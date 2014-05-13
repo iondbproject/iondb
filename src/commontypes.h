@@ -13,12 +13,20 @@
 extern "C" {
 #endif
 
+#ifndef NULL
+#define NULL ((void*)0)
+#endif
+
 /**
 @brief		General error type.
 */
 enum error 
 {
 	ERROR_NONE,
+	ERROR_UNSUPPORTED,
+	ERROR_UNDEFINEDCHUNKTYPE,
+	ERROR_CANNOTALLOCATEMEMORY,
+	ERROR_OUTSIDEOFCHUNK,
 	ERROR_COUNT
 };
 typedef enum error		error_t;
@@ -34,6 +42,11 @@ struct status
 	unsigned int	affected;
 };
 typedef struct status		status_t;
+
+/**
+@brief		Check that a status is OK.
+*/
+#define IS_STATUS_OK(s) (ERROR_NONE == (s).error)
 
 /**
 @brief		An offset.
@@ -52,9 +65,10 @@ typedef unsigned char		byte;
 typedef byte			bool_t;
 
 /**
-@brief		A size for byte arrays.
+@brief		A generic size type.
+@todo		Better name.
 */
-typedef unsigned int		length_t;
+typedef unsigned int		my_size_t;
 
 /**
 @brief		A general data type that can store whatever you want.
@@ -63,7 +77,7 @@ typedef unsigned int		length_t;
 */
 struct byte_segment
 {
-	length_t		length;		/**< The number of bytes in the
+	my_size_t		length;		/**< The number of bytes in the
 						     byte array. */
 	byte			*segment;	/**< A byte array. Where the
 						     data is stored. */
@@ -72,7 +86,7 @@ struct byte_segment
 /**
 @brief		A general type for keys.
 */
-typedef struct byte_segment	key_t;
+typedef struct byte_segment	my_key_t;
 
 /**
 @brief		A general type for values.
@@ -82,15 +96,15 @@ typedef struct byte_segment	value_t;
 /**
 @brief		True value for booleans.
 */
-#ifndef TRUE
-#define TRUE 1
+#ifndef true
+#define true 1
 #endif
 
 /**
 @brief		False value for booleans.
 */
-#ifndef FALSE
-#define FALSE 0
+#ifndef false
+#define false 0
 #endif
 
 #ifdef __cplusplus
