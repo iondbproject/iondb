@@ -26,9 +26,9 @@ extern "C" {
 */
 status_t
 lpmemhashtable_insert(
-	dictionary_t	*handler,
-	key_t		key,
-	value_t		value
+	lpmemhashtable_t	*handler,
+	my_key_t		key,
+	value_t			value
 );
 
 /**
@@ -46,8 +46,8 @@ lpmemhashtable_insert(
 */
 status_t
 lpmemhashtable_get(
-	dict_iterator_t	*iterator,
-	value_t		*value
+	lpmemhashtable_cursor_t	*cursor,
+	value_t			value
 );
 
 /**
@@ -95,8 +95,8 @@ lpmemhashtable_update(
 */
 dict_iterator_t
 lpmemhashtable_find(
-	dictionary_t	*handler,
-	key_t		key
+	lpmemhashtable_t	*handler,
+	my_key_t		key
 );
 
 /**
@@ -109,7 +109,7 @@ lpmemhashtable_find(
 */
 bool_t
 lpmemhashtable_next(
-	dict_iterator_t	*iterator
+	lpmemhashtable_cursor_t	*cursor
 );
 
 #ifdef __cplusplus

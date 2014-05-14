@@ -14,32 +14,6 @@ extern "C" {
 #endif
 
 /**
-@brief		The dictionary handler supertype.
-@details	Should be the first member of any dictionary implementation.
-		This handler should be agnostic of both the underlying
-		underlying dictionary implementation and the storage
-		medium used.
-*/
-struct dictionary
-{
-	storage_handler_t	storage_handler;	/**< The storage handler
-							     to use with the
-							     dictionary. */
-	// TODO: Either store function pointers in the struct or use if statements and a type.
-};
-typedef struct dictionary dictionary_t;
-
-/**
-@brief		Dictionary iterator type.
-*/
-struct dictionary_iterator
-{
-	status_t	status;		/**< The status of the most recent
-					     iterator operation. */
-};
-typedef struct dictionary_iterator dict_iterator_t;
-
-/**
 @brief		Insert a value into a dictionary.
 @param		handler
 			A pointer to the handler for the dictionary to insert

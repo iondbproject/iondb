@@ -86,12 +86,12 @@ struct byte_segment
 /**
 @brief		A general type for keys.
 */
-typedef struct byte_segment	my_key_t;
+typedef struct byte*		my_key_t;
 
 /**
 @brief		A general type for values.
 */
-typedef struct byte_segment	value_t;
+typedef struct byte*		value_t;
 
 /**
 @brief		True value for booleans.
