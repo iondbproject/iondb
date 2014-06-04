@@ -1,8 +1,5 @@
-/*
- * oadictionaryhandler.h
+/**
  *
- *  Created on: May 26, 2014
- *      Author: workstation
  */
 
 #ifndef OADICTIONARYHANDLER_H_
