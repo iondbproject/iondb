@@ -19,62 +19,73 @@ extern "C" {
 #include "./../../kv_system.h"
 #include "./../../io.h"
 
-#define EMPTY 	-1
-#define DELETED -2
-#define IN_USE -3
-
-#define SIZEOF(STATUS) 1
+#define EMPTY 			-1
+#define DELETED 		-2
+#define IN_USE 			-3
+#define SIZEOF(STATUS) 	1
 
 /**
- * update: allows for overwriting (updating) of values on insert and if not it will insert value
- * insert_unique: allows for unique insert only
+@brief		Options for write concern for for overwriting (updating) of values
+			on insert and if not it will insert value insert_unique which
+			allows for unique insert only
  */
 enum write_concern
 {
-	wc_update,
-	wc_insert_unique,			//allows
+	wc_update,				/**< allows for values to be overwritten if already
+	 	 	 	 	 	 	 	 in dictionary */
+	wc_insert_unique,		/**< allows for unique inserts only
+								(no overwrite) */
 };
 
-typedef char write_concern_t;
-typedef int hash_t;
-typedef struct hashmap hashmap_t;
+typedef char 			write_concern_t;
+typedef int 			hash_t;
+typedef struct hashmap 	hashmap_t;
 
+/**
+@brief		Struct used to maintain information about size of key and value.
+ */
 typedef struct record
 {
-	int key_size;
-	int value_size; 
-}record_t;
+	int 			key_size;			/**< the size of the key in bytes */
+	int 			value_size;			/**< the size of the value in bytes */
+} record_t;
 
+/**
+@brief		Struct used to maintain individual records in the hashmap.
+*/
 typedef struct hash_bucket
 {
-	char status;
-	char data[];
+	char 			status;			/**< the status of the bucket */
+	char 			data[];			/**< the data in the bucket */
 } hash_bucket_t;
 
+/**
+@brief		Struct used to maintain the in memory hashmap.
+*/
 struct hashmap
 {
-	int map_size;
-	record_t record;
+	int 			map_size;		/**<
+	record_t 		record;
 	write_concern_t write_concern;
-	int(* compute_hash)(hashmap_t *, char *, int);
+	int				(* compute_hash)(hashmap_t *, char *, int);
 	char * entry;
 };
 
 /**
- @brief		This function initializes an open address in memory hash map.
+@brief		This function initializes an open address in memory hash map.
 
- @param		hashmap
- 	 	 	 	 Pointer to the hashmap instance to initialize.
- @param 	hashing_function
- 	 	 	 	 Function pointer to the hashing function for the instance.
- @param 	key_size
- 	 	 	 	 The size of the key in bytes.
- @param 	value_size
- 	 	 	 	 The size of the value in bytes.
- @param 	size
- 	 	 	 	 The size of the hashmap in item
- 	 	 	 	 (@p key_size + @p value_size + @c 1)
- @return	The status describing the result of the initialization.
+@param		hashmap
+				Pointer to the hashmap instance to initialize.
+@param		hashing_function
+				Function pointer to the hashing function for the instance.
+@param 		key_size
+				The size of the key in bytes.
+@param		value_size
+				The size of the value in bytes.
+@param		size
+				The size of the hashmap in item
+				(@p key_size + @p value_size + @c 1)
+@return		The status describing the result of the initialization.
  */
 char
 oah_initialize(
@@ -86,31 +97,31 @@ oah_initialize(
 );
 
 /**
- * @brief 	Destroys the map in memory
- *
- * @details Destroys the map in memory and frees the underlying memory.
- *
- * @param 	hash_map
- * 				The map into which the data is going to be inserted
- * @return	The status describing the result of the destruction
- */
+@brief		Destroys the map in memory
+
+@details	Destroys the map in memory and frees the underlying memory.
+
+@param		hash_map
+				The map into which the data is going to be inserted
+@return		The status describing the result of the destruction
+*/
 err_t
 oah_destroy(
 		hashmap_t 	*hash_map
 );
 
 /**
- * @brief 	Returns the theoretical location of item in hashmap
- *
- * @details Determines which bucket a record is to be placed based on the
- * 			hash function used.
- *
- * @param 	num
- * 				The key.
- * @param 	size
- * 				The possible number of buckets in the map.
- * @return 	The index position to start probing at.
- */
+@brief		Returns the theoretical location of item in hashmap
+
+@details	Determines which bucket a record is to be placed based on the
+			hash function used.
+
+@param		num
+				The key.
+@param		size
+				The possible number of buckets in the map.
+@return		The index position to start probing at.
+*/
 int
 oah_getLocation(
 		hash_t 		num,
@@ -118,24 +129,24 @@ oah_getLocation(
 );
 
 /**
- * @brief 	Insert record into hashmap
- *
- * @details Attempts to insert data of a given structure as dictated by record
- * 			into the provided hashmap.  The record is used to determine the
- * 			structure of the data <K,V> so that the key can be extracted.  The
- * 			function will return the status of the insert.  If the record has
- * 			been successfully inserted, the status will reflect success.  If
- * 			the record can not be successfully inserted the error code will
- * 			reflect failure.  Will only allow for insertion of unique records.
- *
- * @param 	hash_map
- * 				The map into which the data is going to be inserted.
- * @param 	key
- * 				The key that is being used to locate the position of the data.
- * @param 	value
- * 				The value that is being inserted.
- * @return 	The status of the insert.
- */
+@brief		Insert record into hashmap
+
+@details	Attempts to insert data of a given structure as dictated by record
+ 			into the provided hashmap.  The record is used to determine the
+ 			structure of the data <K,V> so that the key can be extracted.  The
+ 			function will return the status of the insert.  If the record has
+ 			been successfully inserted, the status will reflect success.  If
+ 			the record can not be successfully inserted the error code will
+ 			reflect failure.  Will only allow for insertion of unique records.
+
+@param 		hash_map
+ 				The map into which the data is going to be inserted.
+@param		key
+ 				The key that is being used to locate the position of the data.
+@param		value
+				The value that is being inserted.
+@return 	The status of the insert.
+*/
 err_t
 oah_insert(
 		hashmap_t 	*hash_map,
@@ -145,100 +156,130 @@ oah_insert(
 
 
 /**
- * @brief Updates a value in the map
- *
- * @details Updates a value in the map.  If the value does not exist, it will insert the value.
- *
- * @param hash_map the map into which the data is going to be inserted
- * @param key the key that is being used to locate the position of the data
- * @param value the value that is being inserted
- * @return the status of the update
- */
+@brief		Updates a value in the map.
+
+@details	Updates a value in the map.  If the value does not exist, it will
+			insert the value.
+
+@param		hash_map
+				The map into which the data is going to be inserted.
+@param		key
+				The key that is being used to locate the position of the data.
+@param		value
+				The value that is being inserted.
+@return		The status of the update
+*/
 err_t
 oah_update(
-		hashmap_t * hash_map,
-		char * key,
-		char * value);
+		hashmap_t 	*hash_map,
+		char 		*key,
+		char 		*value
+);
 
 /**
- * @brief Locates item in map
- *
- * @details Based on a key, function locates the record in the map
- *
- * @param hash_map the map into which the data is going to be inserted
- * @param record the structure of the record being inserted
- * @param key the key for the record that is being searched for
- * @param size the number of buckets available in the map
- * @return the index of the item in the map
+@brief 		Locates item in map.
+
+@details	Based on a key, function locates the record in the map.
+
+@param		hash_map
+				The map into which the data is going to be inserted.
+@param		record
+				The structure of the record being inserted.
+@param		key
+				The key for the record that is being searched for.
+@param		size
+				The number of buckets available in the map.
+@return		The index of the item in the map.
  */
 int
 oah_findItemLoc(
-		hashmap_t * hash_map,
-		char * key);
+		hashmap_t 	*hash_map,
+		char 		*key
+);
 
-/***
- * @brief Deletes item from map
- *
- * @details Deletes item from map based on key.  If key does not exist
- * error is returned
- *
- * @param hash_map the map into which the data is going to be inserted
- * @param record the structure of the record being inserted
- * @param key the key for the record that is being searched for
- * @param size the number of buckets available in the map
- */
+/**
+@brief		Deletes item from map.
+
+@details	Deletes item from map based on key.  If key does not exist
+			error is returned
+
+@param		hash_map
+				The map into which the data is going to be inserted.
+@param		record
+				The structure of the record being inserted.
+@param		key
+				The key for the record that is being searched for.
+@param		size
+				The number of buckets available in the map.
+*/
 err_t
 oah_delete(
-		hashmap_t * hash_map,
-		char * key);
+		hashmap_t 	*hash_map,
+		char 		*key
+);
 
 /**
- * @brief Locates the record if it exists
- *
- * @details Locates the record based on key match is it exists and returns a
- * pointer to the record.  This presents a significant issue as both the key
- * and value could be modified, causing issues with map.
- *
- * @param hash_map the map into which the data is going to be inserted
- * @param record the structure of the record being inserted
- * @param key the key for the record that is being searched for
- * @param size the number of buckets available in the map
- * @param data the record <K,V> in the map
- */
+@brief		Locates the record if it exists.
+
+@details	Locates the record based on key match is it exists and returns a
+			pointer to the record.  This presents a significant issue as
+			both the key and value could be modified, causing issues with map.
+
+@param		hash_map
+				The map into which the data is going to be inserted.
+@param		record
+				The structure of the record being inserted.
+@param		key
+				The key for the record that is being searched for.
+@param		size
+				The number of buckets available in the map.
+@param		data
+				The record <K,V> in the map.
+*/
 err_t
 oah_query(
-		hashmap_t * hash_map,
-		char * key,
-		char ** data);			//TODO change so that memory is allocated and data copied
+		hashmap_t 	*hash_map,
+		char 		*key,
+		char 		**data						//TODO change so that memory is allocated and data copied
+);
 
 /**
- * @brief Helper function to print out map
- *
- * @details Helper function that displays the contents of the map including
- * both key and value.
- *
- * @param hash_map the map into which the data is going to be inserted
- * @param size the number of buckets available in the map
- * @param record the structure of the record being inserted
- */
+@brief		Helper function to print out map.
+
+@details	Helper function that displays the contents of the map including
+			both key and value.
+
+@param		hash_map
+				The map into which the data is going to be inserted.
+@param		size
+				The number of buckets available in the map.
+@param		record
+				The structure of the record being inserted.
+*/
 void
 oah_print(
-		hashmap_t * hash_map,
-		int size,
-		record_t * record);
+		hashmap_t 	*hash_map,
+		int 		size,
+		record_t	*record
+);
 
 /**
- * @brief A simple
- * @param the hashmap the hash function is associated with
- * @param key
- * @param size_of_key
- * @return
- */
+@brief		A simple hashing algorithm implementation.
+
+@param		hashmap
+				The hash function is associated with.
+@param		key
+				The original key value to find hash value for.
+@param		size_of_key
+				The size of the key in bytes.
+@return		The hashed value for the key.
+*/
 hash_t
 oah_compute_simple_hash(
-		hashmap_t * hashmap,
-		char * key,
-		int size_of_key);
+		hashmap_t 	*hashmap,
+		char 		*key,
+		int 		size_of_key
+);
 
 /*void
 static_hash_init(dictonary_handler_t * client);*/
