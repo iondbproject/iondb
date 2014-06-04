@@ -19,20 +19,20 @@ test_open_address_hashmap_create(
 )
 {
 
+/*
 	hashmap_t 	hash_map;
 	status_t 	status;
 	char 		*key;
-
 
 	int i;
 
 	for (i = 0; i < MAX_HASH_TEST; i++)
 	{
 		printf("%i ", i);
-		printf("%i\n", oah_compute_simple_hash((char *)(&i), sizeof(int)));
-		CuAssertIntEquals(tc,i,oah_compute_simple_hash((char *)(&i), sizeof(int)));
-	}
+		printf("%i\n", oah_compute_simple_hash(hash_map, (char *)(&i), sizeof(int)));
 
+	}
+*/
 	/*
 	status = memchunk_create_segment(&segment, numitems, itemsize);
 
