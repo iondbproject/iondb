@@ -10,7 +10,7 @@
 
 #include "./../dicttypes.h"
 #include "./../dictionary.h"
-#include "./../../system.h"
+#include "./../../kv_system.h"
 #include "oahash.h"
 
 /**
@@ -18,7 +18,7 @@
  */
 struct oadict_cursor
 {
-	dict_cursor_t	super;		//Super type of this cursor
+	dict_cursor_t		super;		//Super type of this cursor
 	hash_t	first;					//First visited spot
 	hash_t	current;				//Currently visited spot
 }oadict_cursor_t;

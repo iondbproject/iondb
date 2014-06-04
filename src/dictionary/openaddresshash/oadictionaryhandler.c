@@ -6,7 +6,7 @@
  */
 
 #include "oadictionaryhandler.h"
-#include "./../../system.h"
+#include "./../../kv_system.h"
 
 //for each handler, need name and
 typedef struct oa_dictionary
@@ -31,6 +31,7 @@ oadict_init(dictionary_handler_t * handler)
 	handler->delete_dictionary = oadict_delete_dictionary;
 
 	//TODO return type
+	return 0;
 }
 
 err_t

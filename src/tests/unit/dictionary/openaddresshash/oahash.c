@@ -11,15 +11,29 @@
 #include "./../../../CuTest.h"
 #include "./../../../../dictionary/openaddresshash/oahash.h"
 
+#define MAX_HASH_TEST 100
+
 void
 test_open_address_hashmap_create(
 	CuTest		*tc
 )
-{/*
-	byte			*segment;
-	memchunk_handler_t	handler;
-	status_t		status;
+{
 
+	hashmap_t 	hash_map;
+	status_t 	status;
+	char 		*key;
+
+
+	int i;
+
+	for (i = 0; i < MAX_HASH_TEST; i++)
+	{
+		printf("%i ", i);
+		printf("%i\n", oah_compute_simple_hash((char *)(&i), sizeof(int)));
+		CuAssertIntEquals(tc,i,oah_compute_simple_hash((char *)(&i), sizeof(int)));
+	}
+
+	/*
 	status = memchunk_create_segment(&segment, numitems, itemsize);
 
 	CuAssertTrue(tc, IS_STATUS_OK(status));

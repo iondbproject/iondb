@@ -8,7 +8,7 @@
 #ifndef DICTTYPES_H_
 #define DICTTYPES_H_
 
-#include "./../system.h"
+#include "./../kv_system.h"
 typedef char * key_t;
 typedef char * value_t;
 typedef char boolean_t;

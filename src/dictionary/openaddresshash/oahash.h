@@ -14,8 +14,10 @@ extern "C" {
 #endif
 
 #include <string.h>
-#include "./../../system.h"
-#include "io.h"
+#include <stdio.h>
+
+#include "./../../kv_system.h"
+#include "./../../io.h"
 
 #define EMPTY 	-1
 #define DELETED -2
@@ -34,8 +36,8 @@ enum write_concern
 };
 
 typedef char write_concern_t;
-
 typedef int hash_t;
+typedef struct hashmap hashmap_t;
 
 typedef struct record
 {
@@ -49,14 +51,14 @@ typedef struct hash_bucket
 	char data[];
 } hash_bucket_t;
 
-typedef struct hashmap
+struct hashmap
 {
 	int map_size;
 	record_t record;
 	write_concern_t write_concern;
-	int(* compute_hash)(char *, int);
+	int(* compute_hash)(hashmap_t *, char *, int);
 	char * entry;
-}hashmap_t;
+};
 
 /**
  * @brief Initializes a linear hash map
@@ -71,7 +73,7 @@ typedef struct hashmap
 char
 oah_initialize(
 		hashmap_t * hash_map,
-		hash_t (*f)(char *, int),
+		hash_t (*f)(hashmap_t *, char *, int),
 		int key_size,
 		int value_size,
 		int size);
@@ -211,12 +213,14 @@ oah_print(
 
 /**
  * @brief A simple
+ * @param the hashmap the hash function is associated with
  * @param key
  * @param size_of_key
  * @return
  */
 hash_t
 oah_compute_simple_hash(
+		hashmap_t * hashmap,
 		char * key,
 		int size_of_key);
 

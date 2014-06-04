@@ -22,7 +22,7 @@
 char
 oah_initialize(
 		hashmap_t * hashmap,
-		hash_t (*f)(char *, int),
+		hash_t (*f)(hashmap_t *, char *, int),
 		int key_size,
 		int value_size,
 		int size)
@@ -43,7 +43,7 @@ oah_initialize(
 	io_printf("Record value size: %i\n",hashmap->record.value_size);
 	io_printf("Size of map (in bytes): %i\n",(hashmap->record.key_size + hashmap->record.value_size + 1)*hashmap->map_size);
 #endif
-	
+
 	if (hashmap->entry == NULL)
 		return 1;
 
@@ -113,7 +113,7 @@ oah_insert(
 	io_printf("\n");
 #endif
 
-	hash_t hash = hash_map->compute_hash(key, hash_map->record.key_size);			//compute hash value for given key
+	hash_t hash = hash_map->compute_hash(hash_map, key, hash_map->record.key_size);			//compute hash value for given key
 
 #ifdef DEBUG
 	io_printf("hash value is %i\n",hash);
@@ -200,7 +200,7 @@ oah_findItemLoc(
 		hashmap_t * hash_map,
 		char * key)
 {
-	hash_t hash = hash_map->compute_hash(key,hash_map->record.key_size);	//compute hash value for given key
+	hash_t hash = hash_map->compute_hash(hash_map, key,hash_map->record.key_size);	//compute hash value for given key
 	int loc = oah_getLocation(hash, hash_map->map_size);					//determine bucket based on hash
 
 	int count = 0;
@@ -328,11 +328,12 @@ oah_print(
 
 hash_t
 oah_compute_simple_hash(
+		hashmap_t * hashmap,
 		char * key,
 		int size_of_key)
 {
 	//convert to a hashable value
-	hash_t hash = (hash_t)(*(int *)key);
+	hash_t hash = ((hash_t)(*(int *)key)) % hashmap->map_size;
 
 	return hash;
 }
