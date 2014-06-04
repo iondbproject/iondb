@@ -1,7 +1,10 @@
-/*
- * dictionary.c
- *
- */
+/******************************************************************************/
+/**
+@file
+@author		Graeme Douglas, Scott Fazackerley
+@see		For more information, refer to @ref dictionary.c.
+*/
+/******************************************************************************/
 
 #include "dictionary.h"
 
