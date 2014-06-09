@@ -12,11 +12,11 @@
 // creates a named instance of a database
 status_t
 dictionary_create(
-		dictionary_handler_t * handler,
-		dictionary_t * dictionary,
-		int key_size,
-		int value_size,
-		int dictionary_size
+		dictionary_handler_t 	*handler,
+		dictionary_t 			*dictionary,
+		int 					key_size,
+		int 					value_size,
+		int 					dictionary_size
 )
 {
 	//using the handler, create the dictionary
@@ -28,18 +28,18 @@ dictionary_create(
 status_t
 dictionary_insert(
 	/*dictionary_handler_t	*handler,*/
-	dictionary_t * dictionary,
-	ion_key_t * key,
-	ion_value_t * value)
+	dictionary_t 				*dictionary,
+	ion_key_t 					*key,
+	ion_value_t 				*value)
 {
 	return dictionary->handler->insert(dictionary, key, value);
 }
 
 status_t
 dictionary_get(
-	dictionary_t * dictionary,
-	ion_key_t * key,
-	ion_value_t ** value
+	dictionary_t 				*dictionary,
+	ion_key_t 					*key,
+	ion_value_t 				**value
 )
 {
 	return dictionary->handler->get(dictionary, key, value);
@@ -47,9 +47,9 @@ dictionary_get(
 
 status_t
 dictionary_update(
-		dictionary_t * dictionary,
-		ion_key_t * key,
-		ion_value_t * value)
+		dictionary_t 			*dictionary,
+		ion_key_t 				*key,
+		ion_value_t 			*value)
 {
 	return dictionary->handler->update(dictionary, key, value);
 }

@@ -1,14 +1,17 @@
+/******************************************************************************/
 /**
- * Open Address Hash Map
- *
- * The open address hash map allows non-colliding entries into a hash table
- *
- * @todo 	capture size of map
- * @todo 	prevent duplicate insertions
- * @todo  	When creating the hash-map, need to know something about what is going in it.
- * 			What we need to know if the the size of the key and the size of the data.
- * 			That is all.  Nothing else.
+@file		oahash.c
+@author		Scott Ronald Fazackerley
+@brief		Open Address Hash Map
+@details	The open address hash map allows non-colliding entries into a hash table
+
+@todo 	capture size of map
+@todo 	prevent duplicate insertions
+@todo  	When creating the hash-map, need to know something about what is going in it.
+ 		What we need to know if the the size of the key and the size of the data.
+ 		That is all.  Nothing else.
  */
+/******************************************************************************/
 
 #include "oahash.h"
 

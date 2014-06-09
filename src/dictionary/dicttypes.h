@@ -3,7 +3,7 @@
 @file		
 @author		Scott Fazackerley, Graeme Douglas
 @brief		Types used for dictionaries.
-@detials	This file exists mostly to avoid circular dependencies.
+@details	This file exists mostly to avoid circular dependencies.
 */
 /******************************************************************************/
 

@@ -19,6 +19,7 @@ extern "C" {
 /**
 @brief		Creates as instance of a specific type of dictionary.
 
+@param
 @return		A status describing the result of dictionary creation.
 */
 status_t

@@ -38,12 +38,12 @@ enum write_concern
 };
 
 /**
-@brief		this
+@brief		Write concern for hashmap which limits insert/update of values.
  */
 typedef char 			write_concern_t;
 
 /**
-@brief		this
+@brief		The position in the hashmap.
  */
 typedef int 			hash_t;
 
@@ -71,16 +71,18 @@ typedef struct hash_bucket
 } hash_bucket_t;
 
 /**
-@brief		Struct used to maintain the in memory hashmap.
+@brief		Struct used to maintain an instance of an in memory hashmap.
 */
 struct hashmap
 {
-	int 			map_size;		/**< */
-	record_t 		record;			/**< */
-	write_concern_t write_concern;
+	int 			map_size;		/**<The size of the map in item capacity */
+	record_t 		record;			/**<The record structure for items */
+	write_concern_t write_concern;	/**<The current @p write_concern level
+	 	 	 	 	 	 	 	 	 	 of the hashmap*/
 	int				(* compute_hash)(hashmap_t *, char *, int);
-									/**< */
-	char 			*entry;			/**< */
+									/**<The hashing function to be used for
+										the instance*/
+	char 			*entry;			/**<Pointer to the entries in the hashmap*/
 };
 
 /**
