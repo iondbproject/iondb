@@ -6,6 +6,8 @@
 */
 /******************************************************************************/
 
+#include "./../dictionary/dicttypes.h"
+
 typedef struct kv_collection
 {
 	dictionary_t	*primary_index;
@@ -28,22 +30,22 @@ kv_open(
 status_t
 kv_put(
 	kv_collection_t	*collection,
-	my_key_t	key,
-	value_t		value
+	ion_key_t	key,
+	ion_value_t		value
 );
 
 status_t
 kv_get(
 	kv_collection_t	*collection,
-	my_key_t	key,
-	value_t		*value
+	ion_key_t	key,
+	ion_value_t		*value
 );
 
 status_t
 kv_update(
 	kv_collection_t	*collection,
-	my_key_t	key,
-	value_t		value
+	ion_key_t	key,
+	ion_value_t		value
 );
 
 // Potential future methods:

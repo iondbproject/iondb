@@ -2,6 +2,7 @@
  * Open Address Hash Map
  *
  * The open address hash map allows non-colliding entries into a hash table
+ *
  * @todo 	capture size of map
  * @todo 	prevent duplicate insertions
  * @todo  	When creating the hash-map, need to know something about what is going in it.
@@ -62,8 +63,8 @@ err_t oah_destroy(
 	hashmap_t 	*hash_map
 )
 {
-	hash_map->compute_hash = NULL;
-	hash_map->map_size = 0;
+	hash_map->compute_hash 		= NULL;
+	hash_map->map_size 			= 0;
 	free(hash_map->entry);
 	if (hash_map->entry == NULL)
 	{
@@ -274,7 +275,7 @@ oah_delete(
 		        						+ hash_map->record.value_size
 		        							+ SIZEOF(STATUS)) * loc))));
 
-		item->status			= DELETED					//delete item
+		item->status			= DELETED;					//delete item
 
 #ifdef DEBUG
 		io_printf("Item deleted at location %d\n", loc);

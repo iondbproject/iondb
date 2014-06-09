@@ -19,12 +19,12 @@ extern "C" {
 /**
 @brief		A dictionary key.
 */
-typedef char						*key_t;
+typedef char						*ion_key_t;
 
 /**
 @brief		A dictionary value.
 */
-typedef char						*value_t;
+typedef char						*ion_value_t;
 
 // TODO
 /**
@@ -68,18 +68,18 @@ typedef struct predicate
 */
 struct dictionary_handler
 {
-	err_t	(* insert)(dictionary_t *, key_t *, value_t *);
+	err_t	(* insert)(dictionary_t *, ion_key_t *, ion_value_t *);
 		/**< A pointer to the dictionaries insertion function. */
 	err_t	(* create_dictionary)(int, int, int, dictionary_handler_t * , dictionary_t *);
 		/**< A pointer to the dictionaries creation function. */
-	err_t	(* get)(dictionary_t *, key_t *, value_t **);
+	err_t	(* get)(dictionary_t *, ion_key_t *, ion_value_t **);
 		/**< A pointer to the dictionaries get function. */
-	err_t	(* update)(dictionary_t *, key_t *, value_t *);
+	err_t	(* update)(dictionary_t *, ion_key_t *, ion_value_t *);
 		/**< A pointer to the dictionaries update function. */
 	err_t	(* find)(dictionary_t *, predicate_t *, dict_cursor_t *);
 	//err_t	(* find_g)(dictionary_t *, key_t *, key_t *, cursor_t **);	//min max
 	//err_t	(* next)(cursor_t *);
-	err_t	(* delete)(dictionary_t *, key_t *);
+	err_t	(* delete)(dictionary_t *, ion_key_t *);
 		/**< A pointer to the dictionaries key-value deletion function. */
 	err_t	(* delete_dictionary)(dictionary_t *);
 		/**< A pointer to the dictionaries dictionary removal function. */
@@ -136,7 +136,7 @@ typedef struct equality_cursor
 {
 	dict_cursor_t 	super;
 		/**< Cursor supertype this type inherits from. */
-	boolean_t		(* equal)(dictionary_t *, key_t *);
+	boolean_t		(* equal)(dictionary_t *, ion_key_t *);
 		/**< A pointer to an equality function. */
 } equality_cursor_t;
 
@@ -149,7 +149,7 @@ typedef struct range_cursor
 {
 	dict_cursor_t	super;
 		/**< Cursor supertype this type inherits from. */
-	boolean_t		(* range)(dictionary_t *, key_t *, key_t *);
+	boolean_t		(* range)(dictionary_t *, ion_key_t *, ion_key_t *);
 		/**< A pointer to a range function. */
 } range_t;
 

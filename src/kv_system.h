@@ -1,10 +1,7 @@
-/*
- * System.h
- *
- *  Created on: May 20, 2014
- *      Author: workstation
+/**
+ @todo	Resolve issue between status_t and err_t.  Status_t is a struct that should have
+ 	 	 and err_t and number of item affected.
  */
-
 #ifndef SYSTEM_H_
 #define SYSTEM_H_
 
@@ -19,9 +16,9 @@
 
 enum status
 {
-	status_ok,
-	status_item_not_found,
-	status_duplicate_key,
+	status_ok,            				/**< status_ok*/
+	status_item_not_found,				/**< status_item_not_found */
+	status_duplicate_key, 				/**< status_duplicate_key */
 };
 
 typedef char status_t;

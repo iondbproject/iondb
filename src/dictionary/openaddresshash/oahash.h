@@ -37,8 +37,19 @@ enum write_concern
 								(no overwrite) */
 };
 
+/**
+@brief		this
+ */
 typedef char 			write_concern_t;
+
+/**
+@brief		this
+ */
 typedef int 			hash_t;
+
+/**
+@brief		Prototype declaration for hashmap
+ */
 typedef struct hashmap 	hashmap_t;
 
 /**
@@ -64,11 +75,12 @@ typedef struct hash_bucket
 */
 struct hashmap
 {
-	int 			map_size;		/**<
-	record_t 		record;
+	int 			map_size;		/**< */
+	record_t 		record;			/**< */
 	write_concern_t write_concern;
 	int				(* compute_hash)(hashmap_t *, char *, int);
-	char * entry;
+									/**< */
+	char 			*entry;			/**< */
 };
 
 /**

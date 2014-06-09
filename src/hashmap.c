@@ -20,8 +20,8 @@ void test_query(dictionary_t* test_dictionary, int key, const record_t* record) 
 
 	io_printf("Query\n");
 	char* data;
-	err_t error = dictionary_get(&*test_dictionary, (key_t*) &key,
-			(value_t**) &data);
+	err_t error = dictionary_get(&*test_dictionary, (ion_key_t*) &key,
+			(ion_value_t**) &data);
 	if (error == err_ok) {
 		int idx;
 		int key = *((int*) data);
@@ -64,12 +64,12 @@ int main(void) {
 	int key = 6;		//key
 	memcpy(value,"this is a ",record.value_size);
 
-	dictionary_insert(&test_dictionary, (key_t *)&key, (value_t *)value);
+	dictionary_insert(&test_dictionary, (ion_key_t *)&key, (ion_value_t *)value);
 
 	test_query(&test_dictionary, key, &record);
 
 	memcpy(value,"this is b ",record.value_size);
-	dictionary_update(&test_dictionary, (key_t *)&key, (value_t *)value);
+	dictionary_update(&test_dictionary, (ion_key_t *)&key, (ion_value_t *)value);
 
 	test_query(&test_dictionary, key, &record);
 	/*//pointer to hashmap
