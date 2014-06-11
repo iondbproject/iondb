@@ -16,22 +16,6 @@ extern "C" {
 
 #include "./../kv_system.h"
 
-/**
-@brief		A dictionary key.
-*/
-typedef char						*ion_key_t;
-
-/**
-@brief		A dictionary value.
-*/
-typedef char						*ion_value_t;
-
-// TODO
-/**
-@brief		A boolean.
-@todo		Move to a common types file.
-*/
-typedef char						boolean_t;
 
 /**
 @brief		A dictionary instance variable.

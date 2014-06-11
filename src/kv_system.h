@@ -25,7 +25,7 @@ typedef char status_t;
 
 enum error
 {
-	err_ok = 0,
+	err_ok ,
 	err_item_not_found,
 	err_duplicate_key,
 	err_max_capacity,
@@ -34,6 +34,23 @@ enum error
 };
 
 typedef char err_t;
+
+/**
+@brief		A dictionary key.
+*/
+typedef char						*ion_key_t;
+
+/**
+@brief		A dictionary value.
+*/
+typedef char						*ion_value_t;
+
+// TODO
+/**
+@brief		A boolean.
+@todo		Move to a common types file.
+*/
+typedef char						boolean_t;
 
 
 #endif /* SYSTEM_H_ */

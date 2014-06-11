@@ -79,7 +79,7 @@ struct hashmap
 	record_t 		record;			/**<The record structure for items */
 	write_concern_t write_concern;	/**<The current @p write_concern level
 	 	 	 	 	 	 	 	 	 	 of the hashmap*/
-	int				(* compute_hash)(hashmap_t *, char *, int);
+	int				(* compute_hash)(hashmap_t *, ion_key_t, int);
 									/**<The hashing function to be used for
 										the instance*/
 	char 			*entry;			/**<Pointer to the entries in the hashmap*/
@@ -104,7 +104,7 @@ struct hashmap
 char
 oah_initialize(
 		hashmap_t	*hash_map,
-		hash_t		(*hashing_function)(hashmap_t *, char *, int),
+		hash_t		(*hashing_function)(hashmap_t *, ion_key_t, int),
 		int			key_size,
 		int			value_size,
 		int			size
@@ -163,9 +163,9 @@ oah_getLocation(
 */
 err_t
 oah_insert(
-		hashmap_t 	*hash_map,
-		char 		*key,
-		char	 	*value
+		hashmap_t 		*hash_map,
+		ion_key_t 		key,
+		ion_value_t	 	value
 );
 
 
@@ -185,9 +185,9 @@ oah_insert(
 */
 err_t
 oah_update(
-		hashmap_t 	*hash_map,
-		char 		*key,
-		char 		*value
+		hashmap_t 		*hash_map,
+		ion_key_t		key,
+		ion_value_t 	value
 );
 
 /**
@@ -207,8 +207,8 @@ oah_update(
  */
 int
 oah_findItemLoc(
-		hashmap_t 	*hash_map,
-		char 		*key
+		hashmap_t 		*hash_map,
+		ion_key_t	 	key
 );
 
 /**
@@ -228,8 +228,8 @@ oah_findItemLoc(
 */
 err_t
 oah_delete(
-		hashmap_t 	*hash_map,
-		char 		*key
+		hashmap_t 		*hash_map,
+		ion_key_t		key
 );
 
 /**
@@ -252,9 +252,10 @@ oah_delete(
 */
 err_t
 oah_query(
-		hashmap_t 	*hash_map,
-		char 		*key,
-		char 		**data						//TODO change so that memory is allocated and data copied
+		hashmap_t 		*hash_map,
+		ion_key_t 		key,
+		char 			**data
+					/** @TODO change so that memory is allocated and data copied*/
 );
 
 /**
@@ -290,9 +291,9 @@ oah_print(
 */
 hash_t
 oah_compute_simple_hash(
-		hashmap_t 	*hashmap,
-		char 		*key,
-		int 		size_of_key
+		hashmap_t 		*hashmap,
+		ion_key_t 		key,
+		int 			size_of_key
 );
 
 /*void

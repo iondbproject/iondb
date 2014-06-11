@@ -153,6 +153,18 @@ dictionary_next(
 	dict_iterator_t	*iterator
 );*/
 
+/**
+@brief 		Destroys dictionay
+
+@param 		dictionary
+				The dictionary instance to destroy.
+@return		The status of the total destruction of the dictionary.
+ */
+status_t
+dictionary_delete_dictionary(
+	dictionary_t		*dictionary
+);
+
 #ifdef __cplusplus
 }
 #endif

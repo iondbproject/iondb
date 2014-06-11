@@ -53,3 +53,11 @@ dictionary_update(
 {
 	return dictionary->handler->update(dictionary, key, value);
 }
+
+status_t
+dictionary_delete_dictionary(
+	dictionary_t		*dictionary
+)
+{
+	return dictionary->handler->delete_dictionary(dictionary);
+}

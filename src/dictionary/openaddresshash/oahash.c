@@ -62,15 +62,19 @@ oah_initialize(
 	return 0;
 }
 
-err_t oah_destroy(
+err_t
+oah_destroy(
 	hashmap_t 	*hash_map
 )
 {
 	hash_map->compute_hash 		= NULL;
 	hash_map->map_size 			= 0;
-	free(hash_map->entry);
-	if (hash_map->entry == NULL)
+	hash_map->record.key_size 	= 0;
+	hash_map->record.value_size	= 0;
+	if (hash_map->entry != NULL)			//check to ensure that you are not freeing something already free
 	{
+		free(hash_map->entry);
+		hash_map->entry = NULL;				//
 		return err_ok;
 	}
 	else
@@ -90,9 +94,9 @@ oah_getLocation(
 
 err_t
 oah_update(
-	hashmap_t 	*hash_map,
-	char 		*key,
-	char 		*value
+	hashmap_t	 	*hash_map,
+	ion_key_t 		key,
+	ion_value_t		value
 )
 {
 	//TODO: lock potentially required
@@ -105,9 +109,9 @@ oah_update(
 
 err_t
 oah_insert(
-	hashmap_t 	*hash_map,
-	char 		*key,
-	char 		*value
+	hashmap_t 		*hash_map,
+	ion_key_t 		key,
+	ion_value_t 	value
 )
 {
 	int i;
@@ -211,13 +215,15 @@ oah_insert(
 
 int
 oah_findItemLoc(
-	hashmap_t 	*hash_map,
-	char 		*key
+	hashmap_t 		*hash_map,
+	ion_key_t		key
 )
 {
 	hash_t hash 				= hash_map->compute_hash(hash_map, key,
-	        						hash_map->record.key_size);		//compute hash value for given key
-	int loc 					= oah_getLocation(hash, hash_map->map_size);	//determine bucket based on hash
+	        						hash_map->record.key_size);
+													//compute hash value for given key
+	int loc 					= oah_getLocation(hash, hash_map->map_size);
+													//determine bucket based on hash
 
 	int count 		= 0;
 	while (count != hash_map->map_size)
@@ -257,8 +263,8 @@ oah_findItemLoc(
 
 err_t
 oah_delete(
-	hashmap_t 	*hash_map,
-	char 		*key
+	hashmap_t 		*hash_map,
+	ion_key_t 		key
 )
 {
 	int loc	 					= oah_findItemLoc(hash_map, key);
@@ -289,9 +295,9 @@ oah_delete(
 
 err_t
 oah_query(
-	hashmap_t 	*hash_map,
-	char 		*key,
-	char 		**data)
+	hashmap_t 		*hash_map,
+	ion_key_t 		key,
+	char 			**data)
 {
 	int loc 					= oah_findItemLoc(hash_map, key);
 
@@ -362,9 +368,9 @@ oah_print(
 
 hash_t
 oah_compute_simple_hash(
-	hashmap_t 	*hashmap,
-	char 		*key,
-	int 		size_of_key
+	hashmap_t 		*hashmap,
+	ion_key_t 		key,
+	int 			size_of_key
 )
 {
 	//convert to a hashable value

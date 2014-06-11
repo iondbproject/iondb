@@ -86,6 +86,7 @@ oadict_delete_dictionary(
 {
 	err_t result = oah_destroy((hashmap_t *)dictionary->instance);
 	free(dictionary->instance);
+	dictionary->instance = NULL;					// When releasing memory, set pointer to NULL
 	return result;
 }
 
