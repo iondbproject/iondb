@@ -14,7 +14,30 @@
 #include "./../../../../dictionary/dictionary.h"
 
 #define MAX_HASH_TEST 100
+#define STD_MAP_SIZE 10
 
+void
+initialize_hash_map(
+	int			size,
+	record_t	*record,
+	hashmap_t 	*map
+)
+{
+	oah_initialize(map, oah_compute_simple_hash, record->key_size, record->value_size, size);
+}
+
+void
+initialize_hash_map_std_conditions(
+	hashmap_t	*map
+)
+{
+
+
+	record_t record;
+	record.key_size = 4;
+	record.value_size = 10;
+	initialize_hash_map(STD_MAP_SIZE, &record, map);
+}
 
 /**
 @brief 		Tests for creation and deletion of open address hash.
@@ -28,16 +51,14 @@ test_open_address_hashmap_initialize(
 )
 {
 
+	/* this is required for initializing the hash map and should come from the dictionary */
 	int size;
 	record_t record;
-	/* this is required for initializing the hash map and should come from the dictionary */
 	record.key_size = 4;
 	record.value_size = 10;
 	size = 10;
-	hashmap_t map;			//create handler for hashmap
-
-	//initialize map
-	oah_initialize(&map,oah_compute_simple_hash,record.key_size,record.value_size,size);
+	hashmap_t map;
+	initialize_hash_map(size, &record, &map);
 
 	//valid correct map settings
 	CuAssertTrue(tc, map.record.key_size 		== record.key_size);
@@ -60,23 +81,15 @@ test_open_address_hashmap_compute_simple_hash(
 )
 {
 
-	int size;
-	record_t record;
-	int i = 0;
-
-
-	/* this is required for initializing the hash map and should come from the dictionary */
-	record.key_size = 4;
-	record.value_size = 10;
-	size = 10;
 	hashmap_t map;			//create handler for hashmap
+	int i;
 
-	//initialize map
-	oah_initialize(&map,oah_compute_simple_hash,record.key_size,record.value_size,size);
+	initialize_hash_map_std_conditions(&map);
 
 	for (i = 0; i< MAX_HASH_TEST; i++)
 	{
-		oah_compute_simple_hash(&map, (char *)i, sizeof(i));
+		CuAssertTrue(tc, (i % map.map_size) ==
+			oah_compute_simple_hash(&map, (ion_key_t)((int *)&i), sizeof(i)));
 	}
 }
 
@@ -92,7 +105,12 @@ test_open_address_hashmap_get_location(
 	CuTest		*tc
 )
 {
+	int i;
 
+	for (i = 0; i< MAX_HASH_TEST; i++)
+	{
+		CuAssertTrue(tc, (i % STD_MAP_SIZE) == oah_get_location((hash_t)i, STD_MAP_SIZE));
+	}
 }
 
 /**

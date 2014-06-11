@@ -84,7 +84,7 @@ oah_destroy(
 }
 
 int
-oah_getLocation(
+oah_get_location(
 	hash_t 		num,
 	int 		size
 )
@@ -137,7 +137,7 @@ oah_insert(
 	io_printf("\n");
 #endif
 
-	int loc			= oah_getLocation(hash, hash_map->map_size);
+	int loc			= oah_get_location(hash, hash_map->map_size);
 
 #ifdef DEBUG
 	io_printf("location %i\n", loc);
@@ -222,7 +222,7 @@ oah_findItemLoc(
 	hash_t hash 				= hash_map->compute_hash(hash_map, key,
 	        						hash_map->record.key_size);
 													//compute hash value for given key
-	int loc 					= oah_getLocation(hash, hash_map->map_size);
+	int loc 					= oah_get_location(hash, hash_map->map_size);
 													//determine bucket based on hash
 
 	int count 		= 0;

@@ -137,7 +137,7 @@ oah_destroy(
 @return		The index position to start probing at.
 */
 int
-oah_getLocation(
+oah_get_location(
 		hash_t 		num,
 		int 		size
 );
