@@ -297,7 +297,7 @@ err_t
 oah_query(
 	hashmap_t 		*hash_map,
 	ion_key_t 		key,
-	char 			**data)
+	ion_value_t		*value)
 {
 	int loc 					= oah_find_item_loc(hash_map, key);
 
@@ -314,8 +314,8 @@ oah_query(
 		        					+ hash_map->record.value_size;
 		hash_bucket_t * item	= (((hash_bucket_t *)((hash_map->entry
 		        					+ (data_length + SIZEOF(STATUS)) * loc))));
-		*data 					= (char *)malloc(sizeof(char) * (data_length));
-		memcpy(*data, (char *)(item->data), data_length);
+		*value 					= (ion_value_t)malloc(sizeof(char) * (hash_map->record.value_size));
+		memcpy(*value, (ion_value_t)(item->data+hash_map->record.key_size), hash_map->record.value_size);
 		return err_ok;
 	}
 	else

@@ -236,26 +236,22 @@ oah_delete(
 @brief		Locates the record if it exists.
 
 @details	Locates the record based on key match is it exists and returns a
-			pointer to the record.  This presents a significant issue as
-			both the key and value could be modified, causing issues with map.
+			pointer to the record that has been materialized in memory.
+			This presents a significant issue as both the key and value could
+			be modified, causing issues with map.
 
 @param		hash_map
 				The map into which the data is going to be inserted.
-@param		record
-				The structure of the record being inserted.
 @param		key
 				The key for the record that is being searched for.
-@param		size
-				The number of buckets available in the map.
-@param		data
-				The record <K,V> in the map.
+@param		value
+				The value associated in the map.
 */
 err_t
 oah_query(
 		hashmap_t 		*hash_map,
 		ion_key_t 		key,
-		char 			**data
-					/** @TODO change so that memory is allocated and data copied*/
+		ion_value_t 	*value
 );
 
 /**

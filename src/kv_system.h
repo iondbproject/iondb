@@ -25,7 +25,7 @@ typedef char status_t;
 
 enum error
 {
-	err_ok ,
+	err_ok,
 	err_item_not_found,
 	err_duplicate_key,
 	err_max_capacity,

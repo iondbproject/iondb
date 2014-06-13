@@ -35,7 +35,7 @@ check_map(
 		int j;
 		for (j = 0; j < bucket_size; j++)
 		{
-			printf("%X ", *(char *)(map->entry+j));
+			printf("%X ", *(char *)(map->entry + i*bucket_size +j));
 		}
 		printf("\n");
 	}
@@ -246,7 +246,6 @@ test_open_address_hashmap_simple_insert(
 			oah_insert(&map, (ion_key_t)(&i), str);			//this is will wrap
 		}
 
-
 		for (i = 0; i<map.map_size; i++)
 		{
 			status_t status 	= ((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->status;
@@ -275,7 +274,30 @@ test_open_address_hashmap_simple_insert_and_query(
 	CuTest		*tc
 )
 {
+	hashmap_t map;			//create handler for hashmap
+	int i;
 
+	initialize_hash_map_std_conditions(&map);
+
+	for (i = 0; i<map.map_size; i++)
+	{
+		//build up the value
+		char str[10];
+		sprintf(str,"%02i is key",i);
+		printf("value : %s \n", str);
+		oah_insert(&map, (ion_key_t)(&i), (ion_value_t)str);			//this is will wrap
+	}
+
+	for (i = 0; i<map.map_size; i++)
+	{
+		ion_value_t value;
+		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, &value));
+		//build up expected value
+		char str[10];
+		sprintf(str,"%02i is key",i);
+		CuAssertStrEquals(tc, value, str);
+		free(value);									//must free value after query
+	}
 }
 
 /**
