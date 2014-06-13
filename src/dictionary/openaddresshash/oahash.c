@@ -214,7 +214,7 @@ oah_insert(
 }
 
 int
-oah_findItemLoc(
+oah_find_item_loc(
 	hashmap_t 		*hash_map,
 	ion_key_t		key
 )
@@ -267,7 +267,7 @@ oah_delete(
 	ion_key_t 		key
 )
 {
-	int loc	 					= oah_findItemLoc(hash_map, key);
+	int loc	 					= oah_find_item_loc(hash_map, key);
 
 	if (loc == -1)
 	{
@@ -299,7 +299,7 @@ oah_query(
 	ion_key_t 		key,
 	char 			**data)
 {
-	int loc 					= oah_findItemLoc(hash_map, key);
+	int loc 					= oah_find_item_loc(hash_map, key);
 
 	io_printf("located item at %i\n", loc);
 

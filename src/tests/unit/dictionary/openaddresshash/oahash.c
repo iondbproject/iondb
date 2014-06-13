@@ -16,6 +16,31 @@
 #define MAX_HASH_TEST 100
 #define STD_MAP_SIZE 10
 
+/**
+@brief			Helper function to visualize hashmap contents
+
+@param 			map
+					The hashmap to visualize.
+ */
+void
+check_map(
+	hashmap_t 	*map
+)
+{
+	int i;
+	int bucket_size = map->record.key_size + map->record.value_size + sizeof(char);
+
+	for (i = 0; i < map->map_size; i++)
+	{
+		int j;
+		for (j = 0; j < bucket_size; j++)
+		{
+			printf("%X ", *(char *)(map->entry+j));
+		}
+		printf("\n");
+	}
+				//and now check key positions
+}
 void
 initialize_hash_map(
 	int			size,
@@ -124,16 +149,119 @@ test_open_address_hashmap_get_location(
 @param 		tc
 				CuTest
  */
-
 void
 test_open_address_hashmap_find_item_location(
 	CuTest		*tc
 )
 {
+	hashmap_t map;			//create handler for hashmap
+	int i;
+	int offset;
+
+	initialize_hash_map_std_conditions(&map);
+
+	/** Manually populate records */
+	record_t record 			= map.record;
+
+	char *item;
+
+	//manually map out item stucture
+	item = (char *)malloc(sizeof(char) * (record.key_size + record.value_size +sizeof(char)));
+
+	//manually populate array
+	hash_bucket_t *item_ptr 	= (hash_bucket_t *)item;
+	char *pos_ptr 				= map.entry;
+	int bucket_size 			= sizeof(char) + record.key_size
+									+ record.value_size;
+
+	for (offset = 0; offset < map.map_size; offset ++)
+	{
+		// apply continual offsets
+#ifdef DEBUG
+		printf("entry loc: %p %p \n",map.entry,pos_ptr);
+#endif
+		pos_ptr 				= (map.entry
+									+ (offset*bucket_size)%(map.map_size*bucket_size));
+
+		for (i = 0; i<map.map_size; i++)
+		{
+			item_ptr->status 	= IN_USE;
+			memcpy (item_ptr->data, (int *)&i, sizeof(int));
+			char str[10];
+			//build up the value
+			sprintf(str,"%02i is key",i);
+			//and copy it directly into the slot
+			memcpy((item_ptr->data + sizeof(int)), str, 10);
+			memcpy(pos_ptr, item_ptr, bucket_size);
+			pos_ptr = map.entry + ((((i+1+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size));
+		}
+
+		//and now check key positions
+		for (i = 0; i<map.map_size; i++)
+		{
+			CuAssertTrue(tc, (i+offset)%map.map_size 	== oah_find_item_loc(&map, (ion_key_t)(&i)));
+		}
+	}
 
 }
 
+/**
+@brief 		Tests a simple insert into map and reads results directly from map
 
+@param 		tc
+				CuTest
+ */
+void
+test_open_address_hashmap_simple_insert(
+	CuTest		*tc
+)
+{
+	hashmap_t map;			//create handler for hashmap
+	int i;
+	int offset;
+
+	initialize_hash_map_std_conditions(&map);
+
+	/** Manually populate records */
+	record_t record 			= map.record;
+
+	//manually populate array
+	char *pos_ptr 				= map.entry;
+	int bucket_size 			= sizeof(char)
+									+ record.key_size + record.value_size;
+
+	for (offset = 0; offset < map.map_size; offset ++)
+	{
+		// apply continual offsets
+#ifdef DEBUG
+		printf("entry loc: %p %p \n",map.entry,pos_ptr);
+#endif
+		pos_ptr = (map.entry + (offset*bucket_size)%(map.map_size*bucket_size));
+
+		for (i = 0; i<map.map_size; i++)
+		{
+			//build up the value
+			char str[10];
+			sprintf(str,"%02i is key",i);
+			oah_insert(&map, (ion_key_t)(&i), str);			//this is will wrap
+		}
+
+
+		for (i = 0; i<map.map_size; i++)
+		{
+			status_t status 	= ((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->status;
+			int key				= *(int *)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data );
+			char * value 		= (ion_value_t)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data + sizeof(int));
+
+			//build up expected value
+			char str[10];
+			sprintf(str,"%02i is key", (i+offset)%map.map_size);
+			CuAssertTrue(tc, status		== IN_USE);
+			CuAssertTrue(tc, key 		== (i+offset)%map.map_size);
+			CuAssertStrEquals(tc, value, str);
+		}
+	}
+}
 /**
 @brief 		Tests a simple insert into dictionary and simple query
 
@@ -280,6 +408,7 @@ open_address_hashmap_getsuite()
 	SUITE_ADD_TEST(suite, test_open_address_hashmap_compute_simple_hash);
 	SUITE_ADD_TEST(suite, test_open_address_hashmap_get_location);
 	SUITE_ADD_TEST(suite, test_open_address_hashmap_find_item_location);
+	SUITE_ADD_TEST(suite, test_open_address_hashmap_simple_insert);
 	SUITE_ADD_TEST(suite, test_open_address_hashmap_simple_insert_and_query);
 	SUITE_ADD_TEST(suite, test_open_address_hashmap_simple_delete);
 	SUITE_ADD_TEST(suite, test_open_address_hashmap_duplicate_insert_1);

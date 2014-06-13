@@ -206,7 +206,7 @@ oah_update(
 @return		The index of the item in the map.
  */
 int
-oah_findItemLoc(
+oah_find_item_loc(
 		hashmap_t 		*hash_map,
 		ion_key_t	 	key
 );
