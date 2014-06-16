@@ -274,7 +274,7 @@ test_open_address_hashmap_simple_insert_and_query(
 	CuTest		*tc
 )
 {
-	hashmap_t map;			//create handler for hashmap
+	hashmap_t map;								//create handler for hashmap
 	int i;
 
 	initialize_hash_map_std_conditions(&map);
@@ -303,6 +303,11 @@ test_open_address_hashmap_simple_insert_and_query(
 /**
 @brief 		Tests a simple delete from dictionary
 
+@details	Tests a simple delete from dictionary.  Builds a test collection
+			and then deletes records one by one, checking that each record has
+			been successfully deleted and that the rest of the map has not
+			been perturbed.
+
 @param 		tc
 				CuTest
  */
@@ -311,7 +316,41 @@ test_open_address_hashmap_simple_delete(
 	CuTest		*tc
 )
 {
+	hashmap_t map;								//create handler for hashmap
+	int i,j;
 
+
+	initialize_hash_map_std_conditions(&map);
+
+	for (i = 0; i<map.map_size; i++)
+	{
+		//build up the value
+		char str[10];
+		sprintf(str,"%02i is key",i);
+		printf("value : %s \n", str);
+		oah_insert(&map, (ion_key_t)(&i), (ion_value_t)str);			//this is will wrap
+	}
+
+	for (j = 0; j<map.map_size;j++)
+	{
+		ion_value_t value;
+		//delete the record
+		CuAssertTrue(tc, err_ok				== oah_delete(&map, (ion_key_t)(&j)));
+		//check to make sure that the record has been deleted
+		CuAssertTrue(tc, err_item_not_found	== oah_query(&map,(ion_key_t)(&j), &value));
+
+		//and then check to make sure that the rest of the map is undisturbed
+		for (i = j+1; i<map.map_size; i++)
+		{
+			ion_value_t value;
+			CuAssertTrue(tc, err_ok 		== oah_query(&map,(ion_key_t)&i, &value));
+			//build up expected value
+			char str[10];
+			sprintf(str,"%02i is key",i);
+			CuAssertStrEquals(tc, value, str);
+			free(value);									//must free value after query
+		}
+	}
 }
 
 /**
