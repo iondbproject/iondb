@@ -173,6 +173,7 @@ oah_insert(
 					return err_write_concern;// there is a configuration issue with write concern
 				}
 			}
+
 		}
 		else if (item->status == EMPTY || item->status == DELETED)
 		{
@@ -192,8 +193,6 @@ oah_insert(
 			}
 			io_printf(" inserted at location %d\n", loc);
 #endif
-			count++;
-
 			return err_ok;
 		}
 
@@ -204,6 +203,7 @@ oah_insert(
 #ifdef DEBUG
 		io_printf("checking location %i\n", loc);
 #endif
+		count++;
 	}
 
 #ifdef DEBUG

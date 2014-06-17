@@ -9,6 +9,7 @@
 #define DEBUG 1
 #define IS_EQUAL 0
 
+#define DUMP(varname, format) printf("Variable %s = " format "\n", #varname, varname)
 
 #include <stdio.h>
 #include <stdlib.h>

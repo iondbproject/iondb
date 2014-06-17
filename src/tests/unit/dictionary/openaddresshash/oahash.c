@@ -296,7 +296,10 @@ test_open_address_hashmap_simple_insert_and_query(
 		char str[10];
 		sprintf(str,"%02i is key",i);
 		CuAssertStrEquals(tc, value, str);
-		free(value);									//must free value after query
+		if (value != NULL)							//must free value after query
+		{
+			free(value);
+		}
 	}
 }
 
@@ -348,7 +351,10 @@ test_open_address_hashmap_simple_delete(
 			char str[10];
 			sprintf(str,"%02i is key",i);
 			CuAssertStrEquals(tc, value, str);
-			free(value);									//must free value after query
+			if (value != NULL)							//must free value after query
+			{
+				free(value);
+			}
 		}
 	}
 }
@@ -368,6 +374,38 @@ test_open_address_hashmap_duplicate_insert_1(
 	CuTest		*tc
 )
 {
+	hashmap_t map;								//create handler for hashmap
+	int i;
+
+	initialize_hash_map_std_conditions(&map);
+
+	//check to make sure that the write concern is set to wc_insert_unique (default)
+	CuAssertTrue(tc, wc_insert_unique == map.write_concern);
+
+	//populate the map to only half capacity to make sure there is room
+	for (i = 0; i<(map.map_size/2); i++)
+	{
+		//build up the value
+		char str[10];
+		sprintf(str,"%02i is key",i);
+		printf("value : %s \n", str);
+		CuAssertTrue(tc, err_ok  	== oah_insert(&map,
+													(ion_key_t)(&i),
+													(ion_value_t)str));
+	}
+
+	/** and attempt to insert values with same key, which should fail and should
+	return err_duplicate_key*/
+	for (i = 0; i<(map.map_size/2); i++)
+	{
+		//build up the value
+		char str[10];
+		sprintf(str,"%02i is key",i);
+		printf("value : %s \n", str);
+		CuAssertTrue(tc, err_duplicate_key  	== oah_insert(&map,
+													(ion_key_t)(&i),
+													(ion_value_t)str));
+	}
 
 }
 
@@ -386,6 +424,72 @@ test_open_address_hashmap_duplicate_insert_2(
 	CuTest		*tc
 )
 {
+	hashmap_t map;								//create handler for hashmap
+	int i;
+
+	initialize_hash_map_std_conditions(&map);
+
+	//change write concern to allow up updates
+	map.write_concern = wc_update;
+
+	//check to make sure that the write concern is set to wc_insert_unique (default)
+	CuAssertTrue(tc, wc_update == map.write_concern);
+
+	//populate the map to only half capacity to make sure there is room
+	for (i = 0; i<(map.map_size); i++)
+	{
+		//build up the value
+		char str[10];
+		sprintf(str,"%02i is key",i);
+		printf("value : %s \n", str);
+		CuAssertTrue(tc, err_ok  	== oah_insert(&map,
+													(ion_key_t)(&i),
+													(ion_value_t)str));
+	}
+
+	//check status of <K,V>
+	for (i = 0; i<map.map_size; i++)
+	{
+		ion_value_t value;
+		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, &value));
+		//build up expected value
+		char str[10];
+		sprintf(str,"%02i is key",i);
+		CuAssertStrEquals(tc, value, str);
+		if (value != NULL)							//must free value after query
+		{
+			free(value);
+		}
+	}
+
+	/** and attempt to insert values with same key, which should fail and should
+	return err_duplicate_key*/
+	for (i = 0; i<(map.map_size); i++)
+	{
+		//build up the value
+		char str[10];
+		sprintf(str,"%02i is new",i);
+		printf("value : %s \n", str);
+		CuAssertTrue(tc, err_ok  	== oah_insert(&map,
+													(ion_key_t)(&i),
+													(ion_value_t)str));
+	}
+
+	//and check updated status of <K,V>
+	for (i = 0; i<map.map_size; i++)
+	{
+		ion_value_t value;
+		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, &value));
+		//build up expected value
+		char str[10];
+		sprintf(str,"%02i is new",i);
+		CuAssertStrEquals(tc, value, str);
+		if (value != NULL)							//must free value after query
+		{
+			free(value);
+		}
+	}
+
 }
 
 /**
@@ -399,6 +503,70 @@ test_open_address_hashmap_update_1(
 	CuTest		*tc
 )
 {
+	hashmap_t map;								//create handler for hashmap
+	int i;
+
+	initialize_hash_map_std_conditions(&map);
+
+	//change write concern to allow up updates
+	map.write_concern = wc_insert_unique;
+
+	//check to make sure that the write concern is set to wc_insert_unique (default)
+	CuAssertTrue(tc, wc_insert_unique == map.write_concern);
+
+	//populate the map to only half capacity to make sure there is room
+	for (i = 0; i<(map.map_size); i++)
+	{
+		//build up the value
+		char str[10];
+		sprintf(str,"%02i is key",i);
+		printf("value : %s \n", str);
+		CuAssertTrue(tc, err_ok  	== oah_insert(&map,
+													(ion_key_t)(&i),
+													(ion_value_t)str));
+	}
+
+	//check status of <K,V>
+	for (i = 0; i<map.map_size; i++)
+	{
+		ion_value_t value;
+		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, &value));
+		//build up expected value
+		char str[10];
+		sprintf(str,"%02i is key",i);
+		CuAssertStrEquals(tc, value, str);
+		if (value != NULL)							//must free value after query
+		{
+			free(value);
+		}
+	}
+
+	/** and update the values for the known keys */
+	for (i = 0; i<(map.map_size); i++)
+	{
+		//build up the value
+		char str[10];
+		sprintf(str,"%02i is new",i);
+		printf("value : %s \n", str);
+		CuAssertTrue(tc, err_ok  	== oah_update(&map,
+													(ion_key_t)(&i),
+													(ion_value_t)str));
+	}
+
+	//and check updated status of <K,V>
+	for (i = 0; i<map.map_size; i++)
+	{
+		ion_value_t value;
+		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, &value));
+		//build up expected value
+		char str[10];
+		sprintf(str,"%02i is new",i);
+		CuAssertStrEquals(tc, value, str);
+		if (value != NULL)							//must free value after query
+		{
+			free(value);
+		}
+	}
 }
 
 /**
@@ -413,7 +581,71 @@ test_open_address_hashmap_update_2(
 	CuTest		*tc
 )
 {
-}
+	hashmap_t map;								//create handler for hashmap
+	int i;
+
+	initialize_hash_map_std_conditions(&map);
+
+	//change write concern to allow up updates
+	map.write_concern = wc_insert_unique;
+
+	//check to make sure that the write concern is set to wc_insert_unique (default)
+	CuAssertTrue(tc, wc_insert_unique == map.write_concern);
+
+	//populate the map to only half capacity to make sure there is room
+	for (i = 0; i<(map.map_size/2); i++)
+	{
+		//build up the value
+		char str[10];
+		sprintf(str,"%02i is key",i);
+		printf("value : %s \n", str);
+		CuAssertTrue(tc, err_ok  	== oah_insert(&map,
+													(ion_key_t)(&i),
+													(ion_value_t)str));
+	}
+
+	//check status of <K,V>
+	for (i = 0; i<map.map_size/2; i++)
+	{
+		ion_value_t value;
+		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, &value));
+		//build up expected value
+		char str[10];
+		sprintf(str,"%02i is key",i);
+		CuAssertStrEquals(tc, value, str);
+		if (value != NULL)							//must free value after query
+		{
+			free(value);
+		}
+	}
+
+	/** and update the values for the known keys */
+	for (i = 0; i<(map.map_size); i++)
+	{
+		//build up the value
+		char str[10];
+		sprintf(str,"%02i is new",i);
+		printf("value : %s \n", str);
+		CuAssertTrue(tc, err_ok  	== oah_update(&map,
+													(ion_key_t)(&i),
+													(ion_value_t)str));
+	}
+
+	//and check updated status of <K,V>
+	for (i = 0; i<map.map_size; i++)
+	{
+		ion_value_t value;
+		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, &value));
+		//build up expected value
+		char str[10];
+		sprintf(str,"%02i is new",i);
+		CuAssertStrEquals(tc, value, str);
+		if (value != NULL)
+			{
+				free(value);
+			}							//must free value after query
+	}
+	}
 
 /**
 @brief		Tests that values can be deleted from dictionary with single value.
@@ -426,6 +658,32 @@ test_open_address_hashmap_delete_1(
 	CuTest		*tc
 )
 {
+	hashmap_t map;								//create handler for hashmap
+	int i;
+
+	initialize_hash_map_std_conditions(&map);
+
+	char str[10];
+	sprintf(str,"%02i is key",i);
+	printf("value : %s \n", str);
+	CuAssertTrue(tc, err_ok  	== oah_insert(&map,
+									(ion_key_t)(&i),
+									(ion_value_t)str));
+
+	CuAssertTrue(tc, err_ok  	== oah_delete(&map, (ion_key_t)(&i)));
+
+	//Check that value is not there
+	ion_value_t value;
+	CuAssertTrue(tc, err_item_not_found
+								== oah_query(&map, (ion_key_t)(&i), &value));
+	if (value != NULL)
+	{
+		free(value);
+	}
+
+	//Check that value can not be deleted if it is not there already
+	CuAssertTrue(tc, err_item_not_found
+								== oah_delete(&map, (ion_key_t)(&i)));
 }
 
 /**
@@ -445,6 +703,91 @@ test_open_address_hashmap_delete_2(
 	CuTest		*tc
 )
 {
+	hashmap_t map;								//create handler for hashmap
+	int i, j;
+
+	initialize_hash_map_std_conditions(&map);
+
+	//populate the map
+	for (i = 0; i<(map.map_size); i++)
+	{
+		//build up the value
+		char str[10];
+		sprintf(str,"%02i is key",i);
+		printf("value : %s \n", str);
+		CuAssertTrue(tc, err_ok  		== oah_insert(&map,
+												(ion_key_t)(&i),
+												(ion_value_t)str));
+	}
+
+	//check status of <K,V>
+	for (i = 0; i<map.map_size; i++)
+	{
+		ion_value_t value;
+		CuAssertTrue(tc, err_ok 		== oah_query(&map,
+												(ion_key_t)&i,
+												&value));
+		//build up expected value
+		char str[10];
+		sprintf(str,"%02i is key",i);
+		CuAssertStrEquals(tc, value, str);
+		if (value != NULL)							//must free value after query
+		{
+			free(value);
+		}
+	}
+
+	/** and update the values for the known keys */
+	for (i = (map.map_size - 1); i >= 0; i--)
+	{
+		printf("Deleting key: %i \n",i);
+		CuAssertTrue(tc, err_ok  		== oah_delete(&map,
+												(ion_key_t)(&i)));
+
+		//Check that value is not there
+		ion_value_t value;
+		CuAssertTrue(tc, err_item_not_found
+										== oah_query(&map,
+												(ion_key_t)(&i),
+												&value));
+		if (value != NULL)
+		{
+			free(value);
+		}
+
+		//and check that the rest of the values are still there
+
+		for (j = 0; j<i; j++)
+		{
+			ion_value_t value;
+			CuAssertTrue(tc, err_ok 	== oah_query(&map,
+												(ion_key_t)&j,
+												&value));
+			//build up expected value
+			char str[10];
+			sprintf(str,"%02i is key",j);
+			CuAssertStrEquals(tc, value, str);
+			if (value != NULL)							//must free value after query
+			{
+				free(value);
+			}
+		}
+	}
+
+	//Check that all the values have been deleted
+	for (i = 0; i<map.map_size; i++)
+	{
+		ion_value_t value;
+		CuAssertTrue(tc, err_item_not_found
+										== oah_query(&map,
+												(ion_key_t)&i,
+												&value));
+		if (value != NULL)							//must free value after query
+		{
+			free(value);
+		}
+	}
+
 }
 
 /**
@@ -458,6 +801,67 @@ test_open_address_hashmap_capacity(
 	CuTest		*tc
 )
 {
+	hashmap_t map;								//create handler for hashmap
+	int i;
+
+	initialize_hash_map_std_conditions(&map);
+
+	//populate the map
+	for (i = 0; i<(map.map_size); i++)
+	{
+		//build up the value
+		char str[10];
+		sprintf(str,"%02i is key",i);
+		printf("value : %s \n", str);
+		CuAssertTrue(tc, err_ok  		== oah_insert(&map,
+												(ion_key_t)(&i),
+												(ion_value_t)str));
+	}
+
+	//check status of <K,V>
+	for (i = 0; i<map.map_size; i++)
+	{
+		ion_value_t value;
+		CuAssertTrue(tc, err_ok 		== oah_query(&map,
+												(ion_key_t)&i,
+												&value));
+		//build up expected value
+		char str[10];
+		sprintf(str,"%02i is key",i);
+		CuAssertStrEquals(tc, value, str);
+		if (value != NULL)							//must free value after query
+		{
+			free(value);
+		}
+	}
+
+	//Attempt to insert a value when at max capacity
+	//build up the value
+	char str[10];
+	i = 11;
+	sprintf(str,"%02i is key",i);
+	printf("value : %s \n", str);
+	CuAssertTrue(tc, err_max_capacity 	== oah_insert(&map,
+												(ion_key_t)(&i),
+												(ion_value_t)str));
+
+	/*//and check to make sure that the contents has not changed
+	//check status of <K,V>
+	for (i = 0; i<map.map_size; i++)
+	{
+		ion_value_t value;
+		CuAssertTrue(tc, err_ok 		== oah_query(&map,
+												(ion_key_t)&i,
+												&value));
+		//build up expected value
+		char str[10];
+		sprintf(str,"%02i is key",i);
+		CuAssertStrEquals(tc, value, str);
+		if (value != NULL)							//must free value after query
+		{
+			free(value);
+		}
+	}*/
 }
 
 CuSuite*
