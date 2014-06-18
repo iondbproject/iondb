@@ -1,16 +1,13 @@
 /******************************************************************************/
 /**
-@file		skiplist.c
+@file		slhandler.h
 @author		Kris Wallperington
-@brief		Functional test for Skiplist KV implementation.
+@brief		###BRIEF HERE###
 */
 /******************************************************************************/
+#ifndef SLHANDLER_H_
+#define SLHANDLER_H_
 
-#include <stdlib.h>
-#include <stdio.h>
 
-int main(void) {
-	printf("%s", "I'm a skip list!");
 
-	return EXIT_SUCCESS;
-}
+#endif /* SLHANDLER_H_ */
