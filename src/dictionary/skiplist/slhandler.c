@@ -2,7 +2,7 @@
 /**
 @file		slhandler.c
 @author		Kris Wallperington
-@brief		###BRIEF HERE###
+@brief		Handler liaison between dictionary API and skiplist implementation
 */
 /******************************************************************************/
 

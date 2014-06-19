@@ -2,7 +2,7 @@
 /**
 @file		skiplist.c
 @author		Kris Wallperington
-@brief		Functional test for Skiplist KV implementation.
+@brief		Functional test for Skiplist KV implementation
 */
 /******************************************************************************/
 

@@ -2,7 +2,7 @@
 /**
 @file		slstore.c
 @author		Kris Wallperington
-@brief		###BRIEF HERE###
+@brief		Implementation of a Skiplist data store
 */
 /******************************************************************************/
 
