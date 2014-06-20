@@ -10,7 +10,7 @@
 #include "./../../kv_system.h"
 
 #ifdef 	DEBUG
-#define TO_IMPLEMENT(name) 	printf("%s\n", "This is" name ", implement me");
+#define TO_IMPLEMENT(name) 	io_printf("%s\n", "This is '" name "', implement me")
 #endif
 
 err_t
@@ -18,7 +18,6 @@ sldict_init(
 	dictionary_handler_t 	*handler
 )
 {
-	/* TODO bind all handlers */
 	handler->insert 			= sldict_insert;
 	handler->get 				= sldict_query;
 	handler->create_dictionary 	= sldict_create_dictionary;
@@ -36,12 +35,7 @@ sldict_insert(
 	ion_value_t 	*value
 )
 {
-
-#ifdef 	DEBUG
-	TO_IMPLEMENT("sldict_insert")
-#endif
-
-	return err_ok;
+	return sl_insert((skiplist_t *) dictionary->instance, key, value);
 }
 
 err_t
@@ -53,7 +47,7 @@ sldict_query(
 {
 
 #ifdef 	DEBUG
-	TO_IMPLEMENT("sldict_query")
+	TO_IMPLEMENT("sldict_query");
 #endif
 
 	return err_ok;
@@ -68,12 +62,21 @@ sldict_create_dictionary(
 	dictionary_t 			*dictionary
 )
 {
+	int pnum, pden;
 
-#ifdef 	DEBUG
-	TO_IMPLEMENT("sldict_create_dictionary")
-#endif
+	/* TODO malloc error check */
+	dictionary->instance = malloc(sizeof(skiplist_t));
 
-	return err_ok;
+	pnum 	= 1; /* TODO test pnum val */
+	pden 	= 4; /* TODO test pden val */
+
+	/* TODO Should we handle the possible error code returned by this? If yes, what sorts of errors does it return? */
+	err_t result = sl_initialize((skiplist_t *) dictionary->instance, key_size,
+										value_size, dictionary_size, pnum, pden);
+
+	dictionary->handler = handler;
+
+	return result;
 }
 
 err_t
@@ -84,7 +87,7 @@ sldict_delete(
 {
 
 #ifdef 	DEBUG
-	TO_IMPLEMENT("sldict_delete")
+	TO_IMPLEMENT("sldict_delete");
 #endif
 
 	return err_ok;
@@ -96,11 +99,10 @@ sldict_delete_dictionary(
 )
 {
 
-#ifdef 	DEBUG
-	TO_IMPLEMENT("sldict_delete_dictionary")
-#endif
-
-	return err_ok;
+	err_t result = sl_destroy((skiplist_t *) dictionary->instance);
+	free(dictionary->instance);
+	dictionary->instance = NULL;
+	return result;
 }
 
 err_t
@@ -112,7 +114,7 @@ sldict_update(
 {
 
 #ifdef 	DEBUG
-	TO_IMPLEMENT("sldict_update")
+	TO_IMPLEMENT("sldict_update");
 #endif
 
 	return err_ok;
