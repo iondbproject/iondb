@@ -40,3 +40,9 @@ runalltests_skiplist()
 	CuSuiteDelete(suite);
 	CuStringDelete(output);
 }
+
+void
+runalltests_skiplist_handler()
+{
+	printf("%s\n", "Implement me");
+}
