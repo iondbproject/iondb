@@ -108,6 +108,17 @@ test_skiplist_free_all(
 	CuAssertTrue(tc, skiplist.head 	== NULL);
 }
 
+void
+test_skiplist_generate_levels(
+	CuTest 		*tc
+)
+{
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	/* TODO srand() a known value, generate random level, compare with known */
+}
+
 CuSuite*
 skiplist_getsuite()
 {

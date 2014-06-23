@@ -80,5 +80,34 @@ sl_insert(
 	ion_value_t 	value
 )
 {
+	/* TODO Should this be refactored to be size_t? */
+	int key_size = skiplist->key_size;
+	int value_size = skiplist->value_size;
+
+	sl_node_t *newnode = malloc(sizeof(sl_node_t));
+	memcpy(newnode->key, key, key_size);
+	memcpy(newnode->value, value, value_size);
+	newnode->height = sl_gen_level(skiplist);
+
 	return err_ok;
+}
+
+sl_level_t
+sl_gen_level(
+	skiplist_t 		*skiplist
+)
+{
+	/* TODO Finish the test for this, last here (sl_insert is half done) */
+	sl_level_t level = 1;
+	while((rand() < skiplist->pnum * (RAND_MAX / skiplist->pden)) &&
+													level < skiplist->maxheight)
+	{
+		level++;
+	}
+
+#ifdef DEBUG
+	DUMP(level, "%d");
+#endif
+
+	return level - 1;
 }

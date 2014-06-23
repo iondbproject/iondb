@@ -84,13 +84,32 @@ sl_destroy(
 	skiplist_t 		*skiplist
 );
 
+/**
+@brief 		Inserts a @p key @p value pair into the skiplist.
+
+@details 	Inserts a @p key @p value pair into the skiplist. The key and value
+			are copied byte-for-byte as passed by the user. Duplicate inserts
+			are undefined behavior (Until further notice) FIXME
+
+@param 		skiplist
+				The skiplist in which to insert
+@param 		key
+				The key to be insert
+@param 		value
+				The value to be insert
+@return 	Status of insertion.
+ */
 err_t
 sl_insert(
 	skiplist_t 		*skiplist,
 	ion_key_t 		key,
 	ion_value_t 	value
 );
- /* TODO here */
+
+sl_level_t
+sl_gen_level(
+	skiplist_t 		*skiplist
+);
 
 #ifdef __cplusplus
 }
