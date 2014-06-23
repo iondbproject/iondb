@@ -1,7 +1,7 @@
 /Debug
-/Debug
-/Debug
-/Debug
-/Debug
 /Release
 /build
+/bin
+/.settings
+/.cproject
+/.project
