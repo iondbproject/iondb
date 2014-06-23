@@ -29,8 +29,8 @@ status_t
 dictionary_insert(
 	/*dictionary_handler_t	*handler,*/
 	dictionary_t 				*dictionary,
-	ion_key_t 					*key,
-	ion_value_t 				*value)
+	ion_key_t 					key,
+	ion_value_t 				value)
 {
 	return dictionary->handler->insert(dictionary, key, value);
 }
@@ -38,8 +38,8 @@ dictionary_insert(
 status_t
 dictionary_get(
 	dictionary_t 				*dictionary,
-	ion_key_t 					*key,
-	ion_value_t 				**value
+	ion_key_t 					key,
+	ion_value_t 				*value
 )
 {
 	return dictionary->handler->get(dictionary, key, value);
@@ -48,8 +48,8 @@ dictionary_get(
 status_t
 dictionary_update(
 		dictionary_t 			*dictionary,
-		ion_key_t 				*key,
-		ion_value_t 			*value)
+		ion_key_t 				key,
+		ion_value_t 			value)
 {
 	return dictionary->handler->update(dictionary, key, value);
 }

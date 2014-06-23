@@ -199,7 +199,9 @@ test_open_address_hashmap_find_item_location(
 		//and now check key positions
 		for (i = 0; i<map.map_size; i++)
 		{
-			CuAssertTrue(tc, (i+offset)%map.map_size 	== oah_find_item_loc(&map, (ion_key_t)(&i)));
+			int location;
+			CuAssertTrue(tc, err_ok	== oah_find_item_loc(&map, (ion_key_t)(&i), &location));
+			CuAssertTrue(tc, (i+offset)%map.map_size == location);
 		}
 	}
 
@@ -746,6 +748,7 @@ test_open_address_hashmap_delete_2(
 
 		//Check that value is not there
 		ion_value_t value;
+
 		CuAssertTrue(tc, err_item_not_found
 										== oah_query(&map,
 												(ion_key_t)(&i),
@@ -756,9 +759,11 @@ test_open_address_hashmap_delete_2(
 		}
 
 		//and check that the rest of the values are still there
+		DUMP(i,"%i");
 
 		for (j = 0; j<i; j++)
 		{
+			DUMP(j,"%i");
 			ion_value_t value;
 			CuAssertTrue(tc, err_ok 	== oah_query(&map,
 												(ion_key_t)&j,
@@ -845,7 +850,7 @@ test_open_address_hashmap_capacity(
 												(ion_key_t)(&i),
 												(ion_value_t)str));
 
-	/*//and check to make sure that the contents has not changed
+	//and check to make sure that the contents has not changed
 	//check status of <K,V>
 	for (i = 0; i<map.map_size; i++)
 	{
@@ -861,7 +866,7 @@ test_open_address_hashmap_capacity(
 		{
 			free(value);
 		}
-	}*/
+	}
 }
 
 CuSuite*

@@ -32,6 +32,8 @@ enum error
 	err_max_capacity,
 	err_write_concern,
 	err_colllection_destruction_error,
+	err_invalid_predicate,
+	err_out_of_memory,
 };
 
 typedef char err_t;

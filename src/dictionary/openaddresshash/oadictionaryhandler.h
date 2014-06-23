@@ -29,12 +29,71 @@ typedef struct oa_dictionary
  @brief Cursor for dictionary specific implementations
  @todo What happens to the cursor if the collection is modified during traversal?
  */
-struct oadict_cursor
+typedef struct oadict_cursor
 {
-	dict_cursor_t		super;		/**<Super type of this cursor*/
 	hash_t				first;		/**<First visited spot*/
 	hash_t				current;	/**<Currently visited spot*/
+	char				status;		/**@todo what is this for again as there are two status */
 } oadict_cursor_t;
+
+
+/*
+typedef struct equality_cursor
+{
+	dict_cursor_t 	super;
+		*< Cursor supertype this type inherits from.
+
+}equality_cursor_t;
+*/
+
+
+/**
+@brief		Dictionary cursor for equality queries.
+@details	Used when a dictionary supports multiple vvalues for a given key.
+
+			This subtype should be extended when supported for a given
+			dictionary.
+*/
+typedef struct oadict_equality_cursor
+{
+	dict_cursor_t			super;			/**<Super type this cursor inherits from*/
+	oadict_cursor_t			cursor_info;	/**<Super type to dict implementation*/
+	ion_key_t				value;
+	boolean_t				(* equal)(dictionary_t *, ion_key_t *);
+										/**< A pointer to an equality function. */
+} oadict_equality_cursor_t;
+/*
+
+*
+@brief		Dictionary cursor for range queries.
+@details	This subtype should be extended when supported
+			for a given dictionary.
+
+typedef struct range_cursor
+{
+	dict_cursor_t	super;
+		*< Cursor supertype this type inherits from.
+	boolean_t		(* range)(dictionary_t *, ion_key_t *, ion_key_t *);
+		*< A pointer to a range function.
+} range_t;
+
+*
+@brief		Dictionary cursor for equality queries.
+@details	Used when a user gives a function pointer to evaluate
+			over each record in the dictionary.
+
+			This subtype should be extended when supported for a given
+			dictionary.
+
+typedef struct predicate_cursor
+{
+	dict_cursor_t	super;
+		*< Cursor supertype this type inherits from.
+	boolean_t		(* predicate)(dictionary_t *, void *);			// TODO FIXME the void * needs to be dealt with
+		*< A pointer to function that that filters records.
+} predicate_cursor_t;
+*/
+
 
 /**
 @brief		Registers a specific handler for a  dictionary instance.
@@ -97,8 +156,8 @@ oadict_insert(
 err_t
 oadict_query(
 	dictionary_t 	*dictionary,
-	ion_key_t 		*key,
-	ion_value_t		**value
+	ion_key_t 		key,
+	ion_value_t		*value
 );
 
 /**
@@ -180,7 +239,8 @@ oadict_update(
 );
 
 /**
-@brief 		Finds multiple instances of a given key in the dictionary.
+@brief 		Finds multiple instances of a keys that satisfy the provided
+ 	 	 	 predicate in the dictionary.
 
 @details 	Generates a cursor that allows the traversal of items where
 			the items key satisfies the @p predicate (if the underlying
@@ -200,6 +260,20 @@ oadict_find(
 		dictionary_t 	*dictionary,
 		predicate_t 	*predicate,
 		dict_cursor_t 	*cursor
+);
+
+/**
+@brief		Next function to query and retrieve the next
+			<K,V> that stratifies the predicate of the cursor.
+
+@param 		cursor
+				The cursor to iterate over the results.
+@return		The status of the cursor.
+ */
+err_t
+oadict_next(
+	dict_cursor_t 	*cursor,
+	ion_value_t		value
 );
 
 #endif /* OADICTIONARYHANDLER_H_ */

@@ -45,8 +45,8 @@ dictionary_create(
 status_t
 dictionary_insert(
 	dictionary_t			*dictionary,
-	ion_key_t				*key,
-	ion_value_t				*value
+	ion_key_t				key,
+	ion_value_t				value
 );
 
 /**
@@ -86,8 +86,8 @@ dictionary_find(
 status_t
 dictionary_get(
 	dictionary_t		*dictionary,
-	ion_key_t			*key,
-	ion_value_t			**value
+	ion_key_t			key,
+	ion_value_t			*value
 );
 
 /**
@@ -103,7 +103,7 @@ dictionary_get(
 status_t
 dictionary_delete(
 	dictionary_t		*dictionary,
-	ion_key_t			*key
+	ion_key_t			key
 );
 
 /**
@@ -119,8 +119,8 @@ dictionary_delete(
 status_t
 dictionary_update(
 		dictionary_t	*dictionary,
-		ion_key_t		*key,
-		ion_value_t		*value
+		ion_key_t		key,
+		ion_value_t		value
 );
 
 

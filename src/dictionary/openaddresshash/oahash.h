@@ -19,6 +19,7 @@ extern "C" {
 #include "./../../kv_system.h"
 #include "./../../io.h"
 
+
 #define EMPTY 			-1
 #define DELETED 		-2
 #define IN_USE 			-3
@@ -197,18 +198,17 @@ oah_update(
 
 @param		hash_map
 				The map into which the data is going to be inserted.
-@param		record
-				The structure of the record being inserted.
-@param		key
+@param		ion_key_t
 				The key for the record that is being searched for.
-@param		size
-				The number of buckets available in the map.
-@return		The index of the item in the map.
+@param		location
+				Pointer to the location variable
+@return		The status of the find
  */
-int
+err_t
 oah_find_item_loc(
 		hashmap_t 		*hash_map,
-		ion_key_t	 	key
+		ion_key_t	 	key,
+		int				*location
 );
 
 /**
@@ -294,6 +294,23 @@ oah_compute_simple_hash(
 
 /*void
 static_hash_init(dictonary_handler_t * client);*/
+
+/**
+
+@brief		starts scanning map looking for conditions that match
+			predicate and returns result.
+@param hash_map
+@param predicate
+@param i
+@param value
+@return
+ */
+/*err_t
+oah_scan(
+		hashmap_t 			*hash_map,
+		dict_cursor_t		*cursor,
+		ion_value_t 		*value
+);*/
 
 #ifdef __cplusplus
 }

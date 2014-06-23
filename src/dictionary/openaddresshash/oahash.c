@@ -213,10 +213,11 @@ oah_insert(
 	return err_max_capacity;
 }
 
-int
+err_t
 oah_find_item_loc(
 	hashmap_t 		*hash_map,
-	ion_key_t		key
+	ion_key_t		key,
+	int				*location
 )
 {
 	hash_t hash 				= hash_map->compute_hash(hash_map, key,
@@ -225,7 +226,8 @@ oah_find_item_loc(
 	int loc 					= oah_get_location(hash, hash_map->map_size);
 													//determine bucket based on hash
 
-	int count 		= 0;
+	int count 					= 0;
+
 	while (count != hash_map->map_size)
 	{
 		// check to see if current item is a match based on key
@@ -237,7 +239,7 @@ oah_find_item_loc(
 
 		if (item->status == EMPTY)
 		{
-			return -1;		//TODO correct
+			return err_item_not_found;		//if you hit an empty cell, exit
 		}
 		else //calculate if there is a match
 		{
@@ -249,7 +251,8 @@ oah_find_item_loc(
 
 				if (key_is_equal == IS_EQUAL)
 				{
-					return loc;
+					(*location) = loc;
+					return err_ok;
 				}
 			}
 			count++;
@@ -258,7 +261,7 @@ oah_find_item_loc(
 				loc = 0;
 		}
 	}
-	return -1; //FIXME return codes
+	return err_item_not_found; 				//key have not been found
 }
 
 err_t
@@ -267,9 +270,9 @@ oah_delete(
 	ion_key_t 		key
 )
 {
-	int loc	 					= oah_find_item_loc(hash_map, key);
+	int loc;
 
-	if (loc == -1)
+	if (oah_find_item_loc(hash_map, key, &loc) == err_item_not_found)
 	{
 #ifdef DEBUG
 		io_printf("Item not found when trying to oah_delete.\n");
@@ -299,13 +302,10 @@ oah_query(
 	ion_key_t 		key,
 	ion_value_t		*value)
 {
-	int loc 					= oah_find_item_loc(hash_map, key);
+	int loc;
 
-	io_printf("located item at %i\n", loc);
-
-	if (loc != -1)
+	if (oah_find_item_loc(hash_map, key, &loc) == err_ok)
 	{
-
 #ifdef DEBUG
 		io_printf("Item found at location %d\n", loc);
 #endif
@@ -323,6 +323,7 @@ oah_query(
 #ifdef DEBUG
 		io_printf("Item not found in hash table.\n");
 #endif
+		*value = NULL;				/**set the number of bytes to 0 */
 		return err_item_not_found;
 	}
 }
@@ -379,3 +380,56 @@ oah_compute_simple_hash(
 	return hash;
 }
 
+/*
+err_t
+oah_scan(
+		hashmap_t 			*hash_map,
+		//oadict_cursor_t		*cursor,
+		oadict_cursor_t		*cursor,
+		ion_value_t 		*value
+)
+{
+	int loc = cursor->current;
+
+	//need to access predicate function and check
+
+	//need to scan hashmap fully looking for values that satisfy - need to think about
+	//general case
+	//start at the current position, scan forward
+	while (loc != cursor->first)
+		{
+			// check to see if current item is a match based on key
+			// locate first item
+			hash_bucket_t * item 	= (((hash_bucket_t *)((hash_map->entry
+										+ (hash_map->record.key_size
+											+ hash_map->record.value_size
+												+ SIZEOF(STATUS)) * loc))));
+
+			if (item->status == EMPTY || item->status == DELETED)
+			{
+				//if empty, just skip to next cell
+				loc++;
+			}
+			else //check to see if the current key value satisfies the predicate
+			{
+
+					//need to check key match; what's the most efficient way?
+					//need to use fnptr here for the correct matching
+					int key_is_equal = memcmp(item->data, "10{" ,
+					        			hash_map->record.key_size);
+
+					if (key_is_equal == IS_EQUAL)
+					{
+
+						cursor->current = loc;
+						return cs_valid_data;
+					}
+				}
+				loc++;
+				if (loc >= hash_map->map_size)	// Perform wrapping
+					loc = 0;
+			}
+	//if you end up here, you've wrapped the entire data structure and not found a value
+	return cs_end_of_results;
+}
+*/
