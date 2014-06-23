@@ -72,3 +72,13 @@ sl_destroy(
 
 	return err_ok;
 }
+
+err_t
+sl_insert(
+	skiplist_t 		*skiplist,
+	ion_key_t 		key,
+	ion_value_t 	value
+)
+{
+	return err_ok;
+}

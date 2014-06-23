@@ -37,14 +37,23 @@ typedef struct dictionary_handler	dictionary_handler_t;
 */
 typedef struct dictionary_cursor	dict_cursor_t;
 
-//FIXME
-/**
-@todo A predicate is used with the find statement to produce a resultset with multiple values
-*/
-typedef struct predicate
+typedef char 						predicate_type_t;
+
+typedef struct predicate 			predicate_t;
+
+enum cursor_status
 {
-	void	*stuff;
-} predicate_t;
+	cs_invalid_index = -1,					/**invalid index within cursor*/
+	cs_end_of_results,						/**<cursor has reached end */
+	cs_cursor_initialized,
+	cs_cursor_unitialized,
+	cs_possible_data_inconsistency,			/**<The collection has changed
+												during the life of the
+												cursor*/
+	cs_valid_data
+};
+
+typedef char cursor_status_t;
 
 /**
 @brief		A dictionary_handler is responsible for dealing with the specific interface
@@ -52,18 +61,18 @@ typedef struct predicate
 */
 struct dictionary_handler
 {
-	err_t	(* insert)(dictionary_t *, ion_key_t *, ion_value_t *);
+	err_t	(* insert)(dictionary_t *, ion_key_t, ion_value_t);
 		/**< A pointer to the dictionaries insertion function. */
 	err_t	(* create_dictionary)(int, int, int, dictionary_handler_t * , dictionary_t *);
 		/**< A pointer to the dictionaries creation function. */
-	err_t	(* get)(dictionary_t *, ion_key_t *, ion_value_t **);
+	err_t	(* get)(dictionary_t *, ion_key_t, ion_value_t *);
 		/**< A pointer to the dictionaries get function. */
-	err_t	(* update)(dictionary_t *, ion_key_t *, ion_value_t *);
+	err_t	(* update)(dictionary_t *, ion_key_t, ion_value_t);
 		/**< A pointer to the dictionaries update function. */
 	err_t	(* find)(dictionary_t *, predicate_t *, dict_cursor_t *);
 	//err_t	(* find_g)(dictionary_t *, key_t *, key_t *, cursor_t **);	//min max
 	//err_t	(* next)(cursor_t *);
-	err_t	(* delete)(dictionary_t *, ion_key_t *);
+	err_t	(* delete)(dictionary_t *, ion_key_t);
 		/**< A pointer to the dictionaries key-value deletion function. */
 	err_t	(* delete_dictionary)(dictionary_t *);
 		/**< A pointer to the dictionaries dictionary removal function. */
@@ -85,12 +94,14 @@ struct dictionary
 /**
 @brief		Dictionary cursor type designator.
 */
-typedef enum cursor_type
+enum cursor_type
 {
-	equality,	/**< Equality cursor. */
-	range,		/**< Range cursor. */
-	predicate	/**< Predicate cursor. */
-} cursor_type_t;
+	cursor_equality,	/**< Equality cursor. */
+	cursor_range,		/**< Range cursor. */
+	cursor_predicate	/**< Predicate cursor. */
+};
+
+typedef char 		cursor_type_t;
 
 /**
 @brief		Dictionary cursor supertype.
@@ -104,55 +115,81 @@ typedef enum cursor_type
 struct dictionary_cursor
 {
 	cursor_type_t			type;			/**< Cursor type designator. */
-	status_t				status;			/**< Status of last cursor call. */
-	dictionary_t			*dictionary;	/**< Reference to the dictionary
-											     the cursor belongs to. */
+	cursor_status_t			status;			/**< Status of last cursor call. */
+	dictionary_t			*dictionary;	/**< Reference to the dictionary */
+	err_t					(* next)(dict_cursor_t *, ion_value_t value);
+											/**< Next function binding */
+};
+
+
+
+/**
+@brief		Predicate type designator.
+*/
+enum predicate_type
+{
+	predicate_equality,		/**< Equality cursor. */
+	predicate_range,		/**< Range cursor. */
+	predicate_predicate		/**< Predicate cursor. */
+};
+
+
+//FIXME
+/**
+@brief		Predicate supertype.
+@details	This is a super type. The state information
+			must be stored within a subtype that makes
+			sense to the particular dictionary implementation.
+
+			There are different types of predicates for different types of
+			dictionary operations.
+
+			@todo A predicate is used with the find statement to produce a
+			collection with multiple values
+*/
+struct predicate
+{
+	//predicate_t			*next;
+	predicate_type_t	type;
 };
 
 /**
-@brief		Dictionary cursor for equality queries.
-@details	Used when a dictionary supports multiple vvalues for a given key.
-			
-			This subtype should be extended when supported for a given
-			dictionary.
+@brief		predicate for equality queries.
+@details	Used by the user to setup a predicate for evaluation.
 */
-typedef struct equality_cursor
+typedef struct equality_statement
 {
-	dict_cursor_t 	super;
-		/**< Cursor supertype this type inherits from. */
-	boolean_t		(* equal)(dictionary_t *, ion_key_t *);
-		/**< A pointer to an equality function. */
-} equality_cursor_t;
+	predicate_t 	super;
+					/**< Predicate supertype this type inherits from. */
+	ion_key_t		equality_value;
+					/**< The value to match in the equality */
+} equality_statement_t;
 
 /**
-@brief		Dictionary cursor for range queries.
-@details	This subtype should be extended when supported
-			for a given dictionary.
+@brief		predicate for range queries.
+@details	Used by the user to setup a predicate for evaluation.
 */
-typedef struct range_cursor
+typedef struct range_statement
 {
-	dict_cursor_t	super;
-		/**< Cursor supertype this type inherits from. */
-	boolean_t		(* range)(dictionary_t *, ion_key_t *, ion_key_t *);
-		/**< A pointer to a range function. */
-} range_t;
+	predicate_t 	super;
+					/**< Predicate supertype this type inherits from. */
+	ion_key_t		leq_value;
+					/**< The lower value in the range */
+	ion_key_t		geq_value;
+					/**< The upper value in the range */
+} range_statement_t;
+
 
 /**
-@brief		Dictionary cursor for equality queries.
-@details	Used when a user gives a function pointer to evaluate
-			over each record in the dictionary.
-			
-			This subtype should be extended when supported for a given
-			dictionary.
+@brief		predicate for predicate queries.
+@details	Used by the user to setup a predicate for evaluation.
 */
-typedef struct predicate_cursor
+typedef struct predicate_statement
 {
-	dict_cursor_t	super;
-		/**< Cursor supertype this type inherits from. */
-	boolean_t		(* predicate)(dictionary_t *, void *);			// TODO FIXME the void * needs to be dealt with
-		/**< A pointer to function that that filters records. */
-} predicate_cursor_t;
-
+	predicate_t 	super;
+					/**< Predicate supertype this type inherits from. */
+					/** @TODO this needs to be resolved */
+} predicate_statemet_t;
 
 #ifdef __cplusplus
 }

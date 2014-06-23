@@ -89,10 +89,8 @@ sl_insert(
 	skiplist_t 		*skiplist,
 	ion_key_t 		key,
 	ion_value_t 	value
-)
-{
- /* TODO last was here. Noticed scott declares things as ion_key_t *key (Like double pointer? Look into it!) */
-}
+);
+ /* TODO here */
 
 #ifdef __cplusplus
 }

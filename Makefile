@@ -29,7 +29,7 @@ BIN       := bin
 BIN_LIB   := $(BIN)/lib
 BIN_TESTS := $(BIN)/tests
 BIN_UTILS := $(BIN)/utils
-DOC       := doc
+DOC       := docs
 
 # Compiler options
 GCC           =  gcc
@@ -171,7 +171,7 @@ clean: init_dirs
 
 .PHONY: docs
 docs:
-	cd $(DOC)/doxygen ; doxygen Doxyfile
+	cd $(DOC)/ ; doxygen documentation.Doxyfile
 	@echo "Generated API reference in $(DOC)/doxygen/{html, latex}"
 
 .PHONY: init_dirs

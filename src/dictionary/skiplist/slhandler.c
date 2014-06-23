@@ -31,8 +31,8 @@ sldict_init(
 err_t
 sldict_insert(
 	dictionary_t 	*dictionary,
-	ion_key_t 		*key,
-	ion_value_t 	*value
+	ion_key_t 		key,
+	ion_value_t 	value
 )
 {
 	return sl_insert((skiplist_t *) dictionary->instance, key, value);
@@ -41,8 +41,8 @@ sldict_insert(
 err_t
 sldict_query(
 	dictionary_t 	*dictionary,
-	ion_key_t 		*key,
-	ion_value_t 	**value
+	ion_key_t 		key,
+	ion_value_t 	*value
 )
 {
 
@@ -82,7 +82,7 @@ sldict_create_dictionary(
 err_t
 sldict_delete(
 	dictionary_t 	*dictionary,
-	ion_key_t 		*key
+	ion_key_t 		key
 )
 {
 
@@ -108,8 +108,8 @@ sldict_delete_dictionary(
 err_t
 sldict_update(
 	dictionary_t 	*dictionary,
-	ion_key_t 		*key,
-	ion_value_t 	*value
+	ion_key_t 		key,
+	ion_value_t 	value
 )
 {
 
