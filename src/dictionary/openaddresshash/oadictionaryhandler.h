@@ -125,8 +125,8 @@ oadict_init(
 err_t
 oadict_insert(
 	dictionary_t 	*dictionary,
-	ion_key_t 		*key,
-	ion_value_t 	*value
+	ion_key_t 		key,
+	ion_value_t 	value
 );
 
 /**
@@ -202,7 +202,7 @@ oadict_create_dictionary(
 err_t
 oadict_delete(
 		dictionary_t 	*dictionary,
-		ion_key_t 		*key
+		ion_key_t 		key
 );
 
 /**
@@ -234,8 +234,8 @@ oadict_delete_dictionary(
 err_t
 oadict_update(
 		dictionary_t 	*dictionary,
-		ion_key_t 		*key,
-		ion_value_t 	*value
+		ion_key_t 		key,
+		ion_value_t 	value
 );
 
 /**

@@ -31,8 +31,8 @@ oadict_init(
 err_t
 oadict_insert(
 	dictionary_t 	*dictionary,
-	ion_key_t 		*key,
-	ion_value_t		*value
+	ion_key_t 		key,
+	ion_value_t		value
 )
 {
 	return oah_insert((hashmap_t *)dictionary->instance,(char *)key, (char *)value);
@@ -73,7 +73,7 @@ oadict_create_dictionary(
 err_t
 oadict_delete(
 		dictionary_t 	*dictionary,
-		ion_key_t 		*key
+		ion_key_t 		key
 )
 {
 	return oah_delete((hashmap_t *)dictionary->instance,(char *)key);
@@ -94,8 +94,8 @@ oadict_delete_dictionary(
 err_t
 oadict_update(
 		dictionary_t 	*dictionary,
-		ion_key_t 		*key,
-		ion_value_t 	*value
+		ion_key_t 		key,
+		ion_value_t 	value
 )
 {
 	return oah_update((hashmap_t *)dictionary->instance, (char *)key, (char *)value);

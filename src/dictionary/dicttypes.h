@@ -61,18 +61,18 @@ typedef char cursor_status_t;
 */
 struct dictionary_handler
 {
-	err_t	(* insert)(dictionary_t *, ion_key_t *, ion_value_t *);
+	err_t	(* insert)(dictionary_t *, ion_key_t, ion_value_t);
 		/**< A pointer to the dictionaries insertion function. */
 	err_t	(* create_dictionary)(int, int, int, dictionary_handler_t * , dictionary_t *);
 		/**< A pointer to the dictionaries creation function. */
-	err_t	(* get)(dictionary_t *, ion_key_t *, ion_value_t **);
+	err_t	(* get)(dictionary_t *, ion_key_t, ion_value_t *);
 		/**< A pointer to the dictionaries get function. */
-	err_t	(* update)(dictionary_t *, ion_key_t *, ion_value_t *);
+	err_t	(* update)(dictionary_t *, ion_key_t, ion_value_t);
 		/**< A pointer to the dictionaries update function. */
 	err_t	(* find)(dictionary_t *, predicate_t *, dict_cursor_t *);
 	//err_t	(* find_g)(dictionary_t *, key_t *, key_t *, cursor_t **);	//min max
 	//err_t	(* next)(cursor_t *);
-	err_t	(* delete)(dictionary_t *, ion_key_t *);
+	err_t	(* delete)(dictionary_t *, ion_key_t);
 		/**< A pointer to the dictionaries key-value deletion function. */
 	err_t	(* delete_dictionary)(dictionary_t *);
 		/**< A pointer to the dictionaries dictionary removal function. */
