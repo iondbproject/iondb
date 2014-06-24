@@ -36,6 +36,7 @@ sl_initialize(
 	DUMP(skiplist->maxheight, "%d");
 	DUMP(skiplist->pnum, "%d");
 	DUMP(skiplist->pden, "%d");
+	printf("%s", "\n");
 #endif
 
 	/* TODO malloc error check */
@@ -81,13 +82,34 @@ sl_insert(
 )
 {
 	/* TODO Should this be refactored to be size_t? */
-	int key_size = skiplist->key_size;
-	int value_size = skiplist->value_size;
+	int key_size 			= skiplist->key_size;
+	int value_size 			= skiplist->value_size;
 
-	sl_node_t *newnode = malloc(sizeof(sl_node_t));
+	sl_node_t *newnode 		= malloc(sizeof(sl_node_t));
+	newnode->height 		= sl_gen_level(skiplist);
+	newnode->next 			= malloc(sizeof(sl_node_t*) * (newnode->height+1));
 	memcpy(newnode->key, key, key_size);
 	memcpy(newnode->value, value, value_size);
-	newnode->height = sl_gen_level(skiplist);
+
+	sl_node_t *cursor 		= skiplist->head;
+	sl_level_t h;
+
+	for(h = skiplist->head->height; h >= 0; --h)
+	{
+		// -1 if key is smaller, 0 if same, 1 if key is greater
+		int comp = memcmp(key, cursor->next[h]->key, key_size);
+
+		while(NULL != cursor->next[h] && comp >= 0)
+		{
+			cursor = cursor->next[h];
+		}
+
+		if(h <= newnode->height)
+		{
+			newnode->next[h] 	= cursor->next[h];
+			cursor->next[h] 	= newnode;
+		}
+	}
 
 	return err_ok;
 }
@@ -97,7 +119,6 @@ sl_gen_level(
 	skiplist_t 		*skiplist
 )
 {
-	/* TODO Finish the test for this, last here (sl_insert is half done) */
 	sl_level_t level = 1;
 	while((rand() < skiplist->pnum * (RAND_MAX / skiplist->pden)) &&
 													level < skiplist->maxheight)
@@ -105,9 +126,11 @@ sl_gen_level(
 		level++;
 	}
 
+	level--;
+
 #ifdef DEBUG
 	DUMP(level, "%d");
 #endif
 
-	return level - 1;
+	return level;
 }
