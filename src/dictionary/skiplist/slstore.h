@@ -12,6 +12,7 @@
 extern "C" {
 #endif
 
+#include <time.h>
 #include "./../../io.h"
 #include "./../../kv_system.h"
 

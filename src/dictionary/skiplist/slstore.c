@@ -20,7 +20,7 @@ sl_initialize(
 {
 
 	/* TODO srand may need to be changed */
-	srand(0xDEADBEEF);
+	srand(time(NULL));
 
 	skiplist->key_size 		= key_size;
 	skiplist->value_size 	= value_size;
@@ -44,7 +44,8 @@ sl_initialize(
 	skiplist->head->next 	= malloc(sizeof(sl_node_t) * skiplist->maxheight);
 
 	skiplist->head->height 	= maxheight - 1;
-	skiplist->maxheight 	= maxheight;
+	skiplist->head->key 	= NULL;
+	skiplist->head->value 	= NULL;
 
 	while(--maxheight >= 0)
 	{
@@ -65,6 +66,8 @@ sl_destroy(
 	{
 		tofree = cursor;
 		cursor = cursor->next[0];
+		free(tofree->key);
+		free(tofree->value);
 		free(tofree->next);
 		free(tofree);
 	}
@@ -88,6 +91,9 @@ sl_insert(
 	sl_node_t *newnode 		= malloc(sizeof(sl_node_t));
 	newnode->height 		= sl_gen_level(skiplist);
 	newnode->next 			= malloc(sizeof(sl_node_t*) * (newnode->height+1));
+
+	newnode->key 			= malloc(sizeof(char) * key_size);
+	newnode->value 			= malloc(sizeof(char) * value_size);
 	memcpy(newnode->key, key, key_size);
 	memcpy(newnode->value, value, value_size);
 
@@ -96,10 +102,9 @@ sl_insert(
 
 	for(h = skiplist->head->height; h >= 0; --h)
 	{
-		// -1 if key is smaller, 0 if same, 1 if key is greater
-		int comp = memcmp(key, cursor->next[h]->key, key_size);
-
-		while(NULL != cursor->next[h] && comp >= 0)
+		//The memcmp will return -1 if key is smaller, 0 if equal, 1 if greater.
+		while(NULL != cursor->next[h] &&
+							memcmp(key, cursor->next[h]->key, key_size) >= 0)
 		{
 			cursor = cursor->next[h];
 		}
@@ -126,11 +131,5 @@ sl_gen_level(
 		level++;
 	}
 
-	level--;
-
-#ifdef DEBUG
-	DUMP(level, "%d");
-#endif
-
-	return level;
+	return level - 1;
 }

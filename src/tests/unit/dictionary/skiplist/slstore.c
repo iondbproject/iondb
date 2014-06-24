@@ -27,19 +27,22 @@ check_skiplist(
 
 	for(h = skiplist->head->height; h >= 0; --h)
 	{
+		sl_node_t 	*oldcursor = cursor;
 		while(NULL != cursor->next[h])
 		{
-			int key = 0, value = 0;
-			key 	= *((int*) cursor->key);
-			value 	= *((int*) cursor->value);
-			printf("k: %i (v: %i) -- ", key, value);
+			/* TODO The print doesn't look pretty. How to fix? */
+			int key 	= *cursor->next[h]->key;
+			char* value = cursor->next[h]->value;
+			printf("k: %i (v: %s) -- ", key, value);
 			cursor = cursor->next[h];
 		}
 
 		if(NULL == cursor->next[h])
 		{
-			printf("%s\n", " -- NULL");
+			printf("%s\n", "NULL");
 		}
+
+		cursor = oldcursor;
 	}
 
 	printf("%s", "\n");
@@ -153,14 +156,16 @@ test_skiplist_generate_levels_std_conditions(
 
 	srand(0xDEADBEEF);
 	int i;
-	for(i = 0; i < TEST_SIZE; i++) {
+	for(i = 0; i < TEST_SIZE; i++)
+	{
 		CuAssertTrue(tc, sl_gen_level(&skiplist) == prediction[i]);
 	}
+
+	/* TODO add another test with a different seed */
 }
 
 /**
-@brief 		Tests a single, direct insert into the skiplist. The result is
-			verified by visualizing the list structure against a prediction.
+@brief 		Tests a single insert into the skiplist.
 
 @param 		tc
 				CuTest dependency
@@ -173,13 +178,69 @@ test_skiplist_single_insert(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	char key[4] 	= {0x11, 0x22, 0x33, 0x44}; // 1,144,201,745 in Dec
-	char value[10] 	= {0x44, 0x33, 0x22, 0x11, 0x00,
-						0x00, 0x00, 0x00, 0x00, 0x00};
+	int key = 6;
+	char value[10];
+
+	strcpy(value, "single.");
+
+	sl_insert(&skiplist, (ion_key_t) &key, value);
 
 
+#ifdef DEBUG
+	check_skiplist(&skiplist);
+#endif
 
-	//sl_insert(&skiplist, key, value);
+	CuAssertTrue(tc, *((int*) skiplist.head->next[0]->key) 		== 6);
+	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->value, "single.") 	== 0);
+
+}
+
+/**
+@brief 		Tests several insertions into the skiplist.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_insert_multiple(
+	CuTest 		*tc
+)
+{
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	char strs[5][6] =
+	{		"one",
+			"two",
+			"three",
+			"four",
+			"five"
+	};
+
+	int i;
+	for(i = 1; i <= 5; i++)
+	{
+		sl_insert(&skiplist, (ion_key_t) &i, strs[i - 1]);
+	}
+
+#ifdef DEBUG
+		check_skiplist(&skiplist);
+#endif
+
+	CuAssertTrue(tc, *((int*) skiplist.head->next[0]->key) 													== 1);
+	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->value, "one") 											== 0);
+
+	CuAssertTrue(tc, *((int*) skiplist.head->next[0]->next[0]->key) 										== 2);
+	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->next[0]->value, "two") 									== 0);
+
+	CuAssertTrue(tc, *((int*) skiplist.head->next[0]->next[0]->next[0]->key) 								== 3);
+	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->next[0]->next[0]->value, "three") 						== 0);
+
+	CuAssertTrue(tc, *((int*) skiplist.head->next[0]->next[0]->next[0]->next[0]->key) 						== 4);
+	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->next[0]->next[0]->next[0]->value, "four") 				== 0);
+
+	CuAssertTrue(tc, *((int*) skiplist.head->next[0]->next[0]->next[0]->next[0]->next[0]->key) 				== 5);
+	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->next[0]->next[0]->next[0]->next[0]->value, "five") 		== 0);
 }
 
 CuSuite*
@@ -190,6 +251,8 @@ skiplist_getsuite()
 	SUITE_ADD_TEST(suite, test_skiplist_initialize);
 	SUITE_ADD_TEST(suite, test_skiplist_free_all);
 	SUITE_ADD_TEST(suite, test_skiplist_generate_levels_std_conditions);
+	SUITE_ADD_TEST(suite, test_skiplist_single_insert);
+	SUITE_ADD_TEST(suite, test_skiplist_insert_multiple);
 
 	return suite;
 }
