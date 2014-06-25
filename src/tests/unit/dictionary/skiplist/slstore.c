@@ -23,7 +23,15 @@ check_skiplist(
 )
 {
 	sl_node_t 	*cursor = skiplist->head;
-	sl_level_t h;
+	sl_level_t 	h;
+
+	int 		width 		= 0;
+	sl_node_t 	*counter 	= skiplist->head;
+	while(counter->next[0] != NULL)
+	{
+		counter = counter->next[0];
+		width++;
+	}
 
 	for(h = skiplist->head->height; h >= 0; --h)
 	{
@@ -31,8 +39,8 @@ check_skiplist(
 		while(NULL != cursor->next[h])
 		{
 			/* TODO The print doesn't look pretty. How to fix? */
-			int key 	= *cursor->next[h]->key;
-			char* value = cursor->next[h]->value;
+			int 	key 	= (int) *cursor->next[h]->key;
+			char* 	value 	= (char*) cursor->next[h]->value;
 			printf("k: %i (v: %s) -- ", key, value);
 			cursor = cursor->next[h];
 		}
@@ -178,8 +186,8 @@ test_skiplist_single_insert(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	int key = 6;
-	char value[10];
+	int 	key 		= 6;
+	char 	value[10];
 
 	strcpy(value, "single.");
 
@@ -196,7 +204,9 @@ test_skiplist_single_insert(
 }
 
 /**
-@brief 		Tests several insertions into the skiplist.
+@brief 		Tests several insertions into the skiplist. The skiplist structure
+			is accessed directly in order to verify the insertion has properly
+			occurred.
 
 @param 		tc
 				CuTest dependency

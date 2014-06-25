@@ -85,10 +85,10 @@ sl_insert(
 )
 {
 	/* TODO Should this be refactored to be size_t? */
-	int key_size 			= skiplist->key_size;
-	int value_size 			= skiplist->value_size;
+	int 		key_size 	= skiplist->key_size;
+	int 		value_size 	= skiplist->value_size;
 
-	sl_node_t *newnode 		= malloc(sizeof(sl_node_t));
+	sl_node_t 	*newnode 	= malloc(sizeof(sl_node_t));
 	newnode->height 		= sl_gen_level(skiplist);
 	newnode->next 			= malloc(sizeof(sl_node_t*) * (newnode->height+1));
 
@@ -97,8 +97,8 @@ sl_insert(
 	memcpy(newnode->key, key, key_size);
 	memcpy(newnode->value, value, value_size);
 
-	sl_node_t *cursor 		= skiplist->head;
-	sl_level_t h;
+	sl_node_t 	*cursor 	= skiplist->head;
+	sl_level_t 	h;
 
 	for(h = skiplist->head->height; h >= 0; --h)
 	{
