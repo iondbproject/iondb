@@ -19,6 +19,12 @@
 #define EMPTY 0
 #define OCCUPIED 1
 
+unsigned long
+ipow(
+	int base,
+	int exp
+);
+
 /**
 @brief		Struct used to hold the whole static array and global information
 *			The array is broken into two halfs. The first holding the bucket,
@@ -27,7 +33,8 @@
 struct static_array{
 	int key_size;
 	int value_size;
-	long maxelements;
+	long long maxelements;
+	long array_size;
 	char *array;		//points to the whole static array.
 };
 typedef struct static_array static_array_t;
@@ -60,12 +67,11 @@ typedef struct bucket bucket_t;
 @return		The status describing the result of the creation.
  */
 status_t
-sa_create(
-		dictionary_handler_t 	*handler,
-		dictionary_t 			*dictionary,
+sa_dictionary_create(
+		static_array_t			*starray,
 		int 					key_size,
 		int 					value_size,
-		int 					array_size
+		long 					array_size
 );
 
 /**
@@ -82,7 +88,7 @@ sa_create(
  */
 status_t
 sa_update(
-		dictionary_t 			*dictionary,
+		static_array_t			*starray,
 		ion_key_t 				key,
 		ion_value_t 			value
 );
@@ -104,7 +110,7 @@ void sa_find(); //to be made later
  */
 status_t
 sa_get(
-	dictionary_t 				*dictionary,
+	static_array_t				*starray,
 	ion_key_t 					key,
 	ion_value_t 				*value
 );
@@ -124,7 +130,7 @@ sa_get(
  */
 status_t
 sa_insert(
-	dictionary_t 				*dictionary,
+	static_array_t				*starray,
 	ion_key_t 					key,
 	ion_value_t 				value
 );
@@ -160,7 +166,7 @@ key_to_index(
  */
 status_t
 sa_delete(
-	dictionary_t		*dictionary,
+	static_array_t		*starray,
 	ion_key_t			key
 );
 
@@ -175,7 +181,7 @@ sa_delete(
 
 status_t
 sa_destroy(
-	dictionary_t		*dictionary
+	static_array_t		*starray
 );
 
 #endif /* STATICARRAY_H_ */

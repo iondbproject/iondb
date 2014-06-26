@@ -33,7 +33,8 @@ sadict_query(
 	ion_value_t		*value
 )
 {
-	return sa_get(dictionary,key,value);
+	static_array_t *sa = (static_array_t *)dictionary->instance;
+	return sa_get(sa,key,value);
 }
 
 status_t
@@ -43,7 +44,8 @@ sadict_insert(
 	ion_key_t				value
 )
 {
-	return sa_insert(dictionary,key, value);
+	static_array_t *sa = (static_array_t *)dictionary->instance;
+	return sa_insert(sa,key, value);
 }
 
 status_t
@@ -55,8 +57,16 @@ sadict_create(
 		dictionary_t 			*dictionary
 )
 {
+	static_array_t *st;
+
+	st = malloc(sizeof(static_array_t));
+	dictionary->instance = st;
+
+
 	//this line made by raffi, check with someone
-	sa_create(handler,dictionary,key_size,value_size,dictionary_size);
+	sa_dictionary_create(st,key_size,value_size,dictionary_size);
+
+	dictionary->handler = handler;
 	return 0;
 }
 
@@ -66,7 +76,8 @@ sadict_delete(
 		ion_key_t 		key
 )
 {
-	return sa_delete(dictionary,key);
+	static_array_t *sa = (static_array_t *)dictionary->instance;
+	return sa_delete(sa,key);
 }
 
 status_t
@@ -74,7 +85,11 @@ sadict_destroy(
 		dictionary_t 	*dictionary
 )
 {
-	status_t result = sa_destroy(dictionary);
+	status_t result = sa_destroy((static_array_t *)dictionary->instance);
+
+	free(dictionary->instance);
+	dictionary->instance = NULL;
+
 	return result;
 }
 
