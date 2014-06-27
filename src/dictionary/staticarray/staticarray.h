@@ -19,7 +19,7 @@
 #define EMPTY 0
 #define OCCUPIED 1
 
-unsigned long
+long long
 ipow(
 	int base,
 	int exp
@@ -34,7 +34,7 @@ struct static_array{
 	int key_size;
 	int value_size;
 	long long maxelements;
-	long array_size;
+	long long array_size;
 	char *array;		//points to the whole static array.
 };
 typedef struct static_array static_array_t;
@@ -71,7 +71,7 @@ sa_dictionary_create(
 		static_array_t			*starray,
 		int 					key_size,
 		int 					value_size,
-		long 					array_size
+		long long				array_size
 );
 
 /**
@@ -147,7 +147,7 @@ sa_insert(
  @return	the numerical key to be treated as an index
  */
 
-int
+long long
 key_to_index(
 		ion_key_t key,
 		int key_size

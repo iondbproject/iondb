@@ -7,7 +7,7 @@
 /******************************************************************************/
 
 #include "sahandler.h"
-#define NULL ((void*) 0)
+
 
 status_t
 sa_init(
@@ -62,8 +62,6 @@ sadict_create(
 	st = malloc(sizeof(static_array_t));
 	dictionary->instance = st;
 
-
-	//this line made by raffi, check with someone
 	sa_dictionary_create(st,key_size,value_size,dictionary_size);
 
 	dictionary->handler = handler;

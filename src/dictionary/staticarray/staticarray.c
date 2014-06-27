@@ -10,23 +10,22 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-unsigned long
+long long
 ipow(
 	int base,
 	int exp
 )
 {
+	long long temp = 1;
 
-	unsigned long result = 1;
-	while (exp)
+	int x;
+
+	for(x=0;x<exp;x++)
 	{
-		if (exp & 1)
-			result *= base;
-		exp >>= 1;
-		base *= base;
+		temp *=base;
 	}
-printf("The result is %lu\n", result);
-	return result;
+
+	return temp;
 }
 
 #ifndef NULL
@@ -38,24 +37,24 @@ sa_dictionary_create(
 		static_array_t 			*starray,
 		int 					key_size,
 		int 					value_size,
-		long					array_size
+		long long				array_size
 )
 {
-printf("The key size right now is %d\n",key_size);
+
 	//checks for invalid key size
-	if(key_size >= 4 || key_size <= 0)
+	if(key_size >4 || key_size <= 0)
 	{
 		key_size = 4;
 		starray->key_size=key_size;
 		starray->maxelements = ipow(256,key_size);
+
 	}
 	else
 	{
 		starray->maxelements = ipow(256,key_size);
 		starray->key_size = key_size;
 	}
-printf("The key size right now is %d\n",key_size);
-printf("The size of the max emelents right now is %llu\n", starray->maxelements);
+
 
 	//checks for invalid array size
 	if(array_size <=0 || array_size > starray->maxelements)
@@ -79,20 +78,21 @@ printf("The size of the max emelents right now is %llu\n", starray->maxelements)
 	}
 
 
-printf("The array size %lu \n The bucket size %d \n The value size %d \n The total size %lu \n",
+printf("The array size %llu \n The bucket size %lu \n The value size %d \n The total size %llu \n",
 			starray->array_size,sizeof(bucket_t),value_size, starray->array_size*(sizeof(bucket_t) + value_size));
 
 printf("The key size is %d\n", starray->key_size);
-printf("The max number of elements is size is %lu\n\n", starray->maxelements);
+printf("The max number of elements in the array is %llu\n\n", starray->maxelements);
 fflush(stdout);
 	//creates room on the heap for bucket array and char value array
 	starray->array = malloc(starray->array_size*(sizeof(bucket_t) + value_size));
 
-	int x;
+	long long x;
 
 	for(x=0;x<array_size;x++){
 		((bucket_t *)&(starray->array[x]))->status= EMPTY;
 	}
+	fflush(stdout);
 
 	return status_ok;
 }
@@ -169,7 +169,7 @@ sa_get(
 
 		if(b[k].status == EMPTY || k > pow(256,s))
 		{
-			return status_duplicate_key; //wrong return message but there is an error, no element found
+			return err_item_not_found;
 		}
 		else
 		{
@@ -188,7 +188,7 @@ sa_insert(
 )
 {
 	//gets the maximum number of elements that could exist
-	long m = starray->maxelements;
+	long long m = starray->maxelements;
 
 	//gets key_size
 	int s = starray->key_size;
@@ -199,33 +199,51 @@ sa_insert(
 	//points at the beinging of the char array section
 	char *value_start = ((char *) b) + m*sizeof(bucket_t);
 
-	//gets the integer version of the key
-	long k = key_to_index(key, s);
-
-	bucket_t current = b[k];
-
-	if(current.status==OCCUPIED || k > pow(256,s)){
-		return status_duplicate_key;
+	if(strlen(key)!=starray->key_size)
+	{
+		return status_incorrect_keysize;
 	}
-	else{
-		memcpy(&(value_start[k]), &value,starray->value_size);
-		current.value = value_start;
-		current.status = OCCUPIED;
+
+	//gets the integer version of the key
+	long long kk = key_to_index(key, s);
+
+	//special key to find the value location
+	long long value_key = kk * starray->value_size;
+
+	bucket_t *current = &b[kk];
+
+	int value_length = strlen(value);
+
+	printf("The status is %d\n",current->status);
+
+	if(current->status==OCCUPIED || kk >= starray->array_size || kk <= 0)
+	{
+		return status_incorrect_key;
+	}
+	else if(value_length==0 || value_length >= starray->value_size)
+	{
+		return status_incorrect_value;
+	}
+	else
+	{
+		memcpy(&(value_start[value_key]), value,starray->value_size);
+		current->value = &(value_start[value_key]);
+		current->status = OCCUPIED;
 		return status_ok;
 	}
 
 }
 
-int
+long long
 key_to_index(
 		ion_key_t key,
 		int key_size
 )
 {
-	int result = 0;
-	memcpy((char *)&result, &key, key_size);
+	long long result = 0;
+	memcpy((char *)&result, key, key_size);
 
-	 return result*key_size;
+	return result*key_size;
 }
 
 status_t

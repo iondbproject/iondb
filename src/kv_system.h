@@ -19,6 +19,9 @@ enum status
 	status_ok,            				/**< status_ok*/
 	status_item_not_found,				/**< status_item_not_found */
 	status_duplicate_key, 				/**< status_duplicate_key */
+	status_incorrect_value,
+	status_incorrect_key,
+	status_incorrect_keysize,
 };
 
 typedef char status_t;
