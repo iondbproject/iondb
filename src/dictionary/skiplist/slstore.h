@@ -23,7 +23,6 @@ typedef int sl_level_t;
  */
 typedef struct sl_node
 {
-	/* TODO unsure about these types for key and value */
 	ion_key_t		key;
 	ion_value_t		value;
 	sl_level_t		height;

@@ -25,20 +25,11 @@ check_skiplist(
 	sl_node_t 	*cursor = skiplist->head;
 	sl_level_t 	h;
 
-	int 		width 		= 0;
-	sl_node_t 	*counter 	= skiplist->head;
-	while(counter->next[0] != NULL)
-	{
-		counter = counter->next[0];
-		width++;
-	}
-
 	for(h = skiplist->head->height; h >= 0; --h)
 	{
 		sl_node_t 	*oldcursor = cursor;
 		while(NULL != cursor->next[h])
 		{
-			/* TODO The print doesn't look pretty. How to fix? */
 			int 	key 	= (int) *cursor->next[h]->key;
 			char* 	value 	= (char*) cursor->next[h]->value;
 			printf("k: %i (v: %s) -- ", key, value);
@@ -58,12 +49,12 @@ check_skiplist(
 
 void
 initialize_skiplist(
+	skiplist_t 	*skiplist,
 	int 		maxheight,
 	int 		key_size,
 	int 		value_size,
 	int 	 	pnum,
-	int 		pden,
-	skiplist_t 	*skiplist
+	int 		pden
 )
 {
 	sl_initialize(skiplist, key_size, value_size, maxheight, pnum, pden);
@@ -81,7 +72,7 @@ initialize_skiplist_std_conditions(
 	pden 		= 4;
 	maxheight 	= 7;
 
-	initialize_skiplist(maxheight, key_size, value_size, pnum, pden, skiplist);
+	initialize_skiplist(skiplist, maxheight, key_size, value_size, pnum, pden);
 }
 
 /**
@@ -103,7 +94,7 @@ test_skiplist_initialize(
 	maxheight 	= 7;
 	skiplist_t skiplist;
 
-	initialize_skiplist(maxheight, key_size, value_size, pnum, pden, &skiplist);
+	initialize_skiplist(&skiplist, maxheight, key_size, value_size, pnum, pden);
 
 #ifdef DEBUG
 	check_skiplist(&skiplist);
@@ -253,6 +244,50 @@ test_skiplist_insert_multiple(
 	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->next[0]->next[0]->next[0]->next[0]->value, "five") 		== 0);
 }
 
+/**
+@brief 		Tests a mixed order insert. The structure is traversed and tested
+			to confirm that (p + 1) >= ( p ) in all cases, where p is the key
+			of the current node.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_randomized_insert(
+	CuTest 		*tc
+)
+{
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	char str[10];
+	strcpy(str, "random");
+
+	int i;
+	for(i = 0; i < 100; i++)
+	{
+		int key = rand() % 101;
+		sl_insert(&skiplist, (ion_key_t) &key, str);
+	}
+
+#ifdef DEBUG
+	check_skiplist(&skiplist);
+#endif
+
+	sl_node_t 	*cursor = skiplist.head;
+	while(cursor->next[0]->next[0] != NULL)
+	{
+		int 	now 	= (int) cursor->next[0]->key;
+		int 	next 	= (int) cursor->next[0]->next[0]->key;
+
+		/* FIXME Last here, really weird print out */
+		io_printf("compare %d >= %d? :::: %d\n", next, now, next >= now);
+		CuAssertTrue(tc, next >= now);
+
+		cursor = cursor->next[0];
+	}
+}
+
 CuSuite*
 skiplist_getsuite()
 {
@@ -263,6 +298,7 @@ skiplist_getsuite()
 	SUITE_ADD_TEST(suite, test_skiplist_generate_levels_std_conditions);
 	SUITE_ADD_TEST(suite, test_skiplist_single_insert);
 	SUITE_ADD_TEST(suite, test_skiplist_insert_multiple);
+	SUITE_ADD_TEST(suite, test_skiplist_randomized_insert);
 
 	return suite;
 }

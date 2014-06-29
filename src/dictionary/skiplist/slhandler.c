@@ -67,8 +67,8 @@ sldict_create_dictionary(
 	/* TODO malloc error check */
 	dictionary->instance = malloc(sizeof(skiplist_t));
 
-	pnum 	= 1; /* TODO test pnum val */
-	pden 	= 4; /* TODO test pden val */
+	pnum 	= 1;
+	pden 	= 4;
 
 	/* TODO Should we handle the possible error code returned by this? If yes, what sorts of errors does it return? */
 	err_t result = sl_initialize((skiplist_t *) dictionary->instance, key_size,
