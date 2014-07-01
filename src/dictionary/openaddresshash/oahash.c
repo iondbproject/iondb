@@ -380,12 +380,12 @@ oah_compute_simple_hash(
 	return hash;
 }
 
-/*
+
 err_t
 oah_scan(
 		hashmap_t 			*hash_map,
+		oadict_cursor_t		*cursor,			//know exactly what implementation of cursor is
 		//oadict_cursor_t		*cursor,
-		oadict_cursor_t		*cursor,
 		ion_value_t 		*value
 )
 {
@@ -432,4 +432,4 @@ oah_scan(
 	//if you end up here, you've wrapped the entire data structure and not found a value
 	return cs_end_of_results;
 }
-*/
+

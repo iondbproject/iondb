@@ -117,8 +117,8 @@ struct dictionary_cursor
 	cursor_type_t			type;			/**< Cursor type designator. */
 	cursor_status_t			status;			/**< Status of last cursor call. */
 	dictionary_t			*dictionary;	/**< Reference to the dictionary */
-	err_t					(* next)(dict_cursor_t *, ion_value_t value);
-											/**< Next function binding */
+	cursor_status_t			(* next)(dict_cursor_t *, ion_value_t *value);
+											/**< Next function binding *cursor_status_t)*/
 };
 
 

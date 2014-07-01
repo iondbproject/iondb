@@ -55,5 +55,10 @@ typedef char						*ion_value_t;
 */
 typedef char						boolean_t;
 
+typedef enum
+{
+	true,
+	false,
+} boolean_e;
 
 #endif /* SYSTEM_H_ */

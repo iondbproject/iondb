@@ -16,6 +16,7 @@ extern "C" {
 #include <string.h>
 #include <stdio.h>
 
+#include "oadictionaryhandler.h"
 #include "./../../kv_system.h"
 #include "./../../io.h"
 
@@ -305,12 +306,12 @@ static_hash_init(dictonary_handler_t * client);*/
 @param value
 @return
  */
-/*err_t
+err_t
 oah_scan(
 		hashmap_t 			*hash_map,
-		dict_cursor_t		*cursor,
-		ion_value_t 		*value
-);*/
+		 oadict_cursor_t	*cursor
+		//ion_value_t 		*value
+);
 
 #ifdef __cplusplus
 }

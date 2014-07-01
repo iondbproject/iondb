@@ -140,6 +140,10 @@ oadict_find(
 			if (oah_find_item_loc((hashmap_t*)dictionary->instance, eq_cursor->value, &location) == err_item_not_found)
 			{
 				eq_cursor->super.status = cs_end_of_results;
+				//bind equality function
+				eq_cursor->equal = is_equal;
+				//bind correct next function
+				eq_cursor->super.next = oadict_equality_next;
 				return err_ok;
 			}
 			else
@@ -167,34 +171,48 @@ oadict_find(
 }
 
 
-/**
+
 cursor_status_t
 oadict_equality_next(
 	dict_cursor_t 	*cursor,
-	ion_value_t		value
+	ion_value_t		*value
 )
 {
 	// @todo if the collection changes, then the status of the cursor needs to change
 	oadict_equality_cursor_t *eq_cursor = (oadict_equality_cursor_t *)cursor;
+
 	//check the status of the cursor and if it is not valid or at the end, just exit
 	if (eq_cursor->super.status == cs_cursor_unitialized)
 		return eq_cursor->super.status;
 	else if (eq_cursor->super.status == cs_end_of_results)
 		return eq_cursor->super.status;
 
+
+	//need to use the scan operator
+
 	//materialize the result
-	int idx = eq_cursor->cursor_info->current;
+	int idx = eq_cursor->cursor_info.current;		//this is the current value to return
+
+	//get the value
 
 
 	//this will access map
-	((hashmap_t*)(eq_cursor->super.dictionary->instance))->entry;
+	//oah_scan(((hashmap_t*)(eq_cursor->super.dictionary->instance), eq_cursor);
 	//and find the next result? or do this after?
 
 	//and if there are no more results, set the status to reflect
+	return 0;
 }
-*/
-/*boolean_t
-is_equal(dictionary_t *, ion_key_t *)
-{
 
-}*/
+boolean_t
+is_equal(
+	dictionary_t 	*dict,
+	ion_key_t 		key1,
+	ion_key_t 		key2
+)
+{
+	if (memcmp(key1, key2, ((hashmap_t *)(dict->instance))->record.key_size) == IS_EQUAL)
+		return true;
+	else
+		return false;
+}

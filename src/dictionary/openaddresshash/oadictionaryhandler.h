@@ -59,8 +59,10 @@ typedef struct oadict_equality_cursor
 	dict_cursor_t			super;			/**<Super type this cursor inherits from*/
 	oadict_cursor_t			cursor_info;	/**<Super type to dict implementation*/
 	ion_key_t				value;
-	boolean_t				(* equal)(dictionary_t *, ion_key_t *);
-										/**< A pointer to an equality function. */
+	boolean_t				(* equal)(dictionary_t *,
+								ion_key_t,
+								ion_key_t);
+											/**< A pointer to an equality function. */
 } oadict_equality_cursor_t;
 /*
 
@@ -273,7 +275,39 @@ oadict_find(
 err_t
 oadict_next(
 	dict_cursor_t 	*cursor,
-	ion_value_t		value
+	ion_value_t		*value
+);
+
+
+/**
+@brief		Next function for strict equality predicate
+@param cursor
+@param value
+@return
+ */
+cursor_status_t
+oadict_equality_next(
+	dict_cursor_t 	*cursor,
+	ion_value_t		*value
+);
+
+/**
+@brief		Compares two keys and determines if they are equal assuming
+			that they are equal is length (in size).
+
+@param 		dict
+	 	 	 	 	 The map the keys are associated with.
+@param 		key1
+	 	 	 	 	 The first key for comparison.
+@param 		key2
+	 	 	 	 	 The second key for comparison.
+@return		If the keys are equal.
+ */
+boolean_t
+is_equal(
+	dictionary_t 	*dict,
+	ion_key_t 		key1,
+	ion_key_t 		key2
 );
 
 #endif /* OADICTIONARYHANDLER_H_ */
