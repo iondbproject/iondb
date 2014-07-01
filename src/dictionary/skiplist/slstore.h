@@ -89,7 +89,7 @@ sl_destroy(
 
 @details 	Inserts a @p key @p value pair into the skiplist. The key and value
 			are copied byte-for-byte as passed by the user. Duplicate inserts
-			are undefined behavior (Until further notice) FIXME
+			are implicitly supported.
 
 @param 		skiplist
 				The skiplist in which to insert
@@ -106,6 +106,51 @@ sl_insert(
 	ion_value_t 	value
 );
 
+/**
+@brief 		Requests the @p value stored at the given @p key.
+
+@details 	Requests the @p value stored at the given @p key. The resultant
+			value is then copied into the pointer provided by the user.
+
+@param 		skiplist
+				The skiplist in which to query
+@param 		key
+				The key to be found
+@param 		value
+				The container in which to put the resultant data
+@return 	Status of query.
+ */
+err_t
+sl_query(
+	skiplist_t 		*skiplist,
+	ion_key_t 		key,
+	ion_value_t 	*value
+);
+
+
+/**
+@brief 		Searches for a node with the given @p key. Used in conjunction with
+			sl_query to perform key lookups.
+
+@details 	Searches for a node with the given @p key. Used in conjunction with
+			sl_query to perform key lookups. Returns the node with a key less
+			than and closest to the target key.
+ */
+sl_node_t*
+sl_find_node(
+	skiplist_t 		*skiplist,
+	ion_key_t 		key
+);
+
+/**
+@brief 		Generates a psuedo-random height, bounded within [0, maxheight). The
+			generator is seeded using the current epoch time when the skiplist
+			is initialized.
+
+@param 		skiplist
+				The skiplist to read level generation parameters from
+@return 	A height.
+ */
 sl_level_t
 sl_gen_level(
 	skiplist_t 		*skiplist

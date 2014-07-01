@@ -15,7 +15,7 @@
 #include "./../../../../dictionary/dicttypes.h"
 #include "./../../../../dictionary/dictionary.h"
 
-#define TEST_SIZE 99
+#define PRINT_HEADER(fcn) io_printf("=== [%s] ===\n", fcn)
 
 void
 check_skiplist(
@@ -66,7 +66,7 @@ initialize_skiplist_std_conditions(
 )
 {
 	int key_size, value_size, pden, pnum, maxheight;
-	key_size 	= 4;
+	key_size 	= 8;
 	value_size 	= 10;
 	pnum 		= 1;
 	pden 		= 4;
@@ -86,6 +86,7 @@ test_skiplist_initialize(
 	CuTest 		*tc
 )
 {
+	PRINT_HEADER("test_skiplist_initialize");
 	int key_size, value_size, pden, pnum, maxheight;
 	key_size 	= 4;
 	value_size 	= 10;
@@ -118,6 +119,7 @@ test_skiplist_free_all(
 	CuTest 		*tc
 )
 {
+	PRINT_HEADER("test_skiplist_free_all");
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -138,6 +140,7 @@ test_skiplist_generate_levels_std_conditions(
 	CuTest 		*tc
 )
 {
+	PRINT_HEADER("test_skiplist_generate_levels_std_conditions");
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -155,7 +158,7 @@ test_skiplist_generate_levels_std_conditions(
 
 	srand(0xDEADBEEF);
 	int i;
-	for(i = 0; i < TEST_SIZE; i++)
+	for(i = 0; i < 99; i++)
 	{
 		CuAssertTrue(tc, sl_gen_level(&skiplist) == prediction[i]);
 	}
@@ -174,6 +177,7 @@ test_skiplist_single_insert(
 	CuTest 		*tc
 )
 {
+	PRINT_HEADER("test_skiplist_single_insert");
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -189,7 +193,7 @@ test_skiplist_single_insert(
 	check_skiplist(&skiplist);
 #endif
 
-	CuAssertTrue(tc, *((int*) skiplist.head->next[0]->key) 		== 6);
+	CuAssertTrue(tc, *((int*) skiplist.head->next[0]->key) 				== 6);
 	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->value, "single.") 	== 0);
 
 }
@@ -207,6 +211,7 @@ test_skiplist_insert_multiple(
 	CuTest 		*tc
 )
 {
+	PRINT_HEADER("test_skiplist_insert_multiple");
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -257,6 +262,7 @@ test_skiplist_randomized_insert(
 	CuTest 		*tc
 )
 {
+	PRINT_HEADER("test_skiplist_randomized_insert");
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -277,14 +283,223 @@ test_skiplist_randomized_insert(
 	sl_node_t 	*cursor = skiplist.head;
 	while(cursor->next[0]->next[0] != NULL)
 	{
-		int 	now 	= (int) cursor->next[0]->key;
-		int 	next 	= (int) cursor->next[0]->next[0]->key;
+		int 	now 	= (int) *cursor->next[0]->key;
+		int 	next 	= (int) *cursor->next[0]->next[0]->key;
 
-		/* FIXME Last here, really weird print out */
-		io_printf("compare %d >= %d? :::: %d\n", next, now, next >= now);
 		CuAssertTrue(tc, next >= now);
 
 		cursor = cursor->next[0];
+	}
+}
+
+/**
+@brief 		Tests node search on a single node in a skiplist with only one node.
+
+@details 	Tests node search on a single node in a skiplist with only one node.
+			The key searched for is exact. The test compares the given node key
+			and value information with the information inserted into the
+			skiplist. The test passes if they are the same.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_get_node_single(
+	CuTest 			*tc
+)
+{
+	PRINT_HEADER("test_skiplist_get_node_single");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	char str[10];
+	strcpy(str, "find this");
+
+	int key = 3;
+
+	sl_insert(&skiplist, (ion_key_t) &key, str);
+
+	int search = 3;
+	sl_node_t *node = sl_find_node(&skiplist, (ion_key_t) &search);
+
+	CuAssertTrue(tc, (int) *node->key 			== key);
+	CuAssertTrue(tc, strcmp(str, node->value) 	== 0);
+}
+
+/**
+@brief 		Tests node search on a single node in a skiplist with only one node.
+
+@details 	Tests node search on a single node in a skiplist with only one node.
+			The key searched for is higher than the inserted key. The test
+			compares the given node key and value information with the
+			information inserted into the skiplist. The test passes if they are
+			the same.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_get_node_single_high(
+	CuTest 			*tc
+)
+{
+	PRINT_HEADER("test_skiplist_get_node_single_high");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	char str[10];
+	strcpy(str, "find this");
+
+	int key = 3;
+
+	sl_insert(&skiplist, (ion_key_t) &key, str);
+
+#ifdef DEBUG
+	check_skiplist(&skiplist);
+#endif
+
+	int search = 10;
+	sl_node_t *node = sl_find_node(&skiplist, (ion_key_t) &search);
+
+	CuAssertTrue(tc, (int) *node->key 			== key);
+	CuAssertTrue(tc, strcmp(str, node->value) 	== 0);
+}
+
+/**
+@brief 		Tests node search on a single node in a skiplist with only one node.
+
+@details 	Tests node search on a single node in a skiplist with only one node.
+			The key searched for is lower than the inserted key. The test
+			compares the given node key and value information with the
+			information inserted into the skiplist. The test passes if the node
+			returned is the same as the head node. (Since there's only one node,
+			the only node that can be smaller than the one insert is the head
+			node.)
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_get_node_single_low(
+	CuTest 			*tc
+)
+{
+	PRINT_HEADER("test_skiplist_get_node_single_low");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	char str[10];
+	strcpy(str, "find this");
+
+	int key = 3;
+
+	sl_insert(&skiplist, (ion_key_t) &key, str);
+
+#ifdef DEBUG
+	check_skiplist(&skiplist);
+#endif
+
+	int search = 2;
+	sl_node_t *node = sl_find_node(&skiplist, (ion_key_t) &search);
+
+	CuAssertTrue(tc, node == skiplist.head);
+}
+
+/**
+@brief 		Tests node search on a single node in a skiplist with several nodes.
+
+@details 	Tests node search on a single node in a skiplist with several nodes.
+			The key searched for is exact. The test compares the given node key
+			and value information with the information inserted into the
+			skiplist. The test passes if they are the same.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_get_node_single_many(
+	CuTest 			*tc
+)
+{
+	PRINT_HEADER("test_skiplist_get_node_single_many");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	char str[10];
+	strcpy(str, "find this");
+
+	int key = 25;
+
+	sl_insert(&skiplist, (ion_key_t) &key, str);
+
+	char junk[10];
+	strcpy(junk, "big junk");
+	int i;
+	for(i = 0; i < 100; i++)
+	{
+		if(i >= 10 && i <= 35)
+		{
+			//Create a gap ±10 from the target key
+			continue;
+		}
+		sl_insert(&skiplist, (ion_key_t) &i, junk);
+	}
+
+#ifdef DEBUG
+	check_skiplist(&skiplist);
+#endif
+
+	int search = 25;
+	sl_node_t *node = sl_find_node(&skiplist, (ion_key_t) &search);
+
+	CuAssertTrue(tc, (int) *node->key 			== key);
+	CuAssertTrue(tc, strcmp(str, node->value) 	== 0);
+}
+
+/**
+@brief 		Randomly generates 50 random key value pairs and inserts them into
+			the skiplist. The nodes are then recalled and the key/value pairs
+			are compared to the original inserted ones for accuracy.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_get_node_several(
+	CuTest 			*tc
+)
+{
+	PRINT_HEADER("test_skiplist_get_node_several");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+#ifdef DEBUG
+	// If debugging, use a static seed
+	srand(0xDEADBEEF);
+#endif
+
+	int targets[50];
+	char buffer[10];
+	int i;
+	for(i = 0; i < 50; i++)
+	{
+		/* TODO For some reason all keys are being treated like chars (limit of 128?) Also If the keysize is set to 8 something segfaults.... */
+		int key 	= rand() % 1000;
+		targets[i] 	= key;
+		sprintf(buffer, "TEST %d", key);
+		sl_insert(&skiplist, (ion_key_t) &key, buffer);
+	}
+
+#ifdef DEBUG
+	check_skiplist(&skiplist);
+#endif
+
+	for(i = 0; i < 50; i++)
+	{
+		int 		key		= targets[i];
+		sl_node_t 	*node 	= sl_find_node(&skiplist, (ion_key_t) &key);
+		sprintf(buffer, "TEST %d", key);
+		CuAssertTrue(tc, (int) *node->key 				== key);
+		CuAssertTrue(tc, strcmp(node->value, buffer) 	== 0);
 	}
 }
 
@@ -299,6 +514,11 @@ skiplist_getsuite()
 	SUITE_ADD_TEST(suite, test_skiplist_single_insert);
 	SUITE_ADD_TEST(suite, test_skiplist_insert_multiple);
 	SUITE_ADD_TEST(suite, test_skiplist_randomized_insert);
+	SUITE_ADD_TEST(suite, test_skiplist_get_node_single);
+	SUITE_ADD_TEST(suite, test_skiplist_get_node_single_high);
+	SUITE_ADD_TEST(suite, test_skiplist_get_node_single_low);
+	SUITE_ADD_TEST(suite, test_skiplist_get_node_single_many);
+	SUITE_ADD_TEST(suite, test_skiplist_get_node_several);
 
 	return suite;
 }

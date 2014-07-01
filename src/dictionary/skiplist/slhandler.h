@@ -59,8 +59,8 @@ sldict_insert(
 @details 	Queries a dictionary instance for a given @p key and returns the
 			@p value within, copied into the pointer provided by the user.
 			Assumption is that the pointer is passed unallocated, for this
-			function to allocate. The onus is then on the user to free the
-			given memory.
+			function to allocate. The responsibility is then on the user to
+			free the given memory.
 
 @param 		dictionary
 				The instance of the dictionary to query

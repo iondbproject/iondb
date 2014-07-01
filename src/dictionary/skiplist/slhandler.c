@@ -45,12 +45,7 @@ sldict_query(
 	ion_value_t 	*value
 )
 {
-
-#ifdef 	DEBUG
-	TO_IMPLEMENT("sldict_query");
-#endif
-
-	return err_ok;
+	return sl_query((skiplist_t *) dictionary->instance, key, value);
 }
 
 err_t

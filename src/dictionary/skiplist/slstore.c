@@ -97,6 +97,8 @@ sl_insert(
 	memcpy(newnode->key, key, key_size);
 	memcpy(newnode->value, value, value_size);
 
+	io_printf("This is our key: %d\n", (int) *newnode->key);
+
 	sl_node_t 	*cursor 	= skiplist->head;
 	sl_level_t 	h;
 
@@ -117,6 +119,43 @@ sl_insert(
 	}
 
 	return err_ok;
+}
+
+err_t
+sl_query(
+	skiplist_t 		*skiplist,
+	ion_key_t 		key,
+	ion_value_t 	*value
+)
+{
+	int 	value_size 	= skiplist->value_size;
+	*value 				= malloc(sizeof(char) * value_size);
+	/* TODO last here */
+
+	return err_ok;
+}
+
+sl_node_t*
+sl_find_node(
+	skiplist_t 		*skiplist,
+	ion_key_t 		key
+)
+{
+	int 		key_size 	= skiplist->key_size;
+	sl_node_t* 	cursor 		= skiplist->head;
+	sl_level_t 	h;
+
+	for(h = skiplist->head->height; h >= 0; h--)
+	{
+		//The memcmp will return -1 if key is smaller, 0 if equal, 1 if greater.
+		while( NULL != cursor->next[h] &&
+							memcmp(key, cursor->next[h]->key, key_size) >= 0)
+		{
+			cursor = cursor->next[h];
+		}
+	}
+
+	return cursor;
 }
 
 sl_level_t
