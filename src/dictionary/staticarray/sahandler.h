@@ -25,7 +25,7 @@
 @return		The status of the initalization.
  */
 status_t
-sa_init(
+sadict_init(
 	dictionary_handler_t 	*handler
 );
 

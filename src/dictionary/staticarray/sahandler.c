@@ -10,7 +10,7 @@
 
 
 status_t
-sa_init(
+sadict_init(
 	dictionary_handler_t 	*handler
 )
 {
@@ -18,7 +18,7 @@ sa_init(
 	handler->create_dictionary 	= sadict_create;
 	handler->get 				= sadict_query;
 	handler->update 			= sadict_update;
-	handler->find 				= sa_find;
+	//handler->find 				= sa_find;
 	handler->delete 			= sadict_delete;
 	handler->delete_dictionary 	= sadict_destroy;
 
@@ -61,11 +61,9 @@ sadict_create(
 
 	st = malloc(sizeof(static_array_t));
 	dictionary->instance = st;
-
-	sa_dictionary_create(st,key_size,value_size,dictionary_size);
-
 	dictionary->handler = handler;
-	return 0;
+
+	return sa_dictionary_create(st,key_size,value_size,dictionary_size);
 }
 
 status_t
@@ -87,6 +85,7 @@ sadict_destroy(
 
 	free(dictionary->instance);
 	dictionary->instance = NULL;
+	dictionary->handler =NULL;
 
 	return result;
 }
@@ -98,7 +97,8 @@ sadict_update(
 		ion_value_t 	value
 )
 {
-	return sa_update(dictionary, key, value);
+	static_array_t *sa = (static_array_t *)dictionary->instance;
+	return sa_update(sa, key, value);
 }
 
 status_t
@@ -108,5 +108,5 @@ sadict_find(
 		dict_cursor_t			*cursor
 )
 {
-	return NULL;
+	return 0;
 }

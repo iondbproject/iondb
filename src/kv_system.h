@@ -22,6 +22,8 @@ enum status
 	status_incorrect_value,
 	status_incorrect_key,
 	status_incorrect_keysize,
+	status_empty_slot,
+	status_occupied,
 };
 
 typedef char status_t;

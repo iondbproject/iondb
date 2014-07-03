@@ -6,6 +6,9 @@ bin/tests/staticarray.o:  \
   src/tests/unit/dictionary/staticarray/./../../../../dictionary/staticarray/./../dictionary.h \
   src/tests/unit/dictionary/staticarray/./../../../../dictionary/staticarray/./.././../kv_system.h \
   src/tests/unit/dictionary/staticarray/./../../../../dictionary/staticarray/./../dicttypes.h \
+  src/tests/unit/dictionary/staticarray/./../../../../dictionary/staticarray/sahandler.h \
+  src/tests/unit/dictionary/staticarray/./../../../../dictionary/staticarray/staticarray.h \
+  src/tests/unit/dictionary/staticarray/./../../../../dictionary/staticarray/./../dicttypes.h \
   src/tests/unit/dictionary/staticarray/./../../../../dictionary/dicttypes.h \
   src/tests/unit/dictionary/staticarray/./../../../../dictionary/dictionary.h
 
@@ -18,6 +21,12 @@ src/tests/unit/dictionary/staticarray/./../../../../dictionary/staticarray/./../
 src/tests/unit/dictionary/staticarray/./../../../../dictionary/staticarray/./../dictionary.h:
 
 src/tests/unit/dictionary/staticarray/./../../../../dictionary/staticarray/./.././../kv_system.h:
+
+src/tests/unit/dictionary/staticarray/./../../../../dictionary/staticarray/./../dicttypes.h:
+
+src/tests/unit/dictionary/staticarray/./../../../../dictionary/staticarray/sahandler.h:
+
+src/tests/unit/dictionary/staticarray/./../../../../dictionary/staticarray/staticarray.h:
 
 src/tests/unit/dictionary/staticarray/./../../../../dictionary/staticarray/./../dicttypes.h:
 
