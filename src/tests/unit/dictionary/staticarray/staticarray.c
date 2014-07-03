@@ -605,14 +605,17 @@ printf("------------------------------------------------\n");
 	long long t = ipow(256,3);
 	long long result;
 	int size;
+	double l = log10(256);
+
+	printf("%llu\n",t);
 
 	for(x=0;x<t;x++)
 	{
-		printf("%llu",x);
-		size = (x/256) + 1;
-		result = key_to_index((char *) x,size);
+		printf("The value of x is: %llu ",x);
+		size = (int) (log10(x)/log10(256)) + 1;
+		result = key_to_index((char *) &x,size);
+		printf("The value returned is %llu The value of size is %d\n", result, size);
 		CuAssertTrue(tc,result == x);
-
 	}
 }
 

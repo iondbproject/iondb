@@ -242,7 +242,8 @@ key_to_index(
 	long long result = 0;
 	memcpy((char *)&result, key, key_size);
 
-	return result*key_size;
+	//return result*key_size;
+	return result;
 }
 
 status_t
