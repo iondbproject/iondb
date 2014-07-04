@@ -36,10 +36,10 @@ sadict_init(
 @param		*dictionary
 				pointer to the dictionary that holds everything
 
-@param		*key
+@param		key
 				a pointer to the key
 
-@param		**value
+@param		*value
 				a double pointer that will be set to the value to be returned
 
 @return		The status of the query.
@@ -61,10 +61,10 @@ sadict_query(
 @param		*dictionary
 				pointer to the dictionary that holds everything
 
-@param		*key
+@param		key
 				a pointer to the key. the key is the index
 
-@param		*value
+@param		value
 				the value to be inserted
 
 @return		The status of the insertion.
@@ -114,7 +114,7 @@ sadict_create(
 @param		*dictionary
 				pointer to the dictionary that holds everything
 
-@param		*key
+@param		key
 				a pointer to the key. the key is the index
 
 @return		The status of the deletion.
@@ -147,10 +147,10 @@ sadict_destroy(
 @param		*dictionary
 				pointer to the dictionary that holds everything
 
-@param		*key
+@param		key
 				a pointer to the key. the key is the index
 
-@param		*value
+@param		value
 				a pointer to the value that will replace the value at the key location
 
 @return		The status of the update.

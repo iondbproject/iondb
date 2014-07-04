@@ -205,15 +205,11 @@ sa_insert(
 
 	//gets the integer version of the key
 	long long kk = key_to_index(key, s);
-printf("The key size kk is %llu \n\n", kk);
-printf("The key is %s\n\n", key);
 
 	//special key to find the value location
 	long long value_key = kk * starray->value_size;
 
 	bucket_t *current = &b[kk];
-
-	printf("The status is %d\n",current->status);
 
 	if(current->status==OCCUPIED)
 	{
@@ -242,7 +238,6 @@ key_to_index(
 	long long result = 0;
 	memcpy((char *)&result, key, key_size);
 
-	//return result*key_size;
 	return result;
 }
 

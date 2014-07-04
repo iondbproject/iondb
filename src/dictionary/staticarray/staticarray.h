@@ -54,10 +54,8 @@ typedef struct bucket bucket_t;
 /**
 @brief		This function creates the dictionary
 
-@param		*handker
-				Pointer to the handler that is responsible for this dictionary
-@param		*dictionary
-				the dictionary that everything is stored in
+@param		*starray
+				Pointer to the static array that will be created
 @param 		key_size
 				The size of the key in bytes.
 @param		value_size
@@ -77,12 +75,12 @@ sa_dictionary_create(
 /**
 @brief		This function that updates a value given a key
 
-@param		*dictionary
-				Pointer to the dictionary where everything is located
-@param 		*key
+@param		*starray
+				Pointer to the data structure
+@param 		key
 				a pointer to the key
 @param		value
-				the value to be stored
+				a pointer to the value to be stored
 
 @return		The status describing the result of the update.
  */
@@ -99,11 +97,11 @@ void sa_find(); //to be made later
 /**
 @brief		This function that fetches a value given a key
 
-@param		*dictionary
-				Pointer to the dictionary where everything is located
-@param 		*key
+@param		*starray
+				Pointer to the data structure
+@param 		key
 				a pointer to the key
-@param		**value
+@param		*value
 				the value is found and returned to the user through this double pointer
 
 @return		The status describing the result of the getting of information.
@@ -119,12 +117,12 @@ sa_get(
 /**
 @brief		This function that inserts a value given a key
 
-@param		*dictionary
-				Pointer to the dictionary where everything is located
-@param 		*key
+@param		*starray
+				Pointer to the data structure
+@param 		key
 				a pointer to the key
-@param		*value
-				the value to be inserted into the static array
+@param		value
+				a pointer to the value to be inserted into the static array
 
 @return		The status describing the result of the insert
  */
@@ -138,7 +136,7 @@ sa_insert(
 /**
  @brief		a function that returns a numerical representation of the key
 
- @param		*key
+ @param		key
  	 	 	 	 a pointer to the key
 
  @param		key_size
@@ -157,9 +155,9 @@ key_to_index(
 /**
  @brief		a function that deletes a value given a key
 
- @param		*dictionary
-				Pointer to the dictionary where everything is located
- @param		*key
+ @param		*starray
+				Pointer to the data structure
+ @param		key
  	 	 	 	 a pointer to the key
 
  @return	The status describing the result of the delete
@@ -171,10 +169,10 @@ sa_delete(
 );
 
 /**
- @brief		a function that deletes the whole dictionary
+ @brief		a function that deletes the whole data structure
 
- @param		*dictionary
- 	 	 	 	 a pointer to the dictionary to be destroyed
+ @param		*starray
+				Pointer to the data structure
 
  @return 	The status describing the result of the deletion of the dictionary
  */
