@@ -97,8 +97,6 @@ sl_insert(
 	memcpy(newnode->key, key, key_size);
 	memcpy(newnode->value, value, value_size);
 
-	io_printf("This is our key: %d\n", (int) *newnode->key);
-
 	sl_node_t 	*cursor 	= skiplist->head;
 	sl_level_t 	h;
 
@@ -128,9 +126,19 @@ sl_query(
 	ion_value_t 	*value
 )
 {
-	int 	value_size 	= skiplist->value_size;
-	*value 				= malloc(sizeof(char) * value_size);
-	/* TODO last here */
+	/* TODO These should be size_t */
+	int 		key_size 	= skiplist->key_size;
+	int 		value_size 	= skiplist->value_size;
+	*value 					= NULL; // Delay initialization
+	sl_node_t 	*cursor 	= sl_find_node(skiplist, key);
+
+	if(cursor->key == NULL || memcmp(cursor->key, key, key_size) != 0)
+	{
+		return err_item_not_found;
+	}
+
+	*value 					= malloc(sizeof(char) * value_size);
+	memcpy(*value, cursor->value, value_size);
 
 	return err_ok;
 }

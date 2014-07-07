@@ -30,7 +30,7 @@ check_skiplist(
 		sl_node_t 	*oldcursor = cursor;
 		while(NULL != cursor->next[h])
 		{
-			int 	key 	= (int) *cursor->next[h]->key;
+			int 	key 	= *((int*)cursor->next[h]->key);
 			char* 	value 	= (char*) cursor->next[h]->value;
 			printf("k: %i (v: %s) -- ", key, value);
 			cursor = cursor->next[h];
@@ -66,7 +66,7 @@ initialize_skiplist_std_conditions(
 )
 {
 	int key_size, value_size, pden, pnum, maxheight;
-	key_size 	= 8;
+	key_size 	= 4;
 	value_size 	= 10;
 	pnum 		= 1;
 	pden 		= 4;
@@ -163,7 +163,7 @@ test_skiplist_generate_levels_std_conditions(
 		CuAssertTrue(tc, sl_gen_level(&skiplist) == prediction[i]);
 	}
 
-	/* TODO add another test with a different seed */
+	sl_destroy(&skiplist);
 }
 
 /**
@@ -196,6 +196,7 @@ test_skiplist_single_insert(
 	CuAssertTrue(tc, *((int*) skiplist.head->next[0]->key) 				== 6);
 	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->value, "single.") 	== 0);
 
+	sl_destroy(&skiplist);
 }
 
 /**
@@ -247,6 +248,8 @@ test_skiplist_insert_multiple(
 
 	CuAssertTrue(tc, *((int*) skiplist.head->next[0]->next[0]->next[0]->next[0]->next[0]->key) 				== 5);
 	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->next[0]->next[0]->next[0]->next[0]->value, "five") 		== 0);
+
+	sl_destroy(&skiplist);
 }
 
 /**
@@ -283,13 +286,15 @@ test_skiplist_randomized_insert(
 	sl_node_t 	*cursor = skiplist.head;
 	while(cursor->next[0]->next[0] != NULL)
 	{
-		int 	now 	= (int) *cursor->next[0]->key;
-		int 	next 	= (int) *cursor->next[0]->next[0]->key;
+		int 	now 	= *((int*)cursor->next[0]->key);
+		int 	next 	= *((int*)cursor->next[0]->next[0]->key);
 
 		CuAssertTrue(tc, next >= now);
 
 		cursor = cursor->next[0];
 	}
+
+	sl_destroy(&skiplist);
 }
 
 /**
@@ -322,8 +327,10 @@ test_skiplist_get_node_single(
 	int search = 3;
 	sl_node_t *node = sl_find_node(&skiplist, (ion_key_t) &search);
 
-	CuAssertTrue(tc, (int) *node->key 			== key);
+	CuAssertTrue(tc, *((int*)node->key) 		== key);
 	CuAssertTrue(tc, strcmp(str, node->value) 	== 0);
+
+	sl_destroy(&skiplist);
 }
 
 /**
@@ -361,8 +368,10 @@ test_skiplist_get_node_single_high(
 	int search = 10;
 	sl_node_t *node = sl_find_node(&skiplist, (ion_key_t) &search);
 
-	CuAssertTrue(tc, (int) *node->key 			== key);
+	CuAssertTrue(tc, *((int*)node->key) 		== key);
 	CuAssertTrue(tc, strcmp(str, node->value) 	== 0);
+
+	sl_destroy(&skiplist);
 }
 
 /**
@@ -402,6 +411,8 @@ test_skiplist_get_node_single_low(
 	sl_node_t *node = sl_find_node(&skiplist, (ion_key_t) &search);
 
 	CuAssertTrue(tc, node == skiplist.head);
+
+	sl_destroy(&skiplist);
 }
 
 /**
@@ -451,8 +462,10 @@ test_skiplist_get_node_single_many(
 	int search = 25;
 	sl_node_t *node = sl_find_node(&skiplist, (ion_key_t) &search);
 
-	CuAssertTrue(tc, (int) *node->key 			== key);
+	CuAssertTrue(tc, *((int*)node->key) 		== key);
 	CuAssertTrue(tc, strcmp(str, node->value) 	== 0);
+
+	sl_destroy(&skiplist);
 }
 
 /**
@@ -498,9 +511,288 @@ test_skiplist_get_node_several(
 		int 		key		= targets[i];
 		sl_node_t 	*node 	= sl_find_node(&skiplist, (ion_key_t) &key);
 		sprintf(buffer, "TEST %d", key);
-		CuAssertTrue(tc, (int) *node->key 				== key);
+		CuAssertTrue(tc, *((int*)node->key) 			== key);
 		CuAssertTrue(tc, strcmp(node->value, buffer) 	== 0);
 	}
+
+	sl_destroy(&skiplist);
+}
+
+/**
+@brief 		Tests querying on an empty skiplist. Assumption is that the status
+			should return as "err_item_not_found", and that the value pointer
+			should not be allocated and will be set to null.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_query_nonexist_empty(
+	CuTest 		*tc
+)
+{
+	PRINT_HEADER("test_skiplist_query_single");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	int 			key 	= 3;
+	ion_value_t 	value;
+
+	err_t status = sl_query(&skiplist, (ion_key_t) &key, &value);
+
+#ifdef DEBUG
+	check_skiplist(&skiplist);
+#endif
+
+	CuAssertTrue(tc, status == err_item_not_found);
+	CuAssertTrue(tc, value 	== NULL);
+
+	sl_destroy(&skiplist);
+}
+
+/**
+@brief 		Tests querying on a skiplist with one element, but for a key that
+			doesn't exist within the skiplist. Assumption is that the status
+			should return as "err_item_not_found", and that the value pointer
+			be initialized to null.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_query_nonexist_populated_single(
+	CuTest 		*tc
+)
+{
+	PRINT_HEADER("test_skiplist_query_nonexist_populated_single");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	int test_key = 23;
+	char test_value[10];
+	strcpy(test_value, "I am test");
+
+	sl_insert(&skiplist, (ion_key_t) &test_key, test_value);
+
+#ifdef DEBUG
+	check_skiplist(&skiplist);
+#endif
+
+	int 			key 	= 10;
+	ion_value_t 	value;
+
+	err_t status = sl_query(&skiplist, (ion_key_t) &key, &value);
+
+	CuAssertTrue(tc, status == err_item_not_found);
+	CuAssertTrue(tc, value 	== NULL);
+
+	sl_destroy(&skiplist);
+}
+
+/**
+@brief 		Tests querying on a skiplist with several elements, but for a key
+			that doesn't exist within the skiplist. Assumption is that the
+			status should return as "err_item_not_found", and that the value
+			pointer be initialized to null.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_query_nonexist_populated_several(
+	CuTest 		*tc
+)
+{
+	PRINT_HEADER("test_skiplist_query_nonexist_populated_several");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	int test_key = 46;
+	char test_value[10];
+
+	int i;
+	for(i = 0; i < 32; i++)
+	{
+		sprintf(test_value, "I am: %d", test_key);
+		sl_insert(&skiplist, (ion_key_t) &test_key, test_value);
+		test_key--;
+	}
+
+#ifdef DEBUG
+	check_skiplist(&skiplist);
+#endif
+
+	int 			key 	= 10;
+	ion_value_t 	value;
+
+	err_t status = sl_query(&skiplist, (ion_key_t) &key, &value);
+
+	CuAssertTrue(tc, status == err_item_not_found);
+	CuAssertTrue(tc, value 	== NULL);
+
+	sl_destroy(&skiplist);
+}
+
+/**
+@brief 		Tests querying on a skiplist with a single element, for a key that
+			does exist within the skiplist. Assumption is that the status should
+			return as "err_ok", and that the value be initialized to the same
+			value as stored at the specified key.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_query_exist_single(
+	CuTest 		*tc
+)
+{
+	PRINT_HEADER("test_skiplist_query_exist_single");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	int test_key = 11;
+	char test_value[10];
+	strcpy(test_value, "Find me!");
+
+	sl_insert(&skiplist, (ion_key_t) &test_key, test_value);
+
+#ifdef DEBUG
+	check_skiplist(&skiplist);
+#endif
+
+	int 			key 	= 11;
+	ion_value_t 	value;
+
+	err_t status = sl_query(&skiplist, (ion_key_t) &key, &value);
+
+	CuAssertTrue(tc, status == err_ok);
+	CuAssertTrue(tc, strcmp(value, "Find me!") == 0);
+
+	free(value);
+	sl_destroy(&skiplist);
+}
+
+/**
+@brief 		Tests querying on a skiplist with several elements, for a key that
+			exists within the skiplist. Assumption is that the status should
+			return as "err_ok", and that the value be initialized to the same
+			value stored at the specified key.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_query_exist_populated_single(
+	CuTest 		*tc
+)
+{
+	PRINT_HEADER("test_skiplist_query_exist_populated_single");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	char test_value[10];
+
+	int i;
+	for(i = 0; i < 100; i += 2)
+	{
+		sprintf(test_value, "Find %d", i);
+		sl_insert(&skiplist, (ion_key_t) &i, test_value);
+	}
+
+#ifdef DEBUG
+	check_skiplist(&skiplist);
+#endif
+
+	int 			key 	= 24;
+	ion_value_t 	value;
+
+	err_t status = sl_query(&skiplist, (ion_key_t) &key, &value);
+
+	CuAssertTrue(tc, status == err_ok);
+	CuAssertTrue(tc, strcmp(value, "Find 24") == 0);
+
+	free(value);
+	sl_destroy(&skiplist);
+}
+
+/**
+@brief 		Tests querying on a skiplist with several elements, for a key that
+			exists within the skiplist. Assumption is that the status should
+			return as "err_ok", and that the value be initialized to the same
+			value stored at the specified key.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_query_exist_populated_several(
+	CuTest 		*tc
+)
+{
+	PRINT_HEADER("test_skiplist_query_exist_populated_several");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	char test_value[10];
+
+	int i;
+	for(i = 0; i < 100; i++)
+	{
+		sprintf(test_value, "Find %d", i);
+		sl_insert(&skiplist, (ion_key_t) &i, test_value);
+	}
+
+#ifdef DEBUG
+	check_skiplist(&skiplist);
+#endif
+
+	char 			find_value[10];
+	ion_value_t 	value;
+	for(i = 0; i < 100; i++)
+	{
+		sprintf(find_value, "Find %d", i);
+		err_t status = sl_query(&skiplist, (ion_key_t) &i, &value);
+
+		CuAssertTrue(tc, status == err_ok);
+		CuAssertTrue(tc, strcmp(value, find_value) == 0);
+		free(value);
+	}
+
+	sl_destroy(&skiplist);
+}
+
+/**
+@brief 		Tests a skiplist with different initialization parameters than
+			usual. Each basic operation of insert, query, and delete are tested
+			on the non-standard structure.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_different_size(
+	CuTest 		*tc
+)
+{
+	PRINT_HEADER("test_skiplist_different_size");
+	skiplist_t 	skiplist;
+	int key_size, value_size, pden, pnum, maxheight;
+	key_size 	= 8;
+	value_size 	= 4;
+	pnum 		= 1;
+	pden 		= 1;
+	maxheight 	= 10;
+
+	initialize_skiplist(&skiplist, maxheight, key_size, value_size, pnum, pden);
+
+	//insert
+	//get
+	//delete
+
+	//verify
+
+	sl_destroy(&skiplist);
 }
 
 CuSuite*
@@ -508,17 +800,35 @@ skiplist_getsuite()
 {
 	CuSuite *suite = CuSuiteNew();
 
+	/* Initialization Tests */
 	SUITE_ADD_TEST(suite, test_skiplist_initialize);
 	SUITE_ADD_TEST(suite, test_skiplist_free_all);
+
+	/* Level Tests */
 	SUITE_ADD_TEST(suite, test_skiplist_generate_levels_std_conditions);
+
+	/* Insertion Tests */
 	SUITE_ADD_TEST(suite, test_skiplist_single_insert);
 	SUITE_ADD_TEST(suite, test_skiplist_insert_multiple);
 	SUITE_ADD_TEST(suite, test_skiplist_randomized_insert);
+
+	/* Get Node Tests */
 	SUITE_ADD_TEST(suite, test_skiplist_get_node_single);
 	SUITE_ADD_TEST(suite, test_skiplist_get_node_single_high);
 	SUITE_ADD_TEST(suite, test_skiplist_get_node_single_low);
 	SUITE_ADD_TEST(suite, test_skiplist_get_node_single_many);
 	SUITE_ADD_TEST(suite, test_skiplist_get_node_several);
+
+	/* Query Tests */
+	SUITE_ADD_TEST(suite, test_skiplist_query_nonexist_empty);
+	SUITE_ADD_TEST(suite, test_skiplist_query_nonexist_populated_single);
+	SUITE_ADD_TEST(suite, test_skiplist_query_nonexist_populated_several);
+	SUITE_ADD_TEST(suite, test_skiplist_query_exist_single);
+	SUITE_ADD_TEST(suite, test_skiplist_query_exist_populated_single);
+	SUITE_ADD_TEST(suite, test_skiplist_query_exist_populated_several);
+
+	/* Variation Tests */
+	SUITE_ADD_TEST(suite, test_skiplist_different_size);
 
 	return suite;
 }
