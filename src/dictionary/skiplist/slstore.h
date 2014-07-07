@@ -127,6 +127,26 @@ sl_query(
 	ion_value_t 	*value
 );
 
+/**
+@brief 		Attempts to delete the key/value pair stored at the given @p key.
+
+@details 	Attempts to delete the key/value pair stored at the given @p key.
+			Returns "err_item_not_found" if the requested @p key is not in
+			the skiplist, and "err_ok" if the deletion was successful. Any
+			memory previously used for the deleted key/value pair is assumed
+			to be freed.
+
+@param 		skiplist
+				The skiplist in which to delete from
+@param 		key
+				The key to delete
+@return 	Status of deletion.
+ */
+err_t
+sl_delete(
+	skiplist_t 		*skiplist,
+	ion_key_t 		key
+);
 
 /**
 @brief 		Searches for a node with the given @p key. Used in conjunction with

@@ -80,12 +80,7 @@ sldict_delete(
 	ion_key_t 		key
 )
 {
-
-#ifdef 	DEBUG
-	TO_IMPLEMENT("sldict_delete");
-#endif
-
-	return err_ok;
+	return sl_delete((skiplist_t *) dictionary->instance, key);
 }
 
 err_t

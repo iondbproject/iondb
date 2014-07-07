@@ -143,6 +143,39 @@ sl_query(
 	return err_ok;
 }
 
+err_t
+sl_delete(
+	skiplist_t 		*skiplist,
+	ion_key_t 		key
+)
+{
+	/* TODO size_t these */
+	int 		key_size 	= skiplist->key_size;
+
+	sl_node_t 	*cursor 	= skiplist->head;
+	sl_level_t 	h;
+
+	for(h = skiplist->head->height; h >= 0; --h)
+	{
+		while(NULL != cursor->next[h] &&
+								memcmp(cursor->next[h]->key, key, key_size) < 0)
+		{
+			cursor = cursor->next[h];
+		}
+
+		if(NULL != cursor->next[h] &&
+							memcmp(cursor->next[h]->key, key, key_size) == 0)
+		{
+			/* This node is what the node to be deleted (cursor->next[h])
+			   connected to before */
+			sl_node_t *jump = cursor->next[h]->next[h];
+			return err_ok;
+		}
+	}
+
+	return err_item_not_found;
+}
+
 sl_node_t*
 sl_find_node(
 	skiplist_t 		*skiplist,

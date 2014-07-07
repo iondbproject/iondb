@@ -23,28 +23,17 @@ check_skiplist(
 )
 {
 	sl_node_t 	*cursor = skiplist->head;
-	sl_level_t 	h;
 
-	for(h = skiplist->head->height; h >= 0; --h)
+	while(NULL != cursor->next[0])
 	{
-		sl_node_t 	*oldcursor = cursor;
-		while(NULL != cursor->next[h])
-		{
-			int 	key 	= *((int*)cursor->next[h]->key);
-			char* 	value 	= (char*) cursor->next[h]->value;
-			printf("k: %i (v: %s) -- ", key, value);
-			cursor = cursor->next[h];
-		}
-
-		if(NULL == cursor->next[h])
-		{
-			printf("%s\n", "NULL");
-		}
-
-		cursor = oldcursor;
+		int 		key 		= *((int*)cursor->next[0]->key);
+		char* 		value 		= (char*) cursor->next[0]->value;
+		sl_level_t 	level 		= cursor->next[0]->height + 1;
+		printf("k: %d (v: %s) [l: %d] -- ", key, value, level);
+		cursor = cursor->next[0];
 	}
 
-	printf("%s", "\n");
+	printf("%s", "END\n\n");
 }
 
 void
@@ -519,7 +508,7 @@ test_skiplist_get_node_several(
 }
 
 /**
-@brief 		Tests querying on an empty skiplist. Assumption is that the status
+@brief 		Tests querying on an empty skiplist. assertion is that the status
 			should return as "err_item_not_found", and that the value pointer
 			should not be allocated and will be set to null.
 
@@ -552,7 +541,7 @@ test_skiplist_query_nonexist_empty(
 
 /**
 @brief 		Tests querying on a skiplist with one element, but for a key that
-			doesn't exist within the skiplist. Assumption is that the status
+			doesn't exist within the skiplist. assertion is that the status
 			should return as "err_item_not_found", and that the value pointer
 			be initialized to null.
 
@@ -591,7 +580,7 @@ test_skiplist_query_nonexist_populated_single(
 
 /**
 @brief 		Tests querying on a skiplist with several elements, but for a key
-			that doesn't exist within the skiplist. Assumption is that the
+			that doesn't exist within the skiplist. assertion is that the
 			status should return as "err_item_not_found", and that the value
 			pointer be initialized to null.
 
@@ -635,7 +624,7 @@ test_skiplist_query_nonexist_populated_several(
 
 /**
 @brief 		Tests querying on a skiplist with a single element, for a key that
-			does exist within the skiplist. Assumption is that the status should
+			does exist within the skiplist. assertion is that the status should
 			return as "err_ok", and that the value be initialized to the same
 			value as stored at the specified key.
 
@@ -675,7 +664,7 @@ test_skiplist_query_exist_single(
 
 /**
 @brief 		Tests querying on a skiplist with several elements, for a key that
-			exists within the skiplist. Assumption is that the status should
+			exists within the skiplist. assertion is that the status should
 			return as "err_ok", and that the value be initialized to the same
 			value stored at the specified key.
 
@@ -718,7 +707,7 @@ test_skiplist_query_exist_populated_single(
 
 /**
 @brief 		Tests querying on a skiplist with several elements, for a key that
-			exists within the skiplist. Assumption is that the status should
+			exists within the skiplist. assertion is that the status should
 			return as "err_ok", and that the value be initialized to the same
 			value stored at the specified key.
 
@@ -763,6 +752,152 @@ test_skiplist_query_exist_populated_several(
 }
 
 /**
+@brief 		Tests a deletion from a skiplist that's empty. The assertion is
+			that the deletion will fail, and return "err_item_not_found". No
+			modifications should be made to the structure.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_delete_empty(
+	CuTest 		*tc
+)
+{
+	PRINT_HEADER("test_skiplist_delete_empty");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	int key 		= 3;
+	err_t status 	= sl_delete(&skiplist, (ion_key_t) &key);
+
+#ifdef DEBUG
+	check_skiplist(&skiplist);
+#endif
+
+	CuAssertTrue(tc, status == err_item_not_found);
+
+	sl_destroy(&skiplist);
+}
+
+/**
+@brief 		Tests a deletion from a skiplist that has one element, and the
+			deleted element is not the one within the skiplist. The assertion
+			is that the returned status is "err_item_not_found", and that no
+			modification is to be made to the data structure.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_delete_nonexist_single(
+	CuTest 		*tc
+)
+{
+	PRINT_HEADER("test_skiplist_delete_nonexist_single");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	int 	key 		= 16;
+	char 	value[10];
+	strcpy(value, "Delete me!");
+	sl_insert(&skiplist, (ion_key_t) &key, value);
+
+	int fake_key = 33;
+	err_t status = sl_delete(&skiplist, (ion_key_t) &fake_key);
+
+#ifdef DEBUG
+	check_skiplist(&skiplist);
+#endif
+
+	CuAssertTrue(tc, status == err_item_not_found);
+
+	sl_destroy(&skiplist);
+}
+
+/**
+@brief 		Tests a deletion from a skiplist that has many elements, and the
+			deleted element is not the one within the skiplist. The assertion
+			is that the returned status is "err_item_not_found", and that no
+			modification is to be made to the data structure.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_delete_nonexist_several(
+	CuTest 		*tc
+)
+{
+	PRINT_HEADER("test_skiplist_delete_nonexist_several");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	int 	key 		= 16;
+	char 	value[10];
+	strcpy(value, "Delete me!");
+
+	int i;
+	for(i = 0; i < 10; i++)
+	{
+		sl_insert(&skiplist, (ion_key_t) &key, value);
+		key += 3;
+	}
+
+	int fake_key = 20;
+	err_t status = sl_delete(&skiplist, (ion_key_t) &fake_key);
+
+#ifdef DEBUG
+	check_skiplist(&skiplist);
+#endif
+
+	CuAssertTrue(tc, status == err_item_not_found);
+
+	sl_destroy(&skiplist);
+}
+
+/**
+@brief 		Tests a deletion in a single element skiplist, where the deleted
+			element is the one that exists within the skiplist. The assertion
+			is that the status returned will be "err_ok", and the key/value pair
+			deleted is no longer within the skiplist.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_delete_single(
+	CuTest 		*tc
+)
+{
+	PRINT_HEADER("test_skiplist_delete_single");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	int 	key 		= 97;
+	char 	value[10];
+	strcpy(value, "Special K");
+
+	sl_insert(&skiplist, (ion_key_t) &key, value);
+
+#ifdef DEBUG
+	printf("%s\n", "** BEFORE **");
+	check_skiplist(&skiplist);
+#endif
+
+	err_t status = sl_delete(&skiplist, (ion_key_t) &key);
+
+#ifdef DEBUG
+	printf("%s\n", "** AFTER **");
+	check_skiplist(&skiplist);
+#endif
+
+	CuAssertTrue(tc, status == err_ok);
+
+	sl_destroy(&skiplist);
+}
+
+/**
 @brief 		Tests a skiplist with different initialization parameters than
 			usual. Each basic operation of insert, query, and delete are tested
 			on the non-standard structure.
@@ -786,6 +921,7 @@ test_skiplist_different_size(
 
 	initialize_skiplist(&skiplist, maxheight, key_size, value_size, pnum, pden);
 
+	/* TODO finish this test case */
 	//insert
 	//get
 	//delete
@@ -826,6 +962,12 @@ skiplist_getsuite()
 	SUITE_ADD_TEST(suite, test_skiplist_query_exist_single);
 	SUITE_ADD_TEST(suite, test_skiplist_query_exist_populated_single);
 	SUITE_ADD_TEST(suite, test_skiplist_query_exist_populated_several);
+
+	/* Delete Tests */
+	SUITE_ADD_TEST(suite, test_skiplist_delete_empty);
+	SUITE_ADD_TEST(suite, test_skiplist_delete_nonexist_single);
+	SUITE_ADD_TEST(suite, test_skiplist_delete_nonexist_several);
+	SUITE_ADD_TEST(suite, test_skiplist_delete_single);
 
 	/* Variation Tests */
 	SUITE_ADD_TEST(suite, test_skiplist_different_size);
