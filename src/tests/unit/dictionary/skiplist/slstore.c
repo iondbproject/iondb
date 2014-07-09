@@ -857,7 +857,7 @@ test_skiplist_delete_nonexist_several(
 }
 
 /**
-@brief 		Tests a deletion in a single element skiplist, where the deleted
+@brief 		Tests deletion in a single element skiplist, where the deleted
 			element is the one that exists within the skiplist. The assertion
 			is that the status returned will be "err_ok", and the key/value pair
 			deleted is no longer within the skiplist.
@@ -892,7 +892,100 @@ test_skiplist_delete_single(
 	check_skiplist(&skiplist);
 #endif
 
+	CuAssertTrue(tc, status					 == err_ok);
+	CuAssertTrue(tc, skiplist.head->next[0]	 == NULL);
+
+	sl_destroy(&skiplist);
+}
+
+/**
+@brief 		Tests deleting a single node in a skiplist of several nodes, where
+			the element to delete exists in the skiplist. The assertion is that
+			the status returned will be "err_ok", and the key/value pair deleted
+			is no longer within the skiplist.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_delete_single_several(
+	CuTest 		*tc
+)
+{
+	PRINT_HEADER("test_skiplist_delete_single_several");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	char value[10];
+	strcpy(value, "Poof me!");
+
+	int i;
+	for(i = 101; i < 120; i++)
+	{
+		sl_insert(&skiplist, (ion_key_t) &i, value);
+	}
+
+#ifdef DEBUG
+	printf("%s\n", "** BEFORE **");
+	check_skiplist(&skiplist);
+#endif
+
+	sl_node_t 	*onebefore 	= sl_find_node(&skiplist, (ion_key_t) &(int) {111});
+	sl_node_t 	*theone 	= sl_find_node(&skiplist, (ion_key_t) &(int) {112});
+	sl_level_t 	theone_h 	= theone->height + 1;
+
+	/* This copies all the pointers that the target linked to before for assert
+	 * testing.
+	 */
+	sl_node_t 	*oldnextarr[theone_h];
+	for(i = 0; i < theone_h; i++)
+	{
+		oldnextarr[i] 		= theone->next[i];
+		io_printf("to save: 0x%p | saved: 0x%p\n", theone->next[i], oldnextarr[i]);
+	}
+
+	/* After this block, "theone" is undefined, freed memory and should not
+	 * be accessed. */
+	int 		key 		= 112;
+	err_t 		status 		= sl_delete(&skiplist, (ion_key_t) &key);
+
+#ifdef DEBUG
+	printf("%s\n", "** AFTER **");
+	check_skiplist(&skiplist);
+#endif
+
+	/* FIXME THERE IS SOMETHING WRONG HERE AND I DONT KNOW WHAT (RELATED TO HEIGHTS AND POINTER LINKING IN DELETE????) */
+	// Manually set key 111 to height 2 and key 113 to height 1
 	CuAssertTrue(tc, status == err_ok);
+	for(i = 0; i < theone_h; i++)
+	{
+		io_printf("new: 0x%p == old: 0x%p? [%d]\n", onebefore->next[i], oldnextarr[i], oldnextarr[i] == onebefore->next[i]);
+		sl_node_t *toast = onebefore->next[i];
+		io_printf("key: %d | value: %s | height: %d\n", *((int*) toast->key), toast->value, toast->height);
+		//CuAssertTrue(tc, onebefore->next[i] == oldnextarr[i]);
+	}
+
+	sl_destroy(&skiplist);
+}
+
+/**
+@brief 		Tests deleting a single node in a skiplist of several nodes, where
+			the element to delete exists in the skiplist. This skiplist is non-
+			contiguous in its elements. The assertion is that the status
+			returned will be "err_ok", and the key/value pair deleted is no
+			longer within the skiplist.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_delete_single_several_noncont(
+	CuTest 		*tc
+)
+{
+	PRINT_HEADER("test_skiplist_delete_single_several_noncont");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
 
 	sl_destroy(&skiplist);
 }
@@ -968,6 +1061,8 @@ skiplist_getsuite()
 	SUITE_ADD_TEST(suite, test_skiplist_delete_nonexist_single);
 	SUITE_ADD_TEST(suite, test_skiplist_delete_nonexist_several);
 	SUITE_ADD_TEST(suite, test_skiplist_delete_single);
+	SUITE_ADD_TEST(suite, test_skiplist_delete_single_several);
+	SUITE_ADD_TEST(suite, test_skiplist_delete_single_several_noncont);
 
 	/* Variation Tests */
 	SUITE_ADD_TEST(suite, test_skiplist_different_size);

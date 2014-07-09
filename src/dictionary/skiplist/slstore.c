@@ -91,7 +91,6 @@ sl_insert(
 	sl_node_t 	*newnode 	= malloc(sizeof(sl_node_t));
 	newnode->height 		= sl_gen_level(skiplist);
 	newnode->next 			= malloc(sizeof(sl_node_t*) * (newnode->height+1));
-
 	newnode->key 			= malloc(sizeof(char) * key_size);
 	newnode->value 			= malloc(sizeof(char) * value_size);
 	memcpy(newnode->key, key, key_size);
@@ -149,7 +148,7 @@ sl_delete(
 	ion_key_t 		key
 )
 {
-	/* TODO size_t these */
+	/* TODO size_t this */
 	int 		key_size 	= skiplist->key_size;
 
 	sl_node_t 	*cursor 	= skiplist->head;
@@ -160,15 +159,27 @@ sl_delete(
 		while(NULL != cursor->next[h] &&
 								memcmp(cursor->next[h]->key, key, key_size) < 0)
 		{
-			cursor = cursor->next[h];
+			cursor 	= cursor->next[h];
 		}
 
 		if(NULL != cursor->next[h] &&
 							memcmp(cursor->next[h]->key, key, key_size) == 0)
 		{
-			/* This node is what the node to be deleted (cursor->next[h])
-			   connected to before */
-			sl_node_t *jump = cursor->next[h]->next[h];
+			sl_node_t 	*tofree 	= cursor->next[h];
+			sl_node_t 	*relink 	= cursor->next[h];
+			sl_level_t 	link_h 		= cursor->height + 1;
+			while(link_h >= 0)
+			{
+				sl_node_t 	*jump 		= relink->next[link_h];
+				cursor->next[link_h] 	= jump;
+				link_h--;
+			}
+
+			free(tofree->key);
+			free(tofree->value);
+			free(tofree->next);
+			free(tofree);
+
 			return err_ok;
 		}
 	}
