@@ -165,11 +165,16 @@ sl_delete(
 		if(NULL != cursor->next[h] &&
 							memcmp(cursor->next[h]->key, key, key_size) == 0)
 		{
-			sl_node_t 	*tofree 	= cursor->next[h];
-			sl_node_t 	*relink 	= cursor->next[h];
-			sl_level_t 	link_h 		= cursor->height;
+			sl_node_t 		*tofree 	= cursor->next[h];
+			sl_node_t 		*relink 	= cursor->next[h];
+			sl_level_t 		link_h 		= relink->height;
 			while(link_h >= 0)
 			{
+				while(cursor->next[link_h] != relink)
+				{
+					cursor = cursor->next[link_h];
+				}
+
 				sl_node_t 	*jump 		= relink->next[link_h];
 				cursor->next[link_h] 	= jump;
 				link_h--;

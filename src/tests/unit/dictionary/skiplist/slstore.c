@@ -484,7 +484,6 @@ test_skiplist_get_node_several(
 	int i;
 	for(i = 0; i < 50; i++)
 	{
-		/* TODO For some reason all keys are being treated like chars (limit of 128?) Also If the keysize is set to 8 something segfaults.... */
 		int key 	= rand() % 1000;
 		targets[i] 	= key;
 		sprintf(buffer, "TEST %d", key);
@@ -933,6 +932,7 @@ test_skiplist_delete_single_several(
 	sl_node_t 	*onebefore 	= sl_find_node(&skiplist, (ion_key_t) &(int) {111});
 	sl_node_t 	*theone 	= sl_find_node(&skiplist, (ion_key_t) &(int) {112});
 	sl_level_t 	theone_h 	= theone->height + 1;
+	sl_level_t 	onebefore_h = onebefore->height + 1;
 
 	/* This copies all the pointers that the target linked to before for assert
 	 * testing.
@@ -954,15 +954,13 @@ test_skiplist_delete_single_several(
 	check_skiplist(&skiplist);
 #endif
 
-	/* FIXME THERE IS SOMETHING WRONG HERE AND I DONT KNOW WHAT (RELATED TO HEIGHTS AND POINTER LINKING IN DELETE????) */
-	// Manually set key 111 to height 2 and key 113 to height 1
 	CuAssertTrue(tc, status == err_ok);
-	for(i = 0; i < theone_h; i++)
+	for(i = 0; i < (theone_h >= onebefore_h ? onebefore_h : theone_h); i++)
 	{
 		io_printf("new: 0x%p == old: 0x%p? [%d]\n", onebefore->next[i], oldnextarr[i], oldnextarr[i] == onebefore->next[i]);
 		sl_node_t *toast = onebefore->next[i];
 		io_printf("key: %d | value: %s | height: %d\n", *((int*) toast->key), toast->value, toast->height);
-		//CuAssertTrue(tc, onebefore->next[i] == oldnextarr[i]);
+		CuAssertTrue(tc, onebefore->next[i] == oldnextarr[i]);
 	}
 
 	sl_destroy(&skiplist);
