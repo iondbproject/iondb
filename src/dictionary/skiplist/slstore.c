@@ -167,7 +167,8 @@ sl_delete(
 		{
 			sl_node_t 	*tofree 	= cursor->next[h];
 			sl_node_t 	*relink 	= cursor->next[h];
-			sl_level_t 	link_h 		= cursor->height + 1;
+			/* TODO Changed this from cursor->height */
+			sl_level_t 	link_h 		= cursor->next[h]->height + 1;
 			while(link_h >= 0)
 			{
 				sl_node_t 	*jump 		= relink->next[link_h];
