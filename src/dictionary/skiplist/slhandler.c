@@ -102,10 +102,5 @@ sldict_update(
 	ion_value_t 	value
 )
 {
-
-#ifdef 	DEBUG
-	TO_IMPLEMENT("sldict_update");
-#endif
-
-	return err_ok;
+	return sl_update((skiplist_t *) dictionary->instance, key, value);
 }

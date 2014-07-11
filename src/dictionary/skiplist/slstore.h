@@ -128,6 +128,29 @@ sl_query(
 );
 
 /**
+@brief 		Updates the value stored at @p key with the new @p value.
+
+@details 	Updates the value stored at @p key with the new @p value. The given
+			value is copied byte-for-byte into the malloc'd memory already
+			stored at the key. If the @p key does not exist within the skiplist,
+			the key/value pair is inserted into the skiplist instead.
+
+@param 		skiplist
+				The skiplist in which to update
+@param 		key
+				The key to find and update
+@param 		value
+				The new value to be updated to
+@return 	Status of updating.
+ */
+err_t
+sl_update(
+	skiplist_t 		*skiplist,
+	ion_key_t 		key,
+	ion_value_t 	value
+);
+
+/**
 @brief 		Attempts to delete the key/value pair stored at the given @p key.
 
 @details 	Attempts to delete the key/value pair stored at the given @p key.

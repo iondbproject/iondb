@@ -143,6 +143,33 @@ sl_query(
 }
 
 err_t
+sl_update(
+	skiplist_t 		*skiplist,
+	ion_key_t 		key,
+	ion_value_t 	value
+)
+{
+	/* TODO size_t */
+	int 		key_size 	= skiplist->key_size;
+	int 		value_size 	= skiplist->value_size;
+	sl_node_t 	*cursor 	= sl_find_node(skiplist, key);
+
+	/* If the key doesn't exist in the skiplist... */
+	if(cursor->key == NULL || memcmp(cursor->key, key, key_size) != 0)
+	{
+		/* Insert it. TODO Possibly return different error code */
+		sl_insert(skiplist, key, value);
+		return err_ok;
+	}
+
+	/* Otherwise, the key exists and now we have the node to update. */
+	memcpy(cursor->value, value, value_size);
+	/*TODO Last here, need to write tests. */
+
+	return err_ok;
+}
+
+err_t
 sl_delete(
 	skiplist_t 		*skiplist,
 	ion_key_t 		key
