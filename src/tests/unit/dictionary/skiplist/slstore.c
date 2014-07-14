@@ -17,6 +17,7 @@
 
 #define PRINT_HEADER(fcn) io_printf("=== [%s] ===\n", fcn)
 
+/* 1 Copy occurrence in pet demo skiplist.c */
 void
 check_skiplist(
 	skiplist_t 	*skiplist
@@ -29,11 +30,11 @@ check_skiplist(
 		int 		key 		= *((int*)cursor->next[0]->key);
 		char* 		value 		= (char*) cursor->next[0]->value;
 		sl_level_t 	level 		= cursor->next[0]->height + 1;
-		printf("k: %d (v: %s) [l: %d] -- ", key, value, level);
+		io_printf("k: %d (v: %s) [l: %d] -- ", key, value, level);
 		cursor = cursor->next[0];
 	}
 
-	printf("%s", "END\n\n");
+	io_printf("%s", "END\n\n");
 }
 
 void

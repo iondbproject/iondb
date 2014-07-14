@@ -36,7 +36,7 @@ sl_initialize(
 	DUMP(skiplist->maxheight, "%d");
 	DUMP(skiplist->pnum, "%d");
 	DUMP(skiplist->pden, "%d");
-	printf("%s", "\n");
+	io_printf("%s", "\n");
 #endif
 
 	/* TODO malloc error check */
