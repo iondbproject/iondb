@@ -56,7 +56,7 @@ int main(void) {
 	dictionary_t test_dictionary;
 
 	//register the appropriate handler for a given collection
-	dictionary_create(&map_handler, &test_dictionary,record.key_size,record.value_size,size);
+	dictionary_create(&map_handler, &test_dictionary,key_type_int, /** @todo fix key type*/ record.key_size,record.value_size,size);
 
 	io_printf("Insert\n");
 

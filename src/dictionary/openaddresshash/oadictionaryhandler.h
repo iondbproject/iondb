@@ -14,6 +14,7 @@
 #include "./../../kv_system.h"
 #include "oahash.h"
 
+
 /**
 @brief Struct used to for instance of a given dictionary.
  */
@@ -184,6 +185,7 @@ oadict_query(
  */
 err_t
 oadict_create_dictionary(
+		key_type_t				key_type,
 		int 					key_size,
 		int 					value_size,
 		int 					dictionary_size,
@@ -265,6 +267,37 @@ oadict_find(
 );
 
 /**
+@brief		Compares two key and returns the difference
+
+@details	Compares two key and returns the difference depending on the type
+			of the key defined for the collection.  If the keys are of numeric
+			type, the return value is the difference between the keys.  If the
+			value is negative, @p first_key is smaller than @p second_key.  If
+			return value is positive, then @p first_key is larger than
+			@p second_key.  If the return value is 0 then @p first_key is
+			equal to @p second_key.
+
+			If the key type is @p key_type_char_array then
+			@TODO fix this commemt!
+			The function memcmp compares the size bytes of memory beginning at
+			a1 against the size bytes of memory beginning at a2. The value
+			returned has the same sign as the difference between the first
+			differing pair of bytes (interpreted as unsigned char objects,
+			then promoted to int).
+
+@param 		first_key
+				The first key in the comparison.
+@param 		second_key
+				The second key in the comparison.
+@return		The difference between the keys.
+ */
+int
+oadict_compare(
+		ion_key_t 		first_key,
+		ion_key_t		second_key
+);
+
+/**
 @brief		Next function to query and retrieve the next
 			<K,V> that stratifies the predicate of the cursor.
 
@@ -304,10 +337,13 @@ oadict_equality_next(
 @return		If the keys are equal.
  */
 boolean_t
+/**@TODO Fix name of function */
 is_equal(
 	dictionary_t 	*dict,
 	ion_key_t 		key1,
 	ion_key_t 		key2
 );
+
+
 
 #endif /* OADICTIONARYHANDLER_H_ */

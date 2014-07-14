@@ -63,7 +63,7 @@ struct dictionary_handler
 {
 	err_t	(* insert)(dictionary_t *, ion_key_t, ion_value_t);
 		/**< A pointer to the dictionaries insertion function. */
-	err_t	(* create_dictionary)(int, int, int, dictionary_handler_t * , dictionary_t *);
+	err_t	(* create_dictionary)(key_type_t, int, int, int, dictionary_handler_t * , dictionary_t *);
 		/**< A pointer to the dictionaries creation function. */
 	err_t	(* get)(dictionary_t *, ion_key_t, ion_value_t *);
 		/**< A pointer to the dictionaries get function. */

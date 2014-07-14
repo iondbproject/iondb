@@ -23,7 +23,6 @@ oadict_init(
 	//handler->next =
 	handler->delete 			= oadict_delete;
 	handler->delete_dictionary 	= oadict_delete_dictionary;
-
 	/**@TODO return type*/
 	return 0;
 }
@@ -51,6 +50,7 @@ oadict_query(
 
 err_t
 oadict_create_dictionary(
+		key_type_t				key_type,
 		int 					key_size,
 		int 					value_size,
 		int 					dictionary_size,
@@ -61,8 +61,24 @@ oadict_create_dictionary(
 	//this is the instance of the hashmap
 	dictionary->instance = (hashmap_t *)malloc(sizeof(hashmap_t));
 
+/*	//register the type of key being used by the dictionary (Important for comparison op)
+	dictionary->key_type = key_type;*/
+
 	//this registers the dictionarys the dictionary
-	oah_initialize((hashmap_t *)dictionary->instance, oah_compute_simple_hash, key_size, value_size, dictionary_size);    			// just pick an arbitary size for testing atm
+	oah_initialize(
+		(hashmap_t *)dictionary->instance,
+		oah_compute_simple_hash,
+		key_type,
+		key_size,
+		value_size,
+		dictionary_size
+	);    			// just pick an arbitary size for testing atm
+
+	/**@TODO The correct comparison operator needs to be bound at run time
+	 * based on the type of key defined
+	 */
+
+
 
 	//register the correct handler
 	dictionary->handler = handler;		//todo: need to check to make sure that the handler is registered
@@ -216,3 +232,5 @@ is_equal(
 	else
 		return false;
 }
+
+

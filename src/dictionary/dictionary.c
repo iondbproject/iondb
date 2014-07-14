@@ -14,13 +14,14 @@ status_t
 dictionary_create(
 		dictionary_handler_t 	*handler,
 		dictionary_t 			*dictionary,
+		key_type_t				key_type,
 		int 					key_size,
 		int 					value_size,
 		int 					dictionary_size
 )
 {
 	//using the handler, create the dictionary
-	return handler->create_dictionary(key_size, value_size, dictionary_size, handler, dictionary);
+	return handler->create_dictionary(key_type, key_size, value_size, dictionary_size, handler, dictionary);
 }
 
 //inserts a record into the dictionary
@@ -60,4 +61,13 @@ dictionary_delete_dictionary(
 )
 {
 	return dictionary->handler->delete_dictionary(dictionary);
+}
+
+status_t
+dictionary_delete(
+	dictionary_t		*dictionary,
+	ion_key_t			key
+)
+{
+	return dictionary->handler->delete(dictionary,key);
 }

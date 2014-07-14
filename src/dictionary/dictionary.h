@@ -26,6 +26,7 @@ status_t
 dictionary_create(
 	dictionary_handler_t	*handler,
 	dictionary_t			*dictionary,
+	key_type_t				key_type,
 	int						key_size,
 	int						value_size,
 	int						dictionary_size

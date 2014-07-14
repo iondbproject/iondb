@@ -48,7 +48,7 @@ initialize_hash_map(
 	hashmap_t 	*map
 )
 {
-	oah_initialize(map, oah_compute_simple_hash, record->key_size, record->value_size, size);
+	oah_initialize(map, oah_compute_simple_hash, map->key_type, record->key_size, record->value_size, size);
 }
 
 void
@@ -57,11 +57,12 @@ initialize_hash_map_std_conditions(
 )
 {
 
-
 	record_t record;
-	record.key_size = 4;
-	record.value_size = 10;
+	record.key_size 		= 4;
+	record.value_size 		= 10;
+	map->key_type 			= key_type_int;
 	initialize_hash_map(STD_MAP_SIZE, &record, map);
+
 }
 
 /**
@@ -83,6 +84,8 @@ test_open_address_hashmap_initialize(
 	record.value_size = 10;
 	size = 10;
 	hashmap_t map;
+	map.key_type = key_type_int;			//default to use int key type
+
 	initialize_hash_map(size, &record, &map);
 
 	//valid correct map settings
@@ -869,11 +872,42 @@ test_open_address_hashmap_capacity(
 	}
 }
 
+void
+test_open_adress_hashmap_compare_int(
+	CuTest		*tc
+)
+{
+
+	ion_key_t 		key_one;
+	ion_key_t 		key_two;
+
+	key_one 		= (ion_key_t)&(int){1};
+	key_two 		= (ion_key_t)&(int){1};
+
+	CuAssertTrue(tc, IS_EQUAL ==
+			oah_compare_int(key_one, key_two));
+
+	key_one 		= (ion_key_t)&(int){1};
+	key_two 		= (ion_key_t)&(int){2};
+
+	CuAssertTrue(tc, ZERO >
+				oah_compare_int(key_one, key_two));
+
+	key_one 		= (ion_key_t)&(int){2};
+	key_two 		= (ion_key_t)&(int){1};
+
+	CuAssertTrue(tc, ZERO <
+					oah_compare_int(key_one, key_two));
+
+}
+
+
 CuSuite*
 open_address_hashmap_getsuite()
 {
 	CuSuite *suite = CuSuiteNew();
 
+	SUITE_ADD_TEST(suite, test_open_adress_hashmap_compare_int);
 	SUITE_ADD_TEST(suite, test_open_address_hashmap_initialize);
 	SUITE_ADD_TEST(suite, test_open_address_hashmap_compute_simple_hash);
 	SUITE_ADD_TEST(suite, test_open_address_hashmap_get_location);

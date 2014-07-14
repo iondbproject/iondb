@@ -16,7 +16,7 @@ extern "C" {
 #include <string.h>
 #include <stdio.h>
 
-#include "oadictionaryhandler.h"
+//#include "oadictionaryhandler.h"
 #include "./../../kv_system.h"
 #include "./../../io.h"
 
@@ -77,14 +77,17 @@ typedef struct hash_bucket
 */
 struct hashmap
 {
-	int 			map_size;		/**<The size of the map in item capacity */
-	record_t 		record;			/**<The record structure for items */
-	write_concern_t write_concern;	/**<The current @p write_concern level
+	int 			map_size;		/**< The size of the map in item capacity */
+	key_type_t		key_type;		/**< The key type stored in the map */
+	record_t 		record;			/**< The record structure for items */
+	write_concern_t write_concern;	/**< The current @p write_concern level
 	 	 	 	 	 	 	 	 	 	 of the hashmap*/
 	int				(* compute_hash)(hashmap_t *, ion_key_t, int);
-									/**<The hashing function to be used for
-										the instance*/
-	char 			*entry;			/**<Pointer to the entries in the hashmap*/
+									/**< The hashing function to be used for
+										 the instance*/
+	int 			(* compare)(ion_key_t, ion_key_t);
+									/**< Comparison function for instance of map */
+	char 			*entry;			/**< Pointer to the entries in the hashmap*/
 };
 
 /**
@@ -94,6 +97,8 @@ struct hashmap
 				Pointer to the hashmap instance to initialize.
 @param		hashing_function
 				Function pointer to the hashing function for the instance.
+@param		key_type
+				The type of key that is being stored in the collection.
 @param 		key_size
 				The size of the key in bytes.
 @param		value_size
@@ -107,6 +112,7 @@ char
 oah_initialize(
 		hashmap_t	*hash_map,
 		hash_t		(*hashing_function)(hashmap_t *, ion_key_t, int),
+	    key_type_t	key_type,
 		int			key_size,
 		int			value_size,
 		int			size
@@ -306,13 +312,27 @@ static_hash_init(dictonary_handler_t * client);*/
 @param value
 @return
  */
-err_t
+/*err_t
 oah_scan(
 		hashmap_t 			*hash_map,
-		 oadict_cursor_t	*cursor
+		 //oadict_cursor_t	*cursor  //don't need to pass in the cursor
 		//ion_value_t 		*value
-);
+);*/
 
+/**
+@brief		Compares two integer keys
+
+@param 		first_key
+				The first key in the comparison.
+@param 		second_key
+				The second key in the comparison.
+@return		The difference between the two keys.
+ */
+int
+oah_compare_int(
+	ion_key_t 	first_key,
+	ion_key_t	second_key
+);
 #ifdef __cplusplus
 }
 #endif
