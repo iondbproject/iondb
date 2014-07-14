@@ -1192,6 +1192,139 @@ test_skiplist_update_many_nonexist_nonempty(
 }
 
 /**
+@brief 		Tests the updating of a node in a skiplist with one element, where
+			the one element is the node we attempt to update. The assertion is
+			that the update will return the status of "err_ok", and the changes
+			will be reflected within the node.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_update_single_exist(
+	CuTest 		*tc
+)
+{
+	PRINT_HEADER("test_skiplist_update_single_exist");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	sl_insert(&skiplist, (ion_key_t) &(int) {45}, (char*){"old val"});
+
+#ifdef DEBUG
+	printf("%s\n", "** BEFORE **");
+	check_skiplist(&skiplist);
+#endif
+
+	err_t status = sl_update(&skiplist, (ion_key_t) &(int) {45}, (char*){"new val"});
+
+#ifdef DEBUG
+	printf("%s\n", "** AFTER **");
+	check_skiplist(&skiplist);
+#endif
+
+	CuAssertTrue(tc, status												 == err_ok);
+	CuAssertTrue(tc, *(int*)skiplist.head->next[0]->key					 == 45);
+	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->value, "new val")	 == 0);
+
+	sl_destroy(&skiplist);
+}
+
+/**
+@brief 		Tests the updating of a node in a skiplist with many elements, where
+			the one to be updated exists in the skiplist. The assertion is
+			that the update will return the status of "err_ok", and the changes
+			will be reflected within the targeted node.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_update_single_many_exist(
+	CuTest 		*tc
+)
+{
+	PRINT_HEADER("test_skiplist_update_single_many_exist");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	int i;
+	for(i = 20; i < 46; i += 2)
+	{
+		sl_insert(&skiplist, (ion_key_t) &i, (char*){"MATH"});
+	}
+
+#ifdef DEBUG
+	printf("%s\n", "** BEFORE **");
+	check_skiplist(&skiplist);
+#endif
+
+	err_t status = sl_update(&skiplist, (ion_key_t) &(int) {30}, (char*){"COSC"});
+
+#ifdef DEBUG
+	printf("%s\n", "** AFTER **");
+	check_skiplist(&skiplist);
+#endif
+
+	sl_node_t 		*cursor = sl_find_node(&skiplist, (ion_key_t) &(int) {30});
+
+	CuAssertTrue(tc, status								 == err_ok);
+	CuAssertTrue(tc, *(int*)cursor->key					 == 30);
+	CuAssertTrue(tc, strcmp(cursor->value, "COSC")		 == 0);
+
+	sl_destroy(&skiplist);
+}
+
+/**
+@brief 		Tests the updating of nodes in a skiplist with many elements, where
+			all the nodes are to be updated. The assertion is that the update
+			will return the status of "err_ok", and the changes will be
+			reflected within all nodes.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_update_several_many_exist(
+	CuTest 		*tc
+)
+{
+	PRINT_HEADER("test_skiplist_update_several_many_exist");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	int i;
+	for(i = 60; i < 99; i += 3)
+	{
+		sl_insert(&skiplist, (ion_key_t) &i, (char*){"TEST"});
+	}
+
+#ifdef DEBUG
+	printf("%s\n", "** BEFORE **");
+	check_skiplist(&skiplist);
+#endif
+
+	for(i = 60; i < 99; i += 3)
+	{
+		err_t status = sl_update(&skiplist, (ion_key_t) &i, (char*){"VALUE"});
+
+		sl_node_t 		*cursor = sl_find_node(&skiplist, (ion_key_t) &i);
+
+		CuAssertTrue(tc, status								 == err_ok);
+		CuAssertTrue(tc, *(int*)cursor->key					 == i);
+		CuAssertTrue(tc, strcmp(cursor->value, "VALUE")		 == 0);
+	}
+
+#ifdef DEBUG
+	printf("%s\n", "** AFTER **");
+	check_skiplist(&skiplist);
+#endif
+
+	sl_destroy(&skiplist);
+}
+
+
+/**
 @brief 		Tests a deletion of a skiplist with one element, and then tests a
 			reinsertion of a different key/value pair into the same skiplist.
 			The assertion is that the insertion should work OK with no errors.
@@ -1413,6 +1546,9 @@ skiplist_getsuite()
 	SUITE_ADD_TEST(suite, test_skiplist_update_single_nonexist);
 	SUITE_ADD_TEST(suite, test_skiplist_update_single_nonexist_nonempty);
 	SUITE_ADD_TEST(suite, test_skiplist_update_many_nonexist_nonempty);
+	SUITE_ADD_TEST(suite, test_skiplist_update_single_exist);
+	SUITE_ADD_TEST(suite, test_skiplist_update_single_many_exist);
+	SUITE_ADD_TEST(suite, test_skiplist_update_several_many_exist);
 
 	/* Hybrid Tests */
 	SUITE_ADD_TEST(suite, test_skiplist_delete_then_insert_single);
