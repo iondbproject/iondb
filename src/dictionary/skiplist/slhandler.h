@@ -103,6 +103,7 @@ sldict_query(
  */
 err_t
 sldict_create_dictionary(
+	key_type_t 				key_type,
 	int 					key_size,
 	int 					value_size,
 	int 					dictionary_size,

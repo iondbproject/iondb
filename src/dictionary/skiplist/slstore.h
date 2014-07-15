@@ -41,6 +41,7 @@ typedef struct skiplist
 	int			value_size;
 	int			pnum;
 	int			pden;
+	char 		(* compare)(ion_key_t, ion_key_t, ion_key_size_t);
 } skiplist_t;
 
 /**

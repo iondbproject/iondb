@@ -171,10 +171,10 @@ test_skiplist_single_insert(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	int 	key 		= 6;
-	char 	value[10];
+	int 			key 		= 6;
+	unsigned char 	value[10];
 
-	strcpy(value, "single.");
+	strcpy( (char*) value, "single.");
 
 	sl_insert(&skiplist, (ion_key_t) &key, value);
 
@@ -184,7 +184,7 @@ test_skiplist_single_insert(
 #endif
 
 	CuAssertTrue(tc, *((int*) skiplist.head->next[0]->key) 				== 6);
-	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->value, "single.") 	== 0);
+	CuAssertStrEquals(tc, (char*) skiplist.head->next[0]->value, "single.");
 
 	sl_destroy(&skiplist);
 }
@@ -206,7 +206,7 @@ test_skiplist_insert_multiple(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	char strs[5][6] =
+	unsigned char strs[5][6] =
 	{		"one",
 			"two",
 			"three",
@@ -225,19 +225,19 @@ test_skiplist_insert_multiple(
 #endif
 
 	CuAssertTrue(tc, *((int*) skiplist.head->next[0]->key) 													== 1);
-	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->value, "one") 											== 0);
+	CuAssertStrEquals(tc, (char*) skiplist.head->next[0]->value, "one");
 
 	CuAssertTrue(tc, *((int*) skiplist.head->next[0]->next[0]->key) 										== 2);
-	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->next[0]->value, "two") 									== 0);
+	CuAssertStrEquals(tc, (char*) skiplist.head->next[0]->next[0]->value, "two");
 
 	CuAssertTrue(tc, *((int*) skiplist.head->next[0]->next[0]->next[0]->key) 								== 3);
-	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->next[0]->next[0]->value, "three") 						== 0);
+	CuAssertStrEquals(tc, (char*) skiplist.head->next[0]->next[0]->next[0]->value, "three");
 
 	CuAssertTrue(tc, *((int*) skiplist.head->next[0]->next[0]->next[0]->next[0]->key) 						== 4);
-	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->next[0]->next[0]->next[0]->value, "four") 				== 0);
+	CuAssertStrEquals(tc, (char*) skiplist.head->next[0]->next[0]->next[0]->next[0]->value, "four");
 
 	CuAssertTrue(tc, *((int*) skiplist.head->next[0]->next[0]->next[0]->next[0]->next[0]->key) 				== 5);
-	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->next[0]->next[0]->next[0]->next[0]->value, "five") 		== 0);
+	CuAssertStrEquals(tc, (char*) skiplist.head->next[0]->next[0]->next[0]->next[0]->next[0]->value, "five");
 
 	sl_destroy(&skiplist);
 }
@@ -259,8 +259,8 @@ test_skiplist_randomized_insert(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	char str[10];
-	strcpy(str, "random");
+	unsigned char str[10];
+	strcpy( (char*) str, "random");
 
 	int i;
 	for(i = 0; i < 100; i++)
@@ -307,8 +307,8 @@ test_skiplist_get_node_single(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	char str[10];
-	strcpy(str, "find this");
+	unsigned char str[10];
+	strcpy((char*) str, "find this");
 
 	int key = 3;
 
@@ -318,7 +318,7 @@ test_skiplist_get_node_single(
 	sl_node_t *node = sl_find_node(&skiplist, (ion_key_t) &search);
 
 	CuAssertTrue(tc, *((int*)node->key) 		== key);
-	CuAssertTrue(tc, strcmp(str, node->value) 	== 0);
+	CuAssertStrEquals(tc, (char*) str, (char*) node->value);
 
 	sl_destroy(&skiplist);
 }
@@ -344,8 +344,8 @@ test_skiplist_get_node_single_high(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	char str[10];
-	strcpy(str, "find this");
+	unsigned char str[10];
+	strcpy((char*) str, "find this");
 
 	int key = 3;
 
@@ -359,7 +359,7 @@ test_skiplist_get_node_single_high(
 	sl_node_t *node = sl_find_node(&skiplist, (ion_key_t) &search);
 
 	CuAssertTrue(tc, *((int*)node->key) 		== key);
-	CuAssertTrue(tc, strcmp(str, node->value) 	== 0);
+	CuAssertStrEquals(tc, (char*) str, (char*) node->value);
 
 	sl_destroy(&skiplist);
 }
@@ -386,8 +386,8 @@ test_skiplist_get_node_single_low(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	char str[10];
-	strcpy(str, "find this");
+	unsigned char str[10];
+	strcpy( (char*) str, "find this");
 
 	int key = 3;
 
@@ -425,15 +425,15 @@ test_skiplist_get_node_single_many(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	char str[10];
-	strcpy(str, "find this");
+	unsigned char str[10];
+	strcpy( (char*) str, "find this");
 
 	int key = 25;
 
 	sl_insert(&skiplist, (ion_key_t) &key, str);
 
-	char junk[10];
-	strcpy(junk, "big junk");
+	unsigned char junk[10];
+	strcpy( (char*) junk, "big junk");
 	int i;
 	for(i = 0; i < 100; i++)
 	{
@@ -453,7 +453,7 @@ test_skiplist_get_node_single_many(
 	sl_node_t *node = sl_find_node(&skiplist, (ion_key_t) &search);
 
 	CuAssertTrue(tc, *((int*)node->key) 		== key);
-	CuAssertTrue(tc, strcmp(str, node->value) 	== 0);
+	CuAssertStrEquals(tc, (char*) str, (char*) node->value);
 
 	sl_destroy(&skiplist);
 }
@@ -481,13 +481,13 @@ test_skiplist_get_node_several(
 #endif
 
 	int targets[50];
-	char buffer[10];
+	unsigned char buffer[10];
 	int i;
 	for(i = 0; i < 50; i++)
 	{
 		int key 	= rand() % 1000;
 		targets[i] 	= key;
-		sprintf(buffer, "TEST %d", key);
+		sprintf((char*) buffer, "TEST %d", key);
 		sl_insert(&skiplist, (ion_key_t) &key, buffer);
 	}
 
@@ -499,9 +499,9 @@ test_skiplist_get_node_several(
 	{
 		int 		key		= targets[i];
 		sl_node_t 	*node 	= sl_find_node(&skiplist, (ion_key_t) &key);
-		sprintf(buffer, "TEST %d", key);
+		sprintf((char*) buffer, "TEST %d", key);
 		CuAssertTrue(tc, *((int*)node->key) 			== key);
-		CuAssertTrue(tc, strcmp(node->value, buffer) 	== 0);
+		CuAssertStrEquals(tc, (char*) node->value, (char*) buffer);
 	}
 
 	sl_destroy(&skiplist);
@@ -558,8 +558,8 @@ test_skiplist_query_nonexist_populated_single(
 	initialize_skiplist_std_conditions(&skiplist);
 
 	int test_key = 23;
-	char test_value[10];
-	strcpy(test_value, "I am test");
+	unsigned char test_value[10];
+	strcpy( (char*) test_value, "I am test");
 
 	sl_insert(&skiplist, (ion_key_t) &test_key, test_value);
 
@@ -597,12 +597,12 @@ test_skiplist_query_nonexist_populated_several(
 	initialize_skiplist_std_conditions(&skiplist);
 
 	int test_key = 46;
-	char test_value[10];
+	unsigned char test_value[10];
 
 	int i;
 	for(i = 0; i < 32; i++)
 	{
-		sprintf(test_value, "I am: %d", test_key);
+		sprintf( (char*) test_value, "I am: %d", test_key);
 		sl_insert(&skiplist, (ion_key_t) &test_key, test_value);
 		test_key--;
 	}
@@ -641,8 +641,8 @@ test_skiplist_query_exist_single(
 	initialize_skiplist_std_conditions(&skiplist);
 
 	int test_key = 11;
-	char test_value[10];
-	strcpy(test_value, "Find me!");
+	unsigned char test_value[10];
+	strcpy((char*) test_value, "Find me!");
 
 	sl_insert(&skiplist, (ion_key_t) &test_key, test_value);
 
@@ -656,7 +656,7 @@ test_skiplist_query_exist_single(
 	err_t status = sl_query(&skiplist, (ion_key_t) &key, &value);
 
 	CuAssertTrue(tc, status == err_ok);
-	CuAssertTrue(tc, strcmp(value, "Find me!") == 0);
+	CuAssertStrEquals(tc, (char*) value, "Find me!");
 
 	free(value);
 	sl_destroy(&skiplist);
@@ -680,12 +680,12 @@ test_skiplist_query_exist_populated_single(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	char test_value[10];
+	unsigned char test_value[10];
 
 	int i;
 	for(i = 0; i < 100; i += 2)
 	{
-		sprintf(test_value, "Find %d", i);
+		sprintf((char*) test_value, "Find %d", i);
 		sl_insert(&skiplist, (ion_key_t) &i, test_value);
 	}
 
@@ -699,7 +699,7 @@ test_skiplist_query_exist_populated_single(
 	err_t status = sl_query(&skiplist, (ion_key_t) &key, &value);
 
 	CuAssertTrue(tc, status == err_ok);
-	CuAssertTrue(tc, strcmp(value, "Find 24") == 0);
+	CuAssertStrEquals(tc, (char*) value, "Find 24");
 
 	free(value);
 	sl_destroy(&skiplist);
@@ -723,12 +723,12 @@ test_skiplist_query_exist_populated_several(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	char test_value[10];
+	unsigned char test_value[10];
 
 	int i;
 	for(i = 0; i < 100; i++)
 	{
-		sprintf(test_value, "Find %d", i);
+		sprintf((char*) test_value, "Find %d", i);
 		sl_insert(&skiplist, (ion_key_t) &i, test_value);
 	}
 
@@ -744,7 +744,7 @@ test_skiplist_query_exist_populated_several(
 		err_t status = sl_query(&skiplist, (ion_key_t) &i, &value);
 
 		CuAssertTrue(tc, status == err_ok);
-		CuAssertTrue(tc, strcmp(value, find_value) == 0);
+		CuAssertStrEquals(tc, (char*) value, find_value);
 		free(value);
 	}
 
@@ -798,9 +798,9 @@ test_skiplist_delete_nonexist_single(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	int 	key 		= 16;
-	char 	value[10];
-	strcpy(value, "Delete me!");
+	int 			key 		= 16;
+	unsigned char 	value[10];
+	strcpy((char*) value, "Delete me!");
 	sl_insert(&skiplist, (ion_key_t) &key, value);
 
 	int fake_key = 33;
@@ -834,8 +834,8 @@ test_skiplist_delete_nonexist_several(
 	initialize_skiplist_std_conditions(&skiplist);
 
 	int 	key 		= 16;
-	char 	value[10];
-	strcpy(value, "Delete me!");
+	unsigned char 	value[10];
+	strcpy((char*) value, "Delete me!");
 
 	int i;
 	for(i = 0; i < 10; i++)
@@ -875,8 +875,8 @@ test_skiplist_delete_single(
 	initialize_skiplist_std_conditions(&skiplist);
 
 	int 	key 		= 97;
-	char 	value[10];
-	strcpy(value, "Special K");
+	unsigned char 	value[10];
+	strcpy((char*) value, "Special K");
 
 	sl_insert(&skiplist, (ion_key_t) &key, value);
 
@@ -916,8 +916,8 @@ test_skiplist_delete_single_several(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	char value[10];
-	strcpy(value, "Poof me!");
+	unsigned char value[10];
+	strcpy((char*) value, "Poof me!");
 
 	int i;
 	for(i = 101; i < 120; i++)
@@ -982,8 +982,8 @@ test_skiplist_delete_single_several_noncont(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	char value[10];
-	strcpy(value, "Bop me!");
+	unsigned char value[10];
+	strcpy((char*) value, "Bop me!");
 
 	int i;
 	for(i = 230; i < 300; i+= 5)
@@ -1046,8 +1046,8 @@ test_skiplist_delete_several_all(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	char value[10];
-	strcpy(value, "Wipe");
+	unsigned char value[10];
+	strcpy((char*) value, "Wipe");
 
 	int i;
 	for(i = 9; i < 99; i+= 3)
@@ -1097,7 +1097,7 @@ test_skiplist_update_single_nonexist(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	err_t status = sl_update(&skiplist, (ion_key_t) &(int) {72}, (char*){"test val"});
+	err_t status = sl_update(&skiplist, (ion_key_t) &(int) {72}, (ion_value_t) (char*){"test val"});
 
 #ifdef DEBUG
 	check_skiplist(&skiplist);
@@ -1105,7 +1105,7 @@ test_skiplist_update_single_nonexist(
 
 	CuAssertTrue(tc, status												 == err_ok);
 	CuAssertTrue(tc, *(int*)skiplist.head->next[0]->key					 == 72);
-	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->value, "test val")	 == 0);
+	CuAssertStrEquals(tc, (char*) skiplist.head->next[0]->value, "test val");
 
 	sl_destroy(&skiplist);
 }
@@ -1127,14 +1127,14 @@ test_skiplist_update_single_nonexist_nonempty(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	sl_insert(&skiplist, (ion_key_t) &(int) {99}, (char*){"not val"});
+	sl_insert(&skiplist, (ion_key_t) &(int) {99}, (ion_value_t) (char*){"not val"});
 
 #ifdef DEBUG
 	printf("%s\n", "** BEFORE **");
 	check_skiplist(&skiplist);
 #endif
 
-	err_t status = sl_update(&skiplist, (ion_key_t) &(int) {13}, (char*){"test val"});
+	err_t status = sl_update(&skiplist, (ion_key_t) &(int) {13}, (ion_value_t) (char*){"test val"});
 
 #ifdef DEBUG
 	printf("%s\n", "** AFTER **");
@@ -1143,7 +1143,7 @@ test_skiplist_update_single_nonexist_nonempty(
 
 	CuAssertTrue(tc, status												 == err_ok);
 	CuAssertTrue(tc, *(int*)skiplist.head->next[0]->key					 == 13);
-	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->value, "test val")	 == 0);
+	CuAssertStrEquals(tc, (char*) skiplist.head->next[0]->value, "test val");
 
 	sl_destroy(&skiplist);
 }
@@ -1168,7 +1168,7 @@ test_skiplist_update_many_nonexist_nonempty(
 	int i;
 	for(i = 30; i < 40; i+= 2)
 	{
-		sl_insert(&skiplist, (ion_key_t) &i, (char*){"not it!"});
+		sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char*){"not it!"});
 	}
 
 #ifdef DEBUG
@@ -1176,7 +1176,7 @@ test_skiplist_update_many_nonexist_nonempty(
 	check_skiplist(&skiplist);
 #endif
 
-	err_t status = sl_update(&skiplist, (ion_key_t) &(int) {45}, (char*){"test val"});
+	err_t status = sl_update(&skiplist, (ion_key_t) &(int) {45}, (ion_value_t) (char*){"test val"});
 
 #ifdef DEBUG
 	printf("%s\n", "** AFTER **");
@@ -1187,7 +1187,7 @@ test_skiplist_update_many_nonexist_nonempty(
 
 	CuAssertTrue(tc, status											== err_ok);
 	CuAssertTrue(tc, *(int*)cursor->next[0]->key					== 45);
-	CuAssertTrue(tc, strcmp(cursor->next[0]->value, "test val") 	== 0);
+	CuAssertStrEquals(tc, (char*) cursor->next[0]->value, "test val");
 
 	sl_destroy(&skiplist);
 }
@@ -1210,14 +1210,14 @@ test_skiplist_update_single_exist(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	sl_insert(&skiplist, (ion_key_t) &(int) {45}, (char*){"old val"});
+	sl_insert(&skiplist, (ion_key_t) &(int) {45}, (ion_value_t) (char*){"old val"});
 
 #ifdef DEBUG
 	printf("%s\n", "** BEFORE **");
 	check_skiplist(&skiplist);
 #endif
 
-	err_t status = sl_update(&skiplist, (ion_key_t) &(int) {45}, (char*){"new val"});
+	err_t status = sl_update(&skiplist, (ion_key_t) &(int) {45}, (ion_value_t) (char*){"new val"});
 
 #ifdef DEBUG
 	printf("%s\n", "** AFTER **");
@@ -1226,7 +1226,7 @@ test_skiplist_update_single_exist(
 
 	CuAssertTrue(tc, status												 == err_ok);
 	CuAssertTrue(tc, *(int*)skiplist.head->next[0]->key					 == 45);
-	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->value, "new val")	 == 0);
+	CuAssertStrEquals(tc, (char*) skiplist.head->next[0]->value, "new val");
 
 	sl_destroy(&skiplist);
 }
@@ -1252,7 +1252,7 @@ test_skiplist_update_single_many_exist(
 	int i;
 	for(i = 20; i < 46; i += 2)
 	{
-		sl_insert(&skiplist, (ion_key_t) &i, (char*){"MATH"});
+		sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char*){"MATH"});
 	}
 
 #ifdef DEBUG
@@ -1260,7 +1260,7 @@ test_skiplist_update_single_many_exist(
 	check_skiplist(&skiplist);
 #endif
 
-	err_t status = sl_update(&skiplist, (ion_key_t) &(int) {30}, (char*){"COSC"});
+	err_t status = sl_update(&skiplist, (ion_key_t) &(int) {30}, (ion_value_t) (char*){"COSC"});
 
 #ifdef DEBUG
 	printf("%s\n", "** AFTER **");
@@ -1271,7 +1271,7 @@ test_skiplist_update_single_many_exist(
 
 	CuAssertTrue(tc, status								 == err_ok);
 	CuAssertTrue(tc, *(int*)cursor->key					 == 30);
-	CuAssertTrue(tc, strcmp(cursor->value, "COSC")		 == 0);
+	CuAssertStrEquals(tc, (char*) cursor->value, "COSC");
 
 	sl_destroy(&skiplist);
 }
@@ -1297,7 +1297,7 @@ test_skiplist_update_several_many_exist(
 	int i;
 	for(i = 60; i < 99; i += 3)
 	{
-		sl_insert(&skiplist, (ion_key_t) &i, (char*){"TEST"});
+		sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char*){"TEST"});
 	}
 
 #ifdef DEBUG
@@ -1307,13 +1307,13 @@ test_skiplist_update_several_many_exist(
 
 	for(i = 60; i < 99; i += 3)
 	{
-		err_t status = sl_update(&skiplist, (ion_key_t) &i, (char*){"VALUE"});
+		err_t status = sl_update(&skiplist, (ion_key_t) &i, (ion_value_t) (char*){"VALUE"});
 
 		sl_node_t 		*cursor = sl_find_node(&skiplist, (ion_key_t) &i);
 
 		CuAssertTrue(tc, status								 == err_ok);
 		CuAssertTrue(tc, *(int*)cursor->key					 == i);
-		CuAssertTrue(tc, strcmp(cursor->value, "VALUE")		 == 0);
+		CuAssertStrEquals(tc, (char*) cursor->value, "VALUE");
 	}
 
 #ifdef DEBUG
@@ -1342,7 +1342,7 @@ test_skiplist_delete_then_insert_single(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	sl_insert(&skiplist, (ion_key_t) &(int) {66}, (char*) {"toaster"});
+	sl_insert(&skiplist, (ion_key_t) &(int) {66}, (ion_value_t) (char*) {"toaster"});
 
 #ifdef DEBUG
 	printf("%s\n", "** INSERT **");
@@ -1357,7 +1357,7 @@ test_skiplist_delete_then_insert_single(
 	check_skiplist(&skiplist);
 #endif
 
-	sl_insert(&skiplist, (ion_key_t) &(int) {365}, (char*) {"potato"});
+	sl_insert(&skiplist, (ion_key_t) &(int) {365}, (ion_value_t) (char*) {"potato"});
 
 #ifdef DEBUG
 	printf("%s\n", "** REINSERT **");
@@ -1366,7 +1366,7 @@ test_skiplist_delete_then_insert_single(
 
 	CuAssertTrue(tc, skiplist.head->next[0] 							!= NULL);
 	CuAssertTrue(tc, *(int*) skiplist.head->next[0]->key 				== 365);
-	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->value, "potato") 	== 0);
+	CuAssertStrEquals(tc, (char*) skiplist.head->next[0]->value, "potato");
 
 	sl_destroy(&skiplist);
 }
@@ -1392,7 +1392,7 @@ test_skiplist_delete_then_insert_several(
 	int i;
 	for(i = 0; i < 50; i++)
 	{
-		sl_insert(&skiplist, (ion_key_t) &i, (char*) {"cake"});
+		sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char*) {"cake"});
 	}
 
 #ifdef DEBUG
@@ -1413,7 +1413,7 @@ test_skiplist_delete_then_insert_several(
 
 	for(i = 50; i < 100; i++)
 	{
-		sl_insert(&skiplist, (ion_key_t) &i, (char*) {"pie"});
+		sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char*) {"pie"});
 	}
 
 #ifdef DEBUG
@@ -1421,14 +1421,10 @@ test_skiplist_delete_then_insert_several(
 	check_skiplist(&skiplist);
 #endif
 
-	/* FIXME keys greater than 256 are breaking insertion because the memcmp is
-	 * not returning the right result. http://ideone.com/dgHCv1
-	 */
 	sl_node_t *cursor = skiplist.head;
 	for(i = 50; i < 100; i++)
 	{
-		//CuAssertTrue(tc, *(int*) cursor->next[0]->key 			== i);
-		CuAssertTrue(tc, strcmp(cursor->next[0]->value, "pie") 	== 0);
+		CuAssertStrEquals(tc, (char*) cursor->next[0]->value, "pie");
 		cursor = cursor->next[0];
 	}
 
@@ -1459,9 +1455,9 @@ test_skiplist_different_size(
 
 	initialize_skiplist(&skiplist, maxheight, key_size, value_size, pnum, pden);
 
-	sl_insert(&skiplist, (ion_key_t) &(long long){64}, (char*){"pop"});
-	sl_insert(&skiplist, (ion_key_t) &(long long){32}, (char*){"bep"});
-	sl_insert(&skiplist, (ion_key_t) &(long long){16}, (char*){"tot"});
+	sl_insert(&skiplist, (ion_key_t) &(long long){64}, (ion_value_t) (char*){"pop"});
+	sl_insert(&skiplist, (ion_key_t) &(long long){32}, (ion_value_t) (char*){"bep"});
+	sl_insert(&skiplist, (ion_key_t) &(long long){16}, (ion_value_t) (char*){"tot"});
 
 #ifdef DEBUG
 	printf("%s\n", "** INSERT **");
@@ -1469,23 +1465,23 @@ test_skiplist_different_size(
 #endif
 
 	CuAssertTrue(tc, *(long long*) skiplist.head->next[0]->key 						== 16);
-	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->value, "tot") 					== 0);
+	CuAssertStrEquals(tc, (char*) skiplist.head->next[0]->value, "tot");
 	CuAssertTrue(tc, *(long long*) skiplist.head->next[0]->next[0]->key 			== 32);
-	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->next[0]->value, "bep") 			== 0);
+	CuAssertStrEquals(tc, (char*) skiplist.head->next[0]->next[0]->value, "bep");
 	CuAssertTrue(tc, *(long long*) skiplist.head->next[0]->next[0]->next[0]->key 	== 64);
-	CuAssertTrue(tc, strcmp(skiplist.head->next[0]->next[0]->next[0]->value, "pop") == 0);
+	CuAssertStrEquals(tc, (char*) skiplist.head->next[0]->next[0]->next[0]->value, "pop");
 
-	char* value;
-	err_t status;
+	ion_key_t	 value;
+	err_t 		status;
 	status = sl_query(&skiplist, (ion_key_t) &(long long){64}, &value);
 	CuAssertTrue(tc, status == err_ok);
-	CuAssertTrue(tc, strcmp(value, "pop") == 0);
+	CuAssertStrEquals(tc, (char*) value, "pop");
 	status = sl_query(&skiplist, (ion_key_t) &(long long){32}, &value);
 	CuAssertTrue(tc, status == err_ok);
-	CuAssertTrue(tc, strcmp(value, "bep") == 0);
+	CuAssertStrEquals(tc, (char*) value, "bep");
 	status = sl_query(&skiplist, (ion_key_t) &(long long){16}, &value);
 	CuAssertTrue(tc, status == err_ok);
-	CuAssertTrue(tc, strcmp(value, "tot") == 0);
+	CuAssertStrEquals(tc, (char*) value, "tot");
 
 	status = sl_delete(&skiplist, (ion_key_t) &(long long){64});
 	CuAssertTrue(tc, status == err_ok);

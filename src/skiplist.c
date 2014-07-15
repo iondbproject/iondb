@@ -44,7 +44,9 @@ main(
 			"muffin')\nQuery (Q <key> | 'Q 16') Print (P | 'P')\n\nX to stop.");
 
 	int key_size, value_size, maxheight;
+	key_type_t key_type;
 	key_size 	= 4;
+	key_type 	= key_type_numeric;
 	value_size 	= 10;
 	maxheight 	= 7;
 
@@ -54,7 +56,7 @@ main(
 
 	dictionary_t test_dict;
 
-	dictionary_create(&skip_handler, &test_dict, key_size, value_size, maxheight);
+	dictionary_create(&skip_handler, &test_dict, key_type, key_size, value_size, maxheight);
 
 	char in;
 	while( (in = getchar()) != 'X')
@@ -77,7 +79,7 @@ main(
 			case 'I':
 			{
 				int key;
-				char value[10];
+				unsigned char value[10];
 				scanf("%i %s", &key, value);
 #ifdef DEBUG
 				io_printf("Inserting (%d|%s)...\n", key, value);
@@ -93,14 +95,14 @@ main(
 #ifdef DEBUG
 				io_printf("Deleting (%d)...\n", key);
 #endif
-				//dictionary_delete(&test_dict, (ion_key_t) &key);
+				dictionary_delete(&test_dict, (ion_key_t) &key);
 				break;
 			}
 
 			case 'U':
 			{
 				int key;
-				char value[10];
+				unsigned char value[10];
 				scanf("%i %s", &key, value);
 #ifdef DEBUG
 				io_printf("Updating (%d with %s)...\n", key, value);
@@ -112,7 +114,7 @@ main(
 			case 'Q':
 			{
 				int key;
-				char* value;
+				ion_value_t value;
 				scanf("%i", &key);
 #ifdef DEBUG
 				io_printf("Querying (%d)...\n", key);
