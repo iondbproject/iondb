@@ -93,7 +93,7 @@ main(
 #ifdef DEBUG
 				io_printf("Deleting (%d)...\n", key);
 #endif
-				dictionary_delete(&test_dict, (ion_key_t) &key);
+				//dictionary_delete(&test_dict, (ion_key_t) &key);
 				break;
 			}
 
