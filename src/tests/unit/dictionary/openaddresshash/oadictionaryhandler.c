@@ -68,7 +68,7 @@ test_open_address_hashmap_handler_create_destroy(
 	dictionary_t test_dictionary;
 
 	//register the appropriate handler for a given collection
-	dictionary_create(&map_handler, &test_dictionary, key_type_int, record.key_size, record.value_size,size);
+	dictionary_create(&map_handler, &test_dictionary, key_type_numeric, record.key_size, record.value_size,size);
 
 	CuAssertTrue(tc, (((hashmap_t *)test_dictionary.instance)->record.key_size) == record.key_size);
 	CuAssertTrue(tc, (((hashmap_t *)test_dictionary.instance)->record.value_size) == record.value_size);

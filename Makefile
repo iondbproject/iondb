@@ -125,7 +125,8 @@ utildepends := $(addprefix $(BIN_UTILS)/,$(subst .c,.d,$(notdir $(utilssources))
 # List of test library sources.
 tlsources   := 	$(SRC)/tests/CuTest.c  \
 				$(SRC)/tests/unit/dictionary/openaddresshash/oahash.c	\
-				$(SRC)/tests/unit/dictionary/openaddresshash/oadictionaryhandler.c
+				$(SRC)/tests/unit/dictionary/openaddresshash/oadictionaryhandler.c \
+				$(SRC)/tests/unit/dictionary/dictionary.c	\
 
 # Generate list of libraries to compile.
 testlibs    := $(addprefix $(BIN_TESTS)/,$(subst .c,.o,$(notdir $(tlsources))))
@@ -135,7 +136,8 @@ tldepends   := $(addprefix $(BIN_TESTS)/,$(subst .c,.d,$(notdir $(tlsources))))
 
 # List of executable test library sources. (main)
 testsources := 	$(SRC)/hashmap.c	\
-				$(SRC)/tests/unit/dictionary/openaddresshash/run_oahash.c
+				$(SRC)/tests/unit/dictionary/openaddresshash/run_oahash.c \
+				$(SRC)/tests/unit/dictionary/run_dictionary.c
 
 # Generate list of libraries to compile.
 testexecs   := $(addprefix $(BIN_TESTS)/,$(subst .c,,$(notdir $(testsources))))

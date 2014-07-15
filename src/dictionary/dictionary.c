@@ -71,3 +71,48 @@ dictionary_delete(
 {
 	return dictionary->handler->delete(dictionary,key);
 }
+
+char
+dictionary_compare_value(
+	ion_key_t 		first_key,
+	ion_key_t		second_key,
+	ion_key_size_t	key_size
+	)
+{
+	int idx;
+	char return_value;
+	/**
+	 * In this case, the endiannes of the process does matter as the code does
+	 * a direct comparison of bytes in memory starting for MSB.
+	 */
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+	for (idx = key_size -1; idx >= 0; idx--)
+	{
+		if ((return_value = ((*(first_key+idx) > *(second_key+idx)) - (*(first_key+idx) < *(second_key+idx)))) != ZERO)
+		{
+			return return_value;
+		}
+	}
+	return return_value;
+#else
+	/** @TODO This is a potential issue and needs to be tested on SAMD3 */
+	for (idx = 0 ; idx < key_size ; idx++)
+	{
+		if ((return_value = ((*(first_key+idx) > *(second_key+idx)) - (*(first_key+idx) < *(second_key+idx)))) != ZERO)
+		{
+			return return_value;
+		}
+	}
+	return return_value;
+#endif
+}
+
+char
+dictionary_compare_char_array(
+	ion_key_t 		first_key,
+	ion_key_t		second_key,
+	ion_key_size_t	key_size
+)
+{
+	return memcmp((char *)first_key, (char *)second_key, key_size);
+}

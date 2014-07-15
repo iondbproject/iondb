@@ -34,7 +34,7 @@ oadict_insert(
 	ion_value_t		value
 )
 {
-	return oah_insert((hashmap_t *)dictionary->instance,(char *)key, (char *)value);
+	return oah_insert((hashmap_t *)dictionary->instance, key, value);
 }
 
 err_t
@@ -44,7 +44,7 @@ oadict_query(
 	ion_value_t		*value
 )
 {
-	return oah_query((hashmap_t *)dictionary->instance,(char *)key, (char **)value);
+	return oah_query((hashmap_t *)dictionary->instance, key, value);
 }
 
 
@@ -63,11 +63,32 @@ oadict_create_dictionary(
 
 /*	//register the type of key being used by the dictionary (Important for comparison op)
 	dictionary->key_type = key_type;*/
+	 char (* compare)(ion_key_t, ion_key_t, ion_key_size_t);
+
+	switch (key_type)
+			{
+				case key_type_numeric:
+				{
+					compare = dictionary_compare_value;
+					break;
+				}
+				case key_type_char_array:
+				{
+					compare = dictionary_compare_char_array;
+					break;
+				}
+				default:
+				{
+					//do something - you must bind the correct comparison function
+					break;
+				}
+			}
 
 	//this registers the dictionarys the dictionary
 	oah_initialize(
 		(hashmap_t *)dictionary->instance,
 		oah_compute_simple_hash,
+		compare,
 		key_type,
 		key_size,
 		value_size,
@@ -92,7 +113,7 @@ oadict_delete(
 		ion_key_t 		key
 )
 {
-	return oah_delete((hashmap_t *)dictionary->instance,(char *)key);
+	return oah_delete((hashmap_t *)dictionary->instance, key);
 }
 
 err_t
@@ -114,7 +135,7 @@ oadict_update(
 		ion_value_t 	value
 )
 {
-	return oah_update((hashmap_t *)dictionary->instance, (char *)key, (char *)value);
+	return oah_update((hashmap_t *)dictionary->instance, key, value);
 }
 
 
@@ -207,7 +228,7 @@ oadict_equality_next(
 	//need to use the scan operator
 
 	//materialize the result
-	int idx = eq_cursor->cursor_info.current;		//this is the current value to return
+// here 	int idx = eq_cursor->cursor_info.current;		//this is the current value to return
 
 	//get the value
 

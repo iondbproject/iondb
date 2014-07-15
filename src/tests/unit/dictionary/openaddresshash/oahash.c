@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <limits.h>
 #include "./../../../CuTest.h"
 #include "./../../../../dictionary/openaddresshash/oahash.h"
 #include "./../../../../dictionary/dicttypes.h"
@@ -48,7 +49,7 @@ initialize_hash_map(
 	hashmap_t 	*map
 )
 {
-	oah_initialize(map, oah_compute_simple_hash, map->key_type, record->key_size, record->value_size, size);
+	oah_initialize(map, oah_compute_simple_hash, dictionary_compare_value, map->key_type, record->key_size, record->value_size, size);
 }
 
 void
@@ -60,7 +61,7 @@ initialize_hash_map_std_conditions(
 	record_t record;
 	record.key_size 		= 4;
 	record.value_size 		= 10;
-	map->key_type 			= key_type_int;
+	map->key_type 			= key_type_numeric;
 	initialize_hash_map(STD_MAP_SIZE, &record, map);
 
 }
@@ -84,7 +85,7 @@ test_open_address_hashmap_initialize(
 	record.value_size = 10;
 	size = 10;
 	hashmap_t map;
-	map.key_type = key_type_int;			//default to use int key type
+	map.key_type = key_type_numeric;			//default to use int key type
 
 	initialize_hash_map(size, &record, &map);
 
@@ -248,21 +249,21 @@ test_open_address_hashmap_simple_insert(
 			//build up the value
 			char str[10];
 			sprintf(str,"%02i is key",i);
-			oah_insert(&map, (ion_key_t)(&i), str);			//this is will wrap
+			oah_insert(&map, (ion_key_t)(&i), (unsigned char *)str);			//this is will wrap
 		}
 
 		for (i = 0; i<map.map_size; i++)
 		{
-			status_t status 	= ((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->status;
-			int key				= *(int *)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data );
-			char * value 		= (ion_value_t)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data + sizeof(int));
+			status_t status 		= ((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->status;
+			int key					= *(int *)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data );
+			unsigned char * value 	= (ion_value_t)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data + sizeof(int));
 
 			//build up expected value
 			char str[10];
 			sprintf(str,"%02i is key", (i+offset)%map.map_size);
 			CuAssertTrue(tc, status		== IN_USE);
 			CuAssertTrue(tc, key 		== (i+offset)%map.map_size);
-			CuAssertStrEquals(tc, value, str);
+			CuAssertStrEquals(tc, (char *)value, (char *)str);
 		}
 	}
 }
@@ -300,7 +301,7 @@ test_open_address_hashmap_simple_insert_and_query(
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertStrEquals(tc, value, str);
+		CuAssertStrEquals(tc, (char *)value, str);
 		if (value != NULL)							//must free value after query
 		{
 			free(value);
@@ -355,7 +356,7 @@ test_open_address_hashmap_simple_delete(
 			//build up expected value
 			char str[10];
 			sprintf(str,"%02i is key",i);
-			CuAssertStrEquals(tc, value, str);
+			CuAssertStrEquals(tc, (char *)value, str);
 			if (value != NULL)							//must free value after query
 			{
 				free(value);
@@ -460,7 +461,7 @@ test_open_address_hashmap_duplicate_insert_2(
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertStrEquals(tc, value, str);
+		CuAssertStrEquals(tc, (char *)value, str);
 		if (value != NULL)							//must free value after query
 		{
 			free(value);
@@ -488,7 +489,7 @@ test_open_address_hashmap_duplicate_insert_2(
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is new",i);
-		CuAssertStrEquals(tc, value, str);
+		CuAssertStrEquals(tc, (char *)value, str);
 		if (value != NULL)							//must free value after query
 		{
 			free(value);
@@ -539,7 +540,7 @@ test_open_address_hashmap_update_1(
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertStrEquals(tc, value, str);
+		CuAssertStrEquals(tc, (char *)value, str);
 		if (value != NULL)							//must free value after query
 		{
 			free(value);
@@ -566,7 +567,7 @@ test_open_address_hashmap_update_1(
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is new",i);
-		CuAssertStrEquals(tc, value, str);
+		CuAssertStrEquals(tc, (char *)value, str);
 		if (value != NULL)							//must free value after query
 		{
 			free(value);
@@ -617,7 +618,7 @@ test_open_address_hashmap_update_2(
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertStrEquals(tc, value, str);
+		CuAssertStrEquals(tc, (char *)value, str);
 		if (value != NULL)							//must free value after query
 		{
 			free(value);
@@ -644,7 +645,7 @@ test_open_address_hashmap_update_2(
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is new",i);
-		CuAssertStrEquals(tc, value, str);
+		CuAssertStrEquals(tc, (char *)value, str);
 		if (value != NULL)
 			{
 				free(value);
@@ -735,7 +736,7 @@ test_open_address_hashmap_delete_2(
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertStrEquals(tc, value, str);
+		CuAssertStrEquals(tc, (char *)value, str);
 		if (value != NULL)							//must free value after query
 		{
 			free(value);
@@ -774,7 +775,7 @@ test_open_address_hashmap_delete_2(
 			//build up expected value
 			char str[10];
 			sprintf(str,"%02i is key",j);
-			CuAssertStrEquals(tc, value, str);
+			CuAssertStrEquals(tc, (char *)value, str);
 			if (value != NULL)							//must free value after query
 			{
 				free(value);
@@ -836,7 +837,7 @@ test_open_address_hashmap_capacity(
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertStrEquals(tc, value, str);
+		CuAssertStrEquals(tc, (char *)value, str);
 		if (value != NULL)							//must free value after query
 		{
 			free(value);
@@ -864,7 +865,7 @@ test_open_address_hashmap_capacity(
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertStrEquals(tc, value, str);
+		CuAssertStrEquals(tc, (char *)value, str);
 		if (value != NULL)							//must free value after query
 		{
 			free(value);
@@ -872,34 +873,6 @@ test_open_address_hashmap_capacity(
 	}
 }
 
-void
-test_open_adress_hashmap_compare_int(
-	CuTest		*tc
-)
-{
-
-	ion_key_t 		key_one;
-	ion_key_t 		key_two;
-
-	key_one 		= (ion_key_t)&(int){1};
-	key_two 		= (ion_key_t)&(int){1};
-
-	CuAssertTrue(tc, IS_EQUAL ==
-			oah_compare_int(key_one, key_two));
-
-	key_one 		= (ion_key_t)&(int){1};
-	key_two 		= (ion_key_t)&(int){2};
-
-	CuAssertTrue(tc, ZERO >
-				oah_compare_int(key_one, key_two));
-
-	key_one 		= (ion_key_t)&(int){2};
-	key_two 		= (ion_key_t)&(int){1};
-
-	CuAssertTrue(tc, ZERO <
-					oah_compare_int(key_one, key_two));
-
-}
 
 
 CuSuite*
@@ -907,7 +880,6 @@ open_address_hashmap_getsuite()
 {
 	CuSuite *suite = CuSuiteNew();
 
-	SUITE_ADD_TEST(suite, test_open_adress_hashmap_compare_int);
 	SUITE_ADD_TEST(suite, test_open_address_hashmap_initialize);
 	SUITE_ADD_TEST(suite, test_open_address_hashmap_compute_simple_hash);
 	SUITE_ADD_TEST(suite, test_open_address_hashmap_get_location);

@@ -32,14 +32,15 @@ defines.
 */
 typedef enum key_type
 {
-	key_type_char,						/**< key is char */
-	key_type_uchar,						/**< key is unsigned char */
-	key_type_short,						/**< key is short */
-	key_type_ushort,					/**< key is unsigned char */
-	key_type_int,						/**< key is int */
-	key_type_uint,						/**< key is unsigned int */
-	key_type_long,						/**< key is long */
-	key_type_ulong,						/**< key is unsigned long */
+	/*key_type_char,						*< key is char
+	key_type_uchar,						*< key is unsigned char
+	key_type_short,						*< key is short
+	key_type_ushort,					*< key is unsigned char
+	key_type_int,						*< key is int
+	key_type_uint,						*< key is unsigned int
+	key_type_long,						*< key is long
+	key_type_ulong,						*< key is unsigned long */
+	key_type_numeric,					/**< key is a numeric value */
 	key_type_char_array,				/**< key is char array (string) */
 } key_type_t;
 
@@ -60,12 +61,22 @@ typedef char err_t;
 /**
 @brief		A dictionary key.
 */
-typedef char						*ion_key_t;
+typedef unsigned char				*ion_key_t;
 
 /**
 @brief		A dictionary value.
 */
-typedef char						*ion_value_t;
+typedef unsigned char						*ion_value_t;
+
+/**
+@brief		The size(length) of a dictionary key in bytes.
+ */
+typedef int							ion_key_size_t;
+
+/**
+@brief		The size(length) of a dictionary value in bytes.
+ */
+typedef int 						ion_value_size_t;
 
 // TODO
 /**

@@ -17,12 +17,13 @@
 
 err_t
 oah_initialize(
-    hashmap_t 	*hashmap,
-    hash_t 		(*hashing_function)(hashmap_t *, char *, int),
-    key_type_t	key_type,
-    int 		key_size,
-    int 		value_size,
-    int 		size
+    hashmap_t 			*hashmap,
+    hash_t 				(*hashing_function)(hashmap_t *, ion_key_t, int),
+    char				(*compare)(ion_key_t, ion_key_t, ion_key_size_t),
+    key_type_t			key_type,
+    ion_key_size_t 		key_size,
+    ion_value_size_t 	value_size,
+    int 				size
 )
 {
 	int i;
@@ -31,20 +32,7 @@ oah_initialize(
 	hashmap->record.value_size 	= value_size;
 	hashmap->key_type 			= key_type;
 
-	switch (key_type)
-		{
-			case key_type_int:
-			{
-				hashmap->compare = oah_compare_int;
-				break;
-			}
-			default:
-			{
-				//do something - you must bind the correct comparison function
-				break;
-			}
-		}
-
+	hashmap->compare = compare;
 
 	/* The hash map is allocated as a single contiguous array*/
 	hashmap->map_size 			= size;
@@ -174,12 +162,13 @@ oah_insert(
 		if (item->status == IN_USE) 	//if a cell is in use, need to key to
 		{
 			/*if (memcmp(item->data, key, hash_map->record.key_size) == IS_EQUAL)*/
-			if (hash_map->compare(item->data, key) == IS_EQUAL)
+			if (hash_map->compare(item->data, key, hash_map->record.key_size) == IS_EQUAL)
 			{
 				if (hash_map->write_concern == wc_insert_unique)//allow unique entries only
 				{
 					return err_duplicate_key;
 				}
+
 				else if (hash_map->write_concern == wc_update)//allows for values to be updated											//
 				{
 					memcpy(item->data + hash_map->record.key_size, value,
@@ -267,7 +256,7 @@ oah_find_item_loc(
 				/*int key_is_equal = memcmp(item->data, key,
 				        			hash_map->record.key_size);*/
 
-				int key_is_equal 	= hash_map->compare(item->data, key);
+				int key_is_equal 	= hash_map->compare(item->data, key, hash_map->record.key_size);
 
 				if (IS_EQUAL == key_is_equal)
 				{
@@ -400,6 +389,7 @@ oah_compute_simple_hash(
 	return hash;
 }
 
+
 /*
 err_t
 oah_scan(
@@ -452,12 +442,6 @@ cursor->
 	//if you end up here, you've wrapped the entire data structure and not found a value
 	return cs_end_of_results;
 }
+
+
 */
-int
-oah_compare_int(
-	ion_key_t 	first_key,
-	ion_key_t	second_key
-)
-{
-	return *((int *)first_key) - *((int *)second_key);
-}

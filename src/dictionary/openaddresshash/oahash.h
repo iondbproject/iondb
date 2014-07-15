@@ -69,7 +69,7 @@ typedef struct record
 typedef struct hash_bucket
 {
 	char 			status;			/**< the status of the bucket */
-	char 			data[];			/**< the data in the bucket */
+	unsigned char 	data[];			/**< the data in the bucket */
 } hash_bucket_t;
 
 /**
@@ -85,9 +85,10 @@ struct hashmap
 	int				(* compute_hash)(hashmap_t *, ion_key_t, int);
 									/**< The hashing function to be used for
 										 the instance*/
-	int 			(* compare)(ion_key_t, ion_key_t);
+	char 			(* compare)(ion_key_t, ion_key_t, ion_key_size_t);
 									/**< Comparison function for instance of map */
 	char 			*entry;			/**< Pointer to the entries in the hashmap*/
+
 };
 
 /**
@@ -97,6 +98,9 @@ struct hashmap
 				Pointer to the hashmap instance to initialize.
 @param		hashing_function
 				Function pointer to the hashing function for the instance.
+@param		compare
+				Function pointer to the correct comparison function for the
+				collection.
 @param		key_type
 				The type of key that is being stored in the collection.
 @param 		key_size
@@ -108,14 +112,15 @@ struct hashmap
 				(@p key_size + @p value_size + @c 1)
 @return		The status describing the result of the initialization.
  */
-char
+err_t
 oah_initialize(
-		hashmap_t	*hash_map,
-		hash_t		(*hashing_function)(hashmap_t *, ion_key_t, int),
-	    key_type_t	key_type,
-		int			key_size,
-		int			value_size,
-		int			size
+		hashmap_t			*hashmap,
+		hash_t				(*hashing_function)(hashmap_t *, ion_key_t, int),
+		char				(*compare)(ion_key_t, ion_key_t, ion_key_size_t),
+	    key_type_t			key_type,
+		ion_key_size_t		key_size,
+		ion_value_size_t	value_size,
+		int					size
 );
 
 /**
@@ -319,20 +324,9 @@ oah_scan(
 		//ion_value_t 		*value
 );*/
 
-/**
-@brief		Compares two integer keys
 
-@param 		first_key
-				The first key in the comparison.
-@param 		second_key
-				The second key in the comparison.
-@return		The difference between the two keys.
- */
-int
-oah_compare_int(
-	ion_key_t 	first_key,
-	ion_key_t	second_key
-);
+
+
 #ifdef __cplusplus
 }
 #endif
