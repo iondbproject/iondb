@@ -26,6 +26,7 @@ status_t
 dictionary_create(
 	dictionary_handler_t	*handler,
 	dictionary_t			*dictionary,
+	key_type_t				key_type,
 	int						key_size,
 	int						value_size,
 	int						dictionary_size
@@ -165,6 +166,52 @@ dictionary_delete_dictionary(
 	dictionary_t		*dictionary
 );
 
+
+/**
+@brief		Compares two numeric keys
+
+@details	Compares two ion_key_t assuming that they are of arbitrary
+			length and numeric (ie not a char[]).  The following values
+			will be returned:
+
+				@p first_key > @p second_key return 1
+				@p first_key == @p second_key return 0
+				@p first_key < @p second_key return -1
+
+			This works for all numeric types for both signed and
+			unsigned values as long as both keys are of the same type.
+
+@param 		first_key
+				The pointer to the first key in the comparison.
+
+@param 		second_key
+				The pointer to the second key in the comaparison.
+
+@param 		key_size
+				The length of the key in bytes.
+
+@return		The resulting comparison value.
+ */
+char
+dictionary_compare_value(
+	ion_key_t 		first_key,
+	ion_key_t		second_key,
+	ion_key_size_t	key_size
+);
+
+/**
+
+ @param first_key
+ @param second_key
+ @param key_size
+ @return
+ */
+char
+dictionary_compare_char_array(
+	ion_key_t 		first_key,
+	ion_key_t		second_key,
+	ion_key_size_t	key_size
+);
 #ifdef __cplusplus
 }
 #endif

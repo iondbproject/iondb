@@ -34,22 +34,23 @@ sadict_query(
 )
 {
 	static_array_t *sa = (static_array_t *)dictionary->instance;
-	return sa_get(sa,key,value);
+	return sa_get(sa, key, value);
 }
 
 status_t
 sadict_insert(
 	dictionary_t 	*dictionary,
-	ion_key_t 			key,
-	ion_key_t				value
+	ion_key_t 		key,
+	ion_key_t		value
 )
 {
 	static_array_t *sa = (static_array_t *)dictionary->instance;
-	return sa_insert(sa,key, value);
+	return sa_insert(sa, key, value);
 }
 
 status_t
 sadict_create(
+		key_type_t				key_type,
 		int 					key_size,
 		int 					value_size,
 		int 					dictionary_size,
@@ -60,8 +61,9 @@ sadict_create(
 	static_array_t *st;
 
 	st = malloc(sizeof(static_array_t));
+	st->key_type = key_type;
 	dictionary->instance = st;
-	dictionary->handler = handler;
+	dictionary->handler  = handler;
 
 	return sa_dictionary_create(st,key_size,value_size,dictionary_size);
 }
@@ -85,7 +87,7 @@ sadict_destroy(
 
 	free(dictionary->instance);
 	dictionary->instance = NULL;
-	dictionary->handler =NULL;
+	dictionary->handler  = NULL;
 
 	return result;
 }

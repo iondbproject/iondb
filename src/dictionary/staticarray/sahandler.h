@@ -3,7 +3,7 @@
 @file 		sahandler.h
 @author		Raffi Kudlac
 @brief		The .h file for the sahandler.c file
- */
+*/
 /******************************************************************************/
 #ifndef SAHANDLER_H_
 #define SAHANDLER_H_
@@ -19,11 +19,11 @@
 /**
 @brief		Used to initalize the handler
 
-@param		*handler
+@param		handler
 				a pointer to the handler that will be initalized
 
 @return		The status of the initalization.
- */
+*/
 status_t
 sadict_init(
 	dictionary_handler_t 	*handler
@@ -33,17 +33,17 @@ sadict_init(
 /**
 @brief		Used to query the dictionary
 
-@param		*dictionary
+@param		dictionary
 				pointer to the dictionary that holds everything
 
 @param		key
 				a pointer to the key
 
-@param		*value
+@param		value
 				a double pointer that will be set to the value to be returned
 
 @return		The status of the query.
- */
+*/
 
 
 status_t
@@ -58,7 +58,7 @@ sadict_query(
 /**
 @brief		Used to insert data into the dictionary
 
-@param		*dictionary
+@param		dictionary
 				pointer to the dictionary that holds everything
 
 @param		key
@@ -68,7 +68,7 @@ sadict_query(
 				the value to be inserted
 
 @return		The status of the insertion.
- */
+*/
 
 status_t
 sadict_insert(
@@ -81,6 +81,9 @@ sadict_insert(
 /**
 @brief		Used to create the dictionary and get the ball rolling
 
+@param		key_type
+				the type of the key
+
 @param		key_size
 				the size that all the keys will be
 
@@ -90,16 +93,17 @@ sadict_insert(
 @param		dictionary_size
 				the size of the static array
 
-@param		*handler
+@param		handler
 				the pointer to the handler that goes with the dictionary
-@param		*dictionary
+@param		dictionary
 				the pointer to the dictionary that will be returned to the user
 
 @return		to be filled in.
- */
+*/
 
 status_t
 sadict_create(
+		key_type_t				key_type,
 		int 					key_size,
 		int 					value_size,
 		int 					dictionary_size,
@@ -111,14 +115,14 @@ sadict_create(
 /**
 @brief		Used to delete data from the dictionary given a key
 
-@param		*dictionary
+@param		dictionary
 				pointer to the dictionary that holds everything
 
 @param		key
 				a pointer to the key. the key is the index
 
 @return		The status of the deletion.
- */
+*/
 status_t
 sadict_delete(
 		dictionary_t 	*dictionary,
@@ -129,11 +133,11 @@ sadict_delete(
 /**
 @brief		Used to delete the entire dictionary
 
-@param		*dictionary
+@param		dictionary
 				pointer to the dictionary that holds everything
 
 @return		The status of the deletion.
- */
+*/
 
 status_t
 sadict_destroy(
@@ -144,7 +148,7 @@ sadict_destroy(
 /**
 @brief		Used to update data from the dictionary given a key
 
-@param		*dictionary
+@param		dictionary
 				pointer to the dictionary that holds everything
 
 @param		key
@@ -154,7 +158,7 @@ sadict_destroy(
 				a pointer to the value that will replace the value at the key location
 
 @return		The status of the update.
- */
+*/
 
 status_t
 sadict_update(
@@ -167,17 +171,17 @@ sadict_update(
 /**
 @brief		Finds stuff, dunno how this works
 
-@param		*dictionary
+@param		dictionary
  	 	 	 	 a pointer to the dictionary that holds everything
 
- @param		*pred
+@param		pred
  	 	 	 	 unkown
 
- @param		*cursor
+@param		cursor
  	 	 	 unkown
 
- @return	unknown
- */
+@return	unknown
+*/
 
 status_t
 sadict_find(
