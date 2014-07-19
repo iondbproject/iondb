@@ -16,7 +16,10 @@ extern "C" {
 #include <string.h>
 #include <stdio.h>
 
-//#include "oadictionaryhandler.h"
+#include "./../dicttypes.h"
+#include "./../dictionary.h"
+#include "oadictionary.h"
+
 #include "./../../kv_system.h"
 #include "./../../io.h"
 
@@ -44,15 +47,6 @@ enum write_concern
  */
 typedef char 			write_concern_t;
 
-/**
-@brief		The position in the hashmap.
- */
-typedef int 			hash_t;
-
-/**
-@brief		Prototype declaration for hashmap
- */
-typedef struct hashmap 	hashmap_t;
 
 /**
 @brief		Struct used to maintain information about size of key and value.
@@ -309,20 +303,21 @@ static_hash_init(dictonary_handler_t * client);*/
 
 /**
 
-@brief		starts scanning map looking for conditions that match
-			predicate and returns result.
-@param hash_map
-@param predicate
-@param i
-@param value
-@return
+@brief			Starts scanning map looking for conditions that match
+				predicate and returns result.
+
+@details		Scans that map looking for the next value that satisfies the predicate.
+				The next valid index is returned through the cursor
+
+@param			cursor
+					A pointer to the cursor that is operating on the map.
+
+@return			The status of the scan.
  */
-/*err_t
+err_t
 oah_scan(
-		hashmap_t 			*hash_map,
-		 //oadict_cursor_t	*cursor  //don't need to pass in the cursor
-		//ion_value_t 		*value
-);*/
+		oadict_cursor_t		*cursor  //don't need to pass in the cursor
+);
 
 
 

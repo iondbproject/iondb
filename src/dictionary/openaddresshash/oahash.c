@@ -227,6 +227,8 @@ oah_find_item_loc(
 	int				*location
 )
 {
+	printf("key %i addr %p\n",*(int *)key, key);
+
 	hash_t hash 				= hash_map->compute_hash(hash_map, key,
 	        						hash_map->record.key_size);
 													//compute hash value for given key
@@ -255,6 +257,8 @@ oah_find_item_loc(
 				//need to check key match; what's the most efficient way?
 				/*int key_is_equal = memcmp(item->data, key,
 				        			hash_map->record.key_size);*/
+
+				printf("data %i key %i\n",*(int *)item->data,*(int *)key);
 
 				int key_is_equal 	= hash_map->compare(item->data, key, hash_map->record.key_size);
 
@@ -390,21 +394,16 @@ oah_compute_simple_hash(
 }
 
 
-/*
 err_t
 oah_scan(
-		hashmap_t 			*hash_map,
-		oadict_cursor_t		*cursor,			//know exactly what implementation of cursor is
-		//oadict_cursor_t		*cursor,
-		ion_value_t 		*value
+		oadict_cursor_t		*cursor			//know exactly what implementation of cursor is
 )
 {
-	int loc = cursor->current;
-cursor->
-	//need to access predicate function and check
+	int loc = cursor->current;					//this is the current position of the cursor
 
 	//need to scan hashmap fully looking for values that satisfy - need to think about
-	//general case
+	hashmap_t * hash_map = (hashmap_t *)(cursor->super.dictionary->instance);
+
 	//start at the current position, scan forward
 	while (loc != cursor->first)
 		{
@@ -425,13 +424,19 @@ cursor->
 
 					//need to check key match; what's the most efficient way?
 					//need to use fnptr here for the correct matching
-					int key_is_equal = memcmp(item->data, "10{" ,
-					        			hash_map->record.key_size);
-
+					/*int key_is_equal = memcmp(item->data, "10{" ,
+					        			hash_map->record.key_size);*/
+					/**
+					 * Compares value == key
+					 */
+					int key_is_equal = hash_map->compare(
+											cursor->super.predicate.statement.equality.equality_value,
+											(ion_key_t)item->data,
+											hash_map->record.key_size);
 					if (key_is_equal == IS_EQUAL)
 					{
 
-						cursor->current = loc;
+						cursor->current = loc;		//this is the next index for value
 						return cs_valid_data;
 					}
 				}
@@ -443,5 +448,3 @@ cursor->
 	return cs_end_of_results;
 }
 
-
-*/

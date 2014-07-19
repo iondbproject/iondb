@@ -26,29 +26,28 @@ test_dictionary_compare_numerics(
 	key_two 		= (ion_key_t)&(int){1};
 
 	CuAssertTrue(tc, IS_EQUAL ==
-			dictionary_compare_value(key_one, key_two, sizeof(int)));
+			dictionary_compare_signed_value(key_one, key_two, sizeof(int)));
 
 	key_one 		= (ion_key_t)&(int){1};
 	key_two 		= (ion_key_t)&(int){2};
 
 	CuAssertTrue(tc, ZERO >
-				dictionary_compare_value(key_one, key_two,sizeof(int)));
+				dictionary_compare_signed_value(key_one, key_two,sizeof(int)));
 
 	key_one 		= (ion_key_t)&(int){2};
 	key_two 		= (ion_key_t)&(int){0};
 
 	CuAssertTrue(tc, ZERO <
-					dictionary_compare_value(key_one, key_two,sizeof(int)));
+					dictionary_compare_signed_value(key_one, key_two,sizeof(int)));
 int i;
 	for (i = 1; i< 10; i++)
 	{
-		printf("k1: %i k2: %i\n",i,*key_two);
 		CuAssertTrue(tc, ZERO <
-						dictionary_compare_value((ion_key_t)&i, key_two ,sizeof(int)));
+						dictionary_compare_signed_value((ion_key_t)&i, key_two ,sizeof(int)));
 	}
 
 
-//case for signed char
+	//case for unsigned signed char
 	{
 		unsigned char * key_one;
 		unsigned char * key_two;
@@ -57,7 +56,7 @@ int i;
 		key_two 		= &(unsigned char){0};
 
 		CuAssertTrue(tc, ZERO <
-							dictionary_compare_value(key_one, key_two, sizeof(unsigned char)));
+							dictionary_compare_unsigned_value(key_one, key_two, sizeof(unsigned char)));
 
 	}
 
@@ -69,7 +68,7 @@ int i;
 		key_two 		= &(unsigned short){0};
 
 		CuAssertTrue(tc, ZERO <
-							dictionary_compare_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(unsigned short)));
+							dictionary_compare_unsigned_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(unsigned short)));
 
 	}
 
@@ -81,7 +80,7 @@ int i;
 			key_two 		= &(unsigned int){0};
 
 			CuAssertTrue(tc, ZERO <
-								dictionary_compare_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(unsigned int)));
+								dictionary_compare_unsigned_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(unsigned int)));
 
 		}
 
@@ -93,7 +92,7 @@ int i;
 			key_two 		= &(unsigned long){0};
 
 			CuAssertTrue(tc, ZERO <
-								dictionary_compare_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(unsigned long)));
+								dictionary_compare_unsigned_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(unsigned long)));
 
 		}
 
@@ -105,7 +104,7 @@ int i;
 		key_two 		= &(long){0};
 
 		CuAssertTrue(tc, ZERO <
-							dictionary_compare_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(long)));
+							dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(long)));
 
 	}
 	{
@@ -116,9 +115,53 @@ int i;
 		key_two 		= &(char){0};
 
 		CuAssertTrue(tc, ZERO <
-							dictionary_compare_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(char)));
+							dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(char)));
 
 		}
+
+		{
+			char * key_one;
+			char * key_two;
+
+			key_one 		= &(char){0};
+			key_two 		= &(char){-1};
+
+			CuAssertTrue(tc, ZERO <
+								dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(char)));
+
+			}
+
+
+		{
+			short * key_one;
+			short * key_two;
+
+			short i,j;
+
+			key_one 		= &i;
+			key_two 		= &j;
+
+			for (i = SHRT_MIN; i < SHRT_MAX; i++)
+			{
+				//printf("i %i\n",i);
+				for (j = SHRT_MIN; j < SHRT_MAX; j++)
+				{
+					if (i < j)
+					{
+						CuAssertTrue(tc, ZERO >
+								dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(short)));
+					}else if (i == j)
+					{
+						CuAssertTrue(tc, ZERO ==
+								dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(short)));
+					}else
+					{
+						CuAssertTrue(tc, ZERO <
+											dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(short)));
+					}
+				}
+			}
+			}
 }
 
 

@@ -49,7 +49,7 @@ initialize_hash_map(
 	hashmap_t 	*map
 )
 {
-	oah_initialize(map, oah_compute_simple_hash, dictionary_compare_value, map->key_type, record->key_size, record->value_size, size);
+	oah_initialize(map, oah_compute_simple_hash, dictionary_compare_signed_value, map->key_type, record->key_size, record->value_size, size);
 }
 
 void
@@ -61,7 +61,7 @@ initialize_hash_map_std_conditions(
 	record_t record;
 	record.key_size 		= 4;
 	record.value_size 		= 10;
-	map->key_type 			= key_type_numeric;
+	map->key_type 			= key_type_numeric_signed;
 	initialize_hash_map(STD_MAP_SIZE, &record, map);
 
 }
@@ -85,7 +85,7 @@ test_open_address_hashmap_initialize(
 	record.value_size = 10;
 	size = 10;
 	hashmap_t map;
-	map.key_type = key_type_numeric;			//default to use int key type
+	map.key_type = key_type_numeric_signed;			//default to use int key type
 
 	initialize_hash_map(size, &record, &map);
 

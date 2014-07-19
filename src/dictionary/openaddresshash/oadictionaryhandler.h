@@ -13,6 +13,7 @@
 #include "./../dictionary.h"
 #include "./../../kv_system.h"
 #include "oahash.h"
+#include "oadictionary.h"
 
 
 /**
@@ -30,12 +31,13 @@ typedef struct oa_dictionary
  @brief Cursor for dictionary specific implementations
  @todo What happens to the cursor if the collection is modified during traversal?
  */
-typedef struct oadict_cursor
+/*typedef struct oadict_cursor
 {
-	hash_t				first;		/**<First visited spot*/
-	hash_t				current;	/**<Currently visited spot*/
-	char				status;		/**@todo what is this for again as there are two status */
-} oadict_cursor_t;
+	hash_t				first;		*<First visited spot
+	hash_t				current;	*<Currently visited spot
+	char				status;		*@todo what is this for again as there are two status
+} oadict_cursor_t;*/
+
 
 
 /*
@@ -164,24 +166,26 @@ oadict_query(
 );
 
 /**
- @brief		Creates an instance of a dictionary.
+@brief		Creates an instance of a dictionary.
 
- @details	Creates as instance of a dictionary given a @p key_size and
- 	 	 	 @p value_size, in bytes as well as the @p dictionary size
- 	 	 	 which is the number of buckets available in the hashmap.
+@details	Creates as instance of a dictionary given a @p key_size and
+			@p value_size, in bytes as well as the @p dictionary size
+ 	 	 	which is the number of buckets available in the hashmap.
 
- @param 	key_size
- 	 			The size of the key in bytes.
- @param 	value_size
+@param 		key_size
+				The size of the key in bytes.
+@param 		value_size
 				The size of the value in bytes.
- @param 	dictionary_size
- 	 	 	 	 The size of the hashmap in discrete units
- @param 	handler
+@param 		dictionary_size
+				The size of the hashmap in discrete units
+@param		compare
+				Function pointer for the comparison function for the collection.
+@param 		handler
  	 	 	 	 THe handler for the specific dictionary being created.
- @param 	dictionary
+@param 		dictionary
  	 	 	 	 The pointer declared by the caller that will reference
  	 	 	 	 the instance of the dictionary created.
- @return	The status of the creation of the dictionary.
+@return		The status of the creation of the dictionary.
  */
 err_t
 oadict_create_dictionary(
@@ -189,6 +193,7 @@ oadict_create_dictionary(
 		int 					key_size,
 		int 					value_size,
 		int 					dictionary_size,
+		char					(* compare)(ion_key_t, ion_key_t, ion_key_size_t),
 		dictionary_handler_t 	*handler,
 		dictionary_t 			*dictionary
 );
@@ -263,7 +268,7 @@ err_t
 oadict_find(
 		dictionary_t 	*dictionary,
 		predicate_t 	*predicate,
-		dict_cursor_t 	*cursor
+		dict_cursor_t 	**cursor
 );
 
 /**
@@ -321,7 +326,7 @@ oadict_next(
 cursor_status_t
 oadict_equality_next(
 	dict_cursor_t 	*cursor,
-	ion_value_t		*value
+	ion_value_t		value
 );
 
 /**
@@ -344,6 +349,10 @@ is_equal(
 	ion_key_t 		key2
 );
 
+void
+oadict_destroy_cursor(
+	dict_cursor_t	 *cursor
+);
 
 
 #endif /* OADICTIONARYHANDLER_H_ */

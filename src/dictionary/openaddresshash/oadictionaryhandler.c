@@ -19,7 +19,7 @@ oadict_init(
 	handler->create_dictionary 	= oadict_create_dictionary;
 	handler->get 				= oadict_query;
 	handler->update 			= oadict_update;
-	//handler->find =
+	handler->find 				= oadict_find;
 	//handler->next =
 	handler->delete 			= oadict_delete;
 	handler->delete_dictionary 	= oadict_delete_dictionary;
@@ -54,35 +54,13 @@ oadict_create_dictionary(
 		int 					key_size,
 		int 					value_size,
 		int 					dictionary_size,
+		char					(* compare)(ion_key_t, ion_key_t, ion_key_size_t),
 		dictionary_handler_t 	*handler,
 		dictionary_t 			*dictionary
 )
 {
 	//this is the instance of the hashmap
 	dictionary->instance = (hashmap_t *)malloc(sizeof(hashmap_t));
-
-/*	//register the type of key being used by the dictionary (Important for comparison op)
-	dictionary->key_type = key_type;*/
-	 char (* compare)(ion_key_t, ion_key_t, ion_key_size_t);
-
-	switch (key_type)
-			{
-				case key_type_numeric:
-				{
-					compare = dictionary_compare_value;
-					break;
-				}
-				case key_type_char_array:
-				{
-					compare = dictionary_compare_char_array;
-					break;
-				}
-				default:
-				{
-					//do something - you must bind the correct comparison function
-					break;
-				}
-			}
 
 	//this registers the dictionarys the dictionary
 	oah_initialize(
@@ -127,7 +105,6 @@ oadict_delete_dictionary(
 	return result;
 }
 
-
 err_t
 oadict_update(
 		dictionary_t 	*dictionary,
@@ -138,57 +115,62 @@ oadict_update(
 	return oah_update((hashmap_t *)dictionary->instance, key, value);
 }
 
-
+/** @todo What do we do if the cursor is already active? */
 err_t
 oadict_find(
 		dictionary_t 	*dictionary,
 		predicate_t 	*predicate,
-		dict_cursor_t 	*cursor
+		dict_cursor_t 	**cursor
 )
 {
 	//based on the type of predicate that is being used, need to create the correct cursor
-
 	switch(predicate->type)
 	{
 		case predicate_equality:
 		{
 			//allocate memory for cursor
-			if ((cursor = (dict_cursor_t *)malloc(sizeof(oadict_equality_cursor_t))) == NULL)
+			if ((*cursor = (dict_cursor_t *)malloc(sizeof(oadict_cursor_t))) == NULL)
 			{
 				return err_out_of_memory;
 			}
-			//cast to specific instance type
-			oadict_equality_cursor_t *eq_cursor = (oadict_equality_cursor_t *)(cursor);
-			eq_cursor->super.dictionary = dictionary;
-			eq_cursor->super.type = predicate->type;				/** types align */
-			eq_cursor->super.status = cs_cursor_unitialized;
-			//eq_cursor->cursor_info.current = NULL;
-			//eq_cursor->cursor_info.first = NULL;
+
+			(*cursor)->dictionary = dictionary;
+			(*cursor)->type = predicate->type;				//* types align
+			(*cursor)->status = cs_cursor_uninitialized;
+			//bind destory method for cursor
+
+			(*cursor)->destroy = oadict_destroy_cursor;
+
 			//as this is an equality, need to malloc for key as well
-			if ((eq_cursor->value = (ion_key_t)malloc(sizeof((((hashmap_t*)dictionary->instance)->record.key_size)))) == NULL)
+			if (((*cursor)->predicate.statement.equality.equality_value = (ion_key_t)malloc(sizeof((((hashmap_t*)dictionary->instance)->record.key_size)))) == NULL)
 			{
 				return err_out_of_memory;
 			}
 			//copy across the key value as the predicate may be destroyed
-			memcpy(eq_cursor->value, ((equality_statement_t *)predicate)->equality_value,(((hashmap_t*)dictionary->instance)->record.key_size));
+			memcpy((*cursor)->predicate.statement.equality.equality_value, 	predicate->statement.equality.equality_value, (((hashmap_t*)dictionary->instance)->record.key_size));
 
 			//find the location of the first element as this is a straight equality
 			int location = cs_invalid_index;
-			if (oah_find_item_loc((hashmap_t*)dictionary->instance, eq_cursor->value, &location) == err_item_not_found)
+
+			//bind correct next function
+			(*cursor)->next = oadict_equality_next;	// this will use the correct value
+
+			if (oah_find_item_loc((hashmap_t*)dictionary->instance, (*cursor)->predicate.statement.equality.equality_value, &location) == err_item_not_found)
 			{
-				eq_cursor->super.status = cs_end_of_results;
-				//bind equality function
-				eq_cursor->equal = is_equal;
-				//bind correct next function
-				eq_cursor->super.next = oadict_equality_next;
+				//this will still have to be returned?
+				(*cursor)->status = cs_end_of_results;
+				/*//bind equality function
+				eq_cursor->equal = is_equal;*/
 				return err_ok;
 			}
 			else
 			{
+				(*cursor)->status = cs_cursor_initialized;
+				//cast to specific instance type for conveniences of setup
+				oadict_cursor_t *oadict_cursor = (oadict_cursor_t *)(* cursor);
 				// the cursor is ready to be consumed
-				eq_cursor->cursor_info.first = location;
-				eq_cursor->cursor_info.current = location;
-				eq_cursor->cursor_info.status = cs_cursor_initialized;
+				oadict_cursor->first = location;
+				oadict_cursor->current = location;
 				return err_ok;
 			}
 			break;
@@ -202,43 +184,73 @@ oadict_find(
 			break;
 		}
 		default:
-			return err_invalid_predicate;		/** Invalid predicate supplied */
+		{
+			return err_invalid_predicate;		//* Invalid predicate supplied
+			break;
+		}
 	}
 	return err_ok;
 }
 
-
-
 cursor_status_t
 oadict_equality_next(
 	dict_cursor_t 	*cursor,
-	ion_value_t		*value
+	ion_value_t		value
 )
 {
 	// @todo if the collection changes, then the status of the cursor needs to change
-	oadict_equality_cursor_t *eq_cursor = (oadict_equality_cursor_t *)cursor;
+	oadict_cursor_t *oadict_cursor = (oadict_cursor_t *)cursor;
 
 	//check the status of the cursor and if it is not valid or at the end, just exit
-	if (eq_cursor->super.status == cs_cursor_unitialized)
-		return eq_cursor->super.status;
-	else if (eq_cursor->super.status == cs_end_of_results)
-		return eq_cursor->super.status;
+	if (cursor->status == cs_cursor_uninitialized)
+		return cursor->status;
+	else if (cursor->status == cs_end_of_results)
+		return cursor->status;
+	else if ((cursor->status == cs_cursor_initialized )
+				|| (cursor->status == cs_cursor_active))	//cursor is active and results have never been accessed
+	{
 
+		//materialize the result
+		//int idx = oadict_cursor->current;		//this is the current value to return
 
-	//need to use the scan operator
+		//extract reference to map
+		hashmap_t *hash_map 	= ((hashmap_t*)cursor->dictionary->instance);
 
-	//materialize the result
-// here 	int idx = eq_cursor->cursor_info.current;		//this is the current value to return
+		//assume that the value has been pre-allocated
+		//compute length of data record stored in map
+		int data_length 		= hash_map->record.key_size
+					        				+ hash_map->record.value_size;
 
-	//get the value
+		if (cursor->status == cs_cursor_active)							//need to find the next valid entry
+		{
+			//scan and determine what to do?
+			if (cs_end_of_results == oah_scan(oadict_cursor))
+			{
+				//Then this is the end and there are no more results
+				cursor->status = cs_end_of_results;
+				/** @todo need to do something with cursor? - done? */
+				return cursor->status;
+			}
+		}
+		else
+		{
+			//if the cursor is initialized but not active, then just read the data and set cursor active
+			cursor->status = cs_cursor_active;
+		}
 
+		//the results are now ready //reference item at given position
+		hash_bucket_t * item	= (((hash_bucket_t *)((hash_map->entry
+				        				+ (data_length + SIZEOF(STATUS)) * oadict_cursor->current/*idx*/))));
 
-	//this will access map
-	//oah_scan(((hashmap_t*)(eq_cursor->super.dictionary->instance), eq_cursor);
-	//and find the next result? or do this after?
+		//and copy value in
+		memcpy(value, (ion_value_t)(item->data+hash_map->record.key_size), hash_map->record.value_size);
 
-	//and if there are no more results, set the status to reflect
-	return 0;
+		//and update current cursor position
+		//oadict_cursor->current = idx;
+		return cursor->status;
+	}
+	//and if you get this far, the cursor is invalid
+	return cs_invalid_cursor;
 }
 
 boolean_t
@@ -252,6 +264,34 @@ is_equal(
 		return true;
 	else
 		return false;
+}
+
+void
+oadict_destroy_cursor(
+	dict_cursor_t	 *cursor
+)
+{
+	/** Free any internal memory allocations */
+	switch(cursor->type)
+	{
+		case predicate_equality:
+		{
+
+			free(cursor->predicate.statement.equality.equality_value);
+			break;
+		}
+		case predicate_range:
+		{
+			break;
+		}
+		case predicate_predicate:
+		{
+			break;
+		}
+	}
+	/** and free cursor pointer */
+	free(cursor);
+	cursor = NULL;
 }
 
 

@@ -137,8 +137,8 @@ tldepends   := $(addprefix $(BIN_TESTS)/,$(subst .c,.d,$(notdir $(tlsources))))
 # List of executable test library sources. (main)
 testsources := 	$(SRC)/hashmap.c	\
 				$(SRC)/tests/unit/dictionary/openaddresshash/run_oahash.c \
-				$(SRC)/tests/unit/dictionary/run_dictionary.c
-
+				$(SRC)/tests/unit/dictionary/run_dictionary.c 
+				
 # Generate list of libraries to compile.
 testexecs   := $(addprefix $(BIN_TESTS)/,$(subst .c,,$(notdir $(testsources))))
 
