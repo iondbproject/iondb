@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-#include <time.h>
+#include <time.h> /* For random seed */
 #include "./../../io.h"
 #include "./../../kv_system.h"
 
@@ -23,10 +23,12 @@ typedef int sl_level_t;
  */
 typedef struct sl_node
 {
-	ion_key_t		key;
-	ion_value_t		value;
-	sl_level_t		height;
-	struct sl_node	**next;
+	ion_key_t		key; 		/**< Key of a skiplist node */
+	ion_value_t		value;		/**< Value of a skiplist node */
+	sl_level_t		height;		/**< Height index of a skiplist node
+									 (counts from 0) */
+	struct sl_node	**next; 	/**< Array of nodes that form the next
+	 	 	 	 	 	 	 	     column in the skiplist */
 } sl_node_t;
 
 /**
@@ -35,14 +37,18 @@ typedef struct sl_node
  */
 typedef struct skiplist
 {
-	sl_node_t	*head;
-	sl_level_t	maxheight;
-	int			key_size;
-	key_type_t 	key_type;
-	int			value_size;
-	int			pnum;
-	int			pden;
-	char 		(* compare)(ion_key_t, ion_key_t, ion_key_size_t);
+	sl_node_t	*head; 		/**< Entry point into the skiplist. Does not hold
+	 	 	 	 	 	 	     any key/value information */
+	sl_level_t	maxheight;	/**< Maximum height of the skiplist in terms of
+	 	 	 	 	 	 	     the number of nodes */
+	int			key_size; 	/**< Size of key in bytes */
+	key_type_t 	key_type;	/**< Type of key stored, defined as an enum */
+	int			value_size; /**< Size of value in bytes */
+	int			pnum;		/**< Probability NUMerator, used in height gen */
+	int			pden;		/**< Probability DENominator, used in height gen */
+
+							/**< Comparison function used to compare keys */
+	char 		(*compare)(ion_key_t, ion_key_t, ion_key_size_t);
 } skiplist_t;
 
 /**

@@ -63,19 +63,20 @@ sl_destroy(
 	skiplist_t 	*skiplist
 )
 {
-	sl_node_t *cursor = skiplist->head, *tofree;
+	sl_node_t 	*cursor 	= skiplist->head,
+				*tofree;
 
 	while(cursor != NULL)
 	{
-		tofree = cursor;
-		cursor = cursor->next[0];
+		tofree 				= cursor;
+		cursor				= cursor->next[0];
 		free(tofree->key);
 		free(tofree->value);
 		free(tofree->next);
 		free(tofree);
 	}
 
-	skiplist->head = NULL;
+	skiplist->head			= NULL;
 
 	return err_ok;
 }
@@ -106,15 +107,15 @@ sl_insert(
 	{
 		//The memcmp will return -1 if key is smaller, 0 if equal, 1 if greater.
 		while(NULL != cursor->next[h] &&
-							skiplist->compare(key, cursor->next[h]->key, key_size) >= 0)
+					skiplist->compare(key, cursor->next[h]->key, key_size) >= 0)
 		{
 			cursor = cursor->next[h];
 		}
 
 		if(h <= newnode->height)
 		{
-			newnode->next[h] 	= cursor->next[h];
-			cursor->next[h] 	= newnode;
+			newnode->next[h] = cursor->next[h];
+			cursor->next[h]  = newnode;
 		}
 	}
 
@@ -134,7 +135,8 @@ sl_query(
 	*value 					= NULL; // Delay initialization
 	sl_node_t 	*cursor 	= sl_find_node(skiplist, key);
 
-	if(cursor->key == NULL || skiplist->compare(cursor->key, key, key_size) != 0)
+	if(NULL == cursor->key ||
+							skiplist->compare(cursor->key, key, key_size) != 0)
 	{
 		return err_item_not_found;
 	}
@@ -158,7 +160,8 @@ sl_update(
 	sl_node_t 	*cursor 	= sl_find_node(skiplist, key);
 
 	/* If the key doesn't exist in the skiplist... */
-	if(cursor->key == NULL || skiplist->compare(cursor->key, key, key_size) != 0)
+	if(NULL == cursor->key ||
+							skiplist->compare(cursor->key, key, key_size) != 0)
 	{
 		/* Insert it. TODO Possibly return different error code */
 		sl_insert(skiplist, key, value);
@@ -187,13 +190,13 @@ sl_delete(
 	for(h = skiplist->head->height; h >= 0; --h)
 	{
 		while(NULL != cursor->next[h] &&
-				skiplist->compare(cursor->next[h]->key, key, key_size) < 0)
+					skiplist->compare(cursor->next[h]->key, key, key_size) < 0)
 		{
 			cursor 	= cursor->next[h];
 		}
 
 		if(NULL != cursor->next[h] &&
-				skiplist->compare(cursor->next[h]->key, key, key_size) == 0)
+					skiplist->compare(cursor->next[h]->key, key, key_size) == 0)
 		{
 			sl_node_t 		*tofree 	= cursor->next[h];
 			sl_node_t 		*relink 	= cursor->next[h];
@@ -236,9 +239,9 @@ sl_find_node(
 	{
 		//The memcmp will return -1 if key is smaller, 0 if equal, 1 if greater.
 		while( NULL != cursor->next[h] &&
-				skiplist->compare(key, cursor->next[h]->key, key_size) >= 0)
+					skiplist->compare(key, cursor->next[h]->key, key_size) >= 0)
 		{
-			cursor = cursor->next[h];
+			cursor 			= cursor->next[h];
 		}
 	}
 

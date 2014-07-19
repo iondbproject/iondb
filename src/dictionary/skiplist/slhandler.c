@@ -9,10 +9,6 @@
 #include "slhandler.h"
 #include "./../../kv_system.h"
 
-#ifdef 	DEBUG
-#define TO_IMPLEMENT(name) 	io_printf("%s\n", "This is '" name "', implement me")
-#endif
-
 err_t
 sldict_init(
 	dictionary_handler_t 	*handler
@@ -54,7 +50,7 @@ sldict_create_dictionary(
 	int 					key_size,
 	int 					value_size,
 	int 					dictionary_size,
-	char 					(* compare)(ion_key_t, ion_key_t, ion_key_size_t),
+	char 					(*compare)(ion_key_t, ion_key_t, ion_key_size_t),
 	dictionary_handler_t 	*handler,
 	dictionary_t 			*dictionary
 )
@@ -62,16 +58,25 @@ sldict_create_dictionary(
 	int pnum, pden;
 
 	/* TODO malloc error check */
-	dictionary->instance = malloc(sizeof(skiplist_t));
+	dictionary->instance 	= malloc(sizeof(skiplist_t));
 
-	pnum 	= 1;
-	pden 	= 4;
+	pnum 					= 1;
+	pden 					= 4;
 
-	/* TODO Should we handle the possible error code returned by this? If yes, what sorts of errors does it return? */
-	err_t result = sl_initialize((skiplist_t *) dictionary->instance, key_type,
-					compare, key_size, value_size, dictionary_size, pnum, pden);
+	/* TODO Should we handle the possible error code returned by this?
+	 * If yes, what sorts of errors does it return? */
+	err_t result = sl_initialize(
+							(skiplist_t *) dictionary->instance,
+							key_type,
+							compare,
+							key_size,
+							value_size,
+							dictionary_size,
+							pnum,
+							pden
+					);
 
-	dictionary->handler = handler;
+	dictionary->handler 	= handler;
 
 	return result;
 }
@@ -91,7 +96,7 @@ sldict_delete_dictionary(
 )
 {
 
-	err_t result = sl_destroy((skiplist_t *) dictionary->instance);
+	err_t result		 = sl_destroy((skiplist_t *) dictionary->instance);
 	free(dictionary->instance);
 	dictionary->instance = NULL;
 	return result;

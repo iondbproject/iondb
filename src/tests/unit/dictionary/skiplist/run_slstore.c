@@ -13,7 +13,7 @@ void
 runalltests_skiplist_handler();
 
 int
-main()
+main(void)
 {
 	runalltests_skiplist();
 	runalltests_skiplist_handler();

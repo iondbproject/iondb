@@ -45,18 +45,18 @@ main(
 
 	int key_size, value_size, maxheight;
 	key_type_t key_type;
+	dictionary_handler_t skip_handler;
+	dictionary_t test_dict;
+
 	key_size 	= 4;
 	key_type 	= key_type_numeric_signed;
 	value_size 	= 10;
 	maxheight 	= 7;
 
-	dictionary_handler_t skip_handler;
-
 	sldict_init(&skip_handler);
 
-	dictionary_t test_dict;
-
-	dictionary_create(&skip_handler, &test_dict, key_type, key_size, value_size, maxheight);
+	dictionary_create(&skip_handler, &test_dict, key_type, key_size,
+														value_size, maxheight);
 
 	char in;
 	while( (in = getchar()) != 'X')
@@ -67,8 +67,7 @@ main(
 
 		switch(in)
 		{
-			case 'P':
-			{
+			case 'P': {
 #ifdef DEBUG
 				io_printf("%s\n", "Printing skiplist");
 #endif
@@ -76,10 +75,9 @@ main(
 				break;
 			}
 
-			case 'I':
-			{
-				int key;
-				unsigned char value[10];
+			case 'I': {
+							int		 key;
+				unsigned 	char	 value[10];
 				scanf("%i %s", &key, value);
 #ifdef DEBUG
 				io_printf("Inserting (%d|%s)...\n", key, value);
@@ -88,8 +86,7 @@ main(
 				break;
 			}
 
-			case 'D':
-			{
+			case 'D': {
 				int key;
 				scanf("%i", &key);
 #ifdef DEBUG
@@ -99,10 +96,9 @@ main(
 				break;
 			}
 
-			case 'U':
-			{
-				int key;
-				unsigned char value[10];
+			case 'U': {
+							int 	key;
+				unsigned 	char 	value[10];
 				scanf("%i %s", &key, value);
 #ifdef DEBUG
 				io_printf("Updating (%d with %s)...\n", key, value);
@@ -111,8 +107,7 @@ main(
 				break;
 			}
 
-			case 'Q':
-			{
+			case 'Q': {
 				int key;
 				ion_value_t value;
 				scanf("%i", &key);
@@ -120,14 +115,15 @@ main(
 				io_printf("Querying (%d)...\n", key);
 #endif
 				dictionary_get(&test_dict, (ion_key_t) &key, &value);
-				io_printf("Got the value back of '%s' stored in %d.\n", value, key);
+				io_printf("Got the value back of '%s' stored in %d.\n", value,
+																		key);
 				free(value);
 				break;
 			}
 		}
 
 		io_printf("%s", "\n");
-		getchar(); // Eat newline
+		getchar(); /* Eat newline */
 	}
 
 	dictionary_delete_dictionary(&test_dict);
