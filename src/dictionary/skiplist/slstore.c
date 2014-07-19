@@ -11,6 +11,8 @@
 err_t
 sl_initialize(
 	skiplist_t 	*skiplist,
+	key_type_t 	key_type,
+	char 		(* compare)(ion_key_t, ion_key_t, ion_key_size_t),
 	int 		key_size,
 	int 		value_size,
 	int 		maxheight,
@@ -18,11 +20,12 @@ sl_initialize(
 	int 		pden
 )
 {
-
 	/* TODO srand may need to be changed */
 	srand(time(NULL));
 
 	skiplist->key_size 		= key_size;
+	skiplist->key_type 		= key_type;
+	skiplist->compare 		= compare;
 	skiplist->value_size 	= value_size;
 	skiplist->maxheight 	= maxheight;
 
@@ -103,7 +106,7 @@ sl_insert(
 	{
 		//The memcmp will return -1 if key is smaller, 0 if equal, 1 if greater.
 		while(NULL != cursor->next[h] &&
-							memcmp(key, cursor->next[h]->key, key_size) >= 0)
+							skiplist->compare(key, cursor->next[h]->key, key_size) >= 0)
 		{
 			cursor = cursor->next[h];
 		}
@@ -131,7 +134,7 @@ sl_query(
 	*value 					= NULL; // Delay initialization
 	sl_node_t 	*cursor 	= sl_find_node(skiplist, key);
 
-	if(cursor->key == NULL || memcmp(cursor->key, key, key_size) != 0)
+	if(cursor->key == NULL || skiplist->compare(cursor->key, key, key_size) != 0)
 	{
 		return err_item_not_found;
 	}
@@ -155,7 +158,7 @@ sl_update(
 	sl_node_t 	*cursor 	= sl_find_node(skiplist, key);
 
 	/* If the key doesn't exist in the skiplist... */
-	if(cursor->key == NULL || memcmp(cursor->key, key, key_size) != 0)
+	if(cursor->key == NULL || skiplist->compare(cursor->key, key, key_size) != 0)
 	{
 		/* Insert it. TODO Possibly return different error code */
 		sl_insert(skiplist, key, value);
@@ -184,13 +187,13 @@ sl_delete(
 	for(h = skiplist->head->height; h >= 0; --h)
 	{
 		while(NULL != cursor->next[h] &&
-								memcmp(cursor->next[h]->key, key, key_size) < 0)
+				skiplist->compare(cursor->next[h]->key, key, key_size) < 0)
 		{
 			cursor 	= cursor->next[h];
 		}
 
 		if(NULL != cursor->next[h] &&
-							memcmp(cursor->next[h]->key, key, key_size) == 0)
+				skiplist->compare(cursor->next[h]->key, key, key_size) == 0)
 		{
 			sl_node_t 		*tofree 	= cursor->next[h];
 			sl_node_t 		*relink 	= cursor->next[h];
@@ -233,7 +236,7 @@ sl_find_node(
 	{
 		//The memcmp will return -1 if key is smaller, 0 if equal, 1 if greater.
 		while( NULL != cursor->next[h] &&
-							memcmp(key, cursor->next[h]->key, key_size) >= 0)
+				skiplist->compare(key, cursor->next[h]->key, key_size) >= 0)
 		{
 			cursor = cursor->next[h];
 		}

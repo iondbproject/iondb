@@ -40,6 +40,8 @@ check_skiplist(
 void
 initialize_skiplist(
 	skiplist_t 	*skiplist,
+	key_type_t 	key_type,
+	char 		(* compare)(ion_key_t, ion_key_t, ion_key_size_t),
 	int 		maxheight,
 	int 		key_size,
 	int 		value_size,
@@ -47,7 +49,7 @@ initialize_skiplist(
 	int 		pden
 )
 {
-	sl_initialize(skiplist, key_size, value_size, maxheight, pnum, pden);
+	sl_initialize(skiplist, key_type, compare, key_size, value_size, maxheight, pnum, pden);
 }
 
 void
@@ -56,13 +58,17 @@ initialize_skiplist_std_conditions(
 )
 {
 	int key_size, value_size, pden, pnum, maxheight;
+	key_type_t key_type;
+	char (*compare)(ion_key_t, ion_key_t, ion_key_size_t);
+	key_type 	= key_type_numeric_signed;
+	compare 	= dictionary_compare_signed_value;
 	key_size 	= 4;
 	value_size 	= 10;
 	pnum 		= 1;
 	pden 		= 4;
 	maxheight 	= 7;
 
-	initialize_skiplist(skiplist, maxheight, key_size, value_size, pnum, pden);
+	initialize_skiplist(skiplist, key_type, compare, maxheight, key_size, value_size, pnum, pden);
 }
 
 /**
@@ -78,6 +84,10 @@ test_skiplist_initialize(
 {
 	PRINT_HEADER("test_skiplist_initialize");
 	int key_size, value_size, pden, pnum, maxheight;
+	key_type_t key_type;
+	char (*compare)(ion_key_t, ion_key_t, ion_key_size_t);
+	key_type 	= key_type_numeric_signed;
+	compare 	= dictionary_compare_signed_value;
 	key_size 	= 4;
 	value_size 	= 10;
 	pnum 		= 1;
@@ -85,12 +95,14 @@ test_skiplist_initialize(
 	maxheight 	= 7;
 	skiplist_t skiplist;
 
-	initialize_skiplist(&skiplist, maxheight, key_size, value_size, pnum, pden);
+	initialize_skiplist(&skiplist, key_type, compare, maxheight, key_size, value_size, pnum, pden);
 
 #ifdef DEBUG
 	check_skiplist(&skiplist);
 #endif
 
+	CuAssertTrue(tc, skiplist.key_type 		== key_type_numeric_signed);
+	CuAssertTrue(tc, skiplist.compare 		== dictionary_compare_signed_value);
 	CuAssertTrue(tc, skiplist.key_size 		== key_size);
 	CuAssertTrue(tc, skiplist.value_size 	== value_size);
 	CuAssertTrue(tc, skiplist.maxheight 	== maxheight);
@@ -1447,13 +1459,17 @@ test_skiplist_different_size(
 	PRINT_HEADER("test_skiplist_different_size");
 	skiplist_t 	skiplist;
 	int key_size, value_size, pden, pnum, maxheight;
+	key_type_t key_type;
+	char (*compare)(ion_key_t, ion_key_t, ion_key_size_t);
+	key_type 	= key_type_numeric_unsigned;
+	compare 	= dictionary_compare_unsigned_value;
 	key_size 	= 8;
 	value_size 	= 4;
 	pnum 		= 1;
 	pden 		= 1;
 	maxheight 	= 10;
 
-	initialize_skiplist(&skiplist, maxheight, key_size, value_size, pnum, pden);
+	initialize_skiplist(&skiplist, key_type, compare, maxheight, key_size, value_size, pnum, pden);
 
 	sl_insert(&skiplist, (ion_key_t) &(long long){64}, (ion_value_t) (char*){"pop"});
 	sl_insert(&skiplist, (ion_key_t) &(long long){32}, (ion_value_t) (char*){"bep"});
@@ -1494,6 +1510,60 @@ test_skiplist_different_size(
 	printf("%s\n", "** DELETE **");
 	check_skiplist(&skiplist);
 #endif
+
+	sl_destroy(&skiplist);
+}
+
+/**
+@brief 		Tests a skiplist under standard conditions with large keys. This
+			is intended to test the comparison function, which used to break
+			when keys were greater than 256.
+
+@param 		tc
+				Cutest dependency
+ */
+void
+test_skiplist_big_keys(
+	CuTest 		*tc
+)
+{
+	PRINT_HEADER("test_skiplist_big_keys");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	int i;
+	for(i = 230; i < 999; i++)
+	{
+		sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char*){"BIG!"});
+	}
+
+	for(i = 230; i < 999; i++)
+	{
+		sl_node_t 		*cursor = sl_find_node(&skiplist, (ion_key_t) &i);
+		CuAssertTrue(tc, *(int*)cursor->key == i);
+		CuAssertStrEquals(tc, (char*) cursor->value, "BIG!");
+	}
+
+#ifdef DEBUG
+	printf("%s\n", "** INSERT **");
+	check_skiplist(&skiplist);
+#endif
+
+	for(i = 230; i < 999; i++)
+	{
+		sl_delete(&skiplist, (ion_key_t) &i);
+	}
+
+#ifdef DEBUG
+	printf("%s\n", "** DELETE **");
+	check_skiplist(&skiplist);
+#endif
+
+	int h;
+	for(h = skiplist.head->height; h >= 0; h--)
+	{
+		CuAssertTrue(tc, skiplist.head->next[h] == NULL);
+	}
 
 	sl_destroy(&skiplist);
 }
@@ -1553,6 +1623,7 @@ skiplist_getsuite()
 
 	/* Variation Tests */
 	SUITE_ADD_TEST(suite, test_skiplist_different_size);
+	SUITE_ADD_TEST(suite, test_skiplist_big_keys);
 
 	return suite;
 }

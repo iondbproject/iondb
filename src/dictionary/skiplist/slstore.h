@@ -38,6 +38,7 @@ typedef struct skiplist
 	sl_node_t	*head;
 	sl_level_t	maxheight;
 	int			key_size;
+	key_type_t 	key_type;
 	int			value_size;
 	int			pnum;
 	int			pden;
@@ -64,6 +65,8 @@ typedef struct skiplist
 err_t
 sl_initialize(
 	skiplist_t 	*skiplist,
+	key_type_t 	key_type,
+	char 		(*)(ion_key_t, ion_key_t, ion_key_size_t),
 	int 		key_size,
 	int 		value_size,
 	int 		maxheight,

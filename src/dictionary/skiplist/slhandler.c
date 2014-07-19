@@ -54,6 +54,7 @@ sldict_create_dictionary(
 	int 					key_size,
 	int 					value_size,
 	int 					dictionary_size,
+	char 					(* compare)(ion_key_t, ion_key_t, ion_key_size_t),
 	dictionary_handler_t 	*handler,
 	dictionary_t 			*dictionary
 )
@@ -67,8 +68,8 @@ sldict_create_dictionary(
 	pden 	= 4;
 
 	/* TODO Should we handle the possible error code returned by this? If yes, what sorts of errors does it return? */
-	err_t result = sl_initialize((skiplist_t *) dictionary->instance, key_size,
-										value_size, dictionary_size, pnum, pden);
+	err_t result = sl_initialize((skiplist_t *) dictionary->instance, key_type,
+					compare, key_size, value_size, dictionary_size, pnum, pden);
 
 	dictionary->handler = handler;
 

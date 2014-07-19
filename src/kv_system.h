@@ -40,7 +40,8 @@ typedef enum key_type
 	key_type_uint,						*< key is unsigned int
 	key_type_long,						*< key is long
 	key_type_ulong,						*< key is unsigned long */
-	key_type_numeric,					/**< key is a numeric value */
+	key_type_numeric_signed,			/**< key is a signed numeric value */
+	key_type_numeric_unsigned,			/**< key is a signed numeric value */
 	key_type_char_array,				/**< key is char array (string) */
 } key_type_t;
 

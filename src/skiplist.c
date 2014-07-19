@@ -46,7 +46,7 @@ main(
 	int key_size, value_size, maxheight;
 	key_type_t key_type;
 	key_size 	= 4;
-	key_type 	= key_type_numeric;
+	key_type 	= key_type_numeric_signed;
 	value_size 	= 10;
 	maxheight 	= 7;
 

@@ -107,6 +107,7 @@ sldict_create_dictionary(
 	int 					key_size,
 	int 					value_size,
 	int 					dictionary_size,
+	char 					(*)(ion_key_t, ion_key_t, ion_key_size_t),
 	dictionary_handler_t 	*handler,
 	dictionary_t 			*dictionary
 );
