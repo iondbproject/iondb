@@ -109,9 +109,8 @@ typedef struct predicate_cursor
 @param 		handler
 				The handler for the dictionary instance that is to be
 				initialized.
-@return		The status of the initialization.
  */
-err_t
+void
 oadict_init(
 	dictionary_handler_t 	*handler
 );
@@ -310,21 +309,23 @@ oadict_compare(
 				The cursor to iterate over the results.
 @return		The status of the cursor.
  */
-err_t
+/*err_t
 oadict_next(
 	dict_cursor_t 	*cursor,
 	ion_value_t		*value
-);
+);*/
 
 
 /**
-@brief		Next function for strict equality predicate
-@param cursor
-@param value
-@return
+@brief		Next function to query and retrieve the next
+			<K,V> that stratifies the predicate of the cursor.
+
+@param 		cursor
+				The cursor to iterate over the results.
+@return		The status of the cursor.
  */
 cursor_status_t
-oadict_equality_next(
+oadict_next(
 	dict_cursor_t 	*cursor,
 	ion_value_t		value
 );
@@ -349,9 +350,21 @@ is_equal(
 	ion_key_t 		key2
 );
 
+/**
+@brief		Destroys the cursor.
+
+@details	Destroys the cursor when the user is finished with it.  The
+			destroy function will free up internally allocated memory as well
+			as freeing up any reference to the cursor itself.  Cursor pointers
+			will be set to NULL as per ION_DB specification for de-allocated
+			pointers.
+
+@param 		cursor
+				** pointer to cursor.
+ */
 void
 oadict_destroy_cursor(
-	dict_cursor_t	 *cursor
+	dict_cursor_t	 **cursor
 );
 
 

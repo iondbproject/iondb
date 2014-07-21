@@ -196,7 +196,7 @@ struct dictionary_cursor
 	predicate_t				predicate;		/**< The predicate for the cursor */
 	cursor_status_t			(* next)(dict_cursor_t *, ion_value_t value);
 											/**< Next function binding *cursor_status_t)*/
-	void					(* destroy)(dict_cursor_t *);
+	void					(* destroy)(dict_cursor_t **);
 											/**< Destroy the cursor (frees internal memory) */
 };
 

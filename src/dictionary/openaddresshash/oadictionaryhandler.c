@@ -10,7 +10,7 @@
 #include "./../../kv_system.h"
 
 
-err_t
+void
 oadict_init(
 	dictionary_handler_t 	*handler
 )
@@ -20,11 +20,8 @@ oadict_init(
 	handler->get 				= oadict_query;
 	handler->update 			= oadict_update;
 	handler->find 				= oadict_find;
-	//handler->next =
 	handler->delete 			= oadict_delete;
 	handler->delete_dictionary 	= oadict_delete_dictionary;
-	/**@TODO return type*/
-	return 0;
 }
 
 err_t
@@ -153,7 +150,7 @@ oadict_find(
 			int location = cs_invalid_index;
 
 			//bind correct next function
-			(*cursor)->next = oadict_equality_next;	// this will use the correct value
+			(*cursor)->next = oadict_next;	// this will use the correct value
 
 			if (oah_find_item_loc((hashmap_t*)dictionary->instance, (*cursor)->predicate.statement.equality.equality_value, &location) == err_item_not_found)
 			{
@@ -177,6 +174,60 @@ oadict_find(
 		}
 		case predicate_range:
 		{
+			//allocate memory for cursor
+			if ((*cursor = (dict_cursor_t *)malloc(sizeof(oadict_cursor_t))) == NULL)
+			{
+				return err_out_of_memory;
+			}
+			(*cursor)->dictionary = dictionary;
+			(*cursor)->type = predicate->type;				//* types align
+			(*cursor)->status = cs_cursor_uninitialized;
+
+			//bind destrOy method for cursor
+			(*cursor)->destroy = oadict_destroy_cursor;
+
+			//as this is a range, need to malloc leq key
+			if (((*cursor)->predicate.statement.range.leq_value = (ion_key_t)malloc(sizeof((((hashmap_t*)dictionary->instance)->record.key_size)))) == NULL)
+			{
+				free(*cursor);					//cleanup
+				return err_out_of_memory;
+			}
+			//copy across the key value as the predicate may be destroyed
+			memcpy((*cursor)->predicate.statement.range.geq_value, 	predicate->statement.range.geq_value, (((hashmap_t*)dictionary->instance)->record.key_size));
+
+			//as this is a range, need to malloc leq key
+			if (((*cursor)->predicate.statement.range.geq_value = (ion_key_t)malloc(sizeof((((hashmap_t*)dictionary->instance)->record.key_size)))) == NULL)
+			{
+				free(*cursor);					//cleanup
+				free((*cursor)->predicate.statement.range.leq_value);
+				return err_out_of_memory;
+			}
+			//copy across the key value as the predicate may be destroyed
+			memcpy((*cursor)->predicate.statement.range.geq_value, 	predicate->statement.range.geq_value, (((hashmap_t*)dictionary->instance)->record.key_size));
+
+			//find the location of the first element as this is a straight equality
+			int location = cs_invalid_index;
+
+			//bind correct next function
+			(*cursor)->next = oadict_next;	// this will use the correct value
+
+			//start at the lowest end of the range and check
+			if (oah_find_item_loc((hashmap_t*)dictionary->instance, (*cursor)->predicate.statement.range.leq_value, &location) == err_item_not_found)
+			{
+				//this will still have to be returned?
+				(*cursor)->status = cs_end_of_results;
+				return err_ok;
+			}
+			else
+			{
+				(*cursor)->status = cs_cursor_initialized;
+				//cast to specific instance type for conveniences of setup
+				oadict_cursor_t *oadict_cursor = (oadict_cursor_t *)(* cursor);
+				// the cursor is ready to be consumed
+				oadict_cursor->first = location;
+				oadict_cursor->current = location;
+				return err_ok;
+			}
 			break;
 		}
 		case predicate_predicate:
@@ -193,7 +244,7 @@ oadict_find(
 }
 
 cursor_status_t
-oadict_equality_next(
+oadict_next(
 	dict_cursor_t 	*cursor,
 	ion_value_t		value
 )
@@ -209,19 +260,15 @@ oadict_equality_next(
 	else if ((cursor->status == cs_cursor_initialized )
 				|| (cursor->status == cs_cursor_active))	//cursor is active and results have never been accessed
 	{
-
-		//materialize the result
-		//int idx = oadict_cursor->current;		//this is the current value to return
-
 		//extract reference to map
 		hashmap_t *hash_map 	= ((hashmap_t*)cursor->dictionary->instance);
 
 		//assume that the value has been pre-allocated
 		//compute length of data record stored in map
 		int data_length 		= hash_map->record.key_size
-					        				+ hash_map->record.value_size;
+											+ hash_map->record.value_size;
 
-		if (cursor->status == cs_cursor_active)							//need to find the next valid entry
+		if (cursor->status == cs_cursor_active)			//find the next valid entry
 		{
 			//scan and determine what to do?
 			if (cs_end_of_results == oah_scan(oadict_cursor))
@@ -240,13 +287,12 @@ oadict_equality_next(
 
 		//the results are now ready //reference item at given position
 		hash_bucket_t * item	= (((hash_bucket_t *)((hash_map->entry
-				        				+ (data_length + SIZEOF(STATUS)) * oadict_cursor->current/*idx*/))));
+										+ (data_length + SIZEOF(STATUS)) * oadict_cursor->current/*idx*/))));
 
 		//and copy value in
 		memcpy(value, (ion_value_t)(item->data+hash_map->record.key_size), hash_map->record.value_size);
 
 		//and update current cursor position
-		//oadict_cursor->current = idx;
 		return cursor->status;
 	}
 	//and if you get this far, the cursor is invalid
@@ -268,16 +314,15 @@ is_equal(
 
 void
 oadict_destroy_cursor(
-	dict_cursor_t	 *cursor
+	dict_cursor_t	 **cursor
 )
 {
 	/** Free any internal memory allocations */
-	switch(cursor->type)
+	switch((*cursor)->type)
 	{
-		case predicate_equality:
 		{
 
-			free(cursor->predicate.statement.equality.equality_value);
+			free((*cursor)->predicate.statement.equality.equality_value);
 			break;
 		}
 		case predicate_range:
@@ -290,8 +335,8 @@ oadict_destroy_cursor(
 		}
 	}
 	/** and free cursor pointer */
-	free(cursor);
-	cursor = NULL;
+	free(*cursor);
+	*cursor = NULL;
 }
 
 

@@ -20,6 +20,37 @@ extern "C" {
 #define MAX_HASH_TEST 100
 
 /**
+@brief		A helper function to build a test collection
+
+@param 		map_handler
+@param 		record
+@param 		size
+@param 		test_dictionary
+ */
+void
+createTestCollection(
+    dictionary_handler_t	*map_handler,
+    const record_t			*record,
+    int 					size,
+    dictionary_t			*test_dictionary
+)
+{
+	oadict_init(&*map_handler); //register handler for hashmap
+	//register the appropriate handler for a given collection
+	dictionary_create(&*map_handler, &*test_dictionary, key_type_numeric_signed,
+	        record->key_size, record->value_size, size);
+	//build test relation
+	int i;
+	ion_value_t str;
+	str = (ion_value_t)malloc(sizeof(ion_value_t) * record->value_size);
+	for (i = 0; i < size; i++)
+	{
+		sprintf((char*)str, "value : %i ", i);
+		test_dictionary->handler->insert(&*test_dictionary, (ion_key_t)&i, str);
+	}
+	free(str);
+}
+/**
 @brief		Validates the correct registration of function pointers
 			for open address dictionary structure.
 
@@ -254,8 +285,57 @@ test_open_address_hashmap_handler_capacity(
 }
 
 
+
 void
-test_open_address_dictionary_handler_query(
+test_open_address_dictionary_cursor(
+	CuTest		*tc
+)
+{
+	int 		size;
+	record_t 	record;
+
+	/* this is required for initializing the hash map and should come from the dictionary */
+	record.key_size 	= 4;
+	record.value_size 	= 10;
+	size 				= 10;
+
+	dictionary_handler_t 	map_handler;			//create handler for hashmap
+	dictionary_t			test_dictionary;		//collection handler for test collection
+
+	createTestCollection(&map_handler, &record, size, &test_dictionary);
+
+	dict_cursor_t 			*cursor;			//create a new cursor pointer
+
+	//create a new predicate statement
+	predicate_t 			predicate;
+	predicate.type = predicate_equality;
+	//need to prepare predicate correctly
+	predicate.statement.equality.equality_value = (ion_key_t)malloc(sizeof(int));
+
+	/** @Todo This needs to be improved */
+	memcpy(predicate.statement.equality.equality_value,(ion_key_t)&(int){1},sizeof(int));
+
+	//test that the query runs on collection okay
+	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+
+	//check the status of the cursor as it should be initialized
+	CuAssertTrue(tc, cs_cursor_initialized	== cursor->status);
+
+	//free up the correct predicate
+	free(predicate.statement.equality.equality_value);
+
+	//destroy the cursor
+	cursor->destroy(&cursor);
+
+	//and check that cursor has been destroyed correctly
+	CuAssertTrue(tc, NULL 					== cursor);
+
+	//and destory the collection
+	test_dictionary.handler->delete_dictionary(&test_dictionary);
+}
+
+void
+test_open_address_dictionary_handler_query_with_results(
 	CuTest		*tc
 )
 {
@@ -267,57 +347,41 @@ test_open_address_dictionary_handler_query(
 	record.value_size = 10;
 	size = 10;
 
-	dictionary_handler_t map_handler;			//create handler for hashmap
+	dictionary_handler_t 	map_handler;			//create handler for hashmap
+	dictionary_t 			test_dictionary;		//collection handler for test collection
 
-	oadict_init(&map_handler);					//register handler for hashmap
+	createTestCollection(&map_handler, &record, size, &test_dictionary);
 
-	//collection handler for test collection
-	dictionary_t test_dictionary;
-
-	//register the appropriate handler for a given collection
-	dictionary_create(&map_handler, &test_dictionary, key_type_numeric_signed, record.key_size, record.value_size,size);
-
-	//build test relation
-
-	int i;
-	ion_value_t str;
-
-	str = (ion_value_t)malloc(sizeof(ion_value_t)*record.value_size);
-	for (i = 0; i<size;i++)
-	{
-		sprintf((char*)str,"value : %i ",i);
-		printf("Inserting key: %i value: %s\n",i,str);
-		test_dictionary.handler->insert(&test_dictionary,(ion_key_t)&i, str);
-	}
-	free(str);
-
-	dict_cursor_t *cursor;			//create a new cursor pointer
+	dict_cursor_t 			*cursor;				//create a new cursor pointer
 
 	//create a new predicate statement
-	predicate_t predicate;
-	predicate.type = predicate_equality;
+	predicate_t 			predicate;
+	predicate.type 			= predicate_equality;
+
 	//need to prepare predicate correctly
 	predicate.statement.equality.equality_value = (ion_key_t)malloc(sizeof(int));
 	/** @Todo This needs to be improved */
 	memcpy(predicate.statement.equality.equality_value,(ion_key_t)&(int){1},sizeof(int));
 
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 	== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
 
 	//check the status of the cursor as it should be initialized
 	CuAssertTrue(tc, cs_cursor_initialized	== cursor->status);
 
 	//user must allocate memory before calling next()
-	ion_value_t value;
-	value = (ion_value_t)malloc(sizeof(ion_value_t)*record.value_size);
+	ion_value_t 			value;
+	value 					= (ion_value_t)malloc(sizeof(ion_value_t)*record.value_size);
 
 	CuAssertTrue(tc, cs_cursor_active		== cursor->next(cursor, value));
 
 	//check that value is correct that has been returned
-	//
-	str = (ion_value_t)malloc(sizeof(ion_value_t)*record.value_size);
+	ion_value_t				str;
+	str 					= (ion_value_t)malloc(sizeof(ion_value_t)*record.value_size);
 	sprintf((char*)str,"value : %i ", *(int *)predicate.statement.equality.equality_value);
+
 	CuAssertTrue(tc, IS_EQUAL				== memcmp(value, str, record.value_size));
+
 	free(str);
 
 	//and as there is only 1 result, the next call should return empty
@@ -329,6 +393,60 @@ test_open_address_dictionary_handler_query(
 	//free up the correct predicate
 	free(predicate.statement.equality.equality_value);
 	free(value);
+	//destory cursor for cleanup
+	cursor->destroy(&cursor);
+	//and destory the collection
+	test_dictionary.handler->delete_dictionary(&test_dictionary);
+}
+
+void
+test_open_address_dictionary_handler_query_no_results(
+	CuTest		*tc
+)
+{
+	int size;
+	record_t record;
+
+	/* this is required for initializing the hash map and should come from the dictionary */
+	record.key_size = 4;
+	record.value_size = 10;
+	size = 10;
+
+	dictionary_handler_t 	map_handler;			//create handler for hashmap
+	dictionary_t 			test_dictionary;		//collection handler for test collection
+
+	createTestCollection(&map_handler, &record, size, &test_dictionary);
+
+	dict_cursor_t 			*cursor;				//create a new cursor pointer
+
+	//create a new predicate statement
+	predicate_t 			predicate;
+	predicate.type 			= predicate_equality;
+
+	//need to prepare predicate correctly
+	predicate.statement.equality.equality_value = (ion_key_t)malloc(sizeof(int));
+	/** @Todo This needs to be improved */
+	memcpy(predicate.statement.equality.equality_value,(ion_key_t)&(int){-1},sizeof(int));
+
+	//test that the query runs on collection okay
+	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+
+	//check the status of the cursor as it should be at the end of results as no values exist
+	CuAssertTrue(tc, cs_end_of_results	== cursor->status);
+
+	//user must allocate memory before calling next()
+	ion_value_t 			value;
+	value 					= (ion_value_t)malloc(sizeof(ion_value_t)*record.value_size);
+
+	CuAssertTrue(tc, cs_end_of_results		== cursor->next(cursor, value));
+
+	//free up the correct predicate
+	free(predicate.statement.equality.equality_value);
+	free(value);
+	//destroy cursor for cleanup
+	cursor->destroy(&cursor);
+	//and destroy the collection
+	test_dictionary.handler->delete_dictionary(&test_dictionary);
 }
 
 CuSuite*
@@ -347,7 +465,9 @@ open_address_hashmap_handler_getsuite()
 	SUITE_ADD_TEST(suite, test_open_address_hashmap_handler_delete_1);
 	SUITE_ADD_TEST(suite, test_open_address_hashmap_handler_delete_2);
 	SUITE_ADD_TEST(suite, test_open_address_hashmap_handler_capacity);
-	SUITE_ADD_TEST(suite, test_open_address_dictionary_handler_query);
+	SUITE_ADD_TEST(suite, test_open_address_dictionary_cursor);
+	SUITE_ADD_TEST(suite, test_open_address_dictionary_handler_query_with_results);
+	SUITE_ADD_TEST(suite, test_open_address_dictionary_handler_query_no_results);
 
 	return suite;
 }
