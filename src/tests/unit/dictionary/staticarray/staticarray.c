@@ -335,7 +335,7 @@ void test_delete_invalid_keysize(CuTest *tc) {
  CuTest
  */
 void test_get_valid_case(CuTest *tc) {
-	int key_size = 1;
+	int key_size = 2;
 	int value_size = 100;
 	long long array_size = 0;
 
@@ -385,7 +385,7 @@ void test_get_invalid_key(CuTest *tc) {
 	printf("Array Created\n\n");
 
 	//unsigned char value[] = "This is a test insert";
-	unsigned char key[] = "a";
+	unsigned char key[] = "aa";
 	unsigned char *stored_data;
 	long long k = key_to_index(key, 1);
 

@@ -277,3 +277,30 @@ sa_destroy(
 
 	return status_ok;
 }
+
+char
+dictionary_compare_value(
+	ion_key_t 		first_key,
+	ion_key_t		second_key,
+	ion_key_size_t	key_size
+)
+{
+	int k1 key_to_index(first_key, key_size);
+	int k2 key_to_index(second_key, key_size);
+
+	if(k1 == k2)
+	{
+		return "0";
+	}
+	else if(k1 > k2)
+	{
+		return "1";
+	}
+	else
+	{
+		return "2";
+	}
+}
+
+
+}
