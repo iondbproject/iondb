@@ -367,5 +367,38 @@ oadict_destroy_cursor(
 	dict_cursor_t	 **cursor
 );
 
+/**
+@brief		Tests the supplied @pkey against the predicate registered in the
+			cursor.
+
+@param 		cursor
+				The cursor and predicate being used to test @pkey against.
+@param 		key
+				The key to test.
+@return		The result is the key passes or fails the predicate test.
+ */
+char
+odict_test_predicate(
+    oadict_cursor_t* 	cursor,
+    ion_key_t 			key
+);
+
+/**
+
+@brief			Starts scanning map looking for conditions that match
+				predicate and returns result.
+
+@details		Scans that map looking for the next value that satisfies the predicate.
+				The next valid index is returned through the cursor
+
+@param			cursor
+					A pointer to the cursor that is operating on the map.
+
+@return			The status of the scan.
+ */
+err_t
+oadict_scan(
+		oadict_cursor_t		*cursor  //don't need to pass in the cursor
+);
 
 #endif /* OADICTIONARYHANDLER_H_ */

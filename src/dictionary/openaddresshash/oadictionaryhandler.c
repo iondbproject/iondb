@@ -271,7 +271,7 @@ oadict_next(
 		if (cursor->status == cs_cursor_active)			//find the next valid entry
 		{
 			//scan and determine what to do?
-			if (cs_end_of_results == oah_scan(oadict_cursor))
+			if (cs_end_of_results == oadict_scan(oadict_cursor))
 			{
 				//Then this is the end and there are no more results
 				cursor->status = cs_end_of_results;
@@ -339,4 +339,107 @@ oadict_destroy_cursor(
 	*cursor = NULL;
 }
 
+char
+oadict_test_predicate(
+    oadict_cursor_t* 	cursor,
+    ion_key_t 			key
+)
+{
+	//need to check key match; what's the most efficient way?
+	//need to use fnptr here for the correct matching
+	/*int key_is_equal = memcmp(item->data, "10{" ,
+	 hash_map->record.key_size);*/
+	/**
+	 * Compares value == key
+	 */
+	int key_satisfies_predicate;
+	hashmap_t * hash_map = (hashmap_t *)(cursor->super.dictionary->instance);
 
+	switch (cursor->super.type)
+	{
+		case cursor_equality: //equality scan check
+		{
+			key_satisfies_predicate = hash_map->compare(
+								cursor->super.predicate.statement.equality.equality_value,
+								key,
+								hash_map->record.key_size);
+			break;
+		}
+		case cursor_range: // range check
+		{
+			if (
+					(A_lte_B	== hash_map->compare(
+			                		cursor->super.predicate.statement.equality.equality_value,
+			                		key,
+			                		hash_map->record.key_size)
+					)
+					&&
+					(A_gte_B 	== hash_map->compare(
+			                        cursor->super.predicate.statement.equality.equality_value,
+			                        key,
+			                        hash_map->record.key_size)
+					)
+				)
+			{
+				key_satisfies_predicate = true;
+			}
+			else
+			{
+				key_satisfies_predicate = false;
+			}
+			break;
+		}
+	}
+	return key_satisfies_predicate;
+}
+
+err_t
+oadict_scan(
+		oadict_cursor_t		*cursor			//know exactly what implementation of cursor is
+)
+{
+	int loc = cursor->current;					//this is the current position of the cursor
+
+	//need to scan hashmap fully looking for values that satisfy - need to think about
+	hashmap_t * hash_map = (hashmap_t *)(cursor->super.dictionary->instance);
+
+	//start at the current position, scan forward
+	while (loc != cursor->first)
+		{
+			// check to see if current item is a match based on key
+			// locate first item
+			hash_bucket_t * item 	= (((hash_bucket_t *)((hash_map->entry
+										+ (hash_map->record.key_size
+											+ hash_map->record.value_size
+												+ SIZEOF(STATUS)) * loc))));
+
+			if (item->status == EMPTY || item->status == DELETED)
+			{
+				//if empty, just skip to next cell
+				loc++;
+			}
+			else //check to see if the current key value satisfies the predicate
+			{
+
+					//need to check key match; what's the most efficient way?
+					//need to use fnptr here for the correct matching
+					/*int key_is_equal = memcmp(item->data, "10{" ,
+					        			hash_map->record.key_size);*/
+					/**
+					 * Compares value == key
+					 */
+					int key_satisfies_predicate = oadict_test_predicate(cursor, (ion_key_t)item);			//assumes that the key is first
+					if (key_satisfies_predicate == true)
+					{
+
+						cursor->current = loc;		//this is the next index for value
+						return cs_valid_data;
+					}
+				}
+				loc++;
+				if (loc >= hash_map->map_size)	// Perform wrapping
+					loc = 0;
+			}
+	//if you end up here, you've wrapped the entire data structure and not found a value
+	return cs_end_of_results;
+}
