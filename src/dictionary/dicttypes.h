@@ -41,6 +41,13 @@ typedef struct predicate 			predicate_t;
 
 typedef union predicate_statement	predicate_statement_t;
 
+typedef enum comparison
+{
+	A_lte_B	= -1,							/**<The result for the comparison operation is A <= B */
+	A_equ_B = 0,							/**<The result for the comparison operation is A == B */
+	A_gte_B = 1								/**<The result for the comparison operation is A >= B */
+}comparsion_t;
+
 enum cursor_status
 {
 	cs_invalid_index = -1,					/**<Invalid index within cursor*/

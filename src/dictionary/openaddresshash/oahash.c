@@ -393,6 +393,59 @@ oah_compute_simple_hash(
 	return hash;
 }
 
+char
+oah_test_predicate(
+    oadict_cursor_t* 	cursor,
+    ion_key_t 			key
+)
+{
+	//need to check key match; what's the most efficient way?
+	//need to use fnptr here for the correct matching
+	/*int key_is_equal = memcmp(item->data, "10{" ,
+	 hash_map->record.key_size);*/
+	/**
+	 * Compares value == key
+	 */
+	int key_satisfies_predicate;
+	hashmap_t * hash_map = (hashmap_t *)(cursor->super.dictionary->instance);
+
+	switch (cursor->super.type)
+	{
+		case cursor_equality: //equality scan check
+		{
+			key_satisfies_predicate = hash_map->compare(
+								cursor->super.predicate.statement.equality.equality_value,
+								key,
+								hash_map->record.key_size);
+			break;
+		}
+		case cursor_range: // range check
+		{
+			if (
+					(A_lte_B	== hash_map->compare(
+			                		cursor->super.predicate.statement.equality.equality_value,
+			                		key,
+			                		hash_map->record.key_size)
+					)
+					&&
+					(A_gte_B 	== hash_map->compare(
+			                        cursor->super.predicate.statement.equality.equality_value,
+			                        key,
+			                        hash_map->record.key_size)
+					)
+				)
+			{
+				key_satisfies_predicate = true;
+			}
+			else
+			{
+				key_satisfies_predicate = false;
+			}
+			break;
+		}
+	}
+	return key_satisfies_predicate;
+}
 
 err_t
 oah_scan(
@@ -429,11 +482,8 @@ oah_scan(
 					/**
 					 * Compares value == key
 					 */
-					int key_is_equal = hash_map->compare(
-											cursor->super.predicate.statement.equality.equality_value,
-											(ion_key_t)item->data,
-											hash_map->record.key_size);
-					if (key_is_equal == IS_EQUAL)
+					int key_satisfies_predicate = oah_test_predicate(cursor, (ion_key_t)item);			//assumes that the key is first
+					if (key_satisfies_predicate == true)
 					{
 
 						cursor->current = loc;		//this is the next index for value

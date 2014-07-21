@@ -319,7 +319,21 @@ oah_scan(
 		oadict_cursor_t		*cursor  //don't need to pass in the cursor
 );
 
+/**
+@brief		Tests the supplied @pkey against the predicate registered in the
+			cursor.
 
+@param 		cursor
+				The cursor and predicate being used to test @pkey against.
+@param 		key
+				The key to test.
+@return		The result is the key passes or fails the predicate test.
+ */
+char
+oah_test_predicate(
+    oadict_cursor_t* 	cursor,
+    ion_key_t 			key
+);
 
 
 #ifdef __cplusplus
