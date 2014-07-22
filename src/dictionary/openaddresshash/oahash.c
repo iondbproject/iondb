@@ -42,7 +42,7 @@ oah_initialize(
 	hashmap->compute_hash 		= (*hashing_function);		/* Allows for binding of different hash functions
 																depending on requirements */
 
-#ifdef DEBUG
+#if DEBUG
 	io_printf("Record key size: %i\n", hashmap->record.key_size);
 	io_printf("Record value size: %i\n", hashmap->record.value_size);
 	io_printf("Size of map (in bytes): %i\n",
@@ -53,7 +53,7 @@ oah_initialize(
 	if (hashmap->entry == NULL)
 		return 1;
 
-#ifdef DEBUG
+#if DEBUG
 	io_printf("Initializing hash table\n");
 #endif
 
@@ -121,7 +121,7 @@ oah_insert(
 {
 	int i;
 
-#ifdef DEBUG
+#if DEBUG
 	for (i = 0; i < hash_map->record.key_size; i++)
 	{
 		io_printf("%x ", key[i]);
@@ -132,7 +132,7 @@ oah_insert(
 	hash_t hash 	= hash_map->compute_hash(hash_map, key,
 							hash_map->record.key_size);			//compute hash value for given key
 
-#ifdef DEBUG
+#if DEBUG
 	io_printf("hash value is %i\n", hash);
 	io_printf("data value is ");
 	for (i = 0; i < hash_map->record.value_size; i++)
@@ -144,7 +144,7 @@ oah_insert(
 
 	int loc			= oah_get_location(hash, hash_map->map_size);
 
-#ifdef DEBUG
+#if DEBUG
 	io_printf("location %i\n", loc);
 #endif
 
@@ -189,7 +189,7 @@ oah_insert(
 			memcpy(item->data, key, (hash_map->record.key_size));
 			memcpy(item->data + hash_map->record.key_size, value,
 			        (hash_map->record.value_size));
-#ifdef DEBUG
+#if DEBUG
 			{
 				int i;
 				for (i = 0; i < (hash_map->record.key_size
@@ -207,13 +207,13 @@ oah_insert(
 		if (loc >= hash_map->map_size)	// Perform wrapping
 			loc = 0;
 
-#ifdef DEBUG
+#if DEBUG
 		io_printf("checking location %i\n", loc);
 #endif
 		count++;
 	}
 
-#ifdef DEBUG
+#if DEBUG
 	io_printf("Hash table full.  Insert not done");
 #endif
 
@@ -227,7 +227,6 @@ oah_find_item_loc(
 	int				*location
 )
 {
-	printf("key %i addr %p\n",*(int *)key, key);
 
 	hash_t hash 				= hash_map->compute_hash(hash_map, key,
 	        						hash_map->record.key_size);
@@ -254,12 +253,7 @@ oah_find_item_loc(
 		{
 			if (item->status != DELETED)
 			{
-				//need to check key match; what's the most efficient way?
-				/*int key_is_equal = memcmp(item->data, key,
-				        			hash_map->record.key_size);*/
-
-				printf("data %i key %i\n",*(int *)item->data,*(int *)key);
-
+				/** @todo correct compare to use proper returen type*/
 				int key_is_equal 	= hash_map->compare(item->data, key, hash_map->record.key_size);
 
 				if (IS_EQUAL == key_is_equal)
@@ -287,7 +281,7 @@ oah_delete(
 
 	if (oah_find_item_loc(hash_map, key, &loc) == err_item_not_found)
 	{
-#ifdef DEBUG
+#if DEBUG
 		io_printf("Item not found when trying to oah_delete.\n");
 #endif
 		return err_item_not_found;
@@ -302,7 +296,7 @@ oah_delete(
 
 		item->status			= DELETED;					//delete item
 
-#ifdef DEBUG
+#if DEBUG
 		io_printf("Item deleted at location %d\n", loc);
 #endif
 		return err_ok;
@@ -319,7 +313,7 @@ oah_query(
 
 	if (oah_find_item_loc(hash_map, key, &loc) == err_ok)
 	{
-#ifdef DEBUG
+#if DEBUG
 		io_printf("Item found at location %d\n", loc);
 #endif
 
@@ -333,7 +327,7 @@ oah_query(
 	}
 	else
 	{
-#ifdef DEBUG
+#if DEBUG
 		io_printf("Item not found in hash table.\n");
 #endif
 		*value = NULL;				/**set the number of bytes to 0 */

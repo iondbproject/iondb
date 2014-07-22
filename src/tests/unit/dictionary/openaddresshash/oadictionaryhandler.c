@@ -32,13 +32,14 @@ createTestCollection(
     dictionary_handler_t	*map_handler,
     const record_t			*record,
     int 					size,
-    dictionary_t			*test_dictionary
+    dictionary_t			*test_dictionary,
+    key_type_t				key_type
 )
 {
 	oadict_init(map_handler); //register handler for hashmap
 	//register the appropriate handler for a given collection
 
-	dictionary_create(map_handler, test_dictionary, key_type_numeric_signed,
+	dictionary_create(map_handler, test_dictionary, key_type,
 	        record->key_size, record->value_size, size);
 	//build test relation
 	int i;
@@ -288,7 +289,7 @@ test_open_address_hashmap_handler_capacity(
 
 
 void
-test_open_address_dictionary_cursor(
+test_open_address_dictionary_cursor_equality(
 	CuTest		*tc
 )
 {
@@ -303,7 +304,7 @@ test_open_address_dictionary_cursor(
 	dictionary_handler_t 	map_handler;			//create handler for hashmap
 	dictionary_t			test_dictionary;		//collection handler for test collection
 
-	createTestCollection(&map_handler, &record, size, &test_dictionary);
+	createTestCollection(&map_handler, &record, size, &test_dictionary, key_type_numeric_signed);
 
 	dict_cursor_t 			*cursor;			//create a new cursor pointer
 
@@ -351,7 +352,7 @@ test_open_address_dictionary_handler_query_with_results(
 	dictionary_handler_t 	map_handler;			//create handler for hashmap
 	dictionary_t 			test_dictionary;		//collection handler for test collection
 
-	createTestCollection(&map_handler, &record, size, &test_dictionary);
+	createTestCollection(&map_handler, &record, size, &test_dictionary, key_type_numeric_signed);
 
 	dict_cursor_t 			*cursor;				//create a new cursor pointer
 
@@ -416,7 +417,7 @@ test_open_address_dictionary_handler_query_no_results(
 	dictionary_handler_t 	map_handler;			//create handler for hashmap
 	dictionary_t 			test_dictionary;		//collection handler for test collection
 
-	createTestCollection(&map_handler, &record, size, &test_dictionary);
+	createTestCollection(&map_handler, &record, size, &test_dictionary, key_type_numeric_signed);
 
 	dict_cursor_t 			*cursor;				//create a new cursor pointer
 
@@ -469,7 +470,7 @@ test_open_address_dictionary_predicate_equality(
 	dictionary_handler_t 	map_handler;			//create handler for hashmap
 	dictionary_t 			test_dictionary;		//collection handler for test collection
 
-	createTestCollection(&map_handler, &record, size, &test_dictionary);
+	createTestCollection(&map_handler, &record, size, &test_dictionary, key_type_numeric_signed);
 
 	dict_cursor_t 			*cursor;				//create a new cursor pointer
 
@@ -490,7 +491,7 @@ test_open_address_dictionary_predicate_equality(
 
 	memcpy(key_under_test,(ion_key_t)&(int){1},sizeof(int));
 
-	printf("key %i\n",*(int *)key_under_test);
+	//printf("key %i\n",*(int *)key_under_test);
 
 	CuAssertTrue(tc, true 	== oadict_test_predicate(cursor, key_under_test));
 
@@ -513,7 +514,7 @@ test_open_address_dictionary_predicate_equality(
 }
 
 void
-test_open_address_dictionary_predicate_range(
+test_open_address_dictionary_predicate_range_signed(
 	CuTest		*tc
 )
 {
@@ -531,7 +532,7 @@ test_open_address_dictionary_predicate_range(
 	dictionary_handler_t 	map_handler;			//create handler for hashmap
 	dictionary_t 			test_dictionary;		//collection handler for test collection
 
-	createTestCollection(&map_handler, &record, size, &test_dictionary);
+	createTestCollection(&map_handler, &record, size, &test_dictionary,key_type_numeric_signed);
 
 	dict_cursor_t 			*cursor;				//create a new cursor pointer
 
@@ -555,7 +556,7 @@ test_open_address_dictionary_predicate_range(
 
 	memcpy(key_under_test,(ion_key_t)&(int){0},sizeof(int));
 
-	printf("key %i\n",*(int *)key_under_test);
+	//printf("key %i\n",*(int *)key_under_test);
 
 	CuAssertTrue(tc, true 	== oadict_test_predicate(cursor, key_under_test));
 
@@ -585,6 +586,157 @@ test_open_address_dictionary_predicate_range(
 	//and destroy the collection
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
 }
+void
+test_open_address_dictionary_predicate_range_unsigned(
+	CuTest		*tc
+)
+{
+	ion_key_t key_under_test;
+	key_under_test = (ion_key_t)malloc(sizeof(unsigned int));
+
+	int size;
+	record_t record;
+
+	/* this is required for initializing the hash map and should come from the dictionary */
+	record.key_size = 4;
+	record.value_size = 10;
+	size = 10;
+
+	dictionary_handler_t 	map_handler;			//create handler for hashmap
+	dictionary_t 			test_dictionary;		//collection handler for test collection
+
+	createTestCollection(&map_handler, &record, size, &test_dictionary,key_type_numeric_unsigned);
+
+	dict_cursor_t 			*cursor;				//create a new cursor pointer
+
+	cursor = (dict_cursor_t *)malloc(sizeof(dict_cursor_t));
+	cursor->destroy 		= oadict_destroy_cursor;
+
+	//create a new predicate statement
+	predicate_t 			predicate;
+	predicate.type 			= predicate_range;
+
+	//need to prepare predicate correctly
+	predicate.statement.range.geq_value = (ion_key_t)malloc(sizeof(unsigned int));
+	predicate.statement.range.leq_value = (ion_key_t)malloc(sizeof(unsigned int));
+
+	memcpy(predicate.statement.range.geq_value,(ion_key_t)&(unsigned int){0},sizeof(unsigned int));
+	memcpy(predicate.statement.range.leq_value,(ion_key_t)&(unsigned int){2},sizeof(unsigned int));
+
+	cursor->dictionary 		= &test_dictionary;				//register test dictionary
+	cursor->predicate 		= &predicate;					//register predicate
+	cursor->type			= cursor_range;
+
+	memcpy(key_under_test,(ion_key_t)&(unsigned int){0},sizeof(unsigned int));
+
+	//printf("key %i\n",*(unsigned int *)key_under_test);
+
+	CuAssertTrue(tc, true 	== oadict_test_predicate(cursor, key_under_test));
+
+	memcpy(key_under_test,(ion_key_t)&(unsigned int){1},sizeof(unsigned int));
+
+	CuAssertTrue(tc, true 	== oadict_test_predicate(cursor, key_under_test));
+
+	memcpy(key_under_test,(ion_key_t)&(unsigned int){2},sizeof(unsigned int));
+
+	CuAssertTrue(tc, true 	== oadict_test_predicate(cursor, key_under_test));
+
+	memcpy(key_under_test,(ion_key_t)&(unsigned int){3},sizeof(unsigned int));
+
+	CuAssertTrue(tc, false 	== oadict_test_predicate(cursor, key_under_test));
+
+	memcpy(key_under_test,(ion_key_t)&(unsigned int){4},sizeof(unsigned int));
+
+	CuAssertTrue(tc, false 	== oadict_test_predicate(cursor, key_under_test));
+
+	free(key_under_test);
+
+	//free up the correct predicate
+	free(predicate.statement.range.geq_value);
+	free(predicate.statement.range.leq_value);
+	//destroy cursor for cleanup
+	cursor->destroy(&cursor);
+	//and destroy the collection
+	test_dictionary.handler->delete_dictionary(&test_dictionary);
+}
+
+void
+test_open_address_dictionary_cursor_range(
+	CuTest		*tc
+)
+{
+	int 		size;
+	record_t 	record;
+
+	/* this is required for initializing the hash map and should come from the dictionary */
+	record.key_size 	= 4;
+	record.value_size 	= 10;
+	size 				= 10;
+
+	dictionary_handler_t 	map_handler;			//create handler for hashmap
+	dictionary_t			test_dictionary;		//collection handler for test collection
+
+	createTestCollection(&map_handler, &record, size, &test_dictionary, key_type_numeric_signed);
+
+	dict_cursor_t 			*cursor;			//create a new cursor pointer
+
+	//create a new predicate statement
+	predicate_t 			predicate;
+	predicate.type = predicate_range;
+	//need to prepare predicate correctly
+	predicate.statement.range.geq_value = (ion_key_t)malloc(sizeof(int));
+
+	memcpy(predicate.statement.range.geq_value,(ion_key_t)&(int){1},sizeof(int));
+
+	predicate.statement.range.leq_value = (ion_key_t)malloc(sizeof(int));
+
+	memcpy(predicate.statement.range.leq_value,(ion_key_t)&(int){5},sizeof(int));
+
+	//test that the query runs on collection okay
+	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+
+	//check the status of the cursor as it should be initialized
+	CuAssertTrue(tc, cs_cursor_initialized	== cursor->status);
+
+	//user must allocate memory before calling next()
+	ion_value_t 			value;
+	value 					= (ion_value_t)malloc(sizeof(ion_value_t)*record.value_size);
+
+	int result_count = 0;
+	status_t cursor_status;
+
+	while( cs_cursor_active == (cursor_status = cursor->next(cursor, value)))
+	{
+		CuAssertTrue(tc, cs_cursor_active		== cursor_status);
+
+		//check that value is correct that has been returned
+		ion_value_t	str;
+		str = (ion_value_t)malloc(sizeof(ion_value_t)*record.value_size);
+		sprintf((char*)str,"value : %i ", (*(int *)predicate.statement.range.geq_value) + result_count);
+
+		CuAssertTrue(tc, IS_EQUAL				== memcmp(value, str, record.value_size));
+		result_count++;
+		free(str);
+	}
+	CuAssertTrue(tc, 5						== result_count);
+
+	//and as there is only 1 result, the next call should return empty
+	CuAssertTrue(tc, cs_end_of_results		== cursor->next(cursor, value));
+
+	//free up the correct predicate
+	free(predicate.statement.range.geq_value);
+	free(predicate.statement.range.leq_value);
+
+	//destroy the cursor
+	cursor->destroy(&cursor);
+
+	//and check that cursor has been destroyed correctly
+	CuAssertTrue(tc, NULL 					== cursor);
+
+	//and destory the collection
+	test_dictionary.handler->delete_dictionary(&test_dictionary);
+}
+
 CuSuite*
 open_address_hashmap_handler_getsuite()
 {
@@ -602,10 +754,12 @@ open_address_hashmap_handler_getsuite()
 	SUITE_ADD_TEST(suite, test_open_address_hashmap_handler_delete_2);
 	SUITE_ADD_TEST(suite, test_open_address_hashmap_handler_capacity);
 	SUITE_ADD_TEST(suite, test_open_address_dictionary_predicate_equality);
-	SUITE_ADD_TEST(suite, test_open_address_dictionary_predicate_range);
-	/*SUITE_ADD_TEST(suite, test_open_address_dictionary_cursor);
+	SUITE_ADD_TEST(suite, test_open_address_dictionary_predicate_range_signed);
+	SUITE_ADD_TEST(suite, test_open_address_dictionary_predicate_range_unsigned);
+	SUITE_ADD_TEST(suite, test_open_address_dictionary_cursor_equality);
 	SUITE_ADD_TEST(suite, test_open_address_dictionary_handler_query_with_results);
-	SUITE_ADD_TEST(suite, test_open_address_dictionary_handler_query_no_results);*/
+	SUITE_ADD_TEST(suite, test_open_address_dictionary_handler_query_no_results);
+	SUITE_ADD_TEST(suite, test_open_address_dictionary_cursor_range);
 
 	return suite;
 }

@@ -120,27 +120,36 @@ oadict_find(
 		dict_cursor_t 	**cursor
 )
 {
+
+	//allocate memory for cursor
+	if ((*cursor = (dict_cursor_t *)malloc(sizeof(oadict_cursor_t))) == NULL)
+	{
+		return err_out_of_memory;
+	}
+	(*cursor)->dictionary = dictionary;
+	(*cursor)->type = predicate->type;				//* types align
+	(*cursor)->status = cs_cursor_uninitialized;
+
+	//bind destroy method for cursor
+	(*cursor)->destroy = oadict_destroy_cursor;
+
+	//bind correct next function
+	(*cursor)->next = oadict_next;	// this will use the correct value
+
+	//allocate predicate
+	(*cursor)->predicate = (predicate_t *)malloc(sizeof(predicate_t));
+	(*cursor)->predicate->type = predicate->type;			/**@todo repair as there are duplicate types */
+
 	//based on the type of predicate that is being used, need to create the correct cursor
 	switch(predicate->type)
 	{
 		case predicate_equality:
 		{
-			//allocate memory for cursor
-			if ((*cursor = (dict_cursor_t *)malloc(sizeof(oadict_cursor_t))) == NULL)
-			{
-				return err_out_of_memory;
-			}
-
-			(*cursor)->dictionary = dictionary;
-			(*cursor)->type = predicate->type;				//* types align
-			(*cursor)->status = cs_cursor_uninitialized;
-			//bind destory method for cursor
-
-			(*cursor)->destroy = oadict_destroy_cursor;
-
 			//as this is an equality, need to malloc for key as well
-			if (((*cursor)->predicate->statement.equality.equality_value = (ion_key_t)malloc(sizeof((((hashmap_t*)dictionary->instance)->record.key_size)))) == NULL)
+			if (((*cursor)->predicate->statement.equality.equality_value = (ion_key_t)malloc((((hashmap_t*)dictionary->instance)->record.key_size))) == NULL)
 			{
+				free((*cursor)->predicate);
+				free(*cursor);						//cleanup
 				return err_out_of_memory;
 			}
 			//copy across the key value as the predicate may be destroyed
@@ -149,15 +158,9 @@ oadict_find(
 			//find the location of the first element as this is a straight equality
 			int location = cs_invalid_index;
 
-			//bind correct next function
-			(*cursor)->next = oadict_next;	// this will use the correct value
-
 			if (oah_find_item_loc((hashmap_t*)dictionary->instance, (*cursor)->predicate->statement.equality.equality_value, &location) == err_item_not_found)
 			{
-				//this will still have to be returned?
 				(*cursor)->status = cs_end_of_results;
-				/*//bind equality function
-				eq_cursor->equal = is_equal;*/
 				return err_ok;
 			}
 			else
@@ -174,32 +177,22 @@ oadict_find(
 		}
 		case predicate_range:
 		{
-			//allocate memory for cursor
-			if ((*cursor = (dict_cursor_t *)malloc(sizeof(oadict_cursor_t))) == NULL)
-			{
-				return err_out_of_memory;
-			}
-			(*cursor)->dictionary = dictionary;
-			(*cursor)->type = predicate->type;				//* types align
-			(*cursor)->status = cs_cursor_uninitialized;
-
-			//bind destrOy method for cursor
-			(*cursor)->destroy = oadict_destroy_cursor;
-
 			//as this is a range, need to malloc leq key
 			if (((*cursor)->predicate->statement.range.leq_value = (ion_key_t)malloc(sizeof((((hashmap_t*)dictionary->instance)->record.key_size)))) == NULL)
 			{
+				free((*cursor)->predicate);
 				free(*cursor);					//cleanup
 				return err_out_of_memory;
 			}
 			//copy across the key value as the predicate may be destroyed
-			memcpy((*cursor)->predicate->statement.range.geq_value, 	predicate->statement.range.geq_value, (((hashmap_t*)dictionary->instance)->record.key_size));
+			memcpy((*cursor)->predicate->statement.range.leq_value, 	predicate->statement.range.leq_value, (((hashmap_t*)dictionary->instance)->record.key_size));
 
 			//as this is a range, need to malloc leq key
 			if (((*cursor)->predicate->statement.range.geq_value = (ion_key_t)malloc(sizeof((((hashmap_t*)dictionary->instance)->record.key_size)))) == NULL)
 			{
-				free(*cursor);					//cleanup
 				free((*cursor)->predicate->statement.range.leq_value);
+				free((*cursor)->predicate);
+				free(*cursor);					//cleanup
 				return err_out_of_memory;
 			}
 			//copy across the key value as the predicate may be destroyed
@@ -208,11 +201,8 @@ oadict_find(
 			//find the location of the first element as this is a straight equality
 			int location = cs_invalid_index;
 
-			//bind correct next function
-			(*cursor)->next = oadict_next;	// this will use the correct value
-
 			//start at the lowest end of the range and check
-			if (oah_find_item_loc((hashmap_t*)dictionary->instance, (*cursor)->predicate->statement.range.leq_value, &location) == err_item_not_found)
+			if (oah_find_item_loc((hashmap_t*)dictionary->instance, (*cursor)->predicate->statement.range.geq_value, &location) == err_item_not_found)
 			{
 				//this will still have to be returned?
 				(*cursor)->status = cs_end_of_results;
@@ -327,6 +317,8 @@ oadict_destroy_cursor(
 		}
 		case predicate_range:
 		{
+			free((*cursor)->predicate->statement.range.geq_value);
+			free((*cursor)->predicate->statement.range.leq_value);
 			break;
 		}
 		case predicate_predicate:
@@ -335,6 +327,7 @@ oadict_destroy_cursor(
 		}
 	}
 	/** and free cursor pointer */
+	free((*cursor)->predicate);
 	free(*cursor);
 	*cursor = NULL;
 }
@@ -405,10 +398,12 @@ oadict_scan(
 		oadict_cursor_t		*cursor			//know exactly what implementation of cursor is
 )
 {
-	int loc = cursor->current;					//this is the current position of the cursor
-
 	//need to scan hashmap fully looking for values that satisfy - need to think about
 	hashmap_t * hash_map = (hashmap_t *)(cursor->super.dictionary->instance);
+
+	int loc = (cursor->current + 1) % hash_map->map_size;
+													//this is the current position of the cursor
+													//and start scanning 1 ahead
 
 	//start at the current position, scan forward
 	while (loc != cursor->first)
@@ -435,11 +430,10 @@ oadict_scan(
 					/**
 					 * Compares value == key
 					 */
-					int key_satisfies_predicate = oadict_test_predicate(&(cursor->super), (ion_key_t)item);			//assumes that the key is first
+					boolean_t key_satisfies_predicate = oadict_test_predicate(&(cursor->super), (ion_key_t)item->data);			//assumes that the key is first
 
 					if (key_satisfies_predicate == true)
 					{
-
 						cursor->current = loc;		//this is the next index for value
 						return cs_valid_data;
 					}
