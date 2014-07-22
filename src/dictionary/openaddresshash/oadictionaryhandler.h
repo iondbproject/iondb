@@ -377,9 +377,9 @@ oadict_destroy_cursor(
 				The key to test.
 @return		The result is the key passes or fails the predicate test.
  */
-char
-odict_test_predicate(
-    oadict_cursor_t* 	cursor,
+boolean_t
+oadict_test_predicate(
+    dict_cursor_t* 	cursor,
     ion_key_t 			key
 );
 

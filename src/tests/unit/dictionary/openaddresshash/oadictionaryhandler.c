@@ -35,9 +35,10 @@ createTestCollection(
     dictionary_t			*test_dictionary
 )
 {
-	oadict_init(&*map_handler); //register handler for hashmap
+	oadict_init(map_handler); //register handler for hashmap
 	//register the appropriate handler for a given collection
-	dictionary_create(&*map_handler, &*test_dictionary, key_type_numeric_signed,
+
+	dictionary_create(map_handler, test_dictionary, key_type_numeric_signed,
 	        record->key_size, record->value_size, size);
 	//build test relation
 	int i;
@@ -46,7 +47,7 @@ createTestCollection(
 	for (i = 0; i < size; i++)
 	{
 		sprintf((char*)str, "value : %i ", i);
-		test_dictionary->handler->insert(&*test_dictionary, (ion_key_t)&i, str);
+		test_dictionary->handler->insert(test_dictionary, (ion_key_t)&i, str);
 	}
 	free(str);
 }
@@ -449,6 +450,141 @@ test_open_address_dictionary_handler_query_no_results(
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
 }
 
+void
+test_open_address_dictionary_predicate_equality(
+	CuTest		*tc
+)
+{
+	ion_key_t key_under_test;
+	key_under_test = (ion_key_t)malloc(sizeof(int));
+
+	int size;
+	record_t record;
+
+	/* this is required for initializing the hash map and should come from the dictionary */
+	record.key_size = 4;
+	record.value_size = 10;
+	size = 10;
+
+	dictionary_handler_t 	map_handler;			//create handler for hashmap
+	dictionary_t 			test_dictionary;		//collection handler for test collection
+
+	createTestCollection(&map_handler, &record, size, &test_dictionary);
+
+	dict_cursor_t 			*cursor;				//create a new cursor pointer
+
+	cursor = (dict_cursor_t *)malloc(sizeof(dict_cursor_t));
+	cursor->destroy 		= oadict_destroy_cursor;
+
+	//create a new predicate statement
+	predicate_t 			predicate;
+	predicate.type 			= predicate_equality;
+
+	//need to prepare predicate correctly
+	predicate.statement.equality.equality_value = (ion_key_t)malloc(sizeof(int));
+	memcpy(predicate.statement.equality.equality_value,(ion_key_t)&(int){1},sizeof(int));
+
+	cursor->dictionary 		= &test_dictionary;				//register test dictionary
+	cursor->predicate 		= &predicate;					//register predicate
+	cursor->type			= cursor_equality;
+
+	memcpy(key_under_test,(ion_key_t)&(int){1},sizeof(int));
+
+	printf("key %i\n",*(int *)key_under_test);
+
+	CuAssertTrue(tc, true 	== oadict_test_predicate(cursor, key_under_test));
+
+	memcpy(key_under_test,(ion_key_t)&(int){2},sizeof(int));
+
+	CuAssertTrue(tc, false 	== oadict_test_predicate(cursor, key_under_test));
+
+	memcpy(key_under_test,(ion_key_t)&(int){-1},sizeof(int));
+
+	CuAssertTrue(tc, false 	== oadict_test_predicate(cursor, key_under_test));
+
+	free(key_under_test);
+
+	//free up the correct predicate
+	free(predicate.statement.equality.equality_value);
+	//destroy cursor for cleanup
+	cursor->destroy(&cursor);
+	//and destroy the collection
+	test_dictionary.handler->delete_dictionary(&test_dictionary);
+}
+
+void
+test_open_address_dictionary_predicate_range(
+	CuTest		*tc
+)
+{
+	ion_key_t key_under_test;
+	key_under_test = (ion_key_t)malloc(sizeof(int));
+
+	int size;
+	record_t record;
+
+	/* this is required for initializing the hash map and should come from the dictionary */
+	record.key_size = 4;
+	record.value_size = 10;
+	size = 10;
+
+	dictionary_handler_t 	map_handler;			//create handler for hashmap
+	dictionary_t 			test_dictionary;		//collection handler for test collection
+
+	createTestCollection(&map_handler, &record, size, &test_dictionary);
+
+	dict_cursor_t 			*cursor;				//create a new cursor pointer
+
+	cursor = (dict_cursor_t *)malloc(sizeof(dict_cursor_t));
+	cursor->destroy 		= oadict_destroy_cursor;
+
+	//create a new predicate statement
+	predicate_t 			predicate;
+	predicate.type 			= predicate_range;
+
+	//need to prepare predicate correctly
+	predicate.statement.range.geq_value = (ion_key_t)malloc(sizeof(int));
+	predicate.statement.range.leq_value = (ion_key_t)malloc(sizeof(int));
+
+	memcpy(predicate.statement.range.geq_value,(ion_key_t)&(int){-1},sizeof(int));
+	memcpy(predicate.statement.range.leq_value,(ion_key_t)&(int){1},sizeof(int));
+
+	cursor->dictionary 		= &test_dictionary;				//register test dictionary
+	cursor->predicate 		= &predicate;					//register predicate
+	cursor->type			= cursor_range;
+
+	memcpy(key_under_test,(ion_key_t)&(int){0},sizeof(int));
+
+	printf("key %i\n",*(int *)key_under_test);
+
+	CuAssertTrue(tc, true 	== oadict_test_predicate(cursor, key_under_test));
+
+	memcpy(key_under_test,(ion_key_t)&(int){-1},sizeof(int));
+
+	CuAssertTrue(tc, true 	== oadict_test_predicate(cursor, key_under_test));
+
+	memcpy(key_under_test,(ion_key_t)&(int){1},sizeof(int));
+
+	CuAssertTrue(tc, true 	== oadict_test_predicate(cursor, key_under_test));
+
+	memcpy(key_under_test,(ion_key_t)&(int){2},sizeof(int));
+
+	CuAssertTrue(tc, false 	== oadict_test_predicate(cursor, key_under_test));
+
+	memcpy(key_under_test,(ion_key_t)&(int){-2},sizeof(int));
+
+	CuAssertTrue(tc, false 	== oadict_test_predicate(cursor, key_under_test));
+
+	free(key_under_test);
+
+	//free up the correct predicate
+	free(predicate.statement.range.geq_value);
+	free(predicate.statement.range.leq_value);
+	//destroy cursor for cleanup
+	cursor->destroy(&cursor);
+	//and destroy the collection
+	test_dictionary.handler->delete_dictionary(&test_dictionary);
+}
 CuSuite*
 open_address_hashmap_handler_getsuite()
 {
@@ -465,9 +601,11 @@ open_address_hashmap_handler_getsuite()
 	SUITE_ADD_TEST(suite, test_open_address_hashmap_handler_delete_1);
 	SUITE_ADD_TEST(suite, test_open_address_hashmap_handler_delete_2);
 	SUITE_ADD_TEST(suite, test_open_address_hashmap_handler_capacity);
-	SUITE_ADD_TEST(suite, test_open_address_dictionary_cursor);
+	SUITE_ADD_TEST(suite, test_open_address_dictionary_predicate_equality);
+	SUITE_ADD_TEST(suite, test_open_address_dictionary_predicate_range);
+	/*SUITE_ADD_TEST(suite, test_open_address_dictionary_cursor);
 	SUITE_ADD_TEST(suite, test_open_address_dictionary_handler_query_with_results);
-	SUITE_ADD_TEST(suite, test_open_address_dictionary_handler_query_no_results);
+	SUITE_ADD_TEST(suite, test_open_address_dictionary_handler_query_no_results);*/
 
 	return suite;
 }

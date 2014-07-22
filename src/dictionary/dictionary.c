@@ -153,7 +153,9 @@ dictionary_compare_signed_value(
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 	//check the MSByte as signed
 	idx = key_size - 1;						//Start at the MSB
+#if (DEBUG == 1)
 	printf("key 1: %i key 2: %i \n",*(char *)(first_key+idx),*(char *)(second_key+idx));
+#endif
 	if ((return_value = ((*(char *)(first_key+idx) > *(char *)(second_key+idx)) - (*(char *)(first_key+idx) < *(char *)(second_key+idx)))) != ZERO)
 		{
 			return return_value;
@@ -161,7 +163,6 @@ dictionary_compare_signed_value(
 	//and then the rest as unsigned
 	for (idx = key_size - 2; idx >= 0; idx--)
 	{
-		//printf("key 1: %i key 2: %i \n",*(char *)(first_key+idx),*(char *)(second_key+idx));
 		if ((return_value = ((*(first_key+idx) > *(second_key+idx)) - (*(first_key+idx) < *(second_key+idx)))) != ZERO)
 		{
 			return return_value;

@@ -139,12 +139,12 @@ oadict_find(
 			(*cursor)->destroy = oadict_destroy_cursor;
 
 			//as this is an equality, need to malloc for key as well
-			if (((*cursor)->predicate.statement.equality.equality_value = (ion_key_t)malloc(sizeof((((hashmap_t*)dictionary->instance)->record.key_size)))) == NULL)
+			if (((*cursor)->predicate->statement.equality.equality_value = (ion_key_t)malloc(sizeof((((hashmap_t*)dictionary->instance)->record.key_size)))) == NULL)
 			{
 				return err_out_of_memory;
 			}
 			//copy across the key value as the predicate may be destroyed
-			memcpy((*cursor)->predicate.statement.equality.equality_value, 	predicate->statement.equality.equality_value, (((hashmap_t*)dictionary->instance)->record.key_size));
+			memcpy((*cursor)->predicate->statement.equality.equality_value, 	predicate->statement.equality.equality_value, (((hashmap_t*)dictionary->instance)->record.key_size));
 
 			//find the location of the first element as this is a straight equality
 			int location = cs_invalid_index;
@@ -152,7 +152,7 @@ oadict_find(
 			//bind correct next function
 			(*cursor)->next = oadict_next;	// this will use the correct value
 
-			if (oah_find_item_loc((hashmap_t*)dictionary->instance, (*cursor)->predicate.statement.equality.equality_value, &location) == err_item_not_found)
+			if (oah_find_item_loc((hashmap_t*)dictionary->instance, (*cursor)->predicate->statement.equality.equality_value, &location) == err_item_not_found)
 			{
 				//this will still have to be returned?
 				(*cursor)->status = cs_end_of_results;
@@ -187,23 +187,23 @@ oadict_find(
 			(*cursor)->destroy = oadict_destroy_cursor;
 
 			//as this is a range, need to malloc leq key
-			if (((*cursor)->predicate.statement.range.leq_value = (ion_key_t)malloc(sizeof((((hashmap_t*)dictionary->instance)->record.key_size)))) == NULL)
+			if (((*cursor)->predicate->statement.range.leq_value = (ion_key_t)malloc(sizeof((((hashmap_t*)dictionary->instance)->record.key_size)))) == NULL)
 			{
 				free(*cursor);					//cleanup
 				return err_out_of_memory;
 			}
 			//copy across the key value as the predicate may be destroyed
-			memcpy((*cursor)->predicate.statement.range.geq_value, 	predicate->statement.range.geq_value, (((hashmap_t*)dictionary->instance)->record.key_size));
+			memcpy((*cursor)->predicate->statement.range.geq_value, 	predicate->statement.range.geq_value, (((hashmap_t*)dictionary->instance)->record.key_size));
 
 			//as this is a range, need to malloc leq key
-			if (((*cursor)->predicate.statement.range.geq_value = (ion_key_t)malloc(sizeof((((hashmap_t*)dictionary->instance)->record.key_size)))) == NULL)
+			if (((*cursor)->predicate->statement.range.geq_value = (ion_key_t)malloc(sizeof((((hashmap_t*)dictionary->instance)->record.key_size)))) == NULL)
 			{
 				free(*cursor);					//cleanup
-				free((*cursor)->predicate.statement.range.leq_value);
+				free((*cursor)->predicate->statement.range.leq_value);
 				return err_out_of_memory;
 			}
 			//copy across the key value as the predicate may be destroyed
-			memcpy((*cursor)->predicate.statement.range.geq_value, 	predicate->statement.range.geq_value, (((hashmap_t*)dictionary->instance)->record.key_size));
+			memcpy((*cursor)->predicate->statement.range.geq_value, 	predicate->statement.range.geq_value, (((hashmap_t*)dictionary->instance)->record.key_size));
 
 			//find the location of the first element as this is a straight equality
 			int location = cs_invalid_index;
@@ -212,7 +212,7 @@ oadict_find(
 			(*cursor)->next = oadict_next;	// this will use the correct value
 
 			//start at the lowest end of the range and check
-			if (oah_find_item_loc((hashmap_t*)dictionary->instance, (*cursor)->predicate.statement.range.leq_value, &location) == err_item_not_found)
+			if (oah_find_item_loc((hashmap_t*)dictionary->instance, (*cursor)->predicate->statement.range.leq_value, &location) == err_item_not_found)
 			{
 				//this will still have to be returned?
 				(*cursor)->status = cs_end_of_results;
@@ -322,7 +322,7 @@ oadict_destroy_cursor(
 	{
 		{
 
-			free((*cursor)->predicate.statement.equality.equality_value);
+			free((*cursor)->predicate->statement.equality.equality_value);
 			break;
 		}
 		case predicate_range:
@@ -339,53 +339,60 @@ oadict_destroy_cursor(
 	*cursor = NULL;
 }
 
-char
+boolean_t
 oadict_test_predicate(
-    oadict_cursor_t* 	cursor,
+    dict_cursor_t		*cursor,
     ion_key_t 			key
 )
 {
 	//need to check key match; what's the most efficient way?
 	//need to use fnptr here for the correct matching
-	/*int key_is_equal = memcmp(item->data, "10{" ,
+	/*int key_is_eq ual = memcmp(item->data, "10{" ,
 	 hash_map->record.key_size);*/
 	/**
 	 * Compares value == key
 	 */
 	int key_satisfies_predicate;
-	hashmap_t * hash_map = (hashmap_t *)(cursor->super.dictionary->instance);
+	hashmap_t * hash_map = (hashmap_t *)(cursor->dictionary->instance);
 
-	switch (cursor->super.type)
+	//pre-prime value for faster exit
+	key_satisfies_predicate = false;
+
+	switch (cursor->type)
 	{
 		case cursor_equality: //equality scan check
 		{
-			key_satisfies_predicate = hash_map->compare(
-								cursor->super.predicate.statement.equality.equality_value,
+			if (IS_EQUAL ==	hash_map->compare(
+								cursor->predicate->statement.equality.equality_value,
 								key,
-								hash_map->record.key_size);
+								hash_map->record.key_size)
+			)
+			{
+				key_satisfies_predicate = true;
+			}
 			break;
 		}
 		case cursor_range: // range check
 		{
-			if (
-					(A_lte_B	== hash_map->compare(
-			                		cursor->super.predicate.statement.equality.equality_value,
-			                		key,
+			if (		// leq_value <= key <==> !(leq_value > key)
+					(
+						!( A_gt_B == hash_map->compare(
+									key,
+									cursor->predicate->statement.range.leq_value,
 			                		hash_map->record.key_size)
+						)
 					)
-					&&
-					(A_gte_B 	== hash_map->compare(
-			                        cursor->super.predicate.statement.equality.equality_value,
-			                        key,
+					&&	// key <= geq_value <==> !(key > geq_key)
+					(
+						!(A_gt_B == hash_map->compare(
+									cursor->predicate->statement.range.geq_value,
+									key,
 			                        hash_map->record.key_size)
+						)
 					)
 				)
 			{
 				key_satisfies_predicate = true;
-			}
-			else
-			{
-				key_satisfies_predicate = false;
 			}
 			break;
 		}
@@ -428,7 +435,8 @@ oadict_scan(
 					/**
 					 * Compares value == key
 					 */
-					int key_satisfies_predicate = oadict_test_predicate(cursor, (ion_key_t)item);			//assumes that the key is first
+					int key_satisfies_predicate = oadict_test_predicate(&(cursor->super), (ion_key_t)item);			//assumes that the key is first
+
 					if (key_satisfies_predicate == true)
 					{
 
