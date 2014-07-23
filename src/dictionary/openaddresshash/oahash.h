@@ -48,14 +48,6 @@ enum write_concern
 typedef char 			write_concern_t;
 
 
-/**
-@brief		Struct used to maintain information about size of key and value.
- */
-typedef struct record
-{
-	int 			key_size;			/**< the size of the key in bytes */
-	int 			value_size;			/**< the size of the value in bytes */
-} record_t;
 
 /**
 @brief		Struct used to maintain individual records in the hashmap.
@@ -71,17 +63,18 @@ typedef struct hash_bucket
 */
 struct hashmap
 {
-	int 			map_size;		/**< The size of the map in item capacity */
-	key_type_t		key_type;		/**< The key type stored in the map */
-	record_t 		record;			/**< The record structure for items */
-	write_concern_t write_concern;	/**< The current @p write_concern level
-	 	 	 	 	 	 	 	 	 	 of the hashmap*/
-	int				(* compute_hash)(hashmap_t *, ion_key_t, int);
-									/**< The hashing function to be used for
-										 the instance*/
-	char 			(* compare)(ion_key_t, ion_key_t, ion_key_size_t);
-									/**< Comparison function for instance of map */
-	char 			*entry;			/**< Pointer to the entries in the hashmap*/
+	dictionary_parent_t	super;
+	int 				map_size;		/**< The size of the map in item capacity */
+/*	key_type_t			key_type;		*< The key type stored in the map
+	record_t 			record;			*< The record structure for items */
+	write_concern_t 	write_concern;	/**< The current @p write_concern level
+	 	 	 	 	 	 	 	 	 	 	 of the hashmap*/
+	int					(* compute_hash)(hashmap_t *, ion_key_t, int);
+										/**< The hashing function to be used for
+										 	 the instance*/
+	char 				(* compare)(ion_key_t, ion_key_t, ion_key_size_t);
+										/**< Comparison function for instance of map */
+	char 				*entry;				/**< Pointer to the entries in the hashmap*/
 
 };
 

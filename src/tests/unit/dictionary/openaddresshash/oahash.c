@@ -29,7 +29,7 @@ check_map(
 )
 {
 	int i;
-	int bucket_size = map->record.key_size + map->record.value_size + sizeof(char);
+	int bucket_size = map->super.record.key_size + map->super.record.value_size + sizeof(char);
 
 	for (i = 0; i < map->map_size; i++)
 	{
@@ -49,7 +49,7 @@ initialize_hash_map(
 	hashmap_t 	*map
 )
 {
-	oah_initialize(map, oah_compute_simple_hash, dictionary_compare_signed_value, map->key_type, record->key_size, record->value_size, size);
+	oah_initialize(map, oah_compute_simple_hash, dictionary_compare_signed_value, map->super.key_type, record->key_size, record->value_size, size);
 }
 
 void
@@ -61,7 +61,7 @@ initialize_hash_map_std_conditions(
 	record_t record;
 	record.key_size 		= 4;
 	record.value_size 		= 10;
-	map->key_type 			= key_type_numeric_signed;
+	map->super.key_type 	= key_type_numeric_signed;
 	initialize_hash_map(STD_MAP_SIZE, &record, map);
 
 }
@@ -85,16 +85,16 @@ test_open_address_hashmap_initialize(
 	record.value_size = 10;
 	size = 10;
 	hashmap_t map;
-	map.key_type = key_type_numeric_signed;			//default to use int key type
+	map.super.key_type = key_type_numeric_signed;			//default to use int key type
 
 	initialize_hash_map(size, &record, &map);
 
 	//valid correct map settings
-	CuAssertTrue(tc, map.record.key_size 		== record.key_size);
-	CuAssertTrue(tc, map.record.value_size		== record.value_size);
-	CuAssertTrue(tc, map.map_size 				== size);
-	CuAssertTrue(tc, map.compute_hash 			== &oah_compute_simple_hash);
-	CuAssertTrue(tc, map.write_concern 			== wc_insert_unique);
+	CuAssertTrue(tc, map.super.record.key_size 		== record.key_size);
+	CuAssertTrue(tc, map.super.record.value_size	== record.value_size);
+	CuAssertTrue(tc, map.map_size 					== size);
+	CuAssertTrue(tc, map.compute_hash 				== &oah_compute_simple_hash);
+	CuAssertTrue(tc, map.write_concern 				== wc_insert_unique);
 
 }
 
@@ -165,7 +165,7 @@ test_open_address_hashmap_find_item_location(
 	initialize_hash_map_std_conditions(&map);
 
 	/** Manually populate records */
-	record_t record 			= map.record;
+	record_t record 			= map.super.record;
 
 	char *item;
 
@@ -229,10 +229,13 @@ test_open_address_hashmap_simple_insert(
 	initialize_hash_map_std_conditions(&map);
 
 	/** Manually populate records */
-	record_t record 			= map.record;
+	record_t record 			= map.super.record;
 
 	//manually populate array
+#if DEBUG
 	char *pos_ptr 				= map.entry;
+#endif
+
 	int bucket_size 			= sizeof(char)
 									+ record.key_size + record.value_size;
 
@@ -241,8 +244,9 @@ test_open_address_hashmap_simple_insert(
 		// apply continual offsets
 #if DEBUG
 		printf("entry loc: %p %p \n",map.entry,pos_ptr);
-#endif
 		pos_ptr = (map.entry + (offset*bucket_size)%(map.map_size*bucket_size));
+#endif
+
 
 		for (i = 0; i<map.map_size; i++)
 		{

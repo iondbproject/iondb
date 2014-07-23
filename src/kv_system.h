@@ -23,6 +23,16 @@ enum status
 	status_duplicate_key, 				/**< status_duplicate_key */
 };
 
+
+/**
+@brief		Struct used to maintain information about size of key and value.
+ */
+typedef struct record
+{
+	int 			key_size;			/**< the size of the key in bytes */
+	int 			value_size;			/**< the size of the value in bytes */
+} record_t;
+
 typedef char status_t;
 
 /**

@@ -15,6 +15,7 @@ extern "C" {
 
 #include "./../kv_system.h"
 #include "dicttypes.h"
+#include <stdarg.h>
 
 /**
 @brief		Creates as instance of a specific type of dictionary.
@@ -244,6 +245,15 @@ dictionary_compare_char_array(
 	ion_key_size_t	key_size
 );
 
+
+err_t
+dictionary_build_predicate(
+	dictionary_t			*dictionary,
+	predicate_t				*predicate,
+	predicate_operator_t	type,
+	ion_key_t				key1,
+	...
+);
 
 
 #ifdef __cplusplus

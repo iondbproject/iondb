@@ -28,25 +28,25 @@ oah_initialize(
 {
 	int i;
 	hashmap->write_concern 		= wc_insert_unique;			/* By default allow unique inserts only */
-	hashmap->record.key_size 	= key_size;
-	hashmap->record.value_size 	= value_size;
-	hashmap->key_type 			= key_type;
+	hashmap->super.record.key_size 	= key_size;
+	hashmap->super.record.value_size 	= value_size;
+	hashmap->super.key_type 			= key_type;
 
 	hashmap->compare = compare;
 
 	/* The hash map is allocated as a single contiguous array*/
 	hashmap->map_size 			= size;
 	hashmap->entry = (void *)malloc(
-	        (hashmap->record.key_size + hashmap->record.value_size + 1)
+	        (hashmap->super.record.key_size + hashmap->super.record.value_size + 1)
 	                * hashmap->map_size);
 	hashmap->compute_hash 		= (*hashing_function);		/* Allows for binding of different hash functions
 																depending on requirements */
 
 #if DEBUG
-	io_printf("Record key size: %i\n", hashmap->record.key_size);
-	io_printf("Record value size: %i\n", hashmap->record.value_size);
+	io_printf("Record key size: %i\n", hashmap->super.record.key_size);
+	io_printf("Record value size: %i\n", hashmap->super.record.value_size);
 	io_printf("Size of map (in bytes): %i\n",
-	        (hashmap->record.key_size + hashmap->record.value_size + 1)
+	        (hashmap->record.key_size + hashmap->super.record.value_size + 1)
 	                * hashmap->map_size);
 #endif
 
@@ -61,7 +61,7 @@ oah_initialize(
 	for (i = 0; i < size; i++)
 	{
 		((hash_bucket_t *)(hashmap->entry
-		        + ((hashmap->record.key_size + hashmap->record.value_size
+		        + ((hashmap->super.record.key_size + hashmap->super.record.value_size
 		                + SIZEOF(STATUS)) * i)))->status = EMPTY;
 	}
 	return 0;
@@ -74,8 +74,8 @@ oah_destroy(
 {
 	hash_map->compute_hash 		= NULL;
 	hash_map->map_size 			= 0;
-	hash_map->record.key_size 	= 0;
-	hash_map->record.value_size	= 0;
+	hash_map->super.record.key_size 	= 0;
+	hash_map->super.record.value_size	= 0;
 	if (hash_map->entry != NULL)			//check to ensure that you are not freeing something already free
 	{
 		free(hash_map->entry);
@@ -130,7 +130,7 @@ oah_insert(
 #endif
 
 	hash_t hash 	= hash_map->compute_hash(hash_map, key,
-							hash_map->record.key_size);			//compute hash value for given key
+							hash_map->super.record.key_size);			//compute hash value for given key
 
 #if DEBUG
 	io_printf("hash value is %i\n", hash);
@@ -156,13 +156,13 @@ oah_insert(
 	while (count != hash_map->map_size)
 	{
 		item 		= ((hash_bucket_t *)((hash_map->entry
-		        			+ (hash_map->record.key_size + hash_map->record.value_size
+		        			+ (hash_map->super.record.key_size + hash_map->super.record.value_size
 		        				+ SIZEOF(STATUS)) * loc)));
 
 		if (item->status == IN_USE) 	//if a cell is in use, need to key to
 		{
 			/*if (memcmp(item->data, key, hash_map->record.key_size) == IS_EQUAL)*/
-			if (hash_map->compare(item->data, key, hash_map->record.key_size) == IS_EQUAL)
+			if (hash_map->compare(item->data, key, hash_map->super.record.key_size) == IS_EQUAL)
 			{
 				if (hash_map->write_concern == wc_insert_unique)//allow unique entries only
 				{
@@ -171,8 +171,8 @@ oah_insert(
 
 				else if (hash_map->write_concern == wc_update)//allows for values to be updated											//
 				{
-					memcpy(item->data + hash_map->record.key_size, value,
-					        (hash_map->record.value_size));
+					memcpy(item->data + hash_map->super.record.key_size, value,
+					        (hash_map->super.record.value_size));
 					return err_ok;
 				}
 				else
@@ -186,14 +186,14 @@ oah_insert(
 		{
 			//problem is here with base types as it is just an array of data.  Need better way
 			item->status = IN_USE;
-			memcpy(item->data, key, (hash_map->record.key_size));
-			memcpy(item->data + hash_map->record.key_size, value,
-			        (hash_map->record.value_size));
+			memcpy(item->data, key, (hash_map->super.record.key_size));
+			memcpy(item->data + hash_map->super.record.key_size, value,
+			        (hash_map->super.record.value_size));
 #if DEBUG
 			{
 				int i;
 				for (i = 0; i < (hash_map->record.key_size
-				                         + hash_map->record.value_size); i++)
+				                         + hash_map->super->record.value_size); i++)
 				{
 					io_printf("%c", *((item->data) + i));
 				}
@@ -229,7 +229,7 @@ oah_find_item_loc(
 {
 
 	hash_t hash 				= hash_map->compute_hash(hash_map, key,
-	        						hash_map->record.key_size);
+	        						hash_map->super.record.key_size);
 													//compute hash value for given key
 	int loc 					= oah_get_location(hash, hash_map->map_size);
 													//determine bucket based on hash
@@ -241,8 +241,8 @@ oah_find_item_loc(
 		// check to see if current item is a match based on key
 		// locate first item
 		hash_bucket_t * item 	= (((hash_bucket_t *)((hash_map->entry
-									+ (hash_map->record.key_size
-										+ hash_map->record.value_size
+									+ (hash_map->super.record.key_size
+										+ hash_map->super.record.value_size
 											+ SIZEOF(STATUS)) * loc))));
 
 		if (item->status == EMPTY)
@@ -254,7 +254,7 @@ oah_find_item_loc(
 			if (item->status != DELETED)
 			{
 				/** @todo correct compare to use proper returen type*/
-				int key_is_equal 	= hash_map->compare(item->data, key, hash_map->record.key_size);
+				int key_is_equal 	= hash_map->compare(item->data, key, hash_map->super.record.key_size);
 
 				if (IS_EQUAL == key_is_equal)
 				{
@@ -290,8 +290,8 @@ oah_delete(
 	{
 		//locate item
 		hash_bucket_t * item 	= (((hash_bucket_t *)((hash_map->entry
-		        					+ (hash_map->record.key_size
-		        						+ hash_map->record.value_size
+		        					+ (hash_map->super.record.key_size
+		        						+ hash_map->super.record.value_size
 		        							+ SIZEOF(STATUS)) * loc))));
 
 		item->status			= DELETED;					//delete item
@@ -317,12 +317,12 @@ oah_query(
 		io_printf("Item found at location %d\n", loc);
 #endif
 
-		int data_length 		= hash_map->record.key_size
-		        					+ hash_map->record.value_size;
+		int data_length 		= hash_map->super.record.key_size
+		        					+ hash_map->super.record.value_size;
 		hash_bucket_t * item	= (((hash_bucket_t *)((hash_map->entry
 		        					+ (data_length + SIZEOF(STATUS)) * loc))));
-		*value 					= (ion_value_t)malloc(sizeof(char) * (hash_map->record.value_size));
-		memcpy(*value, (ion_value_t)(item->data+hash_map->record.key_size), hash_map->record.value_size);
+		*value 					= (ion_value_t)malloc(sizeof(char) * (hash_map->super.record.value_size));
+		memcpy(*value, (ion_value_t)(item->data+hash_map->super.record.key_size), hash_map->super.record.value_size);
 		return err_ok;
 	}
 	else
