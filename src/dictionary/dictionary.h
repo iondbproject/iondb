@@ -168,18 +168,18 @@ dictionary_delete_dictionary(
 
 
 /**
-@brief		Compares two numeric keys
+@brief		Compares two unsigned integer numeric keys
 
 @details	Compares two ion_key_t assuming that they are of arbitrary
-			length and numeric (ie not a char[]).  The following values
-			will be returned:
+			length and integer, unsigned and numeric (ie not a char[]).  The
+			following values will be returned:
 
 				@p first_key > @p second_key return 1
 				@p first_key == @p second_key return 0
 				@p first_key < @p second_key return -1
 
-			This works for all numeric types for both signed and
-			unsigned values as long as both keys are of the same type.
+			This works for all integer numeric types for unsigned values
+			as long as both keys are of the same type.
 
 @param 		first_key
 				The pointer to the first key in the comparison.
@@ -193,12 +193,43 @@ dictionary_delete_dictionary(
 @return		The resulting comparison value.
  */
 char
-dictionary_compare_value(
+dictionary_compare_unsigned_value(
 	ion_key_t 		first_key,
 	ion_key_t		second_key,
 	ion_key_size_t	key_size
 );
 
+/**
+@brief		Compares two signed integer numeric keys
+
+@details	Compares two ion_key_t assuming that they are of arbitrary
+			length and integer, signed and numeric (ie not a char[]).  The
+			following values will be returned:
+
+				@p first_key > @p second_key return 1
+				@p first_key == @p second_key return 0
+				@p first_key < @p second_key return -1
+
+			This works for all integer numeric types for signed
+			values as long as both keys are of the same type.
+
+@param 		first_key
+				The pointer to the first key in the comparison.
+
+@param 		second_key
+				The pointer to the second key in the comaparison.
+
+@param 		key_size
+				The length of the key in bytes.
+
+@return		The resulting comparison value.
+ */
+char
+dictionary_compare_signed_value(
+	ion_key_t 		first_key,
+	ion_key_t		second_key,
+	ion_key_size_t	key_size
+	);
 /**
 
  @param first_key
@@ -212,6 +243,7 @@ dictionary_compare_char_array(
 	ion_key_t		second_key,
 	ion_key_size_t	key_size
 );
+
 #ifdef __cplusplus
 }
 #endif

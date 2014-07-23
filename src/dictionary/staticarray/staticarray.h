@@ -37,6 +37,7 @@ typedef struct static_array
 	long long	maxelements;	/**< Holds the maximum numbers of elements
 	 	 	 	 	 	 	 	     that can be held*/
 	long long	array_size;		/**< Holds the array size  */
+	char 			(* compare)(ion_key_t, ion_key_t, ion_key_size_t);
 	char		*array;			/**< points to the whole static array. */
 	key_type_t	key_type;		/**< Holds the type of the key. */
 } static_array_t;
@@ -70,7 +71,8 @@ sa_dictionary_create(
 		static_array_t			*starray,
 		int 					key_size,
 		int 					value_size,
-		long long				array_size
+		long long				array_size,
+		char 			(* compare)(ion_key_t, ion_key_t, ion_key_size_t)
 );
 
 /**

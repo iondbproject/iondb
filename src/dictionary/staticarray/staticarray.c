@@ -35,7 +35,8 @@ sa_dictionary_create(
 		static_array_t 			*starray,
 		int 					key_size,
 		int 					value_size,
-		long long				array_size
+		long long				array_size,
+		char				(*compare)(ion_key_t, ion_key_t, ion_key_size_t)
 )
 {
 
@@ -77,6 +78,7 @@ sa_dictionary_create(
 						starray->array_size,
 						(sizeof(bucket_t) + value_size)
 					);
+	starray->compare = compare;
 
 	return status_ok;
 }
@@ -278,29 +280,3 @@ sa_destroy(
 	return status_ok;
 }
 
-char
-dictionary_compare_value(
-	ion_key_t 		first_key,
-	ion_key_t		second_key,
-	ion_key_size_t	key_size
-)
-{
-	int k1 key_to_index(first_key, key_size);
-	int k2 key_to_index(second_key, key_size);
-
-	if(k1 == k2)
-	{
-		return "0";
-	}
-	else if(k1 > k2)
-	{
-		return "1";
-	}
-	else
-	{
-		return "2";
-	}
-}
-
-
-}

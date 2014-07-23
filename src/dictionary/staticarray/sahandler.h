@@ -54,6 +54,15 @@ sadict_query(
 );
 
 
+//To be properly commented later.
+//used as a child cursor to hold private information
+typedef struct sadict_cursor
+{
+	dict_cursor_t 		super;		/**< Cursor supertype this type inherits from */
+	int					first;		/**<First visited spot*/
+	int					current;	/**<Currently visited spot*/
+	//char				status;		/**@todo what is this for again as there are two status */
+} sadict_cursor_t;
 
 /**
 @brief		Used to insert data into the dictionary
@@ -107,6 +116,7 @@ sadict_create(
 		int 					key_size,
 		int 					value_size,
 		int 					dictionary_size,
+		char 			(* compare)(ion_key_t, ion_key_t, ion_key_size_t),
 		dictionary_handler_t 	*handler,
 		dictionary_t 			*dictionary
 );
@@ -187,7 +197,14 @@ status_t
 sadict_find(
 		dictionary_t			*dictionary,
 		predicate_t				*pred,
-		dict_cursor_t			*cursor
+		dict_cursor_t			**cursor
+);
+
+
+cursor_status_t
+sadict_equality_next(
+	dict_cursor_t 	*cursor,
+	ion_value_t		value
 );
 #endif /* SAHANDLER_H_ */
 
