@@ -54,7 +54,8 @@ sadict_create(
 		int 					key_size,
 		int 					value_size,
 		int 					dictionary_size,
-		char				(*compare)(ion_key_t, ion_key_t, ion_key_size_t),
+		char					(*compare)(ion_key_t, ion_key_t,
+											ion_key_size_t),
 		dictionary_handler_t 	*handler,
 		dictionary_t 			*dictionary
 )
@@ -66,7 +67,8 @@ sadict_create(
 	dictionary->instance = st;
 	dictionary->handler  = handler;
 
-	return sa_dictionary_create(st, key_size, value_size, dictionary_size, compare);
+	return sa_dictionary_create(st,
+			key_size, value_size, dictionary_size, compare);
 }
 
 status_t
@@ -115,7 +117,7 @@ sadict_destroy_cursor(
 		case predicate_equality:
 		{
 
-			free((*cursor)->predicate.statement.equality.equality_value);
+			free((*cursor)->predicate->statement.equality.equality_value);
 			break;
 		}
 		case predicate_range:
@@ -147,20 +149,23 @@ sadict_equality_next(
 		//check the status of the cursor and if it is not valid or at the end
 		// just exit
 		if (cursor->status == cs_cursor_uninitialized)
+		{
 			return cursor->status;
+		}
 		else if (cursor->status == cs_end_of_results)
+		{
 			return cursor->status;
+		}
 		else if ((cursor->status == cs_cursor_initialized )
 					|| (cursor->status == cs_cursor_active))
 		{
 			//in the static array there can only be one key
 			static_array_t * sa = cursor->dictionary->instance;
-			sa_get(sa, (unsigned char *) &sadict_cursor->current, &temp); //ask scott
+			sa_get(sa, (unsigned char *) &sadict_cursor->current, &temp);
 			printf("The found info is %s \n", temp);
 
 			memcpy(value, temp, sa->value_size);
 			cursor->status = cs_end_of_results;
-
 			return cursor->status;
 		}
 		return cs_invalid_cursor;
@@ -174,62 +179,62 @@ sadict_find(
 )
 {
 
-	static_array_t *sa = (static_array_t *)dictionary->instance;
+	//allocate memory for cursor
+	if ((*cursor = (dict_cursor_t *)malloc(sizeof(sadict_cursor_t))) == NULL)
+	{
+		return err_out_of_memory;
+	}
+	(*cursor)->dictionary 			= dictionary;
+	(*cursor)->type 				= pred->type;		//* types align
+	(*cursor)->status 				= cs_cursor_uninitialized;
+
+	//bind destroy method for cursor
+	(*cursor)->destroy = sadict_destroy_cursor;
+
+	//allocate predicate
+	(*cursor)->predicate = (predicate_t *)malloc(sizeof(predicate_t));
+	(*cursor)->predicate->type = pred->type;			/**@todo repair as there are duplicate types */
+
+	static_array_t *sa 				= (static_array_t *)dictionary->instance;
 	switch(pred->type)
 	{
 		case predicate_equality:
 		{
-			if ((*cursor = malloc(sizeof(sadict_cursor_t))) == NULL)
-			{
-				return err_out_of_memory;
-			}
-
-			unsigned char *key = pred->statement.equality.equality_value;
-			//initalize stuff
-			(*cursor)->dictionary 	= dictionary;
-			(*cursor)->type 		= pred->type;
-			(*cursor)->status 		= cs_cursor_uninitialized;
-			unsigned char *value;
-
-			(*cursor)->destroy 		= sadict_destroy_cursor;
-
 			//as this is an equality, need to malloc for key as well
-			if (((*cursor)->predicate.statement.equality.equality_value
-					= (ion_key_t)
-					malloc(sizeof((((static_array_t*)dictionary->instance)
-							->key_size)))) == NULL)
+			if (((*cursor)->predicate->statement.equality.equality_value =
+					(ion_key_t)malloc((((static_array_t*)dictionary->instance)->
+							key_size))) == NULL)
 			{
+				free((*cursor)->predicate);
+				free(*cursor);						//cleanup
 				return err_out_of_memory;
 			}
 
-			memcpy((*cursor)->predicate.statement.equality.equality_value,
+			unsigned char *value;
+			unsigned char *key		= pred->statement.equality.equality_value;
+
+			memcpy((*cursor)->predicate->statement.equality.equality_value,
 					pred->statement.equality.equality_value,
 					(((static_array_t*)dictionary->instance)->key_size));
 
 			long long k = key_to_index(
-					(*cursor)->predicate.statement.equality.equality_value,
-					(((static_array_t*)dictionary->instance)->key_size));
+			(*cursor)->predicate->statement.equality.equality_value,
+			(((static_array_t*)dictionary->instance)->key_size));
 
-			if(k >= sa->maxelements || k < 0) //if the key is too small
+			if(sa_get(sa, key, &value) == status_empty_slot)
 			{
-				(*cursor)->status = cs_end_of_results;//scott did this
-				return status_incorrect_keysize;
-			}
-			// The requested location is empty
-			else if(sa_get(sa, key, &value) == status_empty_slot)
-			{
-				(*cursor)->status = cs_end_of_results;//scott did this
+				(*cursor)->status	= cs_invalid_cursor;
 				return status_empty_slot;
 			}
 			else
 			{
 				//setting up more information
-				(*cursor)->status = cs_cursor_initialized;
-				(*cursor)->next = sadict_equality_next;
+				(*cursor)->status	 			= cs_cursor_initialized;
+				(*cursor)->next 				= sadict_equality_next;
 
-				sadict_cursor_t *sadict_cursor = (sadict_cursor_t *)(*cursor);
-				sadict_cursor->current = k;
-				sadict_cursor->first = k;
+				sadict_cursor_t *sadict_cursor 	= (sadict_cursor_t *)(*cursor);
+				sadict_cursor->current 		 	= k;
+				sadict_cursor->first 			= k;
 			}
 
 			break;

@@ -614,7 +614,7 @@ void test_valid_find(CuTest *tc){
 
 	//makes sure that the right information is returned
 	CuAssertTrue(tc, cursor->status == cs_end_of_results);
-	printf("The value returned was %s \n",v);
+	printf("The value returned was %s \n\n",v);
 	CuAssertTrue(tc, strcmp((char *) v, (char *) value)==0);
 
 	//calls next again. There is no next
@@ -622,6 +622,43 @@ void test_valid_find(CuTest *tc){
 	CuAssertTrue(tc, y == cs_end_of_results);
 }
 
+void test_blank_find(CuTest *tc){
+
+	printf("This is for test_blank_find\n");
+	printf("------------------------------------------------\n");
+	//Sets up data until comment marker
+	int key_size 			 = 1;
+	int value_size 			 = 20;
+	long long array_size 	 = 0;
+
+	unsigned char value[]	 = "This is a test";
+	unsigned char key[] 	 = "a";
+	unsigned char invalid_key[] 	 = "b";
+
+	dictionary_t dictionary;
+	dict_cursor_t	*cursor;
+	predicate_t	pred;
+	dictionary_handler_t handler;
+
+	pred.type 								= predicate_equality;
+	pred.statement.equality.equality_value 	= invalid_key;
+
+	sadict_init(&handler);
+	dictionary_create(&handler, &dictionary, key_type_char_array, key_size,value_size,array_size);
+
+	handler.insert(&dictionary, key, value);
+	//long long t = key_to_index(key, key_size);
+
+	//done setting up data
+
+	printf("Right before the find\n");
+	//calls the find method
+	status_t result = handler.find(&dictionary, &pred, &cursor);
+	printf("After the find\n");
+
+	CuAssertTrue(tc, result 		== status_empty_slot);
+	CuAssertTrue(tc, cursor->status	== cs_invalid_cursor);
+}
 
 /*
  @brief		calls all the insert tests
@@ -636,7 +673,8 @@ void insert_tests(CuSuite *suite) {
 
 void find_tests(CuSuite *suite){
 
-	SUITE_ADD_TEST(suite, test_valid_find);
+	//SUITE_ADD_TEST(suite, test_valid_find);
+	SUITE_ADD_TEST(suite, test_blank_find);
 
 }
 
@@ -942,10 +980,12 @@ CuSuite*
 open_address_hash_handler_getsuite() {
 	CuSuite *suite = CuSuiteNew();
 
-	SUITE_ADD_TEST(suite, initalize_hash_handler_tests);
-	SUITE_ADD_TEST(suite, create_hash_handler_tests);
-	SUITE_ADD_TEST(suite, destroy_hash_handler_tests);
+//	SUITE_ADD_TEST(suite, initalize_hash_handler_tests);
+//	SUITE_ADD_TEST(suite, create_hash_handler_tests);
+//	SUITE_ADD_TEST(suite, destroy_hash_handler_tests);
 	SUITE_ADD_TEST(suite, test_valid_find);
+	SUITE_ADD_TEST(suite, test_blank_find);
+
 	return suite;
 }
 

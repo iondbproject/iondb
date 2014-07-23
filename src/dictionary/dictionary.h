@@ -217,7 +217,7 @@ dictionary_compare_unsigned_value(
 				The pointer to the first key in the comparison.
 
 @param 		second_key
-				The pointer to the second key in the comaparison.
+				The pointer to the second key in the comparison.
 
 @param 		key_size
 				The length of the key in bytes.
@@ -243,6 +243,8 @@ dictionary_compare_char_array(
 	ion_key_t		second_key,
 	ion_key_size_t	key_size
 );
+
+
 
 #ifdef __cplusplus
 }

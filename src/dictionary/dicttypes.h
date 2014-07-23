@@ -41,6 +41,13 @@ typedef struct predicate 			predicate_t;
 
 typedef union predicate_statement	predicate_statement_t;
 
+typedef enum comparison
+{
+	A_lt_B	= -1,							/**<The result for the comparison operation is A <= B */
+	A_equ_B = 0,							/**<The result for the comparison operation is A == B */
+	A_gt_B = 1								/**<The result for the comparison operation is A >= B */
+}comparsion_t;
+
 enum cursor_status
 {
 	cs_invalid_index = -1,					/**<Invalid index within cursor*/
@@ -193,7 +200,7 @@ struct dictionary_cursor
 	cursor_type_t			type;			/**< Cursor type designator. */
 	cursor_status_t			status;			/**< Status of last cursor call. */
 	dictionary_t			*dictionary;	/**< Reference to the dictionary */
-	predicate_t				predicate;		/**< The predicate for the cursor */
+	predicate_t				*predicate;		/**< The predicate for the cursor */
 	cursor_status_t			(* next)(dict_cursor_t *, ion_value_t value);
 											/**< Next function binding *cursor_status_t)*/
 	void					(* destroy)(dict_cursor_t **);
