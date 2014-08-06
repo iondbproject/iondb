@@ -153,7 +153,9 @@ dictionary_compare_signed_value(
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 	//check the MSByte as signed
 	idx = key_size - 1;						//Start at the MSB
-	//printf("key 1: %i key 2: %i \n",*(char *)(first_key+idx),*(char *)(second_key+idx));
+#if (DEBUG == 1)
+	printf("key 1: %i key 2: %i \n",*(char *)(first_key+idx),*(char *)(second_key+idx));
+#endif
 	if ((return_value = ((*(char *)(first_key+idx) > *(char *)(second_key+idx)) - (*(char *)(first_key+idx) < *(char *)(second_key+idx)))) != ZERO)
 		{
 			return return_value;
@@ -161,7 +163,6 @@ dictionary_compare_signed_value(
 	//and then the rest as unsigned
 	for (idx = key_size - 2; idx >= 0; idx--)
 	{
-		//printf("key 1: %i key 2: %i \n",*(char *)(first_key+idx),*(char *)(second_key+idx));
 		if ((return_value = ((*(first_key+idx) > *(second_key+idx)) - (*(first_key+idx) < *(second_key+idx)))) != ZERO)
 		{
 			return return_value;
@@ -191,3 +192,48 @@ dictionary_compare_char_array(
 {
 	return memcmp((char *)first_key, (char *)second_key, key_size);
 }
+
+
+/*
+err_t
+dictionary_build_predicate(
+	dictionary_t			*dictionary,
+	predicate_t				*predicate,
+	predicate_operator_t	type,
+	ion_key_t				key_1,
+	...
+)
+{
+	va_list arg_list;
+
+	va_start (arg_list, key_1);         // Initialize the argument list.
+
+	predicate = (predicate_t *)malloc(sizeof(predicate_t));
+
+	predicate->type = type;
+
+	switch(type)
+	{
+		case predicate_equality:
+		{
+			//predicate->statement.equality.equality_value = (ion_key_t)malloc(sizeof(ion_key_t)*(hashdictionary->instance
+			break;
+		}
+		case predicate_range:
+		{
+			break;
+		}
+		case predicate_predicate:
+		{
+			break;
+		}
+		default:
+		{
+			break;
+		}
+	}
+
+
+
+}
+*/

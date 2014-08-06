@@ -6,7 +6,7 @@
 #define SYSTEM_H_
 
 #define USING_ECLIPSE 	1
-#define DEBUG 			1
+#define DEBUG 			0
 #define IS_EQUAL 		0
 #define ZERO			0
 
@@ -22,6 +22,16 @@ enum status
 	status_item_not_found,				/**< status_item_not_found */
 	status_duplicate_key, 				/**< status_duplicate_key */
 };
+
+
+/**
+@brief		Struct used to maintain information about size of key and value.
+ */
+typedef struct record
+{
+	int 			key_size;			/**< the size of the key in bytes */
+	int 			value_size;			/**< the size of the value in bytes */
+} record_t;
 
 typedef char status_t;
 

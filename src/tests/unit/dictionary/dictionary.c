@@ -181,7 +181,7 @@ runalltests_dictionary()
 	CuSuite		*suite	= dictionary_getsuite();
 
 	CuSuiteRun(suite);
-	CuSuiteSummary(suite, output);
+	//CuSuiteSummary(suite, output);
 	CuSuiteDetails(suite, output);
 	printf("%s\n", output->buffer);
 

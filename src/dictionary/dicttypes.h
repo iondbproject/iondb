@@ -41,6 +41,13 @@ typedef struct predicate 			predicate_t;
 
 typedef union predicate_statement	predicate_statement_t;
 
+typedef enum comparison
+{
+	A_lt_B	= -1,							/**<The result for the comparison operation is A <= B */
+	A_equ_B = 0,							/**<The result for the comparison operation is A == B */
+	A_gt_B = 1								/**<The result for the comparison operation is A >= B */
+}comparsion_t;
+
 enum cursor_status
 {
 	cs_invalid_index = -1,					/**<Invalid index within cursor*/
@@ -65,7 +72,7 @@ struct dictionary_handler
 {
 	err_t	(* insert)(dictionary_t *, ion_key_t, ion_value_t);
 		/**< A pointer to the dictionaries insertion function. */
-	err_t	(* create_dictionary)(key_type_t, int, int, int, char (*)(ion_key_t, ion_key_t, ion_key_size_t), dictionary_handler_t * , dictionary_t *);
+	err_t	(* create_dictionary)(key_type_t, int, int, int, char (* compare)(ion_key_t, ion_key_t, ion_key_size_t), dictionary_handler_t * , dictionary_t *);
 		/**< A pointer to the dictionaries creation function. */
 	err_t	(* get)(dictionary_t *, ion_key_t, ion_value_t *);
 		/**< A pointer to the dictionaries get function. */
@@ -86,12 +93,22 @@ struct dictionary_handler
 */
 struct dictionary
 {
+
 	void					*instance;		/**< Specific instance of a
 											     collection (but we don't
 											     know type) */
 	dictionary_handler_t 	*handler;		/**< Handler for the specific type.
 											*/
 };
+
+/**
+@brief 		This is the parent for all collections
+ */
+typedef struct dictionary_parent
+{
+	key_type_t				key_type;		/**< The key type stored in the map*/
+	record_t 				record;			/**< The record structure for items*/
+} dictionary_parent_t;
 
 /**
 @brief		Dictionary cursor type designator.
@@ -193,12 +210,18 @@ struct dictionary_cursor
 	cursor_type_t			type;			/**< Cursor type designator. */
 	cursor_status_t			status;			/**< Status of last cursor call. */
 	dictionary_t			*dictionary;	/**< Reference to the dictionary */
-	predicate_t				predicate;		/**< The predicate for the cursor */
+	predicate_t				*predicate;		/**< The predicate for the cursor */
 	cursor_status_t			(* next)(dict_cursor_t *, ion_value_t value);
 											/**< Next function binding *cursor_status_t)*/
-	void					(* destroy)(dict_cursor_t *);
+	void					(* destroy)(dict_cursor_t **);
 											/**< Destroy the cursor (frees internal memory) */
 };
+
+typedef enum
+{
+	po_equalty,
+	po_range
+} predicate_operator_t;
 
 #ifdef __cplusplus
 }
