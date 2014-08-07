@@ -12,6 +12,9 @@
 extern "C" {
 #endif
 
+#include "./../dicttypes.h"
+#include "./../dictionary.h"
+
 #include <time.h> /* For random seed */
 #include "./../../io.h"
 #include "./../../kv_system.h"
@@ -37,13 +40,14 @@ typedef struct sl_node
  */
 typedef struct skiplist
 {
+	/* TODO yuck */
+	dictionary_parent_t
+				super; 		/**< Parent structure holding dictionary level
+							     information */
 	sl_node_t	*head; 		/**< Entry point into the skiplist. Does not hold
 	 	 	 	 	 	 	     any key/value information */
 	sl_level_t	maxheight;	/**< Maximum height of the skiplist in terms of
 	 	 	 	 	 	 	     the number of nodes */
-	int			key_size; 	/**< Size of key in bytes */
-	key_type_t 	key_type;	/**< Type of key stored, defined as an enum */
-	int			value_size; /**< Size of value in bytes */
 	int			pnum;		/**< Probability NUMerator, used in height gen */
 	int			pden;		/**< Probability DENominator, used in height gen */
 

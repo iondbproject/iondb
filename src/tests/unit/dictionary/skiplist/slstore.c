@@ -130,13 +130,16 @@ test_skiplist_initialize(
 	check_skiplist(&skiplist);
 #endif
 
-	CuAssertTrue(tc, skiplist.key_type 		== key_type_numeric_signed);
-	CuAssertTrue(tc, skiplist.compare 		== dictionary_compare_signed_value);
-	CuAssertTrue(tc, skiplist.key_size 		== key_size);
-	CuAssertTrue(tc, skiplist.value_size 	== value_size);
-	CuAssertTrue(tc, skiplist.maxheight 	== maxheight);
-	CuAssertTrue(tc, skiplist.pnum 			== pnum);
-	CuAssertTrue(tc, skiplist.pden 			== pden);
+	ion_key_size_t 		t_key_size 		= skiplist.super.record.key_size;
+	ion_value_size_t 	t_value_size 	= skiplist.super.record.value_size;
+
+	CuAssertTrue(tc, skiplist.super.key_type 	== key_type_numeric_signed);
+	CuAssertTrue(tc, skiplist.compare 			== dictionary_compare_signed_value);
+	CuAssertTrue(tc, t_key_size 				== key_size);
+	CuAssertTrue(tc, t_value_size 				== value_size);
+	CuAssertTrue(tc, skiplist.maxheight 		== maxheight);
+	CuAssertTrue(tc, skiplist.pnum 				== pnum);
+	CuAssertTrue(tc, skiplist.pden 				== pden);
 }
 
 /**

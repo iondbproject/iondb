@@ -23,19 +23,19 @@ sl_initialize(
 	/* TODO srand may need to be changed */
 	srand(time(NULL));
 
-	skiplist->key_size 		= key_size;
-	skiplist->key_type 		= key_type;
-	skiplist->compare 		= compare;
-	skiplist->value_size 	= value_size;
-	skiplist->maxheight 	= maxheight;
+	skiplist->super.key_type 			= key_type;
+	skiplist->super.record.key_size 	= key_size;
+	skiplist->super.record.value_size 	= value_size;
+	skiplist->compare 					= compare;
+	skiplist->maxheight 				= maxheight;
 
 	/* TODO potentially check if pden and pnum are invalid (0) */
 	skiplist->pden 			= pden;
 	skiplist->pnum 			= pnum;
 
 #ifdef DEBUG
-	DUMP(skiplist->key_size, "%d");
-	DUMP(skiplist->value_size, "%d");
+	DUMP(skiplist->super.record.key_size, "%d");
+	DUMP(skiplist->super.record.value_size, "%d");
 	DUMP(skiplist->maxheight, "%d");
 	DUMP(skiplist->pnum, "%d");
 	DUMP(skiplist->pden, "%d");
@@ -89,8 +89,8 @@ sl_insert(
 )
 {
 	/* TODO Should this be refactored to be size_t? */
-	int 		key_size 	= skiplist->key_size;
-	int 		value_size 	= skiplist->value_size;
+	int 		key_size 	= skiplist->super.record.key_size;
+	int 		value_size 	= skiplist->super.record.value_size;
 
 	sl_node_t 	*newnode 	= malloc(sizeof(sl_node_t));
 	newnode->height 		= sl_gen_level(skiplist);
@@ -130,8 +130,8 @@ sl_query(
 )
 {
 	/* TODO These should be size_t */
-	int 		key_size 	= skiplist->key_size;
-	int 		value_size 	= skiplist->value_size;
+	int 		key_size 	= skiplist->super.record.key_size;
+	int 		value_size 	= skiplist->super.record.value_size;
 	*value 					= NULL; // Delay initialization
 	sl_node_t 	*cursor 	= sl_find_node(skiplist, key);
 
@@ -155,8 +155,8 @@ sl_update(
 )
 {
 	/* TODO size_t */
-	int 		key_size 	= skiplist->key_size;
-	int 		value_size 	= skiplist->value_size;
+	int 		key_size 	= skiplist->super.record.key_size;
+	int 		value_size 	= skiplist->super.record.value_size;
 	sl_node_t 	*cursor 	= sl_find_node(skiplist, key);
 
 	/* If the key doesn't exist in the skiplist... */
@@ -182,7 +182,7 @@ sl_delete(
 )
 {
 	/* TODO size_t this */
-	int 		key_size 	= skiplist->key_size;
+	int 		key_size 	= skiplist->super.record.key_size;
 
 	sl_node_t 	*cursor 	= skiplist->head;
 	sl_level_t 	h;
@@ -231,7 +231,7 @@ sl_find_node(
 	ion_key_t 		key
 )
 {
-	int 		key_size 	= skiplist->key_size;
+	int 		key_size 	= skiplist->super.record.key_size;
 	sl_node_t* 	cursor 		= skiplist->head;
 	sl_level_t 	h;
 
