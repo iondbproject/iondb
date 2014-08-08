@@ -17,6 +17,27 @@
 
 #define PRINT_HEADER(fcn) io_printf("=== [%s] ===\n", fcn)
 
+
+/**
+@brief 		Insert brief here
+
+@param 		tc
+				CuTest dependency
+
+void
+test_empty_template(
+	CuTest 		*tc
+)
+{
+	PRINT_HEADER("test_empty_template");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+
+	sl_destroy(&skiplist);
+} */
+
+
 /* 1 Copy occurrence in pet demo skiplist.c */
 void
 check_skiplist(
@@ -1493,6 +1514,104 @@ test_skiplist_delete_then_insert_several(
 }
 
 /**
+@brief 		Tests a deletion in a skiplist containing several elements, all of
+			the same key. The assertion is that all elements should be deleted,
+			with nothing remaining in the skiplist.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_delete_several_same_key(
+	CuTest 		*tc
+)
+{
+	PRINT_HEADER("test_skiplist_delete_several_same_key");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	int i;
+	for(i = 0; i < 100; i++)
+	{
+		/* TODO collapse these into macros, so that this fits 80 cols */
+		sl_insert(&skiplist, (ion_key_t) &(int) {64}, (ion_value_t) (char*) {"samez"});
+	}
+
+#ifdef DEBUG
+	printf("%s\n", "** INSERT **");
+	check_skiplist(&skiplist);
+#endif
+
+	err_t status = sl_delete(&skiplist, (ion_key_t) &(int) {64});
+
+#ifdef DEBUG
+	printf("%s\n", "** DELETE **");
+	check_skiplist(&skiplist);
+#endif
+
+	int h;
+	for(h = skiplist.head->height; h >= 0; h--)
+	{
+		CuAssertTrue(tc, status == err_ok);
+		CuAssertTrue(tc, skiplist.head->next[h] == NULL);
+	}
+
+	sl_destroy(&skiplist);
+}
+
+/**
+@brief 		Tests a deletion in a skiplist containing several elements, all of
+			the same key. The assertion is that all elements should be deleted,
+			with nothing remaining in the skiplist.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_delete_several_same_key_in_mix(
+	CuTest 		*tc
+)
+{
+	PRINT_HEADER("test_skiplist_delete_several_same_key_in_mix");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	sl_insert(&skiplist, (ion_key_t) &(int) {32}, (ion_value_t) (char*) {"samez"});
+	sl_insert(&skiplist, (ion_key_t) &(int) {33}, (ion_value_t) (char*) {"samez"});
+	sl_insert(&skiplist, (ion_key_t) &(int) {35}, (ion_value_t) (char*) {"samez"});
+
+	int i;
+	for(i = 0; i < 100; i++)
+	{
+		/* TODO collapse these into macros, so that this fits 80 cols */
+		sl_insert(&skiplist, (ion_key_t) &(int) {55}, (ion_value_t) (char*) {"samez"});
+	}
+
+
+	sl_insert(&skiplist, (ion_key_t) &(int) {100}, (ion_value_t) (char*) {"samez"});
+	sl_insert(&skiplist, (ion_key_t) &(int) {101}, (ion_value_t) (char*) {"samez"});
+
+#ifdef DEBUG
+	printf("%s\n", "** INSERT **");
+	check_skiplist(&skiplist);
+#endif
+
+	err_t status = sl_delete(&skiplist, (ion_key_t) &(int) {55});
+
+#ifdef DEBUG
+	printf("%s\n", "** DELETE **");
+	check_skiplist(&skiplist);
+#endif
+
+	CuAssertTrue(tc, status == err_ok);
+	/* TODO collapse these into macros, so that this fits 80 cols */
+	sl_node_t 	*find = sl_find_node(&skiplist, (ion_key_t) &(int) {55});
+	CuAssertTrue(tc, skiplist.compare(find->key, (ion_key_t) &(int) {55}, skiplist.super.record.key_size) != 0);
+
+	sl_destroy(&skiplist);
+}
+
+/**
 @brief 		Tests a skiplist with different initialization parameters than
 			usual. Each basic operation of insert, query, and delete are tested
 			on the non-standard structure.
@@ -1679,6 +1798,8 @@ skiplist_getsuite()
 	SUITE_ADD_TEST(suite, test_skiplist_delete_single_several);
 	SUITE_ADD_TEST(suite, test_skiplist_delete_single_several_noncont);
 	SUITE_ADD_TEST(suite, test_skiplist_delete_several_all);
+	SUITE_ADD_TEST(suite, test_skiplist_delete_several_same_key);
+	SUITE_ADD_TEST(suite, test_skiplist_delete_several_same_key_in_mix);
 
 	/* Update Tests */
 	SUITE_ADD_TEST(suite, test_skiplist_update_single_nonexist);

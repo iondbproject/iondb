@@ -165,13 +165,12 @@ sl_update(
 );
 
 /**
-@brief 		Attempts to delete the key/value pair stored at the given @p key.
+@brief 		Attempts to delete all key/value pairs stored at the given @p key.
 
-@details 	Attempts to delete the key/value pair stored at the given @p key.
+@details 	Attempts to delete all key/value pairs stored at the given @p key.
 			Returns "err_item_not_found" if the requested @p key is not in
 			the skiplist, and "err_ok" if the deletion was successful. Any
-			memory previously used for the deleted key/value pair is assumed
-			to be freed.
+			memory previously used for the deleted key/value pair(s) is freed.
 
 @param 		skiplist
 				The skiplist in which to delete from

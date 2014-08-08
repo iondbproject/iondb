@@ -30,8 +30,8 @@ sl_initialize(
 	skiplist->maxheight 				= maxheight;
 
 	/* TODO potentially check if pden and pnum are invalid (0) */
-	skiplist->pden 			= pden;
-	skiplist->pnum 			= pnum;
+	skiplist->pden 						= pden;
+	skiplist->pnum 						= pnum;
 
 #ifdef DEBUG
 	DUMP(skiplist->super.record.key_size, "%d");
@@ -183,6 +183,8 @@ sl_delete(
 {
 	/* TODO size_t this */
 	int 		key_size 	= skiplist->super.record.key_size;
+	/* Default return is no item */
+	err_t 		status 		= err_item_not_found;
 
 	sl_node_t 	*cursor 	= skiplist->head;
 	sl_level_t 	h;
@@ -198,31 +200,38 @@ sl_delete(
 		if(NULL != cursor->next[h] &&
 					skiplist->compare(cursor->next[h]->key, key, key_size) == 0)
 		{
-			sl_node_t 		*tofree 	= cursor->next[h];
-			sl_node_t 		*relink 	= cursor->next[h];
-			sl_level_t 		link_h 		= relink->height;
-			while(link_h >= 0)
+			sl_node_t 			*oldcursor 	= cursor;
+			while(NULL != cursor->next[h] &&
+					skiplist->compare(cursor->next[h]->key, key, key_size) == 0)
 			{
-				while(cursor->next[link_h] != relink)
+				sl_node_t 		*tofree 	= cursor->next[h];
+				sl_node_t 		*relink 	= cursor->next[h];
+				sl_level_t 		link_h 		= relink->height;
+				while(link_h >= 0)
 				{
-					cursor = cursor->next[link_h];
+					while(cursor->next[link_h] != relink)
+					{
+						cursor = cursor->next[link_h];
+					}
+
+					sl_node_t 	*jump 		= relink->next[link_h];
+					cursor->next[link_h] 	= jump;
+					link_h--;
 				}
 
-				sl_node_t 	*jump 		= relink->next[link_h];
-				cursor->next[link_h] 	= jump;
-				link_h--;
+				free(tofree->key);
+				free(tofree->value);
+				free(tofree->next);
+				free(tofree);
+
+				cursor = oldcursor;
 			}
 
-			free(tofree->key);
-			free(tofree->value);
-			free(tofree->next);
-			free(tofree);
-
-			return err_ok;
+			status = err_ok;
 		}
 	}
 
-	return err_item_not_found;
+	return status;
 }
 
 sl_node_t*
