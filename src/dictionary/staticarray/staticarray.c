@@ -8,13 +8,15 @@
 
 #include "staticarray.h"
 
-long long
+
+//used to calculate max size of array
+sa_max_size_t
 ipow(
 	int base,
 	int exp
 )
 {
-	long long temp = 1;
+	sa_max_size_t temp = 1;
 
 	int x;
 
@@ -33,17 +35,17 @@ ipow(
 status_t
 sa_dictionary_create(
 		static_array_t 			*starray,
-		int 					key_size,
-		int 					value_size,
-		long long				array_size,
-		char				(*compare)(ion_key_t, ion_key_t, ion_key_size_t)
+		ion_key_size_t 			key_size,
+		ion_value_size_t 		value_size,
+		sa_max_size_t			array_size,
+		char					(*compare)(ion_key_t, ion_key_t, ion_key_size_t)
 )
 {
 
 	// checks for invalid key size
 	if (key_size > 3 || key_size <= 0)
 	{
-		return status_incorrect_keysize;
+		return status_key_out_of_bounds;
 
 	}
 	else
@@ -56,7 +58,7 @@ sa_dictionary_create(
 	// checks for invalid array size
 	if(array_size <= 0 || array_size > starray->maxelements)
 	{
-		starray->array_size  = starray->maxelements;
+		return status_array_size_out_of_bounds;
 	}
 	else
 	{
@@ -78,6 +80,22 @@ sa_dictionary_create(
 						starray->array_size,
 						(sizeof(bucket_t) + value_size)
 					);
+
+	int j = 0;
+	//makes pointer pointing at first bucket location
+	bucket_t *bb = (bucket_t *) starray->array;
+
+	// points at the beinging of the char array section
+	ion_value_t value_start = ((ion_value_t) bb) +
+			starray->array_size * sizeof(bucket_t);
+
+	//makes all pointer point to locations in the char array section
+	//this is to reduce code in other functions
+	for(j = 0; j < starray->array_size; j++)
+	{
+		bb[j].value = &value_start[j*starray->value_size];
+	}
+
 	starray->compare = compare;
 
 	return status_ok;
@@ -90,41 +108,25 @@ sa_update(
 		ion_value_t 			value
 )
 {
-	// gets the maximum number of elements that could exist
-	long m = starray->maxelements;
+	bucket_t *b = NULL;
 
-	// gets key_size
-	int s = starray->key_size;
+	status_t sat = find_bucket(&b, starray,key);
 
-	// gets the index from the key
-	long k = key_to_index(key, s);
-
-	long long value_key = k * starray->value_size;
-
-	// b points at the begining of the bucket array
-	bucket_t *b = (bucket_t *) starray->array;
-
-	// points at the beinging of the char array section
-	ion_value_t value_start = ((ion_value_t) b) + m * sizeof(bucket_t);
-
-	if (k >= starray->array_size || k < 0)
+	if (sat != status_ok)
 	{
-		return 	status_incorrect_keysize;
+		return 	sat;
 	}
 	else
 	{
 		// copies value to the location in the char array section
-		memcpy(&(value_start[value_key]), value,starray->value_size);
-		bucket_t *current 	= &b[k];
+		memcpy(b->value, value,starray->value_size);
 
-		if (current->status == EMPTY)
+		if (b->status == EMPTY)
 		{
-			current->value 	= &(value_start[value_key]);
-			current->status = OCCUPIED;
+			b->status = OCCUPIED;
 		}
 		return status_ok;
 	}
-
 }
 
 void
@@ -140,36 +142,31 @@ sa_get(
 	ion_value_t 				*value
 )
 {
+	int v_size = starray->value_size;
 
-		int v_size = starray->value_size;
+	*value 	   = malloc(sizeof(v_size));
 
-		*value 	   = malloc(sizeof(v_size));
+	bucket_t *b = NULL;
 
-		// gets key_size
-		int s = starray->key_size;
+	status_t s 	= find_bucket(&b, starray,key);
 
-		// gets the index from the key
-		long k = key_to_index(key, s);
-
-		// b points at the begining of the bucket array
-		bucket_t *b = (bucket_t *) starray->array;
-
-		// char *value_start = b[k].value;
-
-		if (k >= starray->array_size || k < 0)
-		{
-			return status_incorrect_keysize;
-		}
-		else if (b[k].status == EMPTY)
-		{
-			return status_empty_slot;
-		}
-		else
-		{
-			strcpy((char*)*value, (char*)b[k].value);
-			return status_ok;
-		}
+	if (s != status_ok)
+	{
+		return s;
+	}
+	else if (b->status == EMPTY)
+	{
+		return status_empty_slot;
+	}
+	else
+	{
+		strcpy((char*)*value, (char*)b->value);
+		return status_ok;
+	}
 }
+
+
+
 
 status_t
 sa_insert(
@@ -178,51 +175,33 @@ sa_insert(
 	ion_value_t 				value
 )
 {
-	// gets the maximum number of elements that could exist
-	long long m = starray->maxelements;
+	bucket_t *b = NULL;
 
-	// gets key_size
-	int s				= starray->key_size;
+	status_t s 	= find_bucket(&b, starray,key);
 
-	// b points at the begining of the bucket array
-	bucket_t *b			= (bucket_t *) starray->array;
-
-	// points at the beinging of the char array section
-	ion_value_t value_start	= ((ion_value_t) b) + m*sizeof(bucket_t);
-
-
-	// gets the integer version of the key
-	long long kk		= key_to_index(key, s);
-
-	//special key to find the value location
-	long long value_key = kk * starray->value_size;
-
-	bucket_t *current 	= &b[kk];
-
-	if (current->status == OCCUPIED)
+	if (s != status_ok)
+	{
+		return s;
+	}
+	else if(b->status == OCCUPIED)
 	{
 		return status_occupied;
 	}
-	else if (kk >= starray->array_size || kk <= 0)
-	{
-		return status_incorrect_keysize;
-	}
 	else
 	{
-		memcpy(&(value_start[value_key]), value, starray->value_size);
-		current->value	= &(value_start[value_key]);
-		current->status	= OCCUPIED;
+		memcpy(b->value, value, starray->value_size);
+		b->status = OCCUPIED;
 		return status_ok;
 	}
 }
 
-long long
+sa_max_size_t
 key_to_index(
-		ion_key_t key,
-		int key_size
+		ion_key_t 		key,
+		ion_key_size_t 	key_size
 )
 {
-	long long result = 0;
+	sa_max_size_t result = 0;
 	memcpy((char *)&result, key, key_size);
 
 	return result;
@@ -234,34 +213,21 @@ sa_delete(
 	ion_key_t			key
 )
 {
+	bucket_t *b = NULL;
+	status_t s 	= find_bucket(&b, starray,key);
 
-	// gets the maximum number of elements that could exist
-	long m				= starray->maxelements;
-
-	// gets key_size
-	int s 				= starray->key_size;
-
-	// b points at the begining of the bucket array
-	bucket_t *b			= (bucket_t *) starray->array;
-
-	// points at the beinging of the char array section
-	char *value_start	= ((char *) b) + m*sizeof(bucket_t);
-
-	// gets the integer version of the key
-	long k				= key_to_index(key, s);
-
-	if (k >= starray->array_size || k<0)
+	if (s != status_ok)
 	{
-		return 	status_incorrect_keysize;
+		return 	s;
 	}
-	else if(b[k].status == EMPTY)
+	else if(b->status == EMPTY)
 	{
 		return status_empty_slot;
 	}
 	else
 	{
-		b[k].status 	= EMPTY;
-		memcpy(&(value_start[k]), "", starray->value_size);
+		b->status 	= EMPTY;
+		memcpy(b->value, "", starray->value_size);
 		return status_ok;
 	}
 }
@@ -280,3 +246,25 @@ sa_destroy(
 	return status_ok;
 }
 
+
+status_t
+find_bucket(
+	bucket_t 		**b,
+	static_array_t	*starray,
+	ion_key_t 		key
+)
+{
+	int s = starray->key_size;
+	sa_max_size_t k = key_to_index(key, s);
+
+	if (k >= starray->array_size || k < 0)
+	{
+		return status_key_out_of_bounds;
+	}
+
+	bucket_t *bb = (bucket_t *) starray->array;
+
+	*b = &bb[k];
+
+	return status_ok;
+}

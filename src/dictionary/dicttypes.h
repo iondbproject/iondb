@@ -93,12 +93,22 @@ struct dictionary_handler
 */
 struct dictionary
 {
+
 	void					*instance;		/**< Specific instance of a
 											     collection (but we don't
 											     know type) */
 	dictionary_handler_t 	*handler;		/**< Handler for the specific type.
 											*/
 };
+
+/**
+@brief 		This is the parent for all collections
+ */
+typedef struct dictionary_parent
+{
+	key_type_t				key_type;		/**< The key type stored in the map*/
+	record_t 				record;			/**< The record structure for items*/
+} dictionary_parent_t;
 
 /**
 @brief		Dictionary cursor type designator.
@@ -206,6 +216,12 @@ struct dictionary_cursor
 	void					(* destroy)(dict_cursor_t **);
 											/**< Destroy the cursor (frees internal memory) */
 };
+
+typedef enum
+{
+	po_equalty,
+	po_range
+} predicate_operator_t;
 
 #ifdef __cplusplus
 }

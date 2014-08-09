@@ -21,13 +21,22 @@ enum status
 	status_ok,            				/**< status_ok*/
 	status_item_not_found,				/**< status_item_not_found */
 	status_duplicate_key, 				/**< status_duplicate_key */
-
-	status_incorrect_value,
-	status_incorrect_key,
-	status_incorrect_keysize,
+	status_key_out_of_bounds,
 	status_empty_slot,
+	status_incorrect_value,
 	status_occupied,
+	status_array_size_out_of_bounds,
 };
+
+
+/**
+@brief		Struct used to maintain information about size of key and value.
+ */
+typedef struct record
+{
+	int 			key_size;			/**< the size of the key in bytes */
+	int 			value_size;			/**< the size of the value in bytes */
+} record_t;
 
 typedef char status_t;
 

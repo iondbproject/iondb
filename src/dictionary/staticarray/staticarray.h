@@ -19,7 +19,20 @@
 #define EMPTY 0
 #define OCCUPIED 1
 
-long long
+#if defined GNUC || defined __llvm__ || defined __clang__
+    #include <stdint.h>
+#else
+	#include "pstdint.h"
+#endif
+
+typedef intmax_t sa_max_size_t;	/**< Used to state type of value
+											returned by ipow function */
+
+/**
+@brief    Given a base and an exponent. The function will calculate the base
+			to the exponent. This is used to calculate the max array size
+ */
+sa_max_size_t
 ipow(
 	int base,
 	int exp
@@ -32,23 +45,24 @@ ipow(
 */
 typedef struct static_array
 {
-	int			key_size;		/**< Holds the key size  */
-	int			value_size;		/**< Holds the value size  */
-	long long	maxelements;	/**< Holds the maximum numbers of elements
-	 	 	 	 	 	 	 	     that can be held*/
-	long long	array_size;		/**< Holds the array size  */
-	char 			(* compare)(ion_key_t, ion_key_t, ion_key_size_t);
-	char		*array;			/**< points to the whole static array. */
-	key_type_t	key_type;		/**< Holds the type of the key. */
+	ion_key_size_t		key_size;		/**< Holds the key size  */
+	ion_value_size_t	value_size;		/**< Holds the value size  */
+	sa_max_size_t		maxelements;	/**< Holds the maximum numbers
+											of element  that can be held*/
+	sa_max_size_t		array_size;		/**< Holds the array size  */
+	char 				(* compare)(ion_key_t, ion_key_t, ion_key_size_t);
+	char				*array;			/**< points to the whole static array */
+	key_type_t			key_type;		/**< Holds the type of the key. */
 } static_array_t;
 
 
 /**
-@brief		A struct that holds the availability of the location and a pointer to the char data
+@brief		A struct that holds the availability of the location and
+				a pointer to the char data
 */
 typedef struct bucket
 {
-	char	status;				/**< availability. EMPTY or OCCUPIED */
+	char		status;				/**< availability. EMPTY or OCCUPIED */
 	ion_value_t	value;				/**< pointer pointing to the char data */
 } bucket_t;
 
@@ -68,11 +82,11 @@ typedef struct bucket
 */
 status_t
 sa_dictionary_create(
-		static_array_t			*starray,
-		int 					key_size,
-		int 					value_size,
-		long long				array_size,
-		char 			(* compare)(ion_key_t, ion_key_t, ion_key_size_t)
+	static_array_t		*starray,
+	ion_key_size_t 		key_size,
+	ion_value_size_t 	value_size,
+	sa_max_size_t		array_size,
+	char 				(* compare)(ion_key_t, ion_key_t, ion_key_size_t)
 );
 
 /**
@@ -106,7 +120,8 @@ sa_find(); //to be made later
 @param 		key
 				a pointer to the key
 @param		value
-				the value is found and returned to the user through this double pointer
+				the value is found and returned to the user through
+				this double pointer
 
 @return		The status describing the result of the getting of information.
 */
@@ -149,10 +164,10 @@ sa_insert(
 @return	the numerical key to be treated as an index
 */
 
-long long
+sa_max_size_t
 key_to_index(
 		ion_key_t				key,
-		int						key_size
+		ion_key_size_t			key_size
 );
 
 
@@ -184,6 +199,30 @@ sa_delete(
 status_t
 sa_destroy(
 	static_array_t			*starray
+);
+
+
+/**
+@brief		a function used by others to location the required bucket and to
+			error check that the correct information is given. (key size)
+
+@param		b
+				A pointer that the bucket will be return in
+@param		starray
+				A pointer to the static array that will be searched
+
+@param		key
+				The key that will be used to search with
+
+@return		Will return an error is any were found. Otherwise it will return
+				status okay.
+ */
+
+status_t
+find_bucket(
+	bucket_t 		**b,
+	static_array_t	*starray,
+	ion_key_t 		key
 );
 
 #endif /* STATICARRAY_H_ */

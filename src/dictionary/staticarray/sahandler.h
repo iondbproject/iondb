@@ -58,10 +58,13 @@ sadict_query(
 //used as a child cursor to hold private information
 typedef struct sadict_cursor
 {
-	dict_cursor_t 		super;		/**< Cursor supertype this type inherits from */
-	int					first;		/**<First visited spot*/
-	int					current;	/**<Currently visited spot*/
-	//char				status;		/**@todo what is this for again as there are two status */
+	dict_cursor_t 		super;		/**< Cursor supertype this type inherits
+										from */
+	int					first;		/**< First visited spot*/
+	int					last;		/**< Last Spot to visit */
+	int					current;	/**< Currently visited spot*/
+	//char				status;		/**@todo what is this for
+										//again as there are two status */
 } sadict_cursor_t;
 
 /**
@@ -165,7 +168,8 @@ sadict_destroy(
 				a pointer to the key. the key is the index
 
 @param		value
-				a pointer to the value that will replace the value at the key location
+				a pointer to the value that will replace the
+				value at the key location
 
 @return		The status of the update.
 */
@@ -203,6 +207,12 @@ sadict_find(
 
 cursor_status_t
 sadict_equality_next(
+	dict_cursor_t 	*cursor,
+	ion_value_t		value
+);
+
+cursor_status_t
+sadict_range_next(
 	dict_cursor_t 	*cursor,
 	ion_value_t		value
 );
