@@ -36,13 +36,13 @@ open_address_staticarray_getsuite()
 void
 runalltests_open_address_staticarray()
 {
-	CuString *output = CuStringNew();
-	CuSuite *suite = open_address_staticarray_getsuite();
+	CuString 	*output 	= CuStringNew();
+	CuSuite 	*suite 		= open_address_staticarray_getsuite();
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);
 	CuSuiteDetails(suite, output);
-	printf("%s\n", output->buffer);
+	io_printf("%s\n", output->buffer);
 
 	CuSuiteDelete(suite);
 	CuStringDelete(output);
@@ -76,18 +76,18 @@ test_create(
 		CuTest *tc
 )
 {
-	ion_key_size_t key_size 		= 3;
-	ion_value_size_t value_size 	= 100;
-	sa_max_size_t array_size 		= 100;
+	ion_key_size_t 		key_size 		= 3;
+	ion_value_size_t 	value_size 	= 100;
+	sa_max_size_t 		array_size 		= 100;
 
 	static_array_t st;
 
-	printf("This is for test_create\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_create\n");
+	io_printf("------------------------------------------------\n");
 
 	sa_dictionary_create(&st, key_size, value_size, array_size,
 			dictionary_compare_char_array);
-	printf("finished create method\nNow Clearing heap memory\n\n");
+	io_printf("finished create method\nNow Clearing heap memory\n\n");
 
 	sa_max_size_t x;
 	int length 	= sizeof(bucket_t);
@@ -99,7 +99,7 @@ test_create(
 
 	free(st.array);
 	st.array = NULL;
-	printf("\n");
+	io_printf("\n");
 }
 
 /*
@@ -112,16 +112,16 @@ test_create_invalid_key_size(
 		CuTest *tc
 )
 {
-	ion_key_size_t key_size 	= 7;
-	ion_key_size_t key_size2 	= -5;
-	ion_value_size_t value_size = 50;
-	ion_key_size_t key_size3 	= 3;
-	sa_max_size_t array_size 	= ipow(256, 3) + 13;
+	ion_key_size_t 		key_size 	= 7;
+	ion_key_size_t 		key_size2 	= -5;
+	ion_value_size_t 	value_size 	= 50;
+	ion_key_size_t 		key_size3 	= 3;
+	sa_max_size_t 		array_size 	= ipow(256, 3) + 13;
 
 	static_array_t st;
-	printf("This is for test_create_invalid_key_size\n");
-	printf("------------------------------------------------\n");
-	printf("A key size of 7 was entered when the max is 3. The error was "
+	io_printf("This is for test_create_invalid_key_size\n");
+	io_printf("------------------------------------------------\n");
+	io_printf("A key size of 7 was entered when the max is 3. The error was "
 			"caught\n\n");
 
 	status_t result = sa_dictionary_create(&st, key_size, value_size,
@@ -149,16 +149,16 @@ test_create_max_size(
 		CuTest *tc
 )
 {
-	ion_key_size_t key_size 	= 3;
-	ion_value_size_t value_size = 10000;
-	sa_max_size_t array_size 	= ipow(256, 3);
+	ion_key_size_t 		key_size 	= 3;
+	ion_value_size_t 	value_size 	= 10000;
+	sa_max_size_t 		array_size 	= ipow(256, 3);
 
 	static_array_t st;
-	printf("This is for test_create_max_size\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_create_max_size\n");
+	io_printf("------------------------------------------------\n");
 	sa_dictionary_create(&st, key_size, value_size, array_size,
 			dictionary_compare_char_array);
-	printf("finished create method\nNow Clearing heap memory\n\n");
+	io_printf("finished create method\nNow Clearing heap memory\n\n");
 	sa_max_size_t x;
 	int length 	= sizeof(bucket_t);
 
@@ -169,7 +169,7 @@ test_create_max_size(
 
 	free(st.array);
 	st.array = NULL;
-	printf("\n");
+	io_printf("\n");
 }
 
 /*
@@ -182,14 +182,14 @@ test_create_invalid_value(
 		CuTest *tc
 )
 {
-	ion_key_size_t key_size 	= 1;
-	ion_value_size_t value_size	= -10000;
-	sa_max_size_t array_size 	= 256;
-	static_array_t st;
+	ion_key_size_t 		key_size 	= 1;
+	ion_value_size_t 	value_size	= -10000;
+	sa_max_size_t 		array_size 	= 256;
+	static_array_t 		st;
 
-	printf("This is for test_create_invalid_params_below\n");
-	printf("------------------------------------------------\n\n");
-	printf("A negative value size was entered. The error was caught\n\n");
+	io_printf("This is for test_create_invalid_params_below\n");
+	io_printf("------------------------------------------------\n\n");
+	io_printf("A negative value size was entered. The error was caught\n\n");
 	status_t result = sa_dictionary_create(&st, key_size, value_size,
 			array_size, dictionary_compare_char_array);
 
@@ -224,30 +224,30 @@ test_insert_valid_params(
 )
 {
 
-	ion_key_size_t key_size 	= 1;
-	ion_value_size_t value_size = 100;
-	sa_max_size_t array_size 	= 256;
+	ion_key_size_t 		key_size 	= 1;
+	ion_value_size_t 	value_size 	= 100;
+	sa_max_size_t 		array_size 	= 256;
 
 	static_array_t st;
-	printf("This is for test_insert_valid_params\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_insert_valid_params\n");
+	io_printf("------------------------------------------------\n");
 	sa_dictionary_create(&st, key_size, value_size, array_size,
 			dictionary_compare_char_array);
-	printf("Array Created\n\n");
+	io_printf("Array Created\n\n");
 
-	unsigned char value[] 		= "This is a test insert";
-	unsigned char key[] 		= "a";
-	status_t result 			= sa_insert(&st, key, value);
-	sa_max_size_t t 			= key_to_index(key, key_size);
-	bucket_t *b 				= (bucket_t *) st.array;
-	unsigned char* str 			= b[t].value;
+	unsigned char 	value[] 	= "This is a test insert";
+	unsigned char 	key[] 		= "a";
+	status_t 		result 		= sa_insert(&st, key, value);
+	sa_max_size_t 	t 			= key_to_index(key, key_size);
+	bucket_t 		*b 			= (bucket_t *) st.array;
+	unsigned char* 	str 		= b[t].value;
 
-	printf("The key is %llu\n", t);
+	io_printf("The key is %d\n", t);
 
-	printf("status: %d\n", b[t].status);
-	printf("%s\n\n", str);
+	io_printf("status: %d\n", b[t].status);
+	io_printf("%s\n\n", str);
 	CuAssertTrue(tc, result 									== status_ok);
-	CuAssertTrue(tc,strcmp((char*)b[t].value, (char*) value) 	== 0);
+	CuAssertTrue(tc, strcmp((char*)b[t].value, (char*) value) 	== 0);
 	CuAssertTrue(tc, b[t].status 								== OCCUPIED);
 
 	free(st.array);
@@ -264,28 +264,28 @@ test_insert_invalid_index(
 		CuTest *tc
 )
 {
-	ion_key_size_t key_size 	= 1;
-	ion_value_size_t value_size = 100;
-	sa_max_size_t array_size 	= 50;
+	ion_key_size_t 		key_size 	= 1;
+	ion_value_size_t 	value_size 	= 100;
+	sa_max_size_t 		array_size 	= 50;
 
 	static_array_t st;
-	printf("This is for test_insert_invalid_index\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_insert_invalid_index\n");
+	io_printf("------------------------------------------------\n");
 	sa_dictionary_create(&st, key_size, value_size, array_size,
 			dictionary_compare_char_array);
-	printf("Array Created\n\n");
+	io_printf("Array Created\n\n");
 
-	unsigned char value[] 		= "This is a test insert";
-	unsigned char key[] 		= "a";
-	sa_max_size_t k 			= key_to_index(key, 1);
-	status_t result 			= sa_insert(&st, key, value);
+	unsigned char 	value[] 	= "This is a test insert";
+	unsigned char 	key[] 		= "a";
+	sa_max_size_t 	k 			= key_to_index(key, key_size);
+	status_t 		result 		= sa_insert(&st, key, value);
 
-	printf("The key size is %d\nA key of '%s' was entered\n", key_size, key);
-	printf("The key in integer form is %llu\n The array is %llu long\n", k,
+	io_printf("The key size is %d\nA key of '%s' was entered\n", key_size, key);
+	io_printf("The key in integer form is %d\n The array is %d long\n", k,
 			array_size);
 
 	CuAssertTrue(tc, result 	== status_key_out_of_bounds);
-	printf("The error was caught\n\n");
+	io_printf("The error was caught\n\n");
 
 	free(st.array);
 	st.array = NULL;
@@ -301,16 +301,16 @@ test_insert_collision(
 		CuTest *tc
 )
 {
-	ion_key_size_t key_size 	= 1;
-	ion_value_size_t value_size = 100;
-	sa_max_size_t array_size 	= 256;
+	ion_key_size_t 		key_size 	= 1;
+	ion_value_size_t 	value_size 	= 100;
+	sa_max_size_t 		array_size 	= 256;
 
 	static_array_t st;
-	printf("This is for test_insert_collision\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_insert_collision\n");
+	io_printf("------------------------------------------------\n");
 	sa_dictionary_create(&st, key_size, value_size, array_size,
 			dictionary_compare_char_array);
-	printf("Array Created\n\n");
+	io_printf("Array Created\n\n");
 
 	unsigned char value[] 		= "This is a test insert";
 	unsigned char key[] 		= "k";
@@ -318,14 +318,14 @@ test_insert_collision(
 	unsigned char value2[] 		= "Collision is comming";
 	unsigned char key2[] 		= "k";
 
-	status_t result 			= sa_insert(&st, key, value);
-	printf("Information was inserted with the key of '%s'\n", key);
+	status_t 	  result 		= sa_insert(&st, key, value);
+	io_printf("Information was inserted with the key of '%s'\n", key);
 	CuAssertTrue(tc, result 	== status_ok);
 
-	printf("More Information was inserted with the same key, '%s'\nThe error "
+	io_printf("More Information was inserted with the same key, '%s'\nThe error "
 			"was caught and the insertion was not allowed\n\n", key);
 
-	status_t result2 			= sa_insert(&st, key2, value2);
+	status_t 	  result2 		= sa_insert(&st, key2, value2);
 	CuAssertTrue(tc, result2 	== status_occupied);
 
 	free(st.array);
@@ -359,24 +359,25 @@ test_delete_valid_case(
 		CuTest *tc
 )
 {
-	ion_key_size_t key_size 	= 1;
-	ion_value_size_t value_size	= 100;
-	sa_max_size_t array_size 	= 256;
+	ion_key_size_t 		key_size 	= 1;
+	ion_value_size_t 	value_size	= 100;
+	sa_max_size_t 		array_size 	= 256;
 
 	static_array_t st;
-	printf("This is for test_delete_valid_case\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_delete_valid_case\n");
+	io_printf("------------------------------------------------\n");
 	sa_dictionary_create(&st, key_size, value_size, array_size,
 			dictionary_compare_char_array);
-	printf("Array Created\n\n");
+	io_printf("Array Created\n\n");
 
 	unsigned char value[] 		= "This is a test insert";
 	unsigned char key[] 		= "k";
 	sa_max_size_t k 			= key_to_index(key, 1);
 
-	status_t result 			= sa_insert(&st, key, value);
-	printf("Information was inserted with the key of '%s'\n", key);
-	CuAssertTrue(tc, result == status_ok);
+	status_t 	  result 		= sa_insert(&st, key, value);
+
+	io_printf("Information was inserted with the key of '%s'\n", key);
+	CuAssertTrue(tc, result 	== status_ok);
 
 	status_t d 					= sa_delete(&st, key);
 	bucket_t *b 				= (bucket_t *) st.array;
@@ -384,7 +385,7 @@ test_delete_valid_case(
 	CuAssertTrue(tc, d 								== status_ok);
 	CuAssertTrue(tc, b[k].status					== EMPTY);
 	CuAssertTrue(tc, strcmp((char*)b[k].value, "")	== 0);
-	printf("the value is %s \n", b[k].value);
+	io_printf("the value is %s \n", b[k].value);
 
 	free(st.array);
 	st.array 					= NULL;
@@ -401,19 +402,19 @@ test_delete_empty_slot(
 )
 {
 
-	ion_key_size_t key_size 	= 1;
-	ion_value_size_t value_size = 100;
-	sa_max_size_t array_size 	= 256;
+	ion_key_size_t 		key_size 	= 1;
+	ion_value_size_t 	value_size 	= 100;
+	sa_max_size_t 		array_size 	= 256;
 
 	static_array_t st;
-	printf("This is for test_delete_empty_slot\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_delete_empty_slot\n");
+	io_printf("------------------------------------------------\n");
 	sa_dictionary_create(&st, key_size, value_size, array_size,
 			dictionary_compare_char_array);
-	printf("Array Created\n\n");
+	io_printf("Array Created\n\n");
 	unsigned char key[] 		= "k";
 
-	status_t d = sa_delete(&st, key);
+	status_t 	  	 d 			= sa_delete(&st, key);
 	CuAssertTrue(tc, d 			== status_empty_slot);
 
 	free(st.array);
@@ -430,16 +431,16 @@ test_delete_invalid_keysize(
 		CuTest *tc
 )
 {
-	ion_key_size_t key_size 	= 1;
-	ion_value_size_t value_size = 100;
-	sa_max_size_t array_size 	= 100;
+	ion_key_size_t 		key_size 	= 1;
+	ion_value_size_t 	value_size 	= 100;
+	sa_max_size_t 		array_size 	= 100;
 
 	static_array_t st;
-	printf("This is for test_delete_invalid_keysize\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_delete_invalid_keysize\n");
+	io_printf("------------------------------------------------\n");
 	sa_dictionary_create(&st, key_size, value_size, array_size,
 			dictionary_compare_char_array);
-	printf("Array Created\n\n");
+	io_printf("Array Created\n\n");
 
 	unsigned char value[] 		= "This is a test insert";
 	unsigned char key[] 		= "a";
@@ -447,10 +448,10 @@ test_delete_invalid_keysize(
 	sa_max_size_t k 			= key_to_index(invalid_key, 1);
 	status_t result 			= sa_insert(&st, key, value);
 
-	printf("Information was inserted with the key of '%s'\n", key);
+	io_printf("Information was inserted with the key of '%s'\n", key);
 	CuAssertTrue(tc, result 	== status_ok);
 
-	printf("Tried to delete at index %llu when array only goes up to %llu\n\n",
+	io_printf("Tried to delete at index %d when array only goes up to %d\n\n",
 			k, array_size);
 	status_t d 					= sa_delete(&st, invalid_key);
 	CuAssertTrue(tc, d 			== status_key_out_of_bounds);
@@ -486,23 +487,23 @@ test_get_valid_case(
 		CuTest *tc
 )
 {
-	ion_key_size_t key_size 	= 1;
-	ion_value_size_t value_size = 100;
-	sa_max_size_t array_size 	= 256;
+	ion_key_size_t 		key_size 	= 1;
+	ion_value_size_t 	value_size 	= 100;
+	sa_max_size_t 		array_size 	= 256;
 
 	static_array_t st;
-	printf("This is for test_get_valid_case\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_get_valid_case\n");
+	io_printf("------------------------------------------------\n");
 	sa_dictionary_create(&st, key_size, value_size, array_size,
 			dictionary_compare_char_array);
-	printf("Array Created\n\n");
+	io_printf("Array Created\n\n");
 
 	unsigned char value[] 		= "This is a test insert";
 	unsigned char key[] 		= "a";
 	unsigned char *stored_data;
-	status_t result 			= sa_insert(&st, key, value);
+	status_t 	  result 		= sa_insert(&st, key, value);
 
-	printf("Information was inserted with the key of '%s' and a value of "
+	io_printf("Information was inserted with the key of '%s' and a value of "
 			"\n '%s'\n", key, value);
 
 	CuAssertTrue(tc, result 	== status_ok);
@@ -510,12 +511,12 @@ test_get_valid_case(
 	status_t get_result 		= sa_get(&st, key, &stored_data);
 
 	CuAssertTrue(tc, get_result == status_ok);
-	printf("The value retrieved was: %s\n", stored_data);
+	io_printf("The value retrieved was: %s\n", stored_data);
 
 	CuAssertTrue(tc, strcmp((char*) stored_data, (char*) value)
 								== 0);
 
-	printf("The memory address of the Data Structure is not returned\n\n");
+	io_printf("The memory address of the Data Structure is not returned\n\n");
 	CuAssertTrue(tc, &stored_data
 								!= &((bucket_t *) st.array)->value);
 
@@ -533,27 +534,26 @@ test_get_invalid_key(
 		CuTest *tc
 )
 {
-	ion_key_size_t key_size 	= 1;
-	ion_value_size_t value_size = 100;
-	sa_max_size_t array_size 	= 50;
+	ion_key_size_t 		key_size 	= 1;
+	ion_value_size_t 	value_size 	= 100;
+	sa_max_size_t 		array_size 	= 50;
 
 	static_array_t st;
-	printf("This is for test_get_invalid_key\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_get_invalid_key\n");
+	io_printf("------------------------------------------------\n");
 	sa_dictionary_create(&st, key_size, value_size, array_size,
 			dictionary_compare_char_array);
-	printf("Array Created\n\n");
+	io_printf("Array Created\n\n");
 
-	//unsigned char value[] = "This is a test insert";
 	unsigned char key[] 		= "aa";
 	unsigned char *stored_data;
-	sa_max_size_t k 			= key_to_index(key, 1);
+	sa_max_size_t k 			= key_to_index(key, key_size);
+	status_t 	  get_result 	= sa_get(&st, key, &stored_data);
 
-	status_t get_result 		= sa_get(&st, key, &stored_data);
 	CuAssertTrue(tc, get_result == status_key_out_of_bounds);
 
-	printf("The index location of %llu tried to be accessed but the max index"
-			"is %llu\n\n", k, array_size);
+	io_printf("The index location of %d tried to be accessed but the max index"
+			"is %d\n\n", k, array_size);
 
 	free(st.array);
 	st.array 					= NULL;
@@ -570,25 +570,24 @@ test_get_from_empty_location(
 )
 {
 
-	ion_key_size_t key_size 	= 1;
-	ion_value_size_t value_size = 100;
-	sa_max_size_t array_size 	= 256;
+	ion_key_size_t 		key_size 	= 1;
+	ion_value_size_t 	value_size 	= 100;
+	sa_max_size_t 		array_size 	= 256;
 
 	static_array_t st;
-	printf("This is for test_get_from_empty_location\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_get_from_empty_location\n");
+	io_printf("------------------------------------------------\n");
 	sa_dictionary_create(&st, key_size, value_size, array_size,
 			dictionary_compare_char_array);
-	printf("Array Created\n\n");
+	io_printf("Array Created\n\n");
 
-	//unsigned char value[] = "This is a test insert";
 	unsigned char key[] 		= "a";
 	unsigned char *stored_data;
 	sa_max_size_t k 			= key_to_index(key, 1);
-	status_t get_result 		= sa_get(&st, key, &stored_data);
+	status_t 	  get_result 	= sa_get(&st, key, &stored_data);
 
 	CuAssertTrue(tc, get_result == status_empty_slot);
-	printf("A value was looked for at index %llu but none was found and the "
+	io_printf("A value was looked for at index %d but none was found and the "
 			"error was caught\n\n", k);
 
 	free(st.array);
@@ -622,29 +621,29 @@ test_update_valid_case(
 		CuTest *tc
 )
 {
-	ion_key_size_t key_size 	= 1;
-	ion_value_size_t value_size = 100;
-	sa_max_size_t array_size 	= 256;
+	ion_key_size_t 		key_size 	= 1;
+	ion_value_size_t 	value_size	= 100;
+	sa_max_size_t 		array_size 	= 256;
+	static_array_t 		st;
 
-	static_array_t st;
-	printf("This is for test_update_valid_case\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_update_valid_case\n");
+	io_printf("------------------------------------------------\n");
 	sa_dictionary_create(&st, key_size, value_size, array_size,
 			dictionary_compare_char_array);
-	printf("Array Created\n\n");
+	io_printf("Array Created\n\n");
 
 	unsigned char value[] 		= "This is a test insert";
 	unsigned char key[] 		= "a";
 	unsigned char new_value[] 	= "The value was changed";
 	sa_max_size_t k 			= key_to_index(key, 1);
-	status_t result 			= sa_insert(&st, key, value);
+	status_t 	  result 		= sa_insert(&st, key, value);
 
-	printf("Information was inserted with the key of '%s' and a value of \n "
+	io_printf("Information was inserted with the key of '%s' and a value of \n"
 			"'%s'\n", key, value);
 
 	CuAssertTrue(tc, result 	== status_ok);
 
-	printf("The old information was overwritten with '%s'\n", new_value);
+	io_printf("The old information was overwritten with '%s'\n", new_value);
 
 	status_t update_result 		= sa_update(&st, key, new_value);
 
@@ -658,7 +657,7 @@ test_update_valid_case(
 
 	CuAssertTrue(tc, memcmp(pointer[k].value, new_value, value_size)
 								== 0);
-	printf("The information in the data structure is '%s'\n\n",
+	io_printf("The information in the data structure is '%s'\n\n",
 			pointer[k].value);
 
 	free(st.array);
@@ -676,24 +675,24 @@ test_update_invalid_key(
 )
 {
 
-	ion_key_size_t key_size 	= 1;
-	ion_value_size_t value_size = 100;
-	sa_max_size_t array_size 	= 70;
+	ion_key_size_t 		key_size 	= 1;
+	ion_value_size_t 	value_size 	= 100;
+	sa_max_size_t 		array_size 	= 70;
+	static_array_t 		st;
 
-	static_array_t st;
-	printf("This is for test_update_invalid_key\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_update_invalid_key\n");
+	io_printf("------------------------------------------------\n");
 	sa_dictionary_create(&st, key_size, value_size, array_size,
 			dictionary_compare_char_array);
-	printf("Array Created\n\n");
+	io_printf("Array Created\n\n");
 
 	unsigned char key[] 		= "a";
 	unsigned char new_value[] 	= "The value was changed";
 	sa_max_size_t k 			= key_to_index(key, 1);
 
-	printf("index %llu was attempted to be accessed with a max array size "
-			"of %llu \n", k, array_size);
-	printf("The error was caught\n\n");
+	io_printf("index %d was attempted to be accessed with a max array size "
+			"of %d \n", k, array_size);
+	io_printf("The error was caught\n\n");
 
 	status_t update_result 		= sa_update(&st, key, new_value);
 	CuAssertTrue(tc, update_result
@@ -712,18 +711,18 @@ test_update_empty_location(
 		CuTest *tc
 )
 {
-	ion_key_size_t key_size 	= 1;
-	ion_value_size_t value_size = 100;
-	sa_max_size_t array_size 	= 256;
+	ion_key_size_t 		key_size 	= 1;
+	ion_value_size_t 	value_size 	= 100;
+	sa_max_size_t 		array_size 	= 256;
+	static_array_t 		st;
 
-	static_array_t st;
-	printf("This is for test_update_empty_location\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_update_empty_location\n");
+	io_printf("------------------------------------------------\n");
 	sa_dictionary_create(&st, key_size, value_size, array_size,
 			dictionary_compare_char_array);
-	printf("Array Created\n\n");
+	io_printf("Array Created\n\n");
 
-	bucket_t *pointer 			= (bucket_t *) st.array;
+	bucket_t 	  *pointer 		= (bucket_t *) st.array;
 	unsigned char key[] 		= "a";
 	unsigned char new_value[] 	= "The value was changed from nothing";
 	sa_max_size_t k 			= key_to_index(key, 1);
@@ -731,7 +730,7 @@ test_update_empty_location(
 	CuAssertTrue(tc, pointer[k].status
 								== EMPTY);
 
-	printf("the value '%s' was inserted into a blank location using the update"
+	io_printf("the value '%s' was inserted into a blank location using the update"
 			" method\n", new_value);
 
 	status_t update_result 		= sa_update(&st, key, new_value);
@@ -773,16 +772,16 @@ test_destroy(
 		CuTest *tc
 )
 {
-	ion_key_size_t key_size 	= 1;
-	ion_value_size_t value_size = 100;
-	sa_max_size_t array_size 	= 256;
+	ion_key_size_t 		key_size 	= 1;
+	ion_value_size_t 	value_size 	= 100;
+	sa_max_size_t 		array_size 	= 256;
+	static_array_t 		st;
 
-	static_array_t st;
-	printf("This is for test_update_empty_location\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_update_empty_location\n");
+	io_printf("------------------------------------------------\n");
 	sa_dictionary_create(&st, key_size, value_size, array_size,
 			dictionary_compare_char_array);
-	printf("Array Created\n\n");
+	io_printf("Array Created\n\n");
 
 	status_t destroy_result 	= sa_destroy(&st);
 
@@ -804,8 +803,8 @@ test_key_to_index(
 )
 {
 
-	printf("This is for test_key_to_index\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_key_to_index\n");
+	io_printf("------------------------------------------------\n");
 	sa_max_size_t x;
 	sa_max_size_t t 	= ipow(256, 1);
 	sa_max_size_t tt 	= ipow(256, 2);
@@ -813,37 +812,37 @@ test_key_to_index(
 	sa_max_size_t result;
 	int size;
 
-	printf("%llu\n", t);
+	io_printf("%d\n", t);
 
 	for (x = 0; x < t; x++)
 	{
-		printf("The value of x is: %llu ", x);
+		io_printf("The value of x is: %d ", x);
 		//size = sizeof(sa_max_size_t);
 		size 	= 1;
 		result 	= key_to_index((unsigned char *) &x, size);
-		printf("The value returned is %llu The value of size is %d\n", result,
+		io_printf("The value returned is %d The value of size is %d\n", result,
 				size);
 		CuAssertTrue(tc, result == x);
 	}
 
 	for (x = t; x < tt; x++)
 	{
-		printf("The value of x is: %llu ", x);
+		io_printf("The value of x is: %d ", x);
 		//size = sizeof(sa_max_size_t);
 		size 	= 2;
 		result 	= key_to_index((unsigned char *) &x, size);
-		printf("The value returned is %llu The value of size is %d\n", result,
+		io_printf("The value returned is %d The value of size is %d\n", result,
 				size);
 		CuAssertTrue(tc, result == x);
 	}
 
 	for (x = tt; x < ttt; x++)
 	{
-		printf("The value of x is: %llu ", x);
+		io_printf("The value of x is: %d ", x);
 		//size = sizeof(sa_max_size_t);
 		size 	= 3;
 		result 	= key_to_index((unsigned char *) &x, size);
-		printf("The value returned is %llu The value of size is %d\n", result,
+		io_printf("The value returned is %d The value of size is %d\n", result,
 				size);
 		CuAssertTrue(tc, result == x);
 	}
@@ -887,13 +886,13 @@ open_address_hash_handler_getsuite()
 void
 runalltests_open_address_hash_handler()
 {
-	CuString *output = CuStringNew();
-	CuSuite *suite = open_address_hash_handler_getsuite();
+	CuString 	*output = CuStringNew();
+	CuSuite 	*suite 	= open_address_hash_handler_getsuite();
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);
 	CuSuiteDetails(suite, output);
-	printf("%s\n", output->buffer);
+	io_printf("%s\n", output->buffer);
 
 	CuSuiteDelete(suite);
 	CuStringDelete(output);
@@ -912,12 +911,11 @@ initalize_hash_handler_tests(
 )
 {
 
-	printf("This is for initalize_hash_handler_tests\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for initalize_hash_handler_tests\n");
+	io_printf("------------------------------------------------\n");
 
-	dictionary_handler_t handler;
-
-	status_t result = sadict_init(&handler);
+	dictionary_handler_t 	handler;
+	status_t 				result = sadict_init(&handler);
 
 	CuAssertTrue(tc, result 		== status_ok);
 	CuAssertTrue(tc, handler.insert == &sadict_insert);
@@ -940,16 +938,17 @@ create_hash_handler_tests(
 		CuTest *tc
 )
 {
-	printf("This is for create_hash_handler_tests\n");
-	printf("------------------------------------------------\n");
-	dictionary_handler_t handler;
-	dictionary_t dictionary;
+	io_printf("This is for create_hash_handler_tests\n");
+	io_printf("------------------------------------------------\n");
+	dictionary_handler_t 	handler;
+	dictionary_t 			dictionary;
 
 	status_t result = sadict_create(key_type_char_array,1, 20, 256,
 			dictionary_compare_char_array, &handler, &dictionary);
-	CuAssertTrue(tc, result 			== status_ok);
-	CuAssertTrue(tc, dictionary.instance!= NULL);
-	CuAssertTrue(tc, dictionary.handler != NULL);
+
+	CuAssertTrue(tc, result 				== status_ok);
+	CuAssertTrue(tc, dictionary.instance	!= NULL);
+	CuAssertTrue(tc, dictionary.handler 	!= NULL);
 }
 
 /*
@@ -962,13 +961,14 @@ destroy_hash_handler_tests(
 		CuTest *tc
 )
 {
-	printf("This is for destroy_hash_handler_tests\n");
-	printf("------------------------------------------------\n");
-	dictionary_handler_t handler;
-	dictionary_t dictionary;
+	io_printf("This is for destroy_hash_handler_tests\n");
+	io_printf("------------------------------------------------\n");
+	dictionary_handler_t 	handler;
+	dictionary_t 			dictionary;
 
 	status_t result = sadict_create(key_type_char_array,1, 20, 256,
 			dictionary_compare_char_array, &handler, &dictionary);
+
 	CuAssertTrue(tc, result 			 	== status_ok);
 	CuAssertTrue(tc, dictionary.instance	!= NULL);
 	CuAssertTrue(tc, dictionary.handler 	!= NULL);
@@ -993,21 +993,21 @@ test_valid_find(
 		CuTest *tc
 )
 {
-	printf("This is for test_valid_find\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_valid_find\n");
+	io_printf("------------------------------------------------\n");
 	//Sets up data until comment marker
-	ion_key_size_t key_size 	= 1;
-	ion_value_size_t value_size	= 20;
-	sa_max_size_t array_size 	= 256;
+	ion_key_size_t 		key_size 	= 1;
+	ion_value_size_t 	value_size	= 20;
+	sa_max_size_t 		array_size 	= 256;
 
 	unsigned char value[]	 	= "This is a test";
 	unsigned char key[] 	 	= "a";
 	unsigned char v[20];
 
-	dictionary_t dictionary;
-	dict_cursor_t	*cursor;
-	predicate_t	pred;
-	dictionary_handler_t handler;
+	dictionary_t 			dictionary;
+	dict_cursor_t			*cursor;
+	predicate_t				pred;
+	dictionary_handler_t 	handler;
 
 	pred.type 								= predicate_equality;
 	pred.statement.equality.equality_value 	= key;
@@ -1021,13 +1021,13 @@ test_valid_find(
 
 	//done setting up data
 
-	printf("Right before the find\n");
+	io_printf("Right before the find\n");
 
 	status_t result 				= handler.find(&dictionary, &pred, &cursor);
-	printf("After the find\n");
+	io_printf("After the find\n");
 
 	sadict_cursor_t *sadict_cursor 	= (sadict_cursor_t *)(cursor);
-	printf("The correct key has been found \n");
+	io_printf("The correct key has been found \n");
 
 	//Tests that all the information is where it should be
 	CuAssertTrue(tc, t 				== sadict_cursor->current);
@@ -1037,7 +1037,7 @@ test_valid_find(
 	CuAssertTrue(tc, cursor->next   == &sadict_equality_next);
 
 	cursor->next(cursor,v);
-	printf("The value returned was %s \n\n",v);
+	io_printf("The value returned was %s \n\n",v);
 
 	//makes sure that the right information is returned
 	CuAssertTrue(tc, cursor->status == cs_end_of_results);
@@ -1061,21 +1061,21 @@ test_blank_find(
 )
 {
 
-	printf("This is for test_blank_find\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_blank_find\n");
+	io_printf("------------------------------------------------\n");
 	//Sets up data until comment marker
-	ion_key_size_t key_size 			 	= 1;
-	ion_value_size_t value_size 			 = 20;
-	sa_max_size_t array_size				= 256;
+	ion_key_size_t 			key_size 		= 1;
+	ion_value_size_t 		value_size		= 20;
+	sa_max_size_t 			array_size		= 256;
 
-	unsigned char value[]	 				= "This is a test";
-	unsigned char key[] 	 				= "a";
-	unsigned char invalid_key[] 			= "b";
+	unsigned char 			value[]			= "This is a test";
+	unsigned char 			key[] 	 		= "a";
+	unsigned char 			invalid_key[]	= "b";
 
-	dictionary_t dictionary;
-	dict_cursor_t	*cursor;
-	predicate_t	pred;
-	dictionary_handler_t handler;
+	dictionary_t 			dictionary;
+	dict_cursor_t			*cursor;
+	predicate_t				pred;
+	dictionary_handler_t 	handler;
 
 	pred.type 								= predicate_equality;
 	pred.statement.equality.equality_value 	= invalid_key;
@@ -1088,9 +1088,9 @@ test_blank_find(
 
 	//done setting up data
 
-	printf("Right before the find\n");
+	io_printf("Right before the find\n");
 	status_t result = handler.find(&dictionary, &pred, &cursor);
-	printf("After the find\n");
+	io_printf("After the find\n");
 
 	CuAssertTrue(tc, result 		== status_empty_slot);
 	CuAssertTrue(tc, cursor->status	== cs_end_of_results);
@@ -1106,18 +1106,18 @@ test_invalid_key_equal_find(
 		CuTest *tc
 )
 {
-	printf("This is for test_valid_find\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_valid_find\n");
+	io_printf("------------------------------------------------\n");
 	//Sets up data until comment marker
-	ion_key_size_t key_size 			 	= 1;
-	ion_value_size_t value_size 			= 20;
-	sa_max_size_t array_size 				= 50;
-	unsigned char key[] 	 				= "a";
+	ion_key_size_t 			key_size 	 	= 1;
+	ion_value_size_t 		value_size 		= 20;
+	sa_max_size_t 			array_size 		= 50;
+	unsigned char 			key[] 	 		= "a";
 
-	dictionary_t dictionary;
-	dict_cursor_t	*cursor;
-	predicate_t	pred;
-	dictionary_handler_t handler;
+	dictionary_t 			dictionary;
+	dict_cursor_t			*cursor;
+	predicate_t				pred;
+	dictionary_handler_t 	handler;
 
 	pred.type 								= predicate_equality;
 	pred.statement.equality.equality_value 	= key;
@@ -1128,9 +1128,9 @@ test_invalid_key_equal_find(
 
 	//done setting up data
 
-	printf("Right before the find\n");
+	io_printf("Right before the find\n");
 	status_t result = handler.find(&dictionary, &pred, &cursor);
-	printf("After the find\n");
+	io_printf("After the find\n");
 
 	//Tests that all the information is where it should be
 	CuAssertTrue(tc, result 		== status_key_out_of_bounds);
@@ -1150,22 +1150,22 @@ test_valid_range_find(
 		CuTest *tc
 )
 {
-	printf("This is for test_valid_range_find\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_valid_range_find\n");
+	io_printf("------------------------------------------------\n");
 	//Sets up data until comment marker
-	ion_key_size_t key_size 			 	= 1;
-	ion_value_size_t value_size				= 20;
-	sa_max_size_t array_size				= 256;
+	ion_key_size_t 			key_size 		= 1;
+	ion_value_size_t 		value_size		= 20;
+	sa_max_size_t 			array_size		= 256;
 
-	unsigned char upper[] 	 				= "g";
-	unsigned char lower[] 	 				= "d";
-	unsigned char key[20];
-	unsigned char v[20];
+	unsigned char 			upper[] 		= "g";
+	unsigned char 			lower[] 	 	= "d";
+	unsigned char 			key[20];
+	unsigned char 			v[20];
 
-	dictionary_t dictionary;
-	dict_cursor_t	*cursor;
-	predicate_t	pred;
-	dictionary_handler_t handler;
+	dictionary_t 			dictionary;
+	dict_cursor_t			*cursor;
+	predicate_t				pred;
+	dictionary_handler_t 	handler;
 
 	pred.type 								= predicate_range;
 	pred.statement.range.geq_value 			= upper;
@@ -1184,9 +1184,9 @@ test_valid_range_find(
 		handler.insert(&dictionary, (unsigned char *) &x, (unsigned char *) &x);
 	}
 
-	printf("Right before the find\n");
+	io_printf("Right before the find\n");
 	status_t result = handler.find(&dictionary, &pred, &cursor);
-	printf("After the find\n");
+	io_printf("After the find\n");
 
 	sadict_cursor_t *sadict_cursor 	= (sadict_cursor_t *)(cursor);
 
@@ -1202,7 +1202,7 @@ test_valid_range_find(
 
 	t = 101;
 
-	printf("'next' was called and the value returned was %s \n",v);
+	io_printf("'next' was called and the value returned was %s \n",v);
 
 	//Tests that all the information is where it should be
 	CuAssertTrue(tc, t 							== sadict_cursor->current);
@@ -1237,22 +1237,22 @@ test_one_range_find(
 		CuTest *tc
 )
 {
-	printf("This is for test_full_valid_range_find\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_full_valid_range_find\n");
+	io_printf("------------------------------------------------\n");
 	//Sets up data until comment marker
-	ion_key_size_t key_size 			 	= 1;
-	ion_value_size_t value_size 			= 20;
-	sa_max_size_t array_size 				= 256;
+	ion_key_size_t 			key_size 		= 1;
+	ion_value_size_t 		value_size 		= 20;
+	sa_max_size_t 			array_size 		= 256;
 
-	unsigned char upper[] 	 				= "c";
-	unsigned char lower[] 	 				= "c";
-	unsigned char key[20];
-	unsigned char v[20];
+	unsigned char 			upper[] 	 	= "c";
+	unsigned char 			lower[] 	 	= "c";
+	unsigned char 			key[20];
+	unsigned char 			v[20];
 
-	dictionary_t dictionary;
-	dict_cursor_t	*cursor;
-	predicate_t	pred;
-	dictionary_handler_t handler;
+	dictionary_t 			dictionary;
+	dict_cursor_t			*cursor;
+	predicate_t				pred;
+	dictionary_handler_t 	handler;
 
 	pred.type 								= predicate_range;
 	pred.statement.range.geq_value 			= upper;
@@ -1271,14 +1271,14 @@ test_one_range_find(
 		handler.insert(&dictionary, (unsigned char *) &x, (unsigned char *) &x);
 	}
 
-	printf("Right before the find\n");
+	io_printf("Right before the find\n");
 	status_t result = handler.find(&dictionary, &pred, &cursor);
-	printf("After the find\n");
+	io_printf("After the find\n");
 
 	sadict_cursor_t *sadict_cursor 	= (sadict_cursor_t *)(cursor);
 
 	//Tests that all the information is where it should be
-	printf("The current status is %d \n", sadict_cursor->current );
+	io_printf("The current status is %d \n", sadict_cursor->current );
 
 	t = 99;
 	CuAssertTrue(tc, t 				== sadict_cursor->current);
@@ -1306,22 +1306,22 @@ test_full_valid_range_find(
 )
 {
 
-	printf("This is for test_full_valid_range_find\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_full_valid_range_find\n");
+	io_printf("------------------------------------------------\n");
 	//Sets up data until comment marker
-	ion_key_size_t key_size 		= 1;
-	ion_value_size_t value_size 	= 20;
-	sa_max_size_t array_size 		= 256;
+	ion_key_size_t 			key_size 	= 1;
+	ion_value_size_t 		value_size 	= 20;
+	sa_max_size_t 			array_size 	= 256;
 
-	unsigned char upper[] 	 		= "z";
-	unsigned char lower[] 	 		= "a";
-	unsigned char key[20];
-	unsigned char v[20];
+	unsigned char 			upper[] 	= "z";
+	unsigned char 			lower[] 	= "a";
+	unsigned char 			key[20];
+	unsigned char 			v[20];
 
-	dictionary_t dictionary;
-	dict_cursor_t	*cursor;
-	predicate_t	pred;
-	dictionary_handler_t handler;
+	dictionary_t 			dictionary;
+	dict_cursor_t			*cursor;
+	predicate_t				pred;
+	dictionary_handler_t 	handler;
 
 	pred.type 						= predicate_range;
 	pred.statement.range.geq_value	= upper;
@@ -1340,14 +1340,14 @@ test_full_valid_range_find(
 		handler.insert(&dictionary, (unsigned char *) &x, (unsigned char *) &x);
 	}
 
-	printf("Right before the find\n");
+	io_printf("Right before the find\n");
 	status_t result = handler.find(&dictionary, &pred, &cursor);
-	printf("After the find\n");
+	io_printf("After the find\n");
 
 	sadict_cursor_t *sadict_cursor 	= (sadict_cursor_t *)(cursor);
 
 	//Tests that all the information is where it should be
-	printf("The current status is %d \n", sadict_cursor->current );
+	io_printf("The current status is %d \n", sadict_cursor->current );
 
 
 	CuAssertTrue(tc, t 				== sadict_cursor->current);
@@ -1367,13 +1367,13 @@ test_full_valid_range_find(
 	}
 
 	t = 122;
-	CuAssertTrue(tc, t 					== sadict_cursor->current);
-	CuAssertTrue(tc, t 					== sadict_cursor->last);
-	CuAssertTrue(tc, result 			== err_ok);
-	CuAssertTrue(tc, cursor->status 	== cs_cursor_active);
+	CuAssertTrue(tc, t 				== sadict_cursor->current);
+	CuAssertTrue(tc, t 				== sadict_cursor->last);
+	CuAssertTrue(tc, result 		== err_ok);
+	CuAssertTrue(tc, cursor->status == cs_cursor_active);
 
 	cursor->next(cursor,v);
-	CuAssertTrue(tc, cursor->status 	== cs_end_of_results);
+	CuAssertTrue(tc, cursor->status == cs_end_of_results);
 }
 
 
@@ -1389,24 +1389,24 @@ test_blank_valid_range_find(
 		CuTest *tc
 )
 {
-	printf("This is for test_blank_valid_range_find\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_blank_valid_range_find\n");
+	io_printf("------------------------------------------------\n");
 	//Sets up data until comment marker
-	ion_key_size_t key_size 		= 1;
-	ion_value_size_t value_size 	= 20;
-	sa_max_size_t array_size 		= 256;
+	ion_key_size_t 			key_size 	= 1;
+	ion_value_size_t 		value_size 	= 20;
+	sa_max_size_t 			array_size 	= 256;
 
-	unsigned char upper[] 	 		= "d";
-	unsigned char lower[] 	 		= "a";
-	unsigned char v[20];
+	unsigned char 			upper[] 	= "d";
+	unsigned char 			lower[] 	= "a";
+	unsigned char 			v[20];
 
-	dictionary_t dictionary;
-	dict_cursor_t	*cursor;
-	predicate_t	pred;
-	dictionary_handler_t handler;
+	dictionary_t 			dictionary;
+	dict_cursor_t			*cursor;
+	predicate_t				pred;
+	dictionary_handler_t 	handler;
 
 	pred.type 						= predicate_range;
-	pred.statement.range.geq_value 	= upper;
+	pred.statement.range.geq_value	= upper;
 	pred.statement.range.leq_value 	= lower;
 
 	sadict_init(&handler);
@@ -1415,14 +1415,14 @@ test_blank_valid_range_find(
 
 	int t = 97;
 
-	printf("Right before the find\n");
+	io_printf("Right before the find\n");
 	status_t result = handler.find(&dictionary, &pred, &cursor);
-	printf("After the find\n");
+	io_printf("After the find\n");
 
 	sadict_cursor_t *sadict_cursor 	= (sadict_cursor_t *)(cursor);
 
 	//Tests that all the information is where it should be
-	printf("The current status is %d \n", sadict_cursor->current );
+	io_printf("The current status is %d \n", sadict_cursor->current );
 
 
 	CuAssertTrue(tc, t 				== sadict_cursor->current);
@@ -1437,7 +1437,7 @@ test_blank_valid_range_find(
 	for(j = 97; j<101; j++)
 	{
 		cursor->next(cursor, v);
-		printf("The value is '%s'\n", v);
+		io_printf("The value is '%s'\n", v);
 		CuAssertTrue(tc, strcmp((char *) v, "")
 									== 0);
 	}
@@ -1457,21 +1457,21 @@ test_invalid_lower_bound_find(
 		CuTest *tc
 )
 {
-	printf("This is for test_invalid_upper_bound_find\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_invalid_upper_bound_find\n");
+	io_printf("------------------------------------------------\n");
 	//Sets up data until comment marker
-	ion_key_size_t key_size 		= 1;
-	ion_value_size_t value_size 	= 20;
-	sa_max_size_t array_size 		= 50;
+	ion_key_size_t 			key_size 	= 1;
+	ion_value_size_t 		value_size 	= 20;
+	sa_max_size_t 			array_size 	= 50;
 
 	//upper bound is below the lower bound
-	unsigned char to_high[] 	 	= ")";
-	unsigned char to_low[] 	 		= "a";
+	unsigned char 			to_high[] 	= ")";
+	unsigned char 			to_low[]	= "a";
 
-	dictionary_t dictionary;
-	dict_cursor_t	*cursor;
-	predicate_t	pred;
-	dictionary_handler_t handler;
+	dictionary_t 			dictionary;
+	dict_cursor_t			*cursor;
+	predicate_t				pred;
+	dictionary_handler_t 	handler;
 
 	pred.type 						= predicate_range;
 	pred.statement.range.geq_value 	= to_high;
@@ -1482,9 +1482,9 @@ test_invalid_lower_bound_find(
 	key_size,value_size,array_size);
 
 
-	printf("Right before the find\n");
+	io_printf("Right before the find\n");
 	status_t result = handler.find(&dictionary, &pred, &cursor);
-	printf("After the find\n");
+	io_printf("After the find\n");
 
 	CuAssertTrue(tc, result 		== status_key_out_of_bounds);
 	CuAssertTrue(tc, cursor->status == cs_end_of_results);
@@ -1501,21 +1501,21 @@ test_invalid_upper_bound_find(
 		CuTest *tc
 )
 {
-	printf("This is for test_invalid_upper_bound_find\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_invalid_upper_bound_find\n");
+	io_printf("------------------------------------------------\n");
 	//Sets up data until comment marker
-	ion_key_size_t key_size 		= 1;
-	ion_value_size_t value_size 	= 20;
-	sa_max_size_t array_size 		= 50;
+	ion_key_size_t 			key_size 	= 1;
+	ion_value_size_t 		value_size 	= 20;
+	sa_max_size_t 			array_size 	= 50;
 
 	//upper bound is below the lower bound
-	unsigned char to_high[] 	 	= "b";
-	unsigned char to_low[] 	 		= ")";
+	unsigned char 			to_high[] 	= "b";
+	unsigned char 			to_low[] 	= ")";
 
-	dictionary_t dictionary;
-	dict_cursor_t	*cursor;
-	predicate_t	pred;
-	dictionary_handler_t handler;
+	dictionary_t 			dictionary;
+	dict_cursor_t			*cursor;
+	predicate_t				pred;
+	dictionary_handler_t 	handler;
 
 	pred.type 						= predicate_range;
 	pred.statement.range.geq_value 	= to_high;
@@ -1526,9 +1526,9 @@ test_invalid_upper_bound_find(
 	key_size,value_size,array_size);
 
 
-	printf("Right before the find\n");
+	io_printf("Right before the find\n");
 	status_t result = handler.find(&dictionary, &pred, &cursor);
-	printf("After the find\n");
+	io_printf("After the find\n");
 
 	CuAssertTrue(tc, result 		== status_key_out_of_bounds);
 	CuAssertTrue(tc, cursor->status == cs_end_of_results);
@@ -1546,21 +1546,21 @@ test_invalid_bounds_range_find(
 		CuTest *tc
 )
 {
-	printf("This is for test_invalid_bounds_range_find\n");
-	printf("------------------------------------------------\n");
+	io_printf("This is for test_invalid_bounds_range_find\n");
+	io_printf("------------------------------------------------\n");
 	//Sets up data until comment marker
-	ion_key_size_t key_size 		= 1;
-	ion_value_size_t value_size 	= 20;
-	sa_max_size_t array_size 		= 256;
+	ion_key_size_t 			key_size 	= 1;
+	ion_value_size_t 		value_size 	= 20;
+	sa_max_size_t 			array_size 	= 256;
 
 	//upper bound is below the lower bound
-	unsigned char upper[] 	 		= "b";
-	unsigned char lower[] 	 		= "h";
+	unsigned char 			upper[] 	= "b";
+	unsigned char 			lower[] 	= "h";
 
-	dictionary_t dictionary;
-	dict_cursor_t	*cursor;
-	predicate_t	pred;
-	dictionary_handler_t handler;
+	dictionary_t 			dictionary;
+	dict_cursor_t			*cursor;
+	predicate_t				pred;
+	dictionary_handler_t 	handler;
 
 	pred.type 						= predicate_range;
 	pred.statement.range.geq_value 	= upper;
@@ -1570,7 +1570,7 @@ test_invalid_bounds_range_find(
 	dictionary_create(&handler, &dictionary, key_type_char_array,
 	key_size,value_size,array_size);
 
-	printf("Right before the find\n");
+	io_printf("Right before the find\n");
 	//calls the find method
 	status_t result = handler.find(&dictionary, &pred, &cursor);
 	io_printf("After the find\n");

@@ -11,7 +11,9 @@ bin/tests/staticarray.o:  \
   src/tests/unit/dictionary/staticarray/./../../../CuTest.h \
   src/tests/unit/dictionary/staticarray/./../../../../dictionary/staticarray/staticarray.h \
   src/tests/unit/dictionary/staticarray/./../../../../dictionary/dicttypes.h \
-  src/tests/unit/dictionary/staticarray/./../../../../dictionary/dictionary.h
+  src/tests/unit/dictionary/staticarray/./../../../../dictionary/dictionary.h \
+  src/tests/unit/dictionary/staticarray/./../../../../io.h \
+  src/tests/unit/dictionary/staticarray/./../../../../kv_system.h
 
 src/tests/unit/dictionary/staticarray/staticarrayclone.h:
 
@@ -36,3 +38,7 @@ src/tests/unit/dictionary/staticarray/./../../../../dictionary/staticarray/stati
 src/tests/unit/dictionary/staticarray/./../../../../dictionary/dicttypes.h:
 
 src/tests/unit/dictionary/staticarray/./../../../../dictionary/dictionary.h:
+
+src/tests/unit/dictionary/staticarray/./../../../../io.h:
+
+src/tests/unit/dictionary/staticarray/./../../../../kv_system.h:
