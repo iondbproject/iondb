@@ -76,7 +76,10 @@ sldict_create_dictionary(
 							pden
 					);
 
-	dictionary->handler 	= handler;
+	if(err_ok == result)
+	{
+		dictionary->handler 	= handler;
+	}
 
 	return result;
 }

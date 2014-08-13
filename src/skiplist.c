@@ -61,14 +61,14 @@ main(
 	char in;
 	while( (in = getchar()) != 'X')
 	{
-#ifdef DEBUG
+#if defined(DEBUG)
 		io_printf("You said: %c\n", in);
 #endif
 
 		switch(in)
 		{
 			case 'P': {
-#ifdef DEBUG
+#if defined(DEBUG)
 				io_printf("%s\n", "Printing skiplist");
 #endif
 				print_skiplist((skiplist_t*) test_dict.instance);
@@ -79,7 +79,7 @@ main(
 							int		 key;
 				unsigned 	char	 value[10];
 				scanf("%i %s", &key, value);
-#ifdef DEBUG
+#if defined(DEBUG)
 				io_printf("Inserting (%d|%s)...\n", key, value);
 #endif
 				dictionary_insert(&test_dict, (ion_key_t) &key, value);
@@ -89,7 +89,7 @@ main(
 			case 'D': {
 				int key;
 				scanf("%i", &key);
-#ifdef DEBUG
+#if defined(DEBUG)
 				io_printf("Deleting (%d)...\n", key);
 #endif
 				dictionary_delete(&test_dict, (ion_key_t) &key);
@@ -100,7 +100,7 @@ main(
 							int 	key;
 				unsigned 	char 	value[10];
 				scanf("%i %s", &key, value);
-#ifdef DEBUG
+#if defined(DEBUG)
 				io_printf("Updating (%d with %s)...\n", key, value);
 #endif
 				dictionary_update(&test_dict, (ion_key_t) &key, value);
@@ -111,7 +111,7 @@ main(
 				int key;
 				ion_value_t value;
 				scanf("%i", &key);
-#ifdef DEBUG
+#if defined(DEBUG)
 				io_printf("Querying (%d)...\n", key);
 #endif
 				dictionary_get(&test_dict, (ion_key_t) &key, &value);

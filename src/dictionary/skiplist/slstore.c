@@ -33,7 +33,7 @@ sl_initialize(
 	skiplist->pden 						= pden;
 	skiplist->pnum 						= pnum;
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	DUMP(skiplist->super.record.key_size, "%d");
 	DUMP(skiplist->super.record.value_size, "%d");
 	DUMP(skiplist->maxheight, "%d");
@@ -45,7 +45,12 @@ sl_initialize(
 	skiplist->head 			= malloc(sizeof(sl_node_t));
 	if(NULL == skiplist->head) { return err_out_of_memory; }
 	skiplist->head->next 	= malloc(sizeof(sl_node_t) * skiplist->maxheight);
-	if(NULL == skiplist->head->next) { return err_out_of_memory; }
+	if(NULL == skiplist->head->next)
+	{
+		free(skiplist->head);
+		skiplist->head = NULL;
+		return err_out_of_memory;
+	}
 
 	skiplist->head->height 	= maxheight - 1;
 	skiplist->head->key 	= NULL;
@@ -98,13 +103,28 @@ sl_insert(
 
 	newnode->height 		= sl_gen_level(skiplist);
 	newnode->next 			= malloc(sizeof(sl_node_t*) * (newnode->height+1));
-	if(NULL == newnode->next) { return err_out_of_memory; }
+	if(NULL == newnode->next)
+	{
+		free(newnode);
+		return err_out_of_memory;
+	}
 
 	newnode->key 			= malloc(sizeof(char) * key_size);
-	if(NULL == newnode->key) { return err_out_of_memory; }
+	if(NULL == newnode->key)
+	{
+		free(newnode->next);
+		free(newnode);
+		return err_out_of_memory;
+	}
 
 	newnode->value 			= malloc(sizeof(char) * value_size);
-	if(NULL == newnode->value) { return err_out_of_memory; }
+	if(NULL == newnode->value)
+	{
+		free(newnode->key);
+		free(newnode->next);
+		free(newnode);
+		return err_out_of_memory;
+	}
 
 	memcpy(newnode->key, key, key_size);
 	memcpy(newnode->value, value, value_size);
@@ -180,7 +200,6 @@ sl_update(
 
 	/* Otherwise, the key exists and now we have the node to update. */
 	memcpy(cursor->value, value, value_size);
-	/*TODO Last here, need to write tests. */
 
 	return err_ok;
 }

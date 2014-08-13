@@ -147,7 +147,7 @@ test_skiplist_initialize(
 			pden
 	);
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	check_skiplist(&skiplist);
 #endif
 
@@ -244,7 +244,7 @@ test_skiplist_single_insert(
 	sl_insert(&skiplist, (ion_key_t) &key, value);
 
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	check_skiplist(&skiplist);
 #endif
 
@@ -286,7 +286,7 @@ test_skiplist_insert_multiple(
 		sl_insert(&skiplist, (ion_key_t) &i, strs[i - 1]);
 	}
 
-#ifdef DEBUG
+#if defined(DEBUG)
 		check_skiplist(&skiplist);
 #endif
 	sl_node_t 	*cursor;
@@ -341,7 +341,7 @@ test_skiplist_randomized_insert(
 		sl_insert(&skiplist, (ion_key_t) &key, str);
 	}
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	check_skiplist(&skiplist);
 #endif
 
@@ -423,7 +423,7 @@ test_skiplist_get_node_single_high(
 
 	sl_insert(&skiplist, (ion_key_t) &key, str);
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	check_skiplist(&skiplist);
 #endif
 
@@ -465,7 +465,7 @@ test_skiplist_get_node_single_low(
 
 	sl_insert(&skiplist, (ion_key_t) &key, str);
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	check_skiplist(&skiplist);
 #endif
 
@@ -517,7 +517,7 @@ test_skiplist_get_node_single_many(
 		sl_insert(&skiplist, (ion_key_t) &i, junk);
 	}
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	check_skiplist(&skiplist);
 #endif
 
@@ -547,7 +547,7 @@ test_skiplist_get_node_several(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	// If debugging, use a static seed
 	srand(0xDEADBEEF);
 #endif
@@ -563,7 +563,7 @@ test_skiplist_get_node_several(
 		sl_insert(&skiplist, (ion_key_t) &key, buffer);
 	}
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	check_skiplist(&skiplist);
 #endif
 
@@ -601,7 +601,7 @@ test_skiplist_query_nonexist_empty(
 
 	err_t status = sl_query(&skiplist, (ion_key_t) &key, &value);
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	check_skiplist(&skiplist);
 #endif
 
@@ -635,7 +635,7 @@ test_skiplist_query_nonexist_populated_single(
 
 	sl_insert(&skiplist, (ion_key_t) &test_key, test_value);
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	check_skiplist(&skiplist);
 #endif
 
@@ -679,7 +679,7 @@ test_skiplist_query_nonexist_populated_several(
 		test_key--;
 	}
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	check_skiplist(&skiplist);
 #endif
 
@@ -718,7 +718,7 @@ test_skiplist_query_exist_single(
 
 	sl_insert(&skiplist, (ion_key_t) &test_key, test_value);
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	check_skiplist(&skiplist);
 #endif
 
@@ -761,7 +761,7 @@ test_skiplist_query_exist_populated_single(
 		sl_insert(&skiplist, (ion_key_t) &i, test_value);
 	}
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	check_skiplist(&skiplist);
 #endif
 
@@ -804,7 +804,7 @@ test_skiplist_query_exist_populated_several(
 		sl_insert(&skiplist, (ion_key_t) &i, test_value);
 	}
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	check_skiplist(&skiplist);
 #endif
 
@@ -843,7 +843,7 @@ test_skiplist_delete_empty(
 	int key 		= 3;
 	err_t status 	= sl_delete(&skiplist, (ion_key_t) &key);
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	check_skiplist(&skiplist);
 #endif
 
@@ -878,7 +878,7 @@ test_skiplist_delete_nonexist_single(
 	int 	fake_key 	= 33;
 	err_t 	status 		= sl_delete(&skiplist, (ion_key_t) &fake_key);
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	check_skiplist(&skiplist);
 #endif
 
@@ -919,7 +919,7 @@ test_skiplist_delete_nonexist_several(
 	int 	fake_key 	= 20;
 	err_t 	status 		= sl_delete(&skiplist, (ion_key_t) &fake_key);
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	check_skiplist(&skiplist);
 #endif
 
@@ -952,14 +952,14 @@ test_skiplist_delete_single(
 
 	sl_insert(&skiplist, (ion_key_t) &key, value);
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** BEFORE **");
 	check_skiplist(&skiplist);
 #endif
 
 	err_t status = sl_delete(&skiplist, (ion_key_t) &key);
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** AFTER **");
 	check_skiplist(&skiplist);
 #endif
@@ -997,7 +997,7 @@ test_skiplist_delete_single_several(
 		sl_insert(&skiplist, (ion_key_t) &i, value);
 	}
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** BEFORE **");
 	check_skiplist(&skiplist);
 #endif
@@ -1021,7 +1021,7 @@ test_skiplist_delete_single_several(
 	int 		key 		= 112;
 	err_t 		status 		= sl_delete(&skiplist, (ion_key_t) &key);
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** AFTER **");
 	check_skiplist(&skiplist);
 #endif
@@ -1063,7 +1063,7 @@ test_skiplist_delete_single_several_noncont(
 		sl_insert(&skiplist, (ion_key_t) &i, value);
 	}
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** BEFORE **");
 	check_skiplist(&skiplist);
 #endif
@@ -1087,7 +1087,7 @@ test_skiplist_delete_single_several_noncont(
 	int 		key 		= 240;
 	err_t 		status 		= sl_delete(&skiplist, (ion_key_t) &key);
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** AFTER **");
 	check_skiplist(&skiplist);
 #endif
@@ -1127,7 +1127,7 @@ test_skiplist_delete_several_all(
 		sl_insert(&skiplist, (ion_key_t) &i, value);
 	}
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** BEFORE **");
 	check_skiplist(&skiplist);
 #endif
@@ -1138,7 +1138,7 @@ test_skiplist_delete_several_all(
 		CuAssertTrue(tc, status == err_ok);
 	}
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** AFTER **");
 	check_skiplist(&skiplist);
 #endif
@@ -1172,7 +1172,7 @@ test_skiplist_update_single_nonexist(
 	/* TODO collapse these into macros, so that this fits 80 cols */
 	err_t status = sl_update(&skiplist, (ion_key_t) &(int) {72}, (ion_value_t) (char*){"test val"});
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	check_skiplist(&skiplist);
 #endif
 
@@ -1203,7 +1203,7 @@ test_skiplist_update_single_nonexist_nonempty(
 	/* TODO collapse these into macros, so that this fits 80 cols */
 	sl_insert(&skiplist, (ion_key_t) &(int) {99}, (ion_value_t) (char*){"not val"});
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** BEFORE **");
 	check_skiplist(&skiplist);
 #endif
@@ -1211,7 +1211,7 @@ test_skiplist_update_single_nonexist_nonempty(
 	/* TODO collapse these into macros, so that this fits 80 cols */
 	err_t status = sl_update(&skiplist, (ion_key_t) &(int) {13}, (ion_value_t) (char*){"test val"});
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** AFTER **");
 	check_skiplist(&skiplist);
 #endif
@@ -1246,7 +1246,7 @@ test_skiplist_update_many_nonexist_nonempty(
 		sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char*){"not it!"});
 	}
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** BEFORE **");
 	check_skiplist(&skiplist);
 #endif
@@ -1254,7 +1254,7 @@ test_skiplist_update_many_nonexist_nonempty(
 	/* TODO collapse these into macros, so that this fits 80 cols */
 	err_t status = sl_update(&skiplist, (ion_key_t) &(int) {45}, (ion_value_t) (char*){"test val"});
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** AFTER **");
 	check_skiplist(&skiplist);
 #endif
@@ -1289,7 +1289,7 @@ test_skiplist_update_single_exist(
 	/* TODO collapse these into macros, so that this fits 80 cols */
 	sl_insert(&skiplist, (ion_key_t) &(int) {45}, (ion_value_t) (char*){"old val"});
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** BEFORE **");
 	check_skiplist(&skiplist);
 #endif
@@ -1297,7 +1297,7 @@ test_skiplist_update_single_exist(
 	/* TODO collapse these into macros, so that this fits 80 cols */
 	err_t status = sl_update(&skiplist, (ion_key_t) &(int) {45}, (ion_value_t) (char*){"new val"});
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** AFTER **");
 	check_skiplist(&skiplist);
 #endif
@@ -1333,7 +1333,7 @@ test_skiplist_update_single_many_exist(
 		sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char*){"MATH"});
 	}
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** BEFORE **");
 	check_skiplist(&skiplist);
 #endif
@@ -1341,7 +1341,7 @@ test_skiplist_update_single_many_exist(
 	/* TODO collapse these into macros, so that this fits 80 cols */
 	err_t status = sl_update(&skiplist, (ion_key_t) &(int) {30}, (ion_value_t) (char*){"COSC"});
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** AFTER **");
 	check_skiplist(&skiplist);
 #endif
@@ -1379,7 +1379,7 @@ test_skiplist_update_several_many_exist(
 		sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char*){"TEST"});
 	}
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** BEFORE **");
 	check_skiplist(&skiplist);
 #endif
@@ -1396,7 +1396,7 @@ test_skiplist_update_several_many_exist(
 		CuAssertStrEquals(tc, 	(char*) cursor->value, "VALUE");
 	}
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** AFTER **");
 	check_skiplist(&skiplist);
 #endif
@@ -1425,7 +1425,7 @@ test_skiplist_delete_then_insert_single(
 	/* TODO collapse these into macros, so that this fits 80 cols */
 	sl_insert(&skiplist, (ion_key_t) &(int) {66}, (ion_value_t) (char*) {"toaster"});
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** INSERT **");
 	check_skiplist(&skiplist);
 #endif
@@ -1433,7 +1433,7 @@ test_skiplist_delete_then_insert_single(
 	err_t status = sl_delete(&skiplist, (ion_key_t) &(int) {66});
 	CuAssertTrue(tc, status == err_ok);
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** DELETE **");
 	check_skiplist(&skiplist);
 #endif
@@ -1441,7 +1441,7 @@ test_skiplist_delete_then_insert_single(
 	/* TODO collapse these into macros, so that this fits 80 cols */
 	sl_insert(&skiplist, (ion_key_t) &(int) {365}, (ion_value_t) (char*) {"potato"});
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** REINSERT **");
 	check_skiplist(&skiplist);
 #endif
@@ -1477,7 +1477,7 @@ test_skiplist_delete_then_insert_several(
 		sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char*) {"cake"});
 	}
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** INSERT **");
 	check_skiplist(&skiplist);
 #endif
@@ -1488,7 +1488,7 @@ test_skiplist_delete_then_insert_several(
 		CuAssertTrue(tc, status == err_ok);
 	}
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** DELETE **");
 	check_skiplist(&skiplist);
 #endif
@@ -1498,7 +1498,7 @@ test_skiplist_delete_then_insert_several(
 		sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char*) {"pie"});
 	}
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** REINSERT **");
 	check_skiplist(&skiplist);
 #endif
@@ -1537,14 +1537,14 @@ test_skiplist_delete_several_same_key(
 		sl_insert(&skiplist, (ion_key_t) &(int) {64}, (ion_value_t) (char*) {"samez"});
 	}
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** INSERT **");
 	check_skiplist(&skiplist);
 #endif
 
 	err_t status = sl_delete(&skiplist, (ion_key_t) &(int) {64});
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** DELETE **");
 	check_skiplist(&skiplist);
 #endif
@@ -1591,14 +1591,14 @@ test_skiplist_delete_several_same_key_in_mix(
 	sl_insert(&skiplist, (ion_key_t) &(int) {100}, (ion_value_t) (char*) {"samez"});
 	sl_insert(&skiplist, (ion_key_t) &(int) {101}, (ion_value_t) (char*) {"samez"});
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** INSERT **");
 	check_skiplist(&skiplist);
 #endif
 
 	err_t status = sl_delete(&skiplist, (ion_key_t) &(int) {55});
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** DELETE **");
 	check_skiplist(&skiplist);
 #endif
@@ -1654,7 +1654,7 @@ test_skiplist_different_size(
 	sl_insert(&skiplist, (ion_key_t) &(long long){32}, (ion_value_t) (char*){"bep"});
 	sl_insert(&skiplist, (ion_key_t) &(long long){16}, (ion_value_t) (char*){"tot"});
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** INSERT **");
 	check_skiplist(&skiplist);
 #endif
@@ -1696,7 +1696,7 @@ test_skiplist_different_size(
 	status = sl_delete(&skiplist, (ion_key_t) &(long long){16});
 	CuAssertTrue(tc, status == err_ok);
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** DELETE **");
 	check_skiplist(&skiplist);
 #endif
@@ -1734,7 +1734,7 @@ test_skiplist_big_keys(
 		CuAssertStrEquals(tc, 	(char*) cursor->value, "BIG!");
 	}
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** INSERT **");
 	check_skiplist(&skiplist);
 #endif
@@ -1744,7 +1744,7 @@ test_skiplist_big_keys(
 		sl_delete(&skiplist, (ion_key_t) &i);
 	}
 
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("%s\n", "** DELETE **");
 	check_skiplist(&skiplist);
 #endif
