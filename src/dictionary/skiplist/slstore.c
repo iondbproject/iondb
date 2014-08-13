@@ -42,9 +42,10 @@ sl_initialize(
 	io_printf("%s", "\n");
 #endif
 
-	/* TODO malloc error check */
 	skiplist->head 			= malloc(sizeof(sl_node_t));
+	if(NULL == skiplist->head) { return err_out_of_memory; }
 	skiplist->head->next 	= malloc(sizeof(sl_node_t) * skiplist->maxheight);
+	if(NULL == skiplist->head->next) { return err_out_of_memory; }
 
 	skiplist->head->height 	= maxheight - 1;
 	skiplist->head->key 	= NULL;
@@ -93,10 +94,18 @@ sl_insert(
 	int 		value_size 	= skiplist->super.record.value_size;
 
 	sl_node_t 	*newnode 	= malloc(sizeof(sl_node_t));
+	if(NULL == newnode) { return err_out_of_memory; }
+
 	newnode->height 		= sl_gen_level(skiplist);
 	newnode->next 			= malloc(sizeof(sl_node_t*) * (newnode->height+1));
+	if(NULL == newnode->next) { return err_out_of_memory; }
+
 	newnode->key 			= malloc(sizeof(char) * key_size);
+	if(NULL == newnode->key) { return err_out_of_memory; }
+
 	newnode->value 			= malloc(sizeof(char) * value_size);
+	if(NULL == newnode->value) { return err_out_of_memory; }
+
 	memcpy(newnode->key, key, key_size);
 	memcpy(newnode->value, value, value_size);
 
@@ -142,6 +151,7 @@ sl_query(
 	}
 
 	*value 					= malloc(sizeof(char) * value_size);
+	if(NULL == value) { return err_out_of_memory; }
 	memcpy(*value, cursor->value, value_size);
 
 	return err_ok;

@@ -56,8 +56,9 @@ sldict_create_dictionary(
 {
 	int pnum, pden;
 
-	/* TODO malloc error check */
 	dictionary->instance 	= malloc(sizeof(skiplist_t));
+
+	if(NULL == dictionary->instance) { return err_out_of_memory; }
 
 	pnum 					= 1;
 	pden 					= 4;
