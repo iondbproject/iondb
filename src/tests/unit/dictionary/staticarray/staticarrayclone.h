@@ -2,7 +2,8 @@
 /**
 @file	 staticarrayclone.h
 @author	 Raffi Kudlac
-@brief	 ###BRIEF HERE###
+@brief	 The purpose of this file is to define the functions so that they could
+			be rearacnged in the test staticarray.c file
 */
 /******************************************************************************/
 #ifndef STATICARRAYCLONE_H_

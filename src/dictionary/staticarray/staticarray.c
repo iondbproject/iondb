@@ -8,7 +8,6 @@
 
 #include "staticarray.h"
 
-
 //used to calculate max size of array
 sa_max_size_t
 ipow(
@@ -54,7 +53,6 @@ sa_dictionary_create(
 		starray->key_size 	 = key_size;
 	}
 
-
 	// checks for invalid array size
 	if(array_size <= 0 || array_size > starray->maxelements)
 	{
@@ -76,10 +74,8 @@ sa_dictionary_create(
 	}
 
 	// creates room on the heap for bucket array and char value array
-	starray->array = calloc(
-						starray->array_size,
-						(sizeof(bucket_t) + value_size)
-					);
+	starray->array = calloc(starray->array_size,
+			(sizeof(bucket_t) + value_size));
 
 	int j = 0;
 	//makes pointer pointing at first bucket location
@@ -95,11 +91,10 @@ sa_dictionary_create(
 	{
 		bb[j].value = &value_start[j*starray->value_size];
 	}
-
 	starray->compare = compare;
-
 	return status_ok;
 }
+
 
 status_t
 sa_update(
@@ -108,9 +103,8 @@ sa_update(
 		ion_value_t 			value
 )
 {
-	bucket_t *b = NULL;
-
-	status_t sat = find_bucket(&b, starray,key);
+	bucket_t *b 	= NULL;
+	status_t sat 	= find_bucket(&b, starray,key);
 
 	if (sat != status_ok)
 	{
@@ -119,7 +113,7 @@ sa_update(
 	else
 	{
 		// copies value to the location in the char array section
-		memcpy(b->value, value,starray->value_size);
+		memcpy(b->value, value, starray->value_size);
 
 		if (b->status == EMPTY)
 		{
@@ -129,11 +123,13 @@ sa_update(
 	}
 }
 
+//all taken care of in the handler
 void
 sa_find()
-{ //dont do this one right now
+{
 
 }
+
 
 status_t
 sa_get(
@@ -142,12 +138,9 @@ sa_get(
 	ion_value_t 				*value
 )
 {
-	int v_size = starray->value_size;
-
-	*value 	   = malloc(sizeof(v_size));
-
+	int v_size 	= starray->value_size;
+	*value 	   	= malloc(sizeof(v_size));
 	bucket_t *b = NULL;
-
 	status_t s 	= find_bucket(&b, starray,key);
 
 	if (s != status_ok)
@@ -166,8 +159,6 @@ sa_get(
 }
 
 
-
-
 status_t
 sa_insert(
 	static_array_t				*starray,
@@ -176,7 +167,6 @@ sa_insert(
 )
 {
 	bucket_t *b = NULL;
-
 	status_t s 	= find_bucket(&b, starray,key);
 
 	if (s != status_ok)
@@ -195,6 +185,7 @@ sa_insert(
 	}
 }
 
+
 sa_max_size_t
 key_to_index(
 		ion_key_t 		key,
@@ -206,6 +197,7 @@ key_to_index(
 
 	return result;
 }
+
 
 status_t
 sa_delete(
@@ -232,6 +224,7 @@ sa_delete(
 	}
 }
 
+
 status_t
 sa_destroy(
 	static_array_t		*starray
@@ -239,7 +232,6 @@ sa_destroy(
 {
 	//b points at the begining of the bucket array
 	bucket_t *b 	= (bucket_t *) starray->array;
-
 	free(b);
 	starray->array	= NULL;
 
@@ -254,7 +246,7 @@ find_bucket(
 	ion_key_t 		key
 )
 {
-	int s = starray->key_size;
+	int s 			= starray->key_size;
 	sa_max_size_t k = key_to_index(key, s);
 
 	if (k >= starray->array_size || k < 0)
@@ -262,9 +254,8 @@ find_bucket(
 		return status_key_out_of_bounds;
 	}
 
-	bucket_t *bb = (bucket_t *) starray->array;
-
-	*b = &bb[k];
+	bucket_t *bb 	= (bucket_t *) starray->array;
+	*b 				= &bb[k];
 
 	return status_ok;
 }

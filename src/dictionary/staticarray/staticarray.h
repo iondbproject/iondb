@@ -64,7 +64,7 @@ typedef struct bucket
 {
 	char		status;				/**< availability. EMPTY or OCCUPIED */
 	ion_value_t	value;				/**< pointer pointing to the char data */
-} bucket_t;
+} 	bucket_t;
 
 
 /**
@@ -109,7 +109,7 @@ sa_update(
 );
 
 void
-sa_find(); //to be made later
+sa_find(); // Implemented in the handler
 
 
 /**

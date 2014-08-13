@@ -8,13 +8,10 @@
 #ifndef SAHANDLER_H_
 #define SAHANDLER_H_
 
-
 #include "staticarray.h"
 #include "./../../kv_system.h"
 #include "./../dicttypes.h"
 #include "./../dictionary.h"
-
-
 
 /**
 @brief		Used to initalize the handler
@@ -183,16 +180,16 @@ sadict_update(
 
 
 /**
-@brief		Finds stuff, dunno how this works
+@brief		Finds information given a predicate
 
 @param		dictionary
  	 	 	 	 a pointer to the dictionary that holds everything
 
 @param		pred
- 	 	 	 	 unkown
+ 	 	 	 	 the predicate
 
 @param		cursor
- 	 	 	 unkown
+ 	 	 	 a cursor pointing to the first value that firs the predicate
 
 @return	unknown
 */
@@ -204,12 +201,32 @@ sadict_find(
 		dict_cursor_t			**cursor
 );
 
+/*
+ @brief		Used to find the next vale used by the single search case used by
+  	  	  	  the predicate
 
+@param		cursor
+  	  	  	  the cursor point to the data
+
+@param		value
+  	  	  	  the value to be returned
+ */
 cursor_status_t
 sadict_equality_next(
 	dict_cursor_t 	*cursor,
 	ion_value_t		value
 );
+
+/*
+ @brief		Used to find the next vale used by the range search case used by
+  	  	  	  the predicate
+
+@param		cursor
+  	  	  	  the cursor point to the data
+
+@param		value
+  	  	  	  the value to be returned
+ */
 
 cursor_status_t
 sadict_range_next(
@@ -217,4 +234,3 @@ sadict_range_next(
 	ion_value_t		value
 );
 #endif /* SAHANDLER_H_ */
-

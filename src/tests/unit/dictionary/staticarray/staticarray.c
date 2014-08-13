@@ -28,7 +28,6 @@ open_address_staticarray_getsuite()
 	update_tests(suite);
 	destroy_tests(suite);
 	//SUITE_ADD_TEST(suite,test_key_to_index);
-	//SUITE_ADD_TEST(suite, show_for_raymon);
 
 	return suite;
 }

@@ -77,7 +77,7 @@ sadict_delete(
 		ion_key_t 		key
 )
 {
-	static_array_t *sa = (static_array_t *)dictionary->instance;
+	static_array_t *sa = (static_array_t *) dictionary->instance;
 	return sa_delete(sa,key);
 }
 
@@ -182,17 +182,17 @@ sadict_find(
 	{
 		return err_out_of_memory;
 	}
-	(*cursor)->dictionary = dictionary;
-	(*cursor)->type = pred->type;				//* types align
-	(*cursor)->status = cs_cursor_uninitialized;
+	(*cursor)->dictionary 	= dictionary;
+	(*cursor)->type 		= pred->type;				//* types align
+	(*cursor)->status 		= cs_cursor_uninitialized;
 
 	//bind destroy method for cursor
 	(*cursor)->destroy = sadict_destroy_cursor;
 
 	//allocate predicate
-	(*cursor)->predicate = (predicate_t *)malloc(sizeof(predicate_t));
-	(*cursor)->predicate->type = pred->type;			/**@todo repair as there are duplicate types */
-	static_array_t *sa = (static_array_t *)dictionary->instance;
+	(*cursor)->predicate 		= (predicate_t *)malloc(sizeof(predicate_t));
+	(*cursor)->predicate->type 	= pred->type;
+	static_array_t *sa			= (static_array_t *)dictionary->instance;
 	switch(pred->type)
 	{
 		case predicate_equality:
@@ -200,8 +200,8 @@ sadict_find(
 			//as this is an equality, need to malloc for key as well
 			if (((*cursor)->predicate->statement.equality.equality_value =
 					(ion_key_t)malloc(sizeof(ion_key_t)*
-							(((static_array_t*)dictionary->instance)->key_size)))
-									 == NULL)
+						(((static_array_t*)dictionary->instance)->key_size)))
+								== NULL)
 			{
 				free((*cursor)->predicate);
 				free(*cursor);						//cleanup
