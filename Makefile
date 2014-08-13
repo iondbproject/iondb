@@ -102,9 +102,13 @@ endef
 
 # Sources for database library.
 libsources :=  	$(SRC)/io.c \
+				$(SRC)/files/ion_file.c \
+				$(SRC)/files/linkedfilebag.c \
 				$(SRC)/dictionary/dictionary.c \
 				$(SRC)/dictionary/openaddresshash/oadictionaryhandler.c \
-				$(SRC)/dictionary/openaddresshash/oahash.c
+				$(SRC)/dictionary/openaddresshash/oahash.c \
+				$(SRC)/dictionary/bpptree/bpptree.c \
+				$(SRC)/dictionary/bpptree/bpptreehandler.c \
 				
 # Generate list of libraries to compile.
 libs        := $(addprefix $(BIN_LIB)/,$(subst .c,.o,$(notdir $(libsources))))
@@ -126,7 +130,9 @@ utildepends := $(addprefix $(BIN_UTILS)/,$(subst .c,.d,$(notdir $(utilssources))
 tlsources   := 	$(SRC)/tests/CuTest.c  \
 				$(SRC)/tests/unit/dictionary/openaddresshash/oahash.c	\
 				$(SRC)/tests/unit/dictionary/openaddresshash/oadictionaryhandler.c \
-				$(SRC)/tests/unit/dictionary/dictionary.c	\
+				$(SRC)/tests/unit/dictionary/dictionary.c \
+				$(SRC)/tests/unit/dictionary/generic_dictionary_test.c \
+				$(SRC)/tests/unit/dictionary/bpptree/bpptreehandler.c \
 
 # Generate list of libraries to compile.
 testlibs    := $(addprefix $(BIN_TESTS)/,$(subst .c,.o,$(notdir $(tlsources))))
@@ -137,7 +143,8 @@ tldepends   := $(addprefix $(BIN_TESTS)/,$(subst .c,.d,$(notdir $(tlsources))))
 # List of executable test library sources. (main)
 testsources := 	$(SRC)/hashmap.c	\
 				$(SRC)/tests/unit/dictionary/openaddresshash/run_oahash.c \
-				$(SRC)/tests/unit/dictionary/run_dictionary.c 
+				$(SRC)/tests/unit/dictionary/run_dictionary.c \
+				$(SRC)/tests/unit/dictionary/bpptree/run_bpptree.c 
 				
 # Generate list of libraries to compile.
 testexecs   := $(addprefix $(BIN_TESTS)/,$(subst .c,,$(notdir $(testsources))))

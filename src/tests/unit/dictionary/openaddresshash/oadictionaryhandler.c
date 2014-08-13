@@ -286,8 +286,6 @@ test_open_address_hashmap_handler_capacity(
 {
 }
 
-
-
 void
 test_open_address_dictionary_cursor_equality(
 	CuTest		*tc
