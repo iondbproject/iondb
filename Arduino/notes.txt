@@ -1,0 +1,16 @@
+Notes
+
+Flatten folder structure (but might not be necessary if we introduce some indirection)
+    Change #include paths to be correct for flattened structure
+
+Resolve name conflicts (true and false already defined,  delete is a reserved keyword in C++)
+
+Removed random seed (undefined reference to 'time'? C++ thing)
+
+- Seemingly simple idea: Zip file contains one *.c and one *.h, import copies files into Arduino lib dir
+- Catch: Inflexible for bigger projects
+- Limitation: Does not support subdirectories?
+- EX: Messenger library does not work with Wiring "import" feature, and in fact doesn't work at all!
+- EX2: Datetime library also does not support Wiring import, until it is copied in... and it doesn't work either
+- Note: Most (possibly all) Libraries listed on the official Arduino Library page are non functional and years dated
+- Instead: I read the included libraries to see how they're done

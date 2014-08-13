@@ -16,7 +16,7 @@ sldict_init(
 	handler->insert 			= sldict_insert;
 	handler->get 				= sldict_query;
 	handler->create_dictionary 	= sldict_create_dictionary;
-	handler->delete 			= sldict_delete;
+	handler->deletex 			= sldict_delete;
 	handler->delete_dictionary 	= sldict_delete_dictionary;
 	handler->update 			= sldict_update;
 
