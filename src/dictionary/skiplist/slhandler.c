@@ -114,3 +114,92 @@ sldict_update(
 {
 	return sl_update((skiplist_t *) dictionary->instance, key, value);
 }
+
+err_t
+sldict_find(
+	dictionary_t 	*dictionary,
+	predicate_t 	*predicate,
+	dict_cursor_t 	**cursor
+)
+{
+	*cursor 					= malloc(sizeof(sldict_cursor_t));
+	if(NULL == *cursor) { return err_out_of_memory; }
+
+	(*cursor)->dictionary 		= dictionary;
+	(*cursor)->type 			= predicate->type;
+	(*cursor)->status 			= cs_cursor_uninitialized;
+
+	(*cursor)->destroy 			= sldict_destroy_cursor;
+	(*cursor)->next 			= sldict_next;
+
+	(*cursor)->predicate 		= malloc(sizeof(predicate_t));
+	(*cursor)->predicate->type 	= predicate->type;
+
+	switch(predicate->type)
+	{
+		case predicate_equality:
+		{
+			ion_key_size_t key_size = dictionary->instance->record.key_size;
+			/* TODO yuck */
+			(*cursor)->predicate->statement.equality.equality_value
+								= malloc(sizeof(char) * key_size);
+			if(NULL == (*cursor)->predicate->statement.equality.equality_value)
+			{
+				free( (*cursor)->predicate);
+				free(*cursor);
+				return err_out_of_memory;
+			}
+
+			memcpy(
+				(*cursor)->predicate->statement.equality.equality_value,
+				predicate->statement.equality.equality_value,
+				key_size
+			);
+
+			/* TODO last here, was about to do a find_node */
+
+			break;
+		}
+	}
+
+	return err_ok;
+}
+
+cursor_status_t
+sldict_next( /* TODO finish NEXT */
+	dict_cursor_t 	*cursor,
+	ion_value_t 	value
+)
+{
+	return cs_possible_data_inconsistency;
+}
+
+void
+sldict_destroy_cursor(
+	dict_cursor_t 		**cursor
+)
+{
+	switch( (*cursor)->type)
+	{
+		case predicate_equality:
+		{
+			free( (*cursor)->predicate->statement.equality.equality_value);
+			break;
+		}
+		case predicate_range:
+		{
+			free( (*cursor)->predicate->statement.range.geq_value);
+			free( (*cursor)->predicate->statement.range.leq_value);
+			break;
+		}
+		case predicate_predicate:
+		{
+			/* TODO what's this? */
+			break;
+		}
+	}
+
+	free( (*cursor)->predicate);
+	free(*cursor);
+	*cursor = NULL;
+}

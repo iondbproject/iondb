@@ -12,48 +12,8 @@
 extern "C" {
 #endif
 
-#include "./../dicttypes.h"
-#include "./../dictionary.h"
-
+#include "sltypes.h"
 #include <time.h> /* For random seed */
-#include "./../../io.h"
-#include "./../../kv_system.h"
-
-typedef int sl_level_t;
-
-/**
-@brief 	Struct of a node in the skiplist.
- */
-typedef struct sl_node
-{
-	ion_key_t		key; 		/**< Key of a skiplist node */
-	ion_value_t		value;		/**< Value of a skiplist node */
-	sl_level_t		height;		/**< Height index of a skiplist node
-									 (counts from 0) */
-	struct sl_node	**next; 	/**< Array of nodes that form the next
-	 	 	 	 	 	 	 	     column in the skiplist */
-} sl_node_t;
-
-/**
-@brief 	Struct of the Skiplist, holds metadata and the entry point
- 		into the skiplist.
- */
-typedef struct skiplist
-{
-	/* TODO yuck */
-	dictionary_parent_t
-				super; 		/**< Parent structure holding dictionary level
-							     information */
-	sl_node_t	*head; 		/**< Entry point into the skiplist. Does not hold
-	 	 	 	 	 	 	     any key/value information */
-	sl_level_t	maxheight;	/**< Maximum height of the skiplist in terms of
-	 	 	 	 	 	 	     the number of nodes */
-	int			pnum;		/**< Probability NUMerator, used in height gen */
-	int			pden;		/**< Probability DENominator, used in height gen */
-
-							/**< Comparison function used to compare keys */
-	char 		(*compare)(ion_key_t, ion_key_t, ion_key_size_t);
-} skiplist_t;
 
 /**
 @brief 		Initializes an in-memory skiplist.

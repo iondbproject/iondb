@@ -88,20 +88,6 @@ struct dictionary_handler
 };
 
 /**
-@brief		A dictionary contains information regarding an instance of the
-			storage element and the associated handler.
-*/
-struct dictionary
-{
-
-	void					*instance;		/**< Specific instance of a
-											     collection (but we don't
-											     know type) */
-	dictionary_handler_t 	*handler;		/**< Handler for the specific type.
-											*/
-};
-
-/**
 @brief 		This is the parent for all collections
  */
 typedef struct dictionary_parent
@@ -109,6 +95,21 @@ typedef struct dictionary_parent
 	key_type_t				key_type;		/**< The key type stored in the map*/
 	record_t 				record;			/**< The record structure for items*/
 } dictionary_parent_t;
+
+/**
+@brief		A dictionary contains information regarding an instance of the
+			storage element and the associated handler.
+*/
+struct dictionary
+{
+
+	dictionary_parent_t		*instance;		/**< Specific instance of a
+											     collection (but we don't
+											     know type) */
+	dictionary_handler_t 	*handler;		/**< Handler for the specific type.
+											*/
+};
+
 
 /**
 @brief		Dictionary cursor type designator.

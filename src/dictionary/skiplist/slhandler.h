@@ -12,9 +12,7 @@
 extern "C" {
 #endif
 
-#include "./../dicttypes.h"
-#include "./../dictionary.h"
-#include "./../../kv_system.h"
+#include "sltypes.h"
 #include "slstore.h"
 
 /**
@@ -159,6 +157,62 @@ sldict_update(
 	dictionary_t 	*dictionary,
 	ion_key_t 		key,
 	ion_value_t 	value
+);
+
+/**
+@brief 		Finds multiple keys based on the provided predicate.
+
+@details 	Finds multiple keys based on the provided predicate. Gives a cursor
+			that allows traversal of all key/value pairs that satisfy the
+			@p predicate. Not all implementations support a find.
+
+@param 		dictionary
+				The instance of a dictionary to search within.
+@param 		predicate
+				The predicate used to match.
+@param 		cursor
+				The pointer to a cursor declared by the caller, but initialized
+				and populated within the function.
+@return 	Status of find.
+ */
+err_t
+sldict_find(
+	dictionary_t 	*dictionary,
+	predicate_t 	*predicate,
+	dict_cursor_t 	**cursor
+);
+
+/**
+@brief 		Next function queries and retrieves the next key/value pair that
+			satisfies the predicate of the cursor.
+
+@param 		cursor
+				The cursor used to iterate over results.
+@param 		value
+				A value pointer that is allocated by the caller in which the
+				cursor will fill with the next key/value result. The assumption
+				is that the caller will also free this memory.
+@return 	Status of cursor.
+ */
+cursor_status_t
+sldict_next(
+	dict_cursor_t 	*cursor,
+	ion_value_t 	value
+);
+
+/**
+@brief 		Destroys the cursor.
+
+@details 	Destroys the cursor when the user is finished with it. All memory
+			internally used by the cursor is freed as well. Cursor pointers
+			will be set to NULL as per IonDB specification.
+
+@param 		cursor
+				Pointer to a pointer of a cursor.
+ */
+void
+sldict_destroy_cursor(
+	dict_cursor_t 	**cursor
 );
 
 #ifdef __cplusplus
