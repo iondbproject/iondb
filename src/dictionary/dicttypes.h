@@ -41,6 +41,8 @@ typedef struct predicate 			predicate_t;
 
 typedef union predicate_statement	predicate_statement_t;
 
+typedef struct dictionary_parent	dictionary_parent_t;
+
 typedef enum comparison
 {
 	A_lt_B	= -1,							/**<The result for the comparison operation is A <= B */
@@ -94,7 +96,7 @@ struct dictionary_handler
 struct dictionary
 {
 
-	void					*instance;		/**< Specific instance of a
+	dictionary_parent_t		*instance;		/**< Specific instance of a
 											     collection (but we don't
 											     know type) */
 	dictionary_handler_t 	*handler;		/**< Handler for the specific type.
@@ -104,11 +106,13 @@ struct dictionary
 /**
 @brief 		This is the parent for all collections
  */
-typedef struct dictionary_parent
+struct dictionary_parent
 {
 	key_type_t				key_type;		/**< The key type stored in the map*/
 	record_t 				record;			/**< The record structure for items*/
-} dictionary_parent_t;
+	char 					(* compare)(ion_key_t, ion_key_t, ion_key_size_t);
+										/**< Comparison function for instance of map */
+};
 
 /**
 @brief		Dictionary cursor type designator.
@@ -194,6 +198,7 @@ struct predicate
 {
 	predicate_type_t		type;
 	predicate_statement_t 	statement;
+	void					(*destroy)(predicate_t **);
 };
 
 /**

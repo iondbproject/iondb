@@ -49,7 +49,8 @@ initialize_hash_map(
 	hashmap_t 	*map
 )
 {
-	oah_initialize(map, oah_compute_simple_hash, dictionary_compare_signed_value, map->super.key_type, record->key_size, record->value_size, size);
+	oah_initialize(map, oah_compute_simple_hash, /*dictionary_compare_signed_value,*/ map->super.key_type, record->key_size, record->value_size, size);
+	map->super.compare = dictionary_compare_signed_value;
 }
 
 void

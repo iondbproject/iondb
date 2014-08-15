@@ -246,15 +246,66 @@ dictionary_compare_char_array(
 );
 
 
+/**
+@brief		Allocates memory and creates predicate based on caller input.
+
+@details	Builds predicate based on type requested by caller.  This
+			function is variadic as it will take a different number of
+			parameters depending on the type of predicate required.
+
+
+@param 		dictionary
+				The dictionary the predicate is being build for.
+@param 		predicate
+				The pointer to a predicate reference created by caller.
+@param 		type
+				The type of predicate being requested.
+@param 		key
+				The first key used to be used in the predicate.  If this
+				is a single key comparison, then this is the only key
+				required.  If this is a range query, the first key will
+				be the lower bound as @p key >= value.  The first optional
+				parameter will be used as the upper bound value.
+@return		The status of the predicate.
+ */
 err_t
 dictionary_build_predicate(
 	dictionary_t			*dictionary,
-	predicate_t				*predicate,
+	predicate_t				**predicate,
 	predicate_operator_t	type,
-	ion_key_t				key1,
+	ion_key_t				key,
 	...
 );
 
+/**
+@brief			Destroys a predicate statement for a range query and cleans up
+				memory
+
+@details		Destroys a predicate statement for range query and cleans up
+				memory internally allocated for specific instance.
+
+@param 			predicate
+					Pointer pointer to predicate to destroy.
+ */
+void
+dictonary_destroy_predicate_range(
+	predicate_t		**predicate
+);
+
+/**
+@brief			Destroys a predicate statement for single operator and cleans up
+				memory
+
+@details		Destroys a predicate statement for single operator and cleans up
+				memory internally allocated for specific instance.
+
+@param 			predicate
+					Pointer pointer to predicate to destroy.
+*/
+void
+dictonary_destroy_predicate_statement(
+	predicate_t		**predicate
+);
 
 #ifdef __cplusplus
 }

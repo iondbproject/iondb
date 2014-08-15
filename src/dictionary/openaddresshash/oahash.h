@@ -47,7 +47,10 @@ enum write_concern
  */
 typedef char 			write_concern_t;
 
-
+/**
+@brief		Prototype declaration for hashmap
+ */
+typedef struct hashmap 	hashmap_t;
 
 /**
 @brief		Struct used to maintain individual records in the hashmap.
@@ -65,15 +68,13 @@ struct hashmap
 {
 	dictionary_parent_t	super;
 	int 				map_size;		/**< The size of the map in item capacity */
-/*	key_type_t			key_type;		*< The key type stored in the map
-	record_t 			record;			*< The record structure for items */
 	write_concern_t 	write_concern;	/**< The current @p write_concern level
 	 	 	 	 	 	 	 	 	 	 	 of the hashmap*/
 	int					(* compute_hash)(hashmap_t *, ion_key_t, int);
 										/**< The hashing function to be used for
 										 	 the instance*/
-	char 				(* compare)(ion_key_t, ion_key_t, ion_key_size_t);
-										/**< Comparison function for instance of map */
+/*	char 				(* compare)(ion_key_t, ion_key_t, ion_key_size_t);
+										*< Comparison function for instance of map */
 	char 				*entry;				/**< Pointer to the entries in the hashmap*/
 
 };
@@ -85,9 +86,6 @@ struct hashmap
 				Pointer to the hashmap instance to initialize.
 @param		hashing_function
 				Function pointer to the hashing function for the instance.
-@param		compare
-				Function pointer to the correct comparison function for the
-				collection.
 @param		key_type
 				The type of key that is being stored in the collection.
 @param 		key_size
@@ -103,7 +101,6 @@ err_t
 oah_initialize(
 		hashmap_t			*hashmap,
 		hash_t				(*hashing_function)(hashmap_t *, ion_key_t, int),
-		char				(*compare)(ion_key_t, ion_key_t, ion_key_size_t),
 	    key_type_t			key_type,
 		ion_key_size_t		key_size,
 		ion_value_size_t	value_size,
@@ -293,10 +290,6 @@ oah_compute_simple_hash(
 
 /*void
 static_hash_init(dictonary_handler_t * client);*/
-
-
-
-
 
 
 #ifdef __cplusplus
