@@ -6,6 +6,7 @@
  */
 
 #include "io.h"
+#include "stdlib.h"
 
 int io_printf( const char * format, ... )
 {

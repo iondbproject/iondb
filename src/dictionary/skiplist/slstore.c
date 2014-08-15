@@ -12,7 +12,6 @@ err_t
 sl_initialize(
 	skiplist_t 	*skiplist,
 	key_type_t 	key_type,
-	char 		(* compare)(ion_key_t, ion_key_t, ion_key_size_t),
 	int 		key_size,
 	int 		value_size,
 	int 		maxheight,
@@ -26,7 +25,6 @@ sl_initialize(
 	skiplist->super.key_type 			= key_type;
 	skiplist->super.record.key_size 	= key_size;
 	skiplist->super.record.value_size 	= value_size;
-	skiplist->compare 					= compare;
 	skiplist->maxheight 				= maxheight;
 
 	/* TODO potentially check if pden and pnum are invalid (0) */
@@ -109,7 +107,7 @@ sl_insert(
 		return err_out_of_memory;
 	}
 
-	newnode->key 			= malloc(sizeof(char) * key_size);
+	newnode->key 			= malloc(key_size);
 	if(NULL == newnode->key)
 	{
 		free(newnode->next);
@@ -117,7 +115,7 @@ sl_insert(
 		return err_out_of_memory;
 	}
 
-	newnode->value 			= malloc(sizeof(char) * value_size);
+	newnode->value 			= malloc(value_size);
 	if(NULL == newnode->value)
 	{
 		free(newnode->key);
@@ -136,7 +134,7 @@ sl_insert(
 	{
 		//The memcmp will return -1 if key is smaller, 0 if equal, 1 if greater.
 		while(NULL != cursor->next[h] &&
-					skiplist->compare(key, cursor->next[h]->key, key_size) >= 0)
+					skiplist->super.compare(key, cursor->next[h]->key, key_size) >= 0)
 		{
 			cursor = cursor->next[h];
 		}
@@ -165,12 +163,12 @@ sl_query(
 	sl_node_t 	*cursor 	= sl_find_node(skiplist, key);
 
 	if(NULL == cursor->key ||
-							skiplist->compare(cursor->key, key, key_size) != 0)
+					skiplist->super.compare(cursor->key, key, key_size) != 0)
 	{
 		return err_item_not_found;
 	}
 
-	*value 					= malloc(sizeof(char) * value_size);
+	*value 					= malloc(value_size);
 	if(NULL == value) { return err_out_of_memory; }
 	memcpy(*value, cursor->value, value_size);
 
@@ -191,7 +189,7 @@ sl_update(
 
 	/* If the key doesn't exist in the skiplist... */
 	if(NULL == cursor->key ||
-							skiplist->compare(cursor->key, key, key_size) != 0)
+					skiplist->super.compare(cursor->key, key, key_size) != 0)
 	{
 		/* Insert it. TODO Possibly return different error code */
 		sl_insert(skiplist, key, value);
@@ -221,17 +219,17 @@ sl_delete(
 	for(h = skiplist->head->height; h >= 0; --h)
 	{
 		while(NULL != cursor->next[h] &&
-					skiplist->compare(cursor->next[h]->key, key, key_size) < 0)
+			skiplist->super.compare(cursor->next[h]->key, key, key_size) < 0)
 		{
 			cursor 	= cursor->next[h];
 		}
 
 		if(NULL != cursor->next[h] &&
-					skiplist->compare(cursor->next[h]->key, key, key_size) == 0)
+			skiplist->super.compare(cursor->next[h]->key, key, key_size) == 0)
 		{
 			sl_node_t 			*oldcursor 	= cursor;
 			while(NULL != cursor->next[h] &&
-					skiplist->compare(cursor->next[h]->key, key, key_size) == 0)
+			skiplist->super.compare(cursor->next[h]->key, key, key_size) == 0)
 			{
 				sl_node_t 		*tofree 	= cursor->next[h];
 				sl_node_t 		*relink 	= cursor->next[h];
@@ -275,9 +273,8 @@ sl_find_node(
 
 	for(h = skiplist->head->height; h >= 0; h--)
 	{
-		//The memcmp will return -1 if key is smaller, 0 if equal, 1 if greater.
 		while( NULL != cursor->next[h] &&
-					skiplist->compare(key, cursor->next[h]->key, key_size) >= 0)
+			skiplist->super.compare(key, cursor->next[h]->key, key_size) >= 0)
 		{
 			cursor 			= cursor->next[h];
 		}

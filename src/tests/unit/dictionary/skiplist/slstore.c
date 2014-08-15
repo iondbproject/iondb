@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "./../../../CuTest.h"
+#include "./../../../../dictionary/skiplist/sltypes.h"
 #include "./../../../../dictionary/skiplist/slstore.h"
 #include "./../../../../dictionary/skiplist/slhandler.h"
 #include "./../../../../dictionary/dicttypes.h"
@@ -73,13 +74,13 @@ initialize_skiplist(
 	sl_initialize(
 			skiplist,
 			key_type,
-			compare,
 			key_size,
 			value_size,
 			maxheight,
 			pnum,
 			pden
 	);
+	skiplist->super.compare = compare;
 }
 
 void
@@ -155,7 +156,7 @@ test_skiplist_initialize(
 	ion_value_size_t 	t_value_size 	= skiplist.super.record.value_size;
 
 	CuAssertTrue(tc, skiplist.super.key_type 	== key_type_numeric_signed);
-	CuAssertTrue(tc, skiplist.compare 			== dictionary_compare_signed_value);
+	CuAssertTrue(tc, skiplist.super.compare 	== dictionary_compare_signed_value);
 	CuAssertTrue(tc, t_key_size 				== key_size);
 	CuAssertTrue(tc, t_value_size 				== value_size);
 	CuAssertTrue(tc, skiplist.maxheight 		== maxheight);
@@ -1606,7 +1607,7 @@ test_skiplist_delete_several_same_key_in_mix(
 	CuAssertTrue(tc, status == err_ok);
 	/* TODO collapse these into macros, so that this fits 80 cols */
 	sl_node_t 	*find = sl_find_node(&skiplist, (ion_key_t) &(int) {55});
-	CuAssertTrue(tc, skiplist.compare(find->key, (ion_key_t) &(int) {55}, skiplist.super.record.key_size) != 0);
+	CuAssertTrue(tc, skiplist.super.compare(find->key, (ion_key_t) &(int) {55}, skiplist.super.record.key_size) != 0);
 
 	sl_destroy(&skiplist);
 }
@@ -1829,17 +1830,8 @@ runalltests_skiplist()
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);
 	CuSuiteDetails(suite, output);
-	printf("%s\n", output->buffer);
+	printf("----\nSkiplist Tests:\n%s\n", output->buffer);
 
 	CuSuiteDelete(suite);
 	CuStringDelete(output);
-}
-
-void
-runalltests_skiplist_handler()
-{
-	dictionary_handler_t handler;
-
-	sldict_init(&handler);
-	/* TODO Finish this! */
 }

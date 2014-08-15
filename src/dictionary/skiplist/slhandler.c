@@ -56,19 +56,19 @@ sldict_create_dictionary(
 {
 	int pnum, pden;
 
-	dictionary->instance 	= malloc(sizeof(skiplist_t));
-
+	dictionary->instance 			= malloc(sizeof(skiplist_t));
 	if(NULL == dictionary->instance) { return err_out_of_memory; }
 
-	pnum 					= 1;
-	pden 					= 4;
+	dictionary->instance->compare 	= compare;
+
+	pnum 							= 1;
+	pden 							= 4;
 
 	/* TODO Should we handle the possible error code returned by this?
 	 * If yes, what sorts of errors does it return? */
 	err_t result = sl_initialize(
 							(skiplist_t *) dictionary->instance,
 							key_type,
-							compare,
 							key_size,
 							value_size,
 							dictionary_size,
@@ -139,10 +139,11 @@ sldict_find(
 	{
 		case predicate_equality:
 		{
-			ion_key_size_t key_size = dictionary->instance->record.key_size;
-			/* TODO yuck */
-			(*cursor)->predicate->statement.equality.equality_value
-								= malloc(sizeof(char) * key_size);
+			ion_key_size_t 	key_size 	= dictionary->instance->record.key_size;
+			/* TODO get ALL these lines within 80 cols */
+			ion_key_t 		target_key 	= predicate->statement.equality.equality_value;
+
+			(*cursor)->predicate->statement.equality.equality_value = malloc(key_size);
 			if(NULL == (*cursor)->predicate->statement.equality.equality_value)
 			{
 				free( (*cursor)->predicate);
@@ -152,11 +153,27 @@ sldict_find(
 
 			memcpy(
 				(*cursor)->predicate->statement.equality.equality_value,
-				predicate->statement.equality.equality_value,
+				target_key,
 				key_size
 			);
 
-			/* TODO last here, was about to do a find_node */
+			sl_node_t *loc = sl_find_node(
+								(skiplist_t *) dictionary->instance,
+								target_key
+							 );
+			if(dictionary->instance->compare(loc->key, target_key, key_size) != 0)
+			{
+				/* If this happens, that means the target key doesn't exist */
+				(*cursor)->status = cs_end_of_results;
+				return err_ok;
+			}
+			else
+			{
+				(*cursor)->status 			= cs_cursor_initialized;
+				sldict_cursor_t *sl_cursor 	= (sldict_cursor_t *) (*cursor);
+				sl_cursor->current 			= loc;
+				return err_ok;
+			}
 
 			break;
 		}
@@ -174,6 +191,7 @@ sldict_next( /* TODO finish NEXT */
 	return cs_possible_data_inconsistency;
 }
 
+/* TODO test me */
 void
 sldict_destroy_cursor(
 	dict_cursor_t 		**cursor

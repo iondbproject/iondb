@@ -20,6 +20,8 @@ extern "C" {
 
 @param 		skiplist
 				Pointer to a skiplist instance to initialize
+@param 		key_type
+				Type of key used in this instance of a skiplist.
 @param 		key_size
 				Size of key in bytes.
 @param 	 	value_size
@@ -36,7 +38,6 @@ err_t
 sl_initialize(
 	skiplist_t 	*skiplist,
 	key_type_t 	key_type,
-	char 		(*)(ion_key_t, ion_key_t, ion_key_size_t),
 	int 		key_size,
 	int 		value_size,
 	int 		maxheight,
@@ -149,8 +150,9 @@ sl_delete(
 			sl_query to perform key lookups.
 
 @details 	Searches for a node with the given @p key. Used in conjunction with
-			sl_query to perform key lookups. Returns the node with a key less
-			than and closest to the target key.
+			sl_query to perform key lookups. Returns the first node containing
+			the target key (if it exists), or the closest node less than the
+			target key if it does not exist.
  */
 sl_node_t*
 sl_find_node(

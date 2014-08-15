@@ -50,15 +50,12 @@ typedef struct skiplist
 	 	 	 	 	 	 	     the number of nodes */
 	int			pnum;		/**< Probability NUMerator, used in height gen */
 	int			pden;		/**< Probability DENominator, used in height gen */
-
-							/**< Comparison function used to compare keys */
-	char 		(*compare)(ion_key_t, ion_key_t, ion_key_size_t);
 } skiplist_t;
 
 typedef struct sldict_cursor
 {
-	dict_cursor_t 		super; /**< Supertype of cursor */
-	/* TODO Fill out this struct */
+	dict_cursor_t 		super; 		/**< Supertype of cursor */
+	sl_node_t 			*current; 	/**< Current visited spot */
 } sldict_cursor_t;
 
 

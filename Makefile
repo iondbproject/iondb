@@ -125,8 +125,8 @@ utildepends := $(addprefix $(BIN_UTILS)/,$(subst .c,.d,$(notdir $(utilssources))
 # List of test library sources.
 tlsources   := 	$(SRC)/tests/CuTest.c  \
 				$(SRC)/tests/unit/dictionary/skiplist/slstore.c	\
+				$(SRC)/tests/unit/dictionary/skiplist/slhandler.c \
 				$(SRC)/tests/unit/dictionary/dictionary.c
-				#$(SRC)/tests/unit/dictionary/skiplist/slhandler.c 
 
 # Generate list of libraries to compile.
 testlibs    := $(addprefix $(BIN_TESTS)/,$(subst .c,.o,$(notdir $(tlsources))))
