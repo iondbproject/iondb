@@ -108,7 +108,6 @@ err_t oadict_find(
 		case predicate_equality:
 		{
 			//as this is an equality, need to malloc for key as well
-			/** TODO the size needs to be fixed--------------------------------------------------------| */
 			if (((*cursor)->predicate->statement.equality.equality_value =
 			        (ion_key_t)malloc(
 			                (((hashmap_t*)dictionary->instance)->super.record.key_size)))
