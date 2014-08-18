@@ -11,6 +11,7 @@ extern "C" {
 #include <string.h>
 #include "./../../kv_system.h"
 #include "./../dictionary.h"
+#include "./../../files/ion_file.h"
 
 /****************************
  * implementation dependent *

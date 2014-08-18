@@ -78,7 +78,7 @@ typedef struct bufTypeTag {     /* location of node */
 typedef struct hNodeTag {
     struct hNodeTag *prev;      /* previous node */
     struct hNodeTag *next;      /* next node */
-    FILE *fp;                   /* idx file */
+    file_handle_t fp;                   /* idx file */
     int keySize;                /* key length */
     bool dupKeys;               /* true if duplicate keys */
     int sectorSize;             /* block size for idx records */
@@ -120,8 +120,11 @@ static bErrType flush(bufType *buf) {
     /* flush buffer to disk */
     len = h->sectorSize;
     if (buf->adr == 0) len *= 3;        /* root */
+#if 0
     if (fseek(h->fp, buf->adr, SEEK_SET)) return error(bErrIO);
     if (fwrite(buf->p, len, 1, h->fp) != 1) return error(bErrIO);
+#endif
+    if (err_ok != ion_fwrite_at(h->fp, buf->adr, len, buf->p)) return error(bErrIO);
     buf->modified = false;
     nDiskWrites++;
     return bErrOk;
@@ -202,8 +205,11 @@ static bErrType readDisk(bAdrType adr, bufType **b) {
     if (!buf->valid) {
         len = h->sectorSize;
         if (adr == 0) len *= 3;         /* root */
+#if 0
         if (fseek(h->fp, adr, SEEK_SET)) return error(bErrIO);
         if (fread(buf->p, len, 1, h->fp) != 1) return error(bErrIO);
+#endif
+        if (err_ok != ion_fread_at(h->fp, adr, len, buf->p)) return error(bErrIO);
         buf->modified = false;
         buf->valid = true;
         nDiskReads++;
@@ -651,6 +657,25 @@ bErrType bOpen(bOpenType info, bHandleType *handle) {
     h->curKey = NULL;
 
     /* initialize root */
+    if (ion_fexists(info.iName)) {
+        /* open an existing database */
+	h->fp = ion_fopen(info.iName);
+        if ((rc = readDisk(0, &root)) != 0) return rc;
+        if (ion_fseek(h->fp, 0, ION_FILE_END)) return error(bErrIO);
+        if ((h->nextFreeAdr = ion_ftell(h->fp)) == -1) return error(bErrIO);
+    }
+    else if (NULL != (h->fp = ion_fopen(info.iName))) {
+        /* initialize root */
+        memset(root->p, 0, 3*h->sectorSize);
+        leaf(root) = 1;
+        h->nextFreeAdr = 3 * h->sectorSize;
+    }
+    else {
+        /* something's wrong */
+        free(h);
+        return bErrFileNotOpen;
+    }
+#if 0
     if ((h->fp = fopen(info.iName, "r+b")) != NULL) {
         /* open an existing database */
         if ((rc = readDisk(0, &root)) != 0) return rc;
@@ -666,6 +691,7 @@ bErrType bOpen(bOpenType info, bHandleType *handle) {
         free(h);
         return bErrFileNotOpen;
     }
+#endif
 
     /* append node to hList */
     if (hList.next) {

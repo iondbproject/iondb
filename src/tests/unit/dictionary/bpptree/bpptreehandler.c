@@ -24,7 +24,7 @@ run_bpptreehandler_generic_test_set_1(
 #endif
 	dictionary_test_insert_get(
 		&test,
-		3,
+		10000,
 		tc
 	);
 	

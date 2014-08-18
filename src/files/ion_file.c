@@ -1,6 +1,14 @@
 
 #include "ion_file.h"
 
+boolean_t
+ion_fexists(
+	char		*name
+)
+{
+	return (-1 != access(name, F_OK));
+}
+
 file_handle_t
 ion_fopen(
 	char		*name

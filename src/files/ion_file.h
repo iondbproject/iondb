@@ -25,6 +25,11 @@ typedef long		file_offset_t;
 #define ION_FILE_START	SEEK_SET
 #define ION_FILE_END	SEEK_END
 
+boolean_t
+ion_fexists(
+	char		*name
+);
+
 file_handle_t
 ion_fopen(
 	char		*name
