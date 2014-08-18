@@ -15,15 +15,39 @@ extern "C" {
 #endif
 
 #include "./../kv_system.h"
+
+#define FS_TARGET_CFILE		0
+#define FS_TARGET_ARDUINO	1
+#define FS_TARGET 		FS_TARGET_CFILE
+
+typedef long		file_offset_t;
+
+#if FS_TARGET == FS_TARGET_ARDUINO
+
+#include "SD_c_iface.h"
+
+typedef struct file_handle
+{
+	SD_File*	file;
+	file_offset_t	end;
+} file_handle_t;
+
+#define ION_FILE_START	0
+#define ION_FILE_END	1
+
+#else
+
 #include "stdio.h"
 #include "unistd.h"
 
 typedef FILE*		file_handle_t;
-typedef long		file_offset_t;
 
-#define FILE_NULL	-1
 #define ION_FILE_START	SEEK_SET
 #define ION_FILE_END	SEEK_END
+
+#endif
+
+#define FILE_NULL	-1
 
 boolean_t
 ion_fexists(
