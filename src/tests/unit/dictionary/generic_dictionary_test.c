@@ -137,3 +137,33 @@ dictionary_test_insert_get(
 		CuAssertTrue(tc, 0 == j);
 	}
 }
+
+void
+dictionary_test_delete(
+	generic_test_t	*test,
+	ion_key_t	key_to_delete,
+	boolean_t	free_value,
+	CuTest		*tc
+)
+{
+	err_t		error;
+	ion_value_t	*test_val;
+	
+	error	= dictionary_delete(
+			&(test->dictionary),
+			key_to_delete
+		);
+	
+	CuAssertTrue(tc, err_ok == error);
+	
+	error	= dictionary_get(
+			&(test->dictionary),
+			key_to_delete,
+			&test_val
+		);
+	
+	if (free_value)
+		free(test_val);
+	
+	CuAssertTrue(tc, err_item_not_found == error);
+}

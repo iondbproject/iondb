@@ -20,13 +20,25 @@ run_bpptreehandler_generic_test_set_1(
 	
 	dictionary_test_init(&test, tc);
 	
-#if 0
-#endif
 	dictionary_test_insert_get(
 		&test,
 		10000,
 		tc
 	);
+	
+	int to_delete[] = {7, -9, 32, 1000001};
+	int i;
+	
+	
+	for (i = 0; i < sizeof(to_delete)/sizeof(int); i++)
+	{
+		dictionary_test_delete(
+			&test,
+			(ion_key_t)(&(to_delete[i])),
+			false,
+			tc
+		);
+	}
 	
 	dictionary_delete_dictionary(&(test.dictionary));
 }

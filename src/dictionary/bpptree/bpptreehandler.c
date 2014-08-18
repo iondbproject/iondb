@@ -157,17 +157,17 @@ bpptree_delete(
 )
 {
 	bpptree_t		*bpptree;
-	//bErrType		bErr;
+	bErrType		bErr;
 	//err_t			err;
+	file_offset_t		offset;
 	
 	bpptree	= (bpptree_t *) dictionary->instance;
 	
-	// TODO: This implementation requires we specify record offsets when
-	//       duplicate keys are allowed. Good grief.
-	/*
-	bErr	= delete_value();
-	err	= delete_value();
-	*/
+	bErr	= bDeleteKey(bpptree->tree, key, &offset);
+	if (bErrKeyNotFound != bErr)
+	{
+		lfb_delete_all(&(bpptree->values), offset);
+	}
 	
 	return err_ok;
 }
