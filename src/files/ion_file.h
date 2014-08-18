@@ -16,6 +16,7 @@ extern "C" {
 
 #include "./../kv_system.h"
 #include "stdio.h"
+#include "unistd.h"
 
 typedef FILE*		file_handle_t;
 typedef long		file_offset_t;

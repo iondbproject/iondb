@@ -6,7 +6,13 @@ ion_fopen(
 	char		*name
 )
 {
-	return fopen(name, "r+b");
+	file_handle_t	file;
+	
+	file		= fopen(name, "r+b");
+	if (NULL == file)
+		file	= fopen(name, "w+b");
+	
+	return file;
 }
 
 err_t
@@ -129,8 +135,8 @@ ion_fread(
 	byte		*write_to
 )
 {
-	if (num_bytes != fread(write_to, num_bytes, 1, file))
-		return err_file_incomplete_write;
+	if (1 != fread(write_to, num_bytes, 1, file))
+		return err_file_incomplete_read;
 	
 	return err_ok;
 }

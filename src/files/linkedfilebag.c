@@ -13,7 +13,7 @@ lfb_put(
 	file_offset_t	next_empty;
 	err_t		error;
 	
-	next_empty	= LFB_NULL;
+	next_empty		= LFB_NULL;
 	
 	if (LFB_NULL != bag->next_empty)
 	{
@@ -60,10 +60,7 @@ lfb_put(
 		return error;
 	}
 	
-	if (LFB_NULL != next_empty)
-	{
-		bag->next_empty	= next_empty;
-	}
+	bag->next_empty	= next_empty;
 
 	return err_ok;
 }
@@ -83,7 +80,7 @@ lfb_get(
 			bag->file_handle,
 			offset,
 			sizeof(file_offset_t),
-			(byte *)&next
+			(byte *)next
 		);
 	
 	if (err_ok != error)
@@ -93,7 +90,7 @@ lfb_get(
 	
 	error	= ion_fread_at(
 			bag->file_handle,
-			offset,
+			offset+sizeof(file_offset_t),
 			num_bytes,
 			write_to
 		);

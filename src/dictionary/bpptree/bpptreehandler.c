@@ -8,6 +8,7 @@
 
 #include "bpptreehandler.h"
 #include "./../../kv_system.h"
+#include "./../../io.h"
 
 void
 bpptree_init(
@@ -42,14 +43,14 @@ bpptree_insert(
 	bErr	= bFindKey(bpptree->tree, key, &offset);
 	if (bErrKeyNotFound == bErr)
 	{
-		bErr	= FILE_NULL;
+		offset	= FILE_NULL;
 	}
 	
 	err	= lfb_put(
 			&(bpptree->values),
 			(byte *)value,
-			offset,
 			bpptree->super.record.value_size,
+			offset,
 			&offset
 		);
 	
@@ -91,11 +92,13 @@ bpptree_query(
 		return err_item_not_found;
 	}
 	
+	*value	= malloc(bpptree->super.record.value_size);
+	
 	err	= lfb_get(
 			&(bpptree->values),
 			offset,
 			bpptree->super.record.value_size,
-			(byte *) value,
+			(byte *) *value,
 			&next
 		);
 	
@@ -118,11 +121,14 @@ bpptree_create_dictionary(
 	bOpenType		info;
 	
 	bpptree					= malloc(sizeof(bpptree_t));
+	if (NULL == bpptree)
+		return err_out_of_memory;
 	
 	bpptree->super.record.key_size		= key_size;
 	bpptree->super.record.value_size	= value_size;
 	bpptree->values.file_handle		= ion_fopen("FIXME.values");
 	bpptree->values.next_empty		= FILE_NULL;
+		// FIXME: read this from a property bag.
 	
 	// FIXME: VARIABLE NAMES!
 	info.iName				= "FIXME.bpptree";
@@ -177,11 +183,12 @@ bpptree_delete_dictionary(
 	
 	bpptree			= (bpptree_t *) dictionary->instance;
 	bErr			= bClose(bpptree->tree);
+	ion_fclose(bpptree->values.file_handle);
 	free(dictionary->instance);
 	dictionary->instance	= NULL;
 	
 	// FIXME: Support multiple trees.
-	ion_fremove("FIMME.bpptree");
+	ion_fremove("FIXME.bpptree");
 	ion_fremove("FIXME.values");
 	
 	if (bErrOk != bErr)

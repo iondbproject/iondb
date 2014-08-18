@@ -6,6 +6,9 @@
 extern "C" {
 #endif
 
+#include <time.h>
+#include <stdlib.h>
+#include <limits.h>
 #include "./../../CuTest.h"
 #include "./../../../kv_system.h"
 #include "./../../../dictionary/dicttypes.h"
@@ -13,7 +16,7 @@ extern "C" {
 
 typedef struct generic_test
 {
-	dictionary_t		*dictionary;
+	dictionary_t		dictionary;
 	void			(*init_dict_handler)(dictionary_handler_t *);
 	key_type_t		key_type;
 	ion_key_size_t		key_size;
@@ -36,6 +39,13 @@ void
 dictionary_test_init(
 	generic_test_t		*test,
 	CuTest			*tc
+);
+
+void
+dictionary_test_insert_get(
+	generic_test_t	*test,
+	int		num_to_insert,
+	CuTest		*tc
 );
 
 #ifdef  __cplusplus

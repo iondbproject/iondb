@@ -29,7 +29,7 @@ dictionary_test_init(
 	
 	error	= dictionary_create(
 			&(test->handler),
-			test->dictionary,
+			&(test->dictionary),
 			test->key_type,
 			test->key_size,
 			test->value_size,
@@ -39,14 +39,101 @@ dictionary_test_init(
 	CuAssertTrue(tc, err_ok == error);
 	CuAssertTrue(
 		tc, ((dictionary_parent_t *)(
-			test->dictionary->instance)
+			test->dictionary.instance)
 		    )->record.key_size
 				==
 			 test->key_size);
 	CuAssertTrue(
 		tc, ((dictionary_parent_t *)(
-			test->dictionary->instance)
+			test->dictionary.instance)
 		    )->record.value_size
 				==
 			 test->value_size);
+}
+
+void
+dictionary_test_insert_get(
+	generic_test_t	*test,
+	int		num_to_insert,
+	CuTest		*tc
+)
+{
+	srand(time(NULL));
+	
+	if (0 > num_to_insert ||
+	    num_to_insert * test->key_size > INT_MAX - 1000 ||
+	    num_to_insert * test->value_size > INT_MAX - 1000
+	)
+	{
+		num_to_insert = 10;
+	}
+	
+	byte		keys[num_to_insert * test->key_size];
+	byte		vals[num_to_insert * test->value_size];
+	ion_value_t	test_val;
+	err_t		error;
+	
+	int		i;
+	int		j;
+	
+	for (i = 0; i < num_to_insert; i++)
+	{
+		for (j = 0; j < test->key_size; j++)
+		{
+			keys[j]	= 0x0;
+		}
+		for (j = 0; j < test->value_size; j++)
+		{
+			vals[j]	= 0;
+		}
+		
+		j		= test->key_size;
+		if (j > sizeof(int))
+			j	= sizeof(int);
+		
+		memcpy(
+			&keys[(i*test->key_size)],
+			&i,
+			j
+		);
+		
+		j		= sizeof(int);
+		if (j > test->value_size)
+			j 	= test->value_size;
+		
+		memcpy(
+			&vals[(i*test->value_size)],
+			&i,
+			j
+		);
+		
+		error	= dictionary_insert(
+				&(test->dictionary),
+				&keys[(i*test->key_size)],
+				&vals[(i*test->value_size)]
+			);
+		
+		CuAssertTrue(tc, err_ok == error);
+	}
+	
+	for (i = 0; i < num_to_insert; i++)
+	{
+		error	= dictionary_get(
+				&(test->dictionary),
+				&keys[(i*test->key_size)],
+				&test_val
+			);
+		
+		CuAssertTrue(tc, err_ok == error);
+		
+		j	= memcmp(
+				&(vals[i*test->value_size]),
+				test_val,
+				test->value_size
+			);
+		
+		free(test_val);
+		
+		CuAssertTrue(tc, 0 == j);
+	}
 }

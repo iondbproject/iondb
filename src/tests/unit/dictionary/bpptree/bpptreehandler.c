@@ -19,6 +19,16 @@ run_bpptreehandler_generic_test_set_1(
 	);
 	
 	dictionary_test_init(&test, tc);
+	
+#if 0
+#endif
+	dictionary_test_insert_get(
+		&test,
+		3,
+		tc
+	);
+	
+	dictionary_delete_dictionary(&(test.dictionary));
 }
 
 CuSuite*

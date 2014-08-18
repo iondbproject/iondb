@@ -72,6 +72,7 @@ enum error
 	err_could_not_insert,
 	err_unimplemented,
 	err_file_incomplete_write,
+	err_file_incomplete_read,
 };
 
 typedef char err_t;
@@ -107,8 +108,8 @@ typedef char						boolean_t;
 
 typedef enum
 {
-	true,
 	false,
+	true,
 } boolean_e;
 
 #endif /* SYSTEM_H_ */

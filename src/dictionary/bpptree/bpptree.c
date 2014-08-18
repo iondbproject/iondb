@@ -771,7 +771,7 @@ bErrType bInsertKey(bHandleType handle, void *key, eAdrType rec) {
             /* set mkey to point to insertion point */
             switch(search(buf, key, rec, &mkey, MODE_MATCH)) {
             case CC_LT:  /* key < mkey */
-                if (!h->dupKeys && h->comp((ion_key_t)key, (ion_key_t)mkey, (ion_key_size_t)(h->keySize)) == CC_EQ)
+                if (!h->dupKeys && 0 != ct(buf) && h->comp((ion_key_t)key, (ion_key_t)mkey, (ion_key_size_t)(h->keySize)) == CC_EQ)
                     return bErrDupKeys;
                 break;
             case CC_EQ:  /* key = mkey */
@@ -801,7 +801,8 @@ bErrType bInsertKey(bHandleType handle, void *key, eAdrType rec) {
                 bufType *tbuf;
                 keyType *tkey;
                 if ((rc = readDisk(lastGE, &tbuf)) != 0) return rc;
-                tkey = fkey(tbuf) + lastGEkey;
+                //tkey = fkey(tbuf) + lastGEkey;
+                tkey = fkey(tbuf);
                 memcpy(key(tkey), key, h->keySize);
                 rec(tkey) = rec;
                 if ((rc = writeDisk(tbuf)) != 0) return rc;
