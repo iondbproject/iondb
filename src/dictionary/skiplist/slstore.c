@@ -197,7 +197,14 @@ sl_update(
 	}
 
 	/* Otherwise, the key exists and now we have the node to update. */
-	memcpy(cursor->value, value, value_size);
+
+	/* While the cursor still has the same key as the target key... */
+	while(NULL != cursor && skiplist->super.compare(cursor->key, key, skiplist->super.record.key_size) == 0)
+	{
+		/* Update the value, and then move on to the next node. */
+		memcpy(cursor->value, value, value_size);
+		cursor = cursor->next[0];
+	}
 
 	return err_ok;
 }
@@ -274,8 +281,20 @@ sl_find_node(
 	for(h = skiplist->head->height; h >= 0; h--)
 	{
 		while( NULL != cursor->next[h] &&
-			skiplist->super.compare(key, cursor->next[h]->key, key_size) >= 0)
+			skiplist->super.compare(cursor->next[h]->key, key, key_size) <= 0)
+			//skiplist->super.compare(key, cursor->next[h]->key, key_size) >= 0)
 		{
+			/* FIXME Problem: same as before with delete, the node it finds
+			 * isn't necessarily the first node in the block (I thougth this was
+			 * guarateed somehow) Like if nodes are 1-2-4-2, it will find 4 and
+			 * then linear scan from 4 ---> 2 stop. How fix?
+			 */
+			if(NULL != cursor->next[h] &&
+			skiplist->super.compare(cursor->next[h]->key, key, key_size) == 0)
+			{
+				return cursor->next[h];
+			}
+
 			cursor 			= cursor->next[h];
 		}
 	}

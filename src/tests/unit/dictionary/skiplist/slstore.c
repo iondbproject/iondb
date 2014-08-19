@@ -1405,6 +1405,111 @@ test_skiplist_update_several_many_exist(
 	sl_destroy(&skiplist);
 }
 
+/**
+@brief 		Tests an update in a skiplist containing several elements, all of
+			the same key. The assertion is that all elements should be updated,
+			with none of the original values remaining in the skiplist.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_update_several_same_key(
+	CuTest 		*tc
+)
+{
+	PRINT_HEADER("test_skiplist_update_several_same_key");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	int i;
+	for(i = 0; i < 100; i++)
+	{
+		/* TODO collapse these into macros, so that this fits 80 cols */
+		sl_insert(&skiplist, (ion_key_t) &(int) {64}, (ion_value_t) (char*) {"samez U"});
+	}
+
+#if defined(DEBUG)
+	printf("%s\n", "** INSERT **");
+	check_skiplist(&skiplist);
+#endif
+
+	/* TODO collapse these into macros, so that this fits 80 cols */
+	err_t status = sl_update(&skiplist, (ion_key_t) &(int) {64}, (ion_value_t) (char*) {"new same"});
+
+#if defined(DEBUG)
+	printf("%s\n", "** UPDATE **");
+	check_skiplist(&skiplist);
+#endif
+
+	CuAssertTrue(tc, status == err_ok);
+	sl_node_t 	*cursor = skiplist.head;
+	for(i = 0; i < 100; i++)
+	{
+		cursor = cursor->next[0];
+		CuAssertStrEquals(tc, "new same", (char*) cursor->value);
+	}
+
+	sl_destroy(&skiplist);
+}
+
+/**
+@brief 		Tests an update in a skiplist containing several elements, some of
+			which with the same key. The assertion is that all elements of that
+			specific key be updated, with none of the original values remaining.
+
+@param 		tc
+				CuTest dependency
+ */
+void
+test_skiplist_update_several_same_key_in_mix(
+	CuTest 		*tc
+)
+{
+	PRINT_HEADER("test_skiplist_update_several_same_key_in_mix");
+	skiplist_t skiplist;
+	initialize_skiplist_std_conditions(&skiplist);
+
+	sl_insert(&skiplist, (ion_key_t) &(int) {32}, (ion_value_t) (char*) {"samez U"});
+	sl_insert(&skiplist, (ion_key_t) &(int) {33}, (ion_value_t) (char*) {"samez U"});
+	sl_insert(&skiplist, (ion_key_t) &(int) {35}, (ion_value_t) (char*) {"samez U"});
+
+	int i;
+	for(i = 0; i < 100; i++)
+	{
+		/* TODO collapse these into macros, so that this fits 80 cols */
+		sl_insert(&skiplist, (ion_key_t) &(int) {55}, (ion_value_t) (char*) {"samez  U"});
+	}
+
+
+	sl_insert(&skiplist, (ion_key_t) &(int) {100}, (ion_value_t) (char*) {"samez U"});
+	sl_insert(&skiplist, (ion_key_t) &(int) {101}, (ion_value_t) (char*) {"samez U"});
+
+#if defined(DEBUG)
+	printf("%s\n", "** INSERT **");
+	check_skiplist(&skiplist);
+#endif
+
+	/* TODO collapse these into macros, so that this fits 80 cols */
+	err_t status = sl_update(&skiplist, (ion_key_t) &(int) {55}, (ion_value_t) (char*){"new same"});
+
+#if defined(DEBUG)
+	printf("%s\n", "** UPDATE **");
+	check_skiplist(&skiplist);
+#endif
+
+	CuAssertTrue(tc, status == err_ok);
+	/* TODO collapse these into macros, so that this fits 80 cols */
+	sl_node_t 	*find = sl_find_node(&skiplist, (ion_key_t) &(int) {55});
+	for(i = 0; i < 100; i++)
+	{
+		/* TODO collapse these into macros, so that this fits 80 cols */
+		CuAssertStrEquals(tc, (char*) find->value, (char*){"new same"});
+		find = find->next[0];
+	}
+
+	sl_destroy(&skiplist);
+}
 
 /**
 @brief 		Tests a deletion of a skiplist with one element, and then tests a
@@ -1550,10 +1655,10 @@ test_skiplist_delete_several_same_key(
 	check_skiplist(&skiplist);
 #endif
 
+	CuAssertTrue(tc, status == err_ok);
 	int h;
 	for(h = skiplist.head->height; h >= 0; h--)
 	{
-		CuAssertTrue(tc, status == err_ok);
 		CuAssertTrue(tc, skiplist.head->next[h] == NULL);
 	}
 
@@ -1561,9 +1666,9 @@ test_skiplist_delete_several_same_key(
 }
 
 /**
-@brief 		Tests a deletion in a skiplist containing several elements, all of
-			the same key. The assertion is that all elements should be deleted,
-			with nothing remaining in the skiplist.
+@brief 		Tests a deletion in a skiplist containing several elements, some of
+			which with the same key. The assertion is that all elements of the
+			specific key be deleted, with only the other elements remaining.
 
 @param 		tc
 				CuTest dependency
@@ -1809,6 +1914,8 @@ skiplist_getsuite()
 	SUITE_ADD_TEST(suite, test_skiplist_update_single_exist);
 	SUITE_ADD_TEST(suite, test_skiplist_update_single_many_exist);
 	SUITE_ADD_TEST(suite, test_skiplist_update_several_many_exist);
+	SUITE_ADD_TEST(suite, test_skiplist_update_several_same_key);
+	SUITE_ADD_TEST(suite, test_skiplist_update_several_same_key_in_mix);
 
 	/* Hybrid Tests */
 	SUITE_ADD_TEST(suite, test_skiplist_delete_then_insert_single);
