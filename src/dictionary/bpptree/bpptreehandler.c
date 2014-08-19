@@ -197,8 +197,6 @@ bpptree_delete_dictionary(
 	return err_ok;
 }
 
-// TODO TODO TODO: Everything below here doesn't work yet.
-
 err_t
 bpptree_update(
 		dictionary_t 	*dictionary,
@@ -222,6 +220,8 @@ bpptree_update(
 			(byte *)value
 		);
 	}
+	else
+		return bpptree_insert(dictionary, key, value);
 	
 	return err_ok;
 }
