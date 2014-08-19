@@ -62,6 +62,23 @@ lfb_delete_all(
 	file_offset_t	offset
 );
 
+err_t
+lfb_update(
+	lfb_t		*bag,
+	file_offset_t	offset,
+	unsigned int	num_bytes,
+	byte		*to_write,
+	file_offset_t	*next
+);
+
+err_t
+lfb_update_all(
+	lfb_t		*bag,
+	file_offset_t	offset,
+	unsigned int	num_bytes,
+	byte		*to_write
+);
+
 #ifdef  __cplusplus
 }
 #endif

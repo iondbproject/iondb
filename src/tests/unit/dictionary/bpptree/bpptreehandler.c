@@ -40,6 +40,18 @@ run_bpptreehandler_generic_test_set_1(
 		);
 	}
 	
+	int update_key		= 1;
+	int update_value	= -12;
+	
+#if 0
+	dictionary_test_update(
+		&test,
+		(ion_key_t)(&update_key),
+		(ion_value_t)(&update_value),
+		tc
+	);
+#endif
+	
 	dictionary_delete_dictionary(&(test.dictionary));
 }
 

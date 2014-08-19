@@ -159,11 +159,43 @@ dictionary_test_delete(
 	error	= dictionary_get(
 			&(test->dictionary),
 			key_to_delete,
-			&test_val
+			test_val
 		);
 	
 	if (free_value)
 		free(test_val);
 	
 	CuAssertTrue(tc, err_item_not_found == error);
+}
+
+void
+dictionary_test_update(
+	generic_test_t	*test,
+	ion_key_t	key_to_update,
+	ion_value_t	update_with,
+	CuTest		*tc
+)
+{
+	err_t		error;
+	ion_value_t	*test_val;
+	
+	error	= dictionary_update(
+			&(test->dictionary),
+			key_to_update,
+			update_with
+		);
+	
+	CuAssertTrue(tc, err_ok == error);
+	
+	error	= dictionary_get(
+			&(test->dictionary),
+			key_to_update,
+			test_val
+		);
+	
+	CuAssertTrue(tc, err_ok == error);
+	
+	CuAssertTrue(tc, 0 == memcmp(update_with, *test_val, test->value_size));
+	
+	free(test_val);
 }

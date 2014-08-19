@@ -56,6 +56,14 @@ dictionary_test_delete(
 	CuTest		*tc
 );
 
+void
+dictionary_test_update(
+	generic_test_t	*test,
+	ion_key_t	key_to_update,
+	ion_value_t	update_with,
+	CuTest		*tc
+);
+
 #ifdef  __cplusplus
 }
 #endif

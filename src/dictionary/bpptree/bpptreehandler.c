@@ -158,7 +158,6 @@ bpptree_delete(
 {
 	bpptree_t		*bpptree;
 	bErrType		bErr;
-	//err_t			err;
 	file_offset_t		offset;
 	
 	bpptree	= (bpptree_t *) dictionary->instance;
@@ -166,7 +165,7 @@ bpptree_delete(
 	bErr	= bDeleteKey(bpptree->tree, key, &offset);
 	if (bErrKeyNotFound != bErr)
 	{
-		lfb_delete_all(&(bpptree->values), offset);
+		return lfb_delete_all(&(bpptree->values), offset);
 	}
 	
 	return err_ok;
@@ -179,7 +178,6 @@ bpptree_delete_dictionary(
 {
 	bpptree_t		*bpptree;
 	bErrType		bErr;
-	//err_t			err;
 	
 	bpptree			= (bpptree_t *) dictionary->instance;
 	bErr			= bClose(bpptree->tree);
@@ -208,6 +206,23 @@ bpptree_update(
 		ion_value_t 	value
 )
 {
+	bpptree_t		*bpptree;
+	bErrType		bErr;
+	file_offset_t		offset;
+	
+	bpptree	= (bpptree_t *) dictionary->instance;
+	
+	bErr	= bFindKey(bpptree->tree, key, &offset);
+	if (bErrKeyNotFound != bErr)
+	{
+		lfb_update_all(
+			&(bpptree->values),
+			offset,
+			bpptree->super.record.value_size,
+			(byte *)value
+		);
+	}
+	
 	return err_ok;
 }
 
