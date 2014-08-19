@@ -40,16 +40,39 @@ run_bpptreehandler_generic_test_set_1(
 		);
 	}
 	
-	int update_key		= 1;
-	int update_value	= -12;
+	int update_key;
+	int update_value;
 	
-#if 0
+	update_key	= 1;
+	update_value	= -12;
+	
 	dictionary_test_update(
 		&test,
 		(ion_key_t)(&update_key),
 		(ion_value_t)(&update_value),
 		tc
 	);
+	
+	update_key	= 1;
+	update_value	= 12;
+	
+	dictionary_test_update(
+		&test,
+		(ion_key_t)(&update_key),
+		(ion_value_t)(&update_value),
+		tc
+	);
+	
+	update_key	= 12;
+	update_value	= 1;
+	
+	dictionary_test_update(
+		&test,
+		(ion_key_t)(&update_key),
+		(ion_value_t)(&update_value),
+		tc
+	);
+#if 0
 #endif
 	
 	dictionary_delete_dictionary(&(test.dictionary));

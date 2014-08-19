@@ -147,7 +147,7 @@ dictionary_test_delete(
 )
 {
 	err_t		error;
-	ion_value_t	*test_val;
+	ion_value_t	test_val;
 	
 	error	= dictionary_delete(
 			&(test->dictionary),
@@ -159,7 +159,7 @@ dictionary_test_delete(
 	error	= dictionary_get(
 			&(test->dictionary),
 			key_to_delete,
-			test_val
+			&test_val
 		);
 	
 	if (free_value)
@@ -177,7 +177,7 @@ dictionary_test_update(
 )
 {
 	err_t		error;
-	ion_value_t	*test_val;
+	ion_value_t	test_val;
 	
 	error	= dictionary_update(
 			&(test->dictionary),
@@ -190,12 +190,12 @@ dictionary_test_update(
 	error	= dictionary_get(
 			&(test->dictionary),
 			key_to_update,
-			test_val
+			&test_val
 		);
 	
 	CuAssertTrue(tc, err_ok == error);
 	
-	CuAssertTrue(tc, 0 == memcmp(update_with, *test_val, test->value_size));
+	CuAssertTrue(tc, 0 == memcmp(update_with, test_val, test->value_size));
 	
 	free(test_val);
 }
