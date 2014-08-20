@@ -99,18 +99,9 @@ sl_insert(
 	sl_node_t 	*newnode 	= malloc(sizeof(sl_node_t));
 	if(NULL == newnode) { return err_out_of_memory; }
 
-	newnode->height 		= sl_gen_level(skiplist);
-	newnode->next 			= malloc(sizeof(sl_node_t*) * (newnode->height+1));
-	if(NULL == newnode->next)
-	{
-		free(newnode);
-		return err_out_of_memory;
-	}
-
 	newnode->key 			= malloc(key_size);
 	if(NULL == newnode->key)
 	{
-		free(newnode->next);
 		free(newnode);
 		return err_out_of_memory;
 	}
@@ -119,7 +110,6 @@ sl_insert(
 	if(NULL == newnode->value)
 	{
 		free(newnode->key);
-		free(newnode->next);
 		free(newnode);
 		return err_out_of_memory;
 	}
@@ -127,22 +117,69 @@ sl_insert(
 	memcpy(newnode->key, key, key_size);
 	memcpy(newnode->value, value, value_size);
 
-	sl_node_t 	*cursor 	= skiplist->head;
-	sl_level_t 	h;
-
-	for(h = skiplist->head->height; h >= 0; --h)
+	/* First we check if there's already a duplicate node. If there is, we're
+	 * going to do a modified insert instead. TODO write unit tests to check this
+	 */
+	sl_node_t 	*duplicate 	= sl_find_node(skiplist, key);
+	if( NULL != duplicate &&
+					NULL != duplicate->key &&
+					skiplist->super.compare(duplicate->key, key, key_size) == 0)
 	{
-		//The memcmp will return -1 if key is smaller, 0 if equal, 1 if greater.
-		while(NULL != cursor->next[h] &&
-					skiplist->super.compare(key, cursor->next[h]->key, key_size) >= 0)
+		/* Child duplicate nodes have no height (which is effectively 1). */
+		newnode->height 	= 0;
+		newnode->next 		= malloc(sizeof(sl_node_t*) * (newnode->height+1));
+		if(NULL == newnode->next)
 		{
-			cursor = cursor->next[h];
+			free(newnode->value);
+			free(newnode->key);
+			free(newnode);
+			return err_out_of_memory;
 		}
 
-		if(h <= newnode->height)
+		/* We want duplicate to be the last node in the block of duplicate
+		 * nodes, so we traverse along the bottom until we get there.
+		 */
+		while(NULL != duplicate->next[0] &&
+					skiplist->super.compare(duplicate->next[0]->key, key, key_size) == 0)
 		{
-			newnode->next[h] = cursor->next[h];
-			cursor->next[h]  = newnode;
+			duplicate 		= duplicate->next[0];
+		}
+
+		/* Only one height to worry about */
+		newnode->next[0] 	= duplicate->next[0];
+		duplicate->next[0] 	= newnode;
+	}
+	else
+	{
+		/* If there's no duplicate node, we do a vanilla insert instead */
+		newnode->height 		= sl_gen_level(skiplist);
+		newnode->next 			= malloc(sizeof(sl_node_t*) * (newnode->height+1));
+		if(NULL == newnode->next)
+		{
+			free(newnode->value);
+			free(newnode->key);
+			free(newnode);
+			return err_out_of_memory;
+		}
+
+
+		sl_node_t 	*cursor 	= skiplist->head;
+		sl_level_t 	h;
+
+		for(h = skiplist->head->height; h >= 0; --h)
+		{
+			//The memcmp will return -1 if key is smaller, 0 if equal, 1 if greater.
+			while(NULL != cursor->next[h] &&
+						skiplist->super.compare(key, cursor->next[h]->key, key_size) >= 0)
+			{
+				cursor = cursor->next[h];
+			}
+
+			if(h <= newnode->height)
+			{
+				newnode->next[h] = cursor->next[h];
+				cursor->next[h]  = newnode;
+			}
 		}
 	}
 
@@ -280,17 +317,12 @@ sl_find_node(
 
 	for(h = skiplist->head->height; h >= 0; h--)
 	{
+		/* TODO Step through this and verify its integrity for all cases */
 		while( NULL != cursor->next[h] &&
 			skiplist->super.compare(cursor->next[h]->key, key, key_size) <= 0)
-			//skiplist->super.compare(key, cursor->next[h]->key, key_size) >= 0)
 		{
-			/* FIXME Problem: same as before with delete, the node it finds
-			 * isn't necessarily the first node in the block (I thougth this was
-			 * guarateed somehow) Like if nodes are 1-2-4-2, it will find 4 and
-			 * then linear scan from 4 ---> 2 stop. How fix?
-			 */
 			if(NULL != cursor->next[h] &&
-			skiplist->super.compare(cursor->next[h]->key, key, key_size) == 0)
+				skiplist->super.compare(cursor->next[h]->key, key, key_size) == 0)
 			{
 				return cursor->next[h];
 			}
@@ -299,6 +331,7 @@ sl_find_node(
 		}
 	}
 
+	/* Key was not found, so return closest thing to that key */
 	return cursor;
 }
 

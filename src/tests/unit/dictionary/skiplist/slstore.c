@@ -390,6 +390,7 @@ test_skiplist_get_node_single(
 	int search 	= 3;
 	sl_node_t *node = sl_find_node(&skiplist, (ion_key_t) &search);
 
+	CuAssertTrue(tc, 		node					!= NULL);
 	CuAssertTrue(tc, 		*((int*)node->key) 		== key);
 	CuAssertStrEquals(tc, 	(char*) str, (char*) node->value);
 
