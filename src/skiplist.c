@@ -41,7 +41,8 @@ main(
 	io_printf("%s\n", "I'm a skip list!");
 	io_printf("%s\n\n", "Commands:\nInsert (I <key> <value> | 'I 23 test') " \
 			"Delete (D <key> | 'D 64') Update (U <key> <new value> | 'U 99 " \
-			"muffin')\nQuery (Q <key> | 'Q 16') Print (P | 'P')\n\nX to stop.");
+			"muffin')\nQuery (Q <key> | 'Q 16') Print (P | 'P') Find Node (" \
+			"F <key> | 'F 72')\n\nX to stop.");
 
 	int key_size, value_size, maxheight;
 	key_type_t key_type;
@@ -118,6 +119,20 @@ main(
 				io_printf("Got the value back of '%s' stored in %d.\n", value,
 																		key);
 				free(value);
+				break;
+			}
+			case 'F': {
+				int key;
+				scanf("%i", &key);
+#if defined(DEBUG)
+				io_printf("Finding Node (%d)...\n", key);
+#endif
+				sl_node_t 	*node = sl_find_node(
+										(skiplist_t*) test_dict.instance,
+										(ion_key_t) &key
+									);
+				io_printf("Got back node, key '%d'.\n",
+							NULL != node->key ? *((int*) node->key) : -1337);
 				break;
 			}
 		}

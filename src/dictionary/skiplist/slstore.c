@@ -121,8 +121,7 @@ sl_insert(
 	 * going to do a modified insert instead. TODO write unit tests to check this
 	 */
 	sl_node_t 	*duplicate 	= sl_find_node(skiplist, key);
-	if( NULL != duplicate &&
-					NULL != duplicate->key &&
+	if(NULL != duplicate->key &&
 					skiplist->super.compare(duplicate->key, key, key_size) == 0)
 	{
 		/* Child duplicate nodes have no height (which is effectively 1). */

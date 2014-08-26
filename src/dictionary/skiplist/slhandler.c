@@ -135,11 +135,13 @@ sldict_find(
 	(*cursor)->predicate 		= malloc(sizeof(predicate_t));
 	(*cursor)->predicate->type 	= predicate->type;
 
+
+	ion_key_size_t 	key_size 	= dictionary->instance->record.key_size;
+
 	switch(predicate->type)
 	{
 		case predicate_equality:
 		{
-			ion_key_size_t 	key_size 	= dictionary->instance->record.key_size;
 			/* TODO get ALL these lines within 80 cols */
 			ion_key_t 		target_key 	= predicate->statement.equality.equality_value;
 
@@ -161,7 +163,7 @@ sldict_find(
 								(skiplist_t *) dictionary->instance,
 								target_key
 							 );
-			if(dictionary->instance->compare(loc->key, target_key, key_size) != 0)
+			if(NULL == loc->key || dictionary->instance->compare(loc->key, target_key, key_size) != 0)
 			{
 				/* If this happens, that means the target key doesn't exist */
 				(*cursor)->status = cs_end_of_results;
@@ -177,18 +179,120 @@ sldict_find(
 
 			break;
 		}
+		case predicate_range:
+		{
+			(*cursor)->predicate->statement.range.leq_value = malloc(key_size);
+			if(NULL == (*cursor)->predicate->statement.range.leq_value)
+			{
+				free( (*cursor)->predicate);
+				free(*cursor);
+				return err_out_of_memory;
+			}
+
+			memcpy(
+				(*cursor)->predicate->statement.range.leq_value,
+				predicate->statement.range.leq_value,
+				key_size
+			);
+
+			(*cursor)->predicate->statement.range.geq_value = malloc(key_size);
+			if(NULL == (*cursor)->predicate->statement.range.geq_value)
+			{
+				free((*cursor)->predicate->statement.range.leq_value);
+				free((*cursor)->predicate);
+				free(*cursor);
+				return err_out_of_memory;
+			}
+
+			memcpy(
+				(*cursor)->predicate->statement.range.geq_value,
+				predicate->statement.range.geq_value,
+				key_size
+			);
+
+			sl_node_t *loc = sl_find_node(
+								(skiplist_t *) dictionary->instance,
+								(*cursor)->predicate->statement.range.leq_value
+							 );
+			if(NULL == loc->key ||
+							dictionary->instance->compare(
+								loc->key,
+								(*cursor)->predicate->statement.range.leq_value,
+								key_size
+							) < 0)
+			/* This means the returned node is smaller than the lower bound */
+			{
+				(*cursor)->status 	= cs_end_of_results;
+				return err_ok;
+			}
+			else
+			{
+				(*cursor)->status 			= cs_cursor_initialized;
+				sldict_cursor_t *sl_cursor 	= (sldict_cursor_t *) (*cursor);
+				sl_cursor->current 			= loc;
+				return err_ok;
+			}
+			break;
+		}
+		case predicate_predicate:
+		{
+			/* TODO not implemented */
+			break;
+		}
+		default:
+		{
+			return err_invalid_predicate;
+			break;
+		}
 	}
 
 	return err_ok;
 }
 
 cursor_status_t
-sldict_next( /* TODO finish NEXT */
+sldict_next(
 	dict_cursor_t 	*cursor,
 	ion_value_t 	value
 )
 {
-	return cs_possible_data_inconsistency;
+	sldict_cursor_t *sl_cursor 	= (sldict_cursor_t *) cursor;
+
+	if(cursor->status == cs_cursor_uninitialized)
+	{
+		return cursor->status;
+	}
+	else if(cursor->status == cs_end_of_results)
+	{
+		return cursor->status;
+	}
+	else if(cursor->status == cs_cursor_initialized ||
+			cursor->status == cs_cursor_active)
+	{
+		if(cursor->status == cs_cursor_initialized)
+		{
+			if(NULL == sl_cursor->current ||
+				sldict_test_predicate(cursor, sl_cursor->current->key) == false)
+			{
+				cursor->status 	= cs_end_of_results;
+				return cursor->status;
+			}
+		}
+		else /* The status is cs_cursor_initialized */
+		{
+			cursor->status 	= cs_cursor_active;
+		}
+
+		memcpy(
+			value,
+			sl_cursor->current->value,
+			cursor->dictionary->instance->record.value_size
+		);
+
+		sl_cursor->current 	= sl_cursor->current->next[0];
+		return cursor->status;
+	}
+
+	return cs_invalid_cursor;
 }
 
 /* TODO test me */
@@ -212,7 +316,7 @@ sldict_destroy_cursor(
 		}
 		case predicate_predicate:
 		{
-			/* TODO what's this? */
+			/* TODO not implemented yet */
 			break;
 		}
 	}
@@ -220,4 +324,49 @@ sldict_destroy_cursor(
 	free( (*cursor)->predicate);
 	free(*cursor);
 	*cursor = NULL;
+}
+
+boolean_t
+sldict_test_predicate(
+	dict_cursor_t 	*cursor,
+	ion_key_t 		key
+)
+{
+	skiplist_t 		*skiplist 	= (skiplist_t*) cursor->dictionary->instance;
+	ion_key_size_t 	key_size	= cursor->dictionary->instance->record.key_size;
+	boolean_t 		result 		= false;
+
+	switch(cursor->type)
+	{
+		case cursor_equality:
+		{
+			if(skiplist->super.compare(
+						key,
+						cursor->predicate->statement.equality.equality_value,
+						cursor->dictionary->instance->record.key_size
+					) == 0
+				)
+			{
+				result = true;
+			}
+			break;
+		}
+		case cursor_range:
+		{
+			ion_key_t lower_b 	= cursor->predicate->statement.range.leq_value;
+			ion_key_t upper_b 	= cursor->predicate->statement.range.geq_value;
+
+			/* Check if key >= lower bound */
+			boolean_t comp_lower = skiplist->super.compare(key, lower_b, key_size) >= 0;
+
+			/* Check if key <= upper bound */
+			boolean_t comp_upper = skiplist->super.compare(key, upper_b, key_size) <= 0;
+
+			/* Use a bitwise to do a fast "Both A and B are true". */
+			result = (comp_lower & comp_upper) == 1;
+			break;
+		}
+	}
+
+	return result;
 }
