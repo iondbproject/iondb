@@ -228,6 +228,24 @@ typedef enum
 	po_range
 } predicate_operator_t;
 
+/**
+@brief		Options for write concern for for overwriting (updating) of values
+			on insert and if not it will insert value insert_unique which
+			allows for unique insert only
+ */
+enum write_concern
+{
+	wc_update,				/**< allows for values to be overwritten if already
+	 	 	 	 	 	 	 	 in dictionary */
+	wc_insert_unique,		/**< allows for unique inserts only
+								(no overwrite) */
+};
+
+/**
+@brief		Write concern for hashmap which limits insert/update of values.
+ */
+typedef char 			write_concern_t;
+
 #ifdef __cplusplus
 }
 #endif

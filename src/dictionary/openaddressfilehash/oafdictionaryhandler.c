@@ -6,31 +6,31 @@
  */
 /******************************************************************************/
 
-#include "oadictionaryhandler.h"
+#include "oafdictionaryhandler.h"
 #include "./../../kv_system.h"
 
-void oadict_init(dictionary_handler_t *handler)
+void oafdict_init(dictionary_handler_t *handler)
 {
-	handler->insert = oadict_insert;
-	handler->create_dictionary = oadict_create_dictionary;
-	handler->get = oadict_query;
-	handler->update = oadict_update;
-	handler->find = oadict_find;
-	handler->delete = oadict_delete;
-	handler->delete_dictionary = oadict_delete_dictionary;
+	handler->insert = oafdict_insert;
+	handler->create_dictionary = oafdict_create_dictionary;
+	handler->get = oafdict_query;
+	handler->update = oafdict_update;
+	handler->find = oafdict_find;
+	handler->delete = oafdict_delete;
+	handler->delete_dictionary = oafdict_delete_dictionary;
 }
 
-err_t oadict_insert(dictionary_t *dictionary, ion_key_t key, ion_value_t value)
+err_t oafdict_insert(dictionary_t *dictionary, ion_key_t key, ion_value_t value)
 {
-	return oah_insert((hashmap_t *)dictionary->instance, key, value);
+	return oafh_insert((file_hashmap_t *)dictionary->instance, key, value);
 }
 
-err_t oadict_query(dictionary_t *dictionary, ion_key_t key, ion_value_t *value)
+err_t oafdict_query(dictionary_t *dictionary, ion_key_t key, ion_value_t *value)
 {
-	return oah_query((hashmap_t *)dictionary->instance, key, value);
+	return oafh_query((file_hashmap_t *)dictionary->instance, key, value);
 }
 
-err_t oadict_create_dictionary(
+err_t oafdict_create_dictionary(
     key_type_t key_type,
     int key_size,
     int value_size,
@@ -40,12 +40,12 @@ err_t oadict_create_dictionary(
     dictionary_t *dictionary)
 {
 	//this is the instance of the hashmap
-	dictionary->instance = (dictionary_parent_t *)malloc(sizeof(hashmap_t));
+	dictionary->instance = (dictionary_parent_t *)malloc(sizeof(file_hashmap_t));
 
 	dictionary->instance->compare = compare;
 
 	//this registers the dictionary the dictionary
-	oah_initialize((hashmap_t *)dictionary->instance, oah_compute_simple_hash,
+	oafh_initialize((file_hashmap_t *)dictionary->instance, oafh_compute_simple_hash,
 	        key_type, key_size, value_size, dictionary_size); // just pick an arbitary size for testing atm
 
 	/**@TODO The correct comparison operator needs to be bound at run time
@@ -58,33 +58,33 @@ err_t oadict_create_dictionary(
 	return 0;
 }
 
-err_t oadict_delete(dictionary_t *dictionary, ion_key_t key)
+err_t oafdict_delete(dictionary_t *dictionary, ion_key_t key)
 {
-	return oah_delete((hashmap_t *)dictionary->instance, key);
+	return oafh_delete((file_hashmap_t *)dictionary->instance, key);
 }
 
-err_t oadict_delete_dictionary(dictionary_t *dictionary)
+err_t oafdict_delete_dictionary(dictionary_t *dictionary)
 {
-	err_t result = oah_destroy((hashmap_t *)dictionary->instance);
+	err_t result = oafh_destroy((file_hashmap_t *)dictionary->instance);
 	free(dictionary->instance);
 	dictionary->instance = NULL;// When releasing memory, set pointer to NULL
 	return result;
 }
 
-err_t oadict_update(dictionary_t *dictionary, ion_key_t key, ion_value_t value)
+err_t oafdict_update(dictionary_t *dictionary, ion_key_t key, ion_value_t value)
 {
-	return oah_update((hashmap_t *)dictionary->instance, key, value);
+	return oafh_update((file_hashmap_t *)dictionary->instance, key, value);
 }
 
 /** @todo What do we do if the cursor is already active? */
-err_t oadict_find(
+err_t oafdict_find(
     dictionary_t *dictionary,
     predicate_t *predicate,
     dict_cursor_t **cursor)
 {
 
 	//allocate memory for cursor
-	if ((*cursor = (dict_cursor_t *)malloc(sizeof(oadict_cursor_t))) == NULL)
+	if ((*cursor = (dict_cursor_t *)malloc(sizeof(oafdict_cursor_t))) == NULL)
 	{
 		return err_out_of_memory;
 	}
@@ -93,10 +93,10 @@ err_t oadict_find(
 	(*cursor)->status = cs_cursor_uninitialized;
 
 	//bind destroy method for cursor
-	(*cursor)->destroy = oadict_destroy_cursor;
+	(*cursor)->destroy = oafdict_destroy_cursor;
 
 	//bind correct next function
-	(*cursor)->next = oadict_next;	// this will use the correct value
+	(*cursor)->next = oafdict_next;	// this will use the correct value
 
 	//allocate predicate
 	(*cursor)->predicate = (predicate_t *)malloc(sizeof(predicate_t));
@@ -110,7 +110,7 @@ err_t oadict_find(
 			//as this is an equality, need to malloc for key as well
 			if (((*cursor)->predicate->statement.equality.equality_value =
 			        (ion_key_t)malloc(
-			                (((hashmap_t*)dictionary->instance)->super.record.key_size)))
+			                (((file_hashmap_t*)dictionary->instance)->super.record.key_size)))
 			        == NULL)
 			{
 				free((*cursor)->predicate);
@@ -120,12 +120,12 @@ err_t oadict_find(
 			//copy across the key value as the predicate may be destroyed
 			memcpy((*cursor)->predicate->statement.equality.equality_value,
 			        predicate->statement.equality.equality_value,
-			        ((((hashmap_t*)dictionary->instance)->super.record.key_size)));
+			        ((((file_hashmap_t*)dictionary->instance)->super.record.key_size)));
 
 			//find the location of the first element as this is a straight equality
 			int location = cs_invalid_index;
 
-			if (oah_find_item_loc((hashmap_t*)dictionary->instance,
+			if (oafh_find_item_loc((file_hashmap_t*)dictionary->instance,
 			        (*cursor)->predicate->statement.equality.equality_value,
 			        &location) == err_item_not_found)
 			{
@@ -136,11 +136,12 @@ err_t oadict_find(
 			{
 				(*cursor)->status = cs_cursor_initialized;
 				//cast to specific instance type for conveniences of setup
-				oadict_cursor_t *oadict_cursor = (oadict_cursor_t *)(*cursor);
+				oafdict_cursor_t *oadict_cursor = (oafdict_cursor_t *)(*cursor);
 				// the cursor is ready to be consumed
 				oadict_cursor->first = location;
 
 				oadict_cursor->current = location;
+				DUMP(location,"%i");
 				return err_ok;
 			}
 			break;
@@ -149,7 +150,7 @@ err_t oadict_find(
 		{
 			//as this is a range, need to malloc leq key
 			if (((*cursor)->predicate->statement.range.leq_value =
-			        (ion_key_t)malloc((((hashmap_t*)dictionary->instance)->super.record.key_size)))
+			        (ion_key_t)malloc((((file_hashmap_t*)dictionary->instance)->super.record.key_size)))
 			        == NULL)
 			{
 				free((*cursor)->predicate);
@@ -159,12 +160,12 @@ err_t oadict_find(
 			//copy across the key value as the predicate may be destroyed
 			memcpy((*cursor)->predicate->statement.range.leq_value,
 			        predicate->statement.range.leq_value,
-			        (((hashmap_t *)dictionary->instance)->super.record.key_size));
+			        (((file_hashmap_t *)dictionary->instance)->super.record.key_size));
 
 			//as this is a range, need to malloc leq key
 			if (((*cursor)->predicate->statement.range.geq_value =
 			        (ion_key_t)malloc(
-			        		(((hashmap_t*)dictionary->instance)->super.record.key_size)))
+			        		(((file_hashmap_t*)dictionary->instance)->super.record.key_size)))
 			        == NULL)
 			{
 				free((*cursor)->predicate->statement.range.leq_value);
@@ -175,13 +176,13 @@ err_t oadict_find(
 			//copy across the key value as the predicate may be destroyed
 			memcpy((*cursor)->predicate->statement.range.geq_value,
 			        predicate->statement.range.geq_value,
-			        (((hashmap_t*)dictionary->instance)->super.record.key_size));
+			        (((file_hashmap_t*)dictionary->instance)->super.record.key_size));
 
 			//find the location of the first element as this is a straight equality
 			int location = cs_invalid_index;
 
 			//start at the lowest end of the range and check
-			if (oah_find_item_loc((hashmap_t*)dictionary->instance,
+			if (oafh_find_item_loc((file_hashmap_t*)dictionary->instance,
 			        (*cursor)->predicate->statement.range.geq_value, &location)
 			        == err_item_not_found)
 			{
@@ -193,7 +194,7 @@ err_t oadict_find(
 			{
 				(*cursor)->status = cs_cursor_initialized;
 				//cast to specific instance type for conveniences of setup
-				oadict_cursor_t *oadict_cursor = (oadict_cursor_t *)(*cursor);
+				oafdict_cursor_t *oadict_cursor = (oafdict_cursor_t *)(*cursor);
 				// the cursor is ready to be consumed
 				oadict_cursor->first = location;
 				oadict_cursor->current = location;
@@ -214,10 +215,10 @@ err_t oadict_find(
 	return err_ok;
 }
 
-cursor_status_t oadict_next(dict_cursor_t *cursor, ion_value_t value)
+cursor_status_t oafdict_next(dict_cursor_t *cursor, ion_value_t value)
 {
 	// @todo if the collection changes, then the status of the cursor needs to change
-	oadict_cursor_t *oadict_cursor = (oadict_cursor_t *)cursor;
+	oafdict_cursor_t *oafdict_cursor = (oafdict_cursor_t *)cursor;
 
 	//check the status of the cursor and if it is not valid or at the end, just exit
 	if (cursor->status == cs_cursor_uninitialized)
@@ -228,7 +229,7 @@ cursor_status_t oadict_next(dict_cursor_t *cursor, ion_value_t value)
 	        || (cursor->status == cs_cursor_active))//cursor is active and results have never been accessed
 	{
 		//extract reference to map
-		hashmap_t *hash_map = ((hashmap_t*)cursor->dictionary->instance);
+		file_hashmap_t *hash_map = ((file_hashmap_t*)cursor->dictionary->instance);
 
 		//assume that the value has been pre-allocated
 		//compute length of data record stored in map
@@ -238,7 +239,7 @@ cursor_status_t oadict_next(dict_cursor_t *cursor, ion_value_t value)
 		if (cursor->status == cs_cursor_active)		//find the next valid entry
 		{
 			//scan and determine what to do?
-			if (cs_end_of_results == oadict_scan(oadict_cursor))
+			if (cs_end_of_results == oafdict_scan(oafdict_cursor))		//todo - need to read and updat file position
 			{
 				//Then this is the end and there are no more results
 				cursor->status = cs_end_of_results;
@@ -253,15 +254,16 @@ cursor_status_t oadict_next(dict_cursor_t *cursor, ion_value_t value)
 		}
 
 		//the results are now ready //reference item at given position
-		hash_bucket_t * item =
-		        (((hash_bucket_t *)((hash_map->entry
-		                + (data_length + SIZEOF(STATUS))
-		                        * oadict_cursor->current/*idx*/))));
 
-		//and copy value in
-		memcpy(value,
-		        (ion_value_t)(item->data + hash_map->super.record.key_size),
-		        hash_map->super.record.value_size);
+		//set position in file to read value
+		fseek(hash_map->file,
+			(SIZEOF(STATUS) + data_length) * oafdict_cursor->current		//position is based on indexes (not abs file pos)
+			+ SIZEOF(STATUS) + hash_map->super.record.key_size
+			,SEEK_SET);
+
+/** @todo this needs to be addressed in terms of return type
+ */
+		fread(value, hash_map->super.record.value_size, 1, hash_map->file);
 
 		//and update current cursor position
 		return cursor->status;
@@ -270,16 +272,16 @@ cursor_status_t oadict_next(dict_cursor_t *cursor, ion_value_t value)
 	return cs_invalid_cursor;
 }
 
-boolean_t is_equal(dictionary_t *dict, ion_key_t key1, ion_key_t key2)
+boolean_t oafdict_is_equal(dictionary_t *dict, ion_key_t key1, ion_key_t key2)
 {
 	if (memcmp(key1, key2,
-	        (((hashmap_t*)dict->instance)->super.record.key_size)) == IS_EQUAL)
+	        (((file_hashmap_t*)dict->instance)->super.record.key_size)) == IS_EQUAL)
 		return true;
 	else
 		return false;
 }
 
-void oadict_destroy_cursor(dict_cursor_t **cursor)
+void oafdict_destroy_cursor(dict_cursor_t **cursor)
 {
 	/** Free any internal memory allocations */
 	switch ((*cursor)->type)
@@ -306,7 +308,7 @@ void oadict_destroy_cursor(dict_cursor_t **cursor)
 	*cursor = NULL;
 }
 
-boolean_t oadict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
+boolean_t oafdict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
 {
 	//need to check key match; what's the most efficient way?
 	//need to use fnptr here for the correct matching
@@ -316,7 +318,7 @@ boolean_t oadict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
 	 * Compares value == key
 	 */
 	int key_satisfies_predicate;
-	hashmap_t * hash_map = (hashmap_t *)(cursor->dictionary->instance);
+	file_hashmap_t * hash_map = (file_hashmap_t *)(cursor->dictionary->instance);
 
 	//pre-prime value for faster exit
 	key_satisfies_predicate = false;
@@ -354,25 +356,37 @@ boolean_t oadict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
 	return key_satisfies_predicate;
 }
 
-err_t oadict_scan(oadict_cursor_t *cursor//know exactly what implementation of cursor is
+err_t oafdict_scan(oafdict_cursor_t *cursor//know exactly what implementation of cursor is
     )
 {
 	//need to scan hashmap fully looking for values that satisfy - need to think about
-	hashmap_t * hash_map = (hashmap_t *)(cursor->super.dictionary->instance);
+	file_hashmap_t * hash_map = (file_hashmap_t *)(cursor->super.dictionary->instance);
 
 	int loc = (cursor->current + 1) % hash_map->map_size;
 	//this is the current position of the cursor
 	//and start scanning 1 ahead
+
+	int record_size = SIZEOF(STATUS) + hash_map->super.record.key_size
+            + hash_map->super.record.value_size;
+
+	//move to the correct position in the fie
+	fseek(hash_map->file, loc * record_size, SEEK_SET);
+
+	hash_bucket_t * item;
+
+	item = (hash_bucket_t *)malloc(record_size);
 
 	//start at the current position, scan forward
 	while (loc != cursor->first)
 	{
 		// check to see if current item is a match based on key
 		// locate first item
-		hash_bucket_t * item = (((hash_bucket_t *)((hash_map->entry
+		/*hash_bucket_t * item = (((hash_bucket_t *)((hash_map->entry
 		        + (hash_map->super.record.key_size
 		                + hash_map->super.record.value_size + SIZEOF(STATUS))
-		                * loc))));
+		                * loc))));*/
+
+		fread(item, record_size, 1, hash_map->file);
 
 		if (item->status == EMPTY || item->status == DELETED)
 		{
@@ -389,12 +403,13 @@ err_t oadict_scan(oadict_cursor_t *cursor//know exactly what implementation of c
 			/**
 			 * Compares value == key
 			 */
-			boolean_t key_satisfies_predicate = oadict_test_predicate(
+			boolean_t key_satisfies_predicate = oafdict_test_predicate(
 			        &(cursor->super), (ion_key_t)item->data);//assumes that the key is first
 
 			if (key_satisfies_predicate == true)
 			{
 				cursor->current = loc;		//this is the next index for value
+				free(item);
 				return cs_valid_data;
 			}
 		}
@@ -403,5 +418,6 @@ err_t oadict_scan(oadict_cursor_t *cursor//know exactly what implementation of c
 			loc = 0;
 	}
 	//if you end up here, you've wrapped the entire data structure and not found a value
+	free(item);
 	return cs_end_of_results;
 }

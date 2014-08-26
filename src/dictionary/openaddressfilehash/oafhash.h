@@ -6,8 +6,8 @@
 */
 /******************************************************************************/
 
-#ifndef STATICHASH_H
-#define STATICHASH_H
+#ifndef OAFHASH_H
+#define OAFHASH_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,7 +18,7 @@ extern "C" {
 
 #include "./../dicttypes.h"
 #include "./../dictionary.h"
-#include "oadictionary.h"
+#include "oafdictionary.h"
 
 #include "./../../kv_system.h"
 #include "./../../io.h"
@@ -34,7 +34,7 @@ extern "C" {
 /**
 @brief		Prototype declaration for hashmap
  */
-typedef struct hashmap 	hashmap_t;
+typedef struct file_hashmap 	file_hashmap_t;
 
 /**
 @brief		Struct used to maintain individual records in the hashmap.
@@ -48,19 +48,19 @@ typedef struct hash_bucket
 /**
 @brief		Struct used to maintain an instance of an in memory hashmap.
 */
-struct hashmap
+struct file_hashmap
 {
 	dictionary_parent_t	super;
 	int 				map_size;		/**< The size of the map in item capacity */
 	write_concern_t 	write_concern;	/**< The current @p write_concern level
 	 	 	 	 	 	 	 	 	 	 	 of the hashmap*/
-	int					(* compute_hash)(hashmap_t *, ion_key_t, int);
+	int					(* compute_hash)(file_hashmap_t *, ion_key_t, int);
 										/**< The hashing function to be used for
 										 	 the instance*/
 /*	char 				(* compare)(ion_key_t, ion_key_t, ion_key_size_t);
 										*< Comparison function for instance of map */
-	char 				*entry;				/**< Pointer to the entries in the hashmap*/
-
+	//char 				*entry;				/**< Pointer to the entries in the hashmap*/
+	FILE				*file;				/**< file pointer */
 };
 
 /**
@@ -82,9 +82,9 @@ struct hashmap
 @return		The status describing the result of the initialization.
  */
 err_t
-oah_initialize(
-		hashmap_t			*hashmap,
-		hash_t				(*hashing_function)(hashmap_t *, ion_key_t, int),
+oafh_initialize(
+		file_hashmap_t		*hashmap,
+		hash_t				(*hashing_function)(file_hashmap_t *, ion_key_t, int),
 	    key_type_t			key_type,
 		ion_key_size_t		key_size,
 		ion_value_size_t	value_size,
@@ -101,8 +101,8 @@ oah_initialize(
 @return		The status describing the result of the destruction
 */
 err_t
-oah_destroy(
-		hashmap_t 	*hash_map
+oafh_destroy(
+		file_hashmap_t 	*hash_map
 );
 
 /**
@@ -118,7 +118,7 @@ oah_destroy(
 @return		The index position to start probing at.
 */
 int
-oah_get_location(
+oafh_get_location(
 		hash_t 		num,
 		int 		size
 );
@@ -143,8 +143,8 @@ oah_get_location(
 @return 	The status of the insert.
 */
 err_t
-oah_insert(
-		hashmap_t 		*hash_map,
+oafh_insert(
+		file_hashmap_t 		*hash_map,
 		ion_key_t 		key,
 		ion_value_t	 	value
 );
@@ -165,8 +165,8 @@ oah_insert(
 @return		The status of the update
 */
 err_t
-oah_update(
-		hashmap_t 		*hash_map,
+oafh_update(
+		file_hashmap_t 		*hash_map,
 		ion_key_t		key,
 		ion_value_t 	value
 );
@@ -185,8 +185,8 @@ oah_update(
 @return		The status of the find
  */
 err_t
-oah_find_item_loc(
-		hashmap_t 		*hash_map,
+oafh_find_item_loc(
+		file_hashmap_t 		*hash_map,
 		ion_key_t	 	key,
 		int				*location
 );
@@ -207,8 +207,8 @@ oah_find_item_loc(
 				The number of buckets available in the map.
 */
 err_t
-oah_delete(
-		hashmap_t 		*hash_map,
+oafh_delete(
+		file_hashmap_t 		*hash_map,
 		ion_key_t		key
 );
 
@@ -228,10 +228,10 @@ oah_delete(
 				The value associated in the map.
 */
 err_t
-oah_query(
-		hashmap_t 		*hash_map,
+oafh_query(
+		file_hashmap_t 		*hash_map,
 		ion_key_t 		key,
-		ion_value_t 	*value
+		ion_value_t 	value
 );
 
 /**
@@ -248,8 +248,8 @@ oah_query(
 				The structure of the record being inserted.
 */
 void
-oah_print(
-		hashmap_t 	*hash_map,
+oafh_print(
+		file_hashmap_t 	*hash_map,
 		int 		size,
 		record_t	*record
 );
@@ -266,8 +266,8 @@ oah_print(
 @return		The hashed value for the key.
 */
 hash_t
-oah_compute_simple_hash(
-		hashmap_t 		*hashmap,
+oafh_compute_simple_hash(
+		file_hashmap_t 		*hashmap,
 		ion_key_t 		key,
 		int 			size_of_key
 );

@@ -23,7 +23,7 @@ dictionary_create(
 	//using the handler, create the dictionary
 	/*	//register the type of key being used by the dictionary (Important for comparison op)
 		dictionary->key_type = key_type;*/
-	 char (* compare)(ion_key_t, ion_key_t, ion_key_size_t);
+	char (* compare)(ion_key_t, ion_key_t, ion_key_size_t);
 
 	switch (key_type)
 			{

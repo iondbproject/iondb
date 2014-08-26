@@ -65,6 +65,7 @@ enum error
 	err_colllection_destruction_error,
 	err_invalid_predicate,
 	err_out_of_memory,
+	err_file_write_error,
 };
 
 typedef char err_t;
@@ -101,5 +102,10 @@ typedef enum
 	true,
 	false,
 } boolean_e;
+
+typedef struct return_status{
+	err_t	err;						/**< the error code */
+	int		count;						/**< the number of items affected */
+} return_status_t;
 
 #endif /* SYSTEM_H_ */

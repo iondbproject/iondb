@@ -6,14 +6,14 @@
 */
 /******************************************************************************/
 
-#ifndef OADICTIONARYHANDLER_H_
-#define OADICTIONARYHANDLER_H_
+#ifndef OAFDICTIONARYHANDLER_H_
+#define OAFDICTIONARYHANDLER_H_
 
 #include "./../dicttypes.h"
 #include "./../dictionary.h"
 #include "./../../kv_system.h"
-#include "oahash.h"
-#include "oadictionary.h"
+#include "oafhash.h"
+#include "oafdictionary.h"
 
 
 /**
@@ -23,7 +23,7 @@ typedef struct oaf_dictionary
 {
 	//what needs to go in here?
 	char 		*dictionary_name;	/**<The name of the dictionary*/
-	hashmap_t 	*hashmap;			/**<The map that the operations
+	file_hashmap_t 	*hashmap;			/**<The map that the operations
 	 	 	 	 	 	 	 	 		will operate upon*/
 } oaf_dictionary_t;
 
@@ -57,16 +57,16 @@ typedef struct equality_cursor
 			This subtype should be extended when supported for a given
 			dictionary.
 */
-typedef struct oadict_equality_cursor
+typedef struct oafdict_equality_cursor
 {
 	dict_cursor_t			super;			/**<Super type this cursor inherits from*/
-	oadict_cursor_t			cursor_info;	/**<Super type to dict implementation*/
+	oafdict_cursor_t			cursor_info;	/**<Super type to dict implementation*/
 	ion_key_t				value;
 	boolean_t				(* equal)(dictionary_t *,
 								ion_key_t,
 								ion_key_t);
 											/**< A pointer to an equality function. */
-} oadict_equality_cursor_t;
+} oafdict_equality_cursor_t;
 /*
 
 *
@@ -111,7 +111,7 @@ typedef struct predicate_cursor
 				initialized.
  */
 void
-oadict_init(
+oafdict_init(
 	dictionary_handler_t 	*handler
 );
 
@@ -127,7 +127,7 @@ oadict_init(
 @return		The status on the insertion of the record.
  */
 err_t
-oadict_insert(
+oafdict_insert(
 	dictionary_t 	*dictionary,
 	ion_key_t 		key,
 	ion_value_t 	value
@@ -158,7 +158,7 @@ oadict_insert(
 @return		The status of the query.
  */
 err_t
-oadict_query(
+oafdict_query(
 	dictionary_t 	*dictionary,
 	ion_key_t 		key,
 	ion_value_t		*value
@@ -187,7 +187,7 @@ oadict_query(
 @return		The status of the creation of the dictionary.
  */
 err_t
-oadict_create_dictionary(
+oafdict_create_dictionary(
 		key_type_t				key_type,
 		int 					key_size,
 		int 					value_size,
@@ -208,7 +208,7 @@ oadict_create_dictionary(
 @return		The status of the deletion
  */
 err_t
-oadict_delete(
+oafdict_delete(
 		dictionary_t 	*dictionary,
 		ion_key_t 		key
 );
@@ -221,7 +221,7 @@ oadict_delete(
 @return		The status of the dictionary deletion.
  */
 err_t
-oadict_delete_dictionary(
+oafdict_delete_dictionary(
 		dictionary_t 	*dictionary
 );
 
@@ -240,7 +240,7 @@ oadict_delete_dictionary(
 @return		The status of the update.
  */
 err_t
-oadict_update(
+oafdict_update(
 		dictionary_t 	*dictionary,
 		ion_key_t 		key,
 		ion_value_t 	value
@@ -264,7 +264,7 @@ oadict_update(
 @return		The status of the operation.
  */
 err_t
-oadict_find(
+oafdict_find(
 		dictionary_t 	*dictionary,
 		predicate_t 	*predicate,
 		dict_cursor_t 	**cursor
@@ -296,7 +296,7 @@ oadict_find(
 @return		The difference between the keys.
  */
 int
-oadict_compare(
+oafdict_compare(
 		ion_key_t 		first_key,
 		ion_key_t		second_key
 );
@@ -325,7 +325,7 @@ oadict_next(
 @return		The status of the cursor.
  */
 cursor_status_t
-oadict_next(
+oafdict_next(
 	dict_cursor_t 	*cursor,
 	ion_value_t		value
 );
@@ -344,7 +344,7 @@ oadict_next(
  */
 boolean_t
 /**@TODO Fix name of function */
-is_equal(
+oafdict_is_equal(
 	dictionary_t 	*dict,
 	ion_key_t 		key1,
 	ion_key_t 		key2
@@ -363,7 +363,7 @@ is_equal(
 				** pointer to cursor.
  */
 void
-oadict_destroy_cursor(
+oafdict_destroy_cursor(
 	dict_cursor_t	 **cursor
 );
 
@@ -378,7 +378,7 @@ oadict_destroy_cursor(
 @return		The result is the key passes or fails the predicate test.
  */
 boolean_t
-oadict_test_predicate(
+oafdict_test_predicate(
     dict_cursor_t* 	cursor,
     ion_key_t 			key
 );
@@ -397,8 +397,8 @@ oadict_test_predicate(
 @return			The status of the scan.
  */
 err_t
-oadict_scan(
-		oadict_cursor_t		*cursor  //don't need to pass in the cursor
+oafdict_scan(
+		oafdict_cursor_t		*cursor  //don't need to pass in the cursor
 );
 
 #endif /* OADICTIONARYHANDLER_H_ */
