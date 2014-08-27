@@ -174,6 +174,18 @@ sl_gen_level(
 	skiplist_t 		*skiplist
 );
 
+/**
+@brief 		Iterates through each level of a skiplist and prints out the content
+			of each node in a meaningful way. Intended for debug use only.
+
+@param 		skiplist
+				The skiplist to print
+ */
+void
+print_skiplist(
+	skiplist_t 		*skiplist
+);
+
 #ifdef __cplusplus
 }
 #endif

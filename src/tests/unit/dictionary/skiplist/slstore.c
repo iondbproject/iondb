@@ -6,59 +6,29 @@
 */
 /******************************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "./../../../CuTest.h"
-#include "./../../../../dictionary/skiplist/sltypes.h"
-#include "./../../../../dictionary/skiplist/slstore.h"
-#include "./../../../../dictionary/skiplist/slhandler.h"
-#include "./../../../../dictionary/dicttypes.h"
-#include "./../../../../dictionary/dictionary.h"
-
-#define PRINT_HEADER(fcn) io_printf("=== [%s] ===\n", fcn)
-
+#include "sltests.h"
 
 /**
-@brief 		Insert brief here
+@brief 		Helper function that creates a skiplist based on the given
+			parameters.
 
-@param 		tc
-				CuTest dependency
-
-void
-test_empty_template(
-	CuTest 		*tc
-)
-{
-	PRINT_HEADER("test_empty_template");
-	skiplist_t skiplist;
-	initialize_skiplist_std_conditions(&skiplist);
-
-
-	sl_destroy(&skiplist);
-} */
-
-
-/* 1 Copy occurrence in pet demo skiplist.c */
-void
-check_skiplist(
-	skiplist_t 	*skiplist
-)
-{
-	sl_node_t 	*cursor = skiplist->head;
-
-	while(NULL != cursor->next[0])
-	{
-		int 		key 		= *((int*)cursor->next[0]->key);
-		char* 		value 		= (char*) cursor->next[0]->value;
-		sl_level_t 	level 		= cursor->next[0]->height + 1;
-		io_printf("k: %d (v: %s) [l: %d] -- ", key, value, level);
-		cursor 					= cursor->next[0];
-	}
-
-	io_printf("%s", "END\n\n");
-}
-
+@param 		skiplist
+				Skiplist to initialize
+@param 		key_type
+				Type of key used
+@param 		compare
+				Function pointer to a comparison method used by the skiplist
+@param 		maxheight
+				Maximum height of the skiplist
+@param 		key_size
+				Size of key in bytes allowed
+@param 		value_size
+				Size of value in bytes allowed
+@param 		pnum
+				Probability numerator
+@param 		pden
+				Probability denominator
+ */
 void
 initialize_skiplist(
 	skiplist_t 	*skiplist,
@@ -83,6 +53,13 @@ initialize_skiplist(
 	skiplist->super.compare = compare;
 }
 
+/**
+@brief 		Secondary helper function that creates a skiplist using the
+			standard conditions variable. Simplifies the creation of a skiplist.
+
+@param 		skiplist
+				Skiplist to initialize
+ */
 void
 initialize_skiplist_std_conditions(
 		skiplist_t 	*skiplist
@@ -123,7 +100,7 @@ test_skiplist_initialize(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_initialize");
+	PRINT_HEADER();
 	int key_size, value_size, pden, pnum, maxheight;
 	key_type_t key_type;
 	char (*compare)(ion_key_t, ion_key_t, ion_key_size_t);
@@ -149,7 +126,7 @@ test_skiplist_initialize(
 	);
 
 #if defined(DEBUG)
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	ion_key_size_t 		t_key_size 		= skiplist.super.record.key_size;
@@ -175,7 +152,7 @@ test_skiplist_free_all(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_free_all");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -196,7 +173,7 @@ test_skiplist_generate_levels_std_conditions(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_generate_levels_std_conditions");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -233,7 +210,7 @@ test_skiplist_single_insert(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_single_insert");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -246,7 +223,7 @@ test_skiplist_single_insert(
 
 
 #if defined(DEBUG)
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	CuAssertTrue(tc, 		*((int*) skiplist.head->next[0]->key) 	== 6);
@@ -268,7 +245,7 @@ test_skiplist_insert_multiple(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_insert_multiple");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -288,7 +265,7 @@ test_skiplist_insert_multiple(
 	}
 
 #if defined(DEBUG)
-		check_skiplist(&skiplist);
+		print_skiplist(&skiplist);
 #endif
 	sl_node_t 	*cursor;
 
@@ -328,7 +305,7 @@ test_skiplist_randomized_insert(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_randomized_insert");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -343,7 +320,7 @@ test_skiplist_randomized_insert(
 	}
 
 #if defined(DEBUG)
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	sl_node_t 	*cursor = skiplist.head;
@@ -376,7 +353,7 @@ test_skiplist_get_node_single(
 	CuTest 			*tc
 )
 {
-	PRINT_HEADER("test_skiplist_get_node_single");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -414,7 +391,7 @@ test_skiplist_get_node_single_high(
 	CuTest 			*tc
 )
 {
-	PRINT_HEADER("test_skiplist_get_node_single_high");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -426,7 +403,7 @@ test_skiplist_get_node_single_high(
 	sl_insert(&skiplist, (ion_key_t) &key, str);
 
 #if defined(DEBUG)
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	int 		search 	= 10;
@@ -456,7 +433,7 @@ test_skiplist_get_node_single_low(
 	CuTest 			*tc
 )
 {
-	PRINT_HEADER("test_skiplist_get_node_single_low");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -468,7 +445,7 @@ test_skiplist_get_node_single_low(
 	sl_insert(&skiplist, (ion_key_t) &key, str);
 
 #if defined(DEBUG)
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	int search 	= 2;
@@ -495,7 +472,7 @@ test_skiplist_get_node_single_many(
 	CuTest 			*tc
 )
 {
-	PRINT_HEADER("test_skiplist_get_node_single_many");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -520,7 +497,7 @@ test_skiplist_get_node_single_many(
 	}
 
 #if defined(DEBUG)
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	int 		search 	= 25;
@@ -545,7 +522,7 @@ test_skiplist_get_node_several(
 	CuTest 			*tc
 )
 {
-	PRINT_HEADER("test_skiplist_get_node_several");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -566,7 +543,7 @@ test_skiplist_get_node_several(
 	}
 
 #if defined(DEBUG)
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	for(i = 0; i < 50; i++)
@@ -594,7 +571,7 @@ test_skiplist_query_nonexist_empty(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_query_single");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -604,7 +581,7 @@ test_skiplist_query_nonexist_empty(
 	err_t status = sl_query(&skiplist, (ion_key_t) &key, &value);
 
 #if defined(DEBUG)
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	CuAssertTrue(tc, status == err_item_not_found);
@@ -627,7 +604,7 @@ test_skiplist_query_nonexist_populated_single(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_query_nonexist_populated_single");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -638,7 +615,7 @@ test_skiplist_query_nonexist_populated_single(
 	sl_insert(&skiplist, (ion_key_t) &test_key, test_value);
 
 #if defined(DEBUG)
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	int 			key 	= 10;
@@ -666,7 +643,7 @@ test_skiplist_query_nonexist_populated_several(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_query_nonexist_populated_several");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -682,7 +659,7 @@ test_skiplist_query_nonexist_populated_several(
 	}
 
 #if defined(DEBUG)
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	int 			key 	= 10;
@@ -710,7 +687,7 @@ test_skiplist_query_exist_single(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_query_exist_single");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -721,7 +698,7 @@ test_skiplist_query_exist_single(
 	sl_insert(&skiplist, (ion_key_t) &test_key, test_value);
 
 #if defined(DEBUG)
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	int 			key 	= 11;
@@ -750,7 +727,7 @@ test_skiplist_query_exist_populated_single(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_query_exist_populated_single");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -764,7 +741,7 @@ test_skiplist_query_exist_populated_single(
 	}
 
 #if defined(DEBUG)
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	int 			key 	= 24;
@@ -793,7 +770,7 @@ test_skiplist_query_exist_populated_several(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_query_exist_populated_several");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -807,7 +784,7 @@ test_skiplist_query_exist_populated_several(
 	}
 
 #if defined(DEBUG)
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	char 			find_value[10];
@@ -838,7 +815,7 @@ test_skiplist_delete_empty(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_delete_empty");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -846,7 +823,7 @@ test_skiplist_delete_empty(
 	err_t status 	= sl_delete(&skiplist, (ion_key_t) &key);
 
 #if defined(DEBUG)
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	CuAssertTrue(tc, status == err_item_not_found);
@@ -868,7 +845,7 @@ test_skiplist_delete_nonexist_single(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_delete_nonexist_single");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -881,7 +858,7 @@ test_skiplist_delete_nonexist_single(
 	err_t 	status 		= sl_delete(&skiplist, (ion_key_t) &fake_key);
 
 #if defined(DEBUG)
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	CuAssertTrue(tc, status == err_item_not_found);
@@ -903,7 +880,7 @@ test_skiplist_delete_nonexist_several(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_delete_nonexist_several");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -922,7 +899,7 @@ test_skiplist_delete_nonexist_several(
 	err_t 	status 		= sl_delete(&skiplist, (ion_key_t) &fake_key);
 
 #if defined(DEBUG)
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	CuAssertTrue(tc, status == err_item_not_found);
@@ -944,7 +921,7 @@ test_skiplist_delete_single(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_delete_single");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -956,14 +933,14 @@ test_skiplist_delete_single(
 
 #if defined(DEBUG)
 	printf("%s\n", "** BEFORE **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	err_t status = sl_delete(&skiplist, (ion_key_t) &key);
 
 #if defined(DEBUG)
 	printf("%s\n", "** AFTER **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	CuAssertTrue(tc, status					 == err_ok);
@@ -986,7 +963,7 @@ test_skiplist_delete_single_several(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_delete_single_several");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1001,7 +978,7 @@ test_skiplist_delete_single_several(
 
 #if defined(DEBUG)
 	printf("%s\n", "** BEFORE **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	sl_node_t 	*onebefore 	= sl_find_node(&skiplist, (ion_key_t) &(int) {111});
@@ -1025,7 +1002,7 @@ test_skiplist_delete_single_several(
 
 #if defined(DEBUG)
 	printf("%s\n", "** AFTER **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	CuAssertTrue(tc, 		status == err_ok);
@@ -1052,7 +1029,7 @@ test_skiplist_delete_single_several_noncont(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_delete_single_several_noncont");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1067,7 +1044,7 @@ test_skiplist_delete_single_several_noncont(
 
 #if defined(DEBUG)
 	printf("%s\n", "** BEFORE **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	sl_node_t 	*onebefore 	= sl_find_node(&skiplist, (ion_key_t) &(int) {235});
@@ -1091,7 +1068,7 @@ test_skiplist_delete_single_several_noncont(
 
 #if defined(DEBUG)
 	printf("%s\n", "** AFTER **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	CuAssertTrue(tc,	 status == err_ok);
@@ -1116,7 +1093,7 @@ test_skiplist_delete_several_all(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_delete_several_all");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1131,7 +1108,7 @@ test_skiplist_delete_several_all(
 
 #if defined(DEBUG)
 	printf("%s\n", "** BEFORE **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	for(i = 9; i < 99; i+= 3)
@@ -1142,7 +1119,7 @@ test_skiplist_delete_several_all(
 
 #if defined(DEBUG)
 	printf("%s\n", "** AFTER **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	sl_node_t 	*cursor = skiplist.head;
@@ -1167,7 +1144,7 @@ test_skiplist_update_single_nonexist(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_update_single_nonexist");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1175,7 +1152,7 @@ test_skiplist_update_single_nonexist(
 	err_t status = sl_update(&skiplist, (ion_key_t) &(int) {72}, (ion_value_t) (char*){"test val"});
 
 #if defined(DEBUG)
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	CuAssertTrue(tc, 		status								== err_ok);
@@ -1198,7 +1175,7 @@ test_skiplist_update_single_nonexist_nonempty(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_update_single_nonexist_nonempty");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1207,7 +1184,7 @@ test_skiplist_update_single_nonexist_nonempty(
 
 #if defined(DEBUG)
 	printf("%s\n", "** BEFORE **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	/* TODO collapse these into macros, so that this fits 80 cols */
@@ -1215,7 +1192,7 @@ test_skiplist_update_single_nonexist_nonempty(
 
 #if defined(DEBUG)
 	printf("%s\n", "** AFTER **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	CuAssertTrue(tc, 		status								 == err_ok);
@@ -1238,7 +1215,7 @@ test_skiplist_update_many_nonexist_nonempty(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_update_many_nonexist_nonempty");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1250,7 +1227,7 @@ test_skiplist_update_many_nonexist_nonempty(
 
 #if defined(DEBUG)
 	printf("%s\n", "** BEFORE **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	/* TODO collapse these into macros, so that this fits 80 cols */
@@ -1258,7 +1235,7 @@ test_skiplist_update_many_nonexist_nonempty(
 
 #if defined(DEBUG)
 	printf("%s\n", "** AFTER **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	sl_node_t 		*cursor = sl_find_node(&skiplist, (ion_key_t) &(int) {38});
@@ -1284,7 +1261,7 @@ test_skiplist_update_single_exist(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_update_single_exist");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1293,7 +1270,7 @@ test_skiplist_update_single_exist(
 
 #if defined(DEBUG)
 	printf("%s\n", "** BEFORE **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	/* TODO collapse these into macros, so that this fits 80 cols */
@@ -1301,7 +1278,7 @@ test_skiplist_update_single_exist(
 
 #if defined(DEBUG)
 	printf("%s\n", "** AFTER **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	CuAssertTrue(tc,		status									== err_ok);
@@ -1325,7 +1302,7 @@ test_skiplist_update_single_many_exist(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_update_single_many_exist");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1337,7 +1314,7 @@ test_skiplist_update_single_many_exist(
 
 #if defined(DEBUG)
 	printf("%s\n", "** BEFORE **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	/* TODO collapse these into macros, so that this fits 80 cols */
@@ -1345,7 +1322,7 @@ test_skiplist_update_single_many_exist(
 
 #if defined(DEBUG)
 	printf("%s\n", "** AFTER **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	sl_node_t 		*cursor = sl_find_node(&skiplist, (ion_key_t) &(int) {30});
@@ -1371,7 +1348,7 @@ test_skiplist_update_several_many_exist(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_update_several_many_exist");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1383,7 +1360,7 @@ test_skiplist_update_several_many_exist(
 
 #if defined(DEBUG)
 	printf("%s\n", "** BEFORE **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	for(i = 60; i < 99; i += 3)
@@ -1400,7 +1377,7 @@ test_skiplist_update_several_many_exist(
 
 #if defined(DEBUG)
 	printf("%s\n", "** AFTER **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	sl_destroy(&skiplist);
@@ -1419,7 +1396,7 @@ test_skiplist_update_several_same_key(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_update_several_same_key");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1432,7 +1409,7 @@ test_skiplist_update_several_same_key(
 
 #if defined(DEBUG)
 	printf("%s\n", "** INSERT **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	/* TODO collapse these into macros, so that this fits 80 cols */
@@ -1440,7 +1417,7 @@ test_skiplist_update_several_same_key(
 
 #if defined(DEBUG)
 	printf("%s\n", "** UPDATE **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	CuAssertTrue(tc, status == err_ok);
@@ -1467,7 +1444,7 @@ test_skiplist_update_several_same_key_in_mix(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_update_several_same_key_in_mix");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1488,7 +1465,7 @@ test_skiplist_update_several_same_key_in_mix(
 
 #if defined(DEBUG)
 	printf("%s\n", "** INSERT **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	/* TODO collapse these into macros, so that this fits 80 cols */
@@ -1496,7 +1473,7 @@ test_skiplist_update_several_same_key_in_mix(
 
 #if defined(DEBUG)
 	printf("%s\n", "** UPDATE **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	CuAssertTrue(tc, status == err_ok);
@@ -1525,7 +1502,7 @@ test_skiplist_delete_then_insert_single(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_delete_then_insert_single");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1534,7 +1511,7 @@ test_skiplist_delete_then_insert_single(
 
 #if defined(DEBUG)
 	printf("%s\n", "** INSERT **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	err_t status = sl_delete(&skiplist, (ion_key_t) &(int) {66});
@@ -1542,7 +1519,7 @@ test_skiplist_delete_then_insert_single(
 
 #if defined(DEBUG)
 	printf("%s\n", "** DELETE **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	/* TODO collapse these into macros, so that this fits 80 cols */
@@ -1550,7 +1527,7 @@ test_skiplist_delete_then_insert_single(
 
 #if defined(DEBUG)
 	printf("%s\n", "** REINSERT **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	CuAssertTrue(tc, 		skiplist.head->next[0] 					!= NULL);
@@ -1574,7 +1551,7 @@ test_skiplist_delete_then_insert_several(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_delete_then_insert_several");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1586,7 +1563,7 @@ test_skiplist_delete_then_insert_several(
 
 #if defined(DEBUG)
 	printf("%s\n", "** INSERT **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	for(i = 0; i < 50; i++)
@@ -1597,7 +1574,7 @@ test_skiplist_delete_then_insert_several(
 
 #if defined(DEBUG)
 	printf("%s\n", "** DELETE **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	for(i = 50; i < 100; i++)
@@ -1607,7 +1584,7 @@ test_skiplist_delete_then_insert_several(
 
 #if defined(DEBUG)
 	printf("%s\n", "** REINSERT **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	sl_node_t *cursor = skiplist.head;
@@ -1633,7 +1610,7 @@ test_skiplist_delete_several_same_key(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_delete_several_same_key");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1646,14 +1623,14 @@ test_skiplist_delete_several_same_key(
 
 #if defined(DEBUG)
 	printf("%s\n", "** INSERT **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	err_t status = sl_delete(&skiplist, (ion_key_t) &(int) {64});
 
 #if defined(DEBUG)
 	printf("%s\n", "** DELETE **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	CuAssertTrue(tc, status == err_ok);
@@ -1679,7 +1656,7 @@ test_skiplist_delete_several_same_key_in_mix(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_delete_several_same_key_in_mix");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1700,14 +1677,14 @@ test_skiplist_delete_several_same_key_in_mix(
 
 #if defined(DEBUG)
 	printf("%s\n", "** INSERT **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	err_t status = sl_delete(&skiplist, (ion_key_t) &(int) {55});
 
 #if defined(DEBUG)
 	printf("%s\n", "** DELETE **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	CuAssertTrue(tc, status == err_ok);
@@ -1731,7 +1708,7 @@ test_skiplist_different_size(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_different_size");
+	PRINT_HEADER();
 	skiplist_t 	skiplist;
 	int key_size, value_size, pden, pnum, maxheight;
 	key_type_t key_type;
@@ -1763,7 +1740,7 @@ test_skiplist_different_size(
 
 #if defined(DEBUG)
 	printf("%s\n", "** INSERT **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 	sl_node_t	*cursor;
 
@@ -1805,7 +1782,7 @@ test_skiplist_different_size(
 
 #if defined(DEBUG)
 	printf("%s\n", "** DELETE **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	sl_destroy(&skiplist);
@@ -1824,7 +1801,7 @@ test_skiplist_big_keys(
 	CuTest 		*tc
 )
 {
-	PRINT_HEADER("test_skiplist_big_keys");
+	PRINT_HEADER();
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1843,7 +1820,7 @@ test_skiplist_big_keys(
 
 #if defined(DEBUG)
 	printf("%s\n", "** INSERT **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	for(i = 230; i < 999; i++)
@@ -1853,7 +1830,7 @@ test_skiplist_big_keys(
 
 #if defined(DEBUG)
 	printf("%s\n", "** DELETE **");
-	check_skiplist(&skiplist);
+	print_skiplist(&skiplist);
 #endif
 
 	int h;
@@ -1865,6 +1842,10 @@ test_skiplist_big_keys(
 	sl_destroy(&skiplist);
 }
 
+/**
+@brief 		Creates the suite to test using CuTest.
+@return 	Pointer to a CuTest suite.
+ */
 CuSuite*
 skiplist_getsuite()
 {
@@ -1929,6 +1910,9 @@ skiplist_getsuite()
 	return suite;
 }
 
+/**
+@brief 		Runs all skiplist related tests and outputs the result.
+ */
 void
 runalltests_skiplist()
 {

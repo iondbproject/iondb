@@ -348,3 +348,22 @@ sl_gen_level(
 
 	return level - 1;
 }
+
+void
+print_skiplist(
+	skiplist_t 	*skiplist
+)
+{
+	sl_node_t 	*cursor = skiplist->head;
+
+	while(NULL != cursor->next[0])
+	{
+		int 		key 		= *((int*)cursor->next[0]->key);
+		char* 		value 		= (char*) cursor->next[0]->value;
+		sl_level_t 	level 		= cursor->next[0]->height + 1;
+		io_printf("k: %d (v: %s) [l: %d] -- ", key, value, level);
+		cursor 					= cursor->next[0];
+	}
+
+	io_printf("%s", "END\n\n");
+}
