@@ -30,7 +30,7 @@ extern "C" {
 void
 createTestCollection(
     dictionary_handler_t	*map_handler,
-    const record_t			*record,
+    const record_info_t			*record,
     int 					size,
     dictionary_t			*test_dictionary,
     key_type_t				key_type
@@ -44,7 +44,7 @@ createTestCollection(
 	//build test relation
 	int i;
 	ion_value_t str;
-	str = (ion_value_t)malloc(sizeof(ion_value_t) * record->value_size);
+	str = (ion_value_t)malloc(record->value_size);
 	for (i = 0; i < size; i++)
 	{
 		sprintf((char*)str, "value : %i ", i);
@@ -90,7 +90,7 @@ test_open_address_hashmap_handler_create_destroy(
 {
 
 	int size;
-	record_t record;
+	record_info_t record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
 	record.key_size = 4;
@@ -294,7 +294,7 @@ test_open_address_dictionary_cursor_equality(
 )
 {
 	int 		size;
-	record_t 	record;
+	record_info_t 	record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
 	record.key_size 	= 4;
@@ -342,17 +342,17 @@ test_open_address_dictionary_handler_query_with_results(
 )
 {
 	int size;
-	record_t record;
+	record_info_t record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record.key_size = 4;
-	record.value_size = 10;
+	record_info.key_size = 4;
+	record_info.value_size = 10;
 	size = 10;
 
 	dictionary_handler_t 	map_handler;			//create handler for hashmap
 	dictionary_t 			test_dictionary;		//collection handler for test collection
 
-	createTestCollection(&map_handler, &record, size, &test_dictionary, key_type_numeric_signed);
+	createTestCollection(&map_handler, &record_info, size, &test_dictionary, key_type_numeric_signed);
 
 	dict_cursor_t 			*cursor;				//create a new cursor pointer
 
@@ -372,29 +372,32 @@ test_open_address_dictionary_handler_query_with_results(
 	CuAssertTrue(tc, cs_cursor_initialized	== cursor->status);
 
 	//user must allocate memory before calling next()
-	ion_value_t 			value;
-	value 					= (ion_value_t)malloc(sizeof(ion_value_t)*record.value_size);
+	ion_record_t 			record;
 
-	CuAssertTrue(tc, cs_cursor_active		== cursor->next(cursor, value));
+	record.value 				= (ion_value_t)malloc(record_info.value_size);
+	record.key 					= (ion_key_t)malloc(record_info.key_size);
+
+	CuAssertTrue(tc, cs_cursor_active		== cursor->next(cursor, &record));
 
 	//check that value is correct that has been returned
 	ion_value_t				str;
-	str 					= (ion_value_t)malloc(sizeof(ion_value_t)*record.value_size);
+	str 					= (ion_value_t)malloc(record_info.value_size);
 	sprintf((char*)str,"value : %i ", *(int *)predicate.statement.equality.equality_value);
 
-	CuAssertTrue(tc, IS_EQUAL				== memcmp(value, str, record.value_size));
+	CuAssertTrue(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
 
 	free(str);
 
 	//and as there is only 1 result, the next call should return empty
-	CuAssertTrue(tc, cs_end_of_results		== cursor->next(cursor, value));
+	CuAssertTrue(tc, cs_end_of_results		== cursor->next(cursor, &record));
 
 	//and as there is only 1 result, the next call should return empty
-	CuAssertTrue(tc, cs_end_of_results		== cursor->next(cursor, value));
+	CuAssertTrue(tc, cs_end_of_results		== cursor->next(cursor, &record));
 
 	//free up the correct predicate
 	free(predicate.statement.equality.equality_value);
-	free(value);
+	free(record.value);
+	free(record.key);
 	//destory cursor for cleanup
 	cursor->destroy(&cursor);
 	//and destory the collection
@@ -407,17 +410,17 @@ test_open_address_dictionary_handler_query_no_results(
 )
 {
 	int size;
-	record_t record;
+	record_info_t record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record.key_size = 4;
-	record.value_size = 10;
+	record_info.key_size = 4;
+	record_info.value_size = 10;
 	size = 10;
 
 	dictionary_handler_t 	map_handler;			//create handler for hashmap
 	dictionary_t 			test_dictionary;		//collection handler for test collection
 
-	createTestCollection(&map_handler, &record, size, &test_dictionary, key_type_numeric_signed);
+	createTestCollection(&map_handler, &record_info, size, &test_dictionary, key_type_numeric_signed);
 
 	dict_cursor_t 			*cursor;				//create a new cursor pointer
 
@@ -437,14 +440,16 @@ test_open_address_dictionary_handler_query_no_results(
 	CuAssertTrue(tc, cs_end_of_results	== cursor->status);
 
 	//user must allocate memory before calling next()
-	ion_value_t 			value;
-	value 					= (ion_value_t)malloc(sizeof(ion_value_t)*record.value_size);
+	ion_record_t 			record;
+	record.value 			= (ion_value_t)malloc(record_info.value_size);
+	record.key 				= (ion_key_t)malloc(record_info.key_size);
 
-	CuAssertTrue(tc, cs_end_of_results		== cursor->next(cursor, value));
+	CuAssertTrue(tc, cs_end_of_results		== cursor->next(cursor, &record));
 
 	//free up the correct predicate
 	free(predicate.statement.equality.equality_value);
-	free(value);
+	free(record.value);
+	free(record.key);
 	//destroy cursor for cleanup
 	cursor->destroy(&cursor);
 	//and destroy the collection
@@ -460,7 +465,7 @@ test_open_address_dictionary_predicate_equality(
 	key_under_test = (ion_key_t)malloc(sizeof(int));
 
 	int size;
-	record_t record;
+	record_info_t record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
 	record.key_size = 4;
@@ -522,7 +527,7 @@ test_open_address_dictionary_predicate_range_signed(
 	key_under_test = (ion_key_t)malloc(sizeof(int));
 
 	int size;
-	record_t record;
+	record_info_t record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
 	record.key_size = 4;
@@ -595,7 +600,7 @@ test_open_address_dictionary_predicate_range_unsigned(
 	key_under_test = (ion_key_t)malloc(sizeof(unsigned int));
 
 	int size;
-	record_t record;
+	record_info_t record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
 	record.key_size = 4;
@@ -666,17 +671,17 @@ test_open_address_dictionary_cursor_range(
 )
 {
 	int 		size;
-	record_t 	record;
+	record_info_t 	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record.key_size 	= 4;
-	record.value_size 	= 10;
+	record_info.key_size 	= 4;
+	record_info.value_size 	= 10;
 	size 				= 10;
 
 	dictionary_handler_t 	map_handler;			//create handler for hashmap
 	dictionary_t			test_dictionary;		//collection handler for test collection
 
-	createTestCollection(&map_handler, &record, size, &test_dictionary, key_type_numeric_signed);
+	createTestCollection(&map_handler, &record_info, size, &test_dictionary, key_type_numeric_signed);
 
 	dict_cursor_t 			*cursor;			//create a new cursor pointer
 
@@ -699,29 +704,33 @@ test_open_address_dictionary_cursor_range(
 	CuAssertTrue(tc, cs_cursor_initialized	== cursor->status);
 
 	//user must allocate memory before calling next()
-	ion_value_t 			value;
-	value 					= (ion_value_t)malloc(sizeof(ion_value_t)*record.value_size);
+	ion_record_t			record;
+
+	record.value 			= (ion_value_t)malloc(record_info.value_size);
+	record.key 				= (ion_key_t)malloc(record_info.key_size);
 
 	int result_count = 0;
 	status_t cursor_status;
 
-	while( cs_cursor_active == (cursor_status = cursor->next(cursor, value)))
+	while( cs_cursor_active == (cursor_status = cursor->next(cursor, &record)))
 	{
 		CuAssertTrue(tc, cs_cursor_active		== cursor_status);
 
 		//check that value is correct that has been returned
 		ion_value_t	str;
-		str = (ion_value_t)malloc(sizeof(ion_value_t)*record.value_size);
+		str = (ion_value_t)malloc(record_info.value_size);
 		sprintf((char*)str,"value : %i ", (*(int *)predicate.statement.range.geq_value) + result_count);
 
-		CuAssertTrue(tc, IS_EQUAL				== memcmp(value, str, record.value_size));
+		CuAssertTrue(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
+		CuAssertTrue(tc, *(int*)(record.key)  	<= *(int *)(cursor->predicate->statement.range.leq_value));
+		CuAssertTrue(tc, *(int*)(record.key)  	>= *(int *)(cursor->predicate->statement.range.geq_value));
 		result_count++;
 		free(str);
 	}
 	CuAssertTrue(tc, 5						== result_count);
 
 	//and as there is only 1 result, the next call should return empty
-	CuAssertTrue(tc, cs_end_of_results		== cursor->next(cursor, value));
+	CuAssertTrue(tc, cs_end_of_results		== cursor->next(cursor, &record));
 
 	//free up the correct predicate
 	free(predicate.statement.range.geq_value);

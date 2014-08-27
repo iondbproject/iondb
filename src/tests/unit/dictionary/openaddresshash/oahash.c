@@ -45,7 +45,7 @@ check_map(
 void
 initialize_hash_map(
 	int			size,
-	record_t	*record,
+	record_info_t	*record,
 	hashmap_t 	*map
 )
 {
@@ -59,7 +59,7 @@ initialize_hash_map_std_conditions(
 )
 {
 
-	record_t record;
+	record_info_t record;
 	record.key_size 		= 4;
 	record.value_size 		= 10;
 	map->super.key_type 	= key_type_numeric_signed;
@@ -81,7 +81,7 @@ test_open_address_hashmap_initialize(
 
 	/* this is required for initializing the hash map and should come from the dictionary */
 	int size;
-	record_t record;
+	record_info_t record;
 	record.key_size = 4;
 	record.value_size = 10;
 	size = 10;
@@ -166,7 +166,7 @@ test_open_address_hashmap_find_item_location(
 	initialize_hash_map_std_conditions(&map);
 
 	/** Manually populate records */
-	record_t record 			= map.super.record;
+	record_info_t record 			= map.super.record;
 
 	char *item;
 
@@ -230,7 +230,7 @@ test_open_address_hashmap_simple_insert(
 	initialize_hash_map_std_conditions(&map);
 
 	/** Manually populate records */
-	record_t record 			= map.super.record;
+	record_info_t record 			= map.super.record;
 
 	//manually populate array
 #if DEBUG

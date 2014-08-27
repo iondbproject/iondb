@@ -16,7 +16,7 @@
 
 #include "io.h"
 
-void test_query(dictionary_t* test_dictionary, int key, const record_t* record) {
+void test_query(dictionary_t* test_dictionary, int key, const record_info_t* record) {
 
 	io_printf("Query\n");
 	char* data;
@@ -40,7 +40,7 @@ void test_query(dictionary_t* test_dictionary, int key, const record_t* record) 
 int main(void) {
 	int size;
 	char ch;
-	record_t record;
+	record_info_t record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
 	record.key_size = 4;

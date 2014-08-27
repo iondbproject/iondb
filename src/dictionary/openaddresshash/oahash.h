@@ -251,7 +251,7 @@ void
 oah_print(
 		hashmap_t 	*hash_map,
 		int 		size,
-		record_t	*record
+		record_info_t	*record
 );
 
 /**

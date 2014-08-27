@@ -326,8 +326,8 @@ oadict_next(
  */
 cursor_status_t
 oadict_next(
-	dict_cursor_t 	*cursor,
-	ion_value_t		value
+	dict_cursor_t 		*cursor,
+	ion_record_t		*record
 );
 
 /**

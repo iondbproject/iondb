@@ -214,7 +214,10 @@ err_t oadict_find(
 	return err_ok;
 }
 
-cursor_status_t oadict_next(dict_cursor_t *cursor, ion_value_t value)
+cursor_status_t oadict_next(
+	dict_cursor_t 	*cursor,
+	ion_record_t 	*record
+)
 {
 	// @todo if the collection changes, then the status of the cursor needs to change
 	oadict_cursor_t *oadict_cursor = (oadict_cursor_t *)cursor;
@@ -258,8 +261,15 @@ cursor_status_t oadict_next(dict_cursor_t *cursor, ion_value_t value)
 		                + (data_length + SIZEOF(STATUS))
 		                        * oadict_cursor->current/*idx*/))));
 
-		//and copy value in
-		memcpy(value,
+
+		/** @todo A discussion needs to be had regarding ion_record_t and its format in memory etc */
+		//and copy key and value in
+
+		memcpy(record->key,
+				(ion_key_t)(item->data),
+				hash_map->super.record.key_size);
+
+		memcpy(record->value,
 		        (ion_value_t)(item->data + hash_map->super.record.key_size),
 		        hash_map->super.record.value_size);
 
