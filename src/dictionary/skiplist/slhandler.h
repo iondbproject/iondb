@@ -197,7 +197,7 @@ sldict_find(
 cursor_status_t
 sldict_next(
 	dict_cursor_t 	*cursor,
-	ion_value_t 	value
+	ion_record_t 	*record
 );
 
 /**

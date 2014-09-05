@@ -23,16 +23,6 @@ enum status
 	status_duplicate_key, 				/**< status_duplicate_key */
 };
 
-
-/**
-@brief		Struct used to maintain information about size of key and value.
- */
-typedef struct record
-{
-	int 			key_size;			/**< the size of the key in bytes */
-	int 			value_size;			/**< the size of the value in bytes */
-} record_t;
-
 typedef char status_t;
 
 /**
@@ -65,6 +55,7 @@ enum error
 	err_colllection_destruction_error,
 	err_invalid_predicate,
 	err_out_of_memory,
+	err_file_write_error,
 };
 
 typedef char err_t;
@@ -101,5 +92,28 @@ typedef enum
 	true,
 	false,
 } boolean_e;
+
+typedef struct return_status{
+	err_t	err;						/**< the error code */
+	int		count;						/**< the number of items affected */
+} return_status_t;
+
+/**
+@brief		Struct used to maintain information about size of key and value.
+ */
+typedef struct record_info
+{
+	int 			key_size;			/**< the size of the key in bytes */
+	int 			value_size;			/**< the size of the value in bytes */
+} record_info_t;
+
+/**
+@brief		Struct used to maintain key and value.
+ */
+typedef struct ion_record
+{
+	ion_key_t 			key;			/**< pointer to a key */
+	ion_value_t			value;			/**< a pointer to value */
+} ion_record_t;
 
 #endif /* SYSTEM_H_ */

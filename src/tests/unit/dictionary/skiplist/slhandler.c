@@ -27,7 +27,7 @@ void
 create_test_collection(
 	dictionary_t			*dictionary,
 	dictionary_handler_t 	*handler,
-	record_t 				*record,
+	record_info_t 			*record,
 	key_type_t 				key_type,
 	int						size,
 	int 					num_elements
@@ -69,7 +69,7 @@ create_test_collection_std_conditions(
 )
 {
 	/* This means keysize 4 and valuesize 10 */
-	record_t 				record 			= {4, 10};
+	record_info_t 			record 			= {4, 10};
 	key_type_t 				key_type 		= key_type_numeric_signed;
 	int 					size 			= 7;
 	int 					num_elements 	= 100;
@@ -122,7 +122,7 @@ test_collection_creation(
 	PRINT_HEADER();
 	dictionary_t 			dict;
 	dictionary_handler_t 	handler;
-	record_t 				record 			= {4,10};
+	record_info_t 			record 			= {4,10};
 	key_type_t 				key_type 		= key_type_numeric_signed;
 	int 					size 			= 50;
 	int 					num_elements 	= 25;

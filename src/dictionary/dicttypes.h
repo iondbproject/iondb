@@ -81,8 +81,7 @@ struct dictionary_handler
 	err_t	(* update)(dictionary_t *, ion_key_t, ion_value_t);
 		/**< A pointer to the dictionaries update function. */
 	err_t	(* find)(dictionary_t *, predicate_t *, dict_cursor_t **);
-	//err_t	(* find_g)(dictionary_t *, key_t *, key_t *, cursor_t **);	//min max
-	//err_t	(* next)(cursor_t *);
+		/**< A pointer to the dictionaries find functipn */
 	err_t	(* delete)(dictionary_t *, ion_key_t);
 		/**< A pointer to the dictionaries key-value deletion function. */
 	err_t	(* delete_dictionary)(dictionary_t *);
@@ -109,7 +108,7 @@ struct dictionary
 struct dictionary_parent
 {
 	key_type_t				key_type;		/**< The key type stored in the map*/
-	record_t 				record;			/**< The record structure for items*/
+	record_info_t 				record;			/**< The record structure for items*/
 	char 					(* compare)(ion_key_t, ion_key_t, ion_key_size_t);
 										/**< Comparison function for instance of map */
 };
@@ -216,7 +215,7 @@ struct dictionary_cursor
 	cursor_status_t			status;			/**< Status of last cursor call. */
 	dictionary_t			*dictionary;	/**< Reference to the dictionary */
 	predicate_t				*predicate;		/**< The predicate for the cursor */
-	cursor_status_t			(* next)(dict_cursor_t *, ion_value_t value);
+	cursor_status_t			(* next)(dict_cursor_t *, ion_record_t *record);
 											/**< Next function binding *cursor_status_t)*/
 	void					(* destroy)(dict_cursor_t **);
 											/**< Destroy the cursor (frees internal memory) */
@@ -227,6 +226,24 @@ typedef enum
 	po_equalty,
 	po_range
 } predicate_operator_t;
+
+/**
+@brief		Options for write concern for for overwriting (updating) of values
+			on insert and if not it will insert value insert_unique which
+			allows for unique insert only
+ */
+enum write_concern
+{
+	wc_update,				/**< allows for values to be overwritten if already
+	 	 	 	 	 	 	 	 in dictionary */
+	wc_insert_unique,		/**< allows for unique inserts only
+								(no overwrite) */
+};
+
+/**
+@brief		Write concern for hashmap which limits insert/update of values.
+ */
+typedef char 			write_concern_t;
 
 #ifdef __cplusplus
 }

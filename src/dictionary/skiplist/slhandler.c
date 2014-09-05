@@ -252,7 +252,7 @@ sldict_find(
 cursor_status_t
 sldict_next(
 	dict_cursor_t 	*cursor,
-	ion_value_t 	value
+	ion_record_t 	*record
 )
 {
 	sldict_cursor_t *sl_cursor 	= (sldict_cursor_t *) cursor;
@@ -282,8 +282,14 @@ sldict_next(
 			cursor->status 	= cs_cursor_active;
 		}
 
+		/*Copy both key and value into user provided struct */
 		memcpy(
-			value,
+			record->key,
+			sl_cursor->current->key,
+			cursor->dictionary->instance->record.key_size
+		);
+		memcpy(
+			record->value,
 			sl_cursor->current->value,
 			cursor->dictionary->instance->record.value_size
 		);
@@ -362,8 +368,7 @@ sldict_test_predicate(
 			/* Check if key <= upper bound */
 			boolean_t comp_upper = skiplist->super.compare(key, upper_b, key_size) <= 0;
 
-			/* Use a bitwise to do a fast "Both A and B are true". */
-			result = (comp_lower & comp_upper) == 1;
+			result = comp_lower && comp_upper;
 			break;
 		}
 	}
