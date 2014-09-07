@@ -19,6 +19,7 @@ sldict_init(
 	handler->delete 			= sldict_delete;
 	handler->delete_dictionary 	= sldict_delete_dictionary;
 	handler->update 			= sldict_update;
+	handler->find 				= sldict_find;
 
 	return err_ok;
 }
@@ -98,7 +99,6 @@ sldict_delete_dictionary(
 	dictionary_t 	*dictionary
 )
 {
-
 	err_t result		 = sl_destroy((skiplist_t *) dictionary->instance);
 	free(dictionary->instance);
 	dictionary->instance = NULL;
@@ -268,7 +268,7 @@ sldict_next(
 	else if(cursor->status == cs_cursor_initialized ||
 			cursor->status == cs_cursor_active)
 	{
-		if(cursor->status == cs_cursor_initialized)
+		if(cursor->status == cs_cursor_active)
 		{
 			if(NULL == sl_cursor->current ||
 				sldict_test_predicate(cursor, sl_cursor->current->key) == false)
