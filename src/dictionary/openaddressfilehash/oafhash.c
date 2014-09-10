@@ -149,7 +149,6 @@ oafh_insert(
 
 	hash_t hash 	= hash_map->compute_hash(hash_map, key,
 							hash_map->super.record.key_size);			//compute hash value for given key
-	DUMP(hash,"%i");
 
 #if DEBUG
 	io_printf("hash value is %i\n", hash);
@@ -223,7 +222,7 @@ oafh_insert(
 		else if (item->status == EMPTY || item->status == DELETED)
 		{
 			//problem is here with base types as it is just an array of data.  Need better way
-			printf("empty\n");
+			//printf("empty\n");
 			fseek(hash_map->file,-record_size,SEEK_CUR);
 #if DEBUG
 			DUMP((int)ftell(hash_map->file),"%i");
@@ -285,10 +284,6 @@ oafh_find_item_loc(
 	int loc 					= oafh_get_location(hash, hash_map->map_size);
 													//determine bucket based on hash
 
-	DUMP(loc,"%i");
-	DUMP(hash,"%i");
-	DUMP(*(int*)key,"%i");
-
 	int count 					= 0;
 
 	hash_bucket_t *item;
@@ -305,7 +300,6 @@ oafh_find_item_loc(
 	while (count != hash_map->map_size)
 	{
 
-		DUMP(ftell(hash_map->file),"%i");
 		fread(item,record_size,1,hash_map->file);
 
 		if (item->status == EMPTY)
@@ -348,7 +342,7 @@ oafh_delete(
 )
 {
 	int loc;
-#define DEBUG 1
+
 	if (oafh_find_item_loc(hash_map, key, &loc) == err_item_not_found)
 	{
 #if DEBUG
@@ -396,8 +390,7 @@ oafh_query(
 	ion_value_t		value)
 {
 	int loc;
-	DUMP(*(int *)key,"%i");
-#define DEBUG 1
+
 	if (oafh_find_item_loc(hash_map, key, &loc) == err_ok)
 	{
 #if DEBUG
@@ -410,8 +403,9 @@ oafh_query(
 
 			//set file position
 		fseek(hash_map->file, (loc * record_size) + SIZEOF(STATUS) + hash_map->super.record.key_size, SEEK_SET);
+#if DEBUG
 		printf("seeking %i\n",(loc * record_size) + SIZEOF(STATUS) + hash_map->super.record.key_size);
-
+#endif
 		fread(value, hash_map->super.record.value_size, 1, hash_map->file);
 
 		/**value 					= (ion_value_t)malloc(sizeof(char) * (hash_map->super.record.value_size));
@@ -432,7 +426,7 @@ void
 oafh_print(
 	file_hashmap_t 	*hash_map,
 	int 		size,
-	record_t 	*record
+	record_info_t 	*record
 )
 {
 	int i;

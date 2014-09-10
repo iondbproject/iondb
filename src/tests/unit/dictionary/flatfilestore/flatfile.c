@@ -10,12 +10,11 @@
 #include <string.h>
 #include <limits.h>
 #include "./../../../CuTest.h"
-#include "./../../../../dictionary/openaddressfilehash/oafhash.h"
+#include "./../../../../dictionary/flatfilestore/flatfile.h"
 #include "./../../../../dictionary/dicttypes.h"
 #include "./../../../../dictionary/dictionary.h"
 
-#define MAX_HASH_TEST 100
-#define STD_MAP_SIZE 10
+#define STD_KV_SIZE 10
 #define TEST_FILE	"file.bin"
 
 
@@ -26,22 +25,20 @@
 					The hashmap to visualize.
  */
 void
-check_file_map(
-	file_hashmap_t 	*map
+check_flat_file(
+	ff_file_t 	*flat_file
 )
 {
-	int i;
-	int bucket_size = map->super.record.key_size + map->super.record.value_size + sizeof(char);
+	int bucket_size = flat_file->super.record.key_size + flat_file->super.record.value_size + sizeof(char);
 
-	rewind(map->file);
-	hash_bucket_t * record;
-	record = (hash_bucket_t *)malloc(bucket_size);
-	for (i = 0; i < map->map_size; i++)
+	rewind(flat_file->file_ptr);
+	f_file_record_t * record;
+	record = (f_file_record_t *)malloc(bucket_size);
+	DUMP(bucket_size,"%i");
+	while (!feof(flat_file->file_ptr))
 	{
-		DUMP(i,"%i");
-		DUMP(map->map_size,"%i");
 		int j;
-		DUMP(fread(record,bucket_size,1,map->file),"%i");
+		DUMP(fread(record,bucket_size,1,flat_file->file_ptr),"%i");
 		printf("reading\n");
 		fflush(stdout);
 		for (j = 0; j < bucket_size; j++)
@@ -54,27 +51,26 @@ check_file_map(
 	//and now check key positions
 }
 void
-initialize_file_hash_map(
-	int			size,
+initialize_flat_file(
 	record_info_t	*record,
-	file_hashmap_t 	*map
+	ff_file_t 	*flat_file
 )
 {
-	oafh_initialize(map, oafh_compute_simple_hash, /*dictionary_compare_signed_value,*/ map->super.key_type, record->key_size, record->value_size, size);
-	map->super.compare = dictionary_compare_signed_value;
+	ff_initialize(flat_file, /*dictionary_compare_signed_value,*/ flat_file->super.key_type, record->key_size, record->value_size);
+	flat_file->super.compare = dictionary_compare_signed_value;
 }
 
 void
-initialize_file_hash_map_std_conditions(
-	file_hashmap_t	*map
+initialize_flat_file_std_conditions(
+	ff_file_t	*flat_file
 )
 {
 
 	record_info_t record;
 	record.key_size 		= 4;
 	record.value_size 		= 10;
-	map->super.key_type 	= key_type_numeric_signed;
-	initialize_file_hash_map(STD_MAP_SIZE, &record, map);
+	flat_file->super.key_type 	= key_type_numeric_signed;
+	initialize_flat_file(&record, flat_file);
 
 }
 
@@ -84,78 +80,6 @@ initialize_file_hash_map_std_conditions(
 @param 		tc
 				CuTest
  */
-void
-test_open_address_file_hashmap_initialize(
-	CuTest		*tc
-)
-{
-
-	/* this is required for initializing the hash map and should come from the dictionary */
-	int size;
-	record_info_t record;
-	record.key_size = 4;
-	record.value_size = 10;
-	size = 10;
-	file_hashmap_t map;
-	map.super.key_type = key_type_numeric_signed;			//default to use int key type
-
-	initialize_file_hash_map(size, &record, &map);
-
-	//valid correct map settings
-	CuAssertTrue(tc, map.super.record.key_size 		== record.key_size);
-	CuAssertTrue(tc, map.super.record.value_size	== record.value_size);
-	CuAssertTrue(tc, map.map_size 					== size);
-	CuAssertTrue(tc, map.compute_hash 				== &oafh_compute_simple_hash);
-	CuAssertTrue(tc, map.write_concern 				== wc_insert_unique);
-
-	fclose(map.file);
-	remove(TEST_FILE);
-}
-
-/**
-@brief		Tests the computation of a simple hash value
-
-@param 		tc
-				CuTest
- */
-void
-test_open_address_file_hashmap_compute_simple_hash(
-	CuTest		*tc
-)
-{
-
-	file_hashmap_t map;			//create handler for hashmap
-	int i;
-
-	initialize_file_hash_map_std_conditions(&map);
-
-	for (i = 0; i< MAX_HASH_TEST; i++)
-	{
-		CuAssertTrue(tc, (i % map.map_size) ==
-			oafh_compute_simple_hash(&map, (ion_key_t)((int *)&i), sizeof(i)));
-	}
-}
-
-/**
-@brief 		Test locating an element in the hashmap and returns the theoretical
-			location of the item.
-
-@param 		tc
-				CuTest
- */
-void
-test_open_address_file_hashmap_get_location(
-	CuTest		*tc
-)
-{
-	int i;
-
-	for (i = 0; i< MAX_HASH_TEST; i++)
-	{
-		CuAssertTrue(tc, (i % STD_MAP_SIZE) == oafh_get_location((hash_t)i, STD_MAP_SIZE));
-	}
-}
-
 /**
 @brief		Test locating an element in the hashmap and returns the physical
 			address of the item.
@@ -164,22 +88,21 @@ test_open_address_file_hashmap_get_location(
 			address of the item.  May probe multiple locations depending of
 			current occupancy of hashmap
 
-@param 		tc
 				CuTest
  */
-void
-test_open_address_file_hashmap_find_item_location(
+/*void
+test_flat_file_find_item_location(
 	CuTest		*tc
 )
 {
-	file_hashmap_t map;			//create handler for hashmap
+	ff_file_t flat_file;			//create handler for hashmap
 	int i;
 	int offset;
 
-	initialize_file_hash_map_std_conditions(&map);
+	initialize_flat_file_std_conditions(&flat_file);
 
-	/** Manually populate records */
-	record_info_t record 			= map.super.record;
+	* Manually populate records
+	record_info_t record 			= flat_file.super.record;
 
 	char *item;
 
@@ -187,16 +110,16 @@ test_open_address_file_hashmap_find_item_location(
 	item = (char *)malloc(sizeof(char) * (record.key_size + record.value_size +sizeof(char)));
 
 	//manually populate array
-	hash_bucket_t *item_ptr 	= (hash_bucket_t *)item;
+	f_file_record_t *item_ptr 	= (f_file_record_t *)item;
 
-	//FILE *file_ptr 				= fopen("test.bin","w+");
-	//map.file 					= file_ptr;
+	FILE *file_ptr 				= fopen("test.bin","w+");
+	flat_file.file_ptr 					= file_ptr;
 
 	int bucket_size 			= sizeof(char) + record.key_size
 									+ record.value_size;
 
 	//rewind
-	rewind(map.file);
+	rewind(flat_file.file_ptr);
 
 	for (offset = 0; offset < map.map_size; offset ++)
 	{
@@ -207,7 +130,7 @@ test_open_address_file_hashmap_find_item_location(
 		//pos_ptr 				= (map.entry
 		//							+ (offset*bucket_size)%(map.map_size*bucket_size));
 
-		//printf("writing to %i\n",(offset*bucket_size)%(map.map_size*bucket_size));
+		printf("writing to %i\n",(offset*bucket_size)%(map.map_size*bucket_size));
 
 		fseek(map.file,(offset*bucket_size)%(map.map_size*bucket_size),SEEK_SET);
 
@@ -224,10 +147,10 @@ test_open_address_file_hashmap_find_item_location(
 			//memcpy(pos_ptr, item_ptr, bucket_size);
 
 			fwrite(item_ptr, bucket_size, 1, map.file);
-			//printf("Moving to position %i\n", ((((i+1+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size)));
+			printf("Moving to position %i\n", ((((i+1+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size)));
 			//pos_ptr = map.entry + ((((i+1+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size));
 			fseek(map.file,((((i+1+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size)),SEEK_SET);
-			//printf("current file pos: %i\n",(int)	ftell(map.file));
+			printf("current file pos: %i\n",(int)	ftell(map.file));
 		}
 
 		//and now check key positions
@@ -235,7 +158,7 @@ test_open_address_file_hashmap_find_item_location(
 		{
 			int location;
 			CuAssertTrue(tc, err_ok	== oafh_find_item_loc(&map, (ion_key_t)(&i), &location));
-			//printf("location %i\n",location);
+			printf("location %i\n",location);
 			CuAssertTrue(tc, (i+offset)%map.map_size == location);
 		}
 	}
@@ -244,7 +167,7 @@ test_open_address_file_hashmap_find_item_location(
 	fclose(map.file);
 	remove(TEST_FILE);
 
-}
+}*/
 
 /**
 @brief 		Tests a simple insert into map and reads results directly from map
@@ -253,59 +176,55 @@ test_open_address_file_hashmap_find_item_location(
 				CuTest
  */
 void
-test_open_address_file_hashmap_simple_insert(
+test_flat_file_simple_insert(
 	CuTest		*tc
 )
 {
-	file_hashmap_t map;			//create handler for hashmap
+	ff_file_t flat_file;			//create handler for flat file
 	int i;
-	int offset = 0;
 
-	initialize_file_hash_map_std_conditions(&map);
+	initialize_flat_file_std_conditions(&flat_file);
 
 	//check_file_map(&map);
 
 	// Manually populate records
-	record_info_t record 			= map.super.record;
+	record_info_t record 			= flat_file.super.record;
 
 	int bucket_size 			= sizeof(char)
 									+ record.key_size + record.value_size;
 	//rewind
-	rewind(map.file);
+	rewind(flat_file.file_ptr);
 
-	for (offset = 0; offset < map.map_size; offset ++)
-	{
 
-		for (i = 0; i<map.map_size; i++)
+		for (i = 0; i<STD_KV_SIZE; i++)
 		{
 			//build up the value
 			char str[10];
 			sprintf(str,"%02i is key",i);
-			oafh_insert(&map, (ion_key_t)(&i), (unsigned char *)str);			//this is will wrap
+			ff_insert(&flat_file, (ion_key_t)(&i), (unsigned char *)str);			//this is will wrap
 
 		}
 
-		for (i = 0; i<map.map_size; i++)
+		for (i = 0; i<STD_KV_SIZE; i++)
 		{
 			//set the position in the file
-			fseek(map.file,((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size)),SEEK_SET);
+			fseek(flat_file.file_ptr,flat_file.start_of_data+(i*bucket_size),SEEK_SET);
 
 			status_t status;			//= ((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->status;
 			int key;					//= *(int *)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data );
 			unsigned char value[10];	//= (ion_value_t)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data + sizeof(int));
 
-			fread(&status, SIZEOF(STATUS),1, map.file);
-			fread(&key, map.super.record.key_size, 1, map.file);
-			fread(value, map.super.record.value_size, 1, map.file);
+			fread(&status, SIZEOF(STATUS),1, flat_file.file_ptr);
+			fread(&key, flat_file.super.record.key_size, 1, flat_file.file_ptr);
+			fread(value, flat_file.super.record.value_size, 1, flat_file.file_ptr);
 			//build up expected value
 			char str[10];
-			sprintf(str,"%02i is key", (i+offset)%map.map_size);
+			sprintf(str,"%02i is key", i);
 			CuAssertTrue(tc, status		== IN_USE);
-			CuAssertTrue(tc, key 		== (i+offset)%map.map_size);
+			CuAssertTrue(tc, key 		== i);
 			CuAssertStrEquals(tc, (char *)value, (char *)str);
 		}
-	}
-	fclose(map.file);
+	fclose(flat_file.file_ptr);
 	remove(TEST_FILE);
 }
 /**
@@ -317,28 +236,29 @@ test_open_address_file_hashmap_simple_insert(
 				CuTest
  */
 void
-test_open_address_file_hashmap_simple_insert_and_query(
+test_flat_file_simple_insert_and_query(
 	CuTest		*tc
 )
 {
-	file_hashmap_t map;								//create handler for hashmap
+	ff_file_t flat_file;								//create handler for file
 	int i;
 
-	initialize_file_hash_map_std_conditions(&map);
+	initialize_flat_file_std_conditions(&flat_file);
 
-	for (i = 0; i<map.map_size; i++)
+	for (i = 0; i< STD_KV_SIZE; i++)
 	{
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		oafh_insert(&map, (ion_key_t)(&i), (ion_value_t)str);			//this is will wrap
+		ff_insert(&flat_file, (ion_key_t)(&i), (ion_value_t)str);			//this is will wrap
 	}
 
-	for (i = 0; i<map.map_size; i++)
+	printf("starting lookup\n");
+	for (i = 0; i<STD_KV_SIZE; i++)
 	{
 		ion_value_t value;
-		value = (ion_value_t)malloc(map.super.record.value_size);
-		CuAssertTrue(tc, err_ok 	== oafh_query(&map,(ion_key_t)&i, value));
+		value = (ion_value_t)malloc(flat_file.super.record.value_size);
+		CuAssertTrue(tc, err_ok 	== ff_query(&flat_file,(ion_key_t)&i, value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
@@ -349,9 +269,34 @@ test_open_address_file_hashmap_simple_insert_and_query(
 		}
 	}
 
-	fclose(map.file);
+	fclose(flat_file.file_ptr);
 	remove(TEST_FILE);
 
+}
+
+void
+test_flat_file_initialize(
+	CuTest		*tc
+)
+{
+
+	/* this is required for initializing the hash map and should come from the dictionary */
+	record_info_t record;
+	record.key_size = 4;
+	record.value_size = 10;
+	ff_file_t flat_file;
+
+	flat_file.super.key_type = key_type_numeric_signed;			//default to use int key type
+
+	initialize_flat_file( &record, &flat_file);
+
+	//valid correct map settings
+	CuAssertTrue(tc, flat_file.super.record.key_size 		== record.key_size);
+	CuAssertTrue(tc, flat_file.super.record.value_size		== record.value_size);
+	CuAssertTrue(tc, flat_file.write_concern 				== wc_insert_unique);
+
+	fclose(flat_file.file_ptr);
+	remove(TEST_FILE);
 }
 
 /**
@@ -366,41 +311,44 @@ test_open_address_file_hashmap_simple_insert_and_query(
 				CuTest
  */
 void
-test_open_address_file_hashmap_simple_delete(
+test_flat_file_simple_delete(
 	CuTest		*tc
 )
 {
-	file_hashmap_t map;								//create handler for hashmap
+	ff_file_t file;								//create handler for hashmap
 	int i,j;
 
 
-	initialize_file_hash_map_std_conditions(&map);
+	initialize_flat_file_std_conditions(&file);
 
-	for (i = 0; i<map.map_size; i++)
+	for (i = 0; i<STD_KV_SIZE; i++)
 	{
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		oafh_insert(&map, (ion_key_t)(&i), (ion_value_t)str);			//this is will wrap
+		ff_insert(&file, (ion_key_t)(&i), (ion_value_t)str);			//this is will wrap
 	}
 
 	ion_value_t value;
-	value = (ion_value_t)malloc(map.super.record.value_size);
+	value = (ion_value_t)malloc(file.super.record.value_size);
 
-	for (j = 0; j<map.map_size;j++)
+	for (j = 0; j<STD_KV_SIZE;j++)
 	{
 
-		//delete the record
-		CuAssertTrue(tc, err_ok				== oafh_delete(&map, (ion_key_t)(&j)));
+		//delete the record (single record)
+		return_status_t status;
+		status = ff_delete(&file, (ion_key_t)(&j));
+		CuAssertTrue(tc, err_ok				== status.err);
+		CuAssertTrue(tc, 1					== status.count);
 		//check to make sure that the record has been deleted
-		CuAssertTrue(tc, err_item_not_found	== oafh_query(&map,(ion_key_t)(&j), value));
+		CuAssertTrue(tc, err_item_not_found	== ff_query(&file,(ion_key_t)(&j), value));
 
 		//and then check to make sure that the rest of the map is undisturbed
-		for (i = j+1; i<map.map_size; i++)
+		for (i = j+1; i<STD_KV_SIZE; i++)
 		{
 			ion_value_t value2;
-			value2 = (ion_value_t)malloc(map.super.record.value_size);
-			CuAssertTrue(tc, err_ok 		== oafh_query(&map,(ion_key_t)&i, value2));
+			value2 = (ion_value_t)malloc(file.super.record.value_size);
+			CuAssertTrue(tc, err_ok 		== ff_query(&file,(ion_key_t)&i, value2));
 			//build up expected value
 			char str[10];
 			sprintf(str,"%02i is key",i);
@@ -413,7 +361,7 @@ test_open_address_file_hashmap_simple_delete(
 	}
 	free(value);
 
-	fclose(map.file);
+	fclose(file.file_ptr);
 	remove(TEST_FILE);
 
 }
@@ -429,42 +377,42 @@ test_open_address_file_hashmap_simple_delete(
 				CuTest
  */
 void
-test_open_address_file_hashmap_duplicate_insert_1(
+test_flat_file_duplicate_insert_1(
 	CuTest		*tc
 )
 {
-	file_hashmap_t map;								//create handler for hashmap
+	ff_file_t file;									//create handler
 	int i;
 
-	initialize_file_hash_map_std_conditions(&map);
+	initialize_flat_file_std_conditions(&file);
 
 	//check to make sure that the write concern is set to wc_insert_unique (default)
-	CuAssertTrue(tc, wc_insert_unique == map.write_concern);
+	CuAssertTrue(tc, wc_insert_unique == file.write_concern);
 
 	//populate the map to only half capacity to make sure there is room
-	for (i = 0; i<(map.map_size/2); i++)
+	for (i = 0; i<( STD_KV_SIZE/2); i++)
 	{
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertTrue(tc, err_ok  	== oafh_insert(&map,
+		CuAssertTrue(tc, err_ok  	== ff_insert(&file,
 													(ion_key_t)(&i),
 													(ion_value_t)str));
 	}
 
 	/** and attempt to insert values with same key, which should fail and should
 	return err_duplicate_key*/
-	for (i = 0; i<(map.map_size/2); i++)
+	for (i = 0; i<( STD_KV_SIZE/2); i++)
 	{
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertTrue(tc, err_duplicate_key  	== oafh_insert(&map,
+		CuAssertTrue(tc, err_duplicate_key  	== ff_insert(&file,
 													(ion_key_t)(&i),
 													(ion_value_t)str));
 	}
 
-	fclose(map.file);
+	fclose(file.file_ptr);
 	remove(TEST_FILE);
 
 }
@@ -480,39 +428,39 @@ test_open_address_file_hashmap_duplicate_insert_1(
 				CuTest
  */
 void
-test_open_address_file_hashmap_duplicate_insert_2(
+test_flat_file_duplicate_insert_2(
 	CuTest		*tc
 )
 {
-	file_hashmap_t map;								//create handler for hashmap
+	ff_file_t file;								//create handler for hashmap
 	int i;
 
-	initialize_file_hash_map_std_conditions(&map);
+	initialize_flat_file_std_conditions(&file);
 
 	//change write concern to allow up updates
-	map.write_concern = wc_update;
+	file.write_concern = wc_update;
 
 	//check to make sure that the write concern is set to update
-	CuAssertTrue(tc, wc_update == map.write_concern);
+	CuAssertTrue(tc, wc_update == file.write_concern);
 
 	//populate the map to only half capacity to make sure there is room
-	for (i = 0; i<(map.map_size); i++)
+	for (i = 0; i<(STD_KV_SIZE); i++)
 	{
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertTrue(tc, err_ok  	== oafh_insert(&map,
+		CuAssertTrue(tc, err_ok  	== ff_insert(&file,
 													(ion_key_t)(&i),
 													(ion_value_t)str));
 	}
 
 	//check status of <K,V>
-	for (i = 0; i<map.map_size; i++)
+	for (i = 0; i<STD_KV_SIZE; i++)
 	{
 		ion_value_t value;
-		value = (ion_value_t)malloc(map.super.record.value_size);
+		value = (ion_value_t)malloc(file.super.record.value_size);
 
-		CuAssertTrue(tc, err_ok 	== oafh_query(&map,(ion_key_t)&i, value));
+		CuAssertTrue(tc, err_ok 	== ff_query(&file,(ion_key_t)&i, value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
@@ -524,23 +472,23 @@ test_open_address_file_hashmap_duplicate_insert_2(
 	}
 
 	/** and attempt to insert new values with same key*/
-	for (i = 0; i<(map.map_size); i++)
+	for (i = 0; i<(STD_KV_SIZE); i++)
 	{
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is new",i);
-		CuAssertTrue(tc, err_ok  	== oafh_insert(&map,
+		CuAssertTrue(tc, err_ok  	== ff_insert(&file,
 													(ion_key_t)(&i),
 													(ion_value_t)str));
 	}
 
 	//and check updated status of <K,V>
-	for (i = 0; i<map.map_size; i++)
+	for (i = 0; i<STD_KV_SIZE; i++)
 	{
 		ion_value_t value;
-		value = (ion_value_t)malloc(map.super.record.value_size);
+		value = (ion_value_t)malloc(file.super.record.value_size);
 
-		CuAssertTrue(tc, err_ok 	== oafh_query(&map,(ion_key_t)&i, value));
+		CuAssertTrue(tc, err_ok 	== ff_query(&file,(ion_key_t)&i, value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is new",i);
@@ -550,7 +498,7 @@ test_open_address_file_hashmap_duplicate_insert_2(
 			free(value);
 		}
 	}
-	fclose(map.file);
+	fclose(file.file_ptr);
 	remove(TEST_FILE);
 }
 
@@ -561,38 +509,38 @@ test_open_address_file_hashmap_duplicate_insert_2(
 				CuTest
  */
 void
-test_open_address_file_hashmap_update_1(
+test_flat_file_update_1(
 	CuTest		*tc
 )
 {
-	file_hashmap_t map;								//create handler for hashmap
+	ff_file_t file;								//create handler for hashmap
 	int i;
 
-	initialize_file_hash_map_std_conditions(&map);
+	initialize_flat_file_std_conditions(&file);
 
 	//change write concern to allow up updates
-	map.write_concern = wc_insert_unique;
+	file.write_concern = wc_insert_unique;
 
 	//check to make sure that the write concern is set to wc_insert_unique (default)
-	CuAssertTrue(tc, wc_insert_unique == map.write_concern);
+	CuAssertTrue(tc, wc_insert_unique == file.write_concern);
 
 	//populate the map to only half capacity to make sure there is room
-	for (i = 0; i<(map.map_size); i++)
+	for (i = 0; i<(STD_KV_SIZE); i++)
 	{
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertTrue(tc, err_ok  	== oafh_insert(&map,
+		CuAssertTrue(tc, err_ok  	== ff_insert(&file,
 													(ion_key_t)(&i),
 													(ion_value_t)str));
 	}
 
 	//check status of <K,V>
-	for (i = 0; i<map.map_size; i++)
+	for (i = 0; i<STD_KV_SIZE; i++)
 	{
 		ion_value_t value;;
-		value = (ion_value_t)malloc(map.super.record.value_size);
-		CuAssertTrue(tc, err_ok 	== oafh_query(&map,(ion_key_t)&i, value));
+		value = (ion_value_t)malloc(file.super.record.value_size);
+		CuAssertTrue(tc, err_ok 	== ff_query(&file,(ion_key_t)&i, value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
@@ -604,22 +552,22 @@ test_open_address_file_hashmap_update_1(
 	}
 
 	/** and update the values for the known keys */
-	for (i = 0; i<(map.map_size); i++)
+	for (i = 0; i<(STD_KV_SIZE); i++)
 	{
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is new",i);
-		CuAssertTrue(tc, err_ok  	== oafh_update(&map,
+		CuAssertTrue(tc, err_ok  	== ff_update(&file,
 													(ion_key_t)(&i),
 													(ion_value_t)str));
 	}
 
 	//and check updated status of <K,V>
-	for (i = 0; i<map.map_size; i++)
+	for (i = 0; i<STD_KV_SIZE; i++)
 	{
 		ion_value_t value;
-		value = (ion_value_t)malloc(map.super.record.value_size);
-		CuAssertTrue(tc, err_ok 	== oafh_query(&map,(ion_key_t)&i, value));
+		value = (ion_value_t)malloc(file.super.record.value_size);
+		CuAssertTrue(tc, err_ok 	== ff_query(&file,(ion_key_t)&i, value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is new",i);
@@ -629,7 +577,7 @@ test_open_address_file_hashmap_update_1(
 			free(value);
 		}
 	}
-	fclose(map.file);
+	fclose(file.file_ptr);
 	remove(TEST_FILE);
 }
 
@@ -641,38 +589,38 @@ test_open_address_file_hashmap_update_1(
 				CuTest
  */
 void
-test_open_address_file_hashmap_update_2(
+test_flat_file_update_2(
 	CuTest		*tc
 )
 {
-	file_hashmap_t map;								//create handler for hashmap
+	ff_file_t file;								//create handler for hashmap
 	int i;
 
-	initialize_file_hash_map_std_conditions(&map);
+	initialize_flat_file_std_conditions(&file);
 
 	//change write concern to allow up updates
-	map.write_concern = wc_insert_unique;
+	file.write_concern = wc_insert_unique;
 
 	//check to make sure that the write concern is set to wc_insert_unique (default)
-	CuAssertTrue(tc, wc_insert_unique == map.write_concern);
+	CuAssertTrue(tc, wc_insert_unique == file.write_concern);
 
 	//populate the map to only half capacity to make sure there is room
-	for (i = 0; i<(map.map_size/2); i++)
+	for (i = 0; i<(STD_KV_SIZE/2); i++)
 	{
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertTrue(tc, err_ok  	== oafh_insert(&map,
+		CuAssertTrue(tc, err_ok  	== ff_insert(&file,
 													(ion_key_t)(&i),
 													(ion_value_t)str));
 	}
 
 	//check status of <K,V>
-	for (i = 0; i<map.map_size/2; i++)
+	for (i = 0; i<STD_KV_SIZE/2; i++)
 	{
 		ion_value_t value;
-		value = (ion_value_t)malloc(map.super.record.value_size);
-		CuAssertTrue(tc, err_ok 	== oafh_query(&map,(ion_key_t)&i, value));
+		value = (ion_value_t)malloc(file.super.record.value_size);
+		CuAssertTrue(tc, err_ok 	== ff_query(&file,(ion_key_t)&i, value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
@@ -684,22 +632,22 @@ test_open_address_file_hashmap_update_2(
 	}
 
 	/** and update the values for the known keys */
-	for (i = 0; i<(map.map_size); i++)
+	for (i = 0; i<(STD_KV_SIZE); i++)
 	{
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is new",i);
-		CuAssertTrue(tc, err_ok  	== oafh_update(&map,
+		CuAssertTrue(tc, err_ok  	== ff_update(&file,
 													(ion_key_t)(&i),
 													(ion_value_t)str));
 	}
 
 	//and check updated status of <K,V>
-	for (i = 0; i<map.map_size; i++)
+	for (i = 0; i<STD_KV_SIZE; i++)
 	{
 		ion_value_t value;
-		value = (ion_value_t)malloc(map.super.record.value_size);
-		CuAssertTrue(tc, err_ok 	== oafh_query(&map,(ion_key_t)&i, value));
+		value = (ion_value_t)malloc(file.super.record.value_size);
+		CuAssertTrue(tc, err_ok 	== ff_query(&file,(ion_key_t)&i, value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is new",i);
@@ -709,7 +657,7 @@ test_open_address_file_hashmap_update_2(
 				free(value);
 			}							//must free value after query
 	}
-	fclose(map.file);
+	fclose(file.file_ptr);
 	remove(TEST_FILE);
 }
 
@@ -720,37 +668,42 @@ test_open_address_file_hashmap_update_2(
 				CuTeest
  */
 void
-test_open_address_file_hashmap_delete_1(
+test_flat_file_delete_1(
 	CuTest		*tc
 )
 {
-	file_hashmap_t map;								//create handler for hashmap
+	ff_file_t file;								//create handler for hashmap
 	int i;
 
-	initialize_file_hash_map_std_conditions(&map);
+	initialize_flat_file_std_conditions(&file);
 
 	char str[10];
 	sprintf(str,"%02i is key",i);
-	CuAssertTrue(tc, err_ok  	== oafh_insert(&map,
+	CuAssertTrue(tc, err_ok  	== ff_insert(&file,
 									(ion_key_t)(&i),
 									(ion_value_t)str));
 
-	CuAssertTrue(tc, err_ok  	== oafh_delete(&map, (ion_key_t)(&i)));
-
+	return_status_t status;
+	status = ff_delete(&file, (ion_key_t)(&i));
+	CuAssertTrue(tc, err_ok  	== status.err);
+	CuAssertTrue(tc, 1	 		== status.count);
 	//Check that value is not there
 	ion_value_t value;
-	value = (ion_value_t)malloc(map.super.record.value_size);
+	value = (ion_value_t)malloc(file.super.record.value_size);
 	CuAssertTrue(tc, err_item_not_found
-								== oafh_query(&map, (ion_key_t)(&i), value));
+								== ff_query(&file, (ion_key_t)(&i), value));
 	if (value != NULL)
 	{
 		free(value);
 	}
 
 	//Check that value can not be deleted if it is not there already
+	status =  ff_delete(&file, (ion_key_t)(&i));
 	CuAssertTrue(tc, err_item_not_found
-								== oafh_delete(&map, (ion_key_t)(&i)));
-	fclose(map.file);
+								== status.err);
+	CuAssertTrue(tc, 0	 		== status.count);
+
+	fclose(file.file_ptr);
 	remove(TEST_FILE);
 }
 
@@ -767,32 +720,32 @@ test_open_address_file_hashmap_delete_1(
 				CuTest
  */
 void
-test_open_address_file_hashmap_delete_2(
+test_flat_file_delete_2(
 	CuTest		*tc
 )
 {
-	file_hashmap_t map;								//create handler for hashmap
+	ff_file_t file;								//create handler
 	int i, j;
 
-	initialize_file_hash_map_std_conditions(&map);
+	initialize_flat_file_std_conditions(&file);
 
 	//populate the map
-	for (i = 0; i<(map.map_size); i++)
+	for (i = 0; i<(STD_KV_SIZE); i++)
 	{
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertTrue(tc, err_ok  		== oafh_insert(&map,
+		CuAssertTrue(tc, err_ok  		== ff_insert(&file,
 												(ion_key_t)(&i),
 												(ion_value_t)str));
 	}
 
 	//check status of <K,V>
-	for (i = 0; i<map.map_size; i++)
+	for (i = 0; i<STD_KV_SIZE; i++)
 	{
 		ion_value_t value;
-		value = (ion_value_t)malloc(map.super.record.value_size);
-		CuAssertTrue(tc, err_ok 		== oafh_query(&map,
+		value = (ion_value_t)malloc(file.super.record.value_size);
+		CuAssertTrue(tc, err_ok 		== ff_query(&file,
 												(ion_key_t)&i,
 												value));
 		//build up expected value
@@ -806,19 +759,21 @@ test_open_address_file_hashmap_delete_2(
 	}
 
 	/** and update the values for the known keys */
-	for (i = (map.map_size - 1); i >= 0; i--)
+	for (i = (STD_KV_SIZE - 1); i >= 0; i--)
 	{
 #if DEBUG
 		printf("Deleting key: %i \n",i);
 #endif
-		CuAssertTrue(tc, err_ok  		== oafh_delete(&map,
-												(ion_key_t)(&i)));
+		return_status_t status;
+		status = ff_delete(&file, (ion_key_t)(&i));
+		CuAssertTrue(tc, err_ok  		== status.err);
+		CuAssertTrue(tc, 1  			== status.count);
 
 		//Check that value is not there
 		ion_value_t value;
-		value = (ion_value_t)malloc(map.super.record.value_size);
+		value = (ion_value_t)malloc(file.super.record.value_size);
 		CuAssertTrue(tc, err_item_not_found
-										== oafh_query(&map,
+										== ff_query(&file,
 												(ion_key_t)(&i),
 												value));
 		if (value != NULL)
@@ -830,8 +785,8 @@ test_open_address_file_hashmap_delete_2(
 		for (j = 0; j<i; j++)
 		{
 			ion_value_t value;
-			value = (ion_value_t)malloc(map.super.record.value_size);
-			CuAssertTrue(tc, err_ok 	== oafh_query(&map,
+			value = (ion_value_t)malloc(file.super.record.value_size);
+			CuAssertTrue(tc, err_ok 	== ff_query(&file,
 												(ion_key_t)&j,
 												value));
 			//build up expected value
@@ -846,12 +801,12 @@ test_open_address_file_hashmap_delete_2(
 	}
 
 	//Check that all the values have been deleted
-	for (i = 0; i<map.map_size; i++)
+	for (i = 0; i<STD_KV_SIZE; i++)
 	{
 		ion_value_t value;
-		value = (ion_value_t)malloc(map.super.record.value_size);
+		value = (ion_value_t)malloc(file.super.record.value_size);
 		CuAssertTrue(tc, err_item_not_found
-										== oafh_query(&map,
+										== ff_query(&file,
 												(ion_key_t)&i,
 												value));
 		if (value != NULL)							//must free value after query
@@ -859,116 +814,35 @@ test_open_address_file_hashmap_delete_2(
 			free(value);
 		}
 	}
-	fclose(map.file);
+	fclose(file.file_ptr);
 	remove(TEST_FILE);
 }
-
-/**
-@brief		Tests that values can be inserted until capacity has been reached.
-
-@param 		tc
-				CuTest
- */
-void
-test_open_address_file_hashmap_capacity(
-	CuTest		*tc
-)
-{
-	file_hashmap_t map;								//create handler for hashmap
-	int i;
-
-	initialize_file_hash_map_std_conditions(&map);
-
-	//populate the map
-	for (i = 0; i<(map.map_size); i++)
-	{
-		//build up the value
-		char str[10];
-		sprintf(str,"%02i is key",i);
-		CuAssertTrue(tc, err_ok  		== oafh_insert(&map,
-												(ion_key_t)(&i),
-												(ion_value_t)str));
-	}
-
-	//check status of <K,V>
-	for (i = 0; i<map.map_size; i++)
-	{
-		ion_value_t value;
-		value = (ion_value_t)malloc(map.super.record.value_size);
-		CuAssertTrue(tc, err_ok 		== oafh_query(&map,
-												(ion_key_t)&i,
-												value));
-		//build up expected value
-		char str[10];
-		sprintf(str,"%02i is key",i);
-		CuAssertStrEquals(tc, (char *)value, str);
-		if (value != NULL)							//must free value after query
-		{
-			free(value);
-		}
-	}
-
-	//Attempt to insert a value when at max capacity
-	//build up the value
-	char str[10];
-	i = 11;
-	sprintf(str,"%02i is key",i);
-	CuAssertTrue(tc, err_max_capacity 	== oafh_insert(&map,
-												(ion_key_t)(&i),
-												(ion_value_t)str));
-
-	//and check to make sure that the contents has not changed
-	//check status of <K,V>
-	for (i = 0; i<map.map_size; i++)
-	{
-		ion_value_t value;
-		value = (ion_value_t)malloc(map.super.record.value_size);
-		CuAssertTrue(tc, err_ok 		== oafh_query(&map,
-												(ion_key_t)&i,
-												value));
-		//build up expected value
-		char str[10];
-		sprintf(str,"%02i is key",i);
-		CuAssertStrEquals(tc, (char *)value, str);
-		if (value != NULL)							//must free value after query
-		{
-			free(value);
-		}
-	}
-	fclose(map.file);
-	remove(TEST_FILE);
-}
-
-
 
 CuSuite*
-open_address_file_hashmap_getsuite()
+flat_file_getsuite()
 {
 	CuSuite *suite = CuSuiteNew();
 
-	SUITE_ADD_TEST(suite, test_open_address_file_hashmap_initialize);
-	SUITE_ADD_TEST(suite, test_open_address_file_hashmap_compute_simple_hash);
-	SUITE_ADD_TEST(suite, test_open_address_file_hashmap_get_location);
-	SUITE_ADD_TEST(suite, test_open_address_file_hashmap_find_item_location);
-	SUITE_ADD_TEST(suite, test_open_address_file_hashmap_simple_insert);
-	SUITE_ADD_TEST(suite, test_open_address_file_hashmap_simple_insert_and_query);
-	SUITE_ADD_TEST(suite, test_open_address_file_hashmap_simple_delete);
-	SUITE_ADD_TEST(suite, test_open_address_file_hashmap_duplicate_insert_1);
-	SUITE_ADD_TEST(suite, test_open_address_file_hashmap_duplicate_insert_2);
-	SUITE_ADD_TEST(suite, test_open_address_file_hashmap_update_1);
-	SUITE_ADD_TEST(suite, test_open_address_file_hashmap_update_2);
-	SUITE_ADD_TEST(suite, test_open_address_file_hashmap_delete_1);
-	SUITE_ADD_TEST(suite, test_open_address_file_hashmap_delete_2);
-	SUITE_ADD_TEST(suite, test_open_address_file_hashmap_capacity);
+	SUITE_ADD_TEST(suite, test_flat_file_initialize);
+	SUITE_ADD_TEST(suite, test_flat_file_simple_insert);
+	SUITE_ADD_TEST(suite, test_flat_file_simple_insert_and_query);
+	SUITE_ADD_TEST(suite, test_flat_file_simple_delete);
+	SUITE_ADD_TEST(suite, test_flat_file_duplicate_insert_1);
+	SUITE_ADD_TEST(suite, test_flat_file_duplicate_insert_2);
+	SUITE_ADD_TEST(suite, test_flat_file_update_1);
+	SUITE_ADD_TEST(suite, test_flat_file_update_2);
+	SUITE_ADD_TEST(suite, test_flat_file_delete_1);
+	SUITE_ADD_TEST(suite, test_flat_file_delete_2);
 
 	return suite;
 }
 
+
 void
-runalltests_open_address_file_hash()
+runalltests_flat_file()
 {
 	CuString	*output	= CuStringNew();
-	CuSuite		*suite	= open_address_file_hashmap_getsuite();
+	CuSuite		*suite	= flat_file_getsuite();
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);

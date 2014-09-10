@@ -76,7 +76,7 @@ struct dictionary_handler
 		/**< A pointer to the dictionaries insertion function. */
 	err_t	(* create_dictionary)(key_type_t, int, int, int, char (* compare)(ion_key_t, ion_key_t, ion_key_size_t), dictionary_handler_t * , dictionary_t *);
 		/**< A pointer to the dictionaries creation function. */
-	err_t	(* get)(dictionary_t *, ion_key_t, ion_value_t *);
+	err_t	(* get)(dictionary_t *, ion_key_t, ion_value_t);
 		/**< A pointer to the dictionaries get function. */
 	err_t	(* update)(dictionary_t *, ion_key_t, ion_value_t);
 		/**< A pointer to the dictionaries update function. */
@@ -108,7 +108,7 @@ struct dictionary
 struct dictionary_parent
 {
 	key_type_t				key_type;		/**< The key type stored in the map*/
-	record_info_t 				record;			/**< The record structure for items*/
+	record_info_t 			record;			/**< The record structure for items*/
 	char 					(* compare)(ion_key_t, ion_key_t, ion_key_size_t);
 										/**< Comparison function for instance of map */
 };

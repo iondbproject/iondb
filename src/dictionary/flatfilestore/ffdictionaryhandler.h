@@ -1,44 +1,44 @@
 /******************************************************************************/
 /**
-@file		oadictionaryhandler.h
+@file		foadictionaryhandler.h
 @author		Scott Ronald Fazackerley
-@brief		The handler for a hash table using linear probing.
+@brief		The handler for a flat file to store data.
 */
-/******************************************************************************/
+	/******************************************************************************/
 
-#ifndef OAFDICTIONARYHANDLER_H_
-#define OAFDICTIONARYHANDLER_H_
+#ifndef FFDICTIONARYHANDLER_H_
+#define FFDICTIONARYHANDLER_H_
 
 #include "./../dicttypes.h"
 #include "./../dictionary.h"
 #include "./../../kv_system.h"
-#include "oafhash.h"
-#include "oafdictionary.h"
+#include "flatfile.h"
+#include "ffdictionary.h"
 
+
+typedef int record_idx_t;
 
 /**
 @brief Struct used to for instance of a given dictionary.
  */
-typedef struct oaf_dictionary
+typedef struct ff_dictionary
 {
 	//what needs to go in here?
 	char 		*dictionary_name;	/**<The name of the dictionary*/
-	file_hashmap_t 	*hashmap;			/**<The map that the operations
+	ff_file_t 	*file;			/**<The map that the operations
 	 	 	 	 	 	 	 	 		will operate upon*/
-} oaf_dictionary_t;
+} ff_dictionary_t;
 
 /**
  @brief Cursor for dictionary specific implementations
  @todo What happens to the cursor if the collection is modified during traversal?
  */
-/*typedef struct oadict_cursor
+/*typedef struct ffdict_cursor
 {
-	hash_t				first;		*<First visited spot
-	hash_t				current;	*<Currently visited spot
+	record_idx_t		first;		*<First visited spot
+	record_idx_t		current;	*<Currently visited spot
 	char				status;		*@todo what is this for again as there are two status
-} oadict_cursor_t;*/
-
-
+} ffdict_cursor_t;*/
 
 /*
 typedef struct equality_cursor
@@ -52,28 +52,28 @@ typedef struct equality_cursor
 
 /**
 @brief		Dictionary cursor for equality queries.
-@details	Used when a dictionary supports multiple vvalues for a given key.
+@details	Used when a dictionary supports multiple values for a given key.
 
 			This subtype should be extended when supported for a given
 			dictionary.
 */
-typedef struct oafdict_equality_cursor
+typedef struct ffdict_equality_cursor
 {
 	dict_cursor_t			super;			/**<Super type this cursor inherits from*/
-	oafdict_cursor_t			cursor_info;	/**<Super type to dict implementation*/
+	ffdict_cursor_t			cursor_info;	/**<Super type to dict implementation*/
 	ion_key_t				value;
 	boolean_t				(* equal)(dictionary_t *,
 								ion_key_t,
 								ion_key_t);
 											/**< A pointer to an equality function. */
-} oafdict_equality_cursor_t;
+} ffdict_equality_cursor_t;
 /*
 
 *
 @brief		Dictionary cursor for range queries.
 @details	This subtype should be extended when supported
 			for a given dictionary.
-
+`
 typedef struct range_cursor
 {
 	dict_cursor_t	super;
@@ -111,7 +111,7 @@ typedef struct predicate_cursor
 				initialized.
  */
 void
-oafdict_init(
+ffdict_init(
 	dictionary_handler_t 	*handler
 );
 
@@ -127,7 +127,7 @@ oafdict_init(
 @return		The status on the insertion of the record.
  */
 err_t
-oafdict_insert(
+ffdict_insert(
 	dictionary_t 	*dictionary,
 	ion_key_t 		key,
 	ion_value_t 	value
@@ -158,7 +158,7 @@ oafdict_insert(
 @return		The status of the query.
  */
 err_t
-oafdict_query(
+ffdict_query(
 	dictionary_t 	*dictionary,
 	ion_key_t 		key,
 	ion_value_t		value
@@ -187,11 +187,11 @@ oafdict_query(
 @return		The status of the creation of the dictionary.
  */
 err_t
-oafdict_create_dictionary(
+ffdict_create_dictionary(
 		key_type_t				key_type,
-		int 					key_size,
-		int 					value_size,
-		int 					dictionary_size,
+		ion_key_size_t 			key_size,
+		ion_value_size_t		value_size,
+		int 					dictionary_size, /** @todo this needs to be fixed or defined */
 		char					(* compare)(ion_key_t, ion_key_t, ion_key_size_t),
 		dictionary_handler_t 	*handler,
 		dictionary_t 			*dictionary
@@ -208,7 +208,7 @@ oafdict_create_dictionary(
 @return		The status of the deletion
  */
 err_t
-oafdict_delete(
+ffdict_delete(
 		dictionary_t 	*dictionary,
 		ion_key_t 		key
 );
@@ -221,7 +221,7 @@ oafdict_delete(
 @return		The status of the dictionary deletion.
  */
 err_t
-oafdict_delete_dictionary(
+ffdict_delete_dictionary(
 		dictionary_t 	*dictionary
 );
 
@@ -240,7 +240,7 @@ oafdict_delete_dictionary(
 @return		The status of the update.
  */
 err_t
-oafdict_update(
+ffdict_update(
 		dictionary_t 	*dictionary,
 		ion_key_t 		key,
 		ion_value_t 	value
@@ -264,7 +264,7 @@ oafdict_update(
 @return		The status of the operation.
  */
 err_t
-oafdict_find(
+ffdict_find(
 		dictionary_t 	*dictionary,
 		predicate_t 	*predicate,
 		dict_cursor_t 	**cursor
@@ -296,7 +296,7 @@ oafdict_find(
 @return		The difference between the keys.
  */
 int
-oafdict_compare(
+ffdict_compare(
 		ion_key_t 		first_key,
 		ion_key_t		second_key
 );
@@ -325,9 +325,9 @@ oadict_next(
 @return		The status of the cursor.
  */
 cursor_status_t
-oafdict_next(
+ffdict_next(
 	dict_cursor_t 	*cursor,
-	ion_record_t	*value
+	ion_record_t	*record
 );
 
 /**
@@ -344,7 +344,7 @@ oafdict_next(
  */
 boolean_t
 /**@TODO Fix name of function */
-oafdict_is_equal(
+ff_is_equal(
 	dictionary_t 	*dict,
 	ion_key_t 		key1,
 	ion_key_t 		key2
@@ -363,7 +363,7 @@ oafdict_is_equal(
 				** pointer to cursor.
  */
 void
-oafdict_destroy_cursor(
+ffdict_destroy_cursor(
 	dict_cursor_t	 **cursor
 );
 
@@ -378,7 +378,7 @@ oafdict_destroy_cursor(
 @return		The result is the key passes or fails the predicate test.
  */
 boolean_t
-oafdict_test_predicate(
+ffdict_test_predicate(
     dict_cursor_t* 	cursor,
     ion_key_t 			key
 );
@@ -397,8 +397,8 @@ oafdict_test_predicate(
 @return			The status of the scan.
  */
 err_t
-oafdict_scan(
-		oafdict_cursor_t		*cursor  //don't need to pass in the cursor
+ffdict_scan(
+		ffdict_cursor_t		*cursor  //don't need to pass in the cursor
 );
 
-#endif /* OADICTIONARYHANDLER_H_ */
+#endif /* FFDICTIONARYHANDLER_H_ */

@@ -1,13 +1,12 @@
-/******************************************************************************/
-/**
-@file		statichash.h
-@author		Scott Ronald Fazackerley
-@brief		A hash table using linear probing. Designed for in memory use.
-*/
-/******************************************************************************/
+/*
+ * flatFile.h
+ *
+ *  Created on: Aug 14, 2014
+ *      Author: workstation
+ */
 
-#ifndef OAFHASH_H
-#define OAFHASH_H
+#ifndef FLATFILE_H_
+#define FLATFILE_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,114 +17,69 @@ extern "C" {
 
 #include "./../dicttypes.h"
 #include "./../dictionary.h"
-#include "oafdictionary.h"
+#include "./../filehandler.h"
 
 #include "./../../kv_system.h"
 #include "./../../io.h"
 
-
-#define EMPTY 			-1
-#define DELETED 		-2
-#define IN_USE 			-3
-#define SIZEOF(STATUS) 	1
-
-
-
 /**
-@brief		Prototype declaration for hashmap
- */
-typedef struct file_hashmap 	file_hashmap_t;
-
-/**
-@brief		Struct used to maintain individual records in the hashmap.
+@brief		Struct used to maintain an instance of a flat file store.
 */
-typedef struct hash_bucket
+typedef struct ff_file
 {
-	char 			status;			/**< the status of the bucket */
-	unsigned char 	data[];			/**< the data in the bucket */
-} hash_bucket_t;
+	dictionary_parent_t		super;
+	FILE 					*file_ptr;		/**< Pointer to file store */
+	fpos_t 					start_of_data;	/**< indicates start of data block */
+	write_concern_t 		write_concern;	/**< The current @p write_concern level
+	 	 	 	 	 	 	 	 	 	 	 of the file*/
+} ff_file_t;
 
 /**
-@brief		Struct used to maintain an instance of an in memory hashmap.
-*/
-struct file_hashmap
-{
-	dictionary_parent_t	super;
-	int 				map_size;		/**< The size of the map in item capacity */
-	write_concern_t 	write_concern;	/**< The current @p write_concern level
-	 	 	 	 	 	 	 	 	 	 	 of the hashmap*/
-	int					(* compute_hash)(file_hashmap_t *, ion_key_t, int);
-										/**< The hashing function to be used for
-										 	 the instance*/
-/*	char 				(* compare)(ion_key_t, ion_key_t, ion_key_size_t);
-										*< Comparison function for instance of map */
-	//char 				*entry;				/**< Pointer to the entries in the hashmap*/
-	FILE				*file;				/**< file pointer */
-};
+@brief		This function initializes a flat file.
 
-/**
-@brief		This function initializes an open address in memory hash map.
+@details	This initialises the file and assumes that the file
+			does not exist.  If the file exists, it will not init.
 
-@param		hashmap
-				Pointer to the hashmap instance to initialize.
-@param		hashing_function
-				Function pointer to the hashing function for the instance.
+@param		file
+				Pointer to the file instance to initialize.
+@param		compare
+				Function pointer to the correct comparison function for the
+				collection.
 @param		key_type
 				The type of key that is being stored in the collection.
 @param 		key_size
 				The size of the key in bytes.
 @param		value_size
 				The size of the value in bytes.
-@param		size
-				The size of the hashmap in item
-				(@p key_size + @p value_size + @c 1)
 @return		The status describing the result of the initialization.
  */
 err_t
-oafh_initialize(
-		file_hashmap_t		*hashmap,
-		hash_t				(*hashing_function)(file_hashmap_t *, ion_key_t, int),
+ff_initialize(
+		ff_file_t			*file,
+		/*char				(*compare)(ion_key_t, ion_key_t, ion_key_size_t),*/
 	    key_type_t			key_type,
 		ion_key_size_t		key_size,
-		ion_value_size_t	value_size,
-		int					size
+		ion_value_size_t	value_size
 );
 
 /**
-@brief		Destroys the map in memory
+@brief		Destroys the file
 
-@details	Destroys the map in memory and frees the underlying memory.
+@details	Destroys the map file and frees the underlying memory.
 
-@param		hash_map
-				The map into which the data is going to be inserted
+@param		file
+				The file to be destroyed.
 @return		The status describing the result of the destruction
 */
 err_t
-oafh_destroy(
-		file_hashmap_t 	*hash_map
+ff_destroy(
+		ff_file_t 	*file
 );
 
 /**
-@brief		Returns the theoretical location of item in hashmap
+@brief		Insert record into file
 
-@details	Determines which bucket a record is to be placed based on the
-			hash function used.
-
-@param		num
-				The key.
-@param		size
-				The possible number of buckets in the map.
-@return		The index position to start probing at.
-*/
-int
-oafh_get_location(
-		hash_t 		num,
-		int 		size
-);
-
-/**
-@brief		Insert record into hashmap
-
+@todo update comment
 @details	Attempts to insert data of a given structure as dictated by record
  			into the provided hashmap.  The record is used to determine the
  			structure of the data <K,V> so that the key can be extracted.  The
@@ -143,8 +97,8 @@ oafh_get_location(
 @return 	The status of the insert.
 */
 err_t
-oafh_insert(
-		file_hashmap_t 		*hash_map,
+ff_insert(
+		ff_file_t 		*file,
 		ion_key_t 		key,
 		ion_value_t	 	value
 );
@@ -165,8 +119,8 @@ oafh_insert(
 @return		The status of the update
 */
 err_t
-oafh_update(
-		file_hashmap_t 		*hash_map,
+ff_update(
+		ff_file_t 		*file,
 		ion_key_t		key,
 		ion_value_t 	value
 );
@@ -185,10 +139,10 @@ oafh_update(
 @return		The status of the find
  */
 err_t
-oafh_find_item_loc(
-		file_hashmap_t 		*hash_map,
+ff_find_item_loc(
+		ff_file_t 		*file,
 		ion_key_t	 	key,
-		int				*location
+		fpos_t			*location
 );
 
 /**
@@ -206,9 +160,9 @@ oafh_find_item_loc(
 @param		size
 				The number of buckets available in the map.
 */
-err_t
-oafh_delete(
-		file_hashmap_t 		*hash_map,
+return_status_t
+ff_delete(
+		ff_file_t 		*file,
 		ion_key_t		key
 );
 
@@ -228,8 +182,8 @@ oafh_delete(
 				The value associated in the map.
 */
 err_t
-oafh_query(
-		file_hashmap_t 		*hash_map,
+ff_query(
+		ff_file_t 		*file,
 		ion_key_t 		key,
 		ion_value_t 	value
 );
@@ -247,37 +201,17 @@ oafh_query(
 @param		record
 				The structure of the record being inserted.
 */
-void
-oafh_print(
-		file_hashmap_t 	*hash_map,
-		int 		size,
-		record_info_t	*record
-);
-
-/**
-@brief		A simple hashing algorithm implementation.
-
-@param		hashmap
-				The hash function is associated with.
-@param		key
-				The original key value to find hash value for.
-@param		size_of_key
-				The size of the key in bytes.
-@return		The hashed value for the key.
-*/
-hash_t
-oafh_compute_simple_hash(
-		file_hashmap_t 		*hashmap,
-		ion_key_t 		key,
-		int 			size_of_key
-);
-
 /*void
-static_hash_init(dictonary_handler_t * client);*/
-
+ff_print(
+		ff_file_t 	*file,
+		int 		size,
+		record_t	*record
+);*/
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif
+
+
+#endif /* FLATFILE_H_ */
