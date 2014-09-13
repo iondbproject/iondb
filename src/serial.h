@@ -30,9 +30,13 @@ typedef struct uart_buffer
 static volatile uart_buffer_t tx_buffer;
 static volatile uart_buffer_t rx_buffer;
 
-static int uart_putchar(char c, FILE *stream);
-static char uart_getchar();
-static void uart_init();
+int uart_putchar(
+	char c,
+	FILE *stream);
+
+char uart_getchar();
+
+void uart_init();
 
 #ifdef atmega328p
 ISR(USART_RX_vect)
@@ -89,7 +93,7 @@ uart_getchar()
 	return c;
 }
 
-static int
+int
 uart_putchar(char c, FILE *stream)
 {
 	while (tx_buffer.tail == (tx_buffer.head + 1)%BUFFER_SIZE)

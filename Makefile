@@ -160,7 +160,8 @@ avrlibsrcs :=  	$(SRC)/io.c \
 				$(SRC)/dictionary/flatfilestore/ffdictionaryhandler.c \
 				$(SRC)/dictionary/flatfilestore/flatfile.c \
 				$(SRC)/dictionary/openaddressfilehash/oafdictionaryhandler.c \
-				$(SRC)/dictionary/openaddressfilehash/oafhash.c 		
+				$(SRC)/dictionary/openaddressfilehash/oafhash.c \
+				$(SRC)/serial.c		
 				
 # list of target test sources for Atmel Procs
 avrtargetsrc := $(SRC)/sample.c 
