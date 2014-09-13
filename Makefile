@@ -29,13 +29,8 @@ BIN       := bin
 BIN_LIB   := $(BIN)/lib
 BIN_TESTS := $(BIN)/tests
 BIN_UTILS := $(BIN)/utils
+BIN_TARGET:= $(BIN)/target
 DOC       := doc
-
-# Compiler options
-GCC           =  gcc
-CC            =  $(GCC)
-CFLAGS        := $(CFLAGS) -Wall -g
-OUTPUT_OPTION =  -o $@
 ################################################################################
 
 ## Functions ###################################################################
@@ -109,7 +104,7 @@ libsources :=  	$(SRC)/io.c \
 				$(SRC)/dictionary/flatfilestore/flatfile.c \
 				$(SRC)/dictionary/openaddressfilehash/oafdictionaryhandler.c \
 				$(SRC)/dictionary/openaddressfilehash/oafhash.c 
-				
+	
 # Generate list of libraries to compile.
 libs        := $(addprefix $(BIN_LIB)/,$(subst .c,.o,$(notdir $(libsources))))
 
@@ -132,10 +127,11 @@ tlsources   := 	$(SRC)/tests/CuTest.c  \
 				$(SRC)/tests/unit/dictionary/openaddresshash/oadictionaryhandler.c \
 				$(SRC)/tests/unit/dictionary/dictionary.c	\
 				$(SRC)/tests/unit/dictionary/flatfilestore/ffdictionaryhandler.c \
-				$(SRC)/tests/unit/dictionary/bintree/bintreehandler.c \
+				$(SRC)/tests/unit/dictionary/flatfilestore/flatfile.c \
 				$(SRC)/tests/unit/dictionary/openaddressfilehash/oafhash.c \
 				$(SRC)/tests/unit/dictionary/openaddressfilehash/oafdictionaryhandler.c
-	
+				#$(SRC)/tests/unit/dictionary/bintree/bintreehandler.c 
+
 # Generate list of libraries to compile.
 testlibs    := $(addprefix $(BIN_TESTS)/,$(subst .c,.o,$(notdir $(tlsources))))
 
@@ -147,26 +143,55 @@ testsources := 	$(SRC)/hashmap.c	\
 				$(SRC)/tests/unit/dictionary/openaddresshash/run_oahash.c \
 				$(SRC)/tests/unit/dictionary/run_dictionary.c \
 				$(SRC)/tests/unit/dictionary/flatfilestore/run_flatfile.c \
-				$(SRC)/tests/unit/dictionary/bintree/run_bintree.c \
 				$(SRC)/tests/unit/dictionary/openaddressfilehash/run_oafhash.c
-				
+				#$(SRC)/tests/unit/dictionary/bintree/run_bintree.c 
+
 # Generate list of libraries to compile.
 testexecs   := $(addprefix $(BIN_TESTS)/,$(subst .c,,$(notdir $(testsources))))
 
 # Generate list of dependency files for each file.
 testdepends :=$(addprefix $(BIN_TESTS)/,$(subst .c,.d,$(notdir $(testsources))))
+
+# Sources for database library.
+avrlibsrcs :=  	$(SRC)/io.c \
+				$(SRC)/dictionary/dictionary.c \
+				$(SRC)/dictionary/openaddresshash/oadictionaryhandler.c \
+				$(SRC)/dictionary/openaddresshash/oahash.c \
+				$(SRC)/dictionary/flatfilestore/ffdictionaryhandler.c \
+				$(SRC)/dictionary/flatfilestore/flatfile.c \
+				$(SRC)/dictionary/openaddressfilehash/oafdictionaryhandler.c \
+				$(SRC)/dictionary/openaddressfilehash/oafhash.c 		
+				
+# list of target test sources for Atmel Procs
+avrtargetsrc := $(SRC)/sample.c 
+				
 ################################################################################
 
 ## Targets #####################################################################
 .PHONY: all
+# Compiler options for all
+GCC           =  gcc
+CC            =  $(GCC)
+CFLAGS        := $(CFLAGS) -Wall -g
+OUTPUT_OPTION =  -o $@
 all: init_dirs $(libs) $(utilexecs)
 	@echo "Build complete!"
-
+	
 .PHONY: tests
+# Compiler options for tests - builds on host
+GCC           =  gcc
+CC            =  $(GCC)
+CFLAGS        := $(CFLAGS) -Wall -g
+OUTPUT_OPTION =  -o $@
 tests: init_dirs $(libs) $(testlibs) $(testexecs) $(utilexecs)
 	@echo "Build complete!"
 
 .PHONY: utils
+# Compiler options for utils
+GCC           =  gcc
+CC            =  $(GCC)
+CFLAGS        := $(CFLAGS) -Wall -g
+OUTPUT_OPTION =  -o $@
 utils: init_dirs $(libs) $(utilexecs)
 	@echo "Build complete!"
 
@@ -176,12 +201,50 @@ fresh:
 	make tests
 	@echo "Build complete!"
 
+#compiler options for mega2560
+.PHONY: mega
+mega: 
+	make AVR_PROC=atmega2560 avr
+
+.PHONY: uno
+# Compiler options for uno
+
+uno: 
+	make AVR_PROC=atmega328p avr
+
+.PHONY: avr
+AVR_GCC       =  avr-gcc
+AVR_CC        =  $(AVR_GCC)
+AVR_CFLAGS    =  -Wall -g -DF_CPU=16000000UL -c
+AVR_TARGET_ARCH  =  -mmcu=$(AVR_PROC)
+OUTPUT_OPTION =  -o $@.o
+OBJ_OPTION	  = -o $@
+avr: $(avrtargetsrc) $(avrlibsrc) 
+	$(AVR_CC) -D$(AVR_PROC) -Os $(AVR_CFLAGS) $(AVR_TARGET_ARCH) $(OUTPUT_OPTION) $(avrtargetsrc) $(avrlibsrc)
+	$(AVR_CC) $(AVR_TARGET_ARCH) $@.o $(OBJ_OPTION)
+	avr-objcopy -O ihex -R .eeprom $@ $@.hex
+	@echo "Build complete!"
+		
+.PHONY: clean_avr
+clean_avr:	
+	$(RM) avr.o 
+	$(RM) avr.hex
+	
+.PHONY: prog_uno
+prog_uno: clean_avr uno
+	avrdude -F -V -c arduino -p ATMEGA328P -P $(PORT) -b 115200 -U flash:w:avr.hex
+	
+.PHONY: prog_mega
+prog_mega: clean_avr mega
+	avrdude -F -V -c stk500v2 -p atmega2560 -P $(PORT) -b 115200 -U flash:w:avr.hex
+
 .PHONY: clean
 clean: init_dirs
 	$(RM) $(BIN_LIB)/*
 	$(RM) $(BIN_TESTS)/*
 	$(RM) $(BIN_UTILS)/*
-
+	$(RM) $(BIN_TARGET)/*
+	
 .PHONY: docs
 docs:
 	cd $(DOC)/doxygen ; doxygen Doxyfile
@@ -192,7 +255,8 @@ init_dirs:
 	$(MKDIR) $(BIN_LIB)
 	$(MKDIR) $(BIN_TESTS)
 	$(MKDIR) $(BIN_UTILS)
-
+	$(MKDIR) $(BIN_TARGET)
+	
 # Build up object dependencies.
 $(testlibs): $(libs)
 $(testexecs): $(testlibs)
@@ -222,6 +286,10 @@ ifeq "$(MAKECMDGOALS)" "tests"
 endif
 
 ifeq "$(MAKECMDGOALS)" "utils"
+ -include $(utildepends)
+endif
+
+ifeq "$(MAKECMDGOALS)" "uno"
  -include $(utildepends)
 endif
 ################################################################################
