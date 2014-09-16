@@ -99,7 +99,7 @@ endef
 libsources :=  	$(SRC)/io.c \
 				$(SRC)/dictionary/dictionary.c \
 				$(SRC)/dictionary/skiplist/slhandler.c \
-				$(SRC)/dictionary/skiplist/slstore.c \
+				$(SRC)/dictionary/skiplist/slstore.c
 	
 # Generate list of libraries to compile.
 libs        := $(addprefix $(BIN_LIB)/,$(subst .c,.o,$(notdir $(libsources))))
@@ -121,7 +121,7 @@ utildepends := $(addprefix $(BIN_UTILS)/,$(subst .c,.d,$(notdir $(utilssources))
 tlsources   := 	$(SRC)/tests/CuTest.c  \
 				$(SRC)/tests/unit/dictionary/skiplist/slstore.c	\
 				$(SRC)/tests/unit/dictionary/skiplist/slhandler.c \
-				$(SRC)/tests/unit/dictionary/dictionary.c	\
+				$(SRC)/tests/unit/dictionary/dictionary.c
 
 # Generate list of libraries to compile.
 testlibs    := $(addprefix $(BIN_TESTS)/,$(subst .c,.o,$(notdir $(tlsources))))
@@ -132,7 +132,7 @@ tldepends   := $(addprefix $(BIN_TESTS)/,$(subst .c,.d,$(notdir $(tlsources))))
 # List of executable test library sources. (main)
 testsources := 	$(SRC)/skiplist.c	\
 				$(SRC)/tests/unit/dictionary/skiplist/run_slstore.c \
-				$(SRC)/tests/unit/dictionary/run_dictionary.c \
+				$(SRC)/tests/unit/dictionary/run_dictionary.c
 
 # Generate list of libraries to compile.
 testexecs   := $(addprefix $(BIN_TESTS)/,$(subst .c,,$(notdir $(testsources))))
