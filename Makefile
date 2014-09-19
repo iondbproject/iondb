@@ -25,14 +25,15 @@ CP    := cp
 
 # Directory structure.
 SRC       := src
+AVR 	  := "C:\Program Files (x86)\Arduino\hardware\tools\avr\avr\include\avr"
 BIN       := bin
 BIN_LIB   := $(BIN)/lib
+BIN_AVR   := $(BIN)/avr
 BIN_TESTS := $(BIN)/tests
 BIN_UTILS := $(BIN)/utils
 BIN_TARGET:= $(BIN)/target
 DOC       := doc
 ################################################################################
-
 ## Functions ###################################################################
 #(call transform-csource,source-file,new-prefix,new-ending)
 define transform-csource
@@ -84,6 +85,39 @@ $(GCC)	-MM                     \
         $(TARGET_ARCH)          \
         $1
 endef
+
+# If this doesn't work, an ugly SED-based solution is required.
+#(call make-depend,source-file,object-file,depend-file)
+define make-avr-depend
+$(AVR_GCC) -MM                     \
+        -MF $3                  \
+        -MP                     \
+        -MT $2                  \
+		-D$(AVR_PROC)			\
+		$(AVR_INC)	 			\
+        $(AVR_CFLAGS)           \
+        $(CPPFLAGS)             \
+        $(AVR_TARGET_ARCH)      \
+        $1
+endef
+
+# Generate a single library compilation rule.
+#(call gen-lib-rule,source-file)
+define gen-avrlib-rule
+ $(call transform-csource,$1,$(BIN_AVR)/,.o): $1 $(subst .c,.h,$1)
+	$$(call make-avr-depend,$$<, $$@, $$(subst .o,.d,$$@))
+	$(AVR_GCC) -D$(AVR_PROC) $$< $(AVR_CFLAGS) $(AVR_TARGET_ARCH) $(AVR_INC) -c -o $$@
+endef
+
+# $(call transform-csource,$(subst run_,,$1),$(BIN_TEST)/,): $1
+# Generate a single library compilation rule.
+#(call gen-test-rule,source-file)
+define gen-avrtarget-rule
+ $(call transform-csource,$1,$(BIN_TARGET)/,): $1
+	$$(call make-avr-depend,$$<, $$@, $$(addsuffix .d,$$@))
+	$(AVR_GCC) -D$(AVR_PROC) $(AVR_TARGET_ARCH) $(AVR_CFLAGS) $(AVR_INC) -c -o $$@.o $$< 
+endef
+
 ################################################################################
 
 ## Sources #####################################################################
@@ -96,7 +130,7 @@ endef
 # and checked for dependencies.
 
 # Sources for database library.
-libsources :=  	$(SRC)/io.c \
+libsources :=  	$(SRC)/kv_io.c \
 				$(SRC)/dictionary/dictionary.c \
 				$(SRC)/dictionary/skiplist/slhandler.c \
 				$(SRC)/dictionary/skiplist/slstore.c
@@ -141,14 +175,23 @@ testexecs   := $(addprefix $(BIN_TESTS)/,$(subst .c,,$(notdir $(testsources))))
 testdepends :=$(addprefix $(BIN_TESTS)/,$(subst .c,.d,$(notdir $(testsources))))
 
 # Sources for database library.
-avrlibsrcs :=  	$(SRC)/io.c \
+avrlibsrcs :=  	$(SRC)/kv_io.c \
+				$(SRC)/serial.c	\
 				$(SRC)/dictionary/dictionary.c \
 				$(SRC)/dictionary/skiplist/slhandler.c \
-				$(SRC)/dictionary/skiplist/slstore.c \
-				$(SRC)/serial.c		
-				
+				$(SRC)/dictionary/skiplist/slstore.c 
+					
 # list of target test sources for Atmel Procs
 avrtargetsrc := $(SRC)/sample.c 
+
+# Generate list of libraries to compile.
+avrlibs        := $(addprefix $(BIN_AVR)/,$(subst .c,.o,$(notdir $(avrlibsrcs))))
+
+# Generate list of dependency files for each file.
+avrlibdepends  := $(addprefix $(BIN_AVR)/,$(subst .c,.d,$(notdir $(avrlibsrcs))))
+
+# Generate list of libraries to compile for avr
+avrexecs   := $(addprefix $(BIN_TARGET)/,$(subst .c,,$(notdir $(avrtargetsrc))))
 				
 ################################################################################
 
@@ -189,39 +232,43 @@ fresh:
 #compiler options for mega2560
 .PHONY: mega
 mega: 
-	make AVR_PROC=atmega2560 avr
+	make FILE=$(FILE) AVR_PROC=atmega2560 avr
 
 .PHONY: uno
+# $(avrtargetsrc) $(avrlibsrc) 
 # Compiler options for uno
-
 uno: 
-	make AVR_PROC=atmega328p avr
+	make FILE=$(FILE) AVR_PROC=atmega328p avr
 
 .PHONY: avr
 AVR_GCC       =  avr-gcc
 AVR_CC        =  $(AVR_GCC)
 AVR_CFLAGS    =  -Wall -g -DF_CPU=16000000UL -c
 AVR_TARGET_ARCH  =  -mmcu=$(AVR_PROC)
+AVR_INC		  = -I'C:\Program Files (x86)\Arduino\hardware\tools\avr\avr\include\'	
 OUTPUT_OPTION =  -o $@.o
-OBJ_OPTION	  = -o $@
-avr: $(avrtargetsrc) $(avrlibsrc) 
-	$(AVR_CC) -D$(AVR_PROC) -Os $(AVR_CFLAGS) $(AVR_TARGET_ARCH) $(OUTPUT_OPTION) $(avrtargetsrc) $(avrlibsrc)
-	$(AVR_CC) $(AVR_TARGET_ARCH) $@.o $(OBJ_OPTION)
-	avr-objcopy -O ihex -R .eeprom $@ $@.hex
+OBJ_OPTION	  = -o $(BIN_TARGET)/$(subst .c,,$(FILE))
+avr: avr_init_dirs $(avrlibs) $(avrexecs)
+	$(AVR_CC) $(AVR_TARGET_ARCH) $(BIN_TARGET)/$(subst .c,.o,$(FILE)) $(OBJ_OPTION) $(avrlibs)
+	avr-objcopy -O ihex -R .eeprom $(BIN_TARGET)/$(subst .c,,$(FILE)) $(BIN_TARGET)/$(subst .c,.hex,$(FILE))
 	@echo "Build complete!"
 		
 .PHONY: clean_avr
 clean_avr:	
 	$(RM) avr.o 
 	$(RM) avr.hex
+	$(RM) $(BIN_AVR)/*
+	$(RM) $(BIN_TARGET)/*
 	
 .PHONY: prog_uno
-prog_uno: clean_avr uno
-	avrdude -F -V -c arduino -p ATMEGA328P -P $(PORT) -b 115200 -U flash:w:avr.hex
+prog_uno: clean_avr 
+	make FILE=$(FILE) uno
+	avrdude -F -V -c arduino -p ATMEGA328P -P $(PORT) -b 115200 -U flash:w:$(BIN_TARGET)/$(subst .c,.hex,$(FILE))
 	
 .PHONY: prog_mega
-prog_mega: clean_avr mega
-	avrdude -F -V -c stk500v2 -p atmega2560 -P $(PORT) -b 115200 -U flash:w:avr.hex
+prog_mega: clean_avr 
+	make FILE=$(FILE) mega
+	avrdude -F -V -c stk500v2 -p atmega2560 -P $(PORT) -b 115200 -U flash:w:$(BIN_TARGET)/$(subst .c,.hex,$(FILE))
 
 .PHONY: clean
 clean: init_dirs
@@ -274,7 +321,21 @@ ifeq "$(MAKECMDGOALS)" "utils"
  -include $(utildepends)
 endif
 
+.PHONY: avr_init_dirs
+avr_init_dirs:
+	$(MKDIR) $(BIN_AVR)
+	$(MKDIR) $(BIN_TARGET)
+
+#build up dependancies
+$(avrexecs): $(avrlibs)	
+
+# Generate the list of library rules.
+$(foreach source,$(avrlibsrcs),$(eval $(call gen-avrlib-rule,$(source))))
+
+## Generate target
+$(foreach source,$(avrtargetsrc),$(eval $(call gen-avrtarget-rule,$(source))))
+
 ifeq "$(MAKECMDGOALS)" "uno"
- -include $(utildepends)
+ -include $(avrlibdepends) 
 endif
 ################################################################################
