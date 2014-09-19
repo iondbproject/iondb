@@ -106,7 +106,7 @@ endef
 define gen-avrlib-rule
  $(call transform-csource,$1,$(BIN_AVR)/,.o): $1 $(subst .c,.h,$1)
 	$$(call make-avr-depend,$$<, $$@, $$(subst .o,.d,$$@))
-	$(AVR_GCC) -D$(AVR_PROC) $$< $(AVR_CFLAGS) $(AVR_TARGET_ARCH) $(AVR_INC) -c -o $$@
+	$(AVR_GCC) -std=c99 -D$(AVR_PROC) $$< $(AVR_CFLAGS) $(AVR_TARGET_ARCH) $(AVR_INC) -c -o $$@
 endef
 
 # $(call transform-csource,$(subst run_,,$1),$(BIN_TEST)/,): $1
@@ -115,7 +115,7 @@ endef
 define gen-avrtarget-rule
  $(call transform-csource,$1,$(BIN_TARGET)/,): $1
 	$$(call make-avr-depend,$$<, $$@, $$(addsuffix .d,$$@))
-	$(AVR_GCC) -D$(AVR_PROC) $(AVR_TARGET_ARCH) $(AVR_CFLAGS) $(AVR_INC) -c -o $$@.o $$< 
+	$(AVR_GCC) -std=c99 -D$(AVR_PROC) $(AVR_TARGET_ARCH) $(AVR_CFLAGS) $(AVR_INC) -c -o $$@.o $$< 
 endef
 
 ################################################################################
@@ -191,7 +191,8 @@ avrlibsrcs :=  	$(SRC)/kv_io.c \
 				$(SRC)/serial.c	\
 				$(SRC)/dictionary/dictionary.c \
 				$(SRC)/dictionary/skiplist/slhandler.c \
-				$(SRC)/dictionary/skiplist/slstore.c 
+				$(SRC)/dictionary/skiplist/slstore.c \
+				$(SRC)/milli/millisec.c
 					
 # list of target test sources for Atmel Procs
 avrtargetsrc := $(SRC)/sample.c 

@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <avr/io.h>
 #include <util/delay.h>
+#include "milli/millisec.h"
 #include "dictionary/dictionary.h"
 #include "dictionary/skiplist/slhandler.h"
 #include "serial.h"
@@ -24,6 +25,9 @@ int main ( void )
 
 	/**Initialise the uart and setup ISR's*/
 	uart_init();
+
+	/** Initialise timer */
+	ms_timer_init();
 
 	/**Bind to stdout for printf*/
 	stdout = &mystdout;
@@ -57,7 +61,9 @@ int main ( void )
 
 	for (;;) // Loop forever
 	{
+		ms_start_timer();
 		c = uart_getchar();
+		printf("%lu milliseconds have passed since the last character was pressed\n",ms_stop_timer());
 		printf("Processing character : ");
 		printf("%c\n",c);
 		dictionary_insert(&dict, (ion_key_t) &c, (ion_value_t) (char*) {"toast"});
