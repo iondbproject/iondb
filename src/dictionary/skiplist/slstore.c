@@ -20,7 +20,7 @@ sl_initialize(
 )
 {
 	/* TODO srand may need to be changed */
-	srand(time(NULL));
+	//srand(time(NULL));
 
 	skiplist->super.key_type 			= key_type;
 	skiplist->super.record.key_size 	= key_size;
@@ -31,7 +31,7 @@ sl_initialize(
 	skiplist->pden 						= pden;
 	skiplist->pnum 						= pnum;
 
-#if defined(DEBUG)
+#if DEBUG > 0
 	DUMP(skiplist->super.record.key_size, "%d");
 	DUMP(skiplist->super.record.value_size, "%d");
 	DUMP(skiplist->maxheight, "%d");
@@ -189,13 +189,12 @@ err_t
 sl_query(
 	skiplist_t 		*skiplist,
 	ion_key_t 		key,
-	ion_value_t 	*value
+	ion_value_t 	value
 )
 {
 	/* TODO These should be size_t */
 	int 		key_size 	= skiplist->super.record.key_size;
 	int 		value_size 	= skiplist->super.record.value_size;
-	*value 					= NULL; // Delay initialization
 	sl_node_t 	*cursor 	= sl_find_node(skiplist, key);
 
 	if(NULL == cursor->key ||
@@ -204,9 +203,7 @@ sl_query(
 		return err_item_not_found;
 	}
 
-	*value 					= malloc(value_size);
-	if(NULL == value) { return err_out_of_memory; }
-	memcpy(*value, cursor->value, value_size);
+	memcpy(value, cursor->value, value_size);
 
 	return err_ok;
 }

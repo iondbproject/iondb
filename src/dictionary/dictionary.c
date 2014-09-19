@@ -69,7 +69,7 @@ status_t
 dictionary_get(
 	dictionary_t 				*dictionary,
 	ion_key_t 					key,
-	ion_value_t 				*value
+	ion_value_t 				value
 )
 {
 	return dictionary->handler->get(dictionary, key, value);

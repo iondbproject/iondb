@@ -65,16 +65,16 @@ sldict_insert(
 @param 		key
 				The key to search for.
 @param 		value
-				A pointer used to hold the returned value from the query.
-				This function will malloc the memory, and it is up to the
-				consumer to free the memory once they're done with it.
+				A pointer used to hold the returned value from the query. The
+				memory for value is assumed to be allocated and freed by the
+				user.
 @return 	Status of query.
  */
 err_t
 sldict_query(
 	dictionary_t 	*dictionary,
 	ion_key_t 		key,
-	ion_value_t 	*value
+	ion_value_t 	value
 );
 
 /**

@@ -13,7 +13,7 @@ extern "C" {
 #endif
 
 #include "sltypes.h"
-#include <time.h> /* For random seed */
+//#include <time.h> /* For random seed */
 
 /**
 @brief 		Initializes an in-memory skiplist.
@@ -99,7 +99,7 @@ err_t
 sl_query(
 	skiplist_t 		*skiplist,
 	ion_key_t 		key,
-	ion_value_t 	*value
+	ion_value_t 	value
 );
 
 /**

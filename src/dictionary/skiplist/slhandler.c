@@ -38,7 +38,7 @@ err_t
 sldict_query(
 	dictionary_t 	*dictionary,
 	ion_key_t 		key,
-	ion_value_t 	*value
+	ion_value_t 	value
 )
 {
 	return sl_query((skiplist_t *) dictionary->instance, key, value);

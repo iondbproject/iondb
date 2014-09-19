@@ -42,14 +42,14 @@ main(
 	char in;
 	while( (in = getchar()) != 'X')
 	{
-#if defined(DEBUG)
+#if DEBUG > 0
 		io_printf("You said: %c\n", in);
 #endif
 
 		switch(in)
 		{
 			case 'P': {
-#if defined(DEBUG)
+#if DEBUG > 0
 				io_printf("%s\n", "Printing skiplist");
 #endif
 				print_skiplist((skiplist_t*) test_dict.instance);
@@ -60,7 +60,7 @@ main(
 							int		 key;
 				unsigned 	char	 value[10];
 				scanf("%i %s", &key, value);
-#if defined(DEBUG)
+#if DEBUG > 0
 				io_printf("Inserting (%d|%s)...\n", key, value);
 #endif
 				dictionary_insert(&test_dict, (ion_key_t) &key, value);
@@ -70,7 +70,7 @@ main(
 			case 'D': {
 				int key;
 				scanf("%i", &key);
-#if defined(DEBUG)
+#if DEBUG > 0
 				io_printf("Deleting (%d)...\n", key);
 #endif
 				dictionary_delete(&test_dict, (ion_key_t) &key);
@@ -81,7 +81,7 @@ main(
 							int 	key;
 				unsigned 	char 	value[10];
 				scanf("%i %s", &key, value);
-#if defined(DEBUG)
+#if DEBUG > 0
 				io_printf("Updating (%d with %s)...\n", key, value);
 #endif
 				dictionary_update(&test_dict, (ion_key_t) &key, value);
@@ -89,22 +89,21 @@ main(
 			}
 
 			case 'Q': {
-				int key;
-				ion_value_t value;
+							int 	key;
+				unsigned 	char 	value[10];
 				scanf("%i", &key);
-#if defined(DEBUG)
+#if DEBUG > 0
 				io_printf("Querying (%d)...\n", key);
 #endif
-				dictionary_get(&test_dict, (ion_key_t) &key, &value);
+				dictionary_get(&test_dict, (ion_key_t) &key, value);
 				io_printf("Got the value back of '%s' stored in %d.\n", value,
 																		key);
-				free(value);
 				break;
 			}
 			case 'F': {
 				int key;
 				scanf("%i", &key);
-#if defined(DEBUG)
+#if DEBUG > 0
 				io_printf("Finding Node (%d)...\n", key);
 #endif
 				sl_node_t 	*node = sl_find_node(
