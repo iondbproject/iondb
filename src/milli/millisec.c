@@ -67,7 +67,7 @@ ms_set_time(
 	 // Ensure this cannot be disrupted
 	    ATOMIC_BLOCK(ATOMIC_FORCEON)
 	    {
-	        timer1_milliseconds = current_epoch_time * 1000ULL;
+	        timer1_milliseconds = current_epoch_time * 1000LLU;
 	    }
 
 }
@@ -78,5 +78,5 @@ ms_get_time(
 	void 			* something
 )
 {
-	return (timer1_milliseconds / 1000ULL);
+	return (0.001 * timer1_milliseconds);
 }

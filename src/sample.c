@@ -77,7 +77,7 @@ int main ( void )
 		dictionary_insert(&dict, (ion_key_t) &c, (ion_value_t) (char*) {"toast"});
 		dictionary_get(&dict, (ion_key_t) &c, (ion_value_t*) &v);
 		printf("At %d we got %s.\n", c, v);
-		printf("The current epoch time is: %lu\n", ms_get_time(NULL));
+		printf("The current epoch time is: %lu\n", 	ms_get_time(NULL));
 	}
 	free(v);
 	return 0;
