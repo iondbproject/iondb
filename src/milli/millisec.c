@@ -78,5 +78,5 @@ ms_get_time(
 	void 			* something
 )
 {
-	return (0.001 * timer1_milliseconds);
+	return (timer1_milliseconds / 1000LLU);
 }
