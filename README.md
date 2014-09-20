@@ -17,3 +17,7 @@ Second pass:
 
 Third pass:
     * TODO pins
+	
+Mod makefile for skiplist
+Fix io.c/h --> kv_io.c/h conversion
+Change dict_get to get user to alloc return key
