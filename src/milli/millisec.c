@@ -58,3 +58,25 @@ ms_stop_timer
 {
 	return (ms_milliseconds() - start_time);
 }
+
+void
+ms_set_time(
+	unsigned long	current_epoch_time
+	)
+{
+	 // Ensure this cannot be disrupted
+	    ATOMIC_BLOCK(ATOMIC_FORCEON)
+	    {
+	        timer1_milliseconds = current_epoch_time * 1000ULL;
+	    }
+
+}
+
+
+unsigned long
+ms_get_time(
+	void 			* something
+)
+{
+	return (timer1_milliseconds / 1000ULL);
+}

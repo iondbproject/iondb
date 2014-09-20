@@ -14,7 +14,7 @@
 #include "serial.h"
 
 /**bind uart_putchar to file  */
-static FILE mystdout = FDEV_SETUP_STREAM(uart_putchar, NULL,_FDEV_SETUP_WRITE);
+static FILE uart_io = FDEV_SETUP_STREAM(uart_putchar, uart_getchar,_FDEV_SETUP_RW);
 
 enum {
  BLINK_DELAY_MS = 500,
@@ -30,15 +30,23 @@ int main ( void )
 	ms_timer_init();
 
 	/**Bind to stdout for printf*/
-	stdout = &mystdout;
+	stdout = &uart_io;
+	stdin  = &uart_io;
 
 	/**Enable the Global Interrupt Enable flag so that interrupts can be processed */
 	sei ();
 
+	unsigned long cur_time;
+
+	printf("enter the current epoch time: ");
+	scanf("%lu", &cur_time);
+	printf("\nThe time is: %lu \n", cur_time);
+	ms_set_time(cur_time);
+	printf("The current epoch time is: %lu\n", ms_get_time(NULL));
 	/*
 	while(1)
 	{
-		printf("Hi\n");
+		prinltf("Hi\n");
 		//set pin 5 high to turn led on
 		PORTB |= _BV(PORTB5);
 		_delay_ms(BLINK_DELAY_MS);
@@ -69,6 +77,7 @@ int main ( void )
 		dictionary_insert(&dict, (ion_key_t) &c, (ion_value_t) (char*) {"toast"});
 		dictionary_get(&dict, (ion_key_t) &c, (ion_value_t*) &v);
 		printf("At %d we got %s.\n", c, v);
+		printf("The current epoch time is: %lu\n", ms_get_time(NULL));
 	}
 	free(v);
 	return 0;

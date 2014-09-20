@@ -16,8 +16,8 @@
 
 #define CTC_MATCH_OVERFLOW ((F_CPU / 1000) / 8)
 
-static volatile unsigned long 			timer1_milliseconds;
-static volatile unsigned long			start_time;
+static volatile unsigned long long 		timer1_milliseconds;
+static volatile unsigned long long		start_time;
 
 unsigned long
 ms_milliseconds();
@@ -32,5 +32,12 @@ ms_start_timer
 unsigned long
 ms_stop_timer
 ();
+
+void
+ms_set_time(unsigned long current_epoch_time);
+
+unsigned long
+ms_get_time(void * something);
+
 
 #endif /* MILLISEC_H_ */
