@@ -181,13 +181,15 @@ avrlibsrcs :=  	$(SRC)/kv_io.c \
 				$(SRC)/dictionary/skiplist/slhandler.c \
 				$(SRC)/dictionary/skiplist/slstore.c \
 				$(SRC)/milli/millisec.c \
-				$(SRC)/ram/ramutil.c
+				$(SRC)/ram/ramutil.c \
+				$(SRC)/benchmark/benchmark.c
 					
 # list of target test sources for Atmel Procs
 avrtargetsrc := $(SRC)/sample.c \
 				$(SRC)/ramcheck.c \
-				$(SRC)/benchmark.c \
-				$(SRC)/ard_limits.c
+				$(SRC)/benchmark_prototype.c \
+				$(SRC)/ard_limits.c \
+				$(SRC)/ion_bench.c
 
 # Generate list of libraries to compile.
 avrlibs        := $(addprefix $(BIN_AVR)/,$(subst .c,.o,$(notdir $(avrlibsrcs))))
