@@ -26,8 +26,8 @@ oah_initialize(
 )
 {
 	int i;
-	hashmap->write_concern 		= wc_insert_unique;			/* By default allow unique inserts only */
-	hashmap->super.record.key_size 	= key_size;
+	hashmap->write_concern 				= wc_insert_unique;			/* By default allow unique inserts only */
+	hashmap->super.record.key_size 		= key_size;
 	hashmap->super.record.value_size 	= value_size;
 	hashmap->super.key_type 			= key_type;
 
@@ -309,7 +309,7 @@ err_t
 oah_query(
 	hashmap_t 		*hash_map,
 	ion_key_t 		key,
-	ion_value_t		*value)
+	ion_value_t		value)
 {
 	int loc;
 
@@ -323,8 +323,8 @@ oah_query(
 		        					+ hash_map->super.record.value_size;
 		hash_bucket_t * item	= (((hash_bucket_t *)((hash_map->entry
 		        					+ (data_length + SIZEOF(STATUS)) * loc))));
-		*value 					= (ion_value_t)malloc(sizeof(char) * (hash_map->super.record.value_size));
-		memcpy(*value, (ion_value_t)(item->data+hash_map->super.record.key_size), hash_map->super.record.value_size);
+		//*value 					= (ion_value_t)malloc(sizeof(char) * (hash_map->super.record.value_size));
+		memcpy(value, (ion_value_t)(item->data+hash_map->super.record.key_size), hash_map->super.record.value_size);
 		return err_ok;
 	}
 	else
@@ -332,7 +332,7 @@ oah_query(
 #if DEBUG
 		io_printf("Item not found in hash table.\n");
 #endif
-		*value = NULL;				/**set the number of bytes to 0 */
+		value = NULL;				/**set the number of bytes to 0 */
 		return err_item_not_found;
 	}
 }

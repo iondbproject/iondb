@@ -20,7 +20,7 @@ extern "C" {
 #include "./../filehandler.h"
 
 #include "./../../kv_system.h"
-#include "./../../io.h"
+#include "./../../kv_io.h"
 
 /**
 @brief		Struct used to maintain an instance of a flat file store.

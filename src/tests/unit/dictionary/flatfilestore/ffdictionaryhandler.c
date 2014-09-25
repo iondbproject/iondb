@@ -73,7 +73,7 @@ test_flat_file_handler_function_registration(
 	CuAssertTrue(tc, map_handler.insert				== &ffdict_insert);
 	CuAssertTrue(tc, map_handler.create_dictionary	== &ffdict_create_dictionary);
 	CuAssertTrue(tc, map_handler.update				== &ffdict_update);
-	CuAssertTrue(tc, map_handler.delete				== &ffdict_delete);
+	CuAssertTrue(tc, map_handler.remove				== &ffdict_delete);
 	CuAssertTrue(tc, map_handler.delete_dictionary	== &ffdict_delete_dictionary);
 
 }
@@ -120,7 +120,7 @@ test_flat_file_handler_create_destroy(
 											== file.super.key_type);
 	CuAssertTrue(tc, dictionary_compare_signed_value
 											== file.super.compare);
-	CuAssertTrue(tc, true					== feof(file.file_ptr));
+	CuAssertTrue(tc, boolean_true					== feof(file.file_ptr));
 
 	//delete the dictionary
 	CuAssertTrue(tc, err_ok 				==
@@ -196,7 +196,7 @@ test_flat_file_handler_simple_insert(
 
 	CuAssertTrue(tc, err_ok == test_dictionary.handler->insert(&test_dictionary,(ion_key_t)&test_key,(ion_value_t)test_value));
 
-	CuAssertTrue(tc, true	== feof((((ff_file_t *)test_dictionary.instance)->file_ptr)));
+	CuAssertTrue(tc, boolean_true	== feof((((ff_file_t *)test_dictionary.instance)->file_ptr)));
 
 	//reset cursor on file and
 	fsetpos(((ff_file_t *)test_dictionary.instance)->file_ptr, &((ff_file_t *)test_dictionary.instance)->start_of_data);
@@ -571,15 +571,15 @@ test_flat_file_dictionary_predicate_equality(
 
 	//printf("key %i\n",*(int *)key_under_test);
 
-	CuAssertTrue(tc, true 	== ffdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, boolean_true 	== ffdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(int){2},sizeof(int));
 
-	CuAssertTrue(tc, false 	== ffdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, bolean_false 	== ffdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(int){-1},sizeof(int));
 
-	CuAssertTrue(tc, false 	== ffdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, bolean_false 	== ffdict_test_predicate(cursor, key_under_test));
 
 	free(key_under_test);
 
@@ -636,23 +636,23 @@ test_flat_file_dictionary_predicate_range_signed(
 
 	//printf("key %i\n",*(int *)key_under_test);
 
-	CuAssertTrue(tc, true 	== ffdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, boolean_true 	== ffdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(int){-1},sizeof(int));
 
-	CuAssertTrue(tc, true 	== ffdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, boolean_true 	== ffdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(int){1},sizeof(int));
 
-	CuAssertTrue(tc, true 	== ffdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, boolean_true 	== ffdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(int){2},sizeof(int));
 
-	CuAssertTrue(tc, false 	== ffdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, bolean_false 	== ffdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(int){-2},sizeof(int));
 
-	CuAssertTrue(tc, false 	== ffdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, bolean_false 	== ffdict_test_predicate(cursor, key_under_test));
 
 	free(key_under_test);
 
@@ -709,23 +709,23 @@ test_flat_file_dictionary_predicate_range_unsigned(
 
 	//printf("key %i\n",*(unsigned int *)key_under_test);
 
-	CuAssertTrue(tc, true 	== ffdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, boolean_true 	== ffdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(unsigned int){1},sizeof(unsigned int));
 
-	CuAssertTrue(tc, true 	== ffdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, boolean_true 	== ffdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(unsigned int){2},sizeof(unsigned int));
 
-	CuAssertTrue(tc, true 	== ffdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, boolean_true 	== ffdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(unsigned int){3},sizeof(unsigned int));
 
-	CuAssertTrue(tc, false 	== ffdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, bolean_false 	== ffdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(unsigned int){4},sizeof(unsigned int));
 
-	CuAssertTrue(tc, false 	== ffdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, bolean_false 	== ffdict_test_predicate(cursor, key_under_test));
 
 	free(key_under_test);
 

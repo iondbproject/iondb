@@ -16,7 +16,7 @@ void oadict_init(dictionary_handler_t *handler)
 	handler->get = oadict_query;
 	handler->update = oadict_update;
 	handler->find = oadict_find;
-	handler->delete = oadict_delete;
+	handler->remove = oadict_delete;
 	handler->delete_dictionary = oadict_delete_dictionary;
 }
 
@@ -25,7 +25,7 @@ err_t oadict_insert(dictionary_t *dictionary, ion_key_t key, ion_value_t value)
 	return oah_insert((hashmap_t *)dictionary->instance, key, value);
 }
 
-err_t oadict_query(dictionary_t *dictionary, ion_key_t key, ion_value_t *value)
+err_t oadict_query(dictionary_t *dictionary, ion_key_t key, ion_value_t value)
 {
 	return oah_query((hashmap_t *)dictionary->instance, key, value);
 }
@@ -284,9 +284,9 @@ boolean_t is_equal(dictionary_t *dict, ion_key_t key1, ion_key_t key2)
 {
 	if (memcmp(key1, key2,
 	        (((hashmap_t*)dict->instance)->super.record.key_size)) == IS_EQUAL)
-		return true;
+		return boolean_true;
 	else
-		return false;
+		return bolean_false;
 }
 
 void oadict_destroy_cursor(dict_cursor_t **cursor)
@@ -329,7 +329,7 @@ boolean_t oadict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
 	hashmap_t * hash_map = (hashmap_t *)(cursor->dictionary->instance);
 
 	//pre-prime value for faster exit
-	key_satisfies_predicate = false;
+	key_satisfies_predicate = bolean_false;
 
 	switch (cursor->type)
 	{
@@ -340,7 +340,7 @@ boolean_t oadict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
 			                cursor->predicate->statement.equality.equality_value,
 			                key, hash_map->super.record.key_size))
 			{
-				key_satisfies_predicate = true;
+				key_satisfies_predicate = boolean_true;
 			}
 			break;
 		}
@@ -356,7 +356,7 @@ boolean_t oadict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
 			                        cursor->predicate->statement.range.geq_value,
 			                        key, hash_map->super.record.key_size))))
 			{
-				key_satisfies_predicate = true;
+				key_satisfies_predicate = boolean_true;
 			}
 			break;
 		}
@@ -402,7 +402,7 @@ err_t oadict_scan(oadict_cursor_t *cursor//know exactly what implementation of c
 			boolean_t key_satisfies_predicate = oadict_test_predicate(
 			        &(cursor->super), (ion_key_t)item->data);//assumes that the key is first
 
-			if (key_satisfies_predicate == true)
+			if (key_satisfies_predicate == boolean_true)
 			{
 				cursor->current = loc;		//this is the next index for value
 				return cs_valid_data;

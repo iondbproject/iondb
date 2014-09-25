@@ -9,6 +9,10 @@
 #ifndef OAFDICTIONARYHANDLER_H_
 #define OAFDICTIONARYHANDLER_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "./../dicttypes.h"
 #include "./../dictionary.h"
 #include "./../../kv_system.h"
@@ -400,5 +404,9 @@ err_t
 oafdict_scan(
 		oafdict_cursor_t		*cursor  //don't need to pass in the cursor
 );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* OADICTIONARYHANDLER_H_ */

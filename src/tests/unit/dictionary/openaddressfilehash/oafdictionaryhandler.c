@@ -72,7 +72,7 @@ test_open_address_file_hashmap_handler_function_registration(
 	CuAssertTrue(tc, map_handler.insert				== &oafdict_insert);
 	CuAssertTrue(tc, map_handler.create_dictionary	== &oafdict_create_dictionary);
 	CuAssertTrue(tc, map_handler.update				== &oafdict_update);
-	CuAssertTrue(tc, map_handler.delete				== &oafdict_delete);
+	CuAssertTrue(tc, map_handler.remove				== &oafdict_delete);
 	CuAssertTrue(tc, map_handler.delete_dictionary	== &oafdict_delete_dictionary);
 
 }
@@ -472,15 +472,15 @@ test_open_address_file_dictionary_predicate_equality(
 
 	//printf("key %i\n",*(int *)key_under_test);
 
-	CuAssertTrue(tc, true 	== oafdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, boolean_true 	== oafdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(int){2},sizeof(int));
 
-	CuAssertTrue(tc, false 	== oafdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, bolean_false 	== oafdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(int){-1},sizeof(int));
 
-	CuAssertTrue(tc, false 	== oafdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, bolean_false 	== oafdict_test_predicate(cursor, key_under_test));
 
 	free(key_under_test);
 
@@ -537,23 +537,23 @@ test_open_address_file_dictionary_predicate_range_signed(
 
 	//DUMP(*(int *)key_under_test,"%i");
 
-	CuAssertTrue(tc, true 	== oafdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, boolean_true 	== oafdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(int){-1},sizeof(int));
 
-	CuAssertTrue(tc, true 	== oafdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, boolean_true 	== oafdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(int){1},sizeof(int));
 
-	CuAssertTrue(tc, true 	== oafdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, boolean_true 	== oafdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(int){2},sizeof(int));
 
-	CuAssertTrue(tc, false 	== oafdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, bolean_false 	== oafdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(int){-2},sizeof(int));
 
-	CuAssertTrue(tc, false 	== oafdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, bolean_false 	== oafdict_test_predicate(cursor, key_under_test));
 
 	free(key_under_test);
 
@@ -610,23 +610,23 @@ test_open_address_file_dictionary_predicate_range_unsigned(
 
 	//printf("key %i\n",*(unsigned int *)key_under_test);
 
-	CuAssertTrue(tc, true 	== oafdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, boolean_true 	== oafdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(unsigned int){1},sizeof(unsigned int));
 
-	CuAssertTrue(tc, true 	== oafdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, boolean_true 	== oafdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(unsigned int){2},sizeof(unsigned int));
 
-	CuAssertTrue(tc, true 	== oafdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, boolean_true 	== oafdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(unsigned int){3},sizeof(unsigned int));
 
-	CuAssertTrue(tc, false 	== oafdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, bolean_false 	== oafdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(unsigned int){4},sizeof(unsigned int));
 
-	CuAssertTrue(tc, false 	== oafdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, bolean_false 	== oafdict_test_predicate(cursor, key_under_test));
 
 	free(key_under_test);
 

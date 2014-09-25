@@ -13,7 +13,7 @@ void ffdict_init(dictionary_handler_t *handler)
 	handler->get 				= ffdict_query;
 	handler->update 			= ffdict_update;
 	handler->find 				= ffdict_find;
-	handler->delete 			= ffdict_delete;
+	handler->remove 			= ffdict_delete;
 	handler->delete_dictionary 	= ffdict_delete_dictionary;
 }
 
@@ -314,7 +314,7 @@ boolean_t ffdict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
 	ff_file_t * file = (ff_file_t *)(cursor->dictionary->instance);
 
 	//pre-prime value for faster exit
-	key_satisfies_predicate = false;
+	key_satisfies_predicate = bolean_false;
 
 	switch (cursor->type)
 	{
@@ -325,7 +325,7 @@ boolean_t ffdict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
 			                cursor->predicate->statement.equality.equality_value,
 			                key, file->super.record.key_size))
 			{
-				key_satisfies_predicate = true;
+				key_satisfies_predicate = boolean_true;
 			}
 			break;
 		}
@@ -341,7 +341,7 @@ boolean_t ffdict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
 			                        cursor->predicate->statement.range.geq_value,
 			                        key, file->super.record.key_size))))
 			{
-				key_satisfies_predicate = true;
+				key_satisfies_predicate = boolean_true;
 			}
 			break;
 		}
@@ -389,7 +389,7 @@ err_t ffdict_scan(
 			boolean_t key_satisfies_predicate = ffdict_test_predicate(
 					&(cursor->super), (ion_key_t)record->data);		//assumes that the key is first
 
-			if (key_satisfies_predicate == true)
+			if (key_satisfies_predicate == boolean_true)
 			{
 				/** @TODO revisit to cache result? */
 				//back up current cursor to point at the record

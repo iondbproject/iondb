@@ -9,6 +9,10 @@
 #ifndef OADICTIONARYHANDLER_H_
 #define OADICTIONARYHANDLER_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "./../dicttypes.h"
 #include "./../dictionary.h"
 #include "./../../kv_system.h"
@@ -161,7 +165,7 @@ err_t
 oadict_query(
 	dictionary_t 	*dictionary,
 	ion_key_t 		key,
-	ion_value_t		*value
+	ion_value_t		value
 );
 
 /**
@@ -400,5 +404,9 @@ err_t
 oadict_scan(
 		oadict_cursor_t		*cursor  //don't need to pass in the cursor
 );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* OADICTIONARYHANDLER_H_ */

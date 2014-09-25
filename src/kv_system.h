@@ -5,6 +5,10 @@
 #ifndef SYSTEM_H_
 #define SYSTEM_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define USING_ECLIPSE 	1
 #define DEBUG 			0
 #define IS_EQUAL 		0
@@ -89,8 +93,8 @@ typedef char						boolean_t;
 
 typedef enum
 {
-	true,
-	false,
+	boolean_true,
+	bolean_false,
 } boolean_e;
 
 typedef struct return_status{
@@ -115,5 +119,9 @@ typedef struct ion_record
 	ion_key_t 			key;			/**< pointer to a key */
 	ion_value_t			value;			/**< a pointer to value */
 } ion_record_t;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* SYSTEM_H_ */

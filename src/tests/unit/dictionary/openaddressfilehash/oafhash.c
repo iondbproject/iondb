@@ -891,10 +891,12 @@ test_open_address_file_hashmap_capacity(
 	}
 
 	//check status of <K,V>
+	ion_value_t value;
+	value = (ion_value_t)malloc(map.super.record.value_size);
+
 	for (i = 0; i<map.map_size; i++)
 	{
-		ion_value_t value;
-		value = (ion_value_t)malloc(map.super.record.value_size);
+
 		CuAssertTrue(tc, err_ok 		== oafh_query(&map,
 												(ion_key_t)&i,
 												value));
@@ -902,10 +904,7 @@ test_open_address_file_hashmap_capacity(
 		char str[10];
 		sprintf(str,"%02i is key",i);
 		CuAssertStrEquals(tc, (char *)value, str);
-		if (value != NULL)							//must free value after query
-		{
-			free(value);
-		}
+
 	}
 
 	//Attempt to insert a value when at max capacity
@@ -921,8 +920,7 @@ test_open_address_file_hashmap_capacity(
 	//check status of <K,V>
 	for (i = 0; i<map.map_size; i++)
 	{
-		ion_value_t value;
-		value = (ion_value_t)malloc(map.super.record.value_size);
+
 		CuAssertTrue(tc, err_ok 		== oafh_query(&map,
 												(ion_key_t)&i,
 												value));
@@ -930,12 +928,14 @@ test_open_address_file_hashmap_capacity(
 		char str[10];
 		sprintf(str,"%02i is key",i);
 		CuAssertStrEquals(tc, (char *)value, str);
-		if (value != NULL)							//must free value after query
-		{
-			free(value);
-		}
+
 	}
+
+
+	free(value);
+
 	fclose(map.file);
+
 	remove(TEST_FILE);
 }
 
@@ -977,4 +977,6 @@ runalltests_open_address_file_hash()
 
 	CuSuiteDelete(suite);
 	CuStringDelete(output);
+
+	remove(TEST_FILE);
 }

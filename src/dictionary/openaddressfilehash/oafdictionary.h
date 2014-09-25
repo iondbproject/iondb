@@ -7,6 +7,10 @@
 #ifndef OAFDICTIONARY_H_
 #define OAFDICTIONARY_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "./../dicttypes.h"
 
 /**
@@ -21,5 +25,9 @@ typedef struct oadict_cursor
 	hash_t				current;	/**<Currently visited spot*/
 	char				status;		/**@todo what is this for again as there are two status */
 } oafdict_cursor_t;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* OADICTIONARY_H_ */

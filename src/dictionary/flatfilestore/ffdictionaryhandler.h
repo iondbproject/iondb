@@ -9,6 +9,11 @@
 #ifndef FFDICTIONARYHANDLER_H_
 #define FFDICTIONARYHANDLER_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include "./../dicttypes.h"
 #include "./../dictionary.h"
 #include "./../../kv_system.h"
@@ -400,5 +405,9 @@ err_t
 ffdict_scan(
 		ffdict_cursor_t		*cursor  //don't need to pass in the cursor
 );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* FFDICTIONARYHANDLER_H_ */

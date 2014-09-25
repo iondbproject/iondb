@@ -21,7 +21,7 @@ extern "C" {
 #include "oafdictionary.h"
 
 #include "./../../kv_system.h"
-#include "./../../io.h"
+#include "./../../kv_io.h"
 
 
 #define EMPTY 			-1
@@ -234,25 +234,6 @@ oafh_query(
 		ion_value_t 	value
 );
 
-/**
-@brief		Helper function to print out map.
-
-@details	Helper function that displays the contents of the map including
-			both key and value.
-
-@param		hash_map
-				The map into which the data is going to be inserted.
-@param		size
-				The number of buckets available in the map.
-@param		record
-				The structure of the record being inserted.
-*/
-void
-oafh_print(
-		file_hashmap_t 	*hash_map,
-		int 		size,
-		record_info_t	*record
-);
 
 /**
 @brief		A simple hashing algorithm implementation.

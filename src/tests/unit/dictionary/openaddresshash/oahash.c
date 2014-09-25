@@ -298,19 +298,22 @@ test_open_address_hashmap_simple_insert_and_query(
 		oah_insert(&map, (ion_key_t)(&i), (ion_value_t)str);			//this is will wrap
 	}
 
+	ion_value_t value;
+	value = (ion_value_t)malloc(10);
+
 	for (i = 0; i<map.map_size; i++)
 	{
-		ion_value_t value;
-		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, &value));
+
+		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
 		CuAssertStrEquals(tc, (char *)value, str);
-		if (value != NULL)							//must free value after query
+	}
+	if (value != NULL)							//must free value after query
 		{
 			free(value);
 		}
-	}
 }
 
 /**
@@ -343,19 +346,23 @@ test_open_address_hashmap_simple_delete(
 		oah_insert(&map, (ion_key_t)(&i), (ion_value_t)str);			//this is will wrap
 	}
 
+	ion_value_t value;
+	value = (ion_value_t)malloc(10);
+
 	for (j = 0; j<map.map_size;j++)
 	{
-		ion_value_t value;
+
 		//delete the record
 		CuAssertTrue(tc, err_ok				== oah_delete(&map, (ion_key_t)(&j)));
 		//check to make sure that the record has been deleted
-		CuAssertTrue(tc, err_item_not_found	== oah_query(&map,(ion_key_t)(&j), &value));
+		CuAssertTrue(tc, err_item_not_found	== oah_query(&map,(ion_key_t)(&j), value));
 
 		//and then check to make sure that the rest of the map is undisturbed
 		for (i = j+1; i<map.map_size; i++)
 		{
 			ion_value_t value;
-			CuAssertTrue(tc, err_ok 		== oah_query(&map,(ion_key_t)&i, &value));
+			value = (ion_value_t)malloc(10);
+			CuAssertTrue(tc, err_ok 		== oah_query(&map,(ion_key_t)&i, value));
 			//build up expected value
 			char str[10];
 			sprintf(str,"%02i is key",i);
@@ -457,7 +464,8 @@ test_open_address_hashmap_duplicate_insert_2(
 	for (i = 0; i<map.map_size; i++)
 	{
 		ion_value_t value;
-		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, &value));
+		value = (ion_value_t)malloc(10);
+		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
@@ -484,7 +492,8 @@ test_open_address_hashmap_duplicate_insert_2(
 	for (i = 0; i<map.map_size; i++)
 	{
 		ion_value_t value;
-		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, &value));
+		value = (ion_value_t)malloc(10);
+		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is new",i);
@@ -534,7 +543,8 @@ test_open_address_hashmap_update_1(
 	for (i = 0; i<map.map_size; i++)
 	{
 		ion_value_t value;
-		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, &value));
+		value = (ion_value_t)malloc(10);
+		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
@@ -560,7 +570,8 @@ test_open_address_hashmap_update_1(
 	for (i = 0; i<map.map_size; i++)
 	{
 		ion_value_t value;
-		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, &value));
+		value = (ion_value_t)malloc(10);
+		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is new",i);
@@ -610,7 +621,8 @@ test_open_address_hashmap_update_2(
 	for (i = 0; i<map.map_size/2; i++)
 	{
 		ion_value_t value;
-		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, &value));
+		value = (ion_value_t)malloc(10);
+		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
@@ -636,7 +648,8 @@ test_open_address_hashmap_update_2(
 	for (i = 0; i<map.map_size; i++)
 	{
 		ion_value_t value;
-		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, &value));
+		value = (ion_value_t)malloc(10);
+		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is new",i);
@@ -674,8 +687,9 @@ test_open_address_hashmap_delete_1(
 
 	//Check that value is not there
 	ion_value_t value;
+	value = (ion_value_t)malloc(10);
 	CuAssertTrue(tc, err_item_not_found
-								== oah_query(&map, (ion_key_t)(&i), &value));
+								== oah_query(&map, (ion_key_t)(&i), value));
 	if (value != NULL)
 	{
 		free(value);
@@ -723,9 +737,10 @@ test_open_address_hashmap_delete_2(
 	for (i = 0; i<map.map_size; i++)
 	{
 		ion_value_t value;
+		value = (ion_value_t)malloc(10);
 		CuAssertTrue(tc, err_ok 		== oah_query(&map,
 												(ion_key_t)&i,
-												&value));
+												value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
@@ -747,11 +762,11 @@ test_open_address_hashmap_delete_2(
 
 		//Check that value is not there
 		ion_value_t value;
-
+		value = (ion_value_t)malloc(10);
 		CuAssertTrue(tc, err_item_not_found
 										== oah_query(&map,
 												(ion_key_t)(&i),
-												&value));
+												value));
 		if (value != NULL)
 		{
 			free(value);
@@ -761,9 +776,10 @@ test_open_address_hashmap_delete_2(
 		for (j = 0; j<i; j++)
 		{
 			ion_value_t value;
+			value = (ion_value_t)malloc(10);
 			CuAssertTrue(tc, err_ok 	== oah_query(&map,
 												(ion_key_t)&j,
-												&value));
+												value));
 			//build up expected value
 			char str[10];
 			sprintf(str,"%02i is key",j);
@@ -779,10 +795,11 @@ test_open_address_hashmap_delete_2(
 	for (i = 0; i<map.map_size; i++)
 	{
 		ion_value_t value;
+		value = (ion_value_t)malloc(10);
 		CuAssertTrue(tc, err_item_not_found
 										== oah_query(&map,
 												(ion_key_t)&i,
-												&value));
+												value));
 		if (value != NULL)							//must free value after query
 		{
 			free(value);
@@ -819,20 +836,20 @@ test_open_address_hashmap_capacity(
 	}
 
 	//check status of <K,V>
+	ion_value_t value;
+	value = (ion_value_t)malloc(10);
+
 	for (i = 0; i<map.map_size; i++)
 	{
-		ion_value_t value;
+
 		CuAssertTrue(tc, err_ok 		== oah_query(&map,
 												(ion_key_t)&i,
-												&value));
+												value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
 		CuAssertStrEquals(tc, (char *)value, str);
-		if (value != NULL)							//must free value after query
-		{
-			free(value);
-		}
+
 	}
 
 	//Attempt to insert a value when at max capacity
@@ -844,23 +861,24 @@ test_open_address_hashmap_capacity(
 												(ion_key_t)(&i),
 												(ion_value_t)str));
 
+
 	//and check to make sure that the contents has not changed
 	//check status of <K,V>
+	value = (ion_value_t)malloc(10);
+
 	for (i = 0; i<map.map_size; i++)
 	{
-		ion_value_t value;
+
 		CuAssertTrue(tc, err_ok 		== oah_query(&map,
 												(ion_key_t)&i,
-												&value));
+												value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
 		CuAssertStrEquals(tc, (char *)value, str);
-		if (value != NULL)							//must free value after query
-		{
-			free(value);
-		}
 	}
+
+	free(value);
 }
 
 

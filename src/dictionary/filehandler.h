@@ -8,6 +8,10 @@
 #ifndef FILEHANDLER_H_
 #define FILEHANDLER_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define EMPTY 			-1
 #define DELETED 		-2
 #define IN_USE 			-3
@@ -23,5 +27,9 @@ typedef struct f_file_record
 
 	unsigned char 	data[];			/**< the data in the record */
 } f_file_record_t;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* FILEHANDLER_H_ */

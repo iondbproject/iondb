@@ -8,6 +8,10 @@
 #ifndef SERIAL_H_
 #define SERIAL_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdio.h>
@@ -34,5 +38,9 @@ int uart_putchar(
 char uart_getchar();
 
 void uart_init();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* SERIAL_H_ */

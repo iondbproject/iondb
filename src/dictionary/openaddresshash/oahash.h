@@ -21,7 +21,7 @@ extern "C" {
 #include "oadictionary.h"
 
 #include "./../../kv_system.h"
-#include "./../../io.h"
+#include "./../../kv_io.h"
 
 
 #define EMPTY 			-1
@@ -231,7 +231,7 @@ err_t
 oah_query(
 		hashmap_t 		*hash_map,
 		ion_key_t 		key,
-		ion_value_t 	*value
+		ion_value_t 	value
 );
 
 /**
