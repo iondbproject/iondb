@@ -11,7 +11,7 @@
 #include "kv_system.h"
 #include "./dictionary/dictionary.h"
 #include "./dictionary/skiplist/slhandler.h"
-#include "io.h"
+#include "kv_io.h"
 
 int
 main(

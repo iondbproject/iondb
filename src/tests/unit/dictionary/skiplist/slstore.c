@@ -848,7 +848,7 @@ test_skiplist_delete_nonexist_single(
 
 				int 	key 		= 16;
 	unsigned 	char 	value[10];
-	strcpy((char*) value, "Delete me!");
+	strcpy((char*) value, "Delete me");
 	sl_insert(&skiplist, (ion_key_t) &key, value);
 
 	int 	fake_key 	= 33;
@@ -883,7 +883,7 @@ test_skiplist_delete_nonexist_several(
 
 				int 	key 		= 16;
 	unsigned 	char 	value[10];
-	strcpy((char*) value, "Delete me!");
+	strcpy((char*) value, "Delete me");
 
 	int i;
 	for(i = 0; i < 10; i++)
