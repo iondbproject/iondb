@@ -18,13 +18,15 @@ extern "C" {
 
 #define FS_TARGET_CFILE		0
 #define FS_TARGET_ARDUINO	1
-#define FS_TARGET 		FS_TARGET_CFILE
+#define FS_TARGET 		FS_TARGET_ARDUINO
 
 typedef long		file_offset_t;
 
 #if FS_TARGET == FS_TARGET_ARDUINO
 
 #include "SD_c_iface.h"
+
+#define ION_NOFILE	((file_handle_t){ NULL, -1 })
 
 typedef struct file_handle
 {
@@ -38,12 +40,13 @@ typedef struct file_handle
 #else
 
 #include "stdio.h"
-#include "unistd.h"
+//#include "unistd.h"
 
 typedef FILE*		file_handle_t;
 
 #define ION_FILE_START	SEEK_SET
 #define ION_FILE_END	SEEK_END
+#define ION_NOFILE	((file_handle_t)(NULL))
 
 #endif
 

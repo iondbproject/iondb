@@ -7,7 +7,7 @@ ion_fexists(
 )
 {
 #if FS_TARGET == FS_TARGET_ARDUINO
-	return (boolean_t)SD_File_Exists(filename);
+	return (boolean_t)SD_File_Exists(name);
 #else
 	return (-1 != access(name, F_OK));
 #endif
@@ -20,8 +20,8 @@ ion_fopen(
 {
 #if FS_TARGET == FS_TARGET_ARDUINO
 	file_handle_t toret;
-	if (1 != SD_File_Open(&(toret.file), filename, SD_FILE_MODE_WRITE))
-		return DB_STORAGE_NOFILE;
+	if (1 != SD_File_Open(&(toret.file), name, SD_FILE_MODE_WRITE))
+		return ION_NOFILE;
 	return toret;
 #else
 	file_handle_t	file;
@@ -92,7 +92,7 @@ ion_fseek(
 		pos	= file.end - seek_to;
 	}
 	
-	if (1 != SD_File_Seek(f.file, pos+seek_to))
+	if (1 != SD_File_Seek(file.file, pos+seek_to))
 	{
 		return err_file_incomplete_read;
 	}
@@ -131,9 +131,9 @@ ion_fend(
 	ion_fseek(file, 0, ION_FILE_END);
 	to_return	= ion_ftell(file);
 	ion_fseek(file, previous, ION_FILE_START);
-#endif
 	
 	return to_return;
+#endif
 }
 
 err_t
@@ -210,7 +210,7 @@ ion_fread(
 )
 {
 #if FS_TARGET == FS_TARGET_ARDUINO
-	if (num_bytes != SD_File_read(file.file, write_to, num_bytes);
+	if (num_bytes != SD_File_Read(file.file, write_to, num_bytes))
 		return err_file_incomplete_read;
 	
 	return err_ok;
