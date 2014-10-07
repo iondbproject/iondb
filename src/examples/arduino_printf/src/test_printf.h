@@ -9,7 +9,7 @@
 #define TEST_PRINTF_H_
 
 #include <stdio.h>
-#include "serial_io/serial_c_iface.h"		/**< Include the c to c++ wrapper for Serial */
+#include "./serial_io/serial_c_iface.h"		/**< Include the c to c++ wrapper for Serial */
 
 
 #ifdef __cplusplus

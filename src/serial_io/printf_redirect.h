@@ -13,7 +13,7 @@ extern "C" {
 #endif
 
 /** Preprocessor replacement for printf */
-#define printf(format, ...) {char buf[128]; snprintf(buf,128,format, __VA_ARGS__); serial_print(buf);}
+#define printf(format, ...) {char buf[128]; snprintf(buf,128,format,##__VA_ARGS__); serial_print(buf);}
 
 
 #ifdef __cplusplus

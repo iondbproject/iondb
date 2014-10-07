@@ -18,7 +18,31 @@
 extern "C" {
 #endif
 
-#include "printf_redirect.h"
+#define USE_INLINEPRINTF 0	/** <setting this value to 1 will use an inline replacement for printf
+								which reduces call stack requirements (minimal) but increased code
+								footprint considerably for each use of printf.  You decide if you
+								want speed vs. minimal code space */
+
+
+
+/**
+ @brief		Overload of printf for arduino to allow a limited use printf
+ @param 	format
+ 	 	 	 	 The string that contains the text to be written to serial.
+ @return 	The number of characters written.  Returns a negative value on failure.
+ */
+int
+serial_printf_c(
+	const char 	*format,
+	...
+);
+
+/** DO NOT CHANGE INCLUSION ORDER */
+#if USE_INLINE_PRINTF == 1
+	#include "printf_redirect.h"
+#else
+	#define printf(format, ...) 	serial_printf_c(format, ##__VA_ARGS__)
+#endif
 
 /**
 @brief 		Wrapper to Serial stream
@@ -26,9 +50,9 @@ extern "C" {
 				pointer to buffer to print
 @return		The number of characters outputted
 */
-int
+extern int
 serial_print(
-	const char 	*buffer
+	const char 		*buffer
 );
 
 
