@@ -20,6 +20,9 @@ extern "C" {
 #include "flatfile.h"
 #include "ffdictionary.h"
 
+/**redefines file operations for arduino */
+#include "./../../sd_if/kv_stdio_intercept.h"
+
 
 typedef int record_idx_t;
 

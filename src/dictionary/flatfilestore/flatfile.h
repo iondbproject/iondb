@@ -22,6 +22,9 @@ extern "C" {
 #include "./../../kv_system.h"
 #include "./../../kv_io.h"
 
+/**redefines file operations for arduino */
+#include "./../../sd_if/kv_stdio_intercept.h"
+
 /**
 @brief		Struct used to maintain an instance of a flat file store.
 */
