@@ -19,9 +19,10 @@
 void test_query(dictionary_t* test_dictionary, int key, const record_info_t* record) {
 
 	io_printf("Query\n");
-	char* data;
+	ion_value_t data;
+	data = (ion_value_t)malloc(record->value_size);
 	err_t error = dictionary_get(&*test_dictionary, (ion_key_t) &key,
-			(ion_value_t *) &data);
+			(ion_value_t) data);
 	if (error == err_ok) {
 		int idx;
 		int key = *((int*) data);
@@ -39,7 +40,6 @@ void test_query(dictionary_t* test_dictionary, int key, const record_info_t* rec
 
 int main(void) {
 	int size;
-	char ch;
 	record_info_t record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
