@@ -377,7 +377,7 @@ err_t ffdict_scan(
 
 	record = (f_file_record_t *)malloc(record_size);
 
-	//continue until end of file, which will error out on return from fread
+	//continue until end of file, which will error out on return from sd_fread
 	/** @todo option to increase buffer size for performance increase on IO */
 	while (1 == fread(record, record_size, 1, file->file_ptr))
 	{
@@ -394,6 +394,7 @@ err_t ffdict_scan(
 				/** @TODO revisit to cache result? */
 				//back up current cursor to point at the record
 				cursor->current = ftell(file->file_ptr) - record_size;
+				//cursor->current = ftell(file->file_ptr) - record_size;
 				free(record);
 				return cs_valid_data;
 			}

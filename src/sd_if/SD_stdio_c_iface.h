@@ -11,8 +11,6 @@ extern "C" {
 
 #include "kv_stdio_intercept.h"
 
-
-
 typedef long fpos_t;				/**< file position */
 	
 /**

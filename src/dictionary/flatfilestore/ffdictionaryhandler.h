@@ -9,10 +9,10 @@
 #ifndef FFDICTIONARYHANDLER_H_
 #define FFDICTIONARYHANDLER_H_
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 #include "./../dicttypes.h"
 #include "./../dictionary.h"
@@ -21,8 +21,7 @@ extern "C" {
 #include "ffdictionary.h"
 
 /**redefines file operations for arduino */
-#include "./../../sd_if/kv_stdio_intercept.h"
-
+//#include "./../../sd_if/SD_stdio_c_iface.h"
 
 typedef int record_idx_t;
 

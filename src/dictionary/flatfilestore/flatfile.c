@@ -9,8 +9,8 @@
 
 err_t
 ff_initialize(
-		ff_file_t			*file,
-	    key_type_t			key_type,
+		ff_file_t		*file,
+	    	key_type_t		key_type,
 		ion_key_size_t		key_size,
 		ion_value_size_t	value_size
 )
@@ -21,7 +21,7 @@ ff_initialize(
 
 	//check to see if file exists and if it does, throw exception
 
-	if ((file->file_ptr = fopen("file.bin", "r")) != 0)
+	if ((file->file_ptr = fopen("file.bin", "r")) != NULL)
 	{
 			fclose(file->file_ptr);
 			return -1;			/** @todo correct error return code*/
@@ -33,7 +33,7 @@ ff_initialize(
 
 	if (!file->file_ptr)
 	{
-		printf("Unable to open file!");
+		//printf("Unable to open file!");
 		return -2;				/** @todo correct error return code */
 	}
 
@@ -70,8 +70,11 @@ ff_destroy(
 	file->super.record.value_size	= 0;
 
 	fclose(file->file_ptr);
-
-	if (remove("file.bin") == 0)			//check to ensure that you are not freeing something already free
+#if ARDUINO == 1 
+	if (fremove("file.bin") == 0)			//check to ensure that you are not freeing something already free
+#else
+	if (remove("file.bin") == 0)	
+#endif	
 	{
 		return err_ok;
 	}
@@ -133,7 +136,7 @@ ff_insert(
 
 		fread(record, record_size, 1, file->file_ptr);
 
-		if (feof(file->file_ptr) /*|| (record->status == DELETED)*/ )
+		if (feof(file->file_ptr) == EOF/*|| (record->status == DELETED)*/ )
 		{
 			//problem is here with base types as it is just an array of data.  Need better way
 #if DEBUG
@@ -195,7 +198,7 @@ ff_insert(
 		}
 		//There is no other condition now
 
-	}while (!feof(file->file_ptr));		//loop until a deleted location or EOF
+	}while (feof(file->file_ptr) != EOF);		//loop until a deleted location or EOF
 
 	free(record);
 	return err_ok;		//this needs to be corrected
@@ -225,7 +228,7 @@ ff_find_item_loc(
 	fpos_t cur_pos;
 
 	//while we have not reached the end of the the datafile
-	while (!feof(file->file_ptr))
+	while (feof(file->file_ptr) != EOF)
 	{
 
 		cur_pos = ftell(file->file_ptr);	//get current position in file
@@ -237,7 +240,7 @@ ff_find_item_loc(
 		{
 			/** @todo correct compare to use proper return type*/
 			int key_is_equal 	= file->super.compare((ion_key_t)record->data, key, file->super.record.key_size);
-
+			
 			if (IS_EQUAL == key_is_equal)
 			{
 
@@ -295,7 +298,6 @@ ff_query(
 #if DEBUG
 		io_printf("Item found at location %d\n", loc);
 #endif
-
 		//isolate value from record
 		fseek(file->file_ptr,loc + SIZEOF(STATUS) + file->super.record.key_size,SEEK_SET);
 		//copy the value from file to memory
@@ -311,10 +313,3 @@ ff_query(
 		return err_item_not_found;
 	}
 }
-
-
-
-
-
-
-

@@ -22,8 +22,9 @@
 extern "C" {
 #endif
 
+typedef long fpos_t;
+
 #define ARDUINO 1
-//#ifdef  INTERCEPT == 1
 
 #define 	FILE  				SD_FILE
 #define 	fopen(x, y) 			sd_fopen(x ,y)
@@ -38,8 +39,6 @@ extern "C" {
 #define 	feof(x)				sd_feof(x)
 #define		ftell(x)			sd_ftell(x)
 #define 	rewind(x)			sd_rewind(x)
-
-//#endif
 
 #ifdef __cplusplus
 }
