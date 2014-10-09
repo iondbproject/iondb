@@ -637,6 +637,7 @@ test_open_address_file_dictionary_predicate_range_unsigned(
 	cursor->destroy(&cursor);
 	//and destroy the collection
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
+
 }
 
 void

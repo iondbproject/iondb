@@ -12,13 +12,13 @@ extern "C" {
 #include "./../dicttypes.h"
 
 /**redefines file operations for arduino */
-//#include "./../../sd_if/kv_stdio_intercept.h"
+#include "./../../sd_if/kv_stdio_intercept.h"
 
 typedef struct ffdict_cursor
 {
 	dict_cursor_t 			super;		/**< Cursor supertype this type inherits from */
-	fpos_t					current;	/**<Currently visited spot*/
-	char					status;		/**@todo what is this for again as there are two status */
+	fpos_t				current;	/**<Currently visited spot*/
+	char				status;		/**@todo what is this for again as there are two status */
 } ffdict_cursor_t;
 
 #ifdef __cplusplus

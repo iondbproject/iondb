@@ -190,8 +190,8 @@ test_flat_file_simple_insert(
 	// Manually populate records
 	record_info_t record 			= flat_file.super.record;
 
-	int bucket_size 			= sizeof(char)
-									+ record.key_size + record.value_size;
+	int bucket_size 				= sizeof(char)
+											+ record.key_size + record.value_size;
 	//rewind
 	rewind(flat_file.file_ptr);
 
