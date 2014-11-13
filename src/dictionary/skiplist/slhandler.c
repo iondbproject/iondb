@@ -133,6 +133,11 @@ sldict_find(
 	(*cursor)->next 			= sldict_next;
 
 	(*cursor)->predicate 		= malloc(sizeof(predicate_t));
+	if(NULL == (*cursor)->predicate)
+	{
+		free(*cursor);
+		return err_out_of_memory;
+	}
 	(*cursor)->predicate->type 	= predicate->type;
 
 
