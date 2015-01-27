@@ -295,6 +295,7 @@ sl_delete(
 			}
 
 			status = err_ok;
+			return status;
 		}
 	}
 

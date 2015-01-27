@@ -97,7 +97,7 @@ dictionary_delete(
 	ion_key_t			key
 )
 {
-	return dictionary->handler->delete(dictionary,key);
+	return dictionary->handler->remove(dictionary,key);
 }
 
 char
@@ -262,7 +262,6 @@ dictonary_destroy_predicate_statement(
 	free((*predicate)->statement.equality.equality_value);
 	free(*predicate);
 	*predicate = NULL;
-
 }
 
 void
@@ -273,5 +272,5 @@ dictonary_destroy_predicate_range(
 	free((*predicate)->statement.range.geq_value);
 	free((*predicate)->statement.range.leq_value);
 	free(*predicate);
-		*predicate = NULL;
+	*predicate = NULL;
 }

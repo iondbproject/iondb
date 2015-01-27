@@ -113,7 +113,7 @@ test_collection_handler_binding(
 	CuAssertTrue(tc, handler.insert				== &sldict_insert);
 	CuAssertTrue(tc, handler.create_dictionary	== &sldict_create_dictionary);
 	CuAssertTrue(tc, handler.update				== &sldict_update);
-	CuAssertTrue(tc, handler.delete				== &sldict_delete);
+	CuAssertTrue(tc, handler.remove				== &sldict_delete);
 	CuAssertTrue(tc, handler.delete_dictionary	== &sldict_delete_dictionary);
 }
 

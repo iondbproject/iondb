@@ -16,7 +16,7 @@ sldict_init(
 	handler->insert 			= sldict_insert;
 	handler->get 				= sldict_query;
 	handler->create_dictionary 	= sldict_create_dictionary;
-	handler->delete 			= sldict_delete;
+	handler->remove 			= sldict_delete;
 	handler->delete_dictionary 	= sldict_delete_dictionary;
 	handler->update 			= sldict_update;
 	handler->find 				= sldict_find;
@@ -276,7 +276,7 @@ sldict_next(
 		if(cursor->status == cs_cursor_active)
 		{
 			if(NULL == sl_cursor->current ||
-				sldict_test_predicate(cursor, sl_cursor->current->key) == false)
+				sldict_test_predicate(cursor, sl_cursor->current->key) == boolean_false)
 			{
 				cursor->status 	= cs_end_of_results;
 				return cursor->status;
@@ -345,7 +345,7 @@ sldict_test_predicate(
 {
 	skiplist_t 		*skiplist 	= (skiplist_t*) cursor->dictionary->instance;
 	ion_key_size_t 	key_size	= cursor->dictionary->instance->record.key_size;
-	boolean_t 		result 		= false;
+	boolean_t 		result 		= boolean_false;
 
 	switch(cursor->type)
 	{
@@ -358,7 +358,7 @@ sldict_test_predicate(
 					) == 0
 				)
 			{
-				result = true;
+				result = boolean_true;
 			}
 			break;
 		}

@@ -81,8 +81,8 @@ struct dictionary_handler
 	err_t	(* update)(dictionary_t *, ion_key_t, ion_value_t);
 		/**< A pointer to the dictionaries update function. */
 	err_t	(* find)(dictionary_t *, predicate_t *, dict_cursor_t **);
-		/**< A pointer to the dictionaries find functipn */
-	err_t	(* delete)(dictionary_t *, ion_key_t);
+		/**< A pointer to the dictionaries find function */
+	err_t	(* remove)(dictionary_t *, ion_key_t);
 		/**< A pointer to the dictionaries key-value deletion function. */
 	err_t	(* delete_dictionary)(dictionary_t *);
 		/**< A pointer to the dictionaries dictionary removal function. */
@@ -108,7 +108,7 @@ struct dictionary
 struct dictionary_parent
 {
 	key_type_t				key_type;		/**< The key type stored in the map*/
-	record_info_t 				record;			/**< The record structure for items*/
+	record_info_t 			record;			/**< The record structure for items*/
 	char 					(* compare)(ion_key_t, ion_key_t, ion_key_size_t);
 										/**< Comparison function for instance of map */
 };
