@@ -15,11 +15,6 @@ bmk_register(
 {
 	suite->tests[suite->test_count] = bmk_test;
 	suite->test_count++;
-
-#if DEBUG > 0
-	printf("Added new test. There are now %d tests.\n", suite->test_count);
-#endif
-
 }
 
 void
@@ -27,11 +22,25 @@ bmk_run_test_single(
 	bmk_test_ptr bmk_test
 )
 {
-	int 	start_ram 	= free_ram();
-	ms_start_timer();
-	char* 	fcn_name 	= bmk_test();
-	int 	elp_time 	= ms_stop_timer();
-	int 	ram_used 	= start_ram - free_ram();
+	int start_ram = 0;
+	int thetime = 0;
+	int ram_used = 0;
+	int elp_time = 0;
+	char* fcn_name;
+
+	/* Run test 3 times and average */
+	int i;
+	for(i = 0; i < 3; i++)
+	{
+		start_ram 	= free_ram();
+		thetime 	= millis();
+	 	fcn_name 	= bmk_test(); /* This also runs the test */
+		elp_time 	+= millis() - thetime; 
+		ram_used 	+= start_ram - free_ram();
+	}
+
+	elp_time = elp_time / 3;
+	ram_used = ram_used / 3;
 
 	printf("%s used %db RAM and finished in %dms.\n", fcn_name, ram_used, elp_time);
 }
@@ -41,14 +50,12 @@ bmk_run_test_all(
 	bmk_suite_t* suite
 )
 {
-	ms_timer_init();
 	int i;
 	for(i = 0; i < suite->test_count; i++)
 	{
-		int ram_use = free_ram();
 		bmk_run_test_single(suite->tests[i]);
-		printf("Delta ram: %d\n", free_ram() - ram_use);
 	}
-
-	printf("Finished %d tests.\n", suite->test_count);
+	
+	printf("Finished all %d tests.\n", suite->test_count);
 }
+

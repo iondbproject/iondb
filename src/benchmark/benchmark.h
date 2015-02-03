@@ -8,15 +8,19 @@
 #ifndef BENCHMARK_H_
 #define BENCHMARK_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "./../kv_system.h"
 #include "./../kv_io.h"
-#include "./../milli/millisec.h"
 #include "./../ram/ramutil.h"
+#include "./../serial_io/serial_c_iface.h"
 
-#define MAX_TESTS 50 /**< Maximum number of tests in a suite */
+#define MAX_TESTS 25 /**< Maximum number of tests in a suite */
 
 /* What a single benchmark test is defined as.*/
-typedef char* (*bmk_test_ptr)(void);
+typedef char* (*bmk_test_ptr)();
 
 typedef struct bmk_suite
 {
@@ -42,5 +46,9 @@ void
 bmk_run_test_all(
 	bmk_suite_t*
 );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* BENCHMARK_H_ */
