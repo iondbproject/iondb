@@ -7,7 +7,7 @@
 /******************************************************************************/
 
 #include "slstore.h"
-#include "./../../serial_io/serial_c_iface.h"
+//#include "./../../serial_io/serial_c_iface.h"
 
 err_t
 sl_initialize(
