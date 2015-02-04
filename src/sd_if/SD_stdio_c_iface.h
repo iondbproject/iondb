@@ -11,7 +11,7 @@ extern "C" {
 
 #include "kv_stdio_intercept.h"
 
-typedef long fpos_t;				/**< file position */
+//typedef long fpos_t;				/**< file position */
 	
 /**
 @brief		Wrapper around Arduino File type.

@@ -8,6 +8,8 @@
 #ifndef FLATFILE_H_
 #define FLATFILE_H_
 
+//#include "./../../target.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -33,8 +35,8 @@ extern "C" {
 typedef struct ff_file
 {
 	dictionary_parent_t		super;
-	FILE 					*file_ptr;		/**< Pointer to file store */
-	fpos_t 					start_of_data;	/**< indicates start of data block */
+	FILE 				*file_ptr;		/**< Pointer to file store */
+	fpos_t 				start_of_data;	/**< indicates start of data block */
 	write_concern_t 		write_concern;	/**< The current @p write_concern level
 	 	 	 	 	 	 	 	 	 	 	 of the file*/
 } ff_file_t;
@@ -62,7 +64,7 @@ err_t
 ff_initialize(
 		ff_file_t			*file,
 		/*char				(*compare)(ion_key_t, ion_key_t, ion_key_size_t),*/
-	    key_type_t			key_type,
+	    	key_type_t			key_type,
 		ion_key_size_t		key_size,
 		ion_value_size_t	value_size
 );

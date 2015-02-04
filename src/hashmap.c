@@ -14,7 +14,7 @@
 #include "./dictionary/dictionary.h"
 #include "./dictionary/openaddresshash/oadictionaryhandler.h"
 
-#include "io.h"
+#include "kv_io.h"
 
 void test_query(dictionary_t* test_dictionary, int key, const record_info_t* record) {
 

@@ -1,6 +1,10 @@
 #ifndef _LFSR_H_
 #define _LFSR_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 
 typedef struct lfsr
@@ -24,5 +28,11 @@ void
 lfsr_reset(
 	lfsr_t * instance
 );
+
+#ifdef __cplusplus
+}
 #endif
+
+#endif
+
 

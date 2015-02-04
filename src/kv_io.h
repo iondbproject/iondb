@@ -8,10 +8,6 @@
 #ifndef IO_H_
 #define IO_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -26,9 +22,5 @@ extern "C" {
  * @return
  */
 int io_printf( const char * format, ... );
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* IO_H_ */

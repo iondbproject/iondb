@@ -321,7 +321,7 @@ boolean_t ffdict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
 	ff_file_t * file = (ff_file_t *)(cursor->dictionary->instance);
 
 	//pre-prime value for faster exit
-	key_satisfies_predicate = bolean_false;
+	key_satisfies_predicate = boolean_false;
 
 	switch (cursor->type)
 	{
