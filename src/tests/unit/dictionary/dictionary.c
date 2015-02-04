@@ -188,5 +188,3 @@ runalltests_dictionary()
 	CuSuiteDelete(suite);
 	CuStringDelete(output);
 }
-
-
