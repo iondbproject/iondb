@@ -1,4 +1,6 @@
 bin/
+lib/
+.build/
 .settings
 .cproject
 .project
