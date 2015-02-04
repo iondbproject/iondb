@@ -121,5 +121,5 @@ main(
 	}
 
 	dictionary_delete_dictionary(&test_dict);
-	return EXIT_SUCCESS;
+	return 0;
 }

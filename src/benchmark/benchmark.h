@@ -1,9 +1,8 @@
-/*
- * benchmark.h
- *
- *  Created on: Sep 20, 2014
- *      Author: Kris
- */
+/**
+* benchmark.h
+* Author: Eric
+* Date: Feb. 4th 2015
+*/
 
 #ifndef BENCHMARK_H_
 #define BENCHMARK_H_
@@ -17,34 +16,17 @@ extern "C" {
 #include "./../ram/ramutil.h"
 #include "./../serial_io/serial_c_iface.h"
 
-#define MAX_TESTS 25 /**< Maximum number of tests in a suite */
+static unsigned volatile int ram_counter;
+static unsigned volatile int time_counter;
 
-/* What a single benchmark test is defined as.*/
-typedef char* (*bmk_test_ptr)();
-
-typedef struct bmk_suite
-{
-	int 			test_count; /**< Number of tests in the suite */
-	bmk_test_ptr 	tests[MAX_TESTS]; 	/**< Array of test fptrs to run */
-} bmk_suite_t;
-
-/* Given a suite and a test fptr, registers the test to the suite. */
 void
-bmk_register(
-	bmk_suite_t*,
-	bmk_test_ptr
+benchmark_start(
+    void
 );
 
-/* Given a test fptr, run the test and output the results. */
 void
-bmk_run_test_single(
-	bmk_test_ptr
-);
-
-/* Given a suite, run every single test in it using "bmk_run_test_single". */
-void
-bmk_run_test_all(
-	bmk_suite_t*
+benchmark_stop(
+    void
 );
 
 #ifdef __cplusplus

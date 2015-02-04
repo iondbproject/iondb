@@ -153,5 +153,5 @@ int main(void) {
 		io_printf(">");
 		fflush(stdin);
 	}*/
-	return EXIT_SUCCESS;
+	return 0;
 }
