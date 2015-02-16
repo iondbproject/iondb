@@ -181,7 +181,6 @@ testsources := 	$(SRC)/skiplist.c	\
 				$(SRC)/tests/unit/dictionary/skiplist/run_slstore.c \
 				$(SRC)/tests/unit/dictionary/run_dictionary.c \
 				$(SRC)/tests/unit/dictionary/openaddresshash/run_oahash.c \
-				$(SRC)/tests/unit/dictionary/run_dictionary.c \
 				$(SRC)/tests/unit/dictionary/flatfilestore/run_flatfile.c \
 				$(SRC)/tests/unit/dictionary/openaddressfilehash/run_oafhash.c
 
