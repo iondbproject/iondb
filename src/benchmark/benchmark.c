@@ -17,7 +17,8 @@ benchmark_start(
 
 void
 benchmark_stop(
-    void)
+    void
+)
 {
     unsigned int ram_used = ram_counter - free_ram();
     unsigned int time_elapsed = millis() - time_counter;

@@ -1,0 +1,44 @@
+Locations:
+    Arduino forum:
+        Exhibition / Gallery - http://forum.arduino.cc/index.php?board=29.0
+        Other Software Development - http://forum.arduino.cc/index.php?board=23.0
+
+    Reddit Arduino community:
+        http://www.reddit.com/r/Arduino
+
+Code will be hosted on GitHub as a public facing repository. On whiteboard
+
+Posted information:
+    IonDB is a key-value datastore library targeting the Arduino platform and other C-compatible resource constrained systems.
+
+        Advantages:
+            * FOSS code base available for review, licensed under _____ [NB: What is our license?]
+
+            *Can store any arbitrary information as the value, with a key of varying numerical lengths or as a string
+
+            *Strong, unit tested code with excellent coverage [NB: Figure out the coverage %?]
+
+            *Several underlying implementations supplied, such as a Skiplist or an Open Address Hashtable. Allows strong customization and flexibility to support specific needs
+
+            *Customization parameters available, including key size, value size, and implementation specific configuration parameters
+
+            *Written in pure C with a C++ compatable interface
+
+            *Support for file based storage via a custom SD file interface
+
+            *Fully compatable with Arduino Wiring and the Arduino IDE on Windows, OSX, and *nix.
+
+    Github link: <here>
+
+    Installation instructions: [NB: Geared towards the arduino wiring community]
+        Download the library zip file and extract into your Arduino Library directory
+            * Windows: C:\<USER>\Documents\Arduino\libraries
+            * OSX: Documents/Arduino/libraries
+
+        Restart ArduinoIDE.
+
+        From the Arduino IDE menu, go Sketch -> Import Library... and select IonDB from the dropdown. The library is now available for you to access.
+
+        Refer to the IonDB documentation [[[here]]] [NB: Need documentation, probably on GitHub] for example code.
+
+        Contact information: iondbproject@gmail.com [NB: get access from Graeme]
