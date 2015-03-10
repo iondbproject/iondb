@@ -30,7 +30,7 @@ Posted information:
 
     Github link: <here>
 
-    Installation instructions: [NB: Geared towards the arduino wiring community]
+    Installation instructions:
         Download the library zip file and extract into your Arduino Library directory
             * Windows: C:\<USER>\Documents\Arduino\libraries
             * OSX: Documents/Arduino/libraries
@@ -41,4 +41,22 @@ Posted information:
 
         Refer to the IonDB documentation [[[here]]] [NB: Need documentation, probably on GitHub] for example code.
 
-        Contact information: iondbproject@gmail.com [NB: get access from Graeme]
+        Contact information: iondbproject@gmail.com
+
+Potential interest:
+    http://stackoverflow.com/questions/15727814/arduino-hash-table-dictionary
+
+    http://forum.arduino.cc/index.php?topic=110809.0
+    http://forum.arduino.cc/index.php?topic=42114.0
+    http://forum.arduino.cc/index.php?topic=22870.0
+
+    http://www.reddit.com/r/arduino/comments/1zvccj/question_how_would_i_store_temperature_data_from/
+    http://www.reddit.com/r/arduino/comments/128vzj/how_to_collect_data_from_arduino_daily/
+    http://www.reddit.com/r/arduino/comments/1c0say/help_for_a_beginner_on_a_sensor_project/
+    http://www.reddit.com/r/arduino/comments/2sog3k/beginner_looking_to_do_some_data_logging/
+    http://www.reddit.com/r/arduino/comments/rikpk/high_resolution_data_logging/
+    http://www.reddit.com/r/arduino/comments/jabsb/arduino_key_value_store/
+    http://www.reddit.com/r/arduino/comments/2pdg3f/i_have_this_code_concept_in_my_head_i_just_dont/
+
+Previous solutions:
+    http://playground.arduino.cc/Code/HashMap - Static array solution: Stores objects with key-value pairs and does a linear scan (Used previously)
