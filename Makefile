@@ -131,15 +131,15 @@ endef
 
 # Sources for database library.
 libsources :=  	$(SRC)/kv_io.c \
-				$(SRC)/dictionary/dictionary.c \
-				$(SRC)/dictionary/skiplist/slhandler.c \
-				$(SRC)/dictionary/skiplist/slstore.c \
-				$(SRC)/dictionary/openaddresshash/oadictionaryhandler.c \
-				$(SRC)/dictionary/openaddresshash/oahash.c \
-				$(SRC)/dictionary/flatfilestore/ffdictionaryhandler.c \
-				$(SRC)/dictionary/flatfilestore/flatfile.c \
-				$(SRC)/dictionary/openaddressfilehash/oafdictionaryhandler.c \
-				$(SRC)/dictionary/openaddressfilehash/oafhash.c 
+				$(SRC)/dictionary.c \
+				$(SRC)/slhandler.c \
+				$(SRC)/slstore.c \
+				$(SRC)/oadictionaryhandler.c \
+				$(SRC)/oahash.c \
+				$(SRC)/ffdictionaryhandler.c \
+				$(SRC)/flatfile.c \
+				$(SRC)/oafdictionaryhandler.c \
+				$(SRC)/oafhash.c 
 	
 # Generate list of libraries to compile.
 libs        := $(addprefix $(BIN_LIB)/,$(subst .c,.o,$(notdir $(libsources))))
@@ -158,16 +158,16 @@ utilexecs   := $(addprefix $(BIN_UTILS)/,$(subst .c,,$(notdir $(utilsources))))
 utildepends := $(addprefix $(BIN_UTILS)/,$(subst .c,.d,$(notdir $(utilssources))))
 
 # List of test library sources.
-tlsources   := 	$(SRC)/tests/CuTest.c  \
-				$(SRC)/tests/unit/dictionary/skiplist/slstore.c	\
-				$(SRC)/tests/unit/dictionary/skiplist/slhandler.c \
-				$(SRC)/tests/unit/dictionary/dictionary.c \
-				$(SRC)/tests/unit/dictionary/openaddresshash/oahash.c	\
-				$(SRC)/tests/unit/dictionary/openaddresshash/oadictionaryhandler.c \
-				$(SRC)/tests/unit/dictionary/flatfilestore/ffdictionaryhandler.c \
-				$(SRC)/tests/unit/dictionary/flatfilestore/flatfile.c \
-				$(SRC)/tests/unit/dictionary/openaddressfilehash/oafhash.c \
-				$(SRC)/tests/unit/dictionary/openaddressfilehash/oafdictionaryhandler.c
+tlsources   := 	$(SRC)/CuTest.c  \
+				$(SRC)/test_slstore.c	\
+				$(SRC)/test_slhandler.c \
+				$(SRC)/test_dictionary.c \
+				$(SRC)/test_oahash.c	\
+				$(SRC)/test_oadictionaryhandler.c \
+				$(SRC)/test_ffdictionaryhandler.c \
+				$(SRC)/test_flatfile.c \
+				$(SRC)/test_oafhash.c \
+				$(SRC)/test_oafdictionaryhandler.c
 
 # Generate list of libraries to compile.
 testlibs    := $(addprefix $(BIN_TESTS)/,$(subst .c,.o,$(notdir $(tlsources))))
@@ -178,11 +178,11 @@ tldepends   := $(addprefix $(BIN_TESTS)/,$(subst .c,.d,$(notdir $(tlsources))))
 # List of executable test library sources. (main)
 testsources := 	$(SRC)/skiplist.c	\
 				$(SRC)/hashmap.c 	\
-				$(SRC)/tests/unit/dictionary/skiplist/run_slstore.c \
-				$(SRC)/tests/unit/dictionary/run_dictionary.c \
-				$(SRC)/tests/unit/dictionary/openaddresshash/run_oahash.c \
-				$(SRC)/tests/unit/dictionary/flatfilestore/run_flatfile.c \
-				$(SRC)/tests/unit/dictionary/openaddressfilehash/run_oafhash.c
+				$(SRC)/run_slstore.c \
+				$(SRC)/run_dictionary.c \
+				$(SRC)/run_oahash.c \
+				$(SRC)/run_flatfile.c \
+				$(SRC)/run_oafhash.c
 
 # Generate list of libraries to compile.
 testexecs   := $(addprefix $(BIN_TESTS)/,$(subst .c,,$(notdir $(testsources))))
@@ -193,12 +193,11 @@ testdepends :=$(addprefix $(BIN_TESTS)/,$(subst .c,.d,$(notdir $(testsources))))
 # Sources for database library.
 avrlibsrcs :=  	$(SRC)/kv_io.c \
 				$(SRC)/serial.c	\
-				$(SRC)/dictionary/dictionary.c \
-				$(SRC)/dictionary/skiplist/slhandler.c \
-				$(SRC)/dictionary/skiplist/slstore.c \
-				$(SRC)/milli/millisec.c \
-				$(SRC)/ram/ramutil.c \
-				$(SRC)/benchmark/benchmark.c
+				$(SRC)/dictionary.c \
+				$(SRC)/slhandler.c \
+				$(SRC)/slstore.c \
+				$(SRC)/ramutil.c \
+				$(SRC)/benchmark.c
 					
 # list of target test sources for Atmel Procs
 avrtargetsrc := $(SRC)/sample.c \

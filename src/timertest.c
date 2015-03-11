@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "benchmark/benchmark.h"
+#include "benchmark.h"
 //#include "windows.h"
 
 int main(void) {

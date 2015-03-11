@@ -1,15 +1,15 @@
-#include "dictionary/dictionary.h"
-#include "benchmark/benchmark.h"
+#include "dictionary.h"
+#include "benchmark.h"
 
-#include "dictionary/skiplist/slhandler.h"
-//#include "dictionary/openaddresshash/oadictionaryhandler.h"
-//#include "dictionary/openaddressfilehash/oafdictionaryhandler.h"
-//#include "dictionary/flatfilestore/ffdictionaryhandler.h"
+#include "slhandler.h"
+//#include "oadictionaryhandler.h"
+//#include "oafdictionaryhandler.h"
+//#include "ffdictionaryhandler.h"
 
 //#include <SD.h>
-//#include "sd_if/SD_stdio_c_iface.h"
+//#include "SD_stdio_c_iface.h"
 
-#include "lfsr/lfsr.h"
+#include "lfsr.h"
 
 #define SHOW() printf("%s: ", __func__)
 /**< MAKE_ION_KEY :: int -> ion_key_t (unsigned char*) */

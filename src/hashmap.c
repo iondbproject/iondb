@@ -11,8 +11,8 @@
 #include <stdlib.h>
 #include "kv_system.h"
 //#include "oahash.h"
-#include "./dictionary/dictionary.h"
-#include "./dictionary/openaddresshash/oadictionaryhandler.h"
+#include "dictionary.h"
+#include "oadictionaryhandler.h"
 
 #include "kv_io.h"
 
