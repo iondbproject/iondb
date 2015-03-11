@@ -6,6 +6,7 @@
 #define SYSTEM_H_
 
 #define USING_ECLIPSE 	1
+#define ION_ARDUINO		0
 #define DEBUG 			0
 #define IS_EQUAL 		0
 #define ZERO			0

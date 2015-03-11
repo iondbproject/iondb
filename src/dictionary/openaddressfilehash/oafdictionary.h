@@ -14,7 +14,7 @@ extern "C" {
 #include "./../dicttypes.h"
 
 /**redefines file operations for arduino */
-//#include "./../../sd_if/SD_stdio_c_iface.h"
+#include "./../../sd_if/SD_stdio_c_iface.h"
 
 /**
 @brief		The position in the hashmap.

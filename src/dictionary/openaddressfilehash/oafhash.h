@@ -24,7 +24,7 @@ extern "C" {
 #include "./../../kv_io.h"
 
 /**redefines file operations for arduino */
-//#include "./../../sd_if/SD_stdio_c_iface.h"
+#include "./../../sd_if/SD_stdio_c_iface.h"
 
 #define EMPTY 			-1
 #define DELETED 		-2

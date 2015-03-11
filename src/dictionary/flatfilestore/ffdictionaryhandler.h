@@ -21,7 +21,7 @@ extern "C" {
 #include "ffdictionary.h"
 
 /**redefines file operations for arduino */
-//#include "./../../sd_if/SD_stdio_c_iface.h"
+#include "./../../sd_if/SD_stdio_c_iface.h"
 
 typedef int record_idx_t;
 

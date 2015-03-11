@@ -12,7 +12,7 @@ extern "C" {
 #include "./../dicttypes.h"
 
 /**redefines file operations for arduino */
-//#include "./../../sd_if/kv_stdio_intercept.h"
+#include "./../../sd_if/kv_stdio_intercept.h"
 
 typedef struct ffdict_cursor
 {

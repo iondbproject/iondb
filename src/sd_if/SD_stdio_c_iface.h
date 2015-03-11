@@ -2,8 +2,9 @@
 #ifndef SD_STDIO_C_IFACE_H
 #define SD_STDIO_C_IFACE_H
 
-#include <Arduino.h>
+#if ION_ARDUINO > 0
 
+#include <Arduino.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -131,5 +132,7 @@ int SD_File_Begin(uint8_t csPin);
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* Clause ION_ARDUINO */
 
 #endif
