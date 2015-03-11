@@ -18,7 +18,7 @@
 #ifndef KV_STDIO_INTERCEPT_H_
 #define KV_STDIO_INTERCEPT_H_
 
-#if ION_ARDUINO > 0
+#ifdef ION_ARDUINO
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #include "benchmark/benchmark.h"
-#include "windows.h"
+//#include "windows.h"
 
 int main(void) {
     benchmark_start();

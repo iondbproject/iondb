@@ -2,7 +2,9 @@
 #ifndef SD_STDIO_C_IFACE_H
 #define SD_STDIO_C_IFACE_H
 
-#if ION_ARDUINO > 0
+#include "./../kv_system.h"
+
+#ifdef ION_ARDUINO
 
 #include <Arduino.h>
 

@@ -77,71 +77,71 @@ setup(
     switch(TEST)
     {
         case 1: {
-            bench_insert(50);
+            bench_insert(5);
             break;
         }
         case 2: {
-            bench_insert(100);
+            bench_insert(10);
             break;
         }
         case 3: {
-            bench_insert(150);
+            bench_insert(15);
             break;
         }
         case 4: {
-            bench_insert(200);
+            bench_insert(20);
             break;
         }
         case 5: {
-            bench_get(200, 50);
+            bench_get(20, 5);
             break;
         }
         case 6: {
-            bench_get(200, 100);
+            bench_get(20, 10);
             break;
         }
         case 7: {
-            bench_get(200, 150);
+            bench_get(20, 15);
             break;
         }
         case 8: {
-            bench_get(200, 200);
+            bench_get(20, 20);
             break;
         }
         case 9: {
-            bench_delete(200, 50);
+            bench_delete(20, 5);
             break;
         }
         case 10: {
-            bench_delete(200, 100);
+            bench_delete(20, 10);
             break;
         }
         case 11: {
-            bench_delete(200, 150);
+            bench_delete(20, 15);
             break;
         }
         case 12: {
-            bench_delete(200, 200);
+            bench_delete(20, 20);
             break;
         }
         case 13: {
-            bench_equality(200, 50);
+            bench_equality(20, 5);
             break;
         }
         case 14: {
-            bench_equality(150, 100);
+            bench_equality(20, 10);
             break;
         }
         case 15: {
-            bench_equality(150, 150);
+            bench_equality(20, 15);
             break;
         }
         case 16: {
-            bench_range(150, 0);
+            bench_range(20, 0);
             break;
         }
         case 17: {
-            bench_range(150, 1);
+            bench_range(20, 1);
             break;
         }
         default: {
@@ -287,7 +287,7 @@ bench_equality(
 
 void
 bench_range(
-    int max,
+    int num_inserts,
     int whichhalf
 )
 {
@@ -295,7 +295,9 @@ bench_range(
     bench_dict_initialize();
 
     int i;
-    for(i = 0; i < max; i++)
+    int min;
+    int max;
+    for(i = 0; i < num_inserts; i++)
     {
         ion_key_t key = MAKE_ION_KEY(lfsr_get_next(&keygen));
         if(i == 0)
@@ -315,16 +317,19 @@ bench_range(
                 min = curkey;
             }
         }
-        status = dictionary_insert(&dict, key, test_value);
+        dictionary_insert(&dict, key, test_value);
     }
 
+    int int_leq;
+    int int_geq;
+
     if(whichhalf == 0) { // Pick lower half
-        int int_leq = min;
-        int int_geq = min + (max - min) / 2;
+        int_leq = min;
+        int_geq = min + (max - min) / 2;
     }
     else if(whichhalf == 1) {
-        int int_leq = min + (max - min) / 2;
-        int int_geq = max;
+        int_leq = min + (max - min) / 2;
+        int_geq = max;
     }
     ion_key_t   leq     = (ion_key_t) &int_leq;
     ion_key_t   geq     = (ion_key_t) &int_geq;
