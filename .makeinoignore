@@ -1,0 +1,15 @@
+;Unit tests
+CuTest(\.c|\.h)
+run_\w+\.c
+test_\w+\.c
+sltests\.h
+
+;Demo executables
+lfsr_example\.c
+hashmap\.c
+skiplist\.c
+timertest(\.c|\.exe)
+
+;Misc files or directories
+publish\.txt
+ion_deployment
