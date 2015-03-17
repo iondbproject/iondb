@@ -46,9 +46,6 @@ lfsr_t keygen;
 /**< LFSR Seed */
 #define KEY_SEED 0xACE1u
 
-/**< Current test case */
-#define TEST 0
-
 void
 setup(
 )
@@ -281,7 +278,7 @@ loop(
 )
 {
     while(!Serial.available()) {} //Wait
-    char testcase = Serial.read() - CHAR_OFFSET;
+    char testcase = Serial.read();
     switch(testcase)
     {
         case 'a': {
