@@ -13,3 +13,6 @@ timertest(\.c|\.exe)
 ;Misc files or directories
 publish\.txt
 ion_deployment
+
+;Temp excludes
+ionbench_uno_.*

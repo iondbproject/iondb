@@ -72,82 +72,6 @@ setup(
 
     /* LFSR stuff */
     lfsr_init_start_state(KEY_SEED, &keygen);
-
-    /* Benchmark stuff */
-    switch(TEST)
-    {
-        case 1: {
-            bench_insert(25);
-            break;
-        }
-        case 2: {
-            bench_insert(50);
-            break;
-        }
-        case 3: {
-            bench_insert(75);
-            break;
-        }
-        case 4: {
-            bench_insert(100);
-            break;
-        }
-        case 5: {
-            bench_get(100, 20);
-            break;
-        }
-        case 6: {
-            bench_get(100, 40);
-            break;
-        }
-        case 7: {
-            bench_get(100, 60);
-            break;
-        }
-        case 8: {
-            bench_get(100, 80);
-            break;
-        }
-        case 9: {
-            bench_delete(100, 20);
-            break;
-        }
-        case 10: {
-            bench_delete(100, 40);
-            break;
-        }
-        case 11: {
-            bench_delete(100, 60);
-            break;
-        }
-        case 12: {
-            bench_delete(100, 80);
-            break;
-        }
-        case 13: {
-            bench_equality(100, 30);
-            break;
-        }
-        case 14: {
-            bench_equality(100, 60);
-            break;
-        }
-        case 15: {
-            bench_equality(100, 90);
-            break;
-        }
-        case 16: {
-            bench_range(100, 0);
-            break;
-        }
-        case 17: {
-            bench_range(100, 1);
-            break;
-        }
-        default: {
-            printf("Invalid test case\n");
-        }
-    }
 }
 
 void
@@ -352,4 +276,84 @@ bench_range(
     bench_dict_cleanup();
 }
 
-void loop(){} /* Not needed */
+void
+loop(
+)
+{
+    while(!Serial.available()) {} //Wait
+    char testcase = Serial.read() - CHAR_OFFSET;
+    switch(testcase)
+    {
+        case 'a': {
+            bench_insert(50);
+            break;
+        }
+        case 'b': {
+            bench_insert(100);
+            break;
+        }
+        case 'c': {
+            bench_insert(150);
+            break;
+        }
+        case 'd': {
+            bench_insert(200);
+            break;
+        }
+        case 'e': {
+            bench_get(200, 50);
+            break;
+        }
+        case 'f': {
+            bench_get(200, 100);
+            break;
+        }
+        case 'g': {
+            bench_get(200, 150);
+            break;
+        }
+        case 'h': {
+            bench_get(200, 200);
+            break;
+        }
+        case 'i': {
+            bench_delete(200, 50);
+            break;
+        }
+        case 'j': {
+            bench_delete(200, 100);
+            break;
+        }
+        case 'k': {
+            bench_delete(200, 150);
+            break;
+        }
+        case 'l': {
+            bench_delete(200, 200);
+            break;
+        }
+        case 'm': {
+            bench_equality(200, 50);
+            break;
+        }
+        case 'n': {
+            bench_equality(150, 100);
+            break;
+        }
+        case 'o': {
+            bench_equality(150, 150);
+            break;
+        }
+        case 'p': {
+            bench_range(150, 0);
+            break;
+        }
+        case 'q': {
+            bench_range(150, 1);
+            break;
+        }
+        default: {
+            Serial.println("Invalid test case");
+        }
+    }
+}

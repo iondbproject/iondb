@@ -20,7 +20,7 @@ except FileNotFoundError:
     print("Done.")
     open(ignore_file, "x").close()
 
-print("Ignoring the following rules: {}".format(", ".join(exclude_rules)))
+print("Ignoring using the following rules: {}".format(", ".join(exclude_rules)))
 
 ###
 #Process

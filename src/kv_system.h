@@ -5,7 +5,7 @@
 #ifndef SYSTEM_H_
 #define SYSTEM_H_
 
-//#define ION_ARDUINO
+#define ION_ARDUINO
 #define USING_ECLIPSE 	1
 #define DEBUG 			0
 #define IS_EQUAL 		0
