@@ -673,7 +673,7 @@ test_flat_file_delete_1(
 )
 {
 	ff_file_t file;								//create handler for hashmap
-	int i = 366;
+	int i = 2;
 
 	initialize_flat_file_std_conditions(&file);
 

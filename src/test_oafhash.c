@@ -725,7 +725,7 @@ test_open_address_file_hashmap_delete_1(
 )
 {
 	file_hashmap_t map;								//create handler for hashmap
-	int i = 366;
+	int i = 2;
 
 	initialize_file_hash_map_std_conditions(&map);
 
