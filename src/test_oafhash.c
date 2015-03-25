@@ -41,7 +41,7 @@ check_file_map(
 		DUMP(i,"%i");
 		DUMP(map->map_size,"%i");
 		int j;
-		DUMP(fread(record,bucket_size,1,map->file),"%i");
+		DUMP((int) fread(record,bucket_size,1,map->file),"%d");
 		printf("reading\n");
 		fflush(stdout);
 		for (j = 0; j < bucket_size; j++)
@@ -725,7 +725,7 @@ test_open_address_file_hashmap_delete_1(
 )
 {
 	file_hashmap_t map;								//create handler for hashmap
-	int i;
+	int i = 366;
 
 	initialize_file_hash_map_std_conditions(&map);
 

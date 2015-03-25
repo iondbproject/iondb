@@ -109,7 +109,7 @@ err_t ffdict_find(
 			//as this is an equality, need to malloc for key as well
 			if (((*cursor)->predicate->statement.equality.equality_value =
 			        (ion_key_t)malloc(
-			                (int)((ff_file_t*)dictionary->instance->record.key_size)))
+			                (int)(dictionary->instance->record.key_size)))
 			        == NULL)
 			{
 				free((*cursor)->predicate);
@@ -119,7 +119,7 @@ err_t ffdict_find(
 			//copy across the key value as the predicate may be destroyed
 			memcpy((*cursor)->predicate->statement.equality.equality_value,
 			        predicate->statement.equality.equality_value,
-			        (int)(((ff_file_t *)dictionary->instance->record.key_size)));
+			        (int)(dictionary->instance->record.key_size));
 
 			//find the location of the first element as this is a straight equality
 			fpos_t location = cs_invalid_index;
@@ -157,12 +157,12 @@ err_t ffdict_find(
 			//copy across the key value as the predicate may be destroyed
 			memcpy((*cursor)->predicate->statement.range.leq_value,
 			        predicate->statement.range.leq_value,
-			        (int)((ff_file_t *)(dictionary)->instance->record.key_size));
+			        (int)(dictionary->instance->record.key_size));
 
 			//as this is a range, need to malloc leq kesbWy
 			if (((*cursor)->predicate->statement.range.geq_value =
-			        (ion_key_t)malloc(
-			        		(int)((ff_file_t*)(dictionary)->instance->record.key_size)))
+			        malloc(
+		        		(int)(dictionary->instance->record.key_size)))
 			        == NULL)
 			{
 				free((*cursor)->predicate->statement.range.leq_value);
@@ -173,7 +173,7 @@ err_t ffdict_find(
 			//copy across the key value as the predicate may be destroyed
 			memcpy((*cursor)->predicate->statement.range.geq_value,
 			        predicate->statement.range.geq_value,
-			        		(int)((ff_file_t*)dictionary->instance->record.key_size));
+			        		(int)(dictionary->instance->record.key_size));
 
 			//find the location of the first element as this is a straight equality
 			//fpos_t location = cs_invalid_index;

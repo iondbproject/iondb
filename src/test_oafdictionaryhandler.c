@@ -50,6 +50,7 @@ createFileTestCollection(
 		sprintf((char*)str, "value : %i ", i);
 		test_dictionary->handler->insert(test_dictionary, (ion_key_t)&i, str);
 	}
+	//printf("Current str: 0x%p\n", str);
 	free(str);
 }
 /**
@@ -114,7 +115,6 @@ test_open_address_file_hashmap_handler_create_destroy(
 	CuAssertTrue(tc, (((file_hashmap_t *)test_dictionary.instance)->write_concern) == wc_insert_unique);
 	CuAssertTrue(tc, test_dictionary.handler->delete_dictionary(&test_dictionary) == err_ok);
 	CuAssertTrue(tc, test_dictionary.instance == NULL);
-
 }
 
 /**

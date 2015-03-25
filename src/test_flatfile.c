@@ -38,7 +38,7 @@ check_flat_file(
 	while (!feof(flat_file->file_ptr))
 	{
 		int j;
-		DUMP(fread(record,bucket_size,1,flat_file->file_ptr),"%i");
+		DUMP((int) fread(record,bucket_size,1,flat_file->file_ptr),"%d");
 		printf("reading\n");
 		fflush(stdout);
 		for (j = 0; j < bucket_size; j++)
@@ -673,7 +673,7 @@ test_flat_file_delete_1(
 )
 {
 	ff_file_t file;								//create handler for hashmap
-	int i;
+	int i = 366;
 
 	initialize_flat_file_std_conditions(&file);
 
