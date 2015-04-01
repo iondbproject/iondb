@@ -10,9 +10,9 @@
 #include <string.h>
 #include <limits.h>
 #include "CuTest.h"
-#include "flatfile.h"
-#include "dicttypes.h"
-#include "dictionary.h"
+#include "./../src/flatfile.h"
+#include "./../src/dicttypes.h"
+#include "./../src/dictionary.h"
 
 #define STD_KV_SIZE 10
 #define TEST_FILE	"file.bin"

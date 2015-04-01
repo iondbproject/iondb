@@ -25,6 +25,8 @@ CP    := cp
 
 # Directory structure.
 SRC       := src
+TESTS     := tests
+DEMOS     := demos
 AVR 	  := "C:\Program Files (x86)\Arduino\hardware\tools\avr\avr\include\avr"
 BIN       := bin
 BIN_LIB   := $(BIN)/lib
@@ -158,16 +160,16 @@ utilexecs   := $(addprefix $(BIN_UTILS)/,$(subst .c,,$(notdir $(utilsources))))
 utildepends := $(addprefix $(BIN_UTILS)/,$(subst .c,.d,$(notdir $(utilssources))))
 
 # List of test library sources.
-tlsources   := 	$(SRC)/CuTest.c  \
-				$(SRC)/test_slstore.c	\
-				$(SRC)/test_slhandler.c \
-				$(SRC)/test_dictionary.c \
-				$(SRC)/test_oahash.c	\
-				$(SRC)/test_oadictionaryhandler.c \
-				$(SRC)/test_ffdictionaryhandler.c \
-				$(SRC)/test_flatfile.c \
-				$(SRC)/test_oafhash.c \
-				$(SRC)/test_oafdictionaryhandler.c
+tlsources   := 	$(TESTS)/CuTest.c  \
+				$(TESTS)/test_slstore.c	\
+				$(TESTS)/test_slhandler.c \
+				$(TESTS)/test_dictionary.c \
+				$(TESTS)/test_oahash.c	\
+				$(TESTS)/test_oadictionaryhandler.c \
+				$(TESTS)/test_ffdictionaryhandler.c \
+				$(TESTS)/test_flatfile.c \
+				$(TESTS)/test_oafhash.c \
+				$(TESTS)/test_oafdictionaryhandler.c
 
 # Generate list of libraries to compile.
 testlibs    := $(addprefix $(BIN_TESTS)/,$(subst .c,.o,$(notdir $(tlsources))))
@@ -176,13 +178,13 @@ testlibs    := $(addprefix $(BIN_TESTS)/,$(subst .c,.o,$(notdir $(tlsources))))
 tldepends   := $(addprefix $(BIN_TESTS)/,$(subst .c,.d,$(notdir $(tlsources))))
 
 # List of executable test library sources. (main)
-testsources := 	$(SRC)/skiplist.c	\
-				$(SRC)/hashmap.c 	\
-				$(SRC)/run_slstore.c \
-				$(SRC)/run_dictionary.c \
-				$(SRC)/run_oahash.c \
-				$(SRC)/run_flatfile.c \
-				$(SRC)/run_oafhash.c
+testsources := 	$(DEMOS)/skiplist.c	\
+				$(DEMOS)/hashmap.c 	\
+				$(TESTS)/run_slstore.c \
+				$(TESTS)/run_dictionary.c \
+				$(TESTS)/run_oahash.c \
+				$(TESTS)/run_flatfile.c \
+				$(TESTS)/run_oafhash.c
 
 # Generate list of libraries to compile.
 testexecs   := $(addprefix $(BIN_TESTS)/,$(subst .c,,$(notdir $(testsources))))

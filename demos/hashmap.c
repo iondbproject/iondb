@@ -9,12 +9,12 @@
  */
 
 #include <stdlib.h>
-#include "kv_system.h"
+#include "./../src/kv_system.h"
 //#include "oahash.h"
-#include "dictionary.h"
-#include "oadictionaryhandler.h"
+#include "./../src/dictionary.h"
+#include "./../src/oadictionaryhandler.h"
 
-#include "kv_io.h"
+#include "./../src/kv_io.h"
 
 void test_query(dictionary_t* test_dictionary, int key, const record_info_t* record) {
 

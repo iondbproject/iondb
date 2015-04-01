@@ -1,0 +1,59 @@
+mkdir -p bin/lib
+mkdir -p bin/tests
+mkdir -p bin/utils
+mkdir -p bin/target
+gcc	-MM -MF  bin/lib/kv_io.d -MP -MT  bin/lib/kv_io.o  -Wall -g -Wall -g -Wall -g   src/kv_io.c
+gcc  -Wall -g -Wall -g -Wall -g   -c src/kv_io.c  -Wall -g -Wall -g -Wall -g -o bin/lib/kv_io.o
+gcc	-MM -MF  bin/lib/dictionary.d -MP -MT  bin/lib/dictionary.o  -Wall -g -Wall -g -Wall -g   src/dictionary.c
+gcc  -Wall -g -Wall -g -Wall -g   -c src/dictionary.c  -Wall -g -Wall -g -Wall -g -o bin/lib/dictionary.o
+gcc	-MM -MF  bin/lib/slhandler.d -MP -MT  bin/lib/slhandler.o  -Wall -g -Wall -g -Wall -g   src/slhandler.c
+gcc  -Wall -g -Wall -g -Wall -g   -c src/slhandler.c  -Wall -g -Wall -g -Wall -g -o bin/lib/slhandler.o
+gcc	-MM -MF  bin/lib/slstore.d -MP -MT  bin/lib/slstore.o  -Wall -g -Wall -g -Wall -g   src/slstore.c
+gcc  -Wall -g -Wall -g -Wall -g   -c src/slstore.c  -Wall -g -Wall -g -Wall -g -o bin/lib/slstore.o
+gcc	-MM -MF  bin/lib/oadictionaryhandler.d -MP -MT  bin/lib/oadictionaryhandler.o  -Wall -g -Wall -g -Wall -g   src/oadictionaryhandler.c
+gcc  -Wall -g -Wall -g -Wall -g   -c src/oadictionaryhandler.c  -Wall -g -Wall -g -Wall -g -o bin/lib/oadictionaryhandler.o
+gcc	-MM -MF  bin/lib/oahash.d -MP -MT  bin/lib/oahash.o  -Wall -g -Wall -g -Wall -g   src/oahash.c
+gcc  -Wall -g -Wall -g -Wall -g   -c src/oahash.c  -Wall -g -Wall -g -Wall -g -o bin/lib/oahash.o
+gcc	-MM -MF  bin/lib/ffdictionaryhandler.d -MP -MT  bin/lib/ffdictionaryhandler.o  -Wall -g -Wall -g -Wall -g   src/ffdictionaryhandler.c
+gcc  -Wall -g -Wall -g -Wall -g   -c src/ffdictionaryhandler.c  -Wall -g -Wall -g -Wall -g -o bin/lib/ffdictionaryhandler.o
+gcc	-MM -MF  bin/lib/flatfile.d -MP -MT  bin/lib/flatfile.o  -Wall -g -Wall -g -Wall -g   src/flatfile.c
+gcc  -Wall -g -Wall -g -Wall -g   -c src/flatfile.c  -Wall -g -Wall -g -Wall -g -o bin/lib/flatfile.o
+gcc	-MM -MF  bin/lib/oafdictionaryhandler.d -MP -MT  bin/lib/oafdictionaryhandler.o  -Wall -g -Wall -g -Wall -g   src/oafdictionaryhandler.c
+gcc  -Wall -g -Wall -g -Wall -g   -c src/oafdictionaryhandler.c  -Wall -g -Wall -g -Wall -g -o bin/lib/oafdictionaryhandler.o
+gcc	-MM -MF  bin/lib/oafhash.d -MP -MT  bin/lib/oafhash.o  -Wall -g -Wall -g -Wall -g   src/oafhash.c
+gcc  -Wall -g -Wall -g -Wall -g   -c src/oafhash.c  -Wall -g -Wall -g -Wall -g -o bin/lib/oafhash.o
+gcc	-MM -MF  bin/tests/CuTest.d -MP -MT  bin/tests/CuTest.o  -Wall -g -Wall -g -Wall -g   tests/CuTest.c
+gcc  -Wall -g -Wall -g -Wall -g   -c tests/CuTest.c  -Wall -g -Wall -g -Wall -g -o bin/tests/CuTest.o
+gcc	-MM -MF  bin/tests/test_slstore.d -MP -MT  bin/tests/test_slstore.o  -Wall -g -Wall -g -Wall -g   tests/test_slstore.c
+gcc  -Wall -g -Wall -g -Wall -g   -c tests/test_slstore.c  -Wall -g -Wall -g -Wall -g -o bin/tests/test_slstore.o
+gcc	-MM -MF  bin/tests/test_slhandler.d -MP -MT  bin/tests/test_slhandler.o  -Wall -g -Wall -g -Wall -g   tests/test_slhandler.c
+gcc  -Wall -g -Wall -g -Wall -g   -c tests/test_slhandler.c  -Wall -g -Wall -g -Wall -g -o bin/tests/test_slhandler.o
+gcc	-MM -MF  bin/tests/test_dictionary.d -MP -MT  bin/tests/test_dictionary.o  -Wall -g -Wall -g -Wall -g   tests/test_dictionary.c
+gcc  -Wall -g -Wall -g -Wall -g   -c tests/test_dictionary.c  -Wall -g -Wall -g -Wall -g -o bin/tests/test_dictionary.o
+gcc	-MM -MF  bin/tests/test_oahash.d -MP -MT  bin/tests/test_oahash.o  -Wall -g -Wall -g -Wall -g   tests/test_oahash.c
+gcc  -Wall -g -Wall -g -Wall -g   -c tests/test_oahash.c  -Wall -g -Wall -g -Wall -g -o bin/tests/test_oahash.o
+gcc	-MM -MF  bin/tests/test_oadictionaryhandler.d -MP -MT  bin/tests/test_oadictionaryhandler.o  -Wall -g -Wall -g -Wall -g   tests/test_oadictionaryhandler.c
+gcc  -Wall -g -Wall -g -Wall -g   -c tests/test_oadictionaryhandler.c  -Wall -g -Wall -g -Wall -g -o bin/tests/test_oadictionaryhandler.o
+gcc	-MM -MF  bin/tests/test_ffdictionaryhandler.d -MP -MT  bin/tests/test_ffdictionaryhandler.o  -Wall -g -Wall -g -Wall -g   tests/test_ffdictionaryhandler.c
+gcc  -Wall -g -Wall -g -Wall -g   -c tests/test_ffdictionaryhandler.c  -Wall -g -Wall -g -Wall -g -o bin/tests/test_ffdictionaryhandler.o
+gcc	-MM -MF  bin/tests/test_flatfile.d -MP -MT  bin/tests/test_flatfile.o  -Wall -g -Wall -g -Wall -g   tests/test_flatfile.c
+gcc  -Wall -g -Wall -g -Wall -g   -c tests/test_flatfile.c  -Wall -g -Wall -g -Wall -g -o bin/tests/test_flatfile.o
+gcc	-MM -MF  bin/tests/test_oafhash.d -MP -MT  bin/tests/test_oafhash.o  -Wall -g -Wall -g -Wall -g   tests/test_oafhash.c
+gcc  -Wall -g -Wall -g -Wall -g   -c tests/test_oafhash.c  -Wall -g -Wall -g -Wall -g -o bin/tests/test_oafhash.o
+gcc	-MM -MF  bin/tests/test_oafdictionaryhandler.d -MP -MT  bin/tests/test_oafdictionaryhandler.o  -Wall -g -Wall -g -Wall -g   tests/test_oafdictionaryhandler.c
+gcc  -Wall -g -Wall -g -Wall -g   -c tests/test_oafdictionaryhandler.c  -Wall -g -Wall -g -Wall -g -o bin/tests/test_oafdictionaryhandler.o
+gcc	-MM -MF  bin/tests/skiplist.d -MP -MT  bin/tests/skiplist  -Wall -g -Wall -g -Wall -g   demos/skiplist.c
+gcc  -Wall -g -Wall -g -Wall -g -o bin/tests/skiplist demos/skiplist.c bin/lib/kv_io.o bin/lib/dictionary.o bin/lib/slhandler.o bin/lib/slstore.o bin/lib/oadictionaryhandler.o bin/lib/oahash.o bin/lib/ffdictionaryhandler.o bin/lib/flatfile.o bin/lib/oafdictionaryhandler.o bin/lib/oafhash.o bin/tests/CuTest.o bin/tests/test_slstore.o bin/tests/test_slhandler.o bin/tests/test_dictionary.o bin/tests/test_oahash.o bin/tests/test_oadictionaryhandler.o bin/tests/test_ffdictionaryhandler.o bin/tests/test_flatfile.o bin/tests/test_oafhash.o bin/tests/test_oafdictionaryhandler.o
+gcc	-MM -MF  bin/tests/hashmap.d -MP -MT  bin/tests/hashmap  -Wall -g -Wall -g -Wall -g   demos/hashmap.c
+gcc  -Wall -g -Wall -g -Wall -g -o bin/tests/hashmap demos/hashmap.c bin/lib/kv_io.o bin/lib/dictionary.o bin/lib/slhandler.o bin/lib/slstore.o bin/lib/oadictionaryhandler.o bin/lib/oahash.o bin/lib/ffdictionaryhandler.o bin/lib/flatfile.o bin/lib/oafdictionaryhandler.o bin/lib/oafhash.o bin/tests/CuTest.o bin/tests/test_slstore.o bin/tests/test_slhandler.o bin/tests/test_dictionary.o bin/tests/test_oahash.o bin/tests/test_oadictionaryhandler.o bin/tests/test_ffdictionaryhandler.o bin/tests/test_flatfile.o bin/tests/test_oafhash.o bin/tests/test_oafdictionaryhandler.o
+gcc	-MM -MF  bin/tests/run_slstore.d -MP -MT  bin/tests/run_slstore  -Wall -g -Wall -g -Wall -g   tests/run_slstore.c
+gcc  -Wall -g -Wall -g -Wall -g -o bin/tests/run_slstore tests/run_slstore.c bin/lib/kv_io.o bin/lib/dictionary.o bin/lib/slhandler.o bin/lib/slstore.o bin/lib/oadictionaryhandler.o bin/lib/oahash.o bin/lib/ffdictionaryhandler.o bin/lib/flatfile.o bin/lib/oafdictionaryhandler.o bin/lib/oafhash.o bin/tests/CuTest.o bin/tests/test_slstore.o bin/tests/test_slhandler.o bin/tests/test_dictionary.o bin/tests/test_oahash.o bin/tests/test_oadictionaryhandler.o bin/tests/test_ffdictionaryhandler.o bin/tests/test_flatfile.o bin/tests/test_oafhash.o bin/tests/test_oafdictionaryhandler.o
+gcc	-MM -MF  bin/tests/run_dictionary.d -MP -MT  bin/tests/run_dictionary  -Wall -g -Wall -g -Wall -g   tests/run_dictionary.c
+gcc  -Wall -g -Wall -g -Wall -g -o bin/tests/run_dictionary tests/run_dictionary.c bin/lib/kv_io.o bin/lib/dictionary.o bin/lib/slhandler.o bin/lib/slstore.o bin/lib/oadictionaryhandler.o bin/lib/oahash.o bin/lib/ffdictionaryhandler.o bin/lib/flatfile.o bin/lib/oafdictionaryhandler.o bin/lib/oafhash.o bin/tests/CuTest.o bin/tests/test_slstore.o bin/tests/test_slhandler.o bin/tests/test_dictionary.o bin/tests/test_oahash.o bin/tests/test_oadictionaryhandler.o bin/tests/test_ffdictionaryhandler.o bin/tests/test_flatfile.o bin/tests/test_oafhash.o bin/tests/test_oafdictionaryhandler.o
+gcc	-MM -MF  bin/tests/run_oahash.d -MP -MT  bin/tests/run_oahash  -Wall -g -Wall -g -Wall -g   tests/run_oahash.c
+gcc  -Wall -g -Wall -g -Wall -g -o bin/tests/run_oahash tests/run_oahash.c bin/lib/kv_io.o bin/lib/dictionary.o bin/lib/slhandler.o bin/lib/slstore.o bin/lib/oadictionaryhandler.o bin/lib/oahash.o bin/lib/ffdictionaryhandler.o bin/lib/flatfile.o bin/lib/oafdictionaryhandler.o bin/lib/oafhash.o bin/tests/CuTest.o bin/tests/test_slstore.o bin/tests/test_slhandler.o bin/tests/test_dictionary.o bin/tests/test_oahash.o bin/tests/test_oadictionaryhandler.o bin/tests/test_ffdictionaryhandler.o bin/tests/test_flatfile.o bin/tests/test_oafhash.o bin/tests/test_oafdictionaryhandler.o
+gcc	-MM -MF  bin/tests/run_flatfile.d -MP -MT  bin/tests/run_flatfile  -Wall -g -Wall -g -Wall -g   tests/run_flatfile.c
+gcc  -Wall -g -Wall -g -Wall -g -o bin/tests/run_flatfile tests/run_flatfile.c bin/lib/kv_io.o bin/lib/dictionary.o bin/lib/slhandler.o bin/lib/slstore.o bin/lib/oadictionaryhandler.o bin/lib/oahash.o bin/lib/ffdictionaryhandler.o bin/lib/flatfile.o bin/lib/oafdictionaryhandler.o bin/lib/oafhash.o bin/tests/CuTest.o bin/tests/test_slstore.o bin/tests/test_slhandler.o bin/tests/test_dictionary.o bin/tests/test_oahash.o bin/tests/test_oadictionaryhandler.o bin/tests/test_ffdictionaryhandler.o bin/tests/test_flatfile.o bin/tests/test_oafhash.o bin/tests/test_oafdictionaryhandler.o
+gcc	-MM -MF  bin/tests/run_oafhash.d -MP -MT  bin/tests/run_oafhash  -Wall -g -Wall -g -Wall -g   tests/run_oafhash.c
+gcc  -Wall -g -Wall -g -Wall -g -o bin/tests/run_oafhash tests/run_oafhash.c bin/lib/kv_io.o bin/lib/dictionary.o bin/lib/slhandler.o bin/lib/slstore.o bin/lib/oadictionaryhandler.o bin/lib/oahash.o bin/lib/ffdictionaryhandler.o bin/lib/flatfile.o bin/lib/oafdictionaryhandler.o bin/lib/oafhash.o bin/tests/CuTest.o bin/tests/test_slstore.o bin/tests/test_slhandler.o bin/tests/test_dictionary.o bin/tests/test_oahash.o bin/tests/test_oadictionaryhandler.o bin/tests/test_ffdictionaryhandler.o bin/tests/test_flatfile.o bin/tests/test_oafhash.o bin/tests/test_oafdictionaryhandler.o
+Build complete!

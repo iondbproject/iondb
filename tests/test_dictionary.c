@@ -9,8 +9,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "CuTest.h"
-#include "dicttypes.h"
-#include "dictionary.h"
+#include "./../src/dicttypes.h"
+#include "./../src/dictionary.h"
 
 
 void

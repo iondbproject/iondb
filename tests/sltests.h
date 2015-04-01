@@ -12,11 +12,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include "CuTest.h"
-#include "sltypes.h"
-#include "slstore.h"
-#include "slhandler.h"
-#include "dicttypes.h"
-#include "dictionary.h"
+#include "./../src/sltypes.h"
+#include "./../src/slstore.h"
+#include "./../src/slhandler.h"
+#include "./../src/dicttypes.h"
+#include "./../src/dictionary.h"
 
 #define PRINT_HEADER() io_printf("=== [%d:%s] ===\n", __LINE__, __func__);
 
