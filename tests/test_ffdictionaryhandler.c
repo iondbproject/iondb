@@ -120,7 +120,7 @@ test_flat_file_handler_create_destroy(
 											== file.super.key_type);
 	CuAssertTrue(tc, dictionary_compare_signed_value
 											== file.super.compare);
-	//CuAssertTrue(tc, boolean_true					== feof(file.file_ptr));
+	CuAssertTrue(tc, boolean_true					== feof(file.file_ptr));
 
 	//delete the dictionary
 	CuAssertTrue(tc, err_ok 				==

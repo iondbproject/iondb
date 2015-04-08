@@ -38,7 +38,7 @@ void setup() {
 
 |Implementation         |Handler Method |
 |--------------         |-------------- |
-|Skiplist               | sl_dict_init  |
+|Skiplist               | sldict_init  |
 |Open Address Hash      | oadict_init   |
 |Open Address File Hash | oafdict_init  |
 |Flat File              | ffdict_init   |
