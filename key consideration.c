@@ -32,3 +32,19 @@ int y = *((int*) key); //Cast to int pointer, dereference int pointer
 
 
 //Proposals: Macro/function to do key/raw conversion? Perhaps just one to "ionize" literals?
+
+#include <stdio.h>
+
+typedef unsigned char* ion_key_t;
+
+#define IONIZE(x) ({volatile typeof(x) _tmp = x; (ion_key_t) &_tmp; })
+#define NEUTRALIZE(type, x) ( *((type *) x) )
+
+int main(void) {
+    // your code goes here
+    int t = 600000;
+    ion_key_t toast= ionize(100);
+    printf("%p\n", toast);
+    printf("%d\n", neutralize(int, toast) );
+    return 0;
+}

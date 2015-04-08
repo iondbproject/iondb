@@ -13,6 +13,9 @@
 
 #define DUMP(varname, format) printf("Variable %s = " format "\n", #varname, varname)
 
+#define IONIZE(x) ({volatile typeof(x) _tmp = x; (ion_key_t) &_tmp; })
+#define NEUTRALIZE(type, x) ( *((type *) x) )
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
