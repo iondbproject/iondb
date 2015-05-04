@@ -146,7 +146,7 @@ void setup() {
     ion_value_t returned_value = malloc(60); //from value_size
     dictionary_get(&dictionary, key, returned_value);
     printf("Returned %s\n", returned_value);
-    free(returned value);
+    free(returned_value);
 }
 
 void loop() {}
