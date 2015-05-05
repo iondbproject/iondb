@@ -3,9 +3,10 @@ IonDB
 
 ##Preamble
 
-This inclusion is necessary for any IonDB usage:
+These inclusions are necessary for any IonDB usage:
 
 ```c
+#include <SD.h>
 #include "dictionary.h"
 ```
 
@@ -54,7 +55,7 @@ void setup() {
 
 ###Keys and values
 
-Keys and values are **specific type agnostic**, there are only three categories of keys. Two macros provided to bridge the gap between IonDB keys and concrete keys.
+Keys and values are **specific type agnostic**, there are only three categories of keys. Two macros are provided to bridge the gap between IonDB keys and concrete keys.
 
 ```c
 /* Key creation */

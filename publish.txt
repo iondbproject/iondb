@@ -12,11 +12,11 @@ Posted information:
     IonDB is a key-value datastore library targeting the Arduino platform and other C-compatible resource constrained systems.
 
         Advantages:
-            * FOSS code base available for review, licensed under _____ [NB: What is our license?]
+            * FOSS code base available for review, licensed under the Apache license.
 
             *Can store any arbitrary information as the value, with a key of varying numerical lengths or as a string
 
-            *Strong, unit tested code with excellent coverage [NB: Figure out the coverage %?]
+            *Strong, unit tested code
 
             *Several underlying implementations supplied, such as a Skiplist or an Open Address Hashtable. Allows strong customization and flexibility to support specific needs
 
@@ -28,7 +28,7 @@ Posted information:
 
             *Fully compatable with Arduino Wiring and the Arduino IDE on Windows, OSX, and *nix.
 
-    Github link: <here>
+    Github link: https://github.com/iondbproject/iondb
 
     Installation instructions:
         Download the library zip file and extract into your Arduino Library directory
@@ -39,7 +39,7 @@ Posted information:
 
         From the Arduino IDE menu, go Sketch -> Import Library... and select IonDB from the dropdown. The library is now available for you to access.
 
-        Refer to the IonDB documentation [[[here]]] [NB: Need documentation, probably on GitHub] for example code.
+        Refer to the IonDB readme for example code.
 
         Contact information: iondbproject@gmail.com
 
