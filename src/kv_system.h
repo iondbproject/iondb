@@ -60,6 +60,12 @@ enum error
 	err_invalid_predicate,
 	err_out_of_memory,
 	err_file_write_error,
+	err_dictionary_initialization_failed,
+	err_could_not_delete_file,
+	err_could_not_insert,
+	err_unimplemented,
+	err_file_incomplete_write,
+	err_file_incomplete_read,
 };
 
 typedef char err_t;
@@ -83,7 +89,7 @@ typedef int							ion_key_size_t;
 @brief		The size(length) of a dictionary value in bytes.
  */
 typedef int 						ion_value_size_t;
-
+typedef int							ion_dictionary_size_t;
 // TODO
 /**
 @brief		A boolean.
