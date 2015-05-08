@@ -6,7 +6,7 @@ ion_fexists(
 	char		*name
 )
 {
-#if FS_TARGET == FS_TARGET_ARDUINO
+#ifdef ION_ARDUINO
 	return (boolean_t)SD_File_Exists(name);
 #else
 	return (-1 != access(name, F_OK));
@@ -18,18 +18,22 @@ ion_fopen(
 	char		*name
 )
 {
-#if FS_TARGET == FS_TARGET_ARDUINO
+#ifdef ION_ARDUINO
 	file_handle_t toret;
-	if (1 != SD_File_Open(&(toret.file), name, SD_FILE_MODE_WRITE))
-		return ION_NOFILE;
+	toret.file = fopen(name,"r+");
+	if(NULL == toret.file)
+	{
+		toret.file = fopen(name, "w+");
+	}
 	return toret;
 #else
 	file_handle_t	file;
 	
-	file		= fopen(name, "r+b");
-	if (NULL == file)
-		file	= fopen(name, "w+b");
-	
+	file		= fopen(name, "r+");
+	if (NULL == (SD_FILE*) file)
+	{
+		file	= fopen(name, "w+");
+	}
 	return file;
 #endif
 }
@@ -39,8 +43,8 @@ ion_fclose(
 	file_handle_t	file
 )
 {
-#if FS_TARGET == FS_TARGET_ARDUINO
-	SD_File_Close(file.file);
+#ifdef ION_ARDUINO
+	fclose(file.file);
 	return err_ok;
 #else
 	fclose(file);
@@ -53,8 +57,8 @@ ion_fremove(
 	char		*name
 )
 {
-#if FS_TARGET == FS_TARGET_ARDUINO
-	SD_File_Remove(name);
+#ifdef ION_ARDUINO
+	fremove(name);
 	return err_ok;
 #else
 	int	status;
@@ -79,24 +83,8 @@ ion_fseek(
 	int		origin
 )
 {
-#if FS_TARGET == FS_TARGET_ARDUINO
-	size_t pos;
-	pos		= SD_File_Position(file.file);
-	
-	if (ION_FILE_START == origin)
-	{
-		pos	= seek_to;
-	}
-	else if (ION_FILE_END == origin)
-	{
-		pos	= file.end - seek_to;
-	}
-	
-	if (1 != SD_File_Seek(file.file, pos+seek_to))
-	{
-		return err_file_incomplete_read;
-	}
-	
+#ifdef ION_ARDUINO
+	fseek(file.file, seek_to, origin);
 	return err_ok;
 #else
 	fseek(file, seek_to, origin);
@@ -109,8 +97,8 @@ ion_ftell(
 	file_handle_t	file
 )
 {
-#if FS_TARGET == FS_TARGET_ARDUINO
-	return SD_File_Position(file.file);
+#ifdef ION_ARDUINO
+	return ftell(file.file);
 #else
 	return ftell(file);
 #endif
@@ -121,7 +109,7 @@ ion_fend(
 	file_handle_t	file
 )
 {
-#if FS_TARGET == FS_TARGET_ARDUINO
+#ifdef ION_ARDUINO
 	return file.end;
 #else
 	file_offset_t	previous;
@@ -143,15 +131,15 @@ ion_fwrite(
 	byte*		to_write
 )
 {
-#if FS_TARGET == FS_TARGET_ARDUINO
+#ifdef ION_ARDUINO
 	file_offset_t	pos;
 	
-	pos	= SD_File_Position(file.file);
+	pos	= ftell(file.file);
 	
 	if (pos+num_bytes > file.end)
 		file.end	= pos + num_bytes;
 	
-	if (num_bytes != SD_File_Write(file.file, to_write, num_bytes))
+	if (num_bytes != (fwrite(to_write, num_bytes, 1, file.file) * num_bytes))
 	{
 		return err_file_incomplete_write;
 	}
@@ -209,8 +197,8 @@ ion_fread(
 	byte		*write_to
 )
 {
-#if FS_TARGET == FS_TARGET_ARDUINO
-	if (num_bytes != SD_File_Read(file.file, write_to, num_bytes))
+#ifdef ION_ARDUINO
+	if (num_bytes != (fread(write_to, num_bytes, 1, file.file) * num_bytes))
 		return err_file_incomplete_read;
 	
 	return err_ok;

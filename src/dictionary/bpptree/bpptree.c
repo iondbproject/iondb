@@ -124,7 +124,7 @@ static bErrType flush(bufType *buf) {
     if (fseek(h->fp, buf->adr, SEEK_SET)) return error(bErrIO);
     if (fwrite(buf->p, len, 1, h->fp) != 1) return error(bErrIO);
 #endif
-    if (err_ok != ion_fwrite_at(h->fp, buf->adr, len, buf->p)) return error(bErrIO);
+    if (err_ok != ion_fwrite_at(h->fp, buf->adr, len, (byte*) buf->p)) return error(bErrIO);
     buf->modified = boolean_false;
     nDiskWrites++;
     return bErrOk;
@@ -209,7 +209,7 @@ static bErrType readDisk(bAdrType adr, bufType **b) {
         if (fseek(h->fp, adr, SEEK_SET)) return error(bErrIO);
         if (fread(buf->p, len, 1, h->fp) != 1) return error(bErrIO);
 #endif
-        if (err_ok != ion_fread_at(h->fp, adr, len, buf->p)) return error(bErrIO);
+        if (err_ok != ion_fread_at(h->fp, adr, len, (byte*) buf->p)) return error(bErrIO);
         buf->modified = boolean_false;
         buf->valid = boolean_true;
         nDiskReads++;

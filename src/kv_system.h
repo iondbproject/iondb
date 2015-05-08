@@ -5,7 +5,7 @@
 #ifndef SYSTEM_H_
 #define SYSTEM_H_
 
-//#define ION_ARDUINO
+// #define ION_ARDUINO
 #define USING_ECLIPSE 	0
 #define DEBUG 			0
 #define IS_EQUAL 		0
@@ -29,7 +29,9 @@ enum status
 
 typedef char status_t;
 
+#ifndef ION_ARDUINO
 typedef unsigned char byte;
+#endif
 
 /**
 This is the available key types for ION_DB.  All types will be based on system
