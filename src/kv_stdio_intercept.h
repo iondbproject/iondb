@@ -26,8 +26,6 @@ extern "C" {
 
 typedef long fpos_t;
 
-#define ARDUINO 1
-
 #define 	FILE  				SD_FILE
 #define 	fopen(x, y) 			sd_fopen(x ,y)
 #define		fclose(x)			sd_fclose(x)

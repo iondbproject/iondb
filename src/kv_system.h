@@ -29,6 +29,8 @@ enum status
 
 typedef char status_t;
 
+typedef unsigned char byte;
+
 /**
 This is the available key types for ION_DB.  All types will be based on system
 defines.
@@ -99,8 +101,8 @@ typedef char						boolean_t;
 
 typedef enum
 {
-	boolean_true,
 	boolean_false,
+	boolean_true,
 } boolean_e;
 
 typedef struct return_status{

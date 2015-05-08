@@ -70,7 +70,7 @@ ff_destroy(
 	file->super.record.value_size	= 0;
 
 	fclose(file->file_ptr);
-#if ARDUINO == 1 
+#ifdef ION_ARDUINO
 	if (fremove("file.bin") == 0)			//check to ensure that you are not freeing something already free
 #else
 	if (remove("file.bin") == 0)	
