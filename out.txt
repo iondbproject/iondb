@@ -1,6 +1,26 @@
 mkdir -p bin/lib
 mkdir -p bin/tests
 mkdir -p bin/utils
+gcc	-MM -MF  bin/lib/kv_io.d -MP -MT  bin/lib/kv_io.o  -Wall -g   src/kv_io.c
+gcc  -Wall -g   -c src/kv_io.c  -Wall -g -o bin/lib/kv_io.o
+gcc	-MM -MF  bin/lib/ion_file.d -MP -MT  bin/lib/ion_file.o  -Wall -g   src/files/ion_file.c
+gcc  -Wall -g   -c src/files/ion_file.c  -Wall -g -o bin/lib/ion_file.o
+gcc	-MM -MF  bin/lib/linkedfilebag.d -MP -MT  bin/lib/linkedfilebag.o  -Wall -g   src/files/linkedfilebag.c
+gcc  -Wall -g   -c src/files/linkedfilebag.c  -Wall -g -o bin/lib/linkedfilebag.o
+gcc	-MM -MF  bin/lib/dictionary.d -MP -MT  bin/lib/dictionary.o  -Wall -g   src/dictionary/dictionary.c
+gcc  -Wall -g   -c src/dictionary/dictionary.c  -Wall -g -o bin/lib/dictionary.o
+gcc	-MM -MF  bin/lib/bpptree.d -MP -MT  bin/lib/bpptree.o  -Wall -g   src/dictionary/bpptree/bpptree.c
+gcc  -Wall -g   -c src/dictionary/bpptree/bpptree.c  -Wall -g -o bin/lib/bpptree.o
+gcc	-MM -MF  bin/lib/bpptreehandler.d -MP -MT  bin/lib/bpptreehandler.o  -Wall -g   src/dictionary/bpptree/bpptreehandler.c
+gcc  -Wall -g   -c src/dictionary/bpptree/bpptreehandler.c  -Wall -g -o bin/lib/bpptreehandler.o
+gcc	-MM -MF  bin/tests/CuTest.d -MP -MT  bin/tests/CuTest.o  -Wall -g   src/tests/CuTest.c
+gcc  -Wall -g   -c src/tests/CuTest.c  -Wall -g -o bin/tests/CuTest.o
+gcc	-MM -MF  bin/tests/dictionary.d -MP -MT  bin/tests/dictionary.o  -Wall -g   src/tests/unit/dictionary/dictionary.c
+gcc  -Wall -g   -c src/tests/unit/dictionary/dictionary.c  -Wall -g -o bin/tests/dictionary.o
+gcc	-MM -MF  bin/tests/generic_dictionary_test.d -MP -MT  bin/tests/generic_dictionary_test.o  -Wall -g   src/tests/unit/dictionary/generic_dictionary_test.c
+gcc  -Wall -g   -c src/tests/unit/dictionary/generic_dictionary_test.c  -Wall -g -o bin/tests/generic_dictionary_test.o
+gcc	-MM -MF  bin/tests/bpptreehandler.d -MP -MT  bin/tests/bpptreehandler.o  -Wall -g   src/tests/unit/dictionary/bpptree/bpptreehandler.c
+gcc  -Wall -g   -c src/tests/unit/dictionary/bpptree/bpptreehandler.c  -Wall -g -o bin/tests/bpptreehandler.o
 gcc	-MM -MF  bin/tests/run_dictionary.d -MP -MT  bin/tests/run_dictionary  -Wall -g   src/tests/unit/dictionary/run_dictionary.c
 gcc  -Wall -g -o bin/tests/run_dictionary src/tests/unit/dictionary/run_dictionary.c bin/lib/kv_io.o bin/lib/ion_file.o bin/lib/linkedfilebag.o bin/lib/dictionary.o bin/lib/bpptree.o bin/lib/bpptreehandler.o bin/tests/CuTest.o bin/tests/dictionary.o bin/tests/generic_dictionary_test.o bin/tests/bpptreehandler.o
 gcc	-MM -MF  bin/tests/run_bpptree.d -MP -MT  bin/tests/run_bpptree  -Wall -g   src/tests/unit/dictionary/bpptree/run_bpptree.c
