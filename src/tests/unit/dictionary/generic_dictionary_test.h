@@ -52,7 +52,6 @@ void
 dictionary_test_delete(
 	generic_test_t	*test,
 	ion_key_t	key_to_delete,
-	boolean_t	free_value,
 	CuTest		*tc
 );
 

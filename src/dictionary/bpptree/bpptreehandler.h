@@ -134,7 +134,7 @@ err_t
 bpptree_query(
 	dictionary_t 	*dictionary,
 	ion_key_t 		key,
-	ion_value_t		*value
+	ion_value_t		value
 );
 
 /**

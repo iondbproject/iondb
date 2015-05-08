@@ -5,12 +5,16 @@
 #ifndef SYSTEM_H_
 #define SYSTEM_H_
 
-#define USING_ECLIPSE 	1
+//#define ION_ARDUINO
+#define USING_ECLIPSE 	0
 #define DEBUG 			0
 #define IS_EQUAL 		0
 #define ZERO			0
 
 #define DUMP(varname, format) printf("Variable %s = " format "\n", #varname, varname)
+
+#define IONIZE(x) ({volatile typeof(x) _tmp = x; (ion_key_t) &_tmp; })
+#define NEUTRALIZE(type, x) ( *((type *) x) )
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,19 +27,9 @@ enum status
 	status_duplicate_key, 				/**< status_duplicate_key */
 };
 
-typedef char	byte;
-
-
-/**
-@brief		Struct used to maintain information about size of key and value.
- */
-typedef struct record
-{
-	int 			key_size;			/**< the size of the key in bytes */
-	int 			value_size;			/**< the size of the value in bytes */
-} record_t;
-
 typedef char status_t;
+
+typedef unsigned char byte;
 
 /**
 This is the available key types for ION_DB.  All types will be based on system
@@ -67,6 +61,7 @@ enum error
 	err_colllection_destruction_error,
 	err_invalid_predicate,
 	err_out_of_memory,
+	err_file_write_error,
 	err_dictionary_initialization_failed,
 	err_could_not_delete_file,
 	err_could_not_insert,
@@ -90,15 +85,13 @@ typedef unsigned char						*ion_value_t;
 /**
 @brief		The size(length) of a dictionary key in bytes.
  */
-typedef int						ion_key_size_t;
+typedef int							ion_key_size_t;
 
 /**
 @brief		The size(length) of a dictionary value in bytes.
  */
 typedef int 						ion_value_size_t;
-
-typedef int						ion_dictionary_size_t;
-
+typedef int							ion_dictionary_size_t;
 // TODO
 /**
 @brief		A boolean.
@@ -108,8 +101,31 @@ typedef char						boolean_t;
 
 typedef enum
 {
-	false,
-	true,
+	boolean_true,
+	boolean_false,
 } boolean_e;
+
+typedef struct return_status{
+	err_t	err;						/**< the error code */
+	int		count;						/**< the number of items affected */
+} return_status_t;
+
+/**
+@brief		Struct used to maintain information about size of key and value.
+ */
+typedef struct record_info
+{
+	int 			key_size;			/**< the size of the key in bytes */
+	int 			value_size;			/**< the size of the value in bytes */
+} record_info_t;
+
+/**
+@brief		Struct used to maintain key and value.
+ */
+typedef struct ion_record
+{
+	ion_key_t 			key;			/**< pointer to a key */
+	ion_value_t			value;			/**< a pointer to value */
+} ion_record_t;
 
 #endif /* SYSTEM_H_ */

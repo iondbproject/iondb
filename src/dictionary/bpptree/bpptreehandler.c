@@ -8,7 +8,7 @@
 
 #include "bpptreehandler.h"
 #include "./../../kv_system.h"
-#include "./../../io.h"
+#include "./../../kv_io.h"
 
 void
 bpptree_init(
@@ -20,7 +20,7 @@ bpptree_init(
 	handler->get 				= bpptree_query;
 	handler->update 			= bpptree_update;
 	handler->find 				= bpptree_find;
-	handler->delete 			= bpptree_delete;
+	handler->remove 			= bpptree_delete;
 	handler->delete_dictionary 	= bpptree_delete_dictionary;
 }
 
@@ -74,7 +74,7 @@ err_t
 bpptree_query(
 	dictionary_t 	*dictionary,
 	ion_key_t 		key,
-	ion_value_t		*value
+	ion_value_t		value
 )
 {
 	bpptree_t		*bpptree;
@@ -92,13 +92,11 @@ bpptree_query(
 		return err_item_not_found;
 	}
 	
-	*value	= malloc(bpptree->super.record.value_size);
-	
 	err	= lfb_get(
 			&(bpptree->values),
 			offset,
 			bpptree->super.record.value_size,
-			(byte *) *value,
+			(byte *) value,
 			&next
 		);
 	
@@ -133,7 +131,7 @@ bpptree_create_dictionary(
 	// FIXME: VARIABLE NAMES!
 	info.iName				= "FIXME.bpptree";
 	info.keySize				= key_size;
-	info.dupKeys				= false;
+	info.dupKeys				= boolean_false;
 	// FIXME: HOW DO WE SET BLOCK SIZE?
 	info.sectorSize				= 256;
 	info.comp				= compare;
@@ -143,7 +141,7 @@ bpptree_create_dictionary(
 		return err_dictionary_initialization_failed;
 	}
 	
-	dictionary->instance		= bpptree;
+	dictionary->instance		= (dictionary_parent_t*) bpptree;
 	
 	dictionary->handler		= handler;		//todo: need to check to make sure that the handler is registered
 
@@ -417,9 +415,9 @@ bpptree_is_equal(
 )
 {
 	if (memcmp(key1, key2, (((bpptree_t*)dict->instance)->super.record.key_size)) == IS_EQUAL)
-		return true;
+		return boolean_true;
 	else
-		return false;
+		return boolean_false;
 }
 
 void
@@ -472,7 +470,7 @@ bpptree_test_predicate(
 	hashmap_t * hash_map = (hashmap_t *)(cursor->dictionary->instance);
 
 	//pre-prime value for faster exit
-	key_satisfies_predicate = false;
+	key_satisfies_predicate = boolean_false;
 
 	switch (cursor->type)
 	{
@@ -484,7 +482,7 @@ bpptree_test_predicate(
 								hash_map->super.record.key_size)
 			)
 			{
-				key_satisfies_predicate = true;
+				key_satisfies_predicate = boolean_true;
 			}
 			break;
 		}
@@ -508,14 +506,14 @@ bpptree_test_predicate(
 					)
 				)
 			{
-				key_satisfies_predicate = true;
+				key_satisfies_predicate = boolean_true;
 			}
 			break;
 		}
 	}
 	return key_satisfies_predicate;
 #endif
-	return false;
+	return boolean_false;
 }
 
 err_t
@@ -558,7 +556,7 @@ bpptree_scan(
 					 */
 					boolean_t key_satisfies_predicate = oadict_test_predicate(&(cursor->super), (ion_key_t)item->data);			//assumes that the key is first
 
-					if (key_satisfies_predicate == true)
+					if (key_satisfies_predicate == boolean_true)
 					{
 						cursor->current = loc;		//this is the next index for value
 						return cs_valid_data;

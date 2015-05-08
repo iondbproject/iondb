@@ -70,21 +70,24 @@ dictionary_test_insert_get(
 	
 	byte		keys[num_to_insert * test->key_size];
 	byte		vals[num_to_insert * test->value_size];
-	ion_value_t	test_val;
-	err_t		error;
+
+	unsigned char 	test_buf[test->value_size];
+	ion_value_t		test_val = test_buf;
+	err_t			error;
 	
 	int		i;
 	int		j;
 	
 	for (i = 0; i < num_to_insert; i++)
 	{
+
 		for (j = 0; j < test->key_size; j++)
 		{
 			keys[j]	= 0x0;
 		}
 		for (j = 0; j < test->value_size; j++)
 		{
-			vals[j]	= 0;
+			vals[j]		= 0;
 		}
 		
 		j		= test->key_size;
@@ -121,7 +124,7 @@ dictionary_test_insert_get(
 		error	= dictionary_get(
 				&(test->dictionary),
 				&keys[(i*test->key_size)],
-				&test_val
+				test_val
 			);
 		
 		CuAssertTrue(tc, err_ok == error);
@@ -131,9 +134,7 @@ dictionary_test_insert_get(
 				test_val,
 				test->value_size
 			);
-		
-		free(test_val);
-		
+
 		CuAssertTrue(tc, 0 == j);
 	}
 }
@@ -142,12 +143,12 @@ void
 dictionary_test_delete(
 	generic_test_t	*test,
 	ion_key_t	key_to_delete,
-	boolean_t	free_value,
 	CuTest		*tc
 )
 {
-	err_t		error;
-	ion_value_t	test_val;
+	err_t			error;
+	unsigned char 	test_buf[test->value_size];
+	ion_value_t		test_val = test_buf;
 	
 	error	= dictionary_delete(
 			&(test->dictionary),
@@ -159,11 +160,8 @@ dictionary_test_delete(
 	error	= dictionary_get(
 			&(test->dictionary),
 			key_to_delete,
-			&test_val
+			test_val
 		);
-	
-	if (free_value)
-		free(test_val);
 	
 	CuAssertTrue(tc, err_item_not_found == error);
 }
@@ -176,8 +174,9 @@ dictionary_test_update(
 	CuTest		*tc
 )
 {
-	err_t		error;
-	ion_value_t	test_val;
+	err_t			error;
+	unsigned char 	test_buf[test->value_size];
+	ion_value_t		test_val = test_buf;
 	
 	error	= dictionary_update(
 			&(test->dictionary),
@@ -190,12 +189,11 @@ dictionary_test_update(
 	error	= dictionary_get(
 			&(test->dictionary),
 			key_to_update,
-			&test_val
+			test_val
 		);
 	
 	CuAssertTrue(tc, err_ok == error);
 	
 	CuAssertTrue(tc, 0 == memcmp(update_with, test_val, test->value_size));
-	
-	free(test_val);
+
 }

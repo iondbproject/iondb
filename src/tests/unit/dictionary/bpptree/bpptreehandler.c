@@ -35,7 +35,6 @@ run_bpptreehandler_generic_test_set_1(
 		dictionary_test_delete(
 			&test,
 			(ion_key_t)(&(to_delete[i])),
-			false,
 			tc
 		);
 	}

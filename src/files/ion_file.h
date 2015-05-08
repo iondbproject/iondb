@@ -18,7 +18,7 @@ extern "C" {
 
 #define FS_TARGET_CFILE		0
 #define FS_TARGET_ARDUINO	1
-#define FS_TARGET 		FS_TARGET_ARDUINO
+#define FS_TARGET 		FS_TARGET_CFILE
 
 typedef long		file_offset_t;
 
@@ -40,7 +40,7 @@ typedef struct file_handle
 #else
 
 #include "stdio.h"
-//#include "unistd.h"
+#include "unistd.h"
 
 typedef FILE*		file_handle_t;
 

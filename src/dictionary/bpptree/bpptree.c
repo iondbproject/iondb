@@ -125,7 +125,7 @@ static bErrType flush(bufType *buf) {
     if (fwrite(buf->p, len, 1, h->fp) != 1) return error(bErrIO);
 #endif
     if (err_ok != ion_fwrite_at(h->fp, buf->adr, len, buf->p)) return error(bErrIO);
-    buf->modified = false;
+    buf->modified = boolean_false;
     nDiskWrites++;
     return bErrOk;
 }
@@ -171,7 +171,7 @@ static bErrType assignBuf(bAdrType adr, bufType **b) {
                 if ((rc = flush(buf)) != 0) return rc;
             }
             buf->adr = adr;
-            buf->valid = false;
+            buf->valid = boolean_false;
         }
     } else {
         buf->adr = adr;
@@ -190,8 +190,8 @@ static bErrType assignBuf(bAdrType adr, bufType **b) {
 
 static bErrType writeDisk(bufType *buf) {
     /* write buf to disk */
-    buf->valid = true;
-    buf->modified = true;
+    buf->valid = boolean_true;
+    buf->modified = boolean_true;
     return bErrOk;
 }
 
@@ -210,8 +210,8 @@ static bErrType readDisk(bAdrType adr, bufType **b) {
         if (fread(buf->p, len, 1, h->fp) != 1) return error(bErrIO);
 #endif
         if (err_ok != ion_fread_at(h->fp, adr, len, buf->p)) return error(bErrIO);
-        buf->modified = false;
-        buf->valid = true;
+        buf->modified = boolean_false;
+        buf->valid = boolean_true;
         nDiskReads++;
     }
     *b = buf;
@@ -245,7 +245,7 @@ static int search(
     bool foundDup;              /* true if found a duplicate key */
 
     /* scan current node for key using binary search */
-    foundDup = false;
+    foundDup = boolean_false;
     lb = 0; 
     ub = ct(buf) - 1;
     while (lb <= ub) {
@@ -265,7 +265,7 @@ static int search(
                 case MODE_FIRST:
                     /* backtrack to first key */
                     ub = m - 1;
-                    foundDup = true;
+                    foundDup = boolean_true;
                     break;
                 case MODE_MATCH:
                     /* rec's must also match */
@@ -488,7 +488,7 @@ static bErrType scatter(bufType *pbuf, keyType *pkey, int is, bufType **tmp) {
 
         gkey += ks(ct(tmp[i]));
     }
-    leaf(pbuf) = false;
+    leaf(pbuf) = boolean_false;
 
    /************************
     * write modified nodes *
@@ -638,8 +638,8 @@ bErrType bOpen(bOpenType info, bHandleType *handle) {
     for (i = 0; i < bufCt; i++) {
         buf->next = buf + 1;
         buf->prev = buf - 1;
-        buf->modified = false;
-        buf->valid = false;
+        buf->modified = boolean_false;
+        buf->valid = boolean_false;
         buf->p = p;
         p = (nodeType *)((char *)p + h->sectorSize);
         buf++;
@@ -776,8 +776,8 @@ bErrType bInsertKey(bHandleType handle, void *key, eAdrType rec) {
 
     h = handle;
     root = &h->root;
-    lastGEvalid = false;
-    lastLTvalid = false;
+    lastGEvalid = boolean_false;
+    lastLTvalid = boolean_false;
 
     /* check for full root */
     if (ct(root) == 3 * h->maxCt) {
@@ -863,13 +863,13 @@ bErrType bInsertKey(bHandleType handle, void *key, eAdrType rec) {
                 }
             }
             if (cc >= 0 || mkey != fkey(buf)) {
-                lastGEvalid = true;
-                lastLTvalid = false;
+                lastGEvalid = boolean_true;
+                lastLTvalid = boolean_false;
                 lastGE = buf->adr;
                 lastGEkey = mkey - fkey(buf);
                 if (cc < 0) lastGEkey -= ks(1);
             } else {
-                if (lastGEvalid) lastLTvalid = true;
+                if (lastGEvalid) lastLTvalid = boolean_true;
             }
             buf = cbuf;
         }
@@ -896,8 +896,8 @@ bErrType bDeleteKey(bHandleType handle, void *key, eAdrType *rec) {
     h = handle;
     root = &h->root;
     gbuf = &h->gbuf;
-    lastGEvalid = false;
-    lastLTvalid = false;
+    lastGEvalid = boolean_false;
+    lastLTvalid = boolean_false;
 
     buf = root;
     while(1) {
@@ -965,13 +965,13 @@ bErrType bDeleteKey(bHandleType handle, void *key, eAdrType *rec) {
                 }
             }
             if (cc >= 0 || mkey != fkey(buf)) {
-                lastGEvalid = true;
-                lastLTvalid = false;
+                lastGEvalid = boolean_true;
+                lastLTvalid = boolean_false;
                 lastGE = buf->adr;
                 lastGEkey = mkey - fkey(buf);
                 if (cc < 0) lastGEkey -= ks(1);
             } else {
-                if (lastGEvalid) lastLTvalid = true;
+                if (lastGEvalid) lastLTvalid = boolean_true;
             }
             buf = cbuf;
         }
