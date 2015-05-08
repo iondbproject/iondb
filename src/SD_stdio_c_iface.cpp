@@ -323,3 +323,7 @@ sd_printint(int i)
 	Serial.println(i);
 }
 
+int SD_File_Exists(char *filepath)
+{
+	return (int)(SD.exists(filepath));
+}

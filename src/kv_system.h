@@ -29,7 +29,9 @@ enum status
 
 typedef char status_t;
 
+#ifndef ION_ARDUINO
 typedef unsigned char byte;
+#endif
 
 /**
 This is the available key types for ION_DB.  All types will be based on system

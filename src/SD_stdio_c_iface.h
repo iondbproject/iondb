@@ -131,6 +131,13 @@ void sd_rewind(SD_FILE *stream);
 */
 int SD_File_Begin(uint8_t csPin);
 
+/**
+@brief		Check to see if an Arduino SD File exists.
+@param		filepath	String containing path to file (basic filename).
+@returns	@c 1 if the file exists, @c 0 otherwise.
+*/
+int SD_File_Exists(char *filepath);
+
 #ifdef __cplusplus
 }
 #endif
