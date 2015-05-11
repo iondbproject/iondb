@@ -1,8 +1,8 @@
 /******************************************************************************/
 /**
-@file		oadictionaryhandler.h
-@author		Scott Ronald Fazackerley
-@brief		The handler for a hash table using linear probing.
+@file		bpptreehandler.h
+@author		Graeme Douglas
+@brief		The handler for a B+ tree.
 */
 /******************************************************************************/
 
@@ -21,57 +21,6 @@ typedef struct bplusplustree
 	bHandleType		tree;
 	lfb_t			values;
 } bpptree_t;
-
-typedef char bpptree_cursor_t;
-
-/**
-@brief		Dictionary cursor for equality queries.
-@details	Used when a dictionary supports multiple vvalues for a given key.
-
-			This subtype should be extended when supported for a given
-			dictionary.
-*/
-typedef struct oadict_equality_cursor
-{
-	dict_cursor_t			super;			/**<Super type this cursor inherits from*/
-	ion_key_t				value;
-	boolean_t				(* equal)(dictionary_t *,
-								ion_key_t,
-								ion_key_t);
-											/**< A pointer to an equality function. */
-} oadict_equality_cursor_t;
-/*
-
-*
-@brief		Dictionary cursor for range queries.
-@details	This subtype should be extended when supported
-			for a given dictionary.
-
-typedef struct range_cursor
-{
-	dict_cursor_t	super;
-		*< Cursor supertype this type inherits from.
-	boolean_t		(* range)(dictionary_t *, ion_key_t *, ion_key_t *);
-		*< A pointer to a range function.
-} range_t;
-
-*
-@brief		Dictionary cursor for equality queries.
-@details	Used when a user gives a function pointer to evaluate
-			over each record in the dictionary.
-
-			This subtype should be extended when supported for a given
-			dictionary.
-
-typedef struct predicate_cursor
-{
-	dict_cursor_t	super;
-		*< Cursor supertype this type inherits from.
-	boolean_t		(* predicate)(dictionary_t *, void *);			// TODO FIXME the void * needs to be dealt with
-		*< A pointer to function that that filters records.
-} predicate_cursor_t;
-*/
-
 
 /**
 @brief		Registers a specific handler for a  dictionary instance.
@@ -244,52 +193,6 @@ bpptree_find(
 );
 
 /**
-@brief		Compares two key and returns the difference
-
-@details	Compares two key and returns the difference depending on the type
-			of the key defined for the collection.  If the keys are of numeric
-			type, the return value is the difference between the keys.  If the
-			value is negative, @p first_key is smaller than @p second_key.  If
-			return value is positive, then @p first_key is larger than
-			@p second_key.  If the return value is 0 then @p first_key is
-			equal to @p second_key.
-
-			If the key type is @p key_type_char_array then
-			@TODO fix this commemt!
-			The function memcmp compares the size bytes of memory beginning at
-			a1 against the size bytes of memory beginning at a2. The value
-			returned has the same sign as the difference between the first
-			differing pair of bytes (interpreted as unsigned char objects,
-			then promoted to int).
-
-@param 		first_key
-				The first key in the comparison.
-@param 		second_key
-				The second key in the comparison.
-@return		The difference between the keys.
- */
-int
-bpptree_compare(
-		ion_key_t 		first_key,
-		ion_key_t		second_key
-);
-
-/**
-@brief		Next function to query and retrieve the next
-			<K,V> that stratifies the predicate of the cursor.
-
-@param 		cursor
-				The cursor to iterate over the results.
-@return		The status of the cursor.
- */
-/*err_t
-bpptree_next(
-	dict_cursor_t 	*cursor,
-	ion_value_t		*value
-);*/
-
-
-/**
 @brief		Next function to query and retrieve the next
 			<K,V> that stratifies the predicate of the cursor.
 
@@ -300,7 +203,7 @@ bpptree_next(
 cursor_status_t
 bpptree_next(
 	dict_cursor_t 	*cursor,
-	ion_value_t		value
+	ion_record_t	*record
 );
 
 /**
@@ -354,24 +257,6 @@ boolean_t
 bpptree_test_predicate(
     dict_cursor_t* 	cursor,
     ion_key_t 			key
-);
-
-/**
-
-@brief			Starts scanning map looking for conditions that match
-				predicate and returns result.
-
-@details		Scans that map looking for the next value that satisfies the predicate.
-				The next valid index is returned through the cursor
-
-@param			cursor
-					A pointer to the cursor that is operating on the map.
-
-@return			The status of the scan.
- */
-err_t
-bpptree_scan(
-		bpptree_cursor_t		*cursor  //don't need to pass in the cursor
 );
 
 #endif /* OADICTIONARYHANDLER_H_ */

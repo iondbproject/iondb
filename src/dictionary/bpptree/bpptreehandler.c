@@ -60,6 +60,7 @@ bpptree_insert(
 		if (bErrOk != bErr)
 		{
 			// TODO: lfb_delete from values
+			printf("berr %d\n", bErr);
 			return err_could_not_insert;
 		}
 		return err_ok;
@@ -232,127 +233,132 @@ bpptree_find(
 		dict_cursor_t 	**cursor
 )
 {
+	bpptree_t *bpptree = (bpptree_t *) dictionary->instance;
 
-#if 0
-	//allocate memory for cursor
-	if ((*cursor = (dict_cursor_t *)malloc(sizeof(bpptree_cursor_t))) == NULL)
+	*cursor 					= malloc(sizeof(bCursorType));
+	if(NULL == *cursor) { return err_out_of_memory; }
+	bCursorType *bCursor = (bCursorType *) (*cursor);
+
+	(*cursor)->dictionary 		= dictionary;
+	(*cursor)->type 			= predicate->type;
+	(*cursor)->status 			= cs_cursor_uninitialized;
+
+	(*cursor)->destroy 			= bpptree_destroy_cursor;
+	(*cursor)->next 			= bpptree_next;
+
+	(*cursor)->predicate 		= malloc(sizeof(predicate_t));
+	if(NULL == (*cursor)->predicate)
 	{
+		free(*cursor);
 		return err_out_of_memory;
 	}
-	(*cursor)->dictionary = dictionary;
-	(*cursor)->type = predicate->type;				//* types align
-	(*cursor)->status = cs_cursor_uninitialized;
+	(*cursor)->predicate->type 	= predicate->type;
 
-	//bind destroy method for cursor
-	(*cursor)->destroy = bpptree_destroy_cursor;
 
-	//bind correct next function
-	(*cursor)->next = bpptree_next;	// this will use the correct value
+	ion_key_size_t 	key_size 	= dictionary->instance->record.key_size;
 
-	//allocate predicate
-	(*cursor)->predicate = (predicate_t *)malloc(sizeof(predicate_t));
-	(*cursor)->predicate->type = predicate->type;			/**@todo repair as there are duplicate types */
-
-	//based on the type of predicate that is being used, need to create the correct cursor
 	switch(predicate->type)
 	{
 		case predicate_equality:
 		{
-			//as this is an equality, need to malloc for key as well
-			if (((*cursor)->predicate->statement.equality.equality_value = (ion_key_t)malloc(sizeof(ion_key_t)*(((hashmap_t*)dictionary->instance)->super.record.key_size))) == NULL)
-			//if (((*cursor)->predicate->statement.equality.equality_value = (ion_key_t)malloc(sizeof(ion_key_t)* ((dictionary_parent_t)(dictionary->instance)->record.key_size))) == NULL)
+			/* TODO get ALL these lines within 80 cols */
+			ion_key_t 		target_key 	= predicate->statement.equality.equality_value;
 
+			(*cursor)->predicate->statement.equality.equality_value = malloc(key_size);
+			if(NULL == (*cursor)->predicate->statement.equality.equality_value)
 			{
-				free((*cursor)->predicate);
-				free(*cursor);						//cleanup
+				free( (*cursor)->predicate);
+				free(*cursor);
 				return err_out_of_memory;
 			}
-			//copy across the key value as the predicate may be destroyed
-			memcpy((*cursor)->predicate->statement.equality.equality_value, 	predicate->statement.equality.equality_value, (sizeof(ion_key_t)*(((hashmap_t*)dictionary->instance)->super.record.key_size)));
 
-			//find the location of the first element as this is a straight equality
-			int location = cs_invalid_index;
+			memcpy(
+				(*cursor)->predicate->statement.equality.equality_value,
+				target_key,
+				key_size
+			);
+			
+			bErrType err = bFindKey(bpptree->tree, target_key, (eAdrType *) &bCursor->offset);
 
-			if (oah_find_item_loc((hashmap_t*)dictionary->instance, (*cursor)->predicate->statement.equality.equality_value, &location) == err_item_not_found)
+			if(bErrOk != err)
 			{
+				/* If this happens, that means the target key doesn't exist */
 				(*cursor)->status = cs_end_of_results;
 				return err_ok;
 			}
 			else
 			{
-				(*cursor)->status = cs_cursor_initialized;
-				//cast to specific instance type for conveniences of setup
-				bpptree_cursor_t *oadict_cursor = (bpptree_cursor_t *)(* cursor);
-				// the cursor is ready to be consumed
-				oadict_cursor->first = location;
-				oadict_cursor->current = location;
+				(*cursor)->status 			= cs_cursor_initialized;
 				return err_ok;
 			}
+
 			break;
 		}
 		case predicate_range:
 		{
-			//as this is a range, need to malloc leq key
-			if (((*cursor)->predicate->statement.range.leq_value = (ion_key_t)malloc(sizeof(ion_key_t)*(((hashmap_t*)dictionary->instance)->super.record.key_size))) == NULL)
+			(*cursor)->predicate->statement.range.leq_value = malloc(key_size);
+			if(NULL == (*cursor)->predicate->statement.range.leq_value)
 			{
-				free((*cursor)->predicate);
-				free(*cursor);					//cleanup
+				free( (*cursor)->predicate);
+				free(*cursor);
 				return err_out_of_memory;
 			}
-			//copy across the key value as the predicate may be destroyed
-			memcpy((*cursor)->predicate->statement.range.leq_value, 	predicate->statement.range.leq_value, (((hashmap_t *)dictionary->instance)->super.record.key_size));
 
-			//as this is a range, need to malloc leq key
-			if (((*cursor)->predicate->statement.range.geq_value = (ion_key_t)malloc(sizeof(ion_key_t)*(((hashmap_t*)dictionary->instance)->super.record.key_size))) == NULL)
+			memcpy(
+				(*cursor)->predicate->statement.range.leq_value,
+				predicate->statement.range.leq_value,
+				key_size
+			);
+
+			(*cursor)->predicate->statement.range.geq_value = malloc(key_size);
+			if(NULL == (*cursor)->predicate->statement.range.geq_value)
 			{
 				free((*cursor)->predicate->statement.range.leq_value);
 				free((*cursor)->predicate);
-				free(*cursor);					//cleanup
+				free(*cursor);
 				return err_out_of_memory;
 			}
-			//copy across the key value as the predicate may be destroyed
-			memcpy((*cursor)->predicate->statement.range.geq_value, 	predicate->statement.range.geq_value, (((hashmap_t*)dictionary->instance)->super.record.key_size));
 
-			//find the location of the first element as this is a straight equality
-			int location = cs_invalid_index;
+			memcpy(
+				(*cursor)->predicate->statement.range.geq_value,
+				predicate->statement.range.geq_value,
+				key_size
+			);
 
-			//start at the lowest end of the range and check
-			if (oah_find_item_loc((hashmap_t*)dictionary->instance, (*cursor)->predicate->statement.range.geq_value, &location) == err_item_not_found)
+			/* B+ Tree cursor setup stuff here */
+
+			if(0 /* Bad cursor conditional */)
 			{
-				//this will still have to be returned?
-				(*cursor)->status = cs_end_of_results;
+				(*cursor)->status 	= cs_end_of_results;
 				return err_ok;
 			}
 			else
 			{
-				(*cursor)->status = cs_cursor_initialized;
-				//cast to specific instance type for conveniences of setup
-				bpptree_cursor_t *oadict_cursor = (bpptree_cursor_t *)(* cursor);
-				// the cursor is ready to be consumed
-				oadict_cursor->first = location;
-				oadict_cursor->current = location;
+				(*cursor)->status 			= cs_cursor_initialized;
+				/* setup good cursor */
 				return err_ok;
 			}
 			break;
 		}
 		case predicate_predicate:
 		{
+			/* TODO not implemented */
 			break;
 		}
 		default:
 		{
-			return err_invalid_predicate;		//* Invalid predicate supplied
+			return err_invalid_predicate;
 			break;
 		}
 	}
-#endif
+
 	return err_ok;
 }
 
 cursor_status_t
 bpptree_next(
 	dict_cursor_t 	*cursor,
-	ion_value_t		value
+	ion_record_t	*record
 )
 {
 #if 0
@@ -425,31 +431,6 @@ bpptree_destroy_cursor(
 	dict_cursor_t	 **cursor
 )
 {
-#if 0
-	/** Free any internal memory allocations */
-	switch((*cursor)->type)
-	{
-		{
-
-			free((*cursor)->predicate->statement.equality.equality_value);
-			break;
-		}
-		case predicate_range:
-		{
-			free((*cursor)->predicate->statement.range.geq_value);
-			free((*cursor)->predicate->statement.range.leq_value);
-			break;
-		}
-		case predicate_predicate:
-		{
-			break;
-		}
-	}
-	/** and free cursor pointer */
-	free((*cursor)->predicate);
-	free(*cursor);
-	*cursor = NULL;
-#endif
 }
 
 boolean_t
@@ -514,60 +495,4 @@ bpptree_test_predicate(
 	return key_satisfies_predicate;
 #endif
 	return boolean_false;
-}
-
-err_t
-bpptree_scan(
-		bpptree_cursor_t		*cursor			//know exactly what implementation of cursor is
-)
-{
-#if 0
-	//need to scan hashmap fully looking for values that satisfy - need to think about
-	hashmap_t * hash_map = (hashmap_t *)(cursor->super.dictionary->instance);
-
-	int loc = (cursor->current + 1) % hash_map->map_size;
-													//this is the current position of the cursor
-													//and start scanning 1 ahead
-
-	//start at the current position, scan forward
-	while (loc != cursor->first)
-		{
-			// check to see if current item is a match based on key
-			// locate first item
-			hash_bucket_t * item 	= (((hash_bucket_t *)((hash_map->entry
-										+ (hash_map->super.record.key_size
-											+ hash_map->super.record.value_size
-												+ SIZEOF(STATUS)) * loc))));
-
-			if (item->status == EMPTY || item->status == DELETED)
-			{
-				//if empty, just skip to next cell
-				loc++;
-			}
-			else //check to see if the current key value satisfies the predicate
-			{
-
-					//need to check key match; what's the most efficient way?
-					//need to use fnptr here for the correct matching
-					/*int key_is_equal = memcmp(item->data, "10{" ,
-					        			hash_map->record.key_size);*/
-					/**
-					 * Compares value == key
-					 */
-					boolean_t key_satisfies_predicate = oadict_test_predicate(&(cursor->super), (ion_key_t)item->data);			//assumes that the key is first
-
-					if (key_satisfies_predicate == boolean_true)
-					{
-						cursor->current = loc;		//this is the next index for value
-						return cs_valid_data;
-					}
-				}
-				loc++;
-				if (loc >= hash_map->map_size)	// Perform wrapping
-					loc = 0;
-			}
-	//if you end up here, you've wrapped the entire data structure and not found a value
-	return cs_end_of_results;
-#endif
-	return cs_end_of_results;
 }

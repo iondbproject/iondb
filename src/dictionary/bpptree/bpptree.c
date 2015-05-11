@@ -200,7 +200,6 @@ static bErrType readDisk(bAdrType adr, bufType **b) {
     int len;
     bufType *buf;               /* buffer */
     bErrType rc;                /* return code */
-
     if ((rc = assignBuf(adr, &buf)) != 0) return rc;
     if (!buf->valid) {
         len = h->sectorSize;
@@ -209,7 +208,9 @@ static bErrType readDisk(bAdrType adr, bufType **b) {
         if (fseek(h->fp, adr, SEEK_SET)) return error(bErrIO);
         if (fread(buf->p, len, 1, h->fp) != 1) return error(bErrIO);
 #endif
-        if (err_ok != ion_fread_at(h->fp, adr, len, (byte*) buf->p)) return error(bErrIO);
+        if (err_ok != ion_fread_at(h->fp, adr, len, (byte*) buf->p)) {
+            return error(bErrIO);
+        }
         buf->modified = boolean_false;
         buf->valid = boolean_true;
         nDiskReads++;
@@ -218,7 +219,7 @@ static bErrType readDisk(bAdrType adr, bufType **b) {
     return bErrOk;
 }
 
-typedef enum { MODE_FIRST, MODE_MATCH } modeEnum;
+typedef enum { MODE_FIRST, MODE_MATCH, MODE_FGEQ, MODE_LLEQ } modeEnum;
 
 static int search(
     bufType *buf,
@@ -252,10 +253,10 @@ static int search(
         m = (lb + ub) / 2;
         *mkey = fkey(buf) + ks(m);
         cc = h->comp((ion_key_t)key, (ion_key_t)key(*mkey), (ion_key_size_t)(h->keySize));
-        if (cc < 0)
+        if (cc < 0 || (cc == 0 && MODE_FGEQ == mode))
             /* key less than key[m] */
             ub = m - 1;
-        else if (cc > 0)
+        else if (cc > 0 || (cc == 0 && MODE_LLEQ == mode))
             /* key greater than key[m] */
             lb = m + 1;
         else {
@@ -294,6 +295,26 @@ static int search(
         /* next key is first key in set of duplicates */
         *mkey += ks(1);
         return CC_EQ;
+    }
+    if (MODE_LLEQ == mode) {
+        *mkey = fkey(buf) + ks(ub+1);
+        cc =  h->comp((ion_key_t)key, (ion_key_t)key(*mkey), (ion_key_size_t)(h->keySize));
+        if (ub == ct(buf)-1 || (ub != -1 && cc <= 0))
+        {
+            *mkey = fkey(buf) + ks(ub);
+            cc =  h->comp((ion_key_t)key, (ion_key_t)key(*mkey), (ion_key_size_t)(h->keySize));
+        }
+        return cc;
+    }
+    if (MODE_FGEQ == mode) {
+        *mkey = fkey(buf) + ks(lb);
+        cc =  h->comp((ion_key_t)key, (ion_key_t)key(*mkey), (ion_key_size_t)(h->keySize));
+        if (lb < ct(buf) - 1 && cc < 0)
+        {
+            *mkey = fkey(buf) + ks(lb+1);
+            cc =  h->comp((ion_key_t)key, (ion_key_t)key(*mkey), (ion_key_size_t)(h->keySize));
+        }
+        return cc;
     }
     /* didn't find key */
     return cc;
@@ -755,6 +776,46 @@ bErrType bFindKey(bHandleType handle, void *key, eAdrType *rec) {
                 if ((rc = readDisk(childLT(mkey), &buf)) != 0) return rc;
             } else {
                 if ((rc = readDisk(childGE(mkey), &buf)) != 0) return rc;
+            }
+        }
+    }
+}
+
+bErrType bFindFirstGreaterOrEqual(bHandleType handle, void *key, eAdrType *rec) {
+    keyType *lgeqkey;              /* matched key */
+    bufType *buf;               /* buffer */
+    bErrType rc;                /* return code */
+    int      cc;
+
+    h = handle;
+    buf = &h->root;
+
+    /* find key, and return address */
+    while (1) {
+        if (leaf(buf)) {
+            if ((cc = search(buf, key, 0, &lgeqkey, MODE_LLEQ)) > 0) {
+                if ((lgeqkey - fkey(buf))/(h->ks) == (ct(buf)))
+                {
+                    return bErrKeyNotFound;
+                }
+                lgeqkey += ks(1);
+            }
+            h->curBuf = buf; h->curKey = lgeqkey;
+            *rec = rec(lgeqkey);
+            
+            return bErrOk;
+        } else {
+            cc = search(buf, key, 0, &lgeqkey, MODE_LLEQ);
+            if (cc < 0) {
+                if ((rc = readDisk(childLT(lgeqkey), &buf)) != 0)
+                {
+                    return rc;
+                }
+            } else {
+                if ((rc = readDisk(childGE(lgeqkey), &buf)) != 0)
+                {
+                    return rc;
+                }
             }
         }
     }

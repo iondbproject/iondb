@@ -25,7 +25,20 @@ run_bpptreehandler_generic_test_set_1(
 		10000,
 		tc
 	);
-	
+	// hey kill me once you are sure that method works!!!
+#if 0
+	bpptree_t *bpptree = (bpptree_t *) ((dictionary_t *) (&test))->instance;
+	file_offset_t offset = -1;
+	file_offset_t offset2 = -1;
+	int key1 = 0;
+	int key2 = 0;
+	bErrType err1 = bFindFirstGreaterOrEqual(bpptree->tree, &key1, &offset);
+	bErrType err2 = bFindKey(bpptree->tree, &key2, &offset2);
+
+	printf("%ld == %ld\n", offset, offset2);
+	printf("%d == %d\n", err1, err2);fflush(stdout);
+
+#endif
 	int to_delete[] = {7, -9, 32, 1000001};
 	int i;
 	
@@ -71,8 +84,7 @@ run_bpptreehandler_generic_test_set_1(
 		(ion_value_t)(&update_value),
 		tc
 	);
-#if 0
-#endif
+
 	
 	dictionary_delete_dictionary(&(test.dictionary));
 }

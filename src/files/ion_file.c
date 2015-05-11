@@ -29,10 +29,10 @@ ion_fopen(
 #else
 	file_handle_t	file;
 	
-	file		= fopen(name, "r+");
-	if (NULL == (SD_FILE*) file)
+	file		= fopen(name, "r+b");
+	if (NULL == file)
 	{
-		file	= fopen(name, "w+");
+		file	= fopen(name, "w+b");
 	}
 	return file;
 #endif
@@ -87,7 +87,8 @@ ion_fseek(
 	fseek(file.file, seek_to, origin);
 	return err_ok;
 #else
-	fseek(file, seek_to, origin);
+	if (0 != fseek(file, seek_to, origin))
+		return err_file_bad_seek;
 	return err_ok;
 #endif
 }
@@ -203,8 +204,9 @@ ion_fread(
 	
 	return err_ok;
 #else
-	if (1 != fread(write_to, num_bytes, 1, file))
+	if (1 != fread(write_to, num_bytes, 1, file)) {
 		return err_file_incomplete_read;
+	}
 	
 	return err_ok;
 #endif
@@ -219,7 +221,6 @@ ion_fread_at(
 )
 {
 	err_t	error;
-	
 	error	= ion_fseek(file, offset, ION_FILE_START);
 	if (err_ok != error)
 	{

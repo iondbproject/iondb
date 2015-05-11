@@ -70,6 +70,7 @@ enum error
 	err_unimplemented,
 	err_file_incomplete_write,
 	err_file_incomplete_read,
+	err_file_bad_seek,
 };
 
 typedef char err_t;
@@ -103,8 +104,8 @@ typedef char						boolean_t;
 
 typedef enum
 {
-	boolean_false,
-	boolean_true,
+	boolean_false = 0,
+	boolean_true = 1,
 } boolean_e;
 
 typedef struct return_status{

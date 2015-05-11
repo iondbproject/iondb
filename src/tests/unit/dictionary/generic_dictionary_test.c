@@ -115,7 +115,6 @@ dictionary_test_insert_get(
 				&keys[(i*test->key_size)],
 				&vals[(i*test->value_size)]
 			);
-		
 		CuAssertTrue(tc, err_ok == error);
 	}
 	
