@@ -784,7 +784,7 @@ bErrType bFindKey(bHandleType handle, void *key, eAdrType *rec) {
     }
 }
 
-bErrType bFindFirstGreaterOrEqual(bHandleType handle, void *key, eAdrType *rec) {
+bErrType bFindFirstGreaterOrEqual(bHandleType handle, void *key, void *mkey, eAdrType *rec) {
     keyType *lgeqkey;              /* matched key */
     bufType *buf;               /* buffer */
     bErrType rc;                /* return code */
@@ -804,6 +804,7 @@ bErrType bFindFirstGreaterOrEqual(bHandleType handle, void *key, eAdrType *rec) 
                 lgeqkey += ks(1);
             }
             h->curBuf = buf; h->curKey = lgeqkey;
+            memcpy(mkey, key(lgeqkey), h->keySize);
             *rec = rec(lgeqkey);
             
             return bErrOk;

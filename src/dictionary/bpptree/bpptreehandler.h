@@ -22,6 +22,12 @@ typedef struct bplusplustree
 	lfb_t			values;
 } bpptree_t;
 
+typedef struct {
+    dict_cursor_t   super;  	/**< Supertype of cursor 		*/
+    ion_key_t 		cur_key; 	/**< Current key we're visiting */
+    file_offset_t   offset; 	/**< offset in LFB; holds value */
+} bCursorType;
+
 /**
 @brief		Registers a specific handler for a  dictionary instance.
 

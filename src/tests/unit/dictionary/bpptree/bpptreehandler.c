@@ -26,39 +26,34 @@ run_bpptreehandler_generic_test_set_1(
 		tc
 	);
 
+#if 0 
+	/* Temporary test code that should be removed once formal unit tests have been written. */
 	dictionary_t dict = *((dictionary_t*) &test);
 
-	dictionary_insert(&dict, IONIZE(5), IONIZE(3));
-	dictionary_insert(&dict, IONIZE(5), IONIZE(4));
+	dictionary_insert(&dict, IONIZE(5),  IONIZE(3));
+	dictionary_insert(&dict, IONIZE(5),  IONIZE(4));
+	dictionary_insert(&dict, IONIZE(6),  IONIZE(5));
+	dictionary_insert(&dict, IONIZE(12), IONIZE(6));
+	dictionary_insert(&dict, IONIZE(13), IONIZE(7));
+	dictionary_insert(&dict, IONIZE(14), IONIZE(8));
+	dictionary_insert(&dict, IONIZE(15), IONIZE(9));
 
-    ion_key_t   key     = IONIZE(5);
+    ion_key_t   leq     = IONIZE(5);
+    ion_key_t	geq 	= IONIZE(9);
     dict_cursor_t *cursor = NULL;
     predicate_t predicate;
-    predicate.type = predicate_equality;
-    predicate.statement.equality.equality_value = key;
+    predicate.type = predicate_range;
+    predicate.statement.range.leq_value = leq;
+    predicate.statement.range.geq_value = geq;
     dict.handler->find(&dict, &predicate, &cursor);
 
     ion_record_t record;
     record.key      = (ion_key_t) malloc(dict.instance->record.key_size);
     record.value    = (ion_value_t) malloc(dict.instance->record.value_size);
-
     while(cursor->next(cursor, &record) != cs_end_of_results)
     {
         printf("key: %d value: %d\n", NEUTRALIZE(int, record.key), NEUTRALIZE(int, record.value));
     }
-
-	// hey kill me once you are sure that method works!!!
-#if 0
-	bpptree_t *bpptree = (bpptree_t *) ((dictionary_t *) (&test))->instance;
-	file_offset_t offset = -1;
-	file_offset_t offset2 = -1;
-	int key1 = 0;
-	int key2 = 0;
-	bErrType err1 = bFindFirstGreaterOrEqual(bpptree->tree, &key1, &offset);
-	bErrType err2 = bFindKey(bpptree->tree, &key2, &offset2);
-
-	printf("%ld == %ld\n", offset, offset2);
-	printf("%d == %d\n", err1, err2);fflush(stdout);
 #endif
 
 	int to_delete[] = {7, -9, 32, 1000001};

@@ -70,11 +70,6 @@ typedef struct {                /* info for bOpen() */
     bCompType comp;             /* pointer to compare function */
 } bOpenType;
 
-typedef struct {
-    dict_cursor_t   super;  /**< Supertype of cursor */
-    file_offset_t   offset;
-} bCursorType;
-
 /***********************
  * function prototypes *
  ***********************/
@@ -163,12 +158,13 @@ bErrType bFindKey(bHandleType handle, void *key, eAdrType *rec);
      *   bErrKeyNotFound        key not found
      */
 
-bErrType bFindFirstGreaterOrEqual(bHandleType handle, void *key, eAdrType *rec);
+bErrType bFindFirstGreaterOrEqual(bHandleType handle, void *key, void *mkey, eAdrType *rec);
     /*
      * input:
      *   handle                 handle returned by bOpen
      *   key                    key to find
      * output:
+     *   mkey                   key associated with the found offset
      *   rec                    record address of least element greater than or equal to
      * returns:
      *   bErrOk                 operation successful

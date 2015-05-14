@@ -149,9 +149,9 @@ bpptree_create_dictionary(
 		return err_dictionary_initialization_failed;
 	}
 	
-	dictionary->instance		= (dictionary_parent_t*) bpptree;
-	
-	dictionary->handler		= handler;		//todo: need to check to make sure that the handler is registered
+	dictionary->instance			= (dictionary_parent_t*) bpptree;
+	dictionary->instance->compare 	= compare;
+	dictionary->handler				= handler;		//todo: need to check to make sure that the handler is registered
 
 	return err_ok;
 }
@@ -240,10 +240,17 @@ bpptree_find(
 )
 {
 	bpptree_t *bpptree = (bpptree_t *) dictionary->instance;
+	ion_key_size_t 	key_size 	= dictionary->instance->record.key_size;
 
 	*cursor 					= malloc(sizeof(bCursorType));
 	if(NULL == *cursor) { return err_out_of_memory; }
 	bCursorType *bCursor = (bCursorType *) (*cursor);
+	bCursor->cur_key 			= malloc(sizeof(char) * key_size);
+	if(NULL == bCursor->cur_key)
+	{
+		free(bCursor);
+		return err_out_of_memory;
+	}
 
 	(*cursor)->dictionary 		= dictionary;
 	(*cursor)->type 			= predicate->type;
@@ -255,13 +262,13 @@ bpptree_find(
 	(*cursor)->predicate 		= malloc(sizeof(predicate_t));
 	if(NULL == (*cursor)->predicate)
 	{
+		free(bCursor->cur_key);
 		free(*cursor);
 		return err_out_of_memory;
 	}
 	(*cursor)->predicate->type 	= predicate->type;
 
 
-	ion_key_size_t 	key_size 	= dictionary->instance->record.key_size;
 
 	switch(predicate->type)
 	{
@@ -274,6 +281,7 @@ bpptree_find(
 			if(NULL == (*cursor)->predicate->statement.equality.equality_value)
 			{
 				free( (*cursor)->predicate);
+				free(bCursor->cur_key);
 				free(*cursor);
 				return err_out_of_memory;
 			}
@@ -283,6 +291,8 @@ bpptree_find(
 				target_key,
 				key_size
 			);
+
+			memcpy(bCursor->cur_key, target_key, key_size);
 			
 			bErrType err = bFindKey(bpptree->tree, target_key, &bCursor->offset);
 
@@ -306,6 +316,7 @@ bpptree_find(
 			if(NULL == (*cursor)->predicate->statement.range.leq_value)
 			{
 				free( (*cursor)->predicate);
+				free(bCursor->cur_key);
 				free(*cursor);
 				return err_out_of_memory;
 			}
@@ -321,6 +332,7 @@ bpptree_find(
 			{
 				free((*cursor)->predicate->statement.range.leq_value);
 				free((*cursor)->predicate);
+				free(bCursor->cur_key);
 				free(*cursor);
 				return err_out_of_memory;
 			}
@@ -331,9 +343,16 @@ bpptree_find(
 				key_size
 			);
 
-			/* B+ Tree cursor setup stuff here */
+			/* We search for the FGEQ of the Lower bound. */
+			bFindFirstGreaterOrEqual(
+			                         bpptree->tree,
+			                         (*cursor)->predicate->statement.range.leq_value,
+			                         bCursor->cur_key,
+			                         &bCursor->offset
+			                        );
 
-			if(0 /* Bad cursor conditional */)
+			/* If the key returned doesn't satisfy the predicate, we can exit */
+			if(boolean_false == bpptree_test_predicate(*cursor, bCursor->cur_key))
 			{
 				(*cursor)->status 	= cs_end_of_results;
 				return err_ok;
@@ -341,7 +360,6 @@ bpptree_find(
 			else
 			{
 				(*cursor)->status 			= cs_cursor_initialized;
-				/* setup good cursor */
 				return err_ok;
 			}
 			break;
@@ -398,6 +416,14 @@ bpptree_next(
 				case predicate_range:
 				{
 					/*do bFindNextKey then test_predicate */
+					if(-1 == bCursor->offset)
+					{
+						bErrType bErr = bFindNextKey(bpptree->tree, bCursor->cur_key, &bCursor->offset);
+						if(bErrOk != bErr || boolean_false == bpptree_test_predicate(cursor, bCursor->cur_key))
+						{
+							is_valid = boolean_false;
+						}
+					}
 					break;
 				}
 				case predicate_predicate:
@@ -418,37 +444,21 @@ bpptree_next(
 			cursor->status 	= cs_cursor_active;
 		}
 
-		switch(cursor->predicate->type)
-		{
-			case predicate_equality:
-			{
-				/* Get key */
-				memcpy(
-			       record->key,
-			       cursor->predicate->statement.equality.equality_value,
-			       cursor->dictionary->instance->record.key_size
-				);
+		/* Get key */
+		memcpy(
+	       record->key,
+	       bCursor->cur_key,
+	       cursor->dictionary->instance->record.key_size
+		);
 
-				/* Get value */
-			    lfb_get(
-		            &(bpptree->values),
-		            bCursor->offset,
-		            cursor->dictionary->instance->record.value_size,
-		            record->value,
-		            &bCursor->offset
-	            );
-		        break;
-			}
-			case predicate_range:
-			{
-				break;
-			}
-			case predicate_predicate:
-			{
-				/*TODO Not implemented */
-			}
-			/*No default since we can assume the predicate is valid. */
-		}
+		/* Get value */
+	    lfb_get(
+            &(bpptree->values),
+            bCursor->offset,
+            cursor->dictionary->instance->record.value_size,
+            record->value,
+            &bCursor->offset
+        );
 
 		return cursor->status;
 	}
@@ -482,6 +492,7 @@ bpptree_destroy_cursor(
 	}
 
 	free( (*cursor)->predicate);
+	free(((bCursorType *) (*cursor))->cur_key);
 	free((bCursorType *) (*cursor));
 	*cursor = NULL;
 }
