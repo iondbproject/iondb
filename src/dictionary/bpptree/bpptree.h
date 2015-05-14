@@ -116,6 +116,24 @@ bErrType bInsertKey(bHandleType handle, void *key, eAdrType rec);
      *   nodes to generate a "unique" key.
      */
 
+bErrType bUpdateKey(bHandleType handle, void *key, eAdrType rec);
+    /*
+     * input:
+     *   handle                 handle returned by bOpen
+     *   key                    key to update
+     *   rec                    record address
+     * returns:
+     *   bErrOk                 operation successful
+     *   bErrDupKeys            duplicate keys (and info.dupKeys = false)
+     * notes:
+     *   If dupKeys is false, then all records updated must have a
+     *   unique key.  If dupkeys is true, then duplicate keys are
+     *   allowed, but they must all have unique record addresses.
+     *   In this case, record addresses are included in internal
+     *   nodes to generate a "unique" key.
+     */
+
+
 bErrType bDeleteKey(bHandleType handle, void *key, eAdrType *rec);
     /*
      * input:

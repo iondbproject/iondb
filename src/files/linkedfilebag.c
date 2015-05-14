@@ -91,7 +91,7 @@ lfb_get(
 	{
 		return error;
 	}
-	
+
 	error	= ion_fread_at(
 			bag->file_handle,
 			offset+sizeof(file_offset_t),

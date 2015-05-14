@@ -207,26 +207,6 @@ bpptree_next(
 );
 
 /**
-@brief		Compares two keys and determines if they are equal assuming
-			that they are equal is length (in size).
-
-@param 		dict
-	 	 	 	 	 The map the keys are associated with.
-@param 		key1
-	 	 	 	 	 The first key for comparison.
-@param 		key2
-	 	 	 	 	 The second key for comparison.
-@return		If the keys are equal.
- */
-boolean_t
-/**@TODO Fix name of function */
-is_equal(
-	dictionary_t 	*dict,
-	ion_key_t 		key1,
-	ion_key_t 		key2
-);
-
-/**
 @brief		Destroys the cursor.
 
 @details	Destroys the cursor when the user is finished with it.  The

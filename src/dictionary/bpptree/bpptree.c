@@ -280,6 +280,9 @@ static int search(
                         return CC_EQ;
                     }
                     break;
+                case MODE_FGEQ:
+                case MODE_LLEQ: /* nop */
+                    break;
                 }
             } else {
                 return cc;
@@ -931,6 +934,81 @@ bErrType bInsertKey(bHandleType handle, void *key, eAdrType rec) {
                 if (cc < 0) lastGEkey -= ks(1);
             } else {
                 if (lastGEvalid) lastLTvalid = boolean_true;
+            }
+            buf = cbuf;
+        }
+    }
+
+    return bErrOk;
+}
+
+bErrType bUpdateKey(bHandleType handle, void *key, eAdrType rec) {
+    int rc;                     /* return code */
+    keyType *mkey;              /* match key */
+    int cc;                     /* condition code */
+    bufType *buf, *root;
+    bufType *tmp[4];
+    int height;                 /* height of tree */
+
+    h = handle;
+    root = &h->root;
+
+    /* check for full root */
+    if (ct(root) == 3 * h->maxCt) {
+        /* gather root and scatter to 4 bufs */
+        /* this increases b-tree height by 1 */
+        if ((rc = gatherRoot()) != 0) return rc;
+        if ((rc = scatter(root, fkey(root), 0, tmp)) != 0) return rc;
+    }
+    buf = root;
+    height = 0;
+    while(1) {
+        if (leaf(buf)) {
+            /* in leaf, and there' room guaranteed */
+
+            if (height > maxHeight) maxHeight = height;
+
+            /* set mkey to point to update point */
+            switch(search(buf, key, rec, &mkey, MODE_MATCH)) {
+            case CC_LT:  /* key < mkey */
+                return bErrKeyNotFound;
+                break;
+            case CC_EQ:  /* key = mkey */
+                break;
+            case CC_GT:  /* key > mkey */
+                return bErrKeyNotFound;
+                break;
+            }
+
+            /* update key */
+            rec(mkey) = rec;
+            break;
+        } else {
+            /* internal node, descend to child */
+            bufType *cbuf;      /* child buf */
+
+            height++;
+          
+            /* read child */
+            if ((cc = search(buf, key, rec, &mkey, MODE_MATCH)) < 0) {
+                if ((rc = readDisk(childLT(mkey), &cbuf)) != 0) return rc;
+            } else {
+                if ((rc = readDisk(childGE(mkey), &cbuf)) != 0) return rc;
+            }
+
+            /* check for room in child */
+            if (ct(cbuf) == h->maxCt) {
+
+                /* gather 3 bufs and scatter */
+                if ((rc = gather(buf, &mkey, tmp)) != 0) return rc;
+                if ((rc = scatter(buf, mkey, 3, tmp)) != 0) return rc;
+
+                /* read child */
+                if ((cc = search(buf, key, rec, &mkey, MODE_MATCH)) < 0) {
+                    if ((rc = readDisk(childLT(mkey), &cbuf)) != 0) return rc;
+                } else {
+                    if ((rc = readDisk(childGE(mkey), &cbuf)) != 0) return rc;
+                }
             }
             buf = cbuf;
         }

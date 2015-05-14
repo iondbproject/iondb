@@ -12,6 +12,7 @@
 #define ZERO			0
 
 #define DUMP(varname, format) printf("Variable %s = " format "\n", #varname, varname)
+#define PANIC(stuff) printf("%s\n", stuff); fflush(stdout)
 
 #define IONIZE(x) ({volatile typeof(x) _tmp = x; (ion_key_t) &_tmp; })
 #define NEUTRALIZE(type, x) ( *((type *) x) )
