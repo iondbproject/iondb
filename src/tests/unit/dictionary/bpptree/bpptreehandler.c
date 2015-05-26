@@ -26,39 +26,10 @@ run_bpptreehandler_generic_test_set_1(
 		tc
 	);
 
-#if 0 
-	/* Temporary test code that should be removed once formal unit tests have been written. */
-	dictionary_t dict = *((dictionary_t*) &test);
-
-	dictionary_insert(&dict, IONIZE(5),  IONIZE(3));
-	dictionary_insert(&dict, IONIZE(5),  IONIZE(4));
-	dictionary_insert(&dict, IONIZE(6),  IONIZE(5));
-	dictionary_insert(&dict, IONIZE(12), IONIZE(6));
-	dictionary_insert(&dict, IONIZE(13), IONIZE(7));
-	dictionary_insert(&dict, IONIZE(14), IONIZE(8));
-	dictionary_insert(&dict, IONIZE(15), IONIZE(9));
-
-    ion_key_t   leq     = IONIZE(5);
-    ion_key_t	geq 	= IONIZE(9);
-    dict_cursor_t *cursor = NULL;
-    predicate_t predicate;
-    predicate.type = predicate_range;
-    predicate.statement.range.leq_value = leq;
-    predicate.statement.range.geq_value = geq;
-    dict.handler->find(&dict, &predicate, &cursor);
-
-    ion_record_t record;
-    record.key      = (ion_key_t) malloc(dict.instance->record.key_size);
-    record.value    = (ion_value_t) malloc(dict.instance->record.value_size);
-    while(cursor->next(cursor, &record) != cs_end_of_results)
-    {
-        printf("key: %d value: %d\n", NEUTRALIZE(int, record.key), NEUTRALIZE(int, record.value));
-    }
-#endif
+	dictionary_test_insert_get_edge_cases(&test, tc);
 
 	int to_delete[] = {7, -9, 32, 1000001};
 	int i;
-	
 	
 	for (i = 0; i < sizeof(to_delete)/sizeof(int); i++)
 	{
@@ -102,6 +73,40 @@ run_bpptreehandler_generic_test_set_1(
 		tc
 	);
 
+	dictionary_insert(&test.dictionary, IONIZE(5),  IONIZE(3));
+	dictionary_insert(&test.dictionary, IONIZE(5),  IONIZE(5));
+	dictionary_insert(&test.dictionary, IONIZE(5),  IONIZE(7));
+
+	dictionary_insert(&test.dictionary, IONIZE(-5),  IONIZE(14));
+	dictionary_insert(&test.dictionary, IONIZE(-7),  IONIZE(6));
+	dictionary_insert(&test.dictionary, IONIZE(-10),  IONIZE(23));
+	dictionary_insert(&test.dictionary, IONIZE(-205),  IONIZE(9));
+
+	dictionary_test_equality(
+	    &test,
+	    IONIZE(5),
+	    tc
+    );
+
+	dictionary_test_equality(
+	    &test,
+	    IONIZE(-10),
+	    tc
+    );
+
+	dictionary_test_range(
+	    &test,
+	    IONIZE(5),
+	    IONIZE(3777),
+	    tc
+    );
+
+	dictionary_test_range(
+	    &test,
+	    IONIZE(-5),
+	    IONIZE(3777),
+	    tc
+    );
 	
 	dictionary_delete_dictionary(&(test.dictionary));
 }

@@ -12,10 +12,17 @@
 #define ZERO			0
 
 #define DUMP(varname, format) printf("Variable %s = " format "\n", #varname, varname)
+
+#ifndef ION_ARDUINO /* Only if we're on desktop do we want to flush. Otherwise we only do a printf. */
 #define PANIC(stuff) printf("%s\n", stuff); fflush(stdout)
+#else
+#define PANIC(stuff) printf("%s\n", stuff)
+#endif
 
 #define IONIZE(x) ({volatile typeof(x) _tmp = x; (ion_key_t) &_tmp; })
 #define NEUTRALIZE(type, x) ( *((type *) x) )
+
+
 
 #include <stdio.h>
 #include <stdlib.h>

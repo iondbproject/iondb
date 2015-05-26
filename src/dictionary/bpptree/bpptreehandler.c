@@ -67,7 +67,6 @@ bpptree_insert(
 		if (bErrOk != bErr)
 		{
 			// TODO: lfb_delete from values
-printf("berr %d\n", bErr);
 			return err_could_not_insert;
 		}
 		return err_ok;
@@ -245,7 +244,7 @@ bpptree_find(
 	*cursor 					= malloc(sizeof(bCursorType));
 	if(NULL == *cursor) { return err_out_of_memory; }
 	bCursorType *bCursor = (bCursorType *) (*cursor);
-	bCursor->cur_key 			= malloc(sizeof(char) * key_size);
+	bCursor->cur_key 			= malloc(key_size);
 	if(NULL == bCursor->cur_key)
 	{
 		free(bCursor);

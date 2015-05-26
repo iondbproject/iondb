@@ -1207,10 +1207,3 @@ bErrType bFindPrevKey(bHandleType handle, void *key, eAdrType *rec) {
     h->curBuf = buf; h->curKey = pkey;
     return bErrOk;
 }
-
-int comp(const void *key1, const void *key2, unsigned int size) {
-    unsigned int const *p1;
-    unsigned int const *p2;
-    p1 = key1; p2 = key2;
-    return (*p1 == *p2) ? CC_EQ : (*p1 > *p2 ) ? CC_GT : CC_LT;
-}

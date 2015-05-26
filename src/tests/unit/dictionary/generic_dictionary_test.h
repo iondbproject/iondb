@@ -14,6 +14,8 @@ extern "C" {
 #include "./../../../dictionary/dicttypes.h"
 #include "./../../../dictionary/dictionary.h"
 
+#define GTEST_DATA (ion_value_t) "Test data, please ignore! 123 123 abc abc"
+
 typedef struct generic_test
 {
 	dictionary_t		dictionary;
@@ -49,6 +51,12 @@ dictionary_test_insert_get(
 );
 
 void
+dictionary_test_insert_get_edge_cases(
+    generic_test_t  *test,
+    CuTest      *tc
+);
+
+void
 dictionary_test_delete(
 	generic_test_t	*test,
 	ion_key_t	key_to_delete,
@@ -61,6 +69,21 @@ dictionary_test_update(
 	ion_key_t	key_to_update,
 	ion_value_t	update_with,
 	CuTest		*tc
+);
+
+void
+dictionary_test_equality(
+    generic_test_t 	*test,
+    ion_key_t 		eq_key,
+    CuTest			*tc
+);
+
+void
+dictionary_test_range(
+    generic_test_t 	*test,
+    ion_key_t 		leq_key,
+    ion_key_t 		geq_key,
+    CuTest			*tc
 );
 
 #ifdef  __cplusplus
