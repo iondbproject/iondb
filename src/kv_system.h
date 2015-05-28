@@ -103,8 +103,8 @@ typedef char						boolean_t;
 
 typedef enum
 {
-	boolean_false,
-	boolean_true,
+	boolean_false = 0,
+	boolean_true = 1,
 } boolean_e;
 
 typedef struct return_status{

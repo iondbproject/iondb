@@ -1,12 +1,21 @@
 IonDB
 =========
+##"What is this?"
+
+Currently in the Arduino world, there doesn't exist an associative array or map implementation that is both easy to use *and* performance competitive. There also is little support for disk based storage options that don't involve writing it yourself. IonDB is fast, functional, and offers disk based storage out of the box.
+
+In general, IonDB supports:
+* Storing arbitrary values associated to a key
+* Duplicate key support
+* Range and Equality queries
+* Disk based persistent data storage
 
 ##Preamble
 
 These inclusions are necessary for any IonDB usage:
 
 ```c
-#include <SD.h>
+#include <SD.h> //If using file based implementations
 #include "dictionary.h"
 ```
 
@@ -92,6 +101,17 @@ unsigned long long my_key = NEUTRALIZE(unsigned long long, key);
 * key_type_numeric_unsigned
 * key_type_char_array (String)
 
+##File based implementations
+
+An SD shield, and a FAT formatted SD card is required to work with IonDB. The Arduino ethernet shield is recommended. The following initialization is required when working with file bsaed implementations:
+
+```c
+//Use pin 10 if using an Uno, pin 53 if Mega
+pinMode(10, OUTPUT);
+//Change depending on what SD shield is used
+SD.begin(4);
+```
+
 ##Usage
 
 ###Insert
@@ -143,10 +163,10 @@ void setup() {
     
     dictionary_insert(&dictionary, key, value);
     
-    ion_value_t returned_value = malloc(60); //from value_size
+    ion_value_t returned_value = (ion_value_t) malloc(60); //from value_size
     dictionary_get(&dictionary, key, returned_value);
     printf("Returned %s\n", returned_value);
-    free(returned value);
+    free(returned_value);
 }
 
 void loop() {}

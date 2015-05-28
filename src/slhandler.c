@@ -306,7 +306,6 @@ sldict_next(
 	return cs_invalid_cursor;
 }
 
-/* TODO test me */
 void
 sldict_destroy_cursor(
 	dict_cursor_t 		**cursor
