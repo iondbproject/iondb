@@ -5,6 +5,7 @@ IonDB
 Currently in the Arduino world, there doesn't exist an associative array or map implementation that is both easy to use *and* performance competitive. There also is little support for disk based storage options that don't involve writing it yourself. IonDB is fast, functional, and offers disk based storage out of the box.
 
 In general, IonDB supports:
+
 * Storing arbitrary values associated to a key
 * Duplicate key support
 * Range and Equality queries
