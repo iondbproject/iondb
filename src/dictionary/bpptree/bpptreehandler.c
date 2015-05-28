@@ -39,7 +39,6 @@ bpptree_insert(
 	bpptree	= (bpptree_t *) dictionary->instance;
 	
 	offset	= FILE_NULL;
-	
 	bErr	= bFindKey(bpptree->tree, key, &offset);
 	if (bErrKeyNotFound == bErr)
 	{
@@ -127,16 +126,18 @@ bpptree_create_dictionary(
 	
 	bpptree					= malloc(sizeof(bpptree_t));
 	if (NULL == bpptree)
+	{
 		return err_out_of_memory;
+	}
 	
 	bpptree->super.record.key_size		= key_size;
 	bpptree->super.record.value_size	= value_size;
-	bpptree->values.file_handle		= ion_fopen("FIXME.values");
+	bpptree->values.file_handle		= ion_fopen("FIXME.val");
 	bpptree->values.next_empty		= FILE_NULL;
 		// FIXME: read this from a property bag.
 	
 	// FIXME: VARIABLE NAMES!
-	info.iName				= "FIXME.bpptree";
+	info.iName				= "FIXME.bpt";
 	info.keySize				= key_size;
 	info.dupKeys				= boolean_false;
 	// FIXME: HOW DO WE SET BLOCK SIZE?
@@ -147,7 +148,6 @@ bpptree_create_dictionary(
 	{
 		return err_dictionary_initialization_failed;
 	}
-	
 	dictionary->instance			= (dictionary_parent_t*) bpptree;
 	dictionary->instance->compare 	= compare;
 	dictionary->handler				= handler;		//todo: need to check to make sure that the handler is registered
@@ -191,8 +191,8 @@ bpptree_delete_dictionary(
 	dictionary->instance	= NULL;
 	
 	// FIXME: Support multiple trees.
-	ion_fremove("FIXME.bpptree");
-	ion_fremove("FIXME.values");
+	ion_fremove("FIXME.bpt");
+	ion_fremove("FIXME.val");
 	
 	if (bErrOk != bErr)
 	{
@@ -458,7 +458,6 @@ bpptree_next(
             record->value,
             &bCursor->offset
         );
-
 		return cursor->status;
 	}
 

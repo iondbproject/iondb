@@ -7,7 +7,7 @@
 
 // #define ION_ARDUINO
 #define USING_ECLIPSE 	0
-#define DEBUG 			0
+// #define DEBUG 			1
 #define IS_EQUAL 		0
 #define ZERO			0
 

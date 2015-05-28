@@ -151,7 +151,11 @@ SD_FILE
 	else
 	{
 		return 0;		/** incorrect args */
-	}	
+	}
+#ifdef DEBUG
+			Serial.print("attempting file open - ");
+			Serial.println(filename);
+#endif	
 		_SD_File *file 	 = new struct _SD_File();
 		(file)->f = SD.open(filename, operation);
 		if (!((file)->f))

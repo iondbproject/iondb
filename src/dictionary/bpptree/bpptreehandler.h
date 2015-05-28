@@ -9,6 +9,10 @@
 #ifndef BPPTREEHANDLER_H_
 #define BPPTREEHANDLER_H_
 
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
 #include "./../dicttypes.h"
 #include "./../dictionary.h"
 #include "./../../kv_system.h"
@@ -244,5 +248,9 @@ bpptree_test_predicate(
     dict_cursor_t* 	cursor,
     ion_key_t 			key
 );
+
+#ifdef  __cplusplus
+}
+#endif
 
 #endif /* OADICTIONARYHANDLER_H_ */

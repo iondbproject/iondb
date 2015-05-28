@@ -47,7 +47,8 @@ int nDiskWrites;        /* number of disk writes */
 /* line number for last IO or memory error */
 int bErrLineNo;
 
-typedef boolean_e bool;
+typedef boolean_e bpp_bool_t;
+
 //typedef enum {false, true} bool;
 typedef enum {
     bErrOk,
@@ -65,7 +66,7 @@ typedef void *bHandleType;
 typedef struct {                /* info for bOpen() */
     char *iName;                /* name of index file */
     int keySize;                /* length, in bytes, of key */
-    bool dupKeys;               /* true if duplicate keys allowed */
+    bpp_bool_t dupKeys;               /* true if duplicate keys allowed */
     int sectorSize;             /* size of sector on disk */
     bCompType comp;             /* pointer to compare function */
 } bOpenType;

@@ -70,8 +70,8 @@ typedef struct bufTypeTag {     /* location of node */
     struct bufTypeTag *prev;    /* previous */
     bAdrType adr;               /* on disk */
     nodeType *p;                /* in memory */
-    bool valid;                 /* true if buffer contents valid */
-    bool modified;              /* true if buffer modified */
+    bpp_bool_t valid;                 /* true if buffer contents valid */
+    bpp_bool_t modified;              /* true if buffer modified */
 } bufType;
 
 /* one node for each open handle */
@@ -80,7 +80,7 @@ typedef struct hNodeTag {
     struct hNodeTag *next;      /* next node */
     file_handle_t fp;                   /* idx file */
     int keySize;                /* key length */
-    bool dupKeys;               /* true if duplicate keys */
+    bpp_bool_t dupKeys;               /* true if duplicate keys */
     int sectorSize;             /* block size for idx records */
     bCompType comp;             /* pointer to compare routine */
     bufType root;               /* root of b-tree, room for 3 sets */
@@ -243,7 +243,7 @@ static int search(
     int m;                      /* midpoint of search */
     int lb;                     /* lower-bound of binary search */
     int ub;                     /* upper-bound of binary search */
-    bool foundDup;              /* true if found a duplicate key */
+    bpp_bool_t foundDup;              /* true if found a duplicate key */
 
     /* scan current node for key using binary search */
     foundDup = boolean_false;
@@ -688,7 +688,12 @@ bErrType bOpen(bOpenType info, bHandleType *handle) {
         if (ion_fseek(h->fp, 0, ION_FILE_END)) return error(bErrIO);
         if ((h->nextFreeAdr = ion_ftell(h->fp)) == -1) return error(bErrIO);
     }
+    /** TODO make this cleaner **/
+#ifdef ION_ARDUINO
+    else if (NULL != (h->fp = ion_fopen(info.iName)).file) {
+#else
     else if (NULL != (h->fp = ion_fopen(info.iName))) {
+#endif
         /* initialize root */
         memset(root->p, 0, 3*h->sectorSize);
         leaf(root) = 1;
@@ -745,9 +750,14 @@ bErrType bClose(bHandleType handle) {
     }
 
     /* flush idx */
+/** TODO: Cleanup **/
+#ifdef ION_ARDUINO
+    if (h->fp.file) {
+#else
     if (h->fp) {
+#endif
         flushAll();
-        fclose(h->fp);
+        ion_fclose(h->fp);
     }
 
     if (h->malloc2) free(h->malloc2);
@@ -833,8 +843,8 @@ bErrType bInsertKey(bHandleType handle, void *key, eAdrType rec) {
     bufType *buf, *root;
     bufType *tmp[4];
     unsigned int keyOff;
-    bool lastGEvalid;           /* true if GE branch taken */
-    bool lastLTvalid;           /* true if LT branch taken after GE branch */
+    bpp_bool_t lastGEvalid;           /* true if GE branch taken */
+    bpp_bool_t lastLTvalid;           /* true if LT branch taken after GE branch */
     bAdrType lastGE;            /* last childGE traversed */
     unsigned int lastGEkey;     /* last childGE key traversed */
     int height;                 /* height of tree */
@@ -1026,8 +1036,8 @@ bErrType bDeleteKey(bHandleType handle, void *key, eAdrType *rec) {
     bufType *buf;               /* buffer */
     bufType *tmp[4];
     unsigned int keyOff;
-    bool lastGEvalid;           /* true if GE branch taken */
-    bool lastLTvalid;           /* true if LT branch taken after GE branch */
+    bpp_bool_t lastGEvalid;           /* true if GE branch taken */
+    bpp_bool_t lastLTvalid;           /* true if LT branch taken after GE branch */
     bAdrType lastGE;            /* last childGE traversed */
     unsigned int lastGEkey;     /* last childGE key traversed */
     bufType *root;
