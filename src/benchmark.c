@@ -20,7 +20,7 @@ benchmark_stop(
     void
 )
 {
-    unsigned int ram_used = ram_counter - free_ram();
+    unsigned int ram_used = ram_counter - free_ram() - 4; //Magic offset
     unsigned int time_elapsed = millis() - time_counter;
     printf("%db RAM use in %dms.\n", ram_used, time_elapsed);
 }

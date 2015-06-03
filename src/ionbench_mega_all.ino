@@ -1,13 +1,14 @@
 #include "dictionary.h"
 #include "benchmark.h"
 
-#include "slhandler.h"
+//#include "slhandler.h"
 //#include "oadictionaryhandler.h"
 //#include "oafdictionaryhandler.h"
 //#include "ffdictionaryhandler.h"
+// #include "dictionary/bpptree/bpptreehandler.h"
 
-//#include <SD.h>
-//#include "SD_stdio_c_iface.h"
+#include <SD.h>
+#include "SD_stdio_c_iface.h"
 
 #include "lfsr.h"
 
@@ -22,10 +23,11 @@ static int _keyswap;
 /** CONFIG PARAMS **/
 
 /**< Handler of dict to test. */
-err_t               (*handler_fptr)(dictionary_handler_t*)  = sldict_init;
+//err_t               (*handler_fptr)(dictionary_handler_t*)  = sldict_init;
 //void              (*handler_fptr)(dictionary_handler_t*)  = oadict_init;
 //void              (*handler_fptr)(dictionary_handler_t*)  = oafdict_init;
 //void              (*handler_fptr)(dictionary_handler_t*)  = ffdict_init;
+//void                (*handler_fptr)(dictionary_handler_t*) = bpptree_init;
 
 /**< Type of key to test. */
 key_type_t          key_type                                = key_type_numeric_signed;
@@ -54,7 +56,7 @@ setup(
     Serial.begin(9600);
     Serial.println("ready!");
 
-    /* File stuff 
+    /* File stuff */
     //pinMode(10, OUTPUT);
     pinMode(53, OUTPUT);
     if (!SD.begin(4))
@@ -63,12 +65,15 @@ setup(
         Serial.flush();
         return;
     }
-    FILE * file;
-    //remove the file before starting
-    fremove("FILE.BIN"); 
+    // FILE * file;
+    // //remove the file before starting
+    // fremove("FILE.BIN");
 
     /* LFSR stuff */
     lfsr_init_start_state(KEY_SEED, &keygen);
+
+    fremove("FIXME.val");
+    fremove("FIXME.bpt");
 }
 
 void
@@ -87,6 +92,33 @@ bench_dict_cleanup(
 )
 {
     dictionary_delete_dictionary(&dict);
+}
+
+void
+bench_dict_memusage(
+    void
+)
+{
+    SHOW();
+    benchmark_start();
+    bench_dict_initialize();
+    benchmark_stop();
+    bench_dict_cleanup();
+}
+
+void
+bench_insert_memusage(
+    void
+)
+{
+    SHOW();
+    bench_dict_initialize();
+
+    benchmark_start();
+    dictionary_insert(&dict, IONIZE(0), test_value);
+    benchmark_stop();
+    
+    bench_dict_cleanup();
 }
 
 void
@@ -187,7 +219,6 @@ bench_equality(
     for(i = 0; i < count; i++)
     {
         ion_key_t   key     = MAKE_ION_KEY(lfsr_get_next(&keygen));
-
         dict_cursor_t *cursor = NULL;
         predicate_t predicate;
         predicate.type = predicate_equality;
@@ -196,7 +227,9 @@ bench_equality(
         ion_record_t record;
         record.key      = (ion_key_t) malloc(dict.instance->record.key_size);
         record.value    = (ion_value_t) malloc(dict.instance->record.value_size);
+
         while(cursor->next(cursor, &record) != cs_end_of_results);
+
         cursor->destroy(&cursor);
         free(record.key);
         free(record.value);
@@ -279,6 +312,9 @@ loop(
 {
     while(!Serial.available()) {} //Wait
     char testcase = Serial.read();
+    Serial.print("(");
+    Serial.print(testcase);
+    Serial.print(") ");
     switch(testcase)
     {
         case 'a': {
@@ -330,7 +366,7 @@ loop(
             break;
         }
         case 'm': {
-            bench_equality(200, 50);
+            bench_equality(150, 50);
             break;
         }
         case 'n': {
@@ -347,6 +383,14 @@ loop(
         }
         case 'q': {
             bench_range(150, 1);
+            break;
+        }
+        case 'r': {
+            bench_dict_memusage();
+            break;
+        }
+        case 's': {
+            bench_insert_memusage();
             break;
         }
         default: {
