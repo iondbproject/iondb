@@ -61,7 +61,7 @@ typedef enum {
     bErrMemory 
 } bErrType;
 
-typedef void *bHandleType;
+typedef void* bHandleType;
 
 typedef struct {                /* info for bOpen() */
     char *iName;                /* name of index file */

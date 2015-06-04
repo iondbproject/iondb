@@ -76,11 +76,9 @@ typedef struct bufTypeTag {     /* location of node */
 
 /* one node for each open handle */
 typedef struct hNodeTag {
-    struct hNodeTag *prev;      /* previous node */
-    struct hNodeTag *next;      /* next node */
-    file_handle_t fp;                   /* idx file */
+    file_handle_t fp;           /* idx file */
     int keySize;                /* key length */
-    bpp_bool_t dupKeys;               /* true if duplicate keys */
+    bpp_bool_t dupKeys;         /* true if duplicate keys */
     int sectorSize;             /* block size for idx records */
     bCompType comp;             /* pointer to compare routine */
     bufType root;               /* root of b-tree, room for 3 sets */
@@ -95,9 +93,6 @@ typedef struct hNodeTag {
     bAdrType nextFreeAdr;       /* next free b-tree record address */
 } hNode;
 
-static hNode hList;             /* list of hNodes */
-static hNode *h;                /* current hNode */
-
 #define error(rc) lineError(__LINE__, rc)
 
 static bErrType lineError(int lineno, bErrType rc) {
@@ -107,14 +102,16 @@ static bErrType lineError(int lineno, bErrType rc) {
     return rc;
 }
 
-static bAdrType allocAdr(void) {
+static bAdrType allocAdr(bHandleType handle) {
+    hNode *h = handle;
     bAdrType adr;
     adr = h->nextFreeAdr;
     h->nextFreeAdr += h->sectorSize;
     return adr;
 }
 
-static bErrType flush(bufType *buf) {
+static bErrType flush(bHandleType handle, bufType *buf) {
+    hNode *h = handle;
     int len;            /* number of bytes to write */
 
     /* flush buffer to disk */
@@ -130,24 +127,26 @@ static bErrType flush(bufType *buf) {
     return bErrOk;
 }
 
-static bErrType flushAll(void) {
+static bErrType flushAll(bHandleType handle) {
+    hNode *h = handle;
     bErrType rc;                /* return code */
     bufType *buf;               /* buffer */
 
     if (h->root.modified)
-        if ((rc = flush(&h->root)) != 0) return rc;
+        if ((rc = flush(handle, &h->root)) != 0) return rc;
 
     buf = h->bufList.next;
     while (buf != &h->bufList) {
         if (buf->modified)
-            if ((rc = flush(buf)) != 0) return rc;
+            if ((rc = flush(handle, buf)) != 0) return rc;
         buf = buf->next;
     }
     
     return bErrOk;
 }
 
-static bErrType assignBuf(bAdrType adr, bufType **b) {
+static bErrType assignBuf(bHandleType handle, bAdrType adr, bufType **b) {
+    hNode *h = handle;
     /* assign buf to adr */
     bufType *buf;               /* buffer */
     bErrType rc;                /* return code */
@@ -168,7 +167,7 @@ static bErrType assignBuf(bAdrType adr, bufType **b) {
     if (buf->valid) {
         if (buf->adr != adr) {
             if (buf->modified) {
-                if ((rc = flush(buf)) != 0) return rc;
+                if ((rc = flush(handle, buf)) != 0) return rc;
             }
             buf->adr = adr;
             buf->valid = boolean_false;
@@ -195,19 +194,16 @@ static bErrType writeDisk(bufType *buf) {
     return bErrOk;
 }
 
-static bErrType readDisk(bAdrType adr, bufType **b) {
+static bErrType readDisk(bHandleType handle, bAdrType adr, bufType **b) {
+    hNode *h = handle;
     /* read data into buf */
     int len;
     bufType *buf;               /* buffer */
     bErrType rc;                /* return code */
-    if ((rc = assignBuf(adr, &buf)) != 0) return rc;
+    if ((rc = assignBuf(handle, adr, &buf)) != 0) return rc;
     if (!buf->valid) {
         len = h->sectorSize;
         if (adr == 0) len *= 3;         /* root */
-#if 0
-        if (fseek(h->fp, adr, SEEK_SET)) return error(bErrIO);
-        if (fread(buf->p, len, 1, h->fp) != 1) return error(bErrIO);
-#endif
         if (err_ok != ion_fread_at(h->fp, adr, len, (byte*) buf->p)) {
             return error(bErrIO);
         }
@@ -222,6 +218,7 @@ static bErrType readDisk(bAdrType adr, bufType **b) {
 typedef enum { MODE_FIRST, MODE_MATCH, MODE_FGEQ, MODE_LLEQ } modeEnum;
 
 static int search(
+    bHandleType handle,
     bufType *buf,
     void *key, 
     eAdrType rec, 
@@ -239,6 +236,7 @@ static int search(
      *   CC_LT                  key < mkey
      *   CC_GT                  key > mkey
      */
+    hNode *h = handle;
     int cc;                     /* condition code */
     int m;                      /* midpoint of search */
     int lb;                     /* lower-bound of binary search */
@@ -323,7 +321,8 @@ static int search(
     return cc;
 }
 
-static bErrType scatterRoot(void) {
+static bErrType scatterRoot(bHandleType handle) {
+    hNode *h = handle;
     bufType *gbuf;
     bufType *root;
 
@@ -338,7 +337,8 @@ static bErrType scatterRoot(void) {
     return bErrOk;
 }
 
-static bErrType scatter(bufType *pbuf, keyType *pkey, int is, bufType **tmp) {
+static bErrType scatter(bHandleType handle, bufType *pbuf, keyType *pkey, int is, bufType **tmp) {
+    hNode *h = handle;
     bufType *gbuf;              /* gather buf */
     keyType *gkey;              /* gather buf key */
     bErrType rc;                /* return code */
@@ -395,7 +395,7 @@ static bErrType scatter(bufType *pbuf, keyType *pkey, int is, bufType **tmp) {
     while(1) {
         if (iu == 0 || ct > (k0Max + (iu-1)*knMax)) {
             /* add a buffer */
-            if ((rc = assignBuf(allocAdr(), &tmp[iu])) != 0) 
+            if ((rc = assignBuf(handle, allocAdr(handle), &tmp[iu])) != 0) 
                 return rc;
             /* update sequential links */
             if (leaf(gbuf)) {
@@ -450,7 +450,7 @@ static bErrType scatter(bufType *pbuf, keyType *pkey, int is, bufType **tmp) {
         /* link last node to next */
         if (leaf(gbuf) && next(tmp[iu-1])) {
             bufType *buf;
-            if ((rc = readDisk(next(tmp[iu-1]), &buf)) != 0) return rc;
+            if ((rc = readDisk(handle, next(tmp[iu-1]), &buf)) != 0) return rc;
             prev(buf) = tmp[iu-1]->adr;
             if ((rc = writeDisk(buf)) != 0) return rc;
         }
@@ -524,7 +524,8 @@ static bErrType scatter(bufType *pbuf, keyType *pkey, int is, bufType **tmp) {
     return bErrOk;
 }
 
-static bErrType gatherRoot(void) {
+static bErrType gatherRoot(bHandleType handle) {
+    hNode *h = handle;
     bufType *gbuf;
     bufType *root;
 
@@ -537,7 +538,8 @@ static bErrType gatherRoot(void) {
     return bErrOk;
 }
 
-static bErrType gather(bufType *pbuf, keyType **pkey, bufType **tmp) {
+static bErrType gather(bHandleType handle, bufType *pbuf, keyType **pkey, bufType **tmp) {
+    hNode *h = handle;
     bErrType rc;                /* return code */
     bufType *gbuf;
     keyType *gkey;
@@ -561,9 +563,9 @@ static bErrType gather(bufType *pbuf, keyType **pkey, bufType **tmp) {
     /* find 3 adjacent buffers */
     if (*pkey == lkey(pbuf))
         *pkey -= ks(1);
-    if ((rc = readDisk(childLT(*pkey), &tmp[0])) != 0) return rc;
-    if ((rc = readDisk(childGE(*pkey), &tmp[1])) != 0) return rc;
-    if ((rc = readDisk(childGE(*pkey + ks(1)), &tmp[2])) != 0) return rc;
+    if ((rc = readDisk(handle, childLT(*pkey), &tmp[0])) != 0) return rc;
+    if ((rc = readDisk(handle, childGE(*pkey), &tmp[1])) != 0) return rc;
+    if ((rc = readDisk(handle, childGE(*pkey + ks(1)), &tmp[2])) != 0) return rc;
 
     /* gather nodes to gbuf */
     gbuf = &h->gbuf;
@@ -602,6 +604,7 @@ static bErrType gather(bufType *pbuf, keyType **pkey, bufType **tmp) {
 }
 
 bErrType bOpen(bOpenType info, bHandleType *handle) {
+    hNode *h;
     bErrType rc;                /* return code */
     int bufCt;                  /* number of tmp buffers */
     bufType *buf;               /* buffer */
@@ -684,7 +687,7 @@ bErrType bOpen(bOpenType info, bHandleType *handle) {
     if (ion_fexists(info.iName)) {
         /* open an existing database */
 	h->fp = ion_fopen(info.iName);
-        if ((rc = readDisk(0, &root)) != 0) return rc;
+        if ((rc = readDisk(handle, 0, &root)) != 0) return rc;
         if (ion_fseek(h->fp, 0, ION_FILE_END)) return error(bErrIO);
         if ((h->nextFreeAdr = ion_ftell(h->fp)) == -1) return error(bErrIO);
     }
@@ -704,35 +707,6 @@ bErrType bOpen(bOpenType info, bHandleType *handle) {
         free(h);
         return bErrFileNotOpen;
     }
-#if 0
-    if ((h->fp = fopen(info.iName, "r+b")) != NULL) {
-        /* open an existing database */
-        if ((rc = readDisk(0, &root)) != 0) return rc;
-        if (fseek(h->fp, 0, SEEK_END)) return error(bErrIO);
-        if ((h->nextFreeAdr = ftell(h->fp)) == -1) return error(bErrIO);
-    } else if ((h->fp = fopen(info.iName, "w+b")) != NULL) {
-        /* initialize root */
-        memset(root->p, 0, 3*h->sectorSize);
-        leaf(root) = 1;
-        h->nextFreeAdr = 3 * h->sectorSize;
-    } else {
-        /* something's wrong */
-        free(h);
-        return bErrFileNotOpen;
-    }
-#endif
-
-    /* append node to hList */
-    if (hList.next) {
-        h->prev = hList.next;
-        h->next = &hList;
-        h->prev->next = h;
-        h->next->prev = h;
-    } else {
-        /* first item in hList */
-        h->prev = h->next = &hList;
-        hList.next = hList.prev = h;
-    }
 
     *handle = h;
     return bErrOk;
@@ -740,14 +714,8 @@ bErrType bOpen(bOpenType info, bHandleType *handle) {
 
 
 bErrType bClose(bHandleType handle) {
-    h = handle;
+    hNode *h = handle;
     if (h == NULL) return bErrOk;
-
-    /* remove from list */
-    if (h->next) {
-        h->next->prev = h->prev;
-        h->prev->next = h->next;
-    }
 
     /* flush idx */
 /** TODO: Cleanup **/
@@ -756,7 +724,7 @@ bErrType bClose(bHandleType handle) {
 #else
     if (h->fp) {
 #endif
-        flushAll();
+        flushAll(handle);
         ion_fclose(h->fp);
     }
 
@@ -771,13 +739,13 @@ bErrType bFindKey(bHandleType handle, void *key, eAdrType *rec) {
     bufType *buf;               /* buffer */
     bErrType rc;                /* return code */
 
-    h = handle;
+    hNode *h = handle;
     buf = &h->root;
 
     /* find key, and return address */
     while (1) {
         if (leaf(buf)) {
-            if (search(buf, key, 0, &mkey, MODE_FIRST) == 0) {
+            if (search(handle, buf, key, 0, &mkey, MODE_FIRST) == 0) {
                 *rec = rec(mkey);
                 h->curBuf = buf; h->curKey = mkey;
                 return bErrOk;
@@ -785,10 +753,10 @@ bErrType bFindKey(bHandleType handle, void *key, eAdrType *rec) {
                 return bErrKeyNotFound;
             }
         } else {
-            if (search(buf, key, 0, &mkey, MODE_FIRST) < 0) {
-                if ((rc = readDisk(childLT(mkey), &buf)) != 0) return rc;
+            if (search(handle, buf, key, 0, &mkey, MODE_FIRST) < 0) {
+                if ((rc = readDisk(handle, childLT(mkey), &buf)) != 0) return rc;
             } else {
-                if ((rc = readDisk(childGE(mkey), &buf)) != 0) return rc;
+                if ((rc = readDisk(handle, childGE(mkey), &buf)) != 0) return rc;
             }
         }
     }
@@ -800,13 +768,13 @@ bErrType bFindFirstGreaterOrEqual(bHandleType handle, void *key, void *mkey, eAd
     bErrType rc;                /* return code */
     int      cc;
 
-    h = handle;
+    hNode *h = handle;
     buf = &h->root;
 
     /* find key, and return address */
     while (1) {
         if (leaf(buf)) {
-            if ((cc = search(buf, key, 0, &lgeqkey, MODE_LLEQ)) > 0) {
+            if ((cc = search(handle, buf, key, 0, &lgeqkey, MODE_LLEQ)) > 0) {
                 if ((lgeqkey - fkey(buf))/(h->ks) == (ct(buf)))
                 {
                     return bErrKeyNotFound;
@@ -819,14 +787,14 @@ bErrType bFindFirstGreaterOrEqual(bHandleType handle, void *key, void *mkey, eAd
             
             return bErrOk;
         } else {
-            cc = search(buf, key, 0, &lgeqkey, MODE_LLEQ);
+            cc = search(handle, buf, key, 0, &lgeqkey, MODE_LLEQ);
             if (cc < 0) {
-                if ((rc = readDisk(childLT(lgeqkey), &buf)) != 0)
+                if ((rc = readDisk(handle, childLT(lgeqkey), &buf)) != 0)
                 {
                     return rc;
                 }
             } else {
-                if ((rc = readDisk(childGE(lgeqkey), &buf)) != 0)
+                if ((rc = readDisk(handle, childGE(lgeqkey), &buf)) != 0)
                 {
                     return rc;
                 }
@@ -849,7 +817,7 @@ bErrType bInsertKey(bHandleType handle, void *key, eAdrType rec) {
     unsigned int lastGEkey;     /* last childGE key traversed */
     int height;                 /* height of tree */
 
-    h = handle;
+    hNode *h = handle;
     root = &h->root;
     lastGEvalid = boolean_false;
     lastLTvalid = boolean_false;
@@ -858,8 +826,8 @@ bErrType bInsertKey(bHandleType handle, void *key, eAdrType rec) {
     if (ct(root) == 3 * h->maxCt) {
         /* gather root and scatter to 4 bufs */
         /* this increases b-tree height by 1 */
-        if ((rc = gatherRoot()) != 0) return rc;
-        if ((rc = scatter(root, fkey(root), 0, tmp)) != 0) return rc;
+        if ((rc = gatherRoot(handle)) != 0) return rc;
+        if ((rc = scatter(handle, root, fkey(root), 0, tmp)) != 0) return rc;
     }
     buf = root;
     height = 0;
@@ -870,7 +838,7 @@ bErrType bInsertKey(bHandleType handle, void *key, eAdrType rec) {
             if (height > maxHeight) maxHeight = height;
 
             /* set mkey to point to insertion point */
-            switch(search(buf, key, rec, &mkey, MODE_MATCH)) {
+            switch(search(handle, buf, key, rec, &mkey, MODE_MATCH)) {
             case CC_LT:  /* key < mkey */
                 if (!h->dupKeys && 0 != ct(buf) && h->comp((ion_key_t)key, (ion_key_t)mkey, (ion_key_size_t)(h->keySize)) == CC_EQ)
                     return bErrDupKeys;
@@ -901,7 +869,7 @@ bErrType bInsertKey(bHandleType handle, void *key, eAdrType rec) {
             if (!keyOff && lastLTvalid) {
                 bufType *tbuf;
                 keyType *tkey;
-                if ((rc = readDisk(lastGE, &tbuf)) != 0) return rc;
+                if ((rc = readDisk(handle, lastGE, &tbuf)) != 0) return rc;
                 //tkey = fkey(tbuf) + lastGEkey;
                 tkey = fkey(tbuf);
                 memcpy(key(tkey), key, h->keySize);
@@ -917,24 +885,24 @@ bErrType bInsertKey(bHandleType handle, void *key, eAdrType rec) {
             height++;
           
             /* read child */
-            if ((cc = search(buf, key, rec, &mkey, MODE_MATCH)) < 0) {
-                if ((rc = readDisk(childLT(mkey), &cbuf)) != 0) return rc;
+            if ((cc = search(handle, buf, key, rec, &mkey, MODE_MATCH)) < 0) {
+                if ((rc = readDisk(handle, childLT(mkey), &cbuf)) != 0) return rc;
             } else {
-                if ((rc = readDisk(childGE(mkey), &cbuf)) != 0) return rc;
+                if ((rc = readDisk(handle, childGE(mkey), &cbuf)) != 0) return rc;
             }
 
             /* check for room in child */
             if (ct(cbuf) == h->maxCt) {
 
                 /* gather 3 bufs and scatter */
-                if ((rc = gather(buf, &mkey, tmp)) != 0) return rc;
-                if ((rc = scatter(buf, mkey, 3, tmp)) != 0) return rc;
+                if ((rc = gather(handle, buf, &mkey, tmp)) != 0) return rc;
+                if ((rc = scatter(handle, buf, mkey, 3, tmp)) != 0) return rc;
 
                 /* read child */
-                if ((cc = search(buf, key, rec, &mkey, MODE_MATCH)) < 0) {
-                    if ((rc = readDisk(childLT(mkey), &cbuf)) != 0) return rc;
+                if ((cc = search(handle, buf, key, rec, &mkey, MODE_MATCH)) < 0) {
+                    if ((rc = readDisk(handle, childLT(mkey), &cbuf)) != 0) return rc;
                 } else {
-                    if ((rc = readDisk(childGE(mkey), &cbuf)) != 0) return rc;
+                    if ((rc = readDisk(handle, childGE(mkey), &cbuf)) != 0) return rc;
                 }
             }
             if (cc >= 0 || mkey != fkey(buf)) {
@@ -961,15 +929,15 @@ bErrType bUpdateKey(bHandleType handle, void *key, eAdrType rec) {
     bufType *tmp[4];
     int height;                 /* height of tree */
 
-    h = handle;
+    hNode *h = handle;
     root = &h->root;
 
     /* check for full root */
     if (ct(root) == 3 * h->maxCt) {
         /* gather root and scatter to 4 bufs */
         /* this increases b-tree height by 1 */
-        if ((rc = gatherRoot()) != 0) return rc;
-        if ((rc = scatter(root, fkey(root), 0, tmp)) != 0) return rc;
+        if ((rc = gatherRoot(handle)) != 0) return rc;
+        if ((rc = scatter(handle, root, fkey(root), 0, tmp)) != 0) return rc;
     }
     buf = root;
     height = 0;
@@ -980,7 +948,7 @@ bErrType bUpdateKey(bHandleType handle, void *key, eAdrType rec) {
             if (height > maxHeight) maxHeight = height;
 
             /* set mkey to point to update point */
-            switch(search(buf, key, rec, &mkey, MODE_MATCH)) {
+            switch(search(handle, buf, key, rec, &mkey, MODE_MATCH)) {
             case CC_LT:  /* key < mkey */
                 return bErrKeyNotFound;
                 break;
@@ -1001,24 +969,24 @@ bErrType bUpdateKey(bHandleType handle, void *key, eAdrType rec) {
             height++;
           
             /* read child */
-            if ((cc = search(buf, key, rec, &mkey, MODE_MATCH)) < 0) {
-                if ((rc = readDisk(childLT(mkey), &cbuf)) != 0) return rc;
+            if ((cc = search(handle, buf, key, rec, &mkey, MODE_MATCH)) < 0) {
+                if ((rc = readDisk(handle, childLT(mkey), &cbuf)) != 0) return rc;
             } else {
-                if ((rc = readDisk(childGE(mkey), &cbuf)) != 0) return rc;
+                if ((rc = readDisk(handle, childGE(mkey), &cbuf)) != 0) return rc;
             }
 
             /* check for room in child */
             if (ct(cbuf) == h->maxCt) {
 
                 /* gather 3 bufs and scatter */
-                if ((rc = gather(buf, &mkey, tmp)) != 0) return rc;
-                if ((rc = scatter(buf, mkey, 3, tmp)) != 0) return rc;
+                if ((rc = gather(handle, buf, &mkey, tmp)) != 0) return rc;
+                if ((rc = scatter(handle, buf, mkey, 3, tmp)) != 0) return rc;
 
                 /* read child */
-                if ((cc = search(buf, key, rec, &mkey, MODE_MATCH)) < 0) {
-                    if ((rc = readDisk(childLT(mkey), &cbuf)) != 0) return rc;
+                if ((cc = search(handle, buf, key, rec, &mkey, MODE_MATCH)) < 0) {
+                    if ((rc = readDisk(handle, childLT(mkey), &cbuf)) != 0) return rc;
                 } else {
-                    if ((rc = readDisk(childGE(mkey), &cbuf)) != 0) return rc;
+                    if ((rc = readDisk(handle, childGE(mkey), &cbuf)) != 0) return rc;
                 }
             }
             buf = cbuf;
@@ -1043,7 +1011,7 @@ bErrType bDeleteKey(bHandleType handle, void *key, eAdrType *rec) {
     bufType *root;
     bufType *gbuf;
 
-    h = handle;
+    hNode *h = handle;
     root = &h->root;
     gbuf = &h->gbuf;
     lastGEvalid = boolean_false;
@@ -1054,7 +1022,7 @@ bErrType bDeleteKey(bHandleType handle, void *key, eAdrType *rec) {
         if (leaf(buf)) {
 
             /* set mkey to point to deletion point */
-            if (search(buf, key, *rec, &mkey, MODE_MATCH) == 0)
+            if (search(handle, buf, key, *rec, &mkey, MODE_MATCH) == 0)
                 *rec = rec(mkey);
             else
                 return bErrKeyNotFound;
@@ -1070,7 +1038,7 @@ bErrType bDeleteKey(bHandleType handle, void *key, eAdrType *rec) {
             if (!keyOff && lastLTvalid) {
                 bufType *tbuf;
                 keyType *tkey;
-                if ((rc = readDisk(lastGE, &tbuf)) != 0) return rc;
+                if ((rc = readDisk(handle, lastGE, &tbuf)) != 0) return rc;
                 tkey = fkey(tbuf) + lastGEkey;
                 memcpy(key(tkey), mkey, h->keySize);
                 rec(tkey) = rec(mkey);
@@ -1083,35 +1051,35 @@ bErrType bDeleteKey(bHandleType handle, void *key, eAdrType *rec) {
             bufType *cbuf;      /* child buf */
           
             /* read child */
-            if ((cc = search(buf, key, *rec, &mkey, MODE_MATCH)) < 0) {
-                if ((rc = readDisk(childLT(mkey), &cbuf)) != 0) return rc;
+            if ((cc = search(handle, buf, key, *rec, &mkey, MODE_MATCH)) < 0) {
+                if ((rc = readDisk(handle, childLT(mkey), &cbuf)) != 0) return rc;
             } else {
-                if ((rc = readDisk(childGE(mkey), &cbuf)) != 0) return rc;
+                if ((rc = readDisk(handle, childGE(mkey), &cbuf)) != 0) return rc;
             }
 
             /* check for room to delete */
             if (ct(cbuf) == h->maxCt/2) {
 
                 /* gather 3 bufs and scatter */
-                if ((rc = gather(buf, &mkey, tmp)) != 0) return rc;
+                if ((rc = gather(handle, buf, &mkey, tmp)) != 0) return rc;
 
                 /* if last 3 bufs in root, and count is low enough... */
                 if (buf == root
                 && ct(root) == 2 
                 && ct(gbuf) < (3*(3*h->maxCt))/4) {
                     /* collapse tree by one level */
-                    scatterRoot();
+                    scatterRoot(handle);
                     nNodesDel += 3;
                     continue;
                 }
 
-                if ((rc = scatter(buf, mkey, 3, tmp)) != 0) return rc;
+                if ((rc = scatter(handle, buf, mkey, 3, tmp)) != 0) return rc;
 
                 /* read child */
-                if ((cc = search(buf, key, *rec, &mkey, MODE_MATCH)) < 0) {
-                    if ((rc = readDisk(childLT(mkey), &cbuf)) != 0) return rc;
+                if ((cc = search(handle, buf, key, *rec, &mkey, MODE_MATCH)) < 0) {
+                    if ((rc = readDisk(handle, childLT(mkey), &cbuf)) != 0) return rc;
                 } else {
-                    if ((rc = readDisk(childGE(mkey), &cbuf)) != 0) return rc;
+                    if ((rc = readDisk(handle, childGE(mkey), &cbuf)) != 0) return rc;
                 }
             }
             if (cc >= 0 || mkey != fkey(buf)) {
@@ -1134,10 +1102,10 @@ bErrType bFindFirstKey(bHandleType handle, void *key, eAdrType *rec) {
     bErrType rc;                /* return code */
     bufType *buf;               /* buffer */
 
-    h = handle;
+    hNode *h = handle;
     buf = &h->root;
     while (!leaf(buf)) {
-        if ((rc = readDisk(childLT(fkey(buf)), &buf)) != 0) return rc;
+        if ((rc = readDisk(handle, childLT(fkey(buf)), &buf)) != 0) return rc;
     }
     if (ct(buf) == 0) return bErrKeyNotFound;
     memcpy(key, key(fkey(buf)), h->keySize);
@@ -1150,10 +1118,10 @@ bErrType bFindLastKey(bHandleType handle, void *key, eAdrType *rec) {
     bErrType rc;                /* return code */
     bufType *buf;               /* buffer */
 
-    h = handle;
+    hNode *h = handle;
     buf = &h->root;
     while (!leaf(buf)) {
-        if ((rc = readDisk(childGE(lkey(buf)), &buf)) != 0) return rc;
+        if ((rc = readDisk(handle, childGE(lkey(buf)), &buf)) != 0) return rc;
     }
     if (ct(buf) == 0) return bErrKeyNotFound;
     memcpy(key, key(lkey(buf)), h->keySize);
@@ -1167,13 +1135,13 @@ bErrType bFindNextKey(bHandleType handle, void *key, eAdrType *rec) {
     keyType *nkey;              /* next key */
     bufType *buf;               /* buffer */
 
-    h = handle;
+    hNode *h = handle;
     if ((buf = h->curBuf) == NULL) return bErrKeyNotFound;
     if (h->curKey == lkey(buf)) {
         /* current key is last key in leaf node */
         if (next(buf)) {
             /* fetch next set */
-            if ((rc = readDisk(next(buf), &buf)) != 0) return rc;
+            if ((rc = readDisk(handle, next(buf), &buf)) != 0) return rc;
             nkey = fkey(buf);
         } else {
             /* no more sets */
@@ -1195,14 +1163,14 @@ bErrType bFindPrevKey(bHandleType handle, void *key, eAdrType *rec) {
     keyType *fkey;              /* first key */
     bufType *buf;               /* buffer */
 
-    h = handle;
+    hNode *h = handle;
     if ((buf = h->curBuf) == NULL) return bErrKeyNotFound;
     fkey = fkey(buf);
     if (h->curKey == fkey) {
         /* current key is first key in leaf node */
         if (prev(buf)) {
             /* fetch previous set */
-            if ((rc = readDisk(prev(buf), &buf)) != 0) return rc;
+            if ((rc = readDisk(handle, prev(buf), &buf)) != 0) return rc;
             pkey = fkey(buf) + ks((ct(buf) - 1));
         } else {
             /* no more sets */
