@@ -25,12 +25,10 @@ CP    := cp
 
 # Directory structure.
 SRC       := src
-TESTS     := tests
-DEMOS     := demos
-AVR 	  := "C:\Program Files (x86)\Arduino\hardware\tools\avr\avr\include\avr"
+TESTS     := src/tests
+EXAMPLES  := src/examples
 BIN       := bin
 BIN_LIB   := $(BIN)/lib
-BIN_AVR   := $(BIN)/avr
 BIN_TESTS := $(BIN)/tests
 BIN_UTILS := $(BIN)/utils
 BIN_TARGET:= $(BIN)/target
@@ -88,38 +86,6 @@ $(GCC)	-MM                     \
         $1
 endef
 
-# If this doesn't work, an ugly SED-based solution is required.
-#(call make-depend,source-file,object-file,depend-file)
-define make-avr-depend
-$(AVR_GCC) -MM                     \
-        -MF $3                  \
-        -MP                     \
-        -MT $2                  \
-		-D$(AVR_PROC)			\
-		$(AVR_INC)	 			\
-        $(AVR_CFLAGS)           \
-        $(CPPFLAGS)             \
-        $(AVR_TARGET_ARCH)      \
-        $1
-endef
-
-# Generate a single library compilation rule.
-#(call gen-lib-rule,source-file)
-define gen-avrlib-rule
- $(call transform-csource,$1,$(BIN_AVR)/,.o): $1 $(subst .c,.h,$1)
-	$$(call make-avr-depend,$$<, $$@, $$(subst .o,.d,$$@))
-	$(AVR_GCC) -std=c99 -D$(AVR_PROC) $$< $(AVR_CFLAGS) $(AVR_TARGET_ARCH) $(AVR_INC) -c -o $$@
-endef
-
-# $(call transform-csource,$(subst run_,,$1),$(BIN_TEST)/,): $1
-# Generate a single library compilation rule.
-#(call gen-test-rule,source-file)
-define gen-avrtarget-rule
- $(call transform-csource,$1,$(BIN_TARGET)/,): $1
-	$$(call make-avr-depend,$$<, $$@, $$(addsuffix .d,$$@))
-	$(AVR_GCC) -std=c99 -D$(AVR_PROC) $(AVR_TARGET_ARCH) $(AVR_CFLAGS) $(AVR_INC) -c -o $$@.o $$< 
-endef
-
 ################################################################################
 
 ## Sources #####################################################################
@@ -133,15 +99,15 @@ endef
 
 # Sources for database library.
 libsources :=  	$(SRC)/kv_io.c \
-				$(SRC)/dictionary.c \
-				$(SRC)/slhandler.c \
-				$(SRC)/slstore.c \
-				$(SRC)/oadictionaryhandler.c \
-				$(SRC)/oahash.c \
-				$(SRC)/ffdictionaryhandler.c \
-				$(SRC)/flatfile.c \
-				$(SRC)/oafdictionaryhandler.c \
-				$(SRC)/oafhash.c 
+				$(SRC)/dictionary/dictionary.c \
+				$(SRC)/dictionary/skiplist/slhandler.c \
+				$(SRC)/dictionary/skiplist/slstore.c \
+				$(SRC)/dictionary/openaddresshash/oadictionaryhandler.c \
+				$(SRC)/dictionary/openaddresshash/oahash.c \
+				$(SRC)/dictionary/flatfilestore/ffdictionaryhandler.c \
+				$(SRC)/dictionary/flatfilestore/flatfile.c \
+				$(SRC)/dictionary/openaddressfilehash/oafdictionaryhandler.c \
+				$(SRC)/dictionary/openaddressfilehash/oafhash.c 
 	
 # Generate list of libraries to compile.
 libs        := $(addprefix $(BIN_LIB)/,$(subst .c,.o,$(notdir $(libsources))))
@@ -161,15 +127,15 @@ utildepends := $(addprefix $(BIN_UTILS)/,$(subst .c,.d,$(notdir $(utilssources))
 
 # List of test library sources.
 tlsources   := 	$(TESTS)/CuTest.c  \
-				$(TESTS)/test_slstore.c	\
-				$(TESTS)/test_slhandler.c \
-				$(TESTS)/test_dictionary.c \
-				$(TESTS)/test_oahash.c	\
-				$(TESTS)/test_oadictionaryhandler.c \
-				$(TESTS)/test_ffdictionaryhandler.c \
-				$(TESTS)/test_flatfile.c \
-				$(TESTS)/test_oafhash.c \
-				$(TESTS)/test_oafdictionaryhandler.c
+				$(TESTS)/unit/dictionary/skiplist/test_slstore.c	\
+				$(TESTS)/unit/dictionary/skiplist/test_slhandler.c \
+				$(TESTS)/unit/dictionary/test_dictionary.c \
+				$(TESTS)/unit/dictionary/openaddresshash/test_oahash.c	\
+				$(TESTS)/unit/dictionary/openaddresshash/test_oadictionaryhandler.c \
+				$(TESTS)/unit/dictionary/flatfilestore/test_ffdictionaryhandler.c \
+				$(TESTS)/unit/dictionary/flatfilestore/test_flatfile.c \
+				$(TESTS)/unit/dictionary/openaddressfilehash/test_oafhash.c \
+				$(TESTS)/unit/dictionary/openaddressfilehash/test_oafdictionaryhandler.c
 
 # Generate list of libraries to compile.
 testlibs    := $(addprefix $(BIN_TESTS)/,$(subst .c,.o,$(notdir $(tlsources))))
@@ -178,45 +144,20 @@ testlibs    := $(addprefix $(BIN_TESTS)/,$(subst .c,.o,$(notdir $(tlsources))))
 tldepends   := $(addprefix $(BIN_TESTS)/,$(subst .c,.d,$(notdir $(tlsources))))
 
 # List of executable test library sources. (main)
-testsources := 	$(DEMOS)/skiplist.c	\
-				$(DEMOS)/hashmap.c 	\
-				$(TESTS)/run_slstore.c \
-				$(TESTS)/run_dictionary.c \
-				$(TESTS)/run_oahash.c \
-				$(TESTS)/run_flatfile.c \
-				$(TESTS)/run_oafhash.c
+testsources := 	$(EXAMPLES)/skiplist.c	\
+				$(EXAMPLES)/hashmap.c 	\
+				$(TESTS)/unit/dictionary/skiplist/run_slstore.c \
+				$(TESTS)/unit/dictionary/run_dictionary.c \
+				$(TESTS)/unit/dictionary/openaddresshash/run_oahash.c \
+				$(TESTS)/unit/dictionary/flatfilestore/run_flatfile.c \
+				$(TESTS)/unit/dictionary/openaddressfilehash/run_oafhash.c
 
 # Generate list of libraries to compile.
 testexecs   := $(addprefix $(BIN_TESTS)/,$(subst .c,,$(notdir $(testsources))))
 
 # Generate list of dependency files for each file.
 testdepends :=$(addprefix $(BIN_TESTS)/,$(subst .c,.d,$(notdir $(testsources))))
-
-# Sources for database library.
-avrlibsrcs :=  	$(SRC)/kv_io.c \
-				$(SRC)/serial.c	\
-				$(SRC)/dictionary.c \
-				$(SRC)/slhandler.c \
-				$(SRC)/slstore.c \
-				$(SRC)/ramutil.c \
-				$(SRC)/benchmark.c
-					
-# list of target test sources for Atmel Procs
-avrtargetsrc := $(SRC)/sample.c \
-				$(SRC)/ramcheck.c \
-				$(SRC)/benchmark_prototype.c \
-				$(SRC)/ard_limits.c \
-				$(SRC)/ion_bench.c
-
-# Generate list of libraries to compile.
-avrlibs        := $(addprefix $(BIN_AVR)/,$(subst .c,.o,$(notdir $(avrlibsrcs))))
-
-# Generate list of dependency files for each file.
-avrlibdepends  := $(addprefix $(BIN_AVR)/,$(subst .c,.d,$(notdir $(avrlibsrcs))))
-
-# Generate list of libraries to compile for avr
-avrexecs   := $(addprefix $(BIN_TARGET)/,$(subst .c,,$(notdir $(avrtargetsrc))))
-				
+			
 ################################################################################
 
 ## Targets #####################################################################
@@ -253,47 +194,6 @@ fresh:
 	make tests
 	@echo "Build complete!"
 
-#compiler options for mega2560
-.PHONY: mega
-mega: 
-	make FILE=$(FILE) AVR_PROC=atmega2560 avr
-
-.PHONY: uno
-# $(avrtargetsrc) $(avrlibsrc) 
-# Compiler options for uno
-uno: 
-	make FILE=$(FILE) AVR_PROC=atmega328p avr
-
-.PHONY: avr
-AVR_GCC       =  avr-gcc
-AVR_CC        =  $(AVR_GCC)
-AVR_CFLAGS    =  -Wall -g -DF_CPU=16000000UL -c
-AVR_TARGET_ARCH  =  -mmcu=$(AVR_PROC)
-AVR_INC		  = -I'C:\Program Files (x86)\Arduino\hardware\tools\avr\avr\include\'	
-OUTPUT_OPTION =  -o $@.o
-OBJ_OPTION	  = -o $(BIN_TARGET)/$(subst .c,,$(FILE))
-avr: avr_init_dirs $(avrlibs) $(avrexecs)
-	$(AVR_CC) $(AVR_TARGET_ARCH) $(BIN_TARGET)/$(subst .c,.o,$(FILE)) $(OBJ_OPTION) $(avrlibs)
-	avr-objcopy -O ihex -R .eeprom $(BIN_TARGET)/$(subst .c,,$(FILE)) $(BIN_TARGET)/$(subst .c,.hex,$(FILE))
-	@echo "Build complete!"
-		
-.PHONY: clean_avr
-clean_avr:	
-	$(RM) avr.o 
-	$(RM) avr.hex
-	$(RM) $(BIN_AVR)/*
-	$(RM) $(BIN_TARGET)/*
-	
-.PHONY: prog_uno
-prog_uno: clean_avr 
-	make FILE=$(FILE) uno
-	avrdude -F -V -c arduino -p ATMEGA328P -P $(PORT) -b 115200 -U flash:w:$(BIN_TARGET)/$(subst .c,.hex,$(FILE))
-	
-.PHONY: prog_mega
-prog_mega: clean_avr 
-	make FILE=$(FILE) mega
-	avrdude -F -V -c stk500v2 -p atmega2560 -P $(PORT) -b 115200 -U flash:w:$(BIN_TARGET)/$(subst .c,.hex,$(FILE))
-
 .PHONY: clean
 clean: init_dirs
 	$(RM) $(BIN_LIB)/*
@@ -329,7 +229,6 @@ $(foreach source,$(tlsources),$(eval $(call gen-testlib-rule,$(source))))
 
 # Generate a list of test rules.
 $(foreach source,$(testsources),$(eval $(call gen-test-rule,$(source))))
-#$(foreach source,$(testsources),$(info $(call gen-test-rule,$(source))))
 
 ifneq "$(MAKECMDGOALS)" "clean"
  -include $(libdepends)
@@ -345,21 +244,4 @@ ifeq "$(MAKECMDGOALS)" "utils"
  -include $(utildepends)
 endif
 
-.PHONY: avr_init_dirs
-avr_init_dirs:
-	$(MKDIR) $(BIN_AVR)
-	$(MKDIR) $(BIN_TARGET)
-
-#build up dependancies
-$(avrexecs): $(avrlibs)	
-
-# Generate the list of library rules.
-$(foreach source,$(avrlibsrcs),$(eval $(call gen-avrlib-rule,$(source))))
-
-## Generate target
-$(foreach source,$(avrtargetsrc),$(eval $(call gen-avrtarget-rule,$(source))))
-
-ifeq "$(MAKECMDGOALS)" "uno"
- -include $(avrlibdepends) 
-endif
 ################################################################################
