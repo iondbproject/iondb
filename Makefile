@@ -104,6 +104,8 @@ endef
 
 # Sources for database library.
 libsources :=  	$(SRC)/kv_io.c \
+				$(SRC)/file/ion_file.c \
+				$(SRC)/file/linkedfilebag.c \
 				$(SRC)/dictionary/dictionary.c \
 				$(SRC)/dictionary/skiplist/slhandler.c \
 				$(SRC)/dictionary/skiplist/slstore.c \
@@ -112,8 +114,10 @@ libsources :=  	$(SRC)/kv_io.c \
 				$(SRC)/dictionary/flatfilestore/ffdictionaryhandler.c \
 				$(SRC)/dictionary/flatfilestore/flatfile.c \
 				$(SRC)/dictionary/openaddressfilehash/oafdictionaryhandler.c \
-				$(SRC)/dictionary/openaddressfilehash/oafhash.c 
-	
+				$(SRC)/dictionary/openaddressfilehash/oafhash.c \
+				$(SRC)/dictionary/bpptree/bpptree.c \
+				$(SRC)/dictionary/bpptree/bpptreehandler.c
+
 # Generate list of libraries to compile.
 libs        := $(addprefix $(BIN_LIB)/,$(subst .c,.o,$(notdir $(libsources))))
 
@@ -140,7 +144,9 @@ tlsources   := 	$(TESTS)/CuTest.c  \
 				$(TESTS)/unit/dictionary/flatfilestore/test_ffdictionaryhandler.c \
 				$(TESTS)/unit/dictionary/flatfilestore/test_flatfile.c \
 				$(TESTS)/unit/dictionary/openaddressfilehash/test_oafhash.c \
-				$(TESTS)/unit/dictionary/openaddressfilehash/test_oafdictionaryhandler.c
+				$(TESTS)/unit/dictionary/openaddressfilehash/test_oafdictionaryhandler.c \
+				$(TESTS)/unit/dictionary/generic_dictionary_test.c \
+				$(TESTS)/unit/dictionary/bpptree/test_bpptreehandler.c
 
 # Generate list of libraries to compile.
 testlibs    := $(addprefix $(BIN_TESTS)/,$(subst .c,.o,$(notdir $(tlsources))))
@@ -155,8 +161,9 @@ testsources := 	$(EXAMPLES)/skiplist.c	\
 				$(TESTS)/unit/dictionary/run_dictionary.c \
 				$(TESTS)/unit/dictionary/openaddresshash/run_oahash.c \
 				$(TESTS)/unit/dictionary/flatfilestore/run_flatfile.c \
-				$(TESTS)/unit/dictionary/openaddressfilehash/run_oafhash.c
-
+				$(TESTS)/unit/dictionary/openaddressfilehash/run_oafhash.c \
+				$(TESTS)/unit/dictionary/bpptree/run_bpptree.c 
+				
 # Generate list of libraries to compile.
 testexecs   := $(addprefix $(BIN_TESTS)/,$(subst .c,,$(notdir $(testsources))))
 

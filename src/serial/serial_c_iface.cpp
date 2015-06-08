@@ -29,6 +29,9 @@ serial_print(
 )
 { 
     Serial.print(buffer);
+#ifdef DEBUG
+    Serial.flush();
+#endif
 }
 
 void

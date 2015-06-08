@@ -6,6 +6,8 @@
  */
 
 #include "kv_io.h"
+#include "stdlib.h"
+
 
 int io_printf( const char * format, ... )
 {
