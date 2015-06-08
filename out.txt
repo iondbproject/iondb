@@ -1,5 +1,0 @@
-mkdir -p bin/lib
-mkdir -p bin/tests
-mkdir -p bin/utils
-gcc	-MM -MF  bin/lib/ion_file.d -MP -MT  bin/lib/ion_file.o  -Wall -g   src/files/ion_file.c
-gcc  -Wall -g   -c src/files/ion_file.c  -Wall -g -o bin/lib/ion_file.o

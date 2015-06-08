@@ -16,7 +16,7 @@ extern "C" {
 #include "./../dicttypes.h"
 #include "./../dictionary.h"
 #include "./../../kv_system.h"
-#include "./../../files/linkedfilebag.h"
+#include "./../../file/linkedfilebag.h"
 #include "bpptree.h"
 
 typedef struct bplusplustree

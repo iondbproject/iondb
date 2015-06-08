@@ -102,8 +102,8 @@ endef
 
 # Sources for database library.
 libsources :=  	$(SRC)/kv_io.c \
-				$(SRC)/files/ion_file.c \
-				$(SRC)/files/linkedfilebag.c \
+				$(SRC)/file/ion_file.c \
+				$(SRC)/file/linkedfilebag.c \
 				$(SRC)/dictionary/dictionary.c \
 				$(SRC)/dictionary/bpptree/bpptree.c \
 				$(SRC)/dictionary/bpptree/bpptreehandler.c \
@@ -126,9 +126,9 @@ utildepends := $(addprefix $(BIN_UTILS)/,$(subst .c,.d,$(notdir $(utilssources))
 
 # List of test library sources.
 tlsources   := 	$(SRC)/tests/CuTest.c  \
-				$(SRC)/tests/unit/dictionary/dictionary.c \
+				$(SRC)/tests/unit/dictionary/test_dictionary.c \
 				$(SRC)/tests/unit/dictionary/generic_dictionary_test.c \
-				$(SRC)/tests/unit/dictionary/bpptree/bpptreehandler.c \
+				$(SRC)/tests/unit/dictionary/bpptree/test_bpptreehandler.c \
 
 # Generate list of libraries to compile.
 testlibs    := $(addprefix $(BIN_TESTS)/,$(subst .c,.o,$(notdir $(tlsources))))
