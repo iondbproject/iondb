@@ -8,7 +8,6 @@ sltests\.h
 lfsr_example\.c
 hashmap\.c
 skiplist\.c
-timertest(\.c|\.exe)
 
 ;Misc files or directories
 publish\.txt

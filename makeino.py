@@ -34,17 +34,21 @@ print("Making directories for {}...".format(destination_folder), end="")
 os.makedirs(destination_folder)
 print("Done.")
 
-for src_file in os.listdir(source_folder):
-    #If one exclusion rule is satisfied, we skip the file
-    if any([re.match(each_rule, src_file) for each_rule in exclude_rules]):
-        print("Skipping {}...".format(src_file))
-        continue
+for dirpath, dirnames, filenames in os.walk(source_folder):
+    for src_file in filenames:
+        #If one exclusion rule is satisfied, we skip the file
+        if any([re.match(each_rule, src_file) for each_rule in exclude_rules]):
+            print("Skipping {}...".format(src_file))
+            continue
 
-    old_src_file_path = os.path.join(source_folder, src_file)
-    new_src_file_path = os.path.join(destination_folder, src_file)
-
-    print("Copying {} to {}...".format(old_src_file_path, new_src_file_path), end="")
-    shutil.copy(old_src_file_path, new_src_file_path)
-    print("Done.")
+        old_src_file_path = os.path.join(dirpath, src_file)
+        new_src_directory = dirpath.replace(source_folder, destination_folder)
+        new_src_file_path = old_src_file_path.replace(source_folder, destination_folder)
+        print("Copying {} to {}...".format(old_src_file_path, new_src_file_path), end="")
+        if not os.path.exists(new_src_directory):
+            print("(With directory creation)...", end="")
+            shutil.copytree(dirpath, new_src_directory)
+        shutil.copy(old_src_file_path, new_src_file_path)
+        print("Done.")
 
 print("Finished.")

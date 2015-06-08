@@ -31,8 +31,13 @@ BIN       := bin
 BIN_LIB   := $(BIN)/lib
 BIN_TESTS := $(BIN)/tests
 BIN_UTILS := $(BIN)/utils
-BIN_TARGET:= $(BIN)/target
 DOC       := doc
+
+# Compiler options
+GCC           =  gcc
+CC            =  $(GCC)
+CFLAGS        := $(CFLAGS) -Wall -g
+OUTPUT_OPTION =  -o $@
 ################################################################################
 ## Functions ###################################################################
 #(call transform-csource,source-file,new-prefix,new-ending)
@@ -162,29 +167,14 @@ testdepends :=$(addprefix $(BIN_TESTS)/,$(subst .c,.d,$(notdir $(testsources))))
 
 ## Targets #####################################################################
 .PHONY: all
-# Compiler options for all
-GCC           =  gcc
-CC            =  $(GCC)
-CFLAGS        := $(CFLAGS) -Wall -g
-OUTPUT_OPTION =  -o $@
 all: init_dirs $(libs) $(utilexecs)
 	@echo "Build complete!"
 	
 .PHONY: tests
-# Compiler options for tests - builds on host
-GCC           =  gcc
-CC            =  $(GCC)
-CFLAGS        := $(CFLAGS) -Wall -g
-OUTPUT_OPTION =  -o $@
 tests: init_dirs $(libs) $(testlibs) $(testexecs) $(utilexecs)
 	@echo "Build complete!"
 
 .PHONY: utils
-# Compiler options for utils
-GCC           =  gcc
-CC            =  $(GCC)
-CFLAGS        := $(CFLAGS) -Wall -g
-OUTPUT_OPTION =  -o $@
 utils: init_dirs $(libs) $(utilexecs)
 	@echo "Build complete!"
 
@@ -199,7 +189,6 @@ clean: init_dirs
 	$(RM) $(BIN_LIB)/*
 	$(RM) $(BIN_TESTS)/*
 	$(RM) $(BIN_UTILS)/*
-	$(RM) $(BIN_TARGET)/*
 	
 .PHONY: docs
 docs:
@@ -211,7 +200,6 @@ init_dirs:
 	$(MKDIR) $(BIN_LIB)
 	$(MKDIR) $(BIN_TESTS)
 	$(MKDIR) $(BIN_UTILS)
-	$(MKDIR) $(BIN_TARGET)
 	
 # Build up object dependencies.
 $(testlibs): $(libs)
