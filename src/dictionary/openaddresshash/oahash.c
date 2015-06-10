@@ -41,14 +41,6 @@ oah_initialize(
 	hashmap->compute_hash 		= (*hashing_function);		/* Allows for binding of different hash functions
 																depending on requirements */
 
-#if DEBUG
-	io_printf("Record key size: %i\n", hashmap->super.record.key_size);
-	io_printf("Record value size: %i\n", hashmap->super.record.value_size);
-	io_printf("Size of map (in bytes): %i\n",
-	        (hashmap->record.key_size + hashmap->super.record.value_size + 1)
-	                * hashmap->map_size);
-#endif
-
 	if (hashmap->entry == NULL)
 		return 1;
 
@@ -118,36 +110,11 @@ oah_insert(
 	ion_value_t 	value
 )
 {
-
-
-#if DEBUG
-	int i;
-
-	for (i = 0; i < hash_map->record.key_size; i++)
-	{
-		io_printf("%x ", key[i]);
-	}
-	io_printf("\n");
-#endif
-
 	hash_t hash 	= hash_map->compute_hash(hash_map, key,
 							hash_map->super.record.key_size);			//compute hash value for given key
 
-#if DEBUG
-	io_printf("hash value is %i\n", hash);
-	io_printf("data value is ");
-	for (i = 0; i < hash_map->record.value_size; i++)
-	{
-		io_printf("%c", *(value + i));
-	}
-	io_printf("\n");
-#endif
-
 	int loc			= oah_get_location(hash, hash_map->map_size);
 
-#if DEBUG
-	io_printf("location %i\n", loc);
-#endif
 
 	// Scan until find an empty location - oah_insert if found
 	int count 		= 0;
@@ -190,17 +157,6 @@ oah_insert(
 			memcpy(item->data, key, (hash_map->super.record.key_size));
 			memcpy(item->data + hash_map->super.record.key_size, value,
 			        (hash_map->super.record.value_size));
-#if DEBUG
-			{
-				int i;
-				for (i = 0; i < (hash_map->record.key_size
-				                         + hash_map->super->record.value_size); i++)
-				{
-					io_printf("%c", *((item->data) + i));
-				}
-			}
-			io_printf(" inserted at location %d\n", loc);
-#endif
 			return err_ok;
 		}
 

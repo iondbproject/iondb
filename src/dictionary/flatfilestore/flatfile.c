@@ -23,8 +23,8 @@ ff_initialize(
 
 	if ((file->file_ptr = fopen("file.bin", "r")) != NULL)
 	{
-			fclose(file->file_ptr);
-			return -1;			/** @todo correct error return code*/
+		fclose(file->file_ptr);
+		return -1;			/** @todo correct error return code*/
 	}
 
 	//assume the the file does not exists -> this will come from the upper layers
@@ -33,7 +33,6 @@ ff_initialize(
 
 	if (!file->file_ptr)
 	{
-		//printf("Unable to open file!");
 		return -2;				/** @todo correct error return code */
 	}
 
@@ -47,7 +46,7 @@ ff_initialize(
 	fwrite(&(file->super), sizeof(file->super) , 1, file->file_ptr);
 
 	//record the start of the data block
-	fgetpos(file->file_ptr, &file->start_of_data);
+	file->start_of_data = ftell(file->file_ptr);
 
 #if DEBUG
 	io_printf("Record key size: %i\n", file->super.record.key_size);
@@ -206,9 +205,9 @@ ff_insert(
 
 err_t
 ff_find_item_loc(
-	ff_file_t 		*file,
-	ion_key_t		key,
-	fpos_t			*location
+	ff_file_t 			*file,
+	ion_key_t			key,
+	ion_fpos_t			*location
 )
 {
 
@@ -225,7 +224,7 @@ ff_find_item_loc(
 	f_file_record_t * record;
 	record = (f_file_record_t *)malloc(record_size);
 
-	fpos_t cur_pos;
+	ion_fpos_t cur_pos;
 
 	//while we have not reached the end of the the datafile
 	while (!feof(file->file_ptr)/* != EOF*/)
@@ -260,7 +259,7 @@ ff_delete(
 	ion_key_t 		key
 )
 {
-	fpos_t loc 		= UNINITIALISED;		// position to delete
+	ion_fpos_t loc 		= UNINITIALISED;		// position to delete
 	return_status_t status;					// return status
 	status.err 		= err_item_not_found;	// init such that record will not be found
 	status.count 	= 0;					// number of items deleted
@@ -270,7 +269,7 @@ ff_delete(
 		f_file_record_t record;
 		record.status = DELETED;
 
-		fsetpos(file->file_ptr, &loc);
+		fseek(file->file_ptr, loc, SEEK_SET);
 		fwrite(&record,sizeof(record.status),1,file->file_ptr);
 		status.count ++;
 #if DEBUG
@@ -291,7 +290,7 @@ ff_query(
 	ion_key_t 		key,
 	ion_value_t		value)
 {
-	fpos_t loc = -1;		//initialize
+	ion_fpos_t loc = -1;		//initialize
 
 	if (ff_find_item_loc(file, key, &loc) == err_ok)
 	{

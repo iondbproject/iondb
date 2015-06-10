@@ -122,7 +122,7 @@ err_t ffdict_find(
 			        (int)(dictionary->instance->record.key_size));
 
 			//find the location of the first element as this is a straight equality
-			fpos_t location = cs_invalid_index;
+			ion_fpos_t location = cs_invalid_index;
 
 			if (ff_find_item_loc((ff_file_t*)dictionary->instance,
 			        (*cursor)->predicate->statement.equality.equality_value,
@@ -365,7 +365,7 @@ err_t ffdict_scan(
 
 	f_file_record_t * record;
 
-	fpos_t cur_pos = ftell(file->file_ptr);				// this is where you are current
+	ion_fpos_t cur_pos = ftell(file->file_ptr);				// this is where you are current
 	//advance to the next record and check
 
 	int record_size = SIZEOF(STATUS)

@@ -27,7 +27,7 @@ extern "C" {
 /**redefines file operations for arduino */
 #include "./../../file/SD_stdio_c_iface.h"
 
-
+typedef long int ion_fpos_t; /**< Flatfile file position type */
 
 /**
 @brief		Struct used to maintain an instance of a flat file store.
@@ -36,7 +36,7 @@ typedef struct ff_file
 {
 	dictionary_parent_t		super;
 	FILE 				*file_ptr;		/**< Pointer to file store */
-	fpos_t 				start_of_data;	/**< indicates start of data block */
+	ion_fpos_t 				start_of_data;	/**< indicates start of data block */
 	write_concern_t 		write_concern;	/**< The current @p write_concern level
 	 	 	 	 	 	 	 	 	 	 	 of the file*/
 } ff_file_t;
@@ -147,9 +147,9 @@ ff_update(
  */
 err_t
 ff_find_item_loc(
-		ff_file_t 		*file,
-		ion_key_t	 	key,
-		fpos_t			*location
+		ff_file_t 			*file,
+		ion_key_t	 		key,
+		ion_fpos_t			*location
 );
 
 /**

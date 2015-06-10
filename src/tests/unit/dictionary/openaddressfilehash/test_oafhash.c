@@ -201,9 +201,6 @@ test_open_address_file_hashmap_find_item_location(
 	for (offset = 0; offset < map.map_size; offset ++)
 	{
 		// apply continual offsets
-#if DEBUG
-		printf("entry loc: %p %p \n",map.entry,pos_ptr);
-#endif
 		//pos_ptr 				= (map.entry
 		//							+ (offset*bucket_size)%(map.map_size*bucket_size));
 

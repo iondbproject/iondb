@@ -130,7 +130,6 @@ test_flat_file_handler_create_destroy(
 
 	//and check the status of the file (not being there)
 	CuAssertTrue(tc, NULL					== fopen("test.bin","r"));
-
 }
 
 /**
@@ -170,7 +169,7 @@ test_flat_file_handler_simple_insert(
 	CuAssertTrue(tc, err_ok == test_dictionary.handler->insert(&test_dictionary,(ion_key_t)&test_key,(ion_value_t)test_value));
 
 	//reset cursor on file and
-	fsetpos(((ff_file_t *)test_dictionary.instance)->file_ptr, &((ff_file_t *)test_dictionary.instance)->start_of_data);
+	fseek(((ff_file_t *)test_dictionary.instance)->file_ptr, ((ff_file_t *)test_dictionary.instance)->start_of_data, SEEK_SET);
 
 	/* this won't work!! */
 	//ff_file_record_t file_record;
@@ -199,7 +198,7 @@ test_flat_file_handler_simple_insert(
 	CuAssertTrue(tc, boolean_true	== feof((((ff_file_t *)test_dictionary.instance)->file_ptr)));
 
 	//reset cursor on file and
-	fsetpos(((ff_file_t *)test_dictionary.instance)->file_ptr, &((ff_file_t *)test_dictionary.instance)->start_of_data);
+	fseek(((ff_file_t *)test_dictionary.instance)->file_ptr, ((ff_file_t *)test_dictionary.instance)->start_of_data, SEEK_SET);
 
 	int i;
 	for (i = 1;i<3;i++)
@@ -821,81 +820,6 @@ test_flat_file_dictionary_cursor_range(
 	//and destory the collection
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
 }
-
-
-	/*	if (key < node.key)	//if key is lt node, go left
-			{
-				printf("going left\n");
-				//check to see if there is a left child
-				if (node.left == -1)		//attach to the left and be done with it
-				{
-					printf("inserting left %i\n",key);
-					//record the pos of the parent node
-					fpos_t	child_pos;
-					fseek(file,0,SEEK_END);
-					fgetpos(file, &child_pos);
-					node_t child_node;
-					child_node.key = key;
-					child_node.left = -1;
-					child_node.right = -1;
-					child_node.parent = parent_pos;
-					child_node.status = 1;
-					fwrite(&child_node,sizeof(child_node),1,file);
-					fflush(file);
-					node.left = child_pos;
-					fsetpos(file, &parent_pos);
-					fwrite(&node,sizeof(node),1,file);
-					fflush(file);
-					done = true;
-					return err_ok;
-				}
-				else		//read the left node
-				{
-					printf("going down one more left\n");
-					fsetpos(file, (fpos_t *)(&node.left));
-					fgetpos(file, &parent_pos);		//update parent pos
-				}
-			}
-			else if (key > node.key) //i key is gt node, go right
-			{
-				//record the pos of the parent node
-				printf("going right\n");
-				//check to see if there is a left child
-				printf("current node key %i\n",node.key);
-				if (node.right == -1)		//attach to the left and be done with it
-				{
-					printf("inserting right %i\n",key);
-					fpos_t	child_pos;
-					fseek(file,0,SEEK_END);
-					fgetpos(file, &child_pos);
-					node_t child_node;
-					child_node.key = key;
-					child_node.left = -1;
-					child_node.right = -1;
-					child_node.parent = parent_pos;
-					child_node.status = 1;
-					printf("parent pos %X\n", parent_pos);
-					fwrite(&child_node,sizeof(child_node),1,file);
-					fflush(file);
-					printf("child pos %X\n", child_pos);
-					node.right = child_pos;
-					fsetpos(file, &parent_pos);
-					printf("moving to parent position %x\n",parent_pos);
-					printf("parent key %i\n",node.key);
-					fwrite(&node,sizeof(node),1,file);
-					fflush(file);
-					done = true;
-					return err_ok;
-				}
-				else 		//duplicate
-				{
-					printf("going down one more right %x\n",node.right);
-					fseek(file,node.right,SEEK_SET);			//good to know
-					//fsetpos(file,(fpos_t *)(&node.right));	<----this is a problem with fsetpos needs to be calculated relative to current position
-					//fgetpos(file, &parent_pos);		//update parent pos
-					parent_pos = ftell(file);
-					printf("new pos %x\n", parent_pos);
-				}*/
 
 CuSuite*
 flat_file_handler_getsuite()
