@@ -12,7 +12,6 @@
 #include "dictionary/dictionary.h"
 #include "dictionary/skiplist/slhandler.h"
 #include "serial.h"
-#include "flash.h"
 
 
 
