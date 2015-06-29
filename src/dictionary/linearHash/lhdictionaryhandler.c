@@ -268,6 +268,7 @@ cursor_status_t lhdict_next(dict_cursor_t *cursor, ion_record_t *record)
 
 		//the results are now ready //reference item at given position
 
+		/** this is a problem now as there are multiple file to read */
 		//set position in file to read value
 		fseek(hash_map->file,
 			(SIZEOF(STATUS) + data_length) * lhdict_cursor->current		//position is based on indexes (not abs file pos)

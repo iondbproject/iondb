@@ -1,0 +1,21 @@
+*.o
+*.d
+*.a
+*.swp
+*.back
+*~
+src/holding/
+not in GIT/
+src/examples/arduino_flatfile/.build/
+src/examples/arduino_file_oahash/.build/
+src/examples/arduino_oahash/.build/
+src/dictionary/skiplist/
+src/examples/arduino_printf/.build/uno/src/sketch.cpp
+src/examples/arduino_printf/.build/
+src/.project
+src/.cproject
+*.exe
+.settings/
+.cproject
+.gitignore
+.project

@@ -341,6 +341,7 @@ test_linear_hash_dictionary_cursor_equality(
 	dictionary_handler_t 	file_handler;			//create handler for hashmap
 	dictionary_t			test_dictionary;		//collection handler for test collection
 
+	/** Assuming that it is being created correctly */
 	create_linear_hash_test_collection(&file_handler, &record, size, &test_dictionary, key_type_numeric_signed);
 
 	dict_cursor_t 			*cursor;			//create a new cursor pointer
