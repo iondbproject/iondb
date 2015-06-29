@@ -19,6 +19,9 @@ extern "C" {
 #include "oafhash.h"
 #include "oafdictionary.h"
 
+/**redefines file operations for arduino */
+//#include "./../../sd_if/SD_stdio_c_iface.h"
+
 /**
 @brief Struct used to for instance of a given dictionary.
  */

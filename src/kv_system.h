@@ -5,10 +5,6 @@
 #ifndef SYSTEM_H_
 #define SYSTEM_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define USING_ECLIPSE 	1
 #define DEBUG 			0
 #define IS_EQUAL 		0
@@ -102,6 +98,7 @@ typedef enum boolean
 @brief		A boolean.
 @todo		Move to a common types file.
 */
+
 typedef boolean_e							boolean_t;
 
 typedef struct return_status{
@@ -126,9 +123,5 @@ typedef struct ion_record
 	ion_key_t 			key;			/**< pointer to a key */
 	ion_value_t			value;			/**< a pointer to value */
 } ion_record_t;
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* SYSTEM_H_ */

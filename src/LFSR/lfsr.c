@@ -28,5 +28,5 @@ lfsr_reset(
 	lfsr_t * instance
 )
 {
-	instance->start_state = instance->lfsr_value;
+	instance->lfsr_value = instance->start_state;
 }

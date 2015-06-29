@@ -40,6 +40,11 @@ define transform-csource
  $(addprefix $2,$(subst .c,$3,$(notdir $1)))
 endef
 
+#(call transform-csource,source-file,new-prefix,new-ending)
+define transform-cppsource
+ $(addprefix $2,$(subst %.cpp,$3,$(notdir $1)))
+endef
+
 # Generate a single library compilation rule.
 #(call gen-lib-rule,source-file)
 define gen-lib-rule
@@ -101,6 +106,21 @@ $(AVR_GCC) -MM                     \
         $1
 endef
 
+# If this doesn't work, an ugly SED-based solution is required.
+#(call make-depend,source-file,object-file,depend-file)
+define make-cppavr-depend
+$(AVR_CPP) -MM                   \
+        -MF $3                  \
+        -MP                     \
+        -MT $2                  \
+		-D$(AVR_PROC)			\
+		$(AVR_INC)	 			\
+        $(AVR_CFLAGS)           \
+        $(CPPFLAGS)             \
+        $(AVR_TARGET_ARCH)      \
+        $1
+endef
+
 # Generate a single library compilation rule.
 #(call gen-lib-rule,source-file)
 define gen-avrlib-rule
@@ -118,6 +138,19 @@ define gen-avrtarget-rule
 	$(AVR_GCC) -std=c99 -D$(AVR_PROC) $(AVR_TARGET_ARCH) $(AVR_CFLAGS) $(AVR_INC) -c -o $$@.o $$< 
 endef
 
+#todo - update correct
+define gen-cppavrlib-rule
+ $(call transform-cppsource,$1,$(BIN_SDFAT)/,.o): $1 $(subst %.cpp,%.h,$1)
+	$$(call make-cppavr-depend,$$<, $$@, $$(subst .o,.d,$$@))
+	#$(AVR_CPP) -std=c99 -D$(AVR_PROC) $$< $(AVR_CFLAGS) $(AVR_TARGET_ARCH) $(AVR_INC) -c -o $$@
+endef
+
+#(call gen-test-rule,source-file)
+define gen-cppavrtarget-rule
+ $(call transform-cppsource,$1,$(BIN_TARGET)/,): $1
+	$$(call make-cppavr-depend,$$<, $$@, $$(addsuffix .d,$$@))
+	$(AVR_CPP) -std=c99 -D$(AVR_PROC) $(AVR_TARGET_ARCH) $(AVR_CFLAGS) $(AVR_INC) -c -o $$@.o $$< 
+endef
 ################################################################################
 
 ## Sources #####################################################################
@@ -137,7 +170,10 @@ libsources :=  	$(SRC)/kv_io.c \
 				$(SRC)/dictionary/flatfilestore/ffdictionaryhandler.c \
 				$(SRC)/dictionary/flatfilestore/flatfile.c \
 				$(SRC)/dictionary/openaddressfilehash/oafdictionaryhandler.c \
-				$(SRC)/dictionary/openaddressfilehash/oafhash.c 
+				$(SRC)/dictionary/openaddressfilehash/oafhash.c \
+				$(SRC)/dictionary/linearhash/file_ll.c \
+				$(SRC)/dictionary/linearhash/linearhash.c \
+				$(SRC)/dictionary/linearhash/lhdictionaryhandler.c 
 	
 # Generate list of libraries to compile.
 libs        := $(addprefix $(BIN_LIB)/,$(subst .c,.o,$(notdir $(libsources))))
@@ -163,7 +199,10 @@ tlsources   := 	$(SRC)/tests/CuTest.c  \
 				$(SRC)/tests/unit/dictionary/flatfilestore/ffdictionaryhandler.c \
 				$(SRC)/tests/unit/dictionary/flatfilestore/flatfile.c \
 				$(SRC)/tests/unit/dictionary/openaddressfilehash/oafhash.c \
-				$(SRC)/tests/unit/dictionary/openaddressfilehash/oafdictionaryhandler.c
+				$(SRC)/tests/unit/dictionary/openaddressfilehash/oafdictionaryhandler.c \
+				$(SRC)/tests/unit/dictionary/linearhash/file_ll.c \
+				$(SRC)/tests/unit/dictionary/linearhash/linearhash.c \
+				$(SRC)/tests/unit/dictionary/linearhash/lhdictionaryhandler.c 
 				#$(SRC)/tests/unit/dictionary/bintree/bintreehandler.c 
 
 # Generate list of libraries to compile.
@@ -177,7 +216,8 @@ testsources := 	$(SRC)/hashmap.c	\
 				$(SRC)/tests/unit/dictionary/openaddresshash/run_oahash.c \
 				$(SRC)/tests/unit/dictionary/run_dictionary.c \
 				$(SRC)/tests/unit/dictionary/flatfilestore/run_flatfile.c \
-				$(SRC)/tests/unit/dictionary/openaddressfilehash/run_oafhash.c
+				$(SRC)/tests/unit/dictionary/linearhash/run_linearhash.c
+				#$(SRC)/tests/unit/dictionary/openaddressfilehash/run_oafhash.c
 				#$(SRC)/tests/unit/dictionary/bintree/run_bintree.c 
 
 # Generate list of libraries to compile.
@@ -188,15 +228,19 @@ testdepends :=$(addprefix $(BIN_TESTS)/,$(subst .c,.d,$(notdir $(testsources))))
 
 # Sources for database library.
 avrlibsrcs :=  	$(SRC)/kv_io.c \
-				$(SRC)/serial.c	\
-				$(SRC)/dictionary/dictionary.c \
+				$(SRC)/milli/millisec.c
+				#$(SRC)/serial.c	\
+				#$(SRC)/dictionary/dictionary.c \
 				$(SRC)/dictionary/skiplist/slhandler.c \
 				$(SRC)/dictionary/skiplist/slstore.c \
-				$(SRC)/milli/millisec.c
+			
 					
 # list of target test sources for Atmel Procs
-avrtargetsrc := $(SRC)/sample.c 
-
+avrtargetsrc := $(SRC)/sample.c
+				#$(SRC)/main.c
+	
+cppavrsrc	:= $(SRC)/SdFatInterface.cpp
+		
 # Generate list of libraries to compile.
 avrlibs        := $(addprefix $(BIN_AVR)/,$(subst .c,.o,$(notdir $(avrlibsrcs))))
 
@@ -252,22 +296,22 @@ mega:
 # Compiler options for uno
 uno: 
 	make FILE=$(FILE) AVR_PROC=atmega328p avr
-
+		
 .PHONY: avr
 AVR_GCC       =  avr-gcc
 AVR_CC        =  $(AVR_GCC)
-AVR_CFLAGS    =  -Wall -g -DF_CPU=16000000UL -c
+AVR_CFLAGS    =  -Os -Wall -g -DF_CPU=16000000UL -c 
 AVR_TARGET_ARCH  =  -mmcu=$(AVR_PROC)
-AVR_INC		  = -I'C:\Program Files (x86)\Arduino\hardware\tools\avr\avr\include\'	
 OUTPUT_OPTION =  -o $@.o
 OBJ_OPTION	  = -o $(BIN_TARGET)/$(subst .c,,$(FILE))
-avr: avr_init_dirs $(avrlibs) $(avrexecs)
-	$(AVR_CC) $(AVR_TARGET_ARCH) $(BIN_TARGET)/$(subst .c,.o,$(FILE)) $(OBJ_OPTION) $(avrlibs)
+avr: avr_init_dirs $(avrlibs) $(avrexecs) 
+	$(AVR_CC) $(AVR_CFLAGS) -L'$(SRC)/libs/lib' -I'$(SRC)/libs/include' $(AVR_TARGET_ARCH) $(SRC)/SD_c_iface.cpp -o $(SRC)/SD_c_iface.o -lsd -lcore 
+	$(AVR_CC) -L'$(SRC)/libs/lib' -I'$(SRC)/libs/include' $(AVR_TARGET_ARCH) $(BIN_TARGET)/$(subst .c,.o,$(FILE)) $(OBJ_OPTION) $(avrlibs) $(SRC)/SD_c_iface.o -lsd -lcore 
 	avr-objcopy -O ihex -R .eeprom $(BIN_TARGET)/$(subst .c,,$(FILE)) $(BIN_TARGET)/$(subst .c,.hex,$(FILE))
 	@echo "Build complete!"
-		
+	
 .PHONY: clean_avr
-clean_avr:	
+clean_avr:		
 	$(RM) avr.o 
 	$(RM) avr.hex
 	$(RM) $(BIN_AVR)/*
@@ -282,6 +326,7 @@ prog_uno: clean_avr
 prog_mega: clean_avr 
 	make FILE=$(FILE) mega
 	avrdude -F -V -c stk500v2 -p atmega2560 -P $(PORT) -b 115200 -U flash:w:$(BIN_TARGET)/$(subst .c,.hex,$(FILE))
+	#avrdude -F -V -c stk500v2 -p atmega2560 -P $(PORT) -b 115200 -U flash:w:$(BIN_TARGET)/$(subst .c,.hex,$(FILE))
 
 .PHONY: clean
 clean: init_dirs
@@ -289,6 +334,7 @@ clean: init_dirs
 	$(RM) $(BIN_TESTS)/*
 	$(RM) $(BIN_UTILS)/*
 	$(RM) $(BIN_TARGET)/*
+	
 	
 .PHONY: docs
 docs:
@@ -337,7 +383,7 @@ endif
 .PHONY: avr_init_dirs
 avr_init_dirs:
 	$(MKDIR) $(BIN_AVR)
-	$(MKDIR) $(BIN_TARGET)
+	#$(MKDIR) $(BIN_TARGET)
 
 #build up dependancies
 $(avrexecs): $(avrlibs)	
@@ -351,4 +397,6 @@ $(foreach source,$(avrtargetsrc),$(eval $(call gen-avrtarget-rule,$(source))))
 ifeq "$(MAKECMDGOALS)" "uno"
  -include $(avrlibdepends) 
 endif
+
+
 ################################################################################

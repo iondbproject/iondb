@@ -276,12 +276,10 @@ boolean_t oafdict_is_equal(dictionary_t *dict, ion_key_t key1, ion_key_t key2)
 {
 	if (memcmp(key1, key2,
 	        (((file_hashmap_t*)dict->instance)->super.record.key_size)) == IS_EQUAL)
-	{
-		return 1;//boolean_true;
-	}else
-	{
+
+		return boolean_true;
+	else
 		return boolean_false;
-	}
 }
 
 void oafdict_destroy_cursor(dict_cursor_t **cursor)
