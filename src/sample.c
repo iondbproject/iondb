@@ -12,6 +12,9 @@
 #include "dictionary/dictionary.h"
 #include "dictionary/skiplist/slhandler.h"
 #include "serial.h"
+#include "flash.h"
+
+
 
 /**bind uart_putchar to file  */
 static FILE uart_io = FDEV_SETUP_STREAM(uart_putchar, uart_getchar,_FDEV_SETUP_RW);
