@@ -4,8 +4,8 @@
 
 */
 
-#ifndef OAFDICTIONARY_H_
-#define OAFDICTIONARY_H_
+#ifndef LHDICTIONARY_H_
+#define LHFDICTIONARY_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,16 +18,17 @@ extern "C" {
  */
 typedef int 			hash_t;
 
-typedef struct oafdict_cursor
+/**@ todo update this so it works with lh */
+typedef struct lhdict_cursor
 {
 	dict_cursor_t 		super;		/**< Cursor supertype this type inherits from */
 	hash_t				first;		/**<First visited spot*/
 	hash_t				current;	/**<Currently visited spot*/
 	char				status;		/**@todo what is this for again as there are two status */
-} oafdict_cursor_t;
+} lhdict_cursor_t;
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* OAFDICTIONARY_H_ */
+#endif /* LHDICTIONARY_H_ */

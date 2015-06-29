@@ -16,7 +16,6 @@ extern "C" {
 #include "./../../../../dictionary/dicttypes.h"
 #include "./../../../../dictionary/dictionary.h"
 #include "./../../../../dictionary/flatfilestore/ffdictionaryhandler.h"
-#include "./../../../../dictionary/flatfilestore/flatfile.h"
 
 #define TEST_FILE	"file.bin"
 /**
@@ -575,11 +574,11 @@ test_flat_file_dictionary_predicate_equality(
 
 	memcpy(key_under_test,(ion_key_t)&(int){2},sizeof(int));
 
-	CuAssertTrue(tc, bolean_false 	== ffdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, boolean_false 	== ffdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(int){-1},sizeof(int));
 
-	CuAssertTrue(tc, bolean_false 	== ffdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, boolean_false 	== ffdict_test_predicate(cursor, key_under_test));
 
 	free(key_under_test);
 
@@ -648,11 +647,11 @@ test_flat_file_dictionary_predicate_range_signed(
 
 	memcpy(key_under_test,(ion_key_t)&(int){2},sizeof(int));
 
-	CuAssertTrue(tc, bolean_false 	== ffdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, boolean_false 	== ffdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(int){-2},sizeof(int));
 
-	CuAssertTrue(tc, bolean_false 	== ffdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, boolean_false 	== ffdict_test_predicate(cursor, key_under_test));
 
 	free(key_under_test);
 
@@ -721,11 +720,11 @@ test_flat_file_dictionary_predicate_range_unsigned(
 
 	memcpy(key_under_test,(ion_key_t)&(unsigned int){3},sizeof(unsigned int));
 
-	CuAssertTrue(tc, bolean_false 	== ffdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, boolean_false 	== ffdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(unsigned int){4},sizeof(unsigned int));
 
-	CuAssertTrue(tc, bolean_false 	== ffdict_test_predicate(cursor, key_under_test));
+	CuAssertTrue(tc, boolean_false 	== ffdict_test_predicate(cursor, key_under_test));
 
 	free(key_under_test);
 

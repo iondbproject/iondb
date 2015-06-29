@@ -25,8 +25,6 @@ extern "C" {
 /**redefines file operations for arduino */
 //#include "./../../sd_if/SD_stdio_c_iface.h"
 
-
-
 /**
 @brief		Struct used to maintain an instance of a flat file store.
 */

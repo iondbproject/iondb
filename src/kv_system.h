@@ -56,10 +56,16 @@ enum error
 	err_duplicate_key,
 	err_max_capacity,
 	err_write_concern,
-	err_colllection_destruction_error,
+	err_colllection_destruction_error,	/** < the data structure has not been destroyed correctly */
 	err_invalid_predicate,
 	err_out_of_memory,
 	err_file_write_error,
+	err_file_read_error,
+	err_file_close_error,
+	err_file_delete_error,
+	err_uninitialized,
+	err_illegal_state,
+	err_invalid_initial_size,
 };
 
 typedef char err_t;
@@ -77,25 +83,26 @@ typedef unsigned char						*ion_value_t;
 /**
 @brief		The size(length) of a dictionary key in bytes.
  */
-typedef int							ion_key_size_t;
+typedef int									ion_key_size_t;
 
 /**
 @brief		The size(length) of a dictionary value in bytes.
  */
-typedef int 						ion_value_size_t;
+typedef int 								ion_value_size_t;
+
+
+typedef enum boolean
+{
+	boolean_false,
+	boolean_true
+} boolean_e;
 
 // TODO
 /**
 @brief		A boolean.
 @todo		Move to a common types file.
 */
-typedef char						boolean_t;
-
-typedef enum
-{
-	boolean_true,
-	bolean_false,
-} boolean_e;
+typedef boolean_e							boolean_t;
 
 typedef struct return_status{
 	err_t	err;						/**< the error code */
@@ -107,8 +114,8 @@ typedef struct return_status{
  */
 typedef struct record_info
 {
-	int 			key_size;			/**< the size of the key in bytes */
-	int 			value_size;			/**< the size of the value in bytes */
+	ion_key_size_t		key_size;			/**< the size of the key in bytes */
+	ion_value_size_t	value_size;			/**< the size of the value in bytes */
 } record_info_t;
 
 /**

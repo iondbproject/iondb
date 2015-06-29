@@ -286,7 +286,7 @@ boolean_t is_equal(dictionary_t *dict, ion_key_t key1, ion_key_t key2)
 	        (((hashmap_t*)dict->instance)->super.record.key_size)) == IS_EQUAL)
 		return boolean_true;
 	else
-		return bolean_false;
+		return boolean_false;
 }
 
 void oadict_destroy_cursor(dict_cursor_t **cursor)
@@ -329,7 +329,7 @@ boolean_t oadict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
 	hashmap_t * hash_map = (hashmap_t *)(cursor->dictionary->instance);
 
 	//pre-prime value for faster exit
-	key_satisfies_predicate = bolean_false;
+	key_satisfies_predicate = boolean_false;
 
 	switch (cursor->type)
 	{
