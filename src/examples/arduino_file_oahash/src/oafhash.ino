@@ -117,7 +117,42 @@ void loop()
 		Serial.print(" value: ");
 		Serial.println((char *)record.value);	
 	}	
-	test_dictionary.handler->delete_dictionary(&test_dictionary);
+	
+
+	//delete all records
+	for (i = 0; i < size; i++)
+	{
+		Serial.println("get values");
+		test_dictionary.handler->remove(&test_dictionary, (ion_key_t)&i);
+		Serial.println(str);
+		Serial.flush();
+	}		
+	
+	for (i = 0; i < size; i++)
+	{
+		sprintf((char*)str, "value : %i ", i);
+		Serial.println("Inserting values");
+		Serial.flush();
+		test_dictionary.handler->insert(&test_dictionary, (ion_key_t)&i, (ion_value_t)str);
+	}	
+	
+	for (i = 0; i < size; i++)
+	{
+		Serial.println("get values");
+		test_dictionary.handler->get(&test_dictionary, (ion_key_t)&i, (ion_value_t)str);
+		Serial.println(str);
+		Serial.flush();
+	}		
+	
+	for (i = 0; i < size; i++)
+	{
+		sprintf((char*)str, "value : %i ", i);
+		Serial.println("Inserting values");
+		Serial.flush();
+		test_dictionary.handler->insert(&test_dictionary, (ion_key_t)&i, (ion_value_t)str);
+	}	
+	
+	//test_dictionary.handler->delete_dictionary(&test_dictionary);
 	free(str);
 	while(1);
 }
