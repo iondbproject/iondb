@@ -64,6 +64,7 @@ int sd_fsetpos(
 	fpos_t 		*pos
 )
 {
+	//could be problem
 	return (stream) ? !(stream->f.seek(*pos)) : 1;
 }
 
