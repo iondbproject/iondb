@@ -514,52 +514,42 @@ lh_delete(
 )
 {
 
-	hash_set_t hash_set;
 
+
+	hash_set_t hash_set;
 	err_t err = hash_map->compute_hash(hash_map,key,hash_map->super.record.key_size,hash_map->file_level,&hash_set);
-#if DEBUG
-	DUMP(*(int*)key,"%i");
-	DUMP(hash_set.lower_hash,"%i");
-	DUMP(hash_set.upper_hash,"%i");
-#endif
+	#if DEBUG
+		DUMP(*(int*)key,"%i");
+		DUMP(hash_set.lower_hash,"%i");
+		DUMP(hash_set.upper_hash,"%i");
+	#endif
+
 	if (err == err_uninitialized)
 	{
 		return err_uninitialized;
 	}
 
-	int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size
-						+ SIZEOF(STATUS);
-	int bucket_size = record_size * RECORDS_PER_BUCKET;
-	int num_deleted = 0;
-	int bucket_number;
+	/** compute the primary page to search */
+	int bucket_number = lh_compute_bucket_number(hash_map, &hash_set);
 
 #if DEBUG
 	DUMP(bucket_size,"%i");
 #endif
-
+	/**used for pp*/
+	int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size
+							+ SIZEOF(STATUS);
+	int bucket_size = record_size * RECORDS_PER_BUCKET;
+	int num_deleted = 0;
 	l_hash_bucket_t * bucket = (l_hash_bucket_t *)malloc(bucket_size);			/** allocate memory for page */
 
-	if (hash_set.lower_hash >= hash_map->bucket_pointer)						/** if the lower hash is below pointer, then use upper hash */
-	{
-#if DEBUG
-		DUMP(hash_set.lower_hash * bucket_size,"%i");
-#endif
-		fseek(hash_map->file, hash_set.lower_hash * bucket_size, SEEK_SET);
-		bucket_number = hash_set.lower_hash;
-	}
-	else
-	{
-		fseek(hash_map->file, hash_set.upper_hash * bucket_size, SEEK_SET);
-		bucket_number = hash_set.upper_hash;
-	}
-
+	fseek(hash_map->file, bucket_number * bucket_size, SEEK_SET);
 	//read is the bucket and scan for an empty page
 	fread(bucket,bucket_size,1,hash_map->file);
 
 	// Scan until find an empty location
 	int count 		= 0;
 
-	l_hash_bucket_t *item;
+	l_hash_bucket_t * item;
 
 	//check to see if value is in primary bucket
 	while (count != RECORDS_PER_BUCKET)
@@ -581,6 +571,8 @@ lh_delete(
 		}
 		count++;
 	}
+
+
 	fseek(hash_map->file,-bucket_size,SEEK_CUR);									/** backup and write back */
 	fwrite(bucket,bucket_size,1,hash_map->file);
 	free(bucket);
@@ -598,28 +590,10 @@ lh_delete(
 			hash_map->super.record.value_size,
 			bucket_number,
 			hash_map->id)
-			== err_item_not_found)
-	{
-
-	}
-	else
+			!= err_item_not_found)
 	{
 		ion_value_t value = (ion_value_t)malloc(hash_map->super.record.value_size);
 		fll_reset(&linked_list_file);
-		/*while(fll_next(&linked_list_file,&ll_node) != err_item_not_found)	* consume each node in the file
-		{
-			int isequal = hash_map->super.compare(ll_node.data,key,hash_map->super.record.key_size);
-			if (isequal >= 1)			* then you have already passed all possible value, so exit
-			{
-				break;
-			}
-			else if (isequal == 0)											* then a match has been found
-			{
-				fll_remove(&linked_list_file);
-				num_deleted++;
-			}
-		}*/
-		printf("starting deletes\n");
 		while (err_item_not_found != lh_get_next(hash_map, &linked_list_file,key,value))
 		{
 			fll_remove(&linked_list_file);
@@ -627,8 +601,8 @@ lh_delete(
 		}
 		free(value);
 	}
-
 	fll_close(&linked_list_file);											/** and close the file */
+
 	if (num_deleted != 0)
 	{
 		return err_ok;
@@ -691,9 +665,12 @@ lh_search_primary_page(
 	int record_size = hash_map->super.record.key_size
 	        + hash_map->super.record.value_size + SIZEOF(STATUS);
 	int bucket_size = record_size * RECORDS_PER_BUCKET;
+
 	l_hash_bucket_t* bucket = (l_hash_bucket_t*)malloc(bucket_size); /** allocate memory for page */
 
 	fseek(hash_map->file, bucket_number * bucket_size, SEEK_SET);
+	/** need to keep bucket in memory*/
+
 	//read is the bucket and scan for an empty page
 	fread(bucket, bucket_size, 1, hash_map->file);
 	// Scan until find an empty location
@@ -752,8 +729,6 @@ lh_get_next(
 		//int isequal = lhdict_test_predicate();
 		if (isequal >= 1)/** then you have already passed all possible value, so exit */
 		{
-			//value = NULL;
-			//fll_close(linked_list_file);
 			free(ll_node);
 			return err_item_not_found;
 		}
@@ -761,7 +736,6 @@ lh_get_next(
 		{
 			memcpy(value, ll_node->data + hash_map->super.record.key_size,
 			        hash_map->super.record.value_size);
-			//fll_close(&*linked_list_file);
 			free(ll_node);
 			return err_ok;
 		}
