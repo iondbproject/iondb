@@ -67,6 +67,29 @@ typedef struct hashset {
 } hash_set_t;
 
 /**
+ * Actions for bound functions
+ */
+typedef enum action {
+	action_continue,	/**< action_continue - function continues */
+	action_exit     	/**< action_exit - functions exits */
+} action_t;
+
+typedef enum cache_status {
+	cache_active,
+	cache_flushed,
+} cache_status_t;
+
+/**
+ * @brief caches page from disk
+ */
+typedef struct lh_page_cache {
+	cache_status_t		status;		/**< status of page cache */
+	int					bucket_idx;	/**< idx of page that is in cache */
+	l_hash_bucket_t		*cached_bucket;
+									/**< the actual data */
+} lh_page_cache_t;
+
+/**
 @brief		Struct used to maintain an instance of an in memory hashmap.
 */
 struct linear_hashmap
@@ -90,6 +113,7 @@ struct linear_hashmap
 									/**< pointer for current bucket being spilt */
 	int					id;			/**< id for files in system */
 									/** @todo this could be moved to parent */
+	lh_page_cache_t		cache;		/**< holds pp for cacheing */
 };
 
 /**
@@ -385,6 +409,26 @@ lh_compute_bucket_number(
 	  linear_hashmap_t			*hash_map,
 	  hash_set_t				*hash_set
   );
+
+
+action_t
+lh_delete_item_action(
+	linear_hashmap_t	*hash_map,
+	ion_key_t			key,
+	l_hash_bucket_t		*item,
+	void				*num_deleted
+);
+
+err_t
+lh_cache_pp(
+	linear_hashmap_t	*hash_map,
+	int					bucket_number
+);
+
+err_t
+lh_flush_cache(
+	linear_hashmap_t	*hash_map
+);
 
 #ifdef __cplusplus
 }
