@@ -33,6 +33,9 @@ extern "C" {
 
 #define RECORDS_PER_BUCKET	2				/** defines how may records will be stored in a hash bucket */
 
+#define FREE_CACHE_MEMORY 	1
+#define PRESERVE_CACHE_MEMORY 0
+
 #define MAX_FILE_LENGTH  	20
 /** @TODO The location of hash_t needs to be resolved */
 /**
@@ -77,6 +80,7 @@ typedef enum action {
 typedef enum cache_status {
 	cache_active,
 	cache_flushed,
+	cache_invalid
 } cache_status_t;
 
 /**
@@ -427,7 +431,8 @@ lh_cache_pp(
 
 err_t
 lh_flush_cache(
-	linear_hashmap_t	*hash_map
+	linear_hashmap_t	*hash_map,
+	int					action
 );
 
 #ifdef __cplusplus

@@ -38,6 +38,7 @@ lh_initialize(
 	hashmap->super.record.value_size 	= value_size;
 	hashmap->super.key_type 			= key_type;
 	hashmap->id							= id;
+	hashmap->cache.status				= cache_invalid;
 
 	if ( size < 2 || ( 1 << (int)floor(log2(size))) != size)
 	{
@@ -223,56 +224,27 @@ lh_insert(
 {
 /** @todo this needs to be update! */
 
-	l_hash_bucket_t * bucket;
+	hash_set_t hash_set;
+	err_t err = hash_map->compute_hash(hash_map,key,hash_map->super.record.key_size,hash_map->file_level,&hash_set);
+	#if DEBUG
+		DUMP(*(int*)key,"%i");
+		DUMP(hash_set.lower_hash,"%i");
+		DUMP(hash_set.upper_hash,"%i");
+	#endif
 
-
-#if DEBUG
-	int i;
-
-	for (i = 0; i < hash_map->record.key_size; i++)
+	if (err == err_uninitialized)
 	{
-		io_printf("%x ", key[i]);
+		return err_uninitialized;
 	}
-	io_printf("\n");
-#endif
 
-	hash_set_t hash_set;						/** used to store hash values when determining location */
-	/* Find the inital location for the entry */
-	hash_map->compute_hash(hash_map, key,hash_map->super.record.key_size,hash_map->file_level, &hash_set);
-
-#if DEBUG
-	io_printf("lower hash value is %i\n", hash_set.lower_hash);
-	io_printf("upper hash value is %i\n", hash_set.upper_hash);
-#endif
+	/** compute the primary page to search */
+	int bucket_number = lh_compute_bucket_number(hash_map, &hash_set);
 
 	int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size
 					+ SIZEOF(STATUS);
 
-	int bucket_size = record_size * RECORDS_PER_BUCKET;
-	int bucket_number;
-
-#if DEBUG
-	DUMP(bucket_size,"%i");
-#endif
-
-	bucket = (l_hash_bucket_t *)malloc(bucket_size);			/** allocate memory for page */
-
-	if (hash_set.lower_hash >= hash_map->bucket_pointer)						/** if the lower hash is below pointer, then use upper hash */
-	{
-#if DEBUG
-		DUMP(hash_set.lower_hash * bucket_size,"%i");
-#endif
-		fseek(hash_map->file, hash_set.lower_hash * bucket_size, SEEK_SET);
-		bucket_number = hash_set.lower_hash;
-	}
-	else
-	{
-		fseek(hash_map->file, hash_set.upper_hash * bucket_size, SEEK_SET);
-		bucket_number = hash_set.upper_hash;
-	}
-
-	//read is the bucket and scan for an empty page
-	fread(bucket,bucket_size,1,hash_map->file);
+	/** Bring the primary page into cache */
+	lh_cache_pp(hash_map, bucket_number);
 
 	// Scan until find an empty location
 	int count 		= 0;
@@ -282,7 +254,7 @@ lh_insert(
 	//check to see if value is in primary bucket
 	while (count != RECORDS_PER_BUCKET)
 	{
-		item = (l_hash_bucket_t * )(bucket + ( count * record_size));				/** advance through page */
+		item = (l_hash_bucket_t * )(hash_map->cache.cached_bucket + ( count * record_size));				/** advance through page */
 #if DEBUG
 		DUMP(count * record_size,"%i");
 #endif
@@ -298,10 +270,8 @@ lh_insert(
 #if DEBUG
 			DUMP(*(int*)item->data,"%i");
 #endif
-			/** and write block back out */
-			fseek(hash_map->file, -(bucket_size),SEEK_CUR);
-			fwrite(bucket,bucket_size, 1, hash_map->file);
-			free(bucket);
+			/** Flush page back but keep it in cache in the event it is needed */
+			lh_flush_cache(hash_map,PRESERVE_CACHE_MEMORY);
 			return err_ok;
 		}
 		count++;
@@ -533,37 +503,25 @@ lh_delete(
 	/** function pointer for action function when bringing in block*/
 	action_t (*action)(linear_hashmap_t*,ion_key_t,l_hash_bucket_t*,void*);
 	action = lh_delete_item_action;
+
 	int num_deleted = 0;
 
-
-	//lh_scan_pp(hash_map,)
 #if DEBUG
 	DUMP(bucket_size,"%i");
 #endif
-	/**used for pp*/
+	/**cache primary page*/
 	lh_cache_pp(hash_map,bucket_number);
 
 	int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size
 									+ SIZEOF(STATUS);
-
-	/*	int bucket_size = record_size * RECORDS_PER_BUCKET;
-
-
-		l_hash_bucket_t * bucket = (l_hash_bucket_t *)malloc(bucket_size);			* allocate memory for page
-
-		fseek(hash_map->file, bucket_number * bucket_size, SEEK_SET);
-		//read is the bucket and scan for an empty page
-		fread(bucket,bucket_size,1,hash_map->file);*/
-
-	// Scan until find an empty location
 	int count 		= 0;
 
 	l_hash_bucket_t * item;
-
 	//check to see if value is in primary bucket
 	while (count != RECORDS_PER_BUCKET)
 	{
-		item = (l_hash_bucket_t * )(hash_map->cache.cached_bucket + ( count * record_size));				/** advance through page */
+		/** advance through page */
+		item = (l_hash_bucket_t * )(hash_map->cache.cached_bucket + ( count * record_size));
 #if DEBUG
 		DUMP(count * record_size,"%i");
 #endif
@@ -583,7 +541,7 @@ lh_delete(
 		count++;
 	}
 
-	lh_flush_cache(hash_map);
+	lh_flush_cache(hash_map,PRESERVE_CACHE_MEMORY);
 
 	/** and if it is not found in the bucket, check the overflow file */
 #if DEBUG
@@ -670,24 +628,21 @@ lh_search_primary_page(
     ion_value_t				value
   )
 {
+	/**cache primary page*/
+	lh_cache_pp(hash_map,bucket_number);
+
 	int record_size = hash_map->super.record.key_size
 	        + hash_map->super.record.value_size + SIZEOF(STATUS);
-	int bucket_size = record_size * RECORDS_PER_BUCKET;
 
-	l_hash_bucket_t* bucket = (l_hash_bucket_t*)malloc(bucket_size); /** allocate memory for page */
-
-	fseek(hash_map->file, bucket_number * bucket_size, SEEK_SET);
 	/** need to keep bucket in memory*/
 
-	//read is the bucket and scan for an empty page
-	fread(bucket, bucket_size, 1, hash_map->file);
-	// Scan until find an empty location
 	int count = 0;
 	l_hash_bucket_t* item;
+
 	//check to see if value is in primary bucket
 	while (count != RECORDS_PER_BUCKET)
 	{
-		item = (l_hash_bucket_t *)(bucket + (count * record_size)); /** advance through page */
+		item = (l_hash_bucket_t *)(hash_map->cache.cached_bucket + (count * record_size)); /** advance through page */
 #if DEBUG
 		DUMP(count * record_size,"%i");
 #endif
@@ -696,7 +651,7 @@ lh_search_primary_page(
 		if (item->status == EMPTY) /** nothing is here, so exit */
 		{
 			value = NULL;
-			free(bucket);
+			/** Could return cached page, but why not hold on to it */
 			return err_item_not_found;	/** in this case, the cursor would be null */
 		}
 		else if (item->status == IN_USE) /** if location is not being used, use it */
@@ -709,13 +664,15 @@ lh_search_primary_page(
 				        hash_map->super.record.value_size);
 				/** in this case the cursor will be set to be count in bucket
 				 * and the value cached? */
-				free(bucket);
+				//free(bucket);
+				/** Hang onto cached page */
 				return err_ok;
 			}
 		}
 		count++;
 	}
-	free(bucket);
+	//free(bucket);
+	/** and again just hold onto pp */
 	return err_not_in_primary_page;
 }
 
@@ -816,9 +773,6 @@ lh_query(
 	}
 }
 
-
-
-
 err_t
 lh_compute_hash(
 		linear_hashmap_t 	*hashmap,
@@ -867,30 +821,53 @@ lh_cache_pp(
 	int					bucket_number
 	)
 {
-
 	int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size
-									+ SIZEOF(STATUS);
+										+ SIZEOF(STATUS);
 
 	int bucket_size = record_size * RECORDS_PER_BUCKET;
 
-	hash_map->cache.cached_bucket = (l_hash_bucket_t *)malloc(bucket_size);			/** allocate memory for page */
+	if ((hash_map->cache.bucket_idx == bucket_number) && (hash_map->cache.status == cache_active))
+	{
+		return err_ok;							/** The bucket you need is already in the cache and assumed to be consistent??*/
+	}
+	else if ((hash_map->cache.bucket_idx != bucket_number) && (hash_map->cache.status == cache_active))
+	{
+		/** flush page and fetch new one but do not return memory to system*/
+		lh_flush_cache(hash_map,PRESERVE_CACHE_MEMORY);
+	}
+	else if (hash_map->cache.status == cache_invalid)	/** malloc memory */
+	{
+		hash_map->cache.cached_bucket = (l_hash_bucket_t *)malloc(bucket_size);
+												/** allocate memory for page */
+		if (hash_map->cache.cached_bucket == NULL)
+		{
+			return err_out_of_memory;
+		}
+		hash_map->cache.status = cache_flushed;	/** cache is allocated but no data yet*/
+	}
+	/** else the bucket is flushed and just needs new data */
 
 	fseek(hash_map->file, bucket_number * bucket_size, SEEK_SET);
 	//read is the bucket and scan for an empty page
 	fread(hash_map->cache.cached_bucket,bucket_size,1,hash_map->file);
 
 	hash_map->cache.bucket_idx = bucket_number;
-	hash_map->cache.status = 1;			/** @FIXME - correct with proper error codes */
+	hash_map->cache.status = cache_active;		/** cache is now live*/
 
-	return err_ok;						/** @TODO consider error codes on this */
+	return err_ok;								/** @TODO consider error codes on this */
 }
 
 /** flushes a pp back to disk and clears up cache */
 err_t
 lh_flush_cache(
-	linear_hashmap_t	*hash_map
+	linear_hashmap_t	*hash_map,
+	int					action
 )
 {
+	if (hash_map->cache.status == cache_invalid)
+	{
+		return err_ok;			/** @todo this should be a different message */
+	}
 	int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size
 									+ SIZEOF(STATUS);
 
@@ -900,8 +877,14 @@ lh_flush_cache(
 										/** backup and write back */
 
 	fwrite(hash_map->cache.cached_bucket,bucket_size,1,hash_map->file);
-	free(hash_map->cache.cached_bucket);
-
-	hash_map->cache.status = cache_flushed;		/** set status to flushed */
+	if (action == FREE_CACHE_MEMORY)
+	{
+		free(hash_map->cache.cached_bucket);
+		hash_map->cache.status = cache_invalid;	/** nothing is in cache */
+	}
+	else
+	{
+		hash_map->cache.status = cache_flushed;		/** set status to flushed */
+	}
 	return err_ok;
 }
