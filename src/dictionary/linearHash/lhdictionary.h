@@ -25,6 +25,7 @@ typedef struct lhdict_cursor
 	hash_t				first;		/**<First visited spot*/
 	hash_t				current;	/**<Currently visited spot*/
 	char				status;		/**@todo what is this for again as there are two status */
+	ll_file_t			*overflow;	/**<Overflow file that is currently being used */
 } lhdict_cursor_t;
 
 #ifdef __cplusplus

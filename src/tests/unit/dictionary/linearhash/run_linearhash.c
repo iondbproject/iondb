@@ -12,8 +12,8 @@ runalltests_linear_hash_handler();
 int
 main()
 {
-/*	runalltests_file_linked_list();
-	runalltests_linear_hash();*/
+	runalltests_file_linked_list();
+	runalltests_linear_hash();
 	runalltests_linear_hash_handler();
 	return 0;
 }

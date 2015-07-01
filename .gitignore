@@ -19,3 +19,5 @@ src/.cproject
 .cproject
 .gitignore
 .project
+reports/
+.pmd

@@ -130,8 +130,8 @@ err_t lhdict_find(
 
 			//find the location of the first element as this is a straight equality
 			int location = cs_invalid_index;
-			ion_value_t * value;
-			if ((value = (ion_value_t *)malloc(dictionary->instance->record.value_size)) == NULL)
+			ion_value_t value;
+			if ((value = (ion_value_t)malloc(dictionary->instance->record.value_size)) == NULL)
 			{
 				return err_out_of_memory;
 			}

@@ -62,6 +62,7 @@ enum error
 	err_uninitialized,
 	err_illegal_state,
 	err_invalid_initial_size,
+	err_not_in_primary_page
 };
 
 typedef char err_t;

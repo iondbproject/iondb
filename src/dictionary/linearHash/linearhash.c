@@ -604,22 +604,30 @@ lh_delete(
 	}
 	else
 	{
-		ll_file_node_t ll_node;
+		ion_value_t value = (ion_value_t)malloc(hash_map->super.record.value_size);
 		fll_reset(&linked_list_file);
-		while(fll_next(&linked_list_file,&ll_node) != err_item_not_found)	/** consume each node in the file */
+		/*while(fll_next(&linked_list_file,&ll_node) != err_item_not_found)	* consume each node in the file
 		{
 			int isequal = hash_map->super.compare(ll_node.data,key,hash_map->super.record.key_size);
-			if (isequal >= 1)			/** then you have already passed all possible value, so exit */
+			if (isequal >= 1)			* then you have already passed all possible value, so exit
 			{
 				break;
 			}
-			else if (isequal == 0)											/** then a match has been found */
+			else if (isequal == 0)											* then a match has been found
 			{
 				fll_remove(&linked_list_file);
 				num_deleted++;
 			}
+		}*/
+		printf("starting deletes\n");
+		while (err_item_not_found != lh_get_next(hash_map, &linked_list_file,key,value))
+		{
+			fll_remove(&linked_list_file);
+			num_deleted++;
 		}
+		free(value);
 	}
+
 	fll_close(&linked_list_file);											/** and close the file */
 	if (num_deleted != 0)
 	{
@@ -632,12 +640,143 @@ lh_delete(
 }
 
 err_t
+lh_find(
+		dictionary_t 	*dictionary,
+		predicate_t 	*predicate,
+		dict_cursor_t 	**cursor
+)
+{
+	//find a value that satisfies the cre
+
+	return err_ok;
+}
+
+int lh_compute_bucket_number(
+	  linear_hashmap_t			*hash_map,
+	  hash_set_t				*hash_set
+  )
+{
+	int bucket_number = -1;
+
+	if (hash_set->lower_hash >= hash_map->bucket_pointer) /** if the lower hash is below pointer, then use upper hash */
+	{
+#if DEBUG
+		DUMP(hash_set.lower_hash * bucket_size,"%i");
+#endif
+		bucket_number = hash_set->lower_hash;
+	}
+	else
+	{
+		bucket_number = hash_set->upper_hash;
+	}
+	return bucket_number;
+}
+
+/**
+ * @brief finds the value in the primary page.
+ * @param hash_map
+ * @param bucket_number
+ * @param key
+ * @param value
+ * @return
+ */
+err_t
+lh_search_primary_page(
+    linear_hashmap_t		*hash_map,
+    int						bucket_number,
+    ion_key_t				key,
+    ion_value_t				value
+  )
+{
+	int record_size = hash_map->super.record.key_size
+	        + hash_map->super.record.value_size + SIZEOF(STATUS);
+	int bucket_size = record_size * RECORDS_PER_BUCKET;
+	l_hash_bucket_t* bucket = (l_hash_bucket_t*)malloc(bucket_size); /** allocate memory for page */
+
+	fseek(hash_map->file, bucket_number * bucket_size, SEEK_SET);
+	//read is the bucket and scan for an empty page
+	fread(bucket, bucket_size, 1, hash_map->file);
+	// Scan until find an empty location
+	int count = 0;
+	l_hash_bucket_t* item;
+	//check to see if value is in primary bucket
+	while (count != RECORDS_PER_BUCKET)
+	{
+		item = (l_hash_bucket_t *)(bucket + (count * record_size)); /** advance through page */
+#if DEBUG
+		DUMP(count * record_size,"%i");
+#endif
+		/** scan through the entire block looking for a space */
+		/** @todo need to address duplicate keys */
+		if (item->status == EMPTY) /** nothing is here, so exit */
+		{
+			value = NULL;
+			free(bucket);
+			return err_item_not_found;	/** in this case, the cursor would be null */
+		}
+		else if (item->status == IN_USE) /** if location is not being used, use it */
+		{
+			/**if it's in use, compare the keys */
+			if (hash_map->super.compare(key, item->data,
+			        hash_map->super.record.key_size) == IS_EQUAL)
+			{
+				memcpy(value, item->data + hash_map->super.record.key_size,
+				        hash_map->super.record.value_size);
+				/** in this case the cursor will be set to be count in bucket
+				 * and the value cached? */
+				free(bucket);
+				return err_ok;
+			}
+		}
+		count++;
+	}
+	free(bucket);
+	return err_not_in_primary_page;
+}
+
+err_t
+lh_get_next(
+    linear_hashmap_t			*hash_map,
+    ll_file_t					*linked_list_file,
+    ion_key_t 					key,
+    ion_value_t 				value
+)
+{
+	ll_file_node_t * ll_node = (ll_file_node_t *)malloc(linked_list_file->node_size);
+
+	while (fll_next(linked_list_file, ll_node) != err_item_not_found)/** consume each node in the file */
+	{
+		int isequal = hash_map->super.compare(ll_node->data, key,
+		        hash_map->super.record.key_size);
+		/** use satisfy predicate -> need to build quick cursor to evaluate */
+		//int isequal = lhdict_test_predicate();
+		if (isequal >= 1)/** then you have already passed all possible value, so exit */
+		{
+			//value = NULL;
+			//fll_close(linked_list_file);
+			free(ll_node);
+			return err_item_not_found;
+		}
+		else if (isequal == 0)/** then a match has been found */
+		{
+			memcpy(value, ll_node->data + hash_map->super.record.key_size,
+			        hash_map->super.record.value_size);
+			//fll_close(&*linked_list_file);
+			free(ll_node);
+			return err_ok;
+		}
+	}
+	return err_item_not_found;
+}
+
+err_t
 lh_query(
 	linear_hashmap_t 	*hash_map,
 	ion_key_t 			key,
 	ion_value_t			value)
 {
 
+	/** compute possible hash set for key */
 	hash_set_t hash_set;
 	err_t err = hash_map->compute_hash(hash_map,key,hash_map->super.record.key_size,hash_map->file_level,&hash_set);
 #if DEBUG
@@ -651,72 +790,27 @@ lh_query(
 		return err_uninitialized;
 	}
 
-	int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size
-						+ SIZEOF(STATUS);
+	/** compute the primary page to search */
+	int bucket_number = lh_compute_bucket_number(hash_map, &hash_set);
 
-	int bucket_size = record_size * RECORDS_PER_BUCKET;
-	int bucket_number;
+	/** and search it */
+	err = lh_search_primary_page(hash_map, bucket_number, key, value);
+	/** and if the primary page has empty slot or has the value, return */
+	if (err != err_not_in_primary_page)
+	{
+		return err;
+	}
 
 #if DEBUG
 	DUMP(bucket_size,"%i");
 #endif
-	l_hash_bucket_t * bucket = (l_hash_bucket_t *)malloc(bucket_size);			/** allocate memory for page */
-
-	if (hash_set.lower_hash >= hash_map->bucket_pointer)						/** if the lower hash is below pointer, then use upper hash */
-	{
-#if DEBUG
-		DUMP(hash_set.lower_hash * bucket_size,"%i");
-#endif
-		fseek(hash_map->file, hash_set.lower_hash * bucket_size, SEEK_SET);
-		bucket_number = hash_set.lower_hash;
-	}
-	else
-	{
-		fseek(hash_map->file, hash_set.upper_hash * bucket_size, SEEK_SET);
-		bucket_number = hash_set.upper_hash;
-	}
-
-	//read is the bucket and scan for an empty page
-	fread(bucket,bucket_size,1,hash_map->file);
-
-	// Scan until find an empty location
-	int count 		= 0;
-
-	l_hash_bucket_t *item;
-
-	//check to see if value is in primary bucket
-	while (count != RECORDS_PER_BUCKET)
-	{
-		item = (l_hash_bucket_t * )(bucket + ( count * record_size));				/** advance through page */
-#if DEBUG
-		DUMP(count * record_size,"%i");
-#endif
-		/** scan through the entire block looking for a space */
-		/** @todo need to address duplicate keys */
-		if (item->status == EMPTY)		/** nothing is here, so exit */
-		{
-			value = NULL;
-			free(bucket);
-			return err_item_not_found;
-		}
-		else if (item->status == IN_USE )	/** if location is not being used, use it */
-		{
-			/**if it's in use, compare the keys */
-			if (hash_map->super.compare(key,item->data,hash_map->super.record.key_size) == IS_EQUAL)
-			{
-				memcpy(value,item->data+hash_map->super.record.key_size,hash_map->super.record.value_size);
-				free(bucket);
-				return err_ok;
-			}
-		}
-		count++;
-	}
-	free(bucket);
 
 	/** and if it is not found in the bucket, check the overflow file */
+	/** In practice, this could be open ?? */
+
 	ll_file_t linked_list_file;
-	if (fll_open(
-			&linked_list_file,
+
+	if (fll_open(&linked_list_file,
 			fll_compare,
 			hash_map->super.key_type,
 			hash_map->super.record.key_size,
@@ -725,35 +819,22 @@ lh_query(
 			hash_map->id)
 			== err_item_not_found)
 	{
+		/** in this case, cursor is null as value has not been found */
 		return  err_item_not_found;
 	}
 	else
 	{
-		ll_file_node_t * ll_node = (ll_file_node_t *)malloc(linked_list_file.node_size);
+		// find the next available node that matches ?
+		/** @TODO change possibly to satisfies predicate?*/
 		fll_reset(&linked_list_file);
-		while(fll_next(&linked_list_file,ll_node) != err_item_not_found)	/** consume each node in the file */
-		{
-			int isequal = hash_map->super.compare(ll_node->data,key,hash_map->super.record.key_size);
-			if (isequal >= 1)			/** then you have already passed all possible value, so exit */
-			{
-				value = NULL;
-				fll_close(&linked_list_file);
-				free(ll_node);
-				return err_item_not_found;
-			}
-			else if (isequal == 0)											/** then a match has been found */
-			{
-				memcpy(value,ll_node->data+hash_map->super.record.key_size,hash_map->super.record.value_size);
-				fll_close(&linked_list_file);
-				free(ll_node);
-				return err_ok;
-			}
-		}
+		/** this scans the list for the first instance of the item in the ll */
+		err = lh_get_next(hash_map, &linked_list_file, key, value);
 		fll_close(&linked_list_file);										/** close the list and be done as you have reached the end without finding value */
-		value = NULL;															/**set the number of bytes to 0 */
-		return err_item_not_found;
+		return err;
 	}
 }
+
+
 
 
 err_t

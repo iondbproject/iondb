@@ -251,7 +251,7 @@ lhdict_update(
 
 /**
 @brief 		Finds multiple instances of a keys that satisfy the provided
- 	 	 	 predicate in the dictionary.
+ 	 	 	predicate in the dictionary.
 
 @details 	Generates a cursor that allows the traversal of items where
 			the items key satisfies the @p predicate (if the underlying

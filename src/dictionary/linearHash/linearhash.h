@@ -93,6 +93,16 @@ struct linear_hashmap
 };
 
 /**
+ * @brief 	Keeps track of the current ll file
+ */
+struct file_ll
+{
+	FILE				*ll_file;	/**< The pointer for the current file open */
+	int					bucket_id;	/**< The bucket ID for the file */
+
+};
+
+/**
 @brief		This function initializes a linearu in memory hash map.
 
 @param		hashmap
@@ -275,6 +285,27 @@ lh_query(
 );
 
 /**
+@brief		Locates the record if it exists and established a cursor
+			but requires that a predicate be established first.
+
+@details	Locates the record based on key match is it exists and returns a
+			pointer to the record that has been materialized in memory.
+
+@param		hash_map
+				The map into which the data is going to be inserted.
+@param		key
+				The key for the record that is being searched for.
+@param		value
+				The value associated in the map.
+*/
+err_t
+lh_find(
+		dictionary_t 	*dictionary,
+		predicate_t 	*predicate,
+		dict_cursor_t 	**cursor
+);
+
+/**
 @brief		Helper function to print out map.
 
 @details	Helper function that displays the contents of the map including
@@ -332,6 +363,28 @@ lh_split(
 /*void
 static_hash_init(dictonary_handler_t * client);*/
 
+err_t
+lh_search_primary_page(
+    linear_hashmap_t		*hash_map,
+    int						bucket_number,
+    ion_key_t				key,
+    ion_value_t				value
+  );
+
+err_t
+lh_get_next(
+    linear_hashmap_t			*hash_map,
+    ll_file_t					*linked_list_file,
+    ion_key_t 					key,
+    ion_value_t 				value
+);
+
+
+int
+lh_compute_bucket_number(
+	  linear_hashmap_t			*hash_map,
+	  hash_set_t				*hash_set
+  );
 
 #ifdef __cplusplus
 }
