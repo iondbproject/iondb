@@ -400,14 +400,6 @@ lh_split(
 static_hash_init(dictonary_handler_t * client);*/
 
 err_t
-lh_search_primary_page(
-    linear_hashmap_t		*hash_map,
-    int						bucket_number,
-    ion_key_t				key,
-    ion_value_t				value
-  );
-
-err_t
 lh_get_next(
     linear_hashmap_t			*hash_map,
     ll_file_t					*linked_list_file,
@@ -427,8 +419,16 @@ action_status_t
 lh_delete_item_action(
 	linear_hashmap_t	*hash_map,
 	ion_key_t			key,
-	l_hash_bucket_t		*item/**,0
-	void				*delete_count*/
+	l_hash_bucket_t		*item,
+	ion_value_t			value
+);
+
+action_status_t
+lh_query_item_action(
+	linear_hashmap_t	*hash_map,
+	ion_key_t			key,
+	l_hash_bucket_t		*item,
+	ion_value_t			value
 );
 
 err_t
@@ -445,10 +445,11 @@ lh_flush_cache(
 
 return_status_t
 lh_action_primary_page(
-	linear_hashmap_t		*hash_map,
-	int						bucket,
-	ion_key_t				key,
-	action_status_t			(*action)(linear_hashmap_t*, ion_key_t, l_hash_bucket_t*)
+	linear_hashmap_t	*hash_map,
+	int					bucket,
+	ion_key_t			key,
+	action_status_t		(*action)(linear_hashmap_t*, ion_key_t, l_hash_bucket_t*, ion_value_t),
+	ion_value_t			value
 );
 
 #ifdef __cplusplus

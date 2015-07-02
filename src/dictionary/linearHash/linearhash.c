@@ -130,7 +130,6 @@ lh_close(
 	}
 }
 
-
 err_t
 lh_destroy(
 	linear_hashmap_t 	*hash_map
@@ -494,7 +493,7 @@ lh_delete(
 
 	if (err == err_uninitialized)
 	{
-		return err_uninitialized;
+		return err;
 	}
 
 	/** compute the primary page to search */
@@ -509,7 +508,7 @@ lh_delete(
 	DUMP(bucket_size,"%i");
 #endif
 	/** function pointer for action function when bringing in block*/
-	return_status_t status = lh_action_primary_page(hash_map, bucket_number, key, lh_delete_item_action);
+	return_status_t status = lh_action_primary_page(hash_map, bucket_number, key, lh_delete_item_action,NULL);
 
 	num_deleted = status.count;
 
@@ -584,70 +583,6 @@ int lh_compute_bucket_number(
 	return bucket_number;
 }
 
-/**
- * @brief finds the value in the primary page.
- * @param hash_map
- * @param bucket_number
- * @param key
- * @param value
- * @return
- */
-err_t
-lh_search_primary_page(
-    linear_hashmap_t		*hash_map,
-    int						bucket_number,
-    ion_key_t				key,
-    ion_value_t				value
-  )
-{
-	/**cache primary page*/
-	lh_cache_pp(hash_map,bucket_number);
-
-	int record_size = hash_map->super.record.key_size
-	        + hash_map->super.record.value_size + SIZEOF(STATUS);
-
-	/** need to keep bucket in memory*/
-
-	int count = 0;
-	l_hash_bucket_t* item;
-
-	//check to see if value is in primary bucket
-	while (count != RECORDS_PER_BUCKET)
-	{
-		item = (l_hash_bucket_t *)(hash_map->cache.cached_bucket + (count * record_size)); /** advance through page */
-#if DEBUG
-		DUMP(count * record_size,"%i");
-#endif
-		/** scan through the entire block looking for a space */
-		/** @todo need to address duplicate keys */
-		if (item->status == EMPTY) /** nothing is here, so exit */
-		{
-			value = NULL;
-			/** Could return cached page, but why not hold on to it */
-			return err_item_not_found;	/** in this case, the cursor would be null */
-		}
-		else if (item->status == IN_USE) /** if location is not being used, use it */
-		{
-			/**if it's in use, compare the keys */
-			if (hash_map->super.compare(key, item->data,
-			        hash_map->super.record.key_size) == IS_EQUAL)
-			{
-				memcpy(value, item->data + hash_map->super.record.key_size,
-				        hash_map->super.record.value_size);
-				/** in this case the cursor will be set to be count in bucket
-				 * and the value cached? */
-				//free(bucket);
-				/** Hang onto cached page */
-				return err_ok;
-			}
-		}
-		count++;
-	}
-	//free(bucket);
-	/** and again just hold onto pp */
-	return err_not_in_primary_page;
-}
-
 err_t
 lh_get_next(
     linear_hashmap_t			*hash_map,
@@ -706,16 +641,13 @@ lh_query(
 	int bucket_number = lh_compute_bucket_number(hash_map, &hash_set);
 
 	/** and search it */
-
-	/** @FIX ME - too compact?*/
-	err = lh_search_primary_page(hash_map, bucket_number, key, value);
-
+	lh_cache_pp(hash_map,bucket_number);
+	return_status_t status = lh_action_primary_page(hash_map, bucket_number, key, lh_query_item_action, value);
 
 	/** and if the primary page has empty slot or has the value, return */
-
-	if (err != err_not_in_primary_page)
+	if (status.err != err_not_in_primary_page)
 	{
-		return err;
+		return status.err;
 	}
 
 #if DEBUG
@@ -775,10 +707,47 @@ lh_compute_hash(
 }
 
 action_status_t
+lh_query_item_action(
+	linear_hashmap_t	*hash_map,
+	ion_key_t			key,
+	l_hash_bucket_t		*item,
+	ion_value_t			value
+)
+{
+	action_status_t status;
+
+	if (item->status == EMPTY) /** nothing is here, so exit */
+	{
+		value = NULL;
+			/** in this case, the cursor would be null */
+		status.err = err_item_not_found;
+		status.action = action_exit;
+		return status;
+	}
+	else if (item->status == IN_USE) 		/** if location is not being used, use it */
+	{
+		/**if it's in use, compare the keys */
+		if (hash_map->super.compare(key, item->data,
+				hash_map->super.record.key_size) == IS_EQUAL)
+		{
+			memcpy(value, item->data + hash_map->super.record.key_size,
+					hash_map->super.record.value_size);
+			status.err = err_ok;
+			status.action = action_exit;
+			return status;
+		}
+	}
+	status.err = err_not_in_primary_page;		/** Assume default that it cannot be found */
+	status.action = action_continue;
+	return status;
+}
+
+action_status_t
 lh_delete_item_action(
 	linear_hashmap_t	*hash_map,
 	ion_key_t			key,
-	l_hash_bucket_t		*item//,
+	l_hash_bucket_t		*item,
+	ion_value_t		value
 	//void				*delete_count
 )
 {
@@ -890,7 +859,9 @@ lh_action_primary_page(
 	linear_hashmap_t		*hash_map,
 	int						bucket,
 	ion_key_t				key,
-	action_status_t			(*action)(linear_hashmap_t*, ion_key_t, l_hash_bucket_t*)
+	action_status_t			(*action)(linear_hashmap_t*, ion_key_t, l_hash_bucket_t*, ion_value_t),
+	ion_value_t				value
+
 )
 {
 	/** set number of records touched to 0 */
@@ -914,7 +885,7 @@ lh_action_primary_page(
 		DUMP(count * record_size,"%i");
 #endif
 		/** scan through block performing action*/
-		action_status_t record_status = action(hash_map, key, item/*, &num_deleted*/);
+		action_status_t record_status = action(hash_map, key, item, value);
 
 		status.err = record_status.err;
 
