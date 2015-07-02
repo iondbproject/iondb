@@ -414,6 +414,13 @@ lh_compute_bucket_number(
 	  hash_set_t				*hash_set
   );
 
+action_status_t
+lh_insert_item_action(
+	linear_hashmap_t	*hash_map,
+	ion_key_t			key,
+	l_hash_bucket_t		*item,
+	ion_value_t			value
+);
 
 action_status_t
 lh_delete_item_action(

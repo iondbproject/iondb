@@ -239,42 +239,16 @@ lh_insert(
 	/** compute the primary page to search */
 	int bucket_number = lh_compute_bucket_number(hash_map, &hash_set);
 
-	int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size
-					+ SIZEOF(STATUS);
-
 	/** Bring the primary page into cache */
 	lh_cache_pp(hash_map, bucket_number);
 
-	// Scan until find an empty location
-	int count 		= 0;
+	return_status_t status = lh_action_primary_page(hash_map, bucket_number, key, lh_insert_item_action,value);
 
-	l_hash_bucket_t *item;
-
-	//check to see if value is in primary bucket
-	while (count != RECORDS_PER_BUCKET)
+	if (status.err == err_ok)
 	{
-		item = (l_hash_bucket_t * )(hash_map->cache.cached_bucket + ( count * record_size));				/** advance through page */
-#if DEBUG
-		DUMP(count * record_size,"%i");
-#endif
-		/** scan through the entire block looking for a space */
-		/** @todo need to address duplicate keys */
-
-		if (item->status != IN_USE )	/** if location is not being used, use it */
-		{
-			item->status = IN_USE;
-			memcpy(item->data, key, (hash_map->super.record.key_size));
-			memcpy(item->data + hash_map->super.record.key_size, value,
-						        (hash_map->super.record.value_size));
-#if DEBUG
-			DUMP(*(int*)item->data,"%i");
-#endif
-			/** Flush page back but keep it in cache in the event it is needed */
-			lh_flush_cache(hash_map,PRESERVE_CACHE_MEMORY);
-			return err_ok;
-		}
-		count++;
+		return status.err;
 	}
+
 	/** add to overflow page if need be if there is no room*/
 #if DEBUG
 	io_printf("Overflow!\n");
@@ -738,6 +712,35 @@ lh_query_item_action(
 		}
 	}
 	status.err = err_not_in_primary_page;		/** Assume default that it cannot be found */
+	status.action = action_continue;
+	return status;
+}
+
+action_status_t
+lh_insert_item_action(
+	linear_hashmap_t	*hash_map,
+	ion_key_t			key,
+	l_hash_bucket_t		*item,
+	ion_value_t			value
+	)
+{
+	action_status_t status;
+	if (item->status != IN_USE )	/** if location is not being used, use it */
+	{
+		item->status = IN_USE;
+		memcpy(item->data, key, (hash_map->super.record.key_size));
+		memcpy(item->data + hash_map->super.record.key_size, value,
+							(hash_map->super.record.value_size));
+#if DEBUG
+		DUMP(*(int*)item->data,"%i");
+#endif
+		/** Flush page back but keep it in cache in the event it is needed */
+		lh_flush_cache(hash_map,PRESERVE_CACHE_MEMORY);
+		status.action = action_exit;
+		status.err = err_ok;
+		return status;
+	}
+	status.err = err_unable_to_insert;
 	status.action = action_continue;
 	return status;
 }
