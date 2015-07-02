@@ -36,6 +36,8 @@ extern "C" {
 #define FREE_CACHE_MEMORY 	1
 #define PRESERVE_CACHE_MEMORY 0
 
+#define CACHE_SIZE			2				/** defines how many cache blocks are available */
+
 #define MAX_FILE_LENGTH  	20
 /** @TODO The location of hash_t needs to be resolved */
 /**
@@ -125,7 +127,8 @@ struct linear_hashmap
 									/**< pointer for current bucket being spilt */
 	int					id;			/**< id for files in system */
 									/** @todo this could be moved to parent */
-	lh_page_cache_t		cache;		/**< holds pp for cacheing */
+	lh_page_cache_t		cache[CACHE_SIZE];
+									/**< holds pp for cacheing */
 };
 
 /**
@@ -441,18 +444,21 @@ lh_query_item_action(
 err_t
 lh_cache_pp(
 	linear_hashmap_t	*hash_map,
+	int					cache_number,
 	int					bucket_number
 );
 
 err_t
 lh_flush_cache(
 	linear_hashmap_t	*hash_map,
+	int					cache_number,		/** @FIXME scale to correct size */
 	int					action
 );
 
 return_status_t
 lh_action_primary_page(
 	linear_hashmap_t	*hash_map,
+	int					cache_number,
 	int					bucket,
 	ion_key_t			key,
 	action_status_t		(*action)(linear_hashmap_t*, ion_key_t, l_hash_bucket_t*, ion_value_t),
