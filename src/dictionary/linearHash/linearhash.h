@@ -74,8 +74,16 @@ typedef struct hashset {
  */
 typedef enum action {
 	action_continue,	/**< action_continue - function continues */
-	action_exit     	/**< action_exit - functions exits */
+	action_deleted,
+	action_exit     	/**< action_exit - functions exits with error code */
 } action_t;
+
+/**
+ * Action and error codes returned from action fp*/
+typedef struct action_status {
+	action_t	action;	/**< The desired action */
+	err_t		err;	/**< The associated error code */
+} action_status_t;
 
 typedef enum cache_status {
 	cache_active,
@@ -415,12 +423,12 @@ lh_compute_bucket_number(
   );
 
 
-action_t
+action_status_t
 lh_delete_item_action(
 	linear_hashmap_t	*hash_map,
 	ion_key_t			key,
-	l_hash_bucket_t		*item,
-	void				*num_deleted
+	l_hash_bucket_t		*item/**,0
+	void				*delete_count*/
 );
 
 err_t
@@ -433,6 +441,14 @@ err_t
 lh_flush_cache(
 	linear_hashmap_t	*hash_map,
 	int					action
+);
+
+return_status_t
+lh_action_primary_page(
+	linear_hashmap_t		*hash_map,
+	int						bucket,
+	ion_key_t				key,
+	action_status_t			(*action)(linear_hashmap_t*, ion_key_t, l_hash_bucket_t*)
 );
 
 #ifdef __cplusplus

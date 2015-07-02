@@ -81,7 +81,6 @@ err_t ffdict_find(
     predicate_t *predicate,
     dict_cursor_t **cursor)
 {
-
 	//allocate memory for cursor
 	if ((*cursor = (dict_cursor_t *)malloc(sizeof(ffdict_cursor_t))) == NULL)
 	{
