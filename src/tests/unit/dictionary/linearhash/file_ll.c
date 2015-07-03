@@ -60,7 +60,7 @@ test_file_linked_list_initialize(
 	ll_file_t linked_list_file;
 	create_test_linked_list(&linked_list_file, id);
 	char filename[20];
-	sprintf(filename,"%i_%i.ovf",id,linked_list_file,0);
+	sprintf(filename,"%i_%i.ovf",id,0);
 	//valid correct map settings
 	CuAssertTrue(tc, 0	 							== strcmp(linked_list_file.file_name,filename));
 	//check that the first node is actually the head

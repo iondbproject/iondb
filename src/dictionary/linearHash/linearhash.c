@@ -250,6 +250,10 @@ lh_insert(
 
 	if (status.err == err_ok)
 	{
+#if DEBUG
+		io_printf("flushing!\n");
+#endif
+		lh_flush_cache(hash_map,0,PRESERVE_CACHE_MEMORY);
 		return status.err;
 	}
 
@@ -293,26 +297,17 @@ lh_split(
 )
 {
 	//splits the current bucket into two new buckets
-
 	hash_set_t hash_set;						/** used to store hash values when determining location */
-
-	int cache_number = 0;
+	int lower_cache_number = 0;
+	int upper_cache_number = 1;
 
 	int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size
 						+ SIZEOF(STATUS);
 
-	int bucket_size = record_size * RECORDS_PER_BUCKET;
-	l_hash_bucket_t * upper_bucket = (l_hash_bucket_t *)malloc(bucket_size);	/** allocate memory for page */
-
-	/*l_hash_bucket_t * bucket = (l_hash_bucket_t *)malloc(bucket_size);			* allocate memory for page from disk
-
-
-	fseek(hash_map->file, hash_map->bucket_pointer * bucket_size, SEEK_SET);	* select bucket to split
-
-	fread(bucket,bucket_size,1,hash_map->file);*/
-
 	/** cache the current page to split */
-	lh_cache_pp(hash_map,cache_number,hash_map->bucket_pointer);
+	lh_cache_pp(hash_map,lower_cache_number,hash_map->bucket_pointer);
+	/** upper is new page */
+	lh_cache_pp(hash_map,upper_cache_number,EMPTY_BLOCK_REQUEST);
 
 	int count = 0;
 	int lower_bucket_idx = 0, upper_bucket_idx = 0;
@@ -320,7 +315,7 @@ lh_split(
 
 	while (count != RECORDS_PER_BUCKET)
 	{
-		item = (l_hash_bucket_t * )(hash_map->cache[cache_number].cached_bucket + ( count * record_size));			/** advance through page */
+		item = (l_hash_bucket_t * )(hash_map->cache[lower_cache_number].cached_bucket + ( count * record_size));			/** advance through page */
 
 		//scan through the entire block looking for a space
 
@@ -331,7 +326,7 @@ lh_split(
 
 			if (hash_set.lower_hash != hash_set.upper_hash)				/** move this record to the new bucket */
 			{
-				memcpy(upper_bucket+upper_bucket_idx*record_size, item,record_size);
+				memcpy(hash_map->cache[upper_cache_number].cached_bucket /*upper_bucket*/+upper_bucket_idx*record_size, item,record_size);
 				upper_bucket_idx++;										/** advance counter to next record */
 				item->status = DELETED;									/** and delete record from bucket */
 			}
@@ -342,11 +337,11 @@ lh_split(
 	/** a new block has been created, but you now need to denote the rest of the positions as available */
 	{
 		int tmp_idx = upper_bucket_idx;
-		while (tmp_idx++ < RECORDS_PER_BUCKET)
+		while (tmp_idx < RECORDS_PER_BUCKET)
 		{
-			item = (l_hash_bucket_t * )(hash_map->cache[cache_number].cached_bucket + ( count * record_size));
+			item = (l_hash_bucket_t * )(hash_map->cache[upper_cache_number].cached_bucket + ( tmp_idx * record_size));
 			item->status = EMPTY;
-			memcpy(upper_bucket+upper_bucket_idx*record_size, item,record_size);
+			tmp_idx ++;
 		}
 	}
 
@@ -401,7 +396,7 @@ lh_split(
 				{//check to see if there is room in lower bucket
 					while (lower_bucket_idx < RECORDS_PER_BUCKET)
 						{
-							item = (l_hash_bucket_t * )(hash_map->cache[cache_number].cached_bucket + ( lower_bucket_idx * record_size));			/** advance through page */
+							item = (l_hash_bucket_t * )(hash_map->cache[lower_cache_number].cached_bucket/*bucket */+ ( lower_bucket_idx * record_size));			/** advance through page */
 							//scan through the entire block looking for a space
 
 							if (item->status != IN_USE )	/** if location is not being used, use it */
@@ -420,7 +415,7 @@ lh_split(
 				if (upper_bucket_idx < RECORDS_PER_BUCKET)			//still room in buffer
 				{	/** check to see if there is room in upper bucket.
 				 	 	 as this is new, just keep adding to it */
-					item = (l_hash_bucket_t * )(upper_bucket+upper_bucket_idx*record_size);
+					item = (l_hash_bucket_t * )(hash_map->cache[upper_cache_number].cached_bucket/* upper_bucket */+ upper_bucket_idx*record_size);
 																					/** advance through page */
 					item->status = IN_USE;
 					memcpy(item->data, ll_node->data,record_size);
@@ -441,12 +436,8 @@ lh_split(
 		fll_close(&new_ll);
 	}
 	/** and finally flush out the pages */
-	//fseek(hash_map->file, hash_map->bucket_pointer * bucket_size, SEEK_SET);	/**write bucket back to disk*/
-	//fwrite(hash_map->cache.cached_bucket,bucket_size,1,hash_map->file);
-	lh_flush_cache(hash_map,cache_number,PRESERVE_CACHE_MEMORY);
-
-	fseek(hash_map->file, 0, SEEK_END);											/** and add new bucket */
-	fwrite(upper_bucket,bucket_size,1,hash_map->file);
+	lh_flush_cache(hash_map,lower_cache_number,PRESERVE_CACHE_MEMORY);
+	lh_flush_cache(hash_map,upper_cache_number,PRESERVE_CACHE_MEMORY); //* and add new bucket	*/
 	/** increment page pointers, et al. */
 	hash_map->bucket_pointer++;
 	if (hash_map->bucket_pointer == hash_map->initial_map_size*(1<<hash_map->file_level))
@@ -455,8 +446,6 @@ lh_split(
 		hash_map->bucket_pointer = 0;
 		hash_map->file_level ++;
 	}
-	//free(bucket);
-	free(upper_bucket);
 	return err_ok;
 }
 
@@ -489,7 +478,7 @@ lh_delete(
 	lh_cache_pp(hash_map,0,bucket_number);
 
 #if DEBUG
-	DUMP(bucket_size,"%i");
+	//DUMP(bucket_size,"%i");
 #endif
 	/** function pointer for action function when bringing in block*/
 	/** @FIXME need cache block mgr */
@@ -556,9 +545,11 @@ int lh_compute_bucket_number(
 
 	if (hash_set->lower_hash >= hash_map->bucket_pointer) /** if the lower hash is below pointer, then use upper hash */
 	{
+/*
 #if DEBUG
 		DUMP(hash_set.lower_hash * bucket_size,"%i");
 #endif
+*/
 		bucket_number = hash_set->lower_hash;
 	}
 	else
@@ -636,9 +627,11 @@ lh_query(
 		return status.err;
 	}
 
+/*
 #if DEBUG
 	DUMP(bucket_size,"%i");
 #endif
+*/
 
 	/** and if it is not found in the bucket, check the overflow file */
 	/** In practice, this could be open ?? */
@@ -748,9 +741,10 @@ lh_insert_item_action(
 #endif
 		/** Flush page back but keep it in cache in the event it is needed */
 		/** @FIXME This is ugly as what if it is not in blk 0*/
-		lh_flush_cache(hash_map,0,PRESERVE_CACHE_MEMORY);
-		status.action = action_exit;
+		//status.action = action_flush_and_exit;
+		//lh_flush_cache(hash_map,0,PRESERVE_CACHE_MEMORY);
 		status.err = err_ok;
+		status.action = action_exit;
 		return status;
 	}
 	status.err = err_unable_to_insert;
@@ -764,7 +758,6 @@ lh_delete_item_action(
 	ion_key_t			key,
 	l_hash_bucket_t		*item,
 	ion_value_t		value
-	//void				*delete_count
 )
 {
 	action_status_t status;
@@ -803,6 +796,8 @@ lh_cache_pp(
 	int					bucket_number
 	)
 {
+	//io_printf("cache number %i status %i \n",cache_number, hash_map->cache[cache_number].status);
+
 	int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size
 										+ SIZEOF(STATUS);
 
@@ -815,10 +810,12 @@ lh_cache_pp(
 	else if ((hash_map->cache[cache_number].bucket_idx != bucket_number) && (hash_map->cache[cache_number].status == cache_active))
 	{
 		/** flush page and fetch new one but do not return memory to system*/
+	//	io_printf("flushing old page %i\n",hash_map->cache[cache_number].bucket_idx);
 		lh_flush_cache(hash_map,cache_number, PRESERVE_CACHE_MEMORY);
 	}
 	else if (hash_map->cache[cache_number].status == cache_invalid)	/** malloc memory */
 	{
+	//	io_printf("Allocating memory for cache block %i\n",cache_number);
 		hash_map->cache[cache_number].cached_bucket = (l_hash_bucket_t *)malloc(bucket_size);
 												/** allocate memory for page */
 		if (hash_map->cache[cache_number].cached_bucket == NULL)
@@ -829,13 +826,22 @@ lh_cache_pp(
 	}
 	/** else the bucket is flushed and just needs new data */
 
-	fseek(hash_map->file, bucket_number * bucket_size, SEEK_SET);
-	//read is the bucket and scan for an empty page
-	fread(hash_map->cache[cache_number].cached_bucket,bucket_size,1,hash_map->file);
+	if (bucket_number != EMPTY_BLOCK_REQUEST)
+	{
+		fseek(hash_map->file, bucket_number * bucket_size, SEEK_SET);
+		//read is the bucket and scan for an empty page
+		fread(hash_map->cache[cache_number].cached_bucket,bucket_size,1,hash_map->file);
+		hash_map->cache[cache_number].bucket_idx = bucket_number;
+	}
+	else
+	{
+	//	io_printf("fresh cache block\n");
+		hash_map->cache[cache_number].bucket_idx = EMPTY_BLOCK_REQUEST;
+	}
+		hash_map->cache[cache_number].status = cache_active;		/** cache is now live*/
 
-	hash_map->cache[cache_number].bucket_idx = bucket_number;
-	hash_map->cache[cache_number].status = cache_active;		/** cache is now live*/
-
+	//DUMP(hash_map->cache[cache_number].status,"%i");
+	//DUMP(hash_map->cache[cache_number].bucket_idx,"%i");
 	return err_ok;								/** @TODO consider error codes on this */
 }
 
@@ -847,25 +853,39 @@ lh_flush_cache(
 	int					action
 )
 {
+	//io_printf("flushing cache %i status %i bucket %i\n",cache_number,hash_map->cache[cache_number].status, hash_map->cache[cache_number].bucket_idx);
+
 	if (cache_number >= CACHE_SIZE)
 	{
 		return err_item_not_found;
 	}
 	if (hash_map->cache[cache_number].status == cache_invalid)
 	{
+	//	io_printf("invalid cache - nothing to flush\n");
 		return err_ok;			/** @todo this should be a different message */
 	}
+
 	int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size
 									+ SIZEOF(STATUS);
 
 	int bucket_size = record_size * RECORDS_PER_BUCKET;
 
-	fseek(hash_map->file,hash_map->cache[cache_number].bucket_idx * bucket_size, SEEK_SET);
-
+	if (hash_map->cache[cache_number].bucket_idx != EMPTY_BLOCK_REQUEST)
+	{
+	//	io_printf("seeking to correct position in file\n");
+		fseek(hash_map->file,hash_map->cache[cache_number].bucket_idx * bucket_size, SEEK_SET);
+	}
+	else
+	{
+		/** Write new block at end of file */
+	//	io_printf("moving to end\n");
+		fseek(hash_map->file, 0, SEEK_END);											/** and add new bucket */
+	}
 	/** @FIXME better calculation that direct seek?*/
 	//fseek(hash_map->file,-bucket_size,SEEK_CUR);
 										/** backup and write back */
-
+	//fwrite(upper_bucket,bucket_size,1,hash_map->file);
+	//io_printf("writing out data\n");
 	fwrite(hash_map->cache[cache_number].cached_bucket,bucket_size,1,hash_map->file);
 	if (action == FREE_CACHE_MEMORY)
 	{
@@ -919,8 +939,13 @@ lh_action_primary_page(
 		{
 			status.count += 1;
 		}
+		/*if (record_status.action == action_flush_and_exit)
+		{
+			lh_flush_cache(hash_map,cache_number,PRESERVE_CACHE_MEMORY);
+		}*/
 		if (record_status.action == action_exit)		/** if the helper is done, leave */
 		{
+//			printf("exiting\n");
 			return status;
 		}
 		count++;

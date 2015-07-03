@@ -43,7 +43,7 @@ fll_open
 
 	sprintf(filename,"%i_%i.%s",id,bucket,extension);
 	//allocation space for file name
-	linked_list_file->file_name 			= (char*)malloc(strlen(filename));
+	linked_list_file->file_name 			= (char*)malloc(strlen(filename)+1);
 	strcpy(linked_list_file->file_name,filename);
 
 	//attempt to open the file
@@ -91,7 +91,7 @@ fll_create(
 
 	sprintf(filename,"%i_%i.%s",id,bucket,extension);
 	//allocation space for file name
-	linked_list_file->file_name 			= (char*)malloc(strlen(filename));
+	linked_list_file->file_name 			= (char*)malloc(strlen(filename)+1);
 	strcpy(linked_list_file->file_name,filename);
 	linked_list_file->file 					= fopen(linked_list_file->file_name,"w+b");
 														/** NOTE: On windows machines file !!MUST!! be opened with +b to allow for binary mode,

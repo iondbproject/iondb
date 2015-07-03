@@ -25,7 +25,7 @@ extern "C" {
 #include "./../../kv_system.h"
 #include "./../../kv_io.h"
 
-
+#define EMPTY_BLOCK_REQUEST -1
 #define EMPTY 				-1
 #define DELETED 			-2
 #define IN_USE 				-3
@@ -77,6 +77,7 @@ typedef struct hashset {
 typedef enum action {
 	action_continue,	/**< action_continue - function continues */
 	action_deleted,
+	action_flush_and_exit,
 	action_exit     	/**< action_exit - functions exits with error code */
 } action_t;
 

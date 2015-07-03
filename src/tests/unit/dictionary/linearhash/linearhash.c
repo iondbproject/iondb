@@ -337,14 +337,17 @@ test_file_linear_hash_split_1(
 		fread(item,record_size,1,hashmap.file);
 		CuAssertTrue(tc,pre_split_status[idx]
 											==	item->status);
-		if (IN_USE						==	item->status)
+		if (IN_USE							==	item->status)
 		{
+#if DEBUG
+			DUMP(*(int*)item->data,"%i");
+#endif
 			CuAssertTrue(tc,pre_split[idx]	==	*(int*)item->data);
 		}
 	}
-
 	CuAssertTrue(tc,0					== hashmap.bucket_pointer);
 	CuAssertTrue(tc,0					== hashmap.file_level);
+	//printf("getting ready to split\n");
 	CuAssertTrue(tc,err_ok				== lh_split(&hashmap));
 	CuAssertTrue(tc,1					== hashmap.bucket_pointer);
 	CuAssertTrue(tc,0					== hashmap.file_level);
