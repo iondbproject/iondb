@@ -114,7 +114,7 @@ dictionary_compare_unsigned_value(
 	 * a direct comparison of bytes in memory starting for MSB.
 	 */
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-	for (idx = key_size -1; idx >= 0; idx--)
+	for (idx = key_size - 1; idx >= 0; idx--)
 	{
 		if ((return_value = ((*(first_key+idx) > *(second_key+idx)) - (*(first_key+idx) < *(second_key+idx)))) != ZERO)
 		{

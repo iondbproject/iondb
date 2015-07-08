@@ -8,6 +8,8 @@
 #define USING_ECLIPSE 	1
 #define DEBUG 			0
 #define IS_EQUAL 		0
+#define IS_GREATER		1
+#define IS_LESS			-1
 #define ZERO			0
 
 #define DUMP(varname, format) io_printf("Variable %s = " format "\n", #varname, varname)
@@ -94,6 +96,7 @@ typedef enum boolean
 	boolean_false,
 	boolean_true
 } boolean_e;
+
 
 // TODO
 /**

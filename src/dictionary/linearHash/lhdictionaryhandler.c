@@ -108,6 +108,12 @@ err_t lhdict_find(
 	(*cursor)->predicate = (predicate_t *)malloc(sizeof(predicate_t));
 	(*cursor)->predicate->type = predicate->type; /**@todo repair as there are duplicate types */
 
+	((lhdict_cursor_t*)*cursor)->current_bucket 	= -1;	//Set initial pointers to INVALID
+	((lhdict_cursor_t*)*cursor)->first_bucket 		= -1;
+	((lhdict_cursor_t*)*cursor)->overflow 			= NULL;
+	((lhdict_cursor_t*)*cursor)->record_pntr		= 0;	//Point to first item in page
+	((lhdict_cursor_t*)*cursor)->evaluate_predicate = lhdict_test_predicate;
+
 	//based on the type of predicate that is being used, need to create the correct cursor
 	switch (predicate->type)
 	{
@@ -129,32 +135,25 @@ err_t lhdict_find(
 			        ((((linear_hashmap_t *)dictionary->instance)->super.record.key_size)));
 
 			//find the location of the first element as this is a straight equality
-			int location = cs_invalid_index;
-			ion_value_t value;
-			if ((value = (ion_value_t)malloc(dictionary->instance->record.value_size)) == NULL)
-			{
-				return err_out_of_memory;
-			}
-			/** @TODO find item needs to be fixed */
-			/*if (lh_find_item_loc((linear_hashmap_t *)dictionary->instance,
-			        (*cursor)->predicate->statement.equality.equality_value,
-			        &location) == err_item_not_found)*/
-			if (lh_query((linear_hashmap_t *)dictionary->instance,
-						        (*cursor)->predicate->statement.equality.equality_value,
-						        value) == err_item_not_found)
+			//ion_value_t value;
+			//if ((value = (ion_value_t)malloc(dictionary->instance->record.value_size)) == NULL)
+			//{
+			//	return err_out_of_memory;
+			//}
+			/** @TODO find item needs to be fixed  - But how??*/
+			if (lh_find((linear_hashmap_t *)dictionary->instance,*cursor) == err_item_not_found)
 			{
 				(*cursor)->status = cs_end_of_results;
+			//	free(value);
 				return err_ok;
 			}
 			else
 			{
 				(*cursor)->status = cs_cursor_initialized;
-				//cast to specific instance type for conveniences of setup
-				lhdict_cursor_t *lhdict_cursor = (lhdict_cursor_t *)(*cursor);
-				// the cursor is ready to be consumed
-				lhdict_cursor->first = location;
-
-				lhdict_cursor->current = location;
+			//	free(value);
+				//cast tlhdict_cursoro specific instance type for conveniences of setup
+				//lhdict_cursor_t * = (lhdict_cursor_t *)(*cursor);
+				/** @TODO  is there something that needs to be done here ?*/
 				return err_ok;
 			}
 			break;
@@ -191,29 +190,20 @@ err_t lhdict_find(
 			        predicate->statement.range.geq_value,
 			        (((linear_hashmap_t*)dictionary->instance)->super.record.key_size));
 
-			//find the location of the first element as this is a straight equality
-			int location = cs_invalid_index;
-
 			//start at the lowest end of the range and check
-			/*if (lh_find_item_loc((linear_hashmap_t*)dictionary->instance,
-			        (*cursor)->predicate->statement.range.geq_value, &location)
+			if (lh_find((linear_hashmap_t*)dictionary->instance,
+			        *cursor)
 			        == err_item_not_found)
 			{
-				//this will still have to be returned?
 				(*cursor)->status = cs_end_of_results;
 				return err_ok;
 			}
 			else
 			{
 				(*cursor)->status = cs_cursor_initialized;
-				//cast to specific instance type for conveniences of setup
-				lhdict_cursor_t *oadict_cursor = (lhdict_cursor_t *)(*cursor);
-				// the cursor is ready to be consumed
-				oadict_cursor->first = location;
-				oadict_cursor->current = location;
 				return err_ok;
 			}
-			break;*/
+			break;
 		}
 		case predicate_predicate:
 		{
@@ -246,17 +236,16 @@ cursor_status_t lhdict_next(dict_cursor_t *cursor, ion_record_t *record)
 
 		//assume that the value has been pre-allocated
 		//compute length of data record stored in map
-		int data_length = hash_map->super.record.key_size
-		        + hash_map->super.record.value_size;
+		int data_length = hash_map->super.record.key_size + hash_map->super.record.value_size;
 
-		if (cursor->status == cs_cursor_active)		//find the next valid entry
+		/*if (cursor->status == cs_cursor_active)		//find the next valid entry
 		{
 			//scan and determine what to do?
 			if (cs_end_of_results == lhdict_scan(lhdict_cursor))		//todo - need to read and updat file position
 			{
 				//Then this is the end and there are no more results
 				cursor->status = cs_end_of_results;
-				/** @todo need to do something with cursor? - done? */
+				* @todo need to do something with cursor? - done?
 				return cursor->status;
 			}
 		}
@@ -264,24 +253,96 @@ cursor_status_t lhdict_next(dict_cursor_t *cursor, ion_record_t *record)
 		{
 			//if the cursor is initialized but not active, then just read the data and set cursor active
 			cursor->status = cs_cursor_active;
+		}*/
+
+		/** If the cursor is not active, then you can just pull the value
+		 * otherwise you need to keep traversing to see if the value is valid
+		 */
+		if (((lhdict_cursor_t *)cursor)->overflow == NULL)	/**Still searching in pp*/
+		{
+			/** The primary page needs to be processed */
+			cursor->status = cs_cursor_active;
+			/** Cache pp and search for next value*/
+			lh_cache_pp((linear_hashmap_t*)cursor->dictionary->instance,0,((lhdict_cursor_t *)cursor)->current_bucket);
+			/** search for next value record */
+			err_t err =  lh_search_primary_page((linear_hashmap_t*)cursor->dictionary->instance, 0, (lhdict_cursor_t*)cursor);
+			if (err 			== err_item_not_found) 		/** if the item is not found, invalidate the cursor */
+			{
+				cursor->status = cs_end_of_results;
+				return cursor->status;
+			}
+			else if(err 		== err_ok)					/** the value has been found */
+			{
+				int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size
+														+ SIZEOF(STATUS);
+				l_hash_bucket_t * item = (l_hash_bucket_t * )(hash_map->cache[0].cached_bucket + ( ((lhdict_cursor_t *)cursor)->record_pntr) * record_size);
+				memcpy(record->key,item->data,hash_map->super.record.key_size);
+				memcpy(record->value,item->data+hash_map->super.record.key_size,hash_map->super.record.value_size);
+				/**and update current cursor position to point to the next position*/
+				((lhdict_cursor_t*)cursor)->record_pntr++;
+				return cursor->status;
+			}
+			else											/** the value is not in the pp -> move onto overflow pages */
+			{
+				printf("scanning overflow\n");
+				if (((lhdict_cursor_t *)cursor)->overflow == NULL)		/** no open overflow file */
+				{
+					((lhdict_cursor_t *)cursor)->overflow = (ll_file_t *)malloc(sizeof(ll_file_t));
+					if (fll_open(((lhdict_cursor_t *)cursor)->overflow,
+							fll_compare,
+							hash_map->super.key_type,
+							hash_map->super.record.key_size,
+							hash_map->super.record.value_size,
+							((lhdict_cursor_t *)cursor)->first_bucket,
+							hash_map->id)
+							== err_item_not_found)
+					{
+							/** in this case, cursor is null as value has not been found */
+							cursor->status = cs_end_of_results;
+							free(((lhdict_cursor_t *)cursor)->overflow);
+							((lhdict_cursor_t *)cursor)->overflow = NULL;
+							return  err_item_not_found;
+					}
+					else
+					{
+						/** reset ll cursor and start searching file */
+						fll_reset(((lhdict_cursor_t *)cursor)->overflow);
+					}
+				}
+			}
 		}
 
-		//the results are now ready //reference item at given position
+		ll_file_node_t item;
 
-		/** this is a problem now as there are multiple file to read */
-		//set position in file to read value
-		fseek(hash_map->file,
-			(SIZEOF(STATUS) + data_length) * lhdict_cursor->current		//position is based on indexes (not abs file pos)
-			+ SIZEOF(STATUS)
-			,SEEK_SET);
-
-/** @todo this needs to be addressed in terms of return type
- */
-		fread(record->key, hash_map->super.record.key_size, 1, hash_map->file);
-		fread(record->value, hash_map->super.record.value_size, 1, hash_map->file);
-
-		//and update current cursor position
-		return cursor->status;
+		if ( (cursor->status == cs_cursor_active))
+		{
+			while(fll_next(((lhdict_cursor_t *)cursor)->overflow,&item) != err_item_not_found)
+			{		/** now we are at the end of the list, but what to do if we need to go onto next bucket ?*/
+				troolean_t value = ((lhdict_cursor_t *)cursor)->evaluate_predicate(cursor,item.data);
+				if (IS_EQUAL == value)		/** a match has been found */
+				{
+					memcpy(record->key,item.data,hash_map->super.record.key_size);
+					memcpy(record->value,item.data+hash_map->super.record.key_size,hash_map->super.record.value_size);
+					//and update current cursor position
+					return cursor->status;
+				}
+				else if (IS_GREATER == value)				/** as list is ordered just leave */
+				{
+					break;
+				}
+			}
+			cursor->status = cs_end_of_results;
+			return cursor->status;
+		}
+		else
+		{	/** that value is already sitting at the cursor */
+			cursor->status = cs_cursor_active;
+			fll_get(((lhdict_cursor_t *)cursor)->overflow,&item);
+			memcpy(record->key,item.data,hash_map->super.record.key_size);
+			memcpy(record->value,item.data+hash_map->super.record.key_size,hash_map->super.record.value_size);
+			//and update current cursor position
+			return cursor->status;
+		}
 	}
 	//and if you get this far, the cursor is invalid
 	return cs_invalid_cursor;
@@ -321,13 +382,22 @@ void lhdict_destroy_cursor(dict_cursor_t **cursor)
 			break;
 		}
 	}
+	/** free overflow file info */
+	if (((lhdict_cursor_t *)*cursor)->overflow != NULL)
+	{
+		fll_close(((lhdict_cursor_t *)*cursor)->overflow);
+	}
 	/** and free cursor pointer */
 	free((*cursor)->predicate);
 	free(*cursor);
 	*cursor = NULL;
 }
 
-boolean_t lhdict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
+troolean_t
+lhdict_test_predicate(
+	dict_cursor_t *cursor,
+	ion_key_t key
+)
 {
 	//need to check key match; what's the most efficient way?
 	//need to use fnptr here for the correct matching
@@ -336,7 +406,7 @@ boolean_t lhdict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
 	/**
 	 * Compares value == key
 	 */
-	int key_satisfies_predicate;
+	troolean_t key_satisfies_predicate;
 	linear_hashmap_t * hash_map = (linear_hashmap_t *)(cursor->dictionary->instance);
 
 	//pre-prime value for faster exit
@@ -346,28 +416,45 @@ boolean_t lhdict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
 	{
 		case cursor_equality: //equality scan check
 		{
-			if (IS_EQUAL
-			        == hash_map->super.compare(
-			                cursor->predicate->statement.equality.equality_value,
-			                key, hash_map->super.record.key_size))
-			{
-				key_satisfies_predicate = boolean_true;
-			}
-			break;
+			/** if key < predicate -> -1
+			 * if key == predicate -> 0
+			 * if key > predicate 0 -> 1
+			 */
+			return hash_map->super.compare(
+							key,
+							cursor->predicate->statement.equality.equality_value,
+							hash_map->super.record.key_size
+							);
 		}
 		case cursor_range: // range check
 		{
-			if (		// leq_value <= key <==> !(leq_value > key)
-			(!(A_gt_B
-			        == hash_map->super.compare(key,
-			                cursor->predicate->statement.range.leq_value,
-			                hash_map->super.record.key_size))) &&// key <= geq_value <==> !(key > geq_key)
-			        (!(A_gt_B
-			                == hash_map->super.compare(
-			                        cursor->predicate->statement.range.geq_value,
-			                        key, hash_map->super.record.key_size))))
+			/**@FIXME Correct so that range works to short circuit early */
+
+			printf("Evaluating range\n");
+			DUMP(*(int*)cursor->predicate->statement.range.geq_value,"%i");
+			DUMP(*(int*)cursor->predicate->statement.range.leq_value,"%i");
+			DUMP(*(int*)key,"%i");
+
+			if (		// geq_value <= key <==> !(geq_value > key)
+			(A_lt_B
+			        == hash_map->super.compare(
+			                key,
+			        		cursor->predicate->statement.range.geq_value,
+			                hash_map->super.record.key_size)))
 			{
-				key_satisfies_predicate = boolean_true;
+				key_satisfies_predicate = IS_LESS;
+			} else if (	// key <= leq_value <==> !(key > leq_key)
+			(A_gt_B
+			                == hash_map->super.compare(
+			                		key,
+			                		cursor->predicate->statement.range.leq_value,
+			                        hash_map->super.record.key_size)))
+			{
+				key_satisfies_predicate = IS_GREATER;
+			}
+			else
+			{
+				key_satisfies_predicate = IS_EQUAL;
 			}
 			break;
 		}

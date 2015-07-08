@@ -25,6 +25,9 @@ extern "C" {
 #include "./../../kv_system.h"
 #include "./../../kv_io.h"
 
+#include "lhdictionary.h"
+
+
 #define EMPTY_BLOCK_REQUEST -1
 #define EMPTY 				-1
 #define DELETED 			-2
@@ -340,9 +343,8 @@ lh_query(
 */
 err_t
 lh_find(
-		dictionary_t 	*dictionary,
-		predicate_t 	*predicate,
-		dict_cursor_t 	**cursor
+		linear_hashmap_t 	*hash_map,
+		dict_cursor_t 		*cursor
 );
 
 /**
@@ -442,6 +444,14 @@ lh_query_item_action(
 	ion_value_t			value
 );
 
+action_status_t
+lh_split_item_action(
+	linear_hashmap_t	*hash_map,
+	ion_key_t			key,
+	l_hash_bucket_t		*item,
+	ion_value_t			value
+);
+
 err_t
 lh_cache_pp(
 	linear_hashmap_t	*hash_map,
@@ -464,6 +474,14 @@ lh_action_primary_page(
 	ion_key_t			key,
 	action_status_t		(*action)(linear_hashmap_t*, ion_key_t, l_hash_bucket_t*, ion_value_t),
 	ion_value_t			value
+);
+
+err_t
+lh_search_primary_page(
+	linear_hashmap_t		*hash_map,
+	int 					cache_number,
+	lhdict_cursor_t		*cursor  /*predicate is in here */
+/*	ion_value_t				value*/
 );
 
 #ifdef __cplusplus

@@ -18,6 +18,7 @@ extern "C" {
 #include "./../../kv_system.h"
 #include "linearhash.h"
 #include "lhdictionary.h"
+#include "file_ll.h"
 
 /**
 @brief Struct used to for instance of a given dictionary.
@@ -380,7 +381,7 @@ lhdict_destroy_cursor(
 				The key to test.
 @return		The result is the key passes or fails the predicate test.
  */
-boolean_t
+troolean_t
 lhdict_test_predicate(
     dict_cursor_t* 	cursor,
     ion_key_t 			key
