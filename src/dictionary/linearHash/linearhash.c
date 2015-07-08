@@ -552,7 +552,9 @@ lh_find(
 				((lhdict_cursor_t *)cursor)->current_bucket = ((lhdict_cursor_t *)cursor)->first_bucket;
 				/** and search it as the value must be in the page or the overflow page  */
 				lh_cache_pp(hash_map,0,((lhdict_cursor_t *)cursor)->first_bucket); 		/** cache and leave page */
+#if DEBUG
 				DUMP(((lhdict_cursor_t *)cursor)->first_bucket,"%i");
+#endif
 				if (err_ok 	== lh_search_primary_page(hash_map, 0, (lhdict_cursor_t *)cursor)) 		/** then the value has been found and the cursor is good to consume */
 				{
 					cursor->status = cs_cursor_initialized;
@@ -634,14 +636,15 @@ lh_find(
 			((lhdict_cursor_t *)cursor)->current_bucket = ((lhdict_cursor_t *)cursor)->first_bucket;
 
 			/** Compute the current size of the linear hash*/
-			int current_size = hash_map->initial_map_size * (2 << hash_map->file_level) + hash_map->bucket_pointer;
+			int current_size = hash_map->initial_map_size * (1 << hash_map->file_level) + hash_map->bucket_pointer;
 
-			while (((((lhdict_cursor_t *)cursor)->current_bucket + 1) % current_size) != ((lhdict_cursor_t *)cursor)->first_bucket)
+			do
 			{
 				/**Multiple pages must be searched in the event a value can not be found */
-				lh_cache_pp(hash_map,0,((lhdict_cursor_t *)cursor)->first_bucket); 		/** cache next PP */
-				DUMP(((lhdict_cursor_t *)cursor)->first_bucket,"%i");
+				lh_cache_pp(hash_map,0,((lhdict_cursor_t *)cursor)->current_bucket); 		/** cache next PP */
+#if DEBUG
 				DUMP(((lhdict_cursor_t *)cursor)->current_bucket,"%i");
+#endif
 				if (err_ok 	== lh_search_primary_page(hash_map, 0, (lhdict_cursor_t *)cursor))
 				/** then the value has been found and the cursor is good to consume*/
 				{
@@ -657,11 +660,13 @@ lh_find(
 							hash_map->super.key_type,
 							hash_map->super.record.key_size,
 							hash_map->super.record.value_size,
-							((lhdict_cursor_t *)cursor)->first_bucket,
+							((lhdict_cursor_t *)cursor)->current_bucket,
 							hash_map->id)
 							== err_item_not_found)
 					{
+
 							free(((lhdict_cursor_t *)cursor)->overflow);
+							((lhdict_cursor_t *)cursor)->overflow = NULL;
 							/** Free up the ll file pointer and move onto the next pp as the next bucket could
 							 * contain a value that satisfies the predicate under evaluation */
 					}
@@ -675,7 +680,9 @@ lh_find(
 						while (fll_next(((lhdict_cursor_t *)cursor)->overflow, ll_node) != err_item_not_found) /** consume each node in the file*/
 						{
 							troolean_t value = ((lhdict_cursor_t *)cursor)->evaluate_predicate((dict_cursor_t*)cursor,ll_node->data);
-							printf("Evaluating key %i\n",*(int*)ll_node->data);
+#if DEBUG
+							io_printf("Evaluating key %i\n",*(int*)ll_node->data);
+#endif
 							if (IS_GREATER == value)		/** If the value is not found in the predicate range,
 															 *	exit as it will need to check the next pp*/
 							{
@@ -696,16 +703,19 @@ lh_find(
 						((lhdict_cursor_t *)cursor)->overflow = NULL;		/** Clear pointer reference !!Important!! Used by
 																			 *	system to determine if a overflow page is active */
 						free(ll_node);
-
-						/** This is no longer the case as system must consider if all buckets have been checked */
-						/** increment the search to the next bucket and wrap if necessary*/
-						((lhdict_cursor_t *)cursor)->current_bucket = (((lhdict_cursor_t *)cursor)->current_bucket + 1) % current_size;
 					}
+					/** This is no longer the case as system must consider if all buckets have been checked */
+					/** increment the search to the next bucket and wrap if necessary*/
+					((lhdict_cursor_t *)cursor)->current_bucket = (((lhdict_cursor_t *)cursor)->current_bucket + 1) % current_size;
+					/** Reset record pointer as system is now scanning new pp */
+					((lhdict_cursor_t *)cursor)->record_pntr = 0;
 				}
-				/** The scan has checked all buckets and has not found a value that satisfies predicate */
-				cursor->status = cs_end_of_results;
-				return err_item_not_found;
+
 			}
+			while (((lhdict_cursor_t *)cursor)->current_bucket != ((lhdict_cursor_t *)cursor)->first_bucket);
+			/** The scan has checked all buckets and has not found a value that satisfies predicate */
+			cursor->status = cs_end_of_results;
+			return err_item_not_found;
 		}
 			break;
 		default:
@@ -724,11 +734,6 @@ int lh_compute_bucket_number(
 
 	if (hash_set->lower_hash >= hash_map->bucket_pointer) /** if the lower hash is below pointer, then use upper hash */
 	{
-/*
-#if DEBUG
-		DUMP(hash_set.lower_hash * bucket_size,"%i");
-#endif
-*/
 		bucket_number = hash_set->lower_hash;
 	}
 	else
@@ -1200,8 +1205,14 @@ lh_search_primary_page(
 
 	/** @TODO initial condition needs to get changed to support active cursor */
 	l_hash_bucket_t * item;
-
+#if DEBUG
 	DUMP(cursor->record_pntr,"%i");
+#endif
+	/** as the entire page has been scanned, reset pntr back to 0*/
+/*	if (cursor->record_pntr >= RECORDS_PER_BUCKET)
+	{
+		cursor->record_pntr = 0;
+	}*/
 	//check to see if value is in primary bucket
 	while ( cursor->record_pntr != RECORDS_PER_BUCKET)
 	{
