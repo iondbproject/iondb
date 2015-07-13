@@ -125,36 +125,6 @@ dictionary_update(
 		ion_value_t		value
 );
 
-
-/**
-@brief		Get an iterator for all values with key @p key.
-@param		handler
-				A pointer to the handler for the dictionary to insert
-				into.
-@param		key
-				The key search the dictionary for.
-@returns	A dictionary iterator for all values with given key.
-@todo		Must call next to setup first value?
-*/
-/*dict_iterator_t
-dictionary_find(
-	dictionary_t	*handler,
-	key_t		key
-);*/
-
-/**
-@brief		Advance a dictionary iterator by one value.
-@param		iterator
-			A pointer to the dictionary iterator to move to next
-			of.
-@returns	@c TRUE if another value is available, @c FALSE otherwise.
-@todo		Ensure to check the status member of the iterator when done!
-*/
-/*bool_t
-dictionary_next(
-	dict_iterator_t	*iterator
-);*/
-
 /**
 @brief 		Destroys dictionay
 
@@ -232,7 +202,7 @@ dictionary_compare_signed_value(
 	ion_key_size_t	key_size
 	);
 /**
-
+ TODO This doc needs to be fleshed out
  @param first_key
  @param second_key
  @param key_size

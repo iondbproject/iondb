@@ -73,38 +73,6 @@ typedef struct oafdict_equality_cursor
 								ion_key_t);
 											/**< A pointer to an equality function. */
 } oafdict_equality_cursor_t;
-/*
-
-*
-@brief		Dictionary cursor for range queries.
-@details	This subtype should be extended when supported
-			for a given dictionary.
-
-typedef struct range_cursor
-{
-	dict_cursor_t	super;
-		*< Cursor supertype this type inherits from.
-	boolean_t		(* range)(dictionary_t *, ion_key_t *, ion_key_t *);
-		*< A pointer to a range function.
-} range_t;
-
-*
-@brief		Dictionary cursor for equality queries.
-@details	Used when a user gives a function pointer to evaluate
-			over each record in the dictionary.
-
-			This subtype should be extended when supported for a given
-			dictionary.
-
-typedef struct predicate_cursor
-{
-	dict_cursor_t	super;
-		*< Cursor supertype this type inherits from.
-	boolean_t		(* predicate)(dictionary_t *, void *);			// TODO FIXME the void * needs to be dealt with
-		*< A pointer to function that that filters records.
-} predicate_cursor_t;
-*/
-
 
 /**
 @brief		Registers a specific handler for a  dictionary instance.

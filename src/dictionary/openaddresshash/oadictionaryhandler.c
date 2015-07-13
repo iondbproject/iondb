@@ -317,13 +317,8 @@ void oadict_destroy_cursor(dict_cursor_t **cursor)
 
 boolean_t oadict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
 {
-	//need to check key match; what's the most efficient way?
-	//need to use fnptr here for the correct matching
-	/*int key_is_eq ual = memcmp(item->data, "10{" ,
-	 hash_map->record.key_size);*/
-	/**
-	 * Compares value == key
-	 */
+	//TODO need to check key match; what's the most efficient way?
+
 	int key_satisfies_predicate;
 	hashmap_t * hash_map = (hashmap_t *)(cursor->dictionary->instance);
 
@@ -363,8 +358,9 @@ boolean_t oadict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
 	return key_satisfies_predicate;
 }
 
-err_t oadict_scan(oadict_cursor_t *cursor//know exactly what implementation of cursor is
-    )
+err_t oadict_scan(
+	oadict_cursor_t *cursor //know exactly what implementation of cursor is
+)
 {
 	//need to scan hashmap fully looking for values that satisfy - need to think about
 	hashmap_t * hash_map = (hashmap_t *)(cursor->super.dictionary->instance);
@@ -391,13 +387,8 @@ err_t oadict_scan(oadict_cursor_t *cursor//know exactly what implementation of c
 		else //check to see if the current key value satisfies the predicate
 		{
 
-			//need to check key match; what's the most efficient way?
-			//need to use fnptr here for the correct matching
-			/*int key_is_equal = memcmp(item->data, "10{" ,
-			 hash_map->record.key_size);*/
-			/**
-			 * Compares value == key
-			 */
+			//TODO need to check key match; what's the most efficient way?
+
 			boolean_t key_satisfies_predicate = oadict_test_predicate(
 			        &(cursor->super), (ion_key_t)item->data);//assumes that the key is first
 

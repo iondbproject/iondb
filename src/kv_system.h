@@ -7,7 +7,7 @@
 
 // #define ION_ARDUINO
 #define USING_ECLIPSE 	0
-// #define DEBUG 			1
+#define DEBUG 			0
 #define IS_EQUAL 		0
 #define ZERO			0
 
@@ -53,14 +53,6 @@ defines.
 */
 typedef enum key_type
 {
-	/*key_type_char,						*< key is char
-	key_type_uchar,						*< key is unsigned char
-	key_type_short,						*< key is short
-	key_type_ushort,					*< key is unsigned char
-	key_type_int,						*< key is int
-	key_type_uint,						*< key is unsigned int
-	key_type_long,						*< key is long
-	key_type_ulong,						*< key is unsigned long */
 	key_type_numeric_signed,			/**< key is a signed numeric value */
 	key_type_numeric_unsigned,			/**< key is a signed numeric value */
 	key_type_char_array,				/**< key is char array (string) */

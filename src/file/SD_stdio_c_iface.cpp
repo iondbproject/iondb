@@ -35,13 +35,13 @@ sd_feof(
 {
 	if ( stream->eof == 1)
 	{
-#ifdef DEBUG
+#if DEBUG
 		Serial.println("EOF");
 #endif
 		return -1;	//end of file has been reached
 	}else
 	{
-#ifdef DEBUG
+#if DEBUG
 		Serial.println("NOT EOF");
 #endif
 		return 0;	//end of file has not been reached
@@ -87,7 +87,7 @@ SD_FILE
 )
 {
 	uint8_t operation;
-#ifdef DEBUG
+#if DEBUG
 	Serial.print("Target mode: ");
 	Serial.write((uint8_t*)mode,2);
 	Serial.println();
@@ -95,17 +95,17 @@ SD_FILE
 	if ( strcmp(mode,"r") == 0) //	Open a file for reading. The file must exist.
 	{
 		//check to see if file exists
-#ifdef DEBUG
+#if DEBUG
 		Serial.println("checking for file");		
 #endif		
 		if (SD.exists(filename) == false)
 		{
-#ifdef DEBUG	
+#if DEBUG	
 			Serial.println("File does not exist");
 #endif
 			return NULL;
 		}		
-#ifdef DEBUG
+#if DEBUG
 		Serial.println("file exists");
 #endif
 		operation = FILE_READ;
@@ -115,7 +115,7 @@ SD_FILE
 						// its content is erased and the file is 
 						// considered as a new empty file.
 	{
-#ifdef DEBUG
+#if DEBUG
 		Serial.println("opening file");
 #endif		
 		if (SD.exists(filename))
@@ -133,12 +133,12 @@ SD_FILE
 
 	}else if (strcmp(mode, "w+") == 0) //Create an empty file for both reading and writing.
 	{
-#ifdef DEBUG	
+#if DEBUG	
 		Serial.println("opening file");
 #endif
 		if (SD.exists(filename) == true)
 		{
-#ifdef DEBUG
+#if DEBUG
 			Serial.println("removing file");
 #endif			
 			SD.remove(filename);
@@ -153,7 +153,7 @@ SD_FILE
 		return 0;		/** incorrect args */
 
 	}
-#ifdef DEBUG
+#if DEBUG
 			Serial.print("attempting file open - ");
 			Serial.println(filename);
 #endif	
@@ -177,13 +177,13 @@ sd_fread(
 {
 	//read is the size of bytes * num of size-bytes
 	int num_bytes = stream->f.read((char *)ptr, size * nmemb);
-#ifdef DEBUG	
+#if DEBUG	
 	Serial.print("Bytes read : ");
 	Serial.println(num_bytes);
 #endif	
 	if (num_bytes < size * nmemb)
 	{
-#ifdef DEBUG
+#if DEBUG
 		Serial.println("End of file");
 #endif	
 		stream->eof = 1;
@@ -202,7 +202,7 @@ int
 {
 	unsigned long cur_pos 	= stream->f.position();
 	unsigned long cur_end 	= stream->f.size();
-#ifdef DEBUG	
+#if DEBUG	
 	Serial.print("Current pos ");
 	Serial.println(cur_pos);
 	Serial.print("Current end ");
@@ -216,7 +216,7 @@ int
 	{
 		case SEEK_SET:  		//seek from current position
 		{
-#ifdef DEBUG
+#if DEBUG
 			Serial.println("Seek from start");
 #endif			
 			if (offset < 0) return -1;		//can't seek before file
@@ -226,7 +226,7 @@ int
 		}
 		case SEEK_CUR:
 		{	
-#ifdef DEBUG
+#if DEBUG
 			Serial.println("Seek from cur");
 #endif
 			if (offset+cur_pos > cur_end)
@@ -240,7 +240,7 @@ int
 		}
 		case SEEK_END:
 		{
-#ifdef DEBUG	
+#if DEBUG	
 			Serial.println("Seek from end");
 #endif	
 			if (offset > 0) 
@@ -263,7 +263,7 @@ sd_ftell(
 )
 {
 	long int pos =  (stream) ? stream->f.position() : 0;
-#ifdef DEBUG
+#if DEBUG
 	Serial.print("cur pos: ");
 	Serial.println(pos);
 #endif	

@@ -27,7 +27,6 @@ typedef long		file_offset_t;
 typedef struct file_handle
 {
 	SD_FILE*	file;
-	file_offset_t	end;
 } file_handle_t;
 
 #define ION_FILE_START	0

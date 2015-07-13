@@ -12,6 +12,3 @@ skiplist\.c
 ;Misc files or directories
 publish\.txt
 ion_deployment
-
-;Temp excludes
-ionbench_uno_.*

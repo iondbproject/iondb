@@ -25,9 +25,8 @@ extern "C" {
 @param 		handler
 				An instance of a dictionary handler that is to be bound.
 				It is assumed @p handler is initialized by the user.
-@return 	Status of initialization.
  */
-err_t
+void
 sldict_init(
 	dictionary_handler_t 	*handler
 );

@@ -129,7 +129,6 @@ oah_insert(
 
 		if (item->status == IN_USE) 	//if a cell is in use, need to key to
 		{
-			/*if (memcmp(item->data, key, hash_map->record.key_size) == IS_EQUAL)*/
 			if (hash_map->super.compare(item->data, key, hash_map->super.record.key_size) == IS_EQUAL)
 			{
 				if (hash_map->write_concern == wc_insert_unique)//allow unique entries only

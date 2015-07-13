@@ -1,6 +1,6 @@
 
 #include "ion_file.h"
-/*********** TODO: Remove the end attr ***********/
+
 boolean_t
 ion_fexists(
 	char		*name
@@ -25,7 +25,6 @@ ion_fopen(
 	{
 		toret.file = fopen(name, "w+");
 	}
-	toret.end = 0;
 	return toret;
 #else
 	file_handle_t	file;
@@ -130,13 +129,6 @@ ion_fwrite(
 )
 {
 #ifdef ION_ARDUINO
-	file_offset_t	pos;
-	
-	pos	= ftell(file.file);
-	
-	if (pos+num_bytes > file.end)
-		file.end	= pos + num_bytes;
-	
 	if (num_bytes != (fwrite(to_write, num_bytes, 1, file.file) * num_bytes))
 	{
 		return err_file_incomplete_write;

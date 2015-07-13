@@ -143,7 +143,6 @@ int i;
 
 			for (i = SHRT_MIN; i < SHRT_MAX; i++)
 			{
-				//printf("i %i\n",i);
 				for (j = SHRT_MIN; j < SHRT_MAX; j++)
 				{
 					if (i < j)
@@ -181,7 +180,6 @@ runalltests_dictionary()
 	CuSuite		*suite	= dictionary_getsuite();
 
 	CuSuiteRun(suite);
-	//CuSuiteSummary(suite, output);
 	CuSuiteDetails(suite, output);
 	printf("%s\n", output->buffer);
 

@@ -272,10 +272,6 @@ oah_compute_simple_hash(
 		int 			size_of_key
 );
 
-/*void
-static_hash_init(dictonary_handler_t * client);*/
-
-
 #ifdef __cplusplus
 }
 #endif

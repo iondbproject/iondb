@@ -107,6 +107,7 @@ if __FILE__ == $0
     flattener.addFilter(/skiplist\.c/)
     flattener.addFilter(/ionbench.*/)
     flattener.addFilter(/benchmark(\.c|\.h)/)
+    flattener.addFilter(/generic_dictionary_test(\.c|\.h)/)
 
     flattener.addFixCIncludes
 =begin

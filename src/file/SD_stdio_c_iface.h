@@ -13,8 +13,6 @@ extern "C" {
 #endif
 
 #include "kv_stdio_intercept.h"
-
-//typedef long fpos_t;				/**< file position */
 	
 /**
 @brief		Wrapper around Arduino File type.
@@ -26,7 +24,6 @@ typedef struct _SD_File SD_FILE;
 @param		file	Pointer to C file struct type associated with an SD
 			file object.
 */
-//void SD_File_Close(SD_File *file);
 int sd_fclose(SD_FILE *stream);
 
 //Tests the end-of-file indicator for the given stream.
@@ -41,7 +38,6 @@ int sd_fflush(SD_FILE *stream); //file.flush;
 			file object.
 @returns	The position of the cursor within the file.
 */
-//unsigned long SD_File_Position(SD_File *file);
 //Gets the current file position of the stream and writes it to pos
 int sd_fgetpos(SD_FILE *stream, fpos_t *pos); //position()
 
@@ -55,7 +51,6 @@ int sd_fgetpos(SD_FILE *stream, fpos_t *pos); //position()
 @param		mode		What mode to open the file under.
 @returns	A file for reading, or @c NULL if an error occurred.
 */
-//int SD_File_Open(SD_File **file, char *filepath, unsigned char mode);
 //Opens the filename pointed to by filename using the given mode.
 SD_FILE *sd_fopen(char *filename, char *mode);
 
@@ -69,7 +64,6 @@ SD_FILE *sd_fopen(char *filename, char *mode);
 @returns	A read status.
 		(?)
 */
-//int SD_File_Read(SD_File *file, void *buf, uint16_t nbytes);
 //Reads data from the given stream into the array pointed to by ptr.
 size_t sd_fread(void *ptr, size_t size, size_t nmemb, SD_FILE *stream);
 
@@ -81,7 +75,6 @@ size_t sd_fread(void *ptr, size_t size, size_t nmemb, SD_FILE *stream);
 			(from the beginning?)
 @returns	@c 1 for success, @c 0 for failure.
 */
-//int SD_File_Seek(SD_File *file, unsigned long pos);
 //Sets the file position of the stream to the given offset. The argument offset signifies the number of bytes to seek from the given whence position.
 int sd_fseek(SD_FILE *stream, long int offset, int whence);
 
@@ -102,7 +95,6 @@ long int sd_ftell(SD_FILE *stream);
 @param		size	The number of bytes to be written.
 @returns	The number of bytes written.
 */
-//size_t SD_File_Write(SD_File *file, const uint8_t *buf, size_t size);
 //Writes data from the array pointed to by ptr to the given stream.
 size_t sd_fwrite(void *ptr, size_t size, size_t nmemb, SD_FILE *stream);
 
@@ -112,7 +104,6 @@ size_t sd_fwrite(void *ptr, size_t size, size_t nmemb, SD_FILE *stream);
 @param		filepath	The string containing the path to the file.
 @returns	@c 1 if the file was removed successfully, @c 0 otherwise.
 */
-//int SD_File_Remove(char *filepath);
 //Deletes the given filename so that it is no longer accessible.
 int sd_remove(char *filename);
 

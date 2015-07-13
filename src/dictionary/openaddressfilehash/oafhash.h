@@ -59,9 +59,6 @@ struct file_hashmap
 	int					(* compute_hash)(file_hashmap_t *, ion_key_t, int);
 										/**< The hashing function to be used for
 										 	 the instance*/
-/*	char 				(* compare)(ion_key_t, ion_key_t, ion_key_size_t);
-										*< Comparison function for instance of map */
-	//char 				*entry;				/**< Pointer to the entries in the hashmap*/
 	FILE				*file;				/**< file pointer */
 };
 

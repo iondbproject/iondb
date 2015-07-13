@@ -8,7 +8,7 @@
 
 #include "slhandler.h"
 
-err_t
+void
 sldict_init(
 	dictionary_handler_t 	*handler
 )
@@ -20,8 +20,6 @@ sldict_init(
 	handler->delete_dictionary 	= sldict_delete_dictionary;
 	handler->update 			= sldict_update;
 	handler->find 				= sldict_find;
-
-	return err_ok;
 }
 
 err_t

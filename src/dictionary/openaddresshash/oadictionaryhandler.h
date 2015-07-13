@@ -32,29 +32,6 @@ typedef struct oaf_dictionary
 } oaf_dictionary_t;
 
 /**
- @brief Cursor for dictionary specific implementations
- @todo What happens to the cursor if the collection is modified during traversal?
- */
-/*typedef struct oadict_cursor
-{
-    hash_t              first;      *<First visited spot
-    hash_t              current;    *<Currently visited spot
-    char                status;     *@todo what is this for again as there are two status
-} oadict_cursor_t;*/
-
-
-
-/*
-typedef struct equality_cursor
-{
-    dict_cursor_t   super;
-        *< Cursor supertype this type inherits from.
-
-}equality_cursor_t;
-*/
-
-
-/**
 @brief      Dictionary cursor for equality queries.
 @details    Used when a dictionary supports multiple vvalues for a given key.
 
@@ -71,38 +48,6 @@ typedef struct oadict_equality_cursor
                                 ion_key_t);
                                             /**< A pointer to an equality function. */
 } oadict_equality_cursor_t;
-/*
-
-*
-@brief      Dictionary cursor for range queries.
-@details    This subtype should be extended when supported
-            for a given dictionary.
-
-typedef struct range_cursor
-{
-    dict_cursor_t   super;
-        *< Cursor supertype this type inherits from.
-    boolean_t       (* range)(dictionary_t *, ion_key_t *, ion_key_t *);
-        *< A pointer to a range function.
-} range_t;
-
-*
-@brief      Dictionary cursor for equality queries.
-@details    Used when a user gives a function pointer to evaluate
-            over each record in the dictionary.
-
-            This subtype should be extended when supported for a given
-            dictionary.
-
-typedef struct predicate_cursor
-{
-    dict_cursor_t   super;
-        *< Cursor supertype this type inherits from.
-    boolean_t       (* predicate)(dictionary_t *, void *);          // TODO FIXME the void * needs to be dealt with
-        *< A pointer to function that that filters records.
-} predicate_cursor_t;
-*/
-
 
 /**
 @brief      Registers a specific handler for a  dictionary instance.

@@ -32,7 +32,7 @@ sl_initialize(
 	skiplist->pden 						= pden;
 	skiplist->pnum 						= pnum;
 
-#if DEBUG > 0
+#if DEBUG
 	DUMP(skiplist->super.record.key_size, "%d");
 	DUMP(skiplist->super.record.value_size, "%d");
 	DUMP(skiplist->maxheight, "%d");

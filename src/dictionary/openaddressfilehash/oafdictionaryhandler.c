@@ -310,10 +310,8 @@ void oafdict_destroy_cursor(dict_cursor_t **cursor)
 
 boolean_t oafdict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
 {
-	//need to check key match; what's the most efficient way?
-	//need to use fnptr here for the correct matching
-	/*int key_is_eq ual = memcmp(item->data, "10{" ,
-	 hash_map->record.key_size);*/
+	//TODO need to check key match; what's the most efficient way?
+
 	/**
 	 * Compares value == key
 	 */
@@ -379,13 +377,6 @@ err_t oafdict_scan(oafdict_cursor_t *cursor//know exactly what implementation of
 	//start at the current position, scan forward
 	while (loc != cursor->first)
 	{
-		// check to see if current item is a match based on key
-		// locate first item
-		/*hash_bucket_t * item = (((hash_bucket_t *)((hash_map->entry
-		        + (hash_map->super.record.key_size
-		                + hash_map->super.record.value_size + SIZEOF(STATUS))
-		                * loc))));*/
-
 		fread(item, record_size, 1, hash_map->file);
 
 		if (item->status == EMPTY || item->status == DELETED)
@@ -396,13 +387,8 @@ err_t oafdict_scan(oafdict_cursor_t *cursor//know exactly what implementation of
 		else //check to see if the current key value satisfies the predicate
 		{
 
-			//need to check key match; what's the most efficient way?
-			//need to use fnptr here for the correct matching
-			/*int key_is_equal = memcmp(item->data, "10{" ,
-			 hash_map->record.key_size);*/
-			/**
-			 * Compares value == key
-			 */
+			//TODO need to check key match; what's the most efficient way?
+
 			boolean_t key_satisfies_predicate = oafdict_test_predicate(
 			        &(cursor->super), (ion_key_t)item->data);//assumes that the key is first
 

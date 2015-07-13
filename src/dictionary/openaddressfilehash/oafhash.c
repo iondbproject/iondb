@@ -32,17 +32,11 @@ oafh_initialize(
 	hashmap->super.record.value_size 	= value_size;
 	hashmap->super.key_type 			= key_type;
 
-/*	hashmap->compare = compare;*/
-
 	/* The hash map is allocated as a single contiguous file*/
 	hashmap->map_size 			= size;
 
 	//open the file
 	hashmap->file = fopen(TEST_FILE,"w+");
-
- /*= (void *)malloc(
-	        (hashmap->super.record.key_size + hashmap->super.record.value_size + 1)
-	                * hashmap->map_size);*/
 
 	hash_bucket_t *file_record;
 
@@ -100,7 +94,7 @@ oafh_destroy(
 #else
 		remove(TEST_FILE);
 #endif
-		hash_map->file = NULL;				//
+		hash_map->file = NULL;
 		return err_ok;
 	}
 	else
@@ -157,17 +151,12 @@ oafh_insert(
 
 	while (count != hash_map->map_size)
 	{
-		/*item 		= ((hash_bucket_t *)((hash_map->entry
-		        			+ (hash_map->super.record.key_size + hash_map->super.record.value_size
-		        				+ SIZEOF(STATUS)) * loc)));*/
-
 		fread(item,record_size,1,hash_map->file);
 #if DEBUG
 		DUMP((int)ftell(hash_map->file),"%i");
 #endif
 		if (item->status == IN_USE) 	//if a cell is in use, need to key to
 		{
-			/*if (memcmp(item->data, key, hash_map->record.key_size) == IS_EQUAL)*/
 			if (hash_map->super.compare(item->data, key, hash_map->super.record.key_size) == IS_EQUAL)
 			{
 				if (hash_map->write_concern == wc_insert_unique)//allow unique entries only
@@ -330,11 +319,6 @@ oafh_delete(
 
 		fread(item,record_size,1,hash_map->file);
 
-/*		hash_bucket_t * item 	= (((hash_bucket_t *)((hash_map->entry
-		        					+ (hash_map->super.record.key_size
-		        						+ hash_map->super.record.value_size
-		        							+ SIZEOF(STATUS)) * loc))));*/
-
 		item->status			= DELETED;					//delete item
 
 		//backup
@@ -372,9 +356,7 @@ oafh_query(
 		printf("seeking %i\n",(loc * record_size) + SIZEOF(STATUS) + hash_map->super.record.key_size);
 #endif
 		fread(value, hash_map->super.record.value_size, 1, hash_map->file);
-
-		/**value 					= (ion_value_t)malloc(sizeof(char) * (hash_map->super.record.value_size));
-		memcpy(*value, (ion_value_t)(item->data+hash_map->super.record.key_size), hash_map->super.record.value_size);*/
+		
 		return err_ok;
 	}
 	else

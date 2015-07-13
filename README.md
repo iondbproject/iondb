@@ -27,6 +27,7 @@ Then include some (or all) necessary implementation handlers:
 #include "oadictionaryhandler.h"
 #include "oafdictionaryhandler.h"
 #include "ffdictionaryhandler.h"
+#include "bpptreehandler.h"
 ```
 
 In the setup() function, initialize a dictionary (Shown here, a skiplist):
@@ -53,15 +54,17 @@ void setup() {
 |Open Address Hash      | oadict_init   |
 |Open Address File Hash | oafdict_init  |
 |Flat File              | ffdict_init   |
+|B+ Tree                | bpptree_init  |
 
 ####Dictionary size meanings:
 
-|Implementation         |Dictionary Size|
-|--------------         |-------------- |
+|Implementation         |Dictionary Size            |
+|--------------         |--------------             |
 |Skiplist               | Skiplist maximum height   |
-|Open Address Hash      | Number of records    |
-|Open Address File Hash | Number of records    |
-|Flat File              | Not used   |
+|Open Address Hash      | Number of records         |
+|Open Address File Hash | Number of records         |
+|Flat File              | Not used                  |
+|B+ Tree                | Not used                  |
 
 ###Keys and values
 
@@ -141,10 +144,14 @@ dictionary_get(&dictionary, key, my_value);
 free(my_value);
 ```
 
+###Cursors  
+A functional implementation exists for equality cursors (Multiple value query on same key) and range cursors (Query key-value pairs across a bound of keys), however a dictionary level interface for cursor access has yet to be finalized. Implementation level access is demonstrated in the Benchmark source.
+
 ##Full Example  
 Written in Arduino compliant wiring.
 
 ```c
+#include <SD.h>
 #include "dictionary.h"
 #include "slhandler.h"
 

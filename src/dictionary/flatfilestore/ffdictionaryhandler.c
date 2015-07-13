@@ -175,18 +175,11 @@ err_t ffdict_find(
 			        predicate->statement.range.geq_value,
 			        		(int)(dictionary->instance->record.key_size));
 
-			//find the location of the first element as this is a straight equality
-			//fpos_t location = cs_invalid_index;
-
 			ffdict_cursor_t *ffdict_cursor = (ffdict_cursor_t *)(*cursor);
 			//set the start of the scan to be at the first record
 			ffdict_cursor->current =((ff_file_t*)dictionary->instance)->start_of_data;
 
 
-			//start at the lowest end of the range and check
-			/*if (ff_find_item_loc((ff_file_t*)dictionary->instance,
-			        (*cursor)->predicate->statement.range.geq_value, &location)
-			        == err_item_not_found)*/
 			//scan for the first instance that satisfies the predicate
 			if (cs_end_of_results == ffdict_scan(ffdict_cursor))
 			{
@@ -197,11 +190,6 @@ err_t ffdict_find(
 			else
 			{
 				(*cursor)->status = cs_cursor_initialized;
-			/*	//cast to specific instance type for conveniences of setup
-				ffdict_cursor_t *ffdict_cursor = (ffdict_cursor_t *)(*cursor);
-				// the cursor is ready to be consumed
-				//ffdict_cursor->first = location;
-				ffdict_cursor->current = location;*/
 				return err_ok;
 			}
 			break;
@@ -270,16 +258,6 @@ cursor_status_t ffdict_next(dict_cursor_t *cursor, ion_record_t *record)
 	return cs_invalid_cursor;
 }
 
-/** @todo this should be using the compare function */
-/*boolean_t is_equal(dictionary_t *dict, ion_key_t key1, ion_key_t key2)
-{
-	if (memcmp(key1, key2,
-	        (((ff_file_t)dict->instance)->super.record.key_size)) == IS_EQUAL)
-		return true;
-	else
-		return false;
-}*/
-
 void ffdict_destroy_cursor(dict_cursor_t **cursor)
 {
 	/** Free any internal memory allocations */
@@ -309,13 +287,7 @@ void ffdict_destroy_cursor(dict_cursor_t **cursor)
 
 boolean_t ffdict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
 {
-	//need to check key match; what's the most efficient way?
-	//need to use fnptr here for the correct matching
-	/*int key_is_eq ual = memcmp(item->data, "10{" ,
-	 hash_map->record.key_size);*/
-	/**
-	 * Compares value == key
-	 */
+	//TODO need to check key match; what's the most efficient way?
 	int key_satisfies_predicate;
 
 	ff_file_t * file = (ff_file_t *)(cursor->dictionary->instance);
@@ -401,7 +373,6 @@ err_t ffdict_scan(
 				/** @TODO revisit to cache result? */
 				//back up current cursor to point at the record
 				cursor->current = ftell(file->file_ptr) - record_size;
-				//cursor->current = ftell(file->file_ptr) - record_size;
 				free(record);
 				return cs_valid_data;
 			}

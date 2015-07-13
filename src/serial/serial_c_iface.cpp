@@ -29,7 +29,7 @@ serial_print(
 )
 { 
     Serial.print(buffer);
-#ifdef DEBUG
+#if DEBUG
     Serial.flush();
 #endif
 }

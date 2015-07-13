@@ -20,9 +20,6 @@ dictionary_create(
 		int 					dictionary_size
 )
 {
-	//using the handler, create the dictionary
-	/*	//register the type of key being used by the dictionary (Important for comparison op)
-		dictionary->key_type = key_type;*/
 	char (* compare)(ion_key_t, ion_key_t, ion_key_size_t);
 
 	switch (key_type)
@@ -57,7 +54,6 @@ dictionary_create(
 //each dictionary will have a specific handler?
 status_t
 dictionary_insert(
-	/*dictionary_handler_t	*handler,*/
 	dictionary_t 				*dictionary,
 	ion_key_t 					key,
 	ion_value_t 				value)
@@ -152,7 +148,7 @@ dictionary_compare_signed_value(
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 	//check the MSByte as signed
 	idx = key_size - 1;						//Start at the MSB
-#if (DEBUG == 1)
+#if DEBUG
 	printf("key 1: %i key 2: %i \n",*(char *)(first_key+idx),*(char *)(second_key+idx));
 #endif
 	if ((return_value = ((*(char *)(first_key+idx) > *(char *)(second_key+idx)) - (*(char *)(first_key+idx) < *(char *)(second_key+idx)))) != ZERO)
@@ -241,10 +237,6 @@ dictionary_build_predicate(
 			va_end(arg_list);
 			break;
 		}
-		/*case predicate_predicate:
-		{
-			break;
-		}*/
 		default:
 		{
 			return err_invalid_predicate;

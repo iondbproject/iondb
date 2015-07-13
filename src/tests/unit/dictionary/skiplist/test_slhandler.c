@@ -186,7 +186,7 @@ test_slhandler_cursor_equality(
 	predicate_t 			predicate;
 	predicate.type 									= predicate_equality;
 	predicate.statement.equality.equality_value 	= malloc(dict.instance->record.key_size);
-	memcpy(predicate.statement.equality.equality_value, (ion_key_t) &(int){33}, dict.instance->record.key_size);
+	memcpy(predicate.statement.equality.equality_value, IONIZE(33), dict.instance->record.key_size);
 
 	err_t 	status = dict.handler->find(&dict, &predicate, &cursor);
 
@@ -219,7 +219,7 @@ test_slhandler_cursor_equality_with_results(
 	predicate_t 			predicate;
 	predicate.type 									= predicate_equality;
 	predicate.statement.equality.equality_value 	= malloc(dict.instance->record.key_size);
-	memcpy(predicate.statement.equality.equality_value, (ion_key_t) &(int){56}, dict.instance->record.key_size);
+	memcpy(predicate.statement.equality.equality_value, IONIZE(56), dict.instance->record.key_size);
 
 	err_t 	status = dict.handler->find(&dict, &predicate, &cursor);
 
@@ -232,12 +232,12 @@ test_slhandler_cursor_equality_with_results(
 
 	cursor_status_t c_status = cursor->next(cursor, &record);
 	CuAssertTrue(tc, cs_cursor_active == c_status);
-	CuAssertTrue(tc, dict.instance->compare(record.key, (ion_key_t) &(int){56}, dict.instance->record.key_size) == 0);
+	CuAssertTrue(tc, dict.instance->compare(record.key, IONIZE(56), dict.instance->record.key_size) == 0);
 	CuAssertTrue(tc, dict.instance->compare(record.value, (ion_value_t) (char*){"DATA"}, dict.instance->record.value_size) == 0);
 
 	while( cursor->next(cursor, &record) != cs_end_of_results)
 	{
-		CuAssertTrue(tc, dict.instance->compare(record.key, (ion_key_t) &(int){56}, dict.instance->record.key_size) == 0);
+		CuAssertTrue(tc, dict.instance->compare(record.key, IONIZE(56), dict.instance->record.key_size) == 0);
 		CuAssertTrue(tc, dict.instance->compare(record.value, (ion_value_t) (char*){"DATA"}, dict.instance->record.value_size) == 0);
 	}
 
@@ -270,8 +270,8 @@ test_slhandler_cursor_range(
 	predicate.type 									= predicate_range;
 	predicate.statement.range.leq_value 	= malloc(dict.instance->record.key_size);
 	predicate.statement.range.geq_value 	= malloc(dict.instance->record.key_size);
-	memcpy(predicate.statement.range.leq_value, (ion_key_t) &(int){15}, dict.instance->record.key_size);
-	memcpy(predicate.statement.range.geq_value, (ion_key_t) &(int){60}, dict.instance->record.key_size);
+	memcpy(predicate.statement.range.leq_value, IONIZE(15), dict.instance->record.key_size);
+	memcpy(predicate.statement.range.geq_value, IONIZE(60), dict.instance->record.key_size);
 
 	err_t 	status = dict.handler->find(&dict, &predicate, &cursor);
 
@@ -305,8 +305,8 @@ test_slhandler_cursor_range_with_results(
 	predicate.type 									= predicate_range;
 	predicate.statement.range.leq_value 	= malloc(dict.instance->record.key_size);
 	predicate.statement.range.geq_value 	= malloc(dict.instance->record.key_size);
-	memcpy(predicate.statement.range.leq_value, (ion_key_t) &(int){5}, dict.instance->record.key_size);
-	memcpy(predicate.statement.range.geq_value, (ion_key_t) &(int){78}, dict.instance->record.key_size);
+	memcpy(predicate.statement.range.leq_value, IONIZE(5), dict.instance->record.key_size);
+	memcpy(predicate.statement.range.geq_value, IONIZE(78), dict.instance->record.key_size);
 
 	err_t 	status = dict.handler->find(&dict, &predicate, &cursor);
 
@@ -319,14 +319,14 @@ test_slhandler_cursor_range_with_results(
 
 	cursor_status_t c_status = cursor->next(cursor, &record);
 	CuAssertTrue(tc, cs_cursor_active == c_status);
-	CuAssertTrue(tc, dict.instance->compare(record.key, (ion_key_t) &(int){5}, dict.instance->record.key_size) >= 0);
-	CuAssertTrue(tc, dict.instance->compare(record.key, (ion_key_t) &(int){78}, dict.instance->record.key_size) <= 0);
+	CuAssertTrue(tc, dict.instance->compare(record.key, IONIZE(5), dict.instance->record.key_size) >= 0);
+	CuAssertTrue(tc, dict.instance->compare(record.key, IONIZE(78), dict.instance->record.key_size) <= 0);
 	CuAssertTrue(tc, dict.instance->compare(record.value, (ion_value_t) (char*){"DATA"}, dict.instance->record.value_size) == 0);
 
 	while( cursor->next(cursor, &record) != cs_end_of_results)
 	{
-		CuAssertTrue(tc, dict.instance->compare(record.key, (ion_key_t) &(int){5}, dict.instance->record.key_size) >= 0);
-		CuAssertTrue(tc, dict.instance->compare(record.key, (ion_key_t) &(int){78}, dict.instance->record.key_size) <= 0);
+		CuAssertTrue(tc, dict.instance->compare(record.key, IONIZE(5), dict.instance->record.key_size) >= 0);
+		CuAssertTrue(tc, dict.instance->compare(record.key, IONIZE(78), dict.instance->record.key_size) <= 0);
 		CuAssertTrue(tc, dict.instance->compare(record.value, (ion_value_t) (char*){"DATA"}, dict.instance->record.value_size) == 0);
 	}
 

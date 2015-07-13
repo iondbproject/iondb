@@ -117,10 +117,6 @@ static bErrType flush(bHandleType handle, bufType *buf) {
     /* flush buffer to disk */
     len = h->sectorSize;
     if (buf->adr == 0) len *= 3;        /* root */
-#if 0
-    if (fseek(h->fp, buf->adr, SEEK_SET)) return error(bErrIO);
-    if (fwrite(buf->p, len, 1, h->fp) != 1) return error(bErrIO);
-#endif
     if (err_ok != ion_fwrite_at(h->fp, buf->adr, len, (byte*) buf->p)) return error(bErrIO);
     buf->modified = boolean_false;
     nDiskWrites++;
