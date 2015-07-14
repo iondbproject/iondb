@@ -124,7 +124,7 @@ fll_create(
 err_t
 fll_next(
 	ll_file_t				*linked_list_file,
-	ll_file_node_t			*ll_node
+	volatile ll_file_node_t			*ll_node
 )
 {
 	/** @todo Make sure to check status of next!!! */
@@ -315,13 +315,21 @@ fll_find(
 err_t
 fll_get(
 	ll_file_t				*linked_list_file,
-	ll_file_node_t			*ll_node
+	volatile ll_file_node_t			*ll_node
 )
 {
 	if (0 == fseek(linked_list_file->file,linked_list_file->current,SEEK_SET))
 	{
+		//DUMP(linked_list_file->node_size,"%i");
 		if (1 == fread((char*)ll_node,linked_list_file->node_size,1,linked_list_file->file))
 		{
+			/*int i;
+			printf("**VALUE**:\n");
+			for (i = 0;i<linked_list_file->node_size;i++)
+			{
+				io_printf("%c",*(char*)(ll_node+i));
+			}
+			printf("**VALUE**:\n");*/
 			linked_list_file->next = ll_node->next;			/** get next */
 			return err_ok;
 		}

@@ -92,9 +92,10 @@ typedef struct action_status {
 } action_status_t;
 
 typedef enum cache_status {
-	cache_active,
-	cache_flushed,
-	cache_invalid
+	cache_active,				/**< data in the cache is live but same as on disk */
+	cache_active_written,		/**< data is the cache has been changed from what was originally written to disk */
+	cache_flushed,				/**< data in the cache has been flushed to disk but is still in cache */
+	cache_invalid				/**< data in the cache is uncertian */
 } cache_status_t;
 
 /**
@@ -131,6 +132,7 @@ struct linear_hashmap
 									/**< pointer for current bucket being spilt */
 	int					id;			/**< id for files in system */
 									/** @todo this could be moved to parent */
+	int					record_size;/**< the size of the record in the pp */
 	lh_page_cache_t		cache[CACHE_SIZE];
 									/**< holds pp for cacheing */
 };
@@ -318,7 +320,7 @@ lh_delete(
 @param		key
 				The key for the record that is being searched for.
 @param		value
-				The value associated in the map.
+				The value associated in the map.   Returns the first valid value on a direct match.
 */
 err_t
 lh_query(
@@ -452,36 +454,138 @@ lh_split_item_action(
 	ion_value_t			value
 );
 
+/**
+ * Brings a primary page into the cache
+ * @param hash_map
+ * @param bucket_number
+ * @return
+ *
+ * @TODO Add age detection to cache buckets to determine if a bucket has been written or not.
+ * If the primary page has not been written since it have been last flushed, then just drop it
+ * and go onto the next page
+ */
 err_t
 lh_cache_pp(
 	linear_hashmap_t	*hash_map,
 	int					cache_number,
-	int					bucket_number
+	int					bucket_number,
+	lh_page_cache_t		**cache
+);
+
+
+/**
+ * @brief 	Accesses a memory location in the cache.
+ * 			This does not actually copy the value out, but
+ * 			points to a memory location is the cache.
+ * 			The size of the data is already know.
+ *
+ * @param 	hash_map
+ * 				The hashmap the cache is associated with
+ * @param 	cache_number
+ * 				The cache number to operate on
+ * @param 	idx
+ * 				The position of the data in the cache, specifically the record number in the pp
+ * @param 	item
+ * 				The pntr that will used to reference the item in the cache
+ * @return
+ */
+err_t
+lh_read_cache(
+	linear_hashmap_t	*hash_map,
+/*	int					cache_number,*/
+	lh_page_cache_t		*cache,
+	int					idx,
+	void				**item
+);
+
+/**
+ * @brief	Changes the status of a record in the cache
+ * @param cache
+ * @param item
+ * @param status
+ * @return
+ */
+err_t
+lh_write_record_status_in_cache(
+linear_hashmap_t	*hash_map,
+	l_hash_bucket_t		*item,
+	char				status
+);
+
+/**
+ * @brief	Writes data to cache and updates cache status bits
+ * 			which will be used by system during cache flushing
+ * 			to determine is cache actually needs to be flushed.
+ *
+ * @param 	hash_map
+ * 				The hashmap the cache is associated with
+ * @param 	cache_number
+ * 				The cache number to operate on
+ * @param 	to
+ * 				The destination of where the data will be written
+ * @param	from
+ * 				The location of the the data to be read
+ * @param size_of_data
+ * 				The length in bytes of the data
+ * @return
+ */
+err_t
+lh_write_cache_raw(
+	linear_hashmap_t	*hash_map,
+	/**int					cache_number,*/
+	lh_page_cache_t		*cache,
+	void				*to,
+	l_hash_bucket_t		*from
 );
 
 err_t
+lh_write_cache_record(
+	linear_hashmap_t	*hash_map,
+	l_hash_bucket_t		*item,
+	ion_key_t			key,
+	ion_value_t			value
+);
+
+
+/**
+ * @brief flushes a pp back to disk and clears up cach
+ * @param hash_map
+ * @param cache
+ * @param action
+ * @return
+ */
+err_t
 lh_flush_cache(
 	linear_hashmap_t	*hash_map,
-	int					cache_number,		/** @FIXME scale to correct size */
+	lh_page_cache_t		*cache,
 	int					action
 );
 
 return_status_t
 lh_action_primary_page(
 	linear_hashmap_t	*hash_map,
-	int					cache_number,
+	lh_page_cache_t		*cache,
 	int					bucket,
 	ion_key_t			key,
 	action_status_t		(*action)(linear_hashmap_t*, ion_key_t, l_hash_bucket_t*, ion_value_t),
 	ion_value_t			value
 );
 
+/** @FIXME - Make sure that value is malloc'd before call? */
+/**
+ * @brief - this searches for the value but does not get it but only records
+ * the location.
+ * @FIXME - not really happy with this.
+ * @param hash_map
+ * @param cache_number
+ * @param cursor
+ * @return
+ */
 err_t
 lh_search_primary_page(
 	linear_hashmap_t		*hash_map,
-	int 					cache_number,
-	lhdict_cursor_t		*cursor  /*predicate is in here */
-/*	ion_value_t				value*/
+	lh_page_cache_t			*cache,
+	lhdict_cursor_t			*cursor  /*predicate is in here */
 );
 
 #ifdef __cplusplus

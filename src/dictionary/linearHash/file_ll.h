@@ -53,8 +53,8 @@ typedef struct ll_file 	ll_file_t;
 */
 typedef struct ll_file_node
 {
-	int 			next;			/**< next node in list*/
-	unsigned char 	data[];			/**< the data in the bucket */
+	int 				next;			/**< next node in list*/
+	unsigned char 		data[];			/**< the data in the bucket */
 } ll_file_node_t;
 
 /**
@@ -147,7 +147,7 @@ fll_close(
 err_t
 fll_next(
 	ll_file_t				*linked_list_file,
-	ll_file_node_t			*ll_node
+	volatile ll_file_node_t			*ll_node
 );
 
 /**
@@ -200,7 +200,7 @@ fll_find(
 err_t
 fll_get(
 	ll_file_t				*linked_list_file,
-	ll_file_node_t			*ll_node
+	volatile ll_file_node_t			*ll_node
 );
 
 

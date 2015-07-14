@@ -86,6 +86,16 @@ struct dictionary_handler
 		/**< A pointer to the dictionaries key-value deletion function. */
 	err_t	(* delete_dictionary)(dictionary_t *);
 		/**< A pointer to the dictionaries dictionary removal function. */
+	err_t	(* dictionary_open)(dictionary_t *);
+		/**< A pointer to the dictionaries open function with opens a dictionary on disk */
+	err_t	(* close_dictionary)(dictionary_t *);
+		/**< A pointer to the dictionaries close function which leaves the dictionary intact */
+	/** @todo When a dictionary is open/closed it will need to pull meta-information about structure from somewhere.
+	 * 	Should this info be stored on a file by file bases?
+	 * 	Q. What is required to open a structure? - information about structure can be stored in primary kv table for IonDB,
+	 * 	but what about instance information regarding size, etc?
+	 * 	Q. What happens when a structure is closed?
+	 */
 };
 
 /**

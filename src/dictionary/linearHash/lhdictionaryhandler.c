@@ -134,25 +134,16 @@ err_t lhdict_find(
 			        predicate->statement.equality.equality_value,
 			        ((((linear_hashmap_t *)dictionary->instance)->super.record.key_size)));
 
-			//find the location of the first element as this is a straight equality
-			//ion_value_t value;
-			//if ((value = (ion_value_t)malloc(dictionary->instance->record.value_size)) == NULL)
-			//{
-			//	return err_out_of_memory;
-			//}
+
 			/** @TODO find item needs to be fixed  - But how??*/
 			if (lh_find((linear_hashmap_t *)dictionary->instance,*cursor) == err_item_not_found)
 			{
 				(*cursor)->status = cs_end_of_results;
-			//	free(value);
 				return err_ok;
 			}
 			else
 			{
 				(*cursor)->status = cs_cursor_initialized;
-			//	free(value);
-				//cast tlhdict_cursoro specific instance type for conveniences of setup
-				//lhdict_cursor_t * = (lhdict_cursor_t *)(*cursor);
 				/** @TODO  is there something that needs to be done here ?*/
 				return err_ok;
 			}
@@ -220,9 +211,7 @@ err_t lhdict_find(
 
 cursor_status_t lhdict_next(dict_cursor_t *cursor, ion_record_t *record)
 {
-	// @todo if the collection changes, then the status of the cursor needs to change
-	//lhdict_cursor_t *lhdict_cursor = (lhdict_cursor_t *)cursor;
-
+	/** @TODO if the collection changes, then the status of the cursor needs to change */
 	//check the status of the cursor and if it is not valid or at the end, just exit
 	if (cursor->status == cs_cursor_uninitialized)
 		return cursor->status;
@@ -234,9 +223,7 @@ cursor_status_t lhdict_next(dict_cursor_t *cursor, ion_record_t *record)
 		//extract reference to map
 		linear_hashmap_t *hash_map = ((linear_hashmap_t*)cursor->dictionary->instance);
 
-		//assume that the value has been pre-allocated
-		//compute length of data record stored in map
-		int data_length = hash_map->super.record.key_size + hash_map->super.record.value_size;
+		lh_page_cache_t	*cache = NULL;
 
 		/** If the cursor is not active, then you can just pull the value
 		 * otherwise you need to keep traversing to see if the value is valid
@@ -251,10 +238,13 @@ cursor_status_t lhdict_next(dict_cursor_t *cursor, ion_record_t *record)
 			{
 				/** The primary page needs to be processed */
 				cursor->status = cs_cursor_active;
+
 				/** Cache pp and search for next value*/
-				lh_cache_pp((linear_hashmap_t*)cursor->dictionary->instance,0,((lhdict_cursor_t *)cursor)->current_bucket);
+				lh_cache_pp((linear_hashmap_t*)cursor->dictionary->instance,0,((lhdict_cursor_t *)cursor)->current_bucket,&cache);
+
 				/** search for next value record */
-				err_t err =  lh_search_primary_page((linear_hashmap_t*)cursor->dictionary->instance, 0, (lhdict_cursor_t*)cursor);
+				err_t err =  lh_search_primary_page((linear_hashmap_t*)cursor->dictionary->instance, cache, (lhdict_cursor_t*)cursor);
+
 				if (err 			== err_item_not_found) 		/** if the item is not found, invalidate the cursor */
 				{
 					if (cursor->type == predicate_equality)		/** in the event of a strict equality and there is an empty slot, search in done */
@@ -268,11 +258,13 @@ cursor_status_t lhdict_next(dict_cursor_t *cursor, ion_record_t *record)
 				}
 				else if(err 		== err_ok)					/** the value has been found */
 				{
-					int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size
-															+ SIZEOF(STATUS);
-					l_hash_bucket_t * item = (l_hash_bucket_t * )(hash_map->cache[0].cached_bucket + ( ((lhdict_cursor_t *)cursor)->record_pntr) * record_size);
+					l_hash_bucket_t * item = NULL;
+
+					lh_read_cache(hash_map, cache, (((lhdict_cursor_t *)cursor)->record_pntr), (void*)&item);
+
 					memcpy(record->key,item->data,hash_map->super.record.key_size);
 					memcpy(record->value,item->data+hash_map->super.record.key_size,hash_map->super.record.value_size);
+
 					/**and update current cursor position to point to the next position*/
 					((lhdict_cursor_t*)cursor)->record_pntr++;	/** what happens if we exceed page */
 					return cursor->status;
@@ -323,18 +315,19 @@ cursor_status_t lhdict_next(dict_cursor_t *cursor, ion_record_t *record)
 			if (((lhdict_cursor_t *)cursor)->overflow != NULL)
 			{
 				/** as the overflow file pntr is not null, the process */
-				ll_file_node_t item;
+				ll_file_node_t * item = (ll_file_node_t *)malloc(((lhdict_cursor_t *)cursor)->overflow->node_size);
 
 				if ( (cursor->status == cs_cursor_active))
 				{
-					while(fll_next(((lhdict_cursor_t *)cursor)->overflow,&item) != err_item_not_found)
+					while(fll_next(((lhdict_cursor_t *)cursor)->overflow,item) != err_item_not_found)
 					{		/** now we are at the end of the list, but what to do if we need to go onto next bucket ?*/
-						troolean_t value = ((lhdict_cursor_t *)cursor)->evaluate_predicate(cursor,item.data);
+						troolean_t value = ((lhdict_cursor_t *)cursor)->evaluate_predicate(cursor,item->data);
 						if (IS_EQUAL == value)		/** a match has been found */
 						{
-							memcpy(record->key,item.data,hash_map->super.record.key_size);
-							memcpy(record->value,item.data+hash_map->super.record.key_size,hash_map->super.record.value_size);
+							memcpy(record->key,item->data,hash_map->super.record.key_size);
+							memcpy(record->value,item->data+hash_map->super.record.key_size,hash_map->super.record.value_size);
 							//and update current cursor position
+							free(item);
 							return cursor->status;
 						}
 						else if (IS_GREATER == value)				/** as list is ordered just leave */
@@ -352,13 +345,14 @@ cursor_status_t lhdict_next(dict_cursor_t *cursor, ion_record_t *record)
 				else
 				{	/** that value is already sitting at the cursor */
 					cursor->status = cs_cursor_active;
-					fll_get(((lhdict_cursor_t *)cursor)->overflow,&item);
-					memcpy(record->key,item.data,hash_map->super.record.key_size);
-					memcpy(record->value,item.data+hash_map->super.record.key_size,hash_map->super.record.value_size);
-					//and update current cursor position
+					fll_get(((lhdict_cursor_t *)cursor)->overflow,item);
+					memcpy(record->key,item->data,hash_map->super.record.key_size);
+					memcpy(record->value,item->data+hash_map->super.record.key_size,hash_map->super.record.value_size);
+					free(item);
 					return cursor->status;
 				}
 				/** and if you get this far, close the file*/
+				free(item);
 				fll_close(((lhdict_cursor_t *)cursor)->overflow);
 				((lhdict_cursor_t *)cursor)->overflow = NULL;
 			}

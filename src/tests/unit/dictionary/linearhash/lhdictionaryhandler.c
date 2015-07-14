@@ -18,6 +18,7 @@ extern "C" {
 #include "./../../../../dictionary/linearhash/lhdictionaryhandler.h"
 
 #define TEST_FILE	"lh.bin"
+
 /**
 @brief		A helper function to build a test collection
 
@@ -1170,10 +1171,12 @@ test_linear_hash_dictionary_cursor_range_3(
 		ion_value_t	str;
 		str = (ion_value_t)malloc(record_info.value_size);
 		sprintf((char*)str,"value : %i ", expected_results[result_count]);
+//		io_printf("** result1:%i  %s\n",*(int*)record.key,(char*)record.value);
+//		io_printf("** result2:%i  %s\n",*(int*)record.key,str);
 
 		CuAssertTrue(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
 #if DEBUG
-		ip_printf("result:%i  %s\n",*(int*)record.key,(char*)record.value);
+		io_printf("** result:%i  %s\n",*(int*)record.key,(char*)record.value);
 #endif
 		result_count++;
 		free(str);
@@ -1400,9 +1403,9 @@ linear_hash_handler_getsuite()
 {
 	CuSuite *suite = CuSuiteNew();
 
-/*	SUITE_ADD_TEST(suite, test_linear_hash_handler_function_registration);
+	SUITE_ADD_TEST(suite, test_linear_hash_handler_function_registration);
 	SUITE_ADD_TEST(suite, test_linear_hash_handler_create_destroy);
-	SUITE_ADD_TEST(suite, test_linear_hash_handler_simple_insert_and_query);*/
+	SUITE_ADD_TEST(suite, test_linear_hash_handler_simple_insert_and_query);
 	/** @tdodo need simple query*/
 	/*SUITE_ADD_TEST(suite, test_linear_hash_handler_simple_delete);
 	SUITE_ADD_TEST(suite, test_linear_hash_handler_duplicate_insert_1);
