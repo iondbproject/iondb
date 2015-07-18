@@ -16,6 +16,18 @@ extern "C" {
 
 #include "./../kv_system.h"
 
+/**
+@brief 		Dictionary ID
+*/
+typedef unsigned int 				ion_dictionary_id_t;
+
+typedef struct {
+	ion_dictionary_id_t 	id;
+	key_type_t				type;
+	ion_key_size_t			key_size;
+	ion_value_size_t 		value_size;
+	ion_dictionary_size_t 	dictionary_size;
+} ion_dictionary_config_info_t;
 
 /**
 @brief		A dictionary instance variable.
@@ -30,6 +42,7 @@ typedef struct dictionary			dictionary_t;
 @see		@ref struct dictionary_handler
 */
 typedef struct dictionary_handler	dictionary_handler_t;
+
 
 /**
 @brief		The dictionary cursor type.
@@ -74,7 +87,7 @@ struct dictionary_handler
 {
 	err_t	(* insert)(dictionary_t *, ion_key_t, ion_value_t);
 		/**< A pointer to the dictionaries insertion function. */
-	err_t	(* create_dictionary)(key_type_t, int, int, int, char (* compare)(ion_key_t, ion_key_t, ion_key_size_t), dictionary_handler_t * , dictionary_t *);
+	err_t	(* create_dictionary)(key_type_t, int, int, int, char (*)(ion_key_t, ion_key_t, ion_key_size_t), dictionary_handler_t * , dictionary_t *);
 		/**< A pointer to the dictionaries creation function. */
 	err_t	(* get)(dictionary_t *, ion_key_t, ion_value_t);
 		/**< A pointer to the dictionaries get function. */
@@ -86,6 +99,10 @@ struct dictionary_handler
 		/**< A pointer to the dictionaries key-value deletion function. */
 	err_t	(* delete_dictionary)(dictionary_t *);
 		/**< A pointer to the dictionaries dictionary removal function. */
+	err_t 	(* open_dictionary)(dictionary_handler_t *, dictionary_t *, ion_dictionary_config_info_t *);
+		/**< A pointer to the dictionaries open function. */
+	err_t 	(* close_dictionary)(dictionary_t *);
+		/**< A pointer to the dictionaries close function */
 };
 
 /**
@@ -94,12 +111,10 @@ struct dictionary_handler
 */
 struct dictionary
 {
-
 	dictionary_parent_t		*instance;		/**< Specific instance of a
 											     collection (but we don't
 											     know type) */
-	dictionary_handler_t 	*handler;		/**< Handler for the specific type.
-											*/
+	dictionary_handler_t 	*handler;		/**< Handler for the specific type. */
 };
 
 /**
@@ -110,7 +125,8 @@ struct dictionary_parent
 	key_type_t				key_type;		/**< The key type stored in the map*/
 	record_info_t 			record;			/**< The record structure for items*/
 	char 					(* compare)(ion_key_t, ion_key_t, ion_key_size_t);
-										/**< Comparison function for instance of map */
+											/**< Comparison function for instance of map */
+	ion_dictionary_id_t		id;				/**< ID of dictionary instance */
 };
 
 /**

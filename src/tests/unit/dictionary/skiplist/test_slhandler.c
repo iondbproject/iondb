@@ -38,6 +38,7 @@ create_test_collection(
 	dictionary_create(
 			handler,
 			dictionary,
+			1,
 			key_type,
 			record->key_size,
 			record->value_size,

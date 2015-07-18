@@ -36,7 +36,7 @@ main(
 
 	sldict_init(&skip_handler);
 
-	dictionary_create(&skip_handler, &test_dict, key_type, key_size,
+	dictionary_create(&skip_handler, &test_dict, 1, key_type, key_size,
 														value_size, maxheight);
 
 	char in;

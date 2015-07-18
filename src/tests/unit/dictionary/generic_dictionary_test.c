@@ -30,6 +30,7 @@ dictionary_test_init(
 	error	= dictionary_create(
 			&(test->handler),
 			&(test->dictionary),
+			1,
 			test->key_type,
 			test->key_size,
 			test->value_size,

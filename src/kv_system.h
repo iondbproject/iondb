@@ -2,14 +2,19 @@
  @todo	Resolve issue between status_t and err_t.  Status_t is a struct that should have
  	 	 and err_t and number of item affected.
  */
-#ifndef SYSTEM_H_
-#define SYSTEM_H_
+#ifndef KV_SYSTEM_H_
+#define KV_SYSTEM_H_
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 // #define ION_ARDUINO
-#define USING_ECLIPSE 	0
-#define DEBUG 			0
-#define IS_EQUAL 		0
-#define ZERO			0
+#define ION_USING_MASTER_TABLE 	1
+#define USING_ECLIPSE 			0
+#define DEBUG 					0
+#define IS_EQUAL 				0
+#define ZERO					0
 
 /* Only if we're on desktop do we want to flush. Otherwise we only do a printf. */
 #ifndef ION_ARDUINO
@@ -26,12 +31,6 @@
 
 #define IONIZE(x) ({volatile typeof(x) _tmp = x; (ion_key_t) &_tmp; })
 #define NEUTRALIZE(type, x) ( *((type *) x) )
-
-
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 enum status
 {
@@ -69,6 +68,8 @@ enum error
 	err_invalid_predicate,
 	err_out_of_memory,
 	err_file_write_error,
+	err_file_open_error,
+	err_file_close_error,
 	err_dictionary_initialization_failed,
 	err_could_not_delete_file,
 	err_could_not_insert,
@@ -136,4 +137,4 @@ typedef struct ion_record
 	ion_value_t			value;			/**< a pointer to value */
 } ion_record_t;
 
-#endif /* SYSTEM_H_ */
+#endif /* KV_SYSTEM_H_ */

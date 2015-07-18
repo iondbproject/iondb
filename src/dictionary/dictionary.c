@@ -8,46 +8,49 @@
 
 #include "dictionary.h"
 
-
-// creates a named instance of a database
+/* creates a named instance of a database */
 status_t
 dictionary_create(
-		dictionary_handler_t 	*handler,
-		dictionary_t 			*dictionary,
-		key_type_t				key_type,
-		int 					key_size,
-		int 					value_size,
-		int 					dictionary_size
+	dictionary_handler_t 	*handler,
+	dictionary_t 			*dictionary,
+	ion_dictionary_id_t 	id,
+	key_type_t				key_type,
+	int 					key_size,
+	int 					value_size,
+	int 					dictionary_size
 )
 {
+	err_t err;
 	char (* compare)(ion_key_t, ion_key_t, ion_key_size_t);
 
 	switch (key_type)
-			{
-				case key_type_numeric_signed:
-				{
-					compare = dictionary_compare_signed_value;
-					break;
-				}
-				case key_type_numeric_unsigned:
-				{
-					compare = dictionary_compare_unsigned_value;
-					break;
-				}
-				case key_type_char_array:
-				{
-					compare = dictionary_compare_char_array;
-					break;
-				}
-				default:
-				{
-					//do something - you must bind the correct comparison function
-					break;
-				}
-			}
+	{
+		case key_type_numeric_signed:
+		{
+			compare = dictionary_compare_signed_value;
+			break;
+		}
+		case key_type_numeric_unsigned:
+		{
+			compare = dictionary_compare_unsigned_value;
+			break;
+		}
+		case key_type_char_array:
+		{
+			compare = dictionary_compare_char_array;
+			break;
+		}
+		default:
+		{
+			//do something - you must bind the correct comparison function
+			break;
+		}
+	}
 
-	return handler->create_dictionary(key_type, key_size, value_size, dictionary_size, compare, handler, dictionary);
+	err = handler->create_dictionary(key_type, key_size, value_size, dictionary_size, compare, handler, dictionary);
+	dictionary->instance->id = id; /* This ID will either come from the master table, or will be provided by user. */
 
+	return err;
 }
 
 //inserts a record into the dictionary
@@ -56,7 +59,8 @@ status_t
 dictionary_insert(
 	dictionary_t 				*dictionary,
 	ion_key_t 					key,
-	ion_value_t 				value)
+	ion_value_t 				value
+)
 {
 	return dictionary->handler->insert(dictionary, key, value);
 }
@@ -72,9 +76,10 @@ dictionary_get(
 }
 status_t
 dictionary_update(
-		dictionary_t 			*dictionary,
-		ion_key_t 				key,
-		ion_value_t 			value)
+	dictionary_t 			*dictionary,
+	ion_key_t 				key,
+	ion_value_t 			value
+)
 {
 	return dictionary->handler->update(dictionary, key, value);
 }
@@ -101,7 +106,7 @@ dictionary_compare_unsigned_value(
 	ion_key_t 		first_key,
 	ion_key_t		second_key,
 	ion_key_size_t	key_size
-	)
+)
 {
 	int idx;
 	char return_value;
@@ -265,4 +270,22 @@ dictonary_destroy_predicate_range(
 	free((*predicate)->statement.range.leq_value);
 	free(*predicate);
 	*predicate = NULL;
+}
+
+err_t
+dictionary_open(
+ 	dictionary_handler_t 			*handler,
+    dictionary_t 					*dictionary,
+    ion_dictionary_config_info_t 	*config
+)
+{
+	return handler->open_dictionary(handler, dictionary, config);
+}
+
+err_t
+dictionary_close(
+    dictionary_t 					*dictionary
+)
+{
+	return dictionary->handler->close_dictionary(dictionary);
 }

@@ -107,6 +107,7 @@ libsources :=  	$(SRC)/kv_io.c \
 				$(SRC)/file/ion_file.c \
 				$(SRC)/file/linkedfilebag.c \
 				$(SRC)/dictionary/dictionary.c \
+				$(SRC)/dictionary/ion_master_table.c \
 				$(SRC)/dictionary/skiplist/slhandler.c \
 				$(SRC)/dictionary/skiplist/slstore.c \
 				$(SRC)/dictionary/openaddresshash/oadictionaryhandler.c \

@@ -11,7 +11,10 @@
 #include "./../../CuTest.h"
 #include "./../../../dictionary/dicttypes.h"
 #include "./../../../dictionary/dictionary.h"
+#include "./../../../dictionary/ion_master_table.h"
+#include "./../../../dictionary/skiplist/slhandler.h"
 
+/******************************* TODO FIXME XXX Move master table tests into its own file? */
 
 void
 test_dictionary_compare_numerics(
@@ -39,7 +42,7 @@ test_dictionary_compare_numerics(
 
 	CuAssertTrue(tc, ZERO <
 					dictionary_compare_signed_value(key_one, key_two,sizeof(int)));
-int i;
+	int i;
 	for (i = 1; i< 10; i++)
 	{
 		CuAssertTrue(tc, ZERO <
@@ -82,7 +85,7 @@ int i;
 			CuAssertTrue(tc, ZERO <
 								dictionary_compare_unsigned_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(unsigned int)));
 
-		}
+	}
 
 	{
 			unsigned long * key_one;
@@ -94,7 +97,7 @@ int i;
 			CuAssertTrue(tc, ZERO <
 								dictionary_compare_unsigned_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(unsigned long)));
 
-		}
+	}
 
 	{
 		long * key_one;
@@ -141,9 +144,9 @@ int i;
 			key_one 		= &i;
 			key_two 		= &j;
 
-			for (i = SHRT_MIN; i < SHRT_MAX; i++)
+			for (i = SHRT_MIN/10; i < SHRT_MAX/10; i++)
 			{
-				for (j = SHRT_MIN; j < SHRT_MAX; j++)
+				for (j = SHRT_MIN/10; j < SHRT_MAX/10; j++)
 				{
 					if (i < j)
 					{
@@ -163,6 +166,50 @@ int i;
 			}
 }
 
+void
+test_dictionary_master_table(
+	CuTest		*tc
+)
+{
+	err_t err;
+	//Cleanup, just in case
+	remove(ION_MASTER_TABLE_FILENAME);
+
+	err = ion_init_master_table();
+
+	CuAssertTrue(tc, err_ok == err);
+	CuAssertTrue(tc, NULL != ion_master_table_file);
+	CuAssertTrue(tc, 1 == ion_master_table_next_id);
+
+	dictionary_handler_t 	handler;
+	dictionary_t 			dictionary;
+	sldict_init(&handler);
+	err = ion_master_table_create_dictionary(&handler, &dictionary, key_type_numeric_signed, 4, 10, 20);
+
+	CuAssertTrue(tc, err_ok == err);
+	CuAssertTrue(tc, 2 == ion_master_table_next_id);
+
+	ion_dictionary_config_info_t config;
+	err = ion_lookup_in_master_table(1, &config);
+
+	CuAssertTrue(tc, err_ok == err);
+	CuAssertTrue(tc, 1 == config.id);
+	CuAssertTrue(tc, key_type_numeric_signed == config.type);
+	CuAssertTrue(tc, 4 == config.key_size);
+	CuAssertTrue(tc, 10 == config.value_size);
+	CuAssertTrue(tc, 20 == config.dictionary_size);
+
+	err = ion_delete_from_master_table(&dictionary);
+	CuAssertTrue(tc, err_ok == err);
+	
+	err = ion_lookup_in_master_table(1, &config);
+	CuAssertTrue(tc, err_item_not_found == err);
+	
+	err = ion_close_master_table();
+
+	CuAssertTrue(tc, err_ok == err);
+	CuAssertTrue(tc, NULL == ion_master_table_file);
+}
 
 CuSuite*
 dictionary_getsuite()
@@ -170,6 +217,8 @@ dictionary_getsuite()
 	CuSuite *suite = CuSuiteNew();
 
 	SUITE_ADD_TEST(suite, test_dictionary_compare_numerics);
+	SUITE_ADD_TEST(suite, test_dictionary_master_table);
+
 	return suite;
 }
 

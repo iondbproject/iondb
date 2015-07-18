@@ -41,7 +41,7 @@ void setup() {
     //Initialize handler
     sldict_init(&handler);
     
-    //Create dictionary: Given handler, dictionary, key type, key size, value size, dict size
+    //Create dictionary: Given handler, dictionary, key type, key size, value size, dictionary size
     dictionary_create(&handler, &dictionary, key_type_numeric_signed, sizeof(int), 60, 10);
 }
 ```

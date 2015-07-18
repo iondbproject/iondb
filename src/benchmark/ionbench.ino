@@ -82,7 +82,7 @@ bench_dict_initialize(
 )
 {
     handler_fptr(&handler);
-    dictionary_create(&handler, &dict, key_type, key_size, value_size, dict_size);
+    dictionary_create(&handler, &dict, 1, key_type, key_size, value_size, dict_size);
     lfsr_reset(&keygen);
 }
 

@@ -39,7 +39,7 @@ createFlatFileTestCollection(
 	ffdict_init(map_handler); //register handler for hashmap
 	//register the appropriate handler for a given collection
 
-	dictionary_create(map_handler, test_dictionary, key_type,
+	dictionary_create(map_handler, test_dictionary, 1, key_type,
 	        record->key_size, record->value_size, size);
 	//build test relation
 	int i;
@@ -103,7 +103,7 @@ test_flat_file_handler_create_destroy(
 	dictionary_t test_dictionary;
 
 	//register the appropriate handler for a given collection
-	dictionary_create(&map_handler, &test_dictionary, key_type_numeric_signed, record.key_size, record.value_size, 0);
+	dictionary_create(&map_handler, &test_dictionary, 1, key_type_numeric_signed, record.key_size, record.value_size, 0);
 
 	CuAssertTrue(tc, (((ff_file_t *)test_dictionary.instance)->super.record.key_size) == record.key_size);
 	CuAssertTrue(tc, (((ff_file_t *)test_dictionary.instance)->super.record.value_size) == record.value_size);
@@ -162,7 +162,7 @@ test_flat_file_handler_simple_insert(
 	dictionary_t test_dictionary;
 
 	//register the appropriate handler for a given collection
-	dictionary_create(&dict_handler, &test_dictionary, key_type_numeric_signed, record.key_size, record.value_size, 0);
+	dictionary_create(&dict_handler, &test_dictionary, 1, key_type_numeric_signed, record.key_size, record.value_size, 0);
 
 	sprintf((char*)test_value, "value : %i ", test_key);
 
