@@ -13,6 +13,7 @@ extern "C" {
 #include "./../../../kv_system.h"
 #include "./../../../dictionary/dicttypes.h"
 #include "./../../../dictionary/dictionary.h"
+#include "./../../../dictionary/ion_master_table.h"
 
 #define GTEST_DATA (ion_value_t) "Test data, please ignore! 123 123 abc abc"
 
@@ -84,6 +85,12 @@ dictionary_test_range(
     ion_key_t 		leq_key,
     ion_key_t 		geq_key,
     CuTest			*tc
+);
+
+void
+dictionary_test_open_close(
+    generic_test_t  *test,
+    CuTest          *tc
 );
 
 #ifdef  __cplusplus

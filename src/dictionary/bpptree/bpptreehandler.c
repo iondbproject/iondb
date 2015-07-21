@@ -11,6 +11,25 @@
 #include "./../../kv_io.h"
 
 void
+bpptree_get_addr_filename(
+	ion_dictionary_id_t id,
+	char 				*str
+)
+{
+	sprintf(str, "%d.bpt", id);
+	
+}
+
+void
+bpptree_get_value_filename(
+	ion_dictionary_id_t id,
+	char 				*str
+)
+{
+	sprintf(str, "%d.val", id);
+}
+
+void
 bpptree_init(
 	dictionary_handler_t 	*handler
 )
@@ -22,6 +41,8 @@ bpptree_init(
 	handler->find 				= bpptree_find;
 	handler->remove 			= bpptree_delete;
 	handler->delete_dictionary 	= bpptree_delete_dictionary;
+	handler->open_dictionary 	= bpptree_open_dictionary;
+	handler->close_dictionary 	= bpptree_close_dictionary;
 }
 
 err_t
@@ -111,33 +132,37 @@ bpptree_query(
 
 err_t
 bpptree_create_dictionary(
-		key_type_t				key_type,
-		int 					key_size,
-		int 					value_size,
-		int 					dictionary_size,
-		char					(* compare)(ion_key_t, ion_key_t, ion_key_size_t),
-		dictionary_handler_t 	*handler,
-		dictionary_t 			*dictionary
+		ion_dictionary_id_t 		id,
+		key_type_t					key_type,
+		int 						key_size,
+		int 						value_size,
+		int 						dictionary_size,
+		ion_dictionary_compare_t 	compare,
+		dictionary_handler_t 		*handler,
+		dictionary_t 				*dictionary
 )
 {
-	bpptree_t		*bpptree;
-	bErrType		bErr;
-	bOpenType		info;
-	
+	bpptree_t				*bpptree;
+	bErrType				bErr;
+	bOpenType				info;
+
 	bpptree					= malloc(sizeof(bpptree_t));
 	if (NULL == bpptree)
 	{
 		return err_out_of_memory;
 	}
+
+	char value_filename[20];
+	bpptree_get_value_filename(id, value_filename);
+	bpptree->values.file_handle		= ion_fopen(value_filename);
 	
-	bpptree->super.record.key_size		= key_size;
-	bpptree->super.record.value_size	= value_size;
-	bpptree->values.file_handle		= ion_fopen("FIXME.val");
 	bpptree->values.next_empty		= FILE_NULL;
 		// FIXME: read this from a property bag.
 	
 	// FIXME: VARIABLE NAMES!
-	info.iName				= "FIXME.bpt";
+	char addr_filename[20];
+	bpptree_get_addr_filename(id, addr_filename);
+	info.iName					= addr_filename;
 	info.keySize				= key_size;
 	info.dupKeys				= boolean_false;
 	// FIXME: HOW DO WE SET BLOCK SIZE?
@@ -148,9 +173,14 @@ bpptree_create_dictionary(
 	{
 		return err_dictionary_initialization_failed;
 	}
-	dictionary->instance			= (dictionary_parent_t*) bpptree;
-	dictionary->instance->compare 	= compare;
-	dictionary->handler				= handler;		//todo: need to check to make sure that the handler is registered
+
+	dictionary->instance						= (dictionary_parent_t*) bpptree;
+	dictionary->instance->compare 				= compare;
+	dictionary->instance->key_type 				= key_type;
+	dictionary->instance->record.key_size 		= key_size;
+	dictionary->instance->record.value_size 	= value_size;
+	//todo: need to check to make sure that the handler is registered
+	dictionary->handler							= handler;		
 
 	return err_ok;
 }
@@ -181,23 +211,19 @@ bpptree_delete_dictionary(
 		dictionary_t 	*dictionary
 )
 {
-	bpptree_t		*bpptree;
-	bErrType		bErr;
+	err_t error;
 	
-	bpptree			= (bpptree_t *) dictionary->instance;
-	bErr			= bClose(bpptree->tree);
-	ion_fclose(bpptree->values.file_handle);
-	free(dictionary->instance);
-	dictionary->instance	= NULL;
-	
-	// FIXME: Support multiple trees.
-	ion_fremove("FIXME.bpt");
-	ion_fremove("FIXME.val");
-	
-	if (bErrOk != bErr)
-	{
-		return err_colllection_destruction_error;
-	}
+	char addr_filename[20];
+	char value_filename[20];
+	bpptree_get_addr_filename(dictionary->instance->id, addr_filename);
+	bpptree_get_value_filename(dictionary->instance->id, value_filename);
+
+	error = bpptree_close_dictionary(dictionary);
+
+	if (err_ok != error) { return error; }
+
+	ion_fremove(addr_filename);
+	ion_fremove(value_filename);
 	
 	return err_ok;
 }
@@ -537,4 +563,51 @@ bpptree_test_predicate(
 	}
 
 	return result;
+}
+
+err_t
+bpptree_open_dictionary(
+	dictionary_handler_t 			*handler,
+	dictionary_t 					*dictionary,
+	ion_dictionary_config_info_t 	*config,
+	ion_dictionary_compare_t	 	compare
+)
+{
+	err_t error;
+
+	error = bpptree_create_dictionary(
+		config->id,
+		config->type,
+		config->key_size,
+		config->value_size,
+		config->dictionary_size,
+		compare,
+		handler,
+		dictionary
+	);
+	if (err_ok != error) { return error; }
+
+	return err_ok;
+}
+
+err_t
+bpptree_close_dictionary(
+	dictionary_t 					*dictionary
+)
+{
+	bpptree_t		*bpptree;
+	bErrType		bErr;
+
+	bpptree			= (bpptree_t *) dictionary->instance;
+	bErr			= bClose(bpptree->tree);
+	ion_fclose(bpptree->values.file_handle);
+	free(dictionary->instance);
+	dictionary->instance	= NULL;
+	
+	if (bErrOk != bErr)
+	{
+		return err_colllection_destruction_error;
+	}
+	
+	return err_ok;
 }

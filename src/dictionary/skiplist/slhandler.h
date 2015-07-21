@@ -100,13 +100,14 @@ sldict_query(
  */
 err_t
 sldict_create_dictionary(
-	key_type_t 				key_type,
-	int 					key_size,
-	int 					value_size,
-	int 					dictionary_size,
-	char 					(*)(ion_key_t, ion_key_t, ion_key_size_t),
-	dictionary_handler_t 	*handler,
-	dictionary_t 			*dictionary
+	ion_dictionary_id_t 		id,
+	key_type_t 					key_type,
+	int 						key_size,
+	int 						value_size,
+	int 						dictionary_size,
+	ion_dictionary_compare_t 	compare,
+	dictionary_handler_t 		*handler,
+	dictionary_t 				*dictionary
 );
 
 /**

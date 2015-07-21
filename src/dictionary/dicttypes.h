@@ -43,6 +43,10 @@ typedef struct dictionary			dictionary_t;
 */
 typedef struct dictionary_handler	dictionary_handler_t;
 
+/**
+@brief	Function pointer type for dictionary comparison methods. 
+*/
+typedef char (*ion_dictionary_compare_t)(ion_key_t, ion_key_t, ion_key_size_t);
 
 /**
 @brief		The dictionary cursor type.
@@ -87,7 +91,16 @@ struct dictionary_handler
 {
 	err_t	(* insert)(dictionary_t *, ion_key_t, ion_value_t);
 		/**< A pointer to the dictionaries insertion function. */
-	err_t	(* create_dictionary)(key_type_t, int, int, int, char (*)(ion_key_t, ion_key_t, ion_key_size_t), dictionary_handler_t * , dictionary_t *);
+	err_t	(* create_dictionary)(
+		ion_dictionary_id_t,
+		key_type_t,
+		int,
+		int,
+		int,
+		ion_dictionary_compare_t,
+		dictionary_handler_t *,
+		dictionary_t *
+	);
 		/**< A pointer to the dictionaries creation function. */
 	err_t	(* get)(dictionary_t *, ion_key_t, ion_value_t);
 		/**< A pointer to the dictionaries get function. */
@@ -99,7 +112,12 @@ struct dictionary_handler
 		/**< A pointer to the dictionaries key-value deletion function. */
 	err_t	(* delete_dictionary)(dictionary_t *);
 		/**< A pointer to the dictionaries dictionary removal function. */
-	err_t 	(* open_dictionary)(dictionary_handler_t *, dictionary_t *, ion_dictionary_config_info_t *);
+	err_t 	(* open_dictionary)(
+		dictionary_handler_t *,
+		dictionary_t *, 
+		ion_dictionary_config_info_t *,
+		ion_dictionary_compare_t
+	);
 		/**< A pointer to the dictionaries open function. */
 	err_t 	(* close_dictionary)(dictionary_t *);
 		/**< A pointer to the dictionaries close function */
@@ -122,11 +140,10 @@ struct dictionary
  */
 struct dictionary_parent
 {
-	key_type_t				key_type;		/**< The key type stored in the map*/
-	record_info_t 			record;			/**< The record structure for items*/
-	char 					(* compare)(ion_key_t, ion_key_t, ion_key_size_t);
-											/**< Comparison function for instance of map */
-	ion_dictionary_id_t		id;				/**< ID of dictionary instance */
+	key_type_t					key_type;		/**< The key type stored in the map*/
+	record_info_t 				record;			/**< The record structure for items*/
+	ion_dictionary_compare_t 	compare; 		/**< Comparison function for instance of map */
+	ion_dictionary_id_t		id;					/**< ID of dictionary instance */
 };
 
 /**

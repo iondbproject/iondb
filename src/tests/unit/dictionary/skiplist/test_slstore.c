@@ -31,14 +31,14 @@
  */
 void
 initialize_skiplist(
-	skiplist_t 	*skiplist,
-	key_type_t 	key_type,
-	char 		(*compare)(ion_key_t, ion_key_t, ion_key_size_t),
-	int 		maxheight,
-	int 		key_size,
-	int 		value_size,
-	int 	 	pnum,
-	int 		pden
+	skiplist_t 					*skiplist,
+	key_type_t 					key_type,
+	ion_dictionary_compare_t 	compare,
+	int 						maxheight,
+	int 						key_size,
+	int 						value_size,
+	int 	 					pnum,
+	int 						pden
 )
 {
 	sl_initialize(
@@ -66,8 +66,8 @@ initialize_skiplist_std_conditions(
 )
 {
 	int key_size, value_size, pden, pnum, maxheight;
-	key_type_t key_type;
-	char (*compare)(ion_key_t, ion_key_t, ion_key_size_t);
+	key_type_t 					key_type;
+	ion_dictionary_compare_t 	compare;
 
 	key_type 	= key_type_numeric_signed;
 	compare 	= dictionary_compare_signed_value;
@@ -102,9 +102,9 @@ test_skiplist_initialize(
 {
 	PRINT_HEADER();
 	int key_size, value_size, pden, pnum, maxheight;
-	key_type_t key_type;
-	char (*compare)(ion_key_t, ion_key_t, ion_key_size_t);
-	skiplist_t skiplist;
+	key_type_t 					key_type;
+	ion_dictionary_compare_t 	compare;
+	skiplist_t 					skiplist;
 
 	key_type 	= key_type_numeric_signed;
 	compare 	= dictionary_compare_signed_value;
@@ -1702,8 +1702,8 @@ test_skiplist_different_size(
 	PRINT_HEADER();
 	skiplist_t 	skiplist;
 	int key_size, value_size, pden, pnum, maxheight;
-	key_type_t key_type;
-	char (*compare)(ion_key_t, ion_key_t, ion_key_size_t);
+	key_type_t 					key_type;
+	ion_dictionary_compare_t 	compare;
 
 	key_type 	= key_type_numeric_unsigned;
 	compare 	= dictionary_compare_unsigned_value;

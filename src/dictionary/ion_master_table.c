@@ -158,7 +158,8 @@ ion_open_dictionary(
     err_t err;
 
     ion_dictionary_config_info_t config;
-    ion_lookup_in_master_table(id, &config);
+    err = ion_lookup_in_master_table(id, &config);
+    if (err_ok != err) { return err_dictionary_initialization_failed; } /* Lookup for id failed */
 
     err = dictionary_open(handler, dictionary, &config);
     return err;

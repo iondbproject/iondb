@@ -163,13 +163,14 @@ ffdict_query(
  */
 err_t
 ffdict_create_dictionary(
-		key_type_t				key_type,
-		ion_key_size_t 			key_size,
-		ion_value_size_t		value_size,
-		int 					dictionary_size, /** @todo this needs to be fixed or defined */
-		char					(* compare)(ion_key_t, ion_key_t, ion_key_size_t),
-		dictionary_handler_t 	*handler,
-		dictionary_t 			*dictionary
+		ion_dictionary_id_t 		id,
+		key_type_t					key_type,
+		ion_key_size_t 				key_size,
+		ion_value_size_t			value_size,
+		int 						dictionary_size, /** @todo this needs to be fixed or defined */
+		ion_dictionary_compare_t 	compare,
+		dictionary_handler_t 		*handler,
+		dictionary_t 				*dictionary
 );
 
 /**

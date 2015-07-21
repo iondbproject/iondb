@@ -3,6 +3,17 @@
 @file       ion_master_table.h
 @author     Eric Huang, Graeme Douglas, Scott Fazackerley, Wade Penson
 @brief      Master table handling.
+@details    At compile time, the master table is either used, OR it is not included
+            at all. The directive, ION_USING_MASTER_TABLE controls this.
+            
+            If the master table is used, the assumption is that the user does not
+            bypass the master table and call dictionary_create directly.
+
+            If the master table is not used, the user must provide IDs directly to
+            dictionary creation and the onus is on the user to resolve conflicts,
+            if they occur.
+
+            Any files created by implementations have file
 */
 /******************************************************************************/
 
@@ -46,6 +57,14 @@ ion_init_master_table(
 */
 err_t
 ion_close_master_table(
+  void
+);
+
+/**
+@brief Deletes the master table.
+*/
+err_t
+ion_delete_master_table(
   void
 );
 

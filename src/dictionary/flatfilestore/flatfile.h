@@ -63,8 +63,7 @@ typedef struct ff_file
 err_t
 ff_initialize(
 		ff_file_t			*file,
-		/*char				(*compare)(ion_key_t, ion_key_t, ion_key_size_t),*/
-	    	key_type_t			key_type,
+    	key_type_t			key_type,
 		ion_key_size_t		key_size,
 		ion_value_size_t	value_size
 );

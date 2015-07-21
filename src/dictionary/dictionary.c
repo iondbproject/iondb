@@ -8,21 +8,12 @@
 
 #include "dictionary.h"
 
-/* creates a named instance of a database */
-status_t
-dictionary_create(
-	dictionary_handler_t 	*handler,
-	dictionary_t 			*dictionary,
-	ion_dictionary_id_t 	id,
-	key_type_t				key_type,
-	int 					key_size,
-	int 					value_size,
-	int 					dictionary_size
+ion_dictionary_compare_t
+dictionary_switch_compare(
+	key_type_t key_type
 )
 {
-	err_t err;
-	char (* compare)(ion_key_t, ion_key_t, ion_key_size_t);
-
+	ion_dictionary_compare_t compare;
 	switch (key_type)
 	{
 		case key_type_numeric_signed:
@@ -47,8 +38,25 @@ dictionary_create(
 		}
 	}
 
-	err = handler->create_dictionary(key_type, key_size, value_size, dictionary_size, compare, handler, dictionary);
-	dictionary->instance->id = id; /* This ID will either come from the master table, or will be provided by user. */
+	return compare;
+}
+
+status_t
+dictionary_create(
+	dictionary_handler_t 	*handler,
+	dictionary_t 			*dictionary,
+	ion_dictionary_id_t 	id,
+	key_type_t				key_type,
+	int 					key_size,
+	int 					value_size,
+	int 					dictionary_size
+)
+{
+	err_t err;
+	ion_dictionary_compare_t compare = dictionary_switch_compare(key_type);
+
+	err = handler->create_dictionary(id, key_type, key_size, value_size, dictionary_size, compare, handler, dictionary);
+	dictionary->instance->id = id;
 
 	return err;
 }
@@ -279,7 +287,9 @@ dictionary_open(
     ion_dictionary_config_info_t 	*config
 )
 {
-	return handler->open_dictionary(handler, dictionary, config);
+	ion_dictionary_compare_t compare = dictionary_switch_compare(config->type);
+
+	return handler->open_dictionary(handler, dictionary, config, compare);
 }
 
 err_t

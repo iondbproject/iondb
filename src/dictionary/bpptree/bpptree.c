@@ -682,8 +682,8 @@ bErrType bOpen(bOpenType info, bHandleType *handle) {
     /* initialize root */
     if (ion_fexists(info.iName)) {
         /* open an existing database */
-	h->fp = ion_fopen(info.iName);
-        if ((rc = readDisk(handle, 0, &root)) != 0) return rc;
+	    h->fp = ion_fopen(info.iName);
+        if ((rc = readDisk(h, 0, &root)) != 0) return rc;
         if (ion_fseek(h->fp, 0, ION_FILE_END)) return error(bErrIO);
         if ((h->nextFreeAdr = ion_ftell(h->fp)) == -1) return error(bErrIO);
     }

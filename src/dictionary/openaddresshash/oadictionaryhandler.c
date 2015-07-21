@@ -30,11 +30,12 @@ err_t oadict_query(dictionary_t *dictionary, ion_key_t key, ion_value_t value)
 }
 
 err_t oadict_create_dictionary(
+	ion_dictionary_id_t id,
     key_type_t key_type,
     int key_size,
     int value_size,
     int dictionary_size,
-    char (*compare)(ion_key_t, ion_key_t, ion_key_size_t),
+    ion_dictionary_compare_t compare,
     dictionary_handler_t *handler,
     dictionary_t *dictionary)
 {

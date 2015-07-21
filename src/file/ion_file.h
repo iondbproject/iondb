@@ -18,6 +18,9 @@ extern "C" {
 
 typedef long		file_offset_t;
 
+#define ION_FILE_START	SEEK_SET
+#define ION_FILE_END	SEEK_END
+
 #ifdef ION_ARDUINO
 
 #include "SD_stdio_c_iface.h"
@@ -29,18 +32,14 @@ typedef struct file_handle
 	SD_FILE*	file;
 } file_handle_t;
 
-#define ION_FILE_START	0
-#define ION_FILE_END	1
 
-#else
+#else /* Clause ION_ARDUINO */
 
 #include "stdio.h"
 #include "unistd.h"
 
 typedef FILE*		file_handle_t;
 
-#define ION_FILE_START	SEEK_SET
-#define ION_FILE_END	SEEK_END
 #define ION_NOFILE	((file_handle_t)(NULL))
 
 #endif /* Clause ION_ARDUINO */

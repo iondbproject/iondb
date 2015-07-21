@@ -14,8 +14,6 @@
 #include "./../../../dictionary/ion_master_table.h"
 #include "./../../../dictionary/skiplist/slhandler.h"
 
-/******************************* TODO FIXME XXX Move master table tests into its own file? */
-
 void
 test_dictionary_compare_numerics(
 	CuTest		*tc
@@ -172,15 +170,18 @@ test_dictionary_master_table(
 )
 {
 	err_t err;
-	//Cleanup, just in case
+	/* Cleanup, just in case */
 	remove(ION_MASTER_TABLE_FILENAME);
 
+	/* Test init */
 	err = ion_init_master_table();
 
 	CuAssertTrue(tc, err_ok == err);
 	CuAssertTrue(tc, NULL != ion_master_table_file);
 	CuAssertTrue(tc, 1 == ion_master_table_next_id);
+	/*************/
 
+	/* Test create */
 	dictionary_handler_t 	handler;
 	dictionary_t 			dictionary;
 	sldict_init(&handler);
@@ -188,7 +189,24 @@ test_dictionary_master_table(
 
 	CuAssertTrue(tc, err_ok == err);
 	CuAssertTrue(tc, 2 == ion_master_table_next_id);
+	/***************/
 
+	/* Test close */
+	err = ion_close_master_table();
+
+	CuAssertTrue(tc, err_ok == err);
+	CuAssertTrue(tc, NULL == ion_master_table_file);
+	/**************/
+
+	/* Test re-open */
+	err = ion_init_master_table();
+
+	CuAssertTrue(tc, err_ok == err);
+	CuAssertTrue(tc, NULL != ion_master_table_file);
+	CuAssertTrue(tc, 2 == ion_master_table_next_id);
+	/****************/
+
+	/* Test lookup 1st dictionary */
 	ion_dictionary_config_info_t config;
 	err = ion_lookup_in_master_table(1, &config);
 
@@ -198,17 +216,47 @@ test_dictionary_master_table(
 	CuAssertTrue(tc, 4 == config.key_size);
 	CuAssertTrue(tc, 10 == config.value_size);
 	CuAssertTrue(tc, 20 == config.dictionary_size);
+	/******************************/
 
-	err = ion_delete_from_master_table(&dictionary);
+	/* Test create 2nd dictionary */
+	dictionary_handler_t 	handler2;
+	dictionary_t 			dictionary2;
+	sldict_init(&handler2);
+	err = ion_master_table_create_dictionary(&handler2, &dictionary2, key_type_numeric_signed, 2, 7, 14);
+
 	CuAssertTrue(tc, err_ok == err);
+	CuAssertTrue(tc, 3 == ion_master_table_next_id);
+	/******************************/
+
+	/* Test 2nd lookup */
+	err = ion_lookup_in_master_table(2, &config);
+
+	CuAssertTrue(tc, err_ok == err);
+	CuAssertTrue(tc, 2 == config.id);
+	CuAssertTrue(tc, key_type_numeric_signed == config.type);
+	CuAssertTrue(tc, 2 == config.key_size);
+	CuAssertTrue(tc, 7 == config.value_size);
+	CuAssertTrue(tc, 14 == config.dictionary_size);
+	/*******************/
+
+	/* Test delete */
+	err = ion_delete_from_master_table(&dictionary);
+
+	CuAssertTrue(tc, err_ok == err);
+	/***************/
 	
+	/* Test lookup on non-existent row */
 	err = ion_lookup_in_master_table(1, &config);
+
 	CuAssertTrue(tc, err_item_not_found == err);
+	/***********************************/
 	
+	/* Test close */
 	err = ion_close_master_table();
 
 	CuAssertTrue(tc, err_ok == err);
 	CuAssertTrue(tc, NULL == ion_master_table_file);
+	/**************/
 }
 
 CuSuite*

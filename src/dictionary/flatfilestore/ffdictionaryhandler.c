@@ -29,13 +29,15 @@ err_t ffdict_query(dictionary_t *dictionary, ion_key_t key, ion_value_t value)
 }
 
 err_t ffdict_create_dictionary(
-    key_type_t 			key_type,
-    ion_key_size_t		key_size,
-    ion_value_size_t	value_size,
-    int 				dictionary_size,
-    char 				(*compare)(ion_key_t, ion_key_t, ion_key_size_t),
-    dictionary_handler_t *handler,
-    dictionary_t 		*dictionary)
+	ion_dictionary_id_t id,
+    key_type_t 					key_type,
+    ion_key_size_t				key_size,
+    ion_value_size_t			value_size,
+    int 						dictionary_size,
+    ion_dictionary_compare_t 	compare,
+    dictionary_handler_t 		*handler,
+    dictionary_t 				*dictionary
+)
 {
 
 	dictionary->instance = (dictionary_parent_t *)malloc(sizeof(ff_file_t));

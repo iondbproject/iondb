@@ -20,22 +20,24 @@ init_generic_dictionary_test(
 void
 dictionary_test_init(
 	generic_test_t		*test,
-	CuTest			*tc
+	CuTest				*tc
 )
 {
 	err_t			error;
 	
+	error = ion_init_master_table();
+	CuAssertTrue(tc, err_ok == error);
+
 	test->init_dict_handler(&(test->handler));
-	
-	error	= dictionary_create(
-			&(test->handler),
-			&(test->dictionary),
-			1,
-			test->key_type,
-			test->key_size,
-			test->value_size,
-			test->dictionary_size
-		);
+
+	error = ion_master_table_create_dictionary(
+		&test->handler,
+		&test->dictionary,
+		test->key_type,
+		test->key_size,
+		test->value_size,
+		test->dictionary_size
+	);
 	
 	CuAssertTrue(tc, err_ok == error);
 	CuAssertTrue(
@@ -302,4 +304,55 @@ dictionary_test_range(
 
 	cursor->destroy(&cursor);
 	CuAssertTrue(tc, NULL == cursor);
+}
+
+void
+dictionary_test_open_close(
+    generic_test_t  *test,
+    CuTest			*tc
+)
+{
+	err_t error;
+	ion_dictionary_id_t gdict_id = test->dictionary.instance->id;
+
+	/* Insert test record so we can check data integrity after we close/open */
+	error	= dictionary_insert(&(test->dictionary), IONIZE(66650), GTEST_DATA);
+
+	CuAssertTrue(tc, err_ok == error);
+
+	error = ion_close_dictionary(&test->dictionary);
+
+	CuAssertTrue(tc, err_ok == error);
+
+	dictionary_handler_t 	handler_temp;
+	dictionary_t 			dictionary_temp;
+
+	test->init_dict_handler(&handler_temp);
+
+	error = ion_open_dictionary(&handler_temp, &dictionary_temp, gdict_id);
+
+	CuAssertTrue(tc, err_ok == error);
+	CuAssertTrue(
+		tc, ((dictionary_parent_t *)(
+			dictionary_temp.instance)
+		    )->record.key_size
+				==
+			 test->key_size);
+	CuAssertTrue(
+		tc, ((dictionary_parent_t *)(
+			dictionary_temp.instance)
+		    )->record.value_size
+				==
+			 test->value_size);
+
+	/* Check the test record */
+	unsigned char 	test_val[test->value_size];
+	error	= dictionary_get(&dictionary_temp, IONIZE(66650), test_val);
+
+	CuAssertTrue(tc, err_ok == error);
+	int j	= memcmp(GTEST_DATA, test_val, test->value_size);
+	CuAssertTrue(tc, 0 == j);
+
+	test->handler 		= handler_temp;
+	test->dictionary 	= dictionary_temp;
 }

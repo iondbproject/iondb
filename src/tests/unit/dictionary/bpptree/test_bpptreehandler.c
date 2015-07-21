@@ -107,6 +107,8 @@ run_bpptreehandler_generic_test_set_1(
 	    IONIZE(3777),
 	    tc
     );
+
+    dictionary_test_open_close(&test, tc);
 	
 	dictionary_delete_dictionary(&(test.dictionary));
 }
