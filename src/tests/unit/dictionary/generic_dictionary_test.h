@@ -39,6 +39,11 @@ init_generic_dictionary_test(
 );
 
 void
+cleanup_generic_dictionary_test(
+    generic_test_t      *test
+);
+
+void
 dictionary_test_init(
 	generic_test_t		*test,
 	CuTest			*tc

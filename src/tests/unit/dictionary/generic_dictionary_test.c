@@ -15,7 +15,19 @@ init_generic_dictionary_test(
 	test->key_size		= key_size;
 	test->value_size	= value_size;
 	test->dictionary_size	= dictionary_size;
+
+	ion_init_master_table();
 }
+
+void
+cleanup_generic_dictionary_test(
+    generic_test_t      *test
+)
+{
+	dictionary_delete_dictionary(&test->dictionary);
+	ion_close_master_table();
+}
+
 
 void
 dictionary_test_init(
@@ -24,9 +36,6 @@ dictionary_test_init(
 )
 {
 	err_t			error;
-	
-	error = ion_init_master_table();
-	CuAssertTrue(tc, err_ok == error);
 
 	test->init_dict_handler(&(test->handler));
 

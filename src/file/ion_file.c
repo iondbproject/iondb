@@ -87,9 +87,7 @@ ion_fseek(
 	fseek(file.file, seek_to, origin);
 	return err_ok;
 #else
-	if (0 != fseek(file, seek_to, origin)) {
-		return err_file_bad_seek;
-	}
+	if (0 != fseek(file, seek_to, origin)) return err_file_bad_seek;
 	return err_ok;
 #endif
 }
