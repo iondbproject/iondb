@@ -108,6 +108,11 @@ run_bpptreehandler_generic_test_set_1(
 	    tc
     );
 
+	dictionary_test_all_records(
+	    &test,
+	    tc
+    );
+
     dictionary_test_open_close(&test, tc);
 
 	cleanup_generic_dictionary_test(&test);

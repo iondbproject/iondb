@@ -389,6 +389,28 @@ bpptree_find(
 			}
 			break;
 		}
+		case predicate_all_records:
+		{
+			bErrType err;
+			(*cursor)->predicate->statement.range.leq_value = malloc(key_size);
+
+			(*cursor)->predicate->statement.range.geq_value = malloc(key_size);
+			
+			/* We search for first key in B++ tree. */
+			err	= bFindFirstKey(
+					bpptree->tree,
+					bCursor->cur_key,
+					&bCursor->offset
+				);
+			
+			(*cursor)->status				= cs_cursor_initialized;
+			if (bErrOk != err)
+			{
+				(*cursor)->status 			= cs_end_of_results;
+			}
+			return err_ok;
+			break;
+		}
 		case predicate_predicate:
 		{
 			/* TODO not implemented */
@@ -441,15 +463,26 @@ bpptree_next(
 				case predicate_range:
 				{
 					/*do bFindNextKey then test_predicate */
-					if(-1 == bCursor->offset)
+					if (-1 == bCursor->offset)
 					{
 						bErrType bErr = bFindNextKey(bpptree->tree, bCursor->cur_key, &bCursor->offset);
-						if(bErrOk != bErr || boolean_false == bpptree_test_predicate(cursor, bCursor->cur_key))
+						if (bErrOk != bErr || boolean_false == bpptree_test_predicate(cursor, bCursor->cur_key))
 						{
 							is_valid = boolean_false;
 						}
 					}
 					break;
+				}
+				case predicate_all_records:
+				{
+					if (-1 == bCursor->offset)
+					{
+						bErrType bErr = bFindNextKey(bpptree->tree, bCursor->cur_key, &bCursor->offset);
+						if (bErrOk != bErr)
+						{
+							is_valid = boolean_false;
+						}
+					}
 				}
 				case predicate_predicate:
 				{
@@ -506,6 +539,10 @@ bpptree_destroy_cursor(
 		{
 			free( (*cursor)->predicate->statement.range.geq_value);
 			free( (*cursor)->predicate->statement.range.leq_value);
+			break;
+		}
+		case predicate_all_records:
+		{
 			break;
 		}
 		case predicate_predicate:

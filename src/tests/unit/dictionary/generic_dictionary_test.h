@@ -93,6 +93,12 @@ dictionary_test_range(
 );
 
 void
+dictionary_test_all_records(
+    generic_test_t 	*test,
+    CuTest			*tc
+);
+
+void
 dictionary_test_open_close(
     generic_test_t  *test,
     CuTest          *tc

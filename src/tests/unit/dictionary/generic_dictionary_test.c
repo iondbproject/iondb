@@ -316,6 +316,41 @@ dictionary_test_range(
 }
 
 void
+dictionary_test_all_records(
+    generic_test_t 	*test,
+    CuTest			*tc
+)
+{
+	err_t error;
+
+	dict_cursor_t 	*cursor = NULL;
+	predicate_t 	predicate;
+	predicate.type 	= predicate_all_records;
+
+	error = test->dictionary.handler->find(&test->dictionary, &predicate, &cursor);
+
+	CuAssertTrue(tc, err_ok == error);
+	CuAssertTrue(tc, cs_cursor_initialized == cursor->status);
+
+	ion_record_t record;
+	record.key 		= malloc(test->key_size);
+	record.value 	= malloc(test->value_size);
+
+	while(cs_end_of_results != cursor->next(cursor, &record))
+	{
+		CuAssertTrue(tc, err_ok == error);
+	}
+
+	CuAssertTrue(tc, cs_end_of_results == cursor->status);
+
+	free(record.key);
+	free(record.value);
+
+	cursor->destroy(&cursor);
+	CuAssertTrue(tc, NULL == cursor);
+}
+
+void
 dictionary_test_open_close(
     generic_test_t  *test,
     CuTest			*tc

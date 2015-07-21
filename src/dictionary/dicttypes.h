@@ -167,6 +167,7 @@ enum predicate_type
 {
 	predicate_equality,		/**< Equality cursor. */
 	predicate_range,		/**< Range cursor. */
+	predicate_all_records,		/**< Cursor over all elements. */
 	predicate_predicate		/**< Predicate cursor. */
 };
 
@@ -193,6 +194,12 @@ typedef struct range_statement
 					/**< The upper value in the range */
 } range_statement_t;
 
+/**
+@brief		Predicate for cursors that iterate over all records in set.
+*/
+typedef struct ion_all_records_statement
+{
+} ion_all_records_statement_t;
 
 /**
 @brief		predicate for predicate queries.
@@ -205,7 +212,7 @@ typedef struct other_predicate_statement
 
 /**
 @brief used to pass predicate into query
- */
+*/
 union predicate_statement
 {
 	equality_statement_t 			equality;
