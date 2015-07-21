@@ -110,6 +110,7 @@ run_bpptreehandler_generic_test_set_1(
 
 	dictionary_test_all_records(
 	    &test,
+	    10006,
 	    tc
     );
 

@@ -318,6 +318,7 @@ dictionary_test_range(
 void
 dictionary_test_all_records(
     generic_test_t 	*test,
+    int				expected_count,
     CuTest			*tc
 )
 {
@@ -335,10 +336,16 @@ dictionary_test_all_records(
 	ion_record_t record;
 	record.key 		= malloc(test->key_size);
 	record.value 	= malloc(test->value_size);
+	int count	= 0;
 
 	while(cs_end_of_results != cursor->next(cursor, &record))
 	{
 		CuAssertTrue(tc, err_ok == error);
+		count++;
+	}
+	if (expected_count >= 0)
+	{
+		CuAssertTrue(tc, expected_count == count);
 	}
 
 	CuAssertTrue(tc, cs_end_of_results == cursor->status);
