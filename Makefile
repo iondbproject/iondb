@@ -173,7 +173,9 @@ libsources :=  	$(SRC)/kv_io.c \
 				$(SRC)/dictionary/openaddressfilehash/oafhash.c \
 				$(SRC)/dictionary/linearhash/file_ll.c \
 				$(SRC)/dictionary/linearhash/linearhash.c \
-				$(SRC)/dictionary/linearhash/lhdictionaryhandler.c 
+				$(SRC)/dictionary/linearhash/lhdictionaryhandler.c \
+				$(SRC)/dictionary/idEncoder/fileEncoder.c
+				
 	
 # Generate list of libraries to compile.
 libs        := $(addprefix $(BIN_LIB)/,$(subst .c,.o,$(notdir $(libsources))))
@@ -202,7 +204,8 @@ tlsources   := 	$(SRC)/tests/CuTest.c  \
 				$(SRC)/tests/unit/dictionary/openaddressfilehash/oafdictionaryhandler.c \
 				$(SRC)/tests/unit/dictionary/linearhash/file_ll.c \
 				$(SRC)/tests/unit/dictionary/linearhash/linearhash.c \
-				$(SRC)/tests/unit/dictionary/linearhash/lhdictionaryhandler.c 
+				$(SRC)/tests/unit/dictionary/linearhash/lhdictionaryhandler.c \
+				$(SRC)/tests/unit/dictionary/idEncoder/fileEncoder.c
 				#$(SRC)/tests/unit/dictionary/bintree/bintreehandler.c 
 
 # Generate list of libraries to compile.
@@ -216,7 +219,9 @@ testsources := 	$(SRC)/hashmap.c	\
 				$(SRC)/tests/unit/dictionary/openaddresshash/run_oahash.c \
 				$(SRC)/tests/unit/dictionary/run_dictionary.c \
 				$(SRC)/tests/unit/dictionary/flatfilestore/run_flatfile.c \
-				$(SRC)/tests/unit/dictionary/linearhash/run_linearhash.c
+				$(SRC)/tests/unit/dictionary/linearhash/run_linearhash.c \
+				$(SRC)/tests/unit/dictionary/idEncoder/run_fileEncoder.c
+				
 				#$(SRC)/tests/unit/dictionary/openaddressfilehash/run_oafhash.c
 				#$(SRC)/tests/unit/dictionary/bintree/run_bintree.c 
 
