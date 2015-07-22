@@ -40,7 +40,7 @@ fll_open
 	//get the file details for a bucket
 	char 	*extension = "ovf";
 	char  	filename[20];
-
+	/** @todo need to put a check here in the even a file has already been malloc'd */
 	sprintf(filename,"%i_%i.%s",id,bucket,extension);
 	//allocation space for file name
 	linked_list_file->file_name 			= (char*)malloc(strlen(filename)+1);

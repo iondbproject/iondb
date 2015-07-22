@@ -525,7 +525,7 @@ linear_hashmap_t	*hash_map,
  * 				The destination of where the data will be written
  * @param	from
  * 				The location of the the data to be read
- * @param size_of_data
+ * @param 	length
  * 				The length in bytes of the data
  * @return
  */
@@ -535,7 +535,8 @@ lh_write_cache_raw(
 	/**int					cache_number,*/
 	lh_page_cache_t		*cache,
 	void				*to,
-	l_hash_bucket_t		*from
+	l_hash_bucket_t		*from,
+	int					length
 );
 
 err_t

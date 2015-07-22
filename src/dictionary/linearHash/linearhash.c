@@ -353,7 +353,7 @@ lh_split(
 			if (hash_set.lower_hash != hash_set.upper_hash)				//* move this record to the new bucket
 			{
 																							/** @FIXME */
-				lh_write_cache_raw(hash_map, upper_cache, (upper_cache->cached_bucket + upper_bucket_idx*hash_map->record_size), item);
+				lh_write_cache_raw(hash_map, upper_cache, (upper_cache->cached_bucket + upper_bucket_idx*hash_map->record_size), item, hash_map->record_size);
 				upper_bucket_idx++;																//* advance counter to next record
 				lh_write_record_status_in_cache(hash_map,item,DELETED);
 			}
@@ -419,8 +419,8 @@ lh_split(
 							{
 								//item->status = IN_USE;		/** @FIXME consider using function to change status but as item is being written out */
 								lh_write_record_status_in_cache(hash_map,item,IN_USE);
-								lh_write_cache_raw(hash_map,lower_cache,item->data,(void *)ll_node->data);
-																					/** copy in record which should change the state of the cache */
+								lh_write_cache_raw(hash_map,lower_cache,item->data,(void *)ll_node->data, hash_map->record_size - 1);
+																					/** copy in record which should change the state of the cache but does not include status coming from LL */
 								fll_remove(&split_ll);								/** and remove record */
 							}
 							lower_bucket_idx++;										/** advance counter to next record */
@@ -437,7 +437,7 @@ lh_split(
 																					/** advance through page */
 					//item->status = IN_USE;										/** this may be faster but violates cache integrity */
 					lh_write_record_status_in_cache(hash_map,item,IN_USE);
-					lh_write_cache_raw(hash_map,upper_cache,item->data,(void*)ll_node->data);
+					lh_write_cache_raw(hash_map,upper_cache,item->data,(void*)ll_node->data, hash_map->record_size -1);
 																					/** copy in record which should change the state of the cache */
 #if DEBUG
 					DUMP(*(int *)item->data,"%i");
@@ -595,6 +595,7 @@ lh_find(
 						/** in this case, cursor is null as value has not been found */
 						cursor->status = cs_end_of_results;
 						free(((lhdict_cursor_t *)cursor)->overflow);
+						((lhdict_cursor_t *)cursor)->overflow = NULL;								/** Must be set to NULL as used as a check in future */
 						return  err_item_not_found;
 					}
 					else
@@ -621,6 +622,7 @@ lh_find(
 								return err_ok;
 							}
 						}
+						/** @TODO should the overflow file be closed here ?*/
 						cursor->status = cs_end_of_results;
 						free(ll_node);
 						return err_item_not_found;
@@ -784,6 +786,7 @@ lh_get_next(
 			return err_ok;
 		}
 	}
+	free(ll_node);
 	return err_item_not_found;
 }
 
@@ -1088,7 +1091,8 @@ lh_write_cache_raw(
 	linear_hashmap_t	*hash_map,
 	lh_page_cache_t		*cache,
 	void				*to,
-	l_hash_bucket_t		*item
+	l_hash_bucket_t		*item,
+	int					length
 )
 {
 	/** @TODO Does a check need to be in place to ensure that a user is writing to a valid location in a cache ?*/
@@ -1097,7 +1101,7 @@ lh_write_cache_raw(
 		return err_uninitialized;						/** the cache is invalid */
 	}
 
-	memcpy(to,item,hash_map->record_size);				/** copy in record */
+	memcpy(to,item,length);								/** copy in record which may or may not include status of data - its just raw */
 	cache->status								= cache_active_written;
 														/** update status of cache */
 	return err_ok;

@@ -38,9 +38,9 @@ void
 remove_linked_list(
 	ll_file_t		*linked_list_file)
 {
+
 	fclose(linked_list_file->file);
 	remove(linked_list_file->file_name);
-	free(linked_list_file->file);
 	free(linked_list_file->file_name);
 }
 
@@ -197,6 +197,7 @@ test_file_linked_list_insert(
 
 	/** Read file directly to ensure that it is working*/
 	rewind(linked_list_file.file);
+
 	ll_file_node_t * read_node;
 	read_node = (ll_file_node_t *)malloc(linked_list_file.node_size);		/** Allocate space for node */
 	/** Each record is 18 bytes.  First Record is head node and does not contain a key */
@@ -239,6 +240,7 @@ test_file_linked_list_insert(
 	CuAssertTrue(tc, 72	 						 				== read_node->next);
 	CuAssertTrue(tc, 13 										== *(int*)read_node->data);
 
+	free(read_node);
 	remove_linked_list(&linked_list_file);
 }
 
@@ -502,6 +504,7 @@ test_file_linked_list_remove (
 		CuAssertTrue(tc, key_array_ans[idx++]					== *(int*)node->data);
 	}
 	CuAssertTrue(tc, err_item_not_found							== fll_next(&linked_list_file,node));
+	free(node);
 
 	fll_reset(&linked_list_file);								/** reset iterator */
 	idx = 0;
@@ -683,6 +686,7 @@ test_file_linked_list_reopen(
 	free(node);
 
 	fclose(linked_list_file.file);
+	free(linked_list_file.file_name);				/** and free the name too as this is reallocated when the file is opened */
 
 	if (fll_open(&linked_list_file, fll_compare, key_type_numeric_signed, record.key_size,
 		        record.value_size, 0, id) == err_item_not_found)

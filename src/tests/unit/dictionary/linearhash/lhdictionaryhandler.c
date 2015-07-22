@@ -669,7 +669,7 @@ test_linear_hash_dictionary_handler_query_no_results(
 	/* this is required for initializing the hash map and should come from the dictionary */
 	record_info.key_size = 4;
 	record_info.value_size = 10;
-	size = 10;
+	size = 8;
 
 	dictionary_handler_t 	map_handler;			//create handler for hashmap
 	dictionary_t 			test_dictionary;		//collection handler for test collection
