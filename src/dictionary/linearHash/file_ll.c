@@ -235,6 +235,7 @@ fll_insert(
 		}
 		while(!done);
 	}
+	free(ll_probe);														/** clean up probe */
 	return 0;															/** @todo Fix return codes */
 }
 
@@ -476,16 +477,24 @@ fll_close(
 	ll_file_t		*linked_list_file
 )
 {
-	int err = fclose(linked_list_file->file);
-	free(linked_list_file->file);
-	free(linked_list_file->file_name);
-	if (err == 0)
+	//DUMP(linked_list_file->file,"%s");
+	//fflush(stdout);
+	//getchar();
+	err_t err;
+
+	if (linked_list_file->file != NULL)
 	{
-		return err_ok;
+		err = fclose(linked_list_file->file);
+		free(linked_list_file->file_name);
+		if (err == 0)
+		{
+			return err_ok;
+		}
+		else
+		{
+			return err_file_write_error;
+		}
 	}
-	else
-	{
-		return err_file_write_error;
-	}
+	return err_file_close_error;
 }
 

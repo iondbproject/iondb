@@ -192,6 +192,7 @@ lhdict_query(
  */
 err_t
 lhdict_create_dictionary(
+		ion_dictionary_id_t 	id,
 		key_type_t				key_type,
 		int 					key_size,
 		int 					value_size,
@@ -363,6 +364,8 @@ lhdict_is_equal(
 			will be set to NULL as per ION_DB specification for de-allocated
 			pointers.
 
+			Method also frees predicate.
+
 @param 		cursor
 				** pointer to cursor.
  */
@@ -405,8 +408,23 @@ lhdict_scan(
 		lhdict_cursor_t		*cursor  //don't need to pass in the cursor
 );
 
+
+err_t
+lhdict_open(
+	dictionary_handler_t 			*handler,
+	dictionary_t 					*dict,
+	ion_dictionary_config_info_t 	*config
+);
+
+err_t
+lhdict_close(
+	dictionary_t					*dict
+);
+
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* LGDICTIONARYHANDLER_H_ */
+
+#endif /* LHDICTIONARYHANDLER_H_ */

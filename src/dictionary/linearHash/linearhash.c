@@ -37,7 +37,7 @@ lh_initialize(
 	hashmap->super.record.key_size 		= key_size;
 	hashmap->super.record.value_size 	= value_size;
 	hashmap->super.key_type 			= key_type;
-	hashmap->id							= id;
+	hashmap->id							= id;						/** @ todo this can be removed as id is now part of the parent */
 	hashmap->record_size				= key_size + value_size + SIZEOF(STATUS);
 																	/** record size, while it can be computed on the fly is a commonly computed value
 																	 * 	and adds significant overhead so it can be precomputed */
@@ -58,11 +58,10 @@ lh_initialize(
 	DUMP(hashmap->initial_map_size,"%i");
 #endif
 
-	char filename[12];
+	char filename[14];
 	sprintf(filename,"%i_%s",id,TEST_FILE);
 	//open the file
 	hashmap->file = fopen(filename,"w+b");		//main hash file
-
 	//initital the hash map with a min number of buckets
 	//Assumes that there is only one record per bucket
 	/** @todo Correct the minimum block size as this will need to be increased to improve performance */
@@ -110,9 +109,9 @@ lh_initialize(
 #if DEBUG
 	io_printf("Record key size: %i\n", hashmap->super.record.key_size);
 	io_printf("Record value size: %i\n", hashmap->super.record.value_size);
-	io_printf("Size of map (in bytes): %i\n",
+/*	io_printf("Size of map (in bytes): %i\n",
 	        (hashmap->record.key_size + hashmap->super.record.value_size + 1)
-	                * hashmap->map_size);
+	                * hashmap->map_size);*/
 #endif
 
 
@@ -144,7 +143,9 @@ lh_destroy(
 {
 	/** close all the overflow files associated with LH*/
 	int bucket_idx;
+	int cache_idx;
 	char  	filename[20];
+
 	err_t error = err_ok;
 
 	for (bucket_idx = 0; bucket_idx < (hash_map->initial_map_size*(1 << hash_map->file_level)+hash_map->bucket_pointer); bucket_idx ++)
@@ -157,7 +158,8 @@ lh_destroy(
 		{
 			if (fclose(bucket_file) == 0)
 			{
-				free(bucket_file);
+				//free(bucket_file);
+				//bucket_file = NULL;
 #if ARDUINO == 1
 
 				if ( fremove(filename) != 0)
@@ -198,6 +200,15 @@ lh_destroy(
 		hash_map->initial_map_size			= 0;
 		hash_map->super.record.key_size 	= 0;
 		hash_map->super.record.value_size	= 0;
+
+		/** @TODO should cache blocks be flushed ?*/
+		for (cache_idx = 0; cache_idx < CACHE_SIZE; cache_idx++)
+		{
+			if (hash_map->cache[cache_idx].status != cache_invalid)		/** free any cache blocks that are left */
+			{
+				free(hash_map->cache[cache_idx].cached_bucket);
+			}
+		}
 		return error;
 	}
 	else
@@ -214,11 +225,10 @@ lh_update(
 	ion_value_t				value
 )
 {
-	//TODO: lock potentially required
-
+	/** updates all values for a given key and if not found, then it is inserted */
 	write_concern_t current_write_concern 	= hash_map->write_concern;
 	hash_map->write_concern 				= wc_update;								//change write concern to allow update
-	err_t result 							= lh_insert(hash_map, key, value);
+	err_t result 							= lh_insert(hash_map, key, value);			//updates all values for a given key
 	hash_map->write_concern 				= current_write_concern;
 	return result;
 }
@@ -290,7 +300,7 @@ lh_insert(
 				hash_map->id
 				);
 	}
-	ll_file_node_t * node;
+	ll_file_node_t * node;					/** Must be destroyed when done */
 	fll_create_node(&linked_list_file,&(hash_map->super.record),key,value,&node);
 	fll_insert(&linked_list_file,node);
 	fll_close(&linked_list_file);
@@ -517,9 +527,9 @@ lh_delete(
 			num_deleted++;
 		}
 		free(value);
-	}
-	fll_close(&linked_list_file);											/** and close the file */
 
+		fll_close(&linked_list_file);											/** and close the file */
+	}
 	if (num_deleted != 0)
 	{
 		return err_ok;
@@ -656,6 +666,7 @@ lh_find(
 				{
 					/** @TODO error handling for memory*/
 					((lhdict_cursor_t *)cursor)->overflow = (ll_file_t *)malloc(sizeof(ll_file_t));
+
 					if (fll_open(((lhdict_cursor_t *)cursor)->overflow,
 							fll_compare,
 							hash_map->super.key_type,
@@ -702,7 +713,7 @@ lh_find(
 						fll_close(((lhdict_cursor_t *)cursor)->overflow);	/** Take care of memory mgmt */
 						free(((lhdict_cursor_t *)cursor)->overflow);		/** Remove overflow file pntr */
 						((lhdict_cursor_t *)cursor)->overflow = NULL;		/** Clear pointer reference !!Important!! Used by
-																			 *	system to determine if a overflow page is active */
+						 	 	 	 	 	 	 	 	 	 	 	 	 	 *	system to determine if a overflow page is active */
 						free(ll_node);
 					}
 					/** This is no longer the case as system must consider if all buckets have been checked */
@@ -968,12 +979,12 @@ lh_cache_pp(
 
 	int bucket_size = hash_map->record_size * RECORDS_PER_BUCKET;
 
-	if (((*cache)->bucket_idx == bucket_number) && ((*cache)->status == cache_active))
+	if (((*cache)->status == cache_active) && ((*cache)->bucket_idx == bucket_number) )
 	{
 		return err_ok;												/** The bucket you need is already in the cache
 		 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 *	and assumed to be consistent??*/
 	}
-	else if (((*cache)->bucket_idx != bucket_number) && ((*cache)->status == cache_active))
+	else if (((*cache)->status == cache_active) && ((*cache)->bucket_idx != bucket_number))
 	{
 		/** flush page and fetch new one but do not return memory to system*/
 		lh_flush_cache(hash_map,*cache, PRESERVE_CACHE_MEMORY);
@@ -1198,7 +1209,7 @@ lh_action_primary_page(
 		/*lh_read_cache(hash_map, );*/
 		lh_read_cache(hash_map,cache,count,(void*)&item);
 #if DEBUG
-		DUMP(count * record_size,"%i");
+		DUMP(count * hash_map->record_size,"%i");
 #endif
 		/** scan through block performing action*/
 		action_status_t record_status = action(hash_map, key, item, value);
@@ -1238,7 +1249,7 @@ lh_search_primary_page(
 		lh_read_cache(hash_map, cache, cursor->record_pntr, (void*)&item);
 
 #if DEBUG
-		DUMP( cursor->record_pntr * record_size,"%i");
+		DUMP( cursor->record_pntr * hash_map->record_size,"%i");
 #endif
 		/** scan through block performing action*/
 		if (item->status == EMPTY) 			/** nothing is here, so exit */

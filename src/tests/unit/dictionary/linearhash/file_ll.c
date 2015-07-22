@@ -239,8 +239,6 @@ test_file_linked_list_insert(
 	CuAssertTrue(tc, 72	 						 				== read_node->next);
 	CuAssertTrue(tc, 13 										== *(int*)read_node->data);
 
-	//cleanup node
-	free(node);
 	remove_linked_list(&linked_list_file);
 }
 
@@ -708,9 +706,6 @@ test_file_linked_list_reopen(
 	free(read_node);
 	remove_linked_list(&linked_list_file);
 
-	//cleanup node
-	free(read_node);
-	remove_linked_list(&linked_list_file);
 }
 
 CuSuite*

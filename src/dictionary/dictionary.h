@@ -27,6 +27,7 @@ status_t
 dictionary_create(
 	dictionary_handler_t	*handler,
 	dictionary_t			*dictionary,
+	ion_dictionary_id_t		id,
 	key_type_t				key_type,
 	int						key_size,
 	int						value_size,
@@ -305,6 +306,24 @@ dictonary_destroy_predicate_range(
 void
 dictonary_destroy_predicate_statement(
 	predicate_t		**predicate
+);
+
+/**
+@brief Opens a dictionary, given the desired config.
+*/
+err_t
+dictionary_open(
+    dictionary_handler_t 			*handler,
+    dictionary_t 					*dictionary,
+    ion_dictionary_config_info_t 	*config
+);
+
+/**
+@brief Closes a dictionary.
+*/
+err_t
+dictionary_close(
+    dictionary_t 					*dictionary
 );
 
 #ifdef __cplusplus

@@ -65,7 +65,8 @@ enum error
 	err_illegal_state,
 	err_invalid_initial_size,
 	err_not_in_primary_page,
-	err_unable_to_insert
+	err_unable_to_insert,
+	err_not_implemented,
 };
 
 typedef char err_t;
@@ -90,6 +91,7 @@ typedef int									ion_key_size_t;
  */
 typedef int 								ion_value_size_t;
 
+typedef int									ion_dictionary_size_t;
 
 typedef enum boolean
 {

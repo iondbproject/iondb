@@ -46,6 +46,7 @@ int main(void) {
 	record.key_size = 4;
 	record.value_size = 10;
 	size = 10;
+	ion_dictionary_id_t id = 0;
 
 	dictionary_handler_t map_handler;			//create handler for hashmap
 
@@ -56,7 +57,7 @@ int main(void) {
 	dictionary_t test_dictionary;
 
 	//register the appropriate handler for a given collection
-	dictionary_create(&map_handler, &test_dictionary,key_type_numeric_signed, record.key_size,record.value_size,size);
+	dictionary_create(&map_handler, &test_dictionary,key_type_numeric_signed, id, record.key_size,record.value_size,size);
 
 	io_printf("Insert\n");
 

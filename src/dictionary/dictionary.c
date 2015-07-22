@@ -15,11 +15,13 @@ dictionary_create(
 		dictionary_handler_t 	*handler,
 		dictionary_t 			*dictionary,
 		key_type_t				key_type,
+		ion_dictionary_id_t 	id,
 		int 					key_size,
 		int 					value_size,
 		int 					dictionary_size
 )
 {
+	err_t err;
 	//using the handler, create the dictionary
 	/*	//register the type of key being used by the dictionary (Important for comparison op)
 		dictionary->key_type = key_type;*/
@@ -49,8 +51,14 @@ dictionary_create(
 				}
 			}
 
-	return handler->create_dictionary(key_type, key_size, value_size, dictionary_size, compare, handler, dictionary);
+	//handler->create_dictionary(key_type, key_size, value_size, dictionary_size, compare, handler, dictionary);
 
+	err = handler->create_dictionary(id, key_type, key_size, value_size, dictionary_size, compare, handler, dictionary);
+	if (err == err_ok)
+	{
+		dictionary->instance->id = id; /* This ID will either come from the master table, or will be provided by user. */
+	}
+	return err;
 }
 
 //inserts a record into the dictionary
@@ -224,11 +232,13 @@ dictionary_build_predicate(
 		{
 			if (((*predicate)->statement.range.geq_value = (ion_key_t) malloc (key_size)) == NULL)
 			{
+				va_end(arg_list);
 				return err_out_of_memory;
 			}
 			if(((*predicate)->statement.range.leq_value = (ion_key_t) malloc (key_size)) == NULL)
 			{
 				free((*predicate)->statement.range.geq_value);
+				va_end(arg_list);
 				return err_out_of_memory;
 			}
 			(*predicate)->destroy = dictonary_destroy_predicate_range;
@@ -238,7 +248,6 @@ dictionary_build_predicate(
 			va_start(arg_list,key);
 			//and extract the second key from the list
 			memcpy((*predicate)->statement.range.geq_value,	 (ion_key_t)(va_arg(arg_list,ion_key_t)), key_size);
-			va_end(arg_list);
 			break;
 		}
 		/*case predicate_predicate:
@@ -251,6 +260,7 @@ dictionary_build_predicate(
 			break;
 		}
 	}
+	va_end(arg_list);
 	return err_ok;
 }
 
@@ -273,4 +283,22 @@ dictonary_destroy_predicate_range(
 	free((*predicate)->statement.range.leq_value);
 	free(*predicate);
 	*predicate = NULL;
+}
+
+err_t
+dictionary_open(
+ 	dictionary_handler_t 			*handler,
+    dictionary_t 					*dictionary,
+    ion_dictionary_config_info_t 	*config
+)
+{
+	return handler->open_dictionary(handler, dictionary, config);
+}
+
+err_t
+dictionary_close(
+    dictionary_t 					*dictionary
+)
+{
+	return dictionary->handler->close_dictionary(dictionary);
 }

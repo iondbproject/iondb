@@ -37,10 +37,13 @@ create_linear_hash_test_collection(
     int						num_keys
 )
 {
+
+	ion_dictionary_id_t id = 0;
+
 	lhdict_init(map_handler); //register handler for hashmap
 	//register the appropriate handler for a given collection
 
-	dictionary_create(map_handler, test_dictionary, key_type,
+	dictionary_create(map_handler, test_dictionary, key_type, id,
 	        record->key_size, record->value_size, size);
 	//build test relation
 	int i;
@@ -99,6 +102,9 @@ test_linear_hash_handler_create_destroy(
 	/* this is required for initializing the hash map and should come from the dictionary */
 	record.key_size = 4;
 	record.value_size = 10;
+	int initial_size = 4;
+
+	ion_dictionary_id_t	id = 0;
 
 	dictionary_handler_t map_handler;			//create handler for hashmap
 
@@ -108,34 +114,14 @@ test_linear_hash_handler_create_destroy(
 	dictionary_t test_dictionary;
 
 	//register the appropriate handler for a given collection
-	dictionary_create(&map_handler, &test_dictionary, key_type_numeric_signed, record.key_size, record.value_size, 0);
+	dictionary_create(&map_handler, &test_dictionary, key_type_numeric_signed, id, record.key_size, record.value_size, initial_size);
 
 	CuAssertTrue(tc, (((linear_hashmap_t *)test_dictionary.instance)->super.record.key_size) == record.key_size);
 	CuAssertTrue(tc, (((linear_hashmap_t *)test_dictionary.instance)->super.record.value_size) == record.value_size);
 	CuAssertTrue(tc, (((linear_hashmap_t *)test_dictionary.instance)->write_concern) == wc_insert_unique);
-/*
-	//check to see if the file has been created and read the data back
-	rewind(((ff_file_t *)test_dictionary.instance)->file_ptr);
 
-	ff_file_t file;
-	CuAssertTrue(tc, 1						== fread(&(file.super),sizeof(file.super),1,((ff_file_t *)test_dictionary.instance)->file_ptr));
-	CuAssertTrue(tc, record.key_size  		== file.super.record.key_size);
-	CuAssertTrue(tc, record.value_size  	== file.super.record.value_size);
-	CuAssertTrue(tc, key_type_numeric_signed
-											== file.super.key_type);
-	CuAssertTrue(tc, dictionary_compare_signed_value
-											== file.super.compare);
-	CuAssertTrue(tc, boolean_true					== feof(file.file_ptr));
-
-	//delete the dictionary
-	CuAssertTrue(tc, err_ok 				==
-												test_dictionary.handler->delete_dictionary(&test_dictionary) );
-	CuAssertTrue(tc, test_dictionary.instance
-											== NULL);
-
-	//and check the status of the file (not being there)
-	CuAssertTrue(tc, NULL					== fopen("test.bin","r"));*/
-
+	/** and clean up dictionary when done */
+	test_dictionary.handler->delete_dictionary(&test_dictionary);
 }
 
 /**
@@ -175,6 +161,8 @@ test_linear_hash_handler_simple_insert_and_query(
 	record.key_size = 4;
 	record.value_size = 10;
 
+	ion_dictionary_id_t id = 0;
+
 	int test_key = 1;
 	char test_value[record.value_size];
 
@@ -186,11 +174,11 @@ test_linear_hash_handler_simple_insert_and_query(
 	dictionary_t test_dictionary;
 
 	//register the appropriate handler for a given collection
-	CuAssertTrue(tc, err_invalid_initial_size 	==	dictionary_create(&dict_handler, &test_dictionary, key_type_numeric_signed, record.key_size, record.value_size, 0));
+	CuAssertTrue(tc, err_invalid_initial_size 	==	dictionary_create(&dict_handler, &test_dictionary, key_type_numeric_signed, id, record.key_size, record.value_size, 0));
 
-	CuAssertTrue(tc, err_ok	==	dictionary_create(&dict_handler, &test_dictionary, key_type_numeric_signed, record.key_size, record.value_size, 4));
+	CuAssertTrue(tc, err_ok	==	dictionary_create(&dict_handler, &test_dictionary, key_type_numeric_signed, id,  record.key_size, record.value_size, 4));
 
-	sprintf((char*)test_value, "value : %i ", test_key);
+	sprintf((char*)test_value, "value : %i", test_key);
 
 	CuAssertTrue(tc, err_ok 	== 	test_dictionary.handler->insert(&test_dictionary,(ion_key_t)&test_key,(ion_value_t)test_value));
 
@@ -201,9 +189,12 @@ test_linear_hash_handler_simple_insert_and_query(
 	CuAssertTrue(tc,0		== memcmp(test_value,(char *)read_value,record.value_size));
 
 	free(read_value);
+
 	//delete the dictionary
 	CuAssertTrue(tc, err_ok == test_dictionary.handler->delete_dictionary(&test_dictionary));
+
 	CuAssertTrue(tc, test_dictionary.instance == NULL);
+
 
 }
 
@@ -352,24 +343,25 @@ test_linear_hash_dictionary_cursor_equality(
 	dict_cursor_t 			*cursor;			//create a new cursor pointer
 
 	//create a new predicate statement
-	predicate_t 			predicate;
-	predicate.type = predicate_equality;
+	predicate_t *predicate;
+	predicate = (predicate_t*)malloc(sizeof(predicate_t));
+	predicate->type = predicate_equality;
 	//need to prepare predicate correctly
-	predicate.statement.equality.equality_value = (ion_key_t)malloc(sizeof(int));
+	predicate->statement.equality.equality_value = (ion_key_t)malloc(sizeof(int));
 
 	/** @Todo This needs to be improved */
-	memcpy(predicate.statement.equality.equality_value,(ion_key_t)&(int){1},sizeof(int));
+	memcpy(predicate->statement.equality.equality_value,(ion_key_t)&(int){1},sizeof(int));
 
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, predicate, &cursor));
 #if DEBUG
 	DUMP(cursor->status,"%i");
 #endif
 	//check the status of the cursor as it should be initialized
 	CuAssertTrue(tc, cs_cursor_initialized	== cursor->status);
 
-	//free up the correct predicate
-	free(predicate.statement.equality.equality_value);
+	free(predicate->statement.equality.equality_value);
+	free(predicate);
 
 	//destroy the cursor
 	cursor->destroy(&cursor);
@@ -401,8 +393,6 @@ test_linear_hash_dictionary_cursor_range_signed(
 	create_linear_hash_test_collection(&map_handler, &record_info, size, &test_dictionary,key_type_numeric_signed, size);
 
 	dict_cursor_t 			*cursor;				//create a new cursor pointer
-
-	cursor = (dict_cursor_t *)malloc(sizeof(dict_cursor_t));
 
 	//create a new predicate statement
 	predicate_t 			predicate;
@@ -458,8 +448,6 @@ test_linear_hash_dictionary_cursor_range_signed_2(
 
 	dict_cursor_t 			*cursor;				//create a new cursor pointer
 
-	cursor = (dict_cursor_t *)malloc(sizeof(dict_cursor_t));
-
 	//create a new predicate statement
 	predicate_t 			predicate;
 	predicate.type 			= predicate_range;
@@ -514,8 +502,6 @@ test_linear_hash_dictionary_cursor_range_signed_3(
 
 	dict_cursor_t 			*cursor;				//create a new cursor pointer
 
-	cursor = (dict_cursor_t *)malloc(sizeof(dict_cursor_t));
-
 	//create a new predicate statement
 	predicate_t 			predicate;
 	predicate.type 			= predicate_range;
@@ -569,8 +555,6 @@ test_linear_hash_dictionary_cursor_range_signed_4(
 	create_linear_hash_test_collection(&map_handler, &record_info, size, &test_dictionary,key_type_numeric_signed, size*4);
 
 	dict_cursor_t 			*cursor;				//create a new cursor pointer
-
-	cursor = (dict_cursor_t *)malloc(sizeof(dict_cursor_t));
 
 	//create a new predicate statement
 	predicate_t 			predicate;
@@ -690,7 +674,7 @@ test_linear_hash_dictionary_handler_query_no_results(
 	dictionary_handler_t 	map_handler;			//create handler for hashmap
 	dictionary_t 			test_dictionary;		//collection handler for test collection
 
-	createFlatFileTestCollection(&map_handler, &record_info, size, &test_dictionary, key_type_numeric_signed);
+	create_linear_hash_test_collection(&map_handler, &record_info, size, &test_dictionary, key_type_numeric_signed,size);
 
 	dict_cursor_t 			*cursor;				//create a new cursor pointer
 
@@ -711,8 +695,8 @@ test_linear_hash_dictionary_handler_query_no_results(
 
 	//user must allocate memory before calling next()
 	ion_record_t 			record;
-	record.key 					= (ion_key_t)malloc(sizeof(ion_key_t)*record_info.value_size);
-	record.value 					= (ion_value_t)malloc(sizeof(ion_value_t)*record_info.value_size);
+	record.key 				= (ion_key_t)malloc(sizeof(ion_key_t)*record_info.value_size);
+	record.value 			= (ion_value_t)malloc(sizeof(ion_value_t)*record_info.value_size);
 
 	CuAssertTrue(tc, cs_end_of_results		== cursor->next(cursor, &record));
 
@@ -749,42 +733,58 @@ test_linear_hash_dictionary_predicate_equality(
 
 	dict_cursor_t 			*cursor;				//create a new cursor pointer
 
-	cursor = (dict_cursor_t *)malloc(sizeof(dict_cursor_t));
+	cursor = (dict_cursor_t *)((lhdict_cursor_t*)malloc(sizeof(lhdict_cursor_t)));			/** Make sure to malloc correct size */
+
 	/** @FIMXE */
 	cursor->destroy 		= lhdict_destroy_cursor;
 
 	//create a new predicate statement
-	predicate_t 			predicate;
-	predicate.type 			= predicate_equality;
+	/** IMPORTANT - This must be put on the heap as the destory method will attempt to free */
+	cursor->predicate 		= (predicate_t *)malloc(sizeof(predicate_t));
+	cursor->predicate->type	= predicate_equality;
+
+	//predicate_t 			*predicate = (predicate_t *)malloc(sizeof(predicate_t));
+	//predicate->type 		= predicate_equality;
 
 	//need to prepare predicate correctly
-	predicate.statement.equality.equality_value = (ion_key_t)malloc(sizeof(int));
-	memcpy(predicate.statement.equality.equality_value,(ion_key_t)&(int){1},sizeof(int));
+	//predicate->statement.equality.equality_value = (ion_key_t)malloc(sizeof(int));
+	cursor->predicate->statement.equality.equality_value = (ion_key_t)malloc(sizeof(int));
+
+	//memcpy(predicate->statement.equality.equality_value,(ion_key_t)&(int){1},sizeof(int));
+	memcpy(cursor->predicate->statement.equality.equality_value,(ion_key_t)&(int){1},sizeof(int));
 
 	cursor->dictionary 		= &test_dictionary;				//register test dictionary
-	cursor->predicate 		= &predicate;					//register predicate
+	//cursor->predicate 		= predicate;					//register predicate
 	cursor->type			= cursor_equality;
+
 	((lhdict_cursor_t*)cursor)->overflow = NULL;
 
+	io_printf("test 1\n");
 	memcpy(key_under_test,(ion_key_t)&(int){1},sizeof(int));
 
 	CuAssertTrue(tc, IS_EQUAL 	== lhdict_test_predicate(cursor, key_under_test));
-
+	io_printf("test 2\n");
 	memcpy(key_under_test,(ion_key_t)&(int){2},sizeof(int));
 
-
 	CuAssertTrue(tc, IS_EQUAL 	!= lhdict_test_predicate(cursor, key_under_test));
-
+	io_printf("test 3\n");
 	memcpy(key_under_test,(ion_key_t)&(int){-1},sizeof(int));
 
 	CuAssertTrue(tc, IS_EQUAL 	!= lhdict_test_predicate(cursor, key_under_test));
 
-
+	io_printf("freeing key\n");
 	free(key_under_test);
 
+	/** @FIXME this does not need to be done */
 	//free up the correct predicate
-	free(predicate.statement.equality.equality_value);
+	//io_printf("freeing predicate\n");
+	//DUMP(cursor->predicate->statement.equality.equality_value,"%p");
+	//free(cursor->predicate->statement.equality.equality_value);
+
+	//predicate->statement.equality.equality_value = NULL;
+
 	//destroy cursor for cleanup
+	io_printf("destroying cursor\n");
 	cursor->destroy(&cursor);
 	//and destroy the collection
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -813,24 +813,26 @@ test_linear_hash_dictionary_predicate_range_signed(
 
 	dict_cursor_t 			*cursor;				//create a new cursor pointer
 
-	cursor = (dict_cursor_t *)malloc(sizeof(dict_cursor_t));
+	cursor = (dict_cursor_t *)malloc(sizeof(lhdict_cursor_t));
+
 	/** @FIXME */
 	cursor->destroy 		= lhdict_destroy_cursor;
+
 	((lhdict_cursor_t*)cursor)->overflow = NULL;
 
 	//create a new predicate statement
-	predicate_t 			predicate;
-	predicate.type 			= predicate_range;
+	predicate_t 			*predicate = (predicate_t *)malloc(sizeof(predicate_t));
+	predicate->type 			= predicate_range;
 
 	//need to prepare predicate correctly
-	predicate.statement.range.geq_value = (ion_key_t)malloc(sizeof(int));
-	predicate.statement.range.leq_value = (ion_key_t)malloc(sizeof(int));
+	predicate->statement.range.geq_value = (ion_key_t)malloc(sizeof(int));
+	predicate->statement.range.leq_value = (ion_key_t)malloc(sizeof(int));
 
-	memcpy(predicate.statement.range.geq_value,(ion_key_t)&(int){-1},sizeof(int));
-	memcpy(predicate.statement.range.leq_value,(ion_key_t)&(int){1},sizeof(int));
+	memcpy(predicate->statement.range.geq_value,(ion_key_t)&(int){-1},sizeof(int));
+	memcpy(predicate->statement.range.leq_value,(ion_key_t)&(int){1},sizeof(int));
 
 	cursor->dictionary 		= &test_dictionary;				//register test dictionary
-	cursor->predicate 		= &predicate;					//register predicate
+	cursor->predicate 		= predicate;					//register predicate
 	cursor->type			= cursor_range;
 
 	memcpy(key_under_test,(ion_key_t)&(int){0},sizeof(int));
@@ -855,9 +857,6 @@ test_linear_hash_dictionary_predicate_range_signed(
 
 	free(key_under_test);
 
-	//free up the correct predicate
-	free(predicate.statement.range.geq_value);
-	free(predicate.statement.range.leq_value);
 	//destroy cursor for cleanup
 	cursor->destroy(&cursor);
 	//and destroy the collection
@@ -886,23 +885,25 @@ test_linear_hash_dictionary_predicate_range_unsigned(
 
 	dict_cursor_t 			*cursor;				//create a new cursor pointer
 
-	cursor = (dict_cursor_t *)malloc(sizeof(dict_cursor_t));
+	cursor = (dict_cursor_t *)malloc(sizeof(lhdict_cursor_t));
 	/** @FIXME */
 	cursor->destroy 		= lhdict_destroy_cursor;
 
+	((lhdict_cursor_t*)cursor)->overflow = NULL;
+
 	//create a new predicate statement
-	predicate_t 			predicate;
-	predicate.type 			= predicate_range;
+	predicate_t 			*predicate = (predicate_t *)malloc(sizeof(predicate_t));
+	predicate->type 		= predicate_range;
 
 	//need to prepare predicate correctly
-	predicate.statement.range.geq_value = (ion_key_t)malloc(sizeof(unsigned int));
-	predicate.statement.range.leq_value = (ion_key_t)malloc(sizeof(unsigned int));
+	predicate->statement.range.geq_value = (ion_key_t)malloc(sizeof(unsigned int));
+	predicate->statement.range.leq_value = (ion_key_t)malloc(sizeof(unsigned int));
 
-	memcpy(predicate.statement.range.geq_value,(ion_key_t)&(unsigned int){0},sizeof(unsigned int));
-	memcpy(predicate.statement.range.leq_value,(ion_key_t)&(unsigned int){2},sizeof(unsigned int));
+	memcpy(predicate->statement.range.geq_value,(ion_key_t)&(unsigned int){0},sizeof(unsigned int));
+	memcpy(predicate->statement.range.leq_value,(ion_key_t)&(unsigned int){2},sizeof(unsigned int));
 
 	cursor->dictionary 		= &test_dictionary;				//register test dictionary
-	cursor->predicate 		= &predicate;					//register predicate
+	cursor->predicate 		= predicate;					//register predicate
 	cursor->type			= cursor_range;
 
 	memcpy(key_under_test,(ion_key_t)&(unsigned int){0},sizeof(unsigned int));
@@ -927,9 +928,6 @@ test_linear_hash_dictionary_predicate_range_unsigned(
 
 	free(key_under_test);
 
-	//free up the correct predicate
-	free(predicate.statement.range.geq_value);
-	free(predicate.statement.range.leq_value);
 	//destroy cursor for cleanup
 	cursor->destroy(&cursor);
 	//and destroy the collection
@@ -989,7 +987,7 @@ test_linear_hash_dictionary_cursor_range(
 
 		//check that value is correct that has been returned
 		ion_value_t	str;
-		str = (ion_value_t)malloc(record_info.value_size);
+		str = (ion_value_t)malloc(record_info.value_size + 1);			/** make sure to include null */
 		sprintf((char*)str,"value : %i ", (*(int *)predicate.statement.range.geq_value) + result_count);
 
 		CuAssertTrue(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
@@ -1077,7 +1075,7 @@ test_linear_hash_dictionary_cursor_range_2(
 
 		//check that value is correct that has been returned
 		ion_value_t	str;
-		str = (ion_value_t)malloc(record_info.value_size);
+		str = (ion_value_t)malloc(record_info.value_size + 1);
 		sprintf((char*)str,"value : %i ", expected_results[result_count]);
 
 		CuAssertTrue(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
@@ -1162,6 +1160,7 @@ test_linear_hash_dictionary_cursor_range_3(
 	int result_count = 0;
 	status_t cursor_status;
 	int expected_results[] = {1,3,5,2,4};
+
 	while( cs_cursor_active == (cursor_status = cursor->next(cursor, &record)))
 	{
 
@@ -1169,7 +1168,7 @@ test_linear_hash_dictionary_cursor_range_3(
 
 		//check that value is correct that has been returned
 		ion_value_t	str;
-		str = (ion_value_t)malloc(record_info.value_size);
+		str = (ion_value_t)malloc(record_info.value_size + 1);
 		sprintf((char*)str,"value : %i ", expected_results[result_count]);
 //		io_printf("** result1:%i  %s\n",*(int*)record.key,(char*)record.value);
 //		io_printf("** result2:%i  %s\n",*(int*)record.key,str);
@@ -1233,7 +1232,7 @@ test_linear_hash_dictionary_cursor_range_4(
 
 	//create a new predicate statement
 	predicate_t 			predicate;
-	predicate.type = predicate_range;
+	predicate.type 			= predicate_range;
 	//need to prepare predicate correctly
 	predicate.statement.range.geq_value = (ion_key_t)malloc(sizeof(int));
 
@@ -1268,13 +1267,11 @@ test_linear_hash_dictionary_cursor_range_4(
 
 		//check that value is correct that has been returned
 		ion_value_t	str;
-		str = (ion_value_t)malloc(record_info.value_size);
+		str = (ion_value_t)malloc(record_info.value_size + 1);
 		sprintf((char*)str,"value : %i ", expected_results[result_count]);
 
 		CuAssertTrue(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
-#if DEBUG
-		io_printf("result:%i  %s\n",*(int*)record.key,(char*)record.value);
-#endif
+
 		result_count++;
 		free(str);
 	}
@@ -1365,13 +1362,11 @@ test_linear_hash_dictionary_cursor_range_5(
 
 		//check that value is correct that has been returned
 		ion_value_t	str;
-		str = (ion_value_t)malloc(record_info.value_size);
+		str = (ion_value_t)malloc(record_info.value_size + 1);
 		sprintf((char*)str,"value : %i ", expected_results[result_count]);
 
 		CuAssertTrue(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
-#if DEBUG
-		io_printf("result:%i  %s\n",*(int*)record.key,(char*)record.value);
-#endif
+
 		result_count++;
 		free(str);
 	}
@@ -1413,8 +1408,8 @@ linear_hash_handler_getsuite()
 	SUITE_ADD_TEST(suite, test_linear_hash_handler_update_1);
 	SUITE_ADD_TEST(suite, test_linear_hash_handler_update_2);
 	SUITE_ADD_TEST(suite, test_linear_hash_handler_delete_1);
-	SUITE_ADD_TEST(suite, test_linear_hash_handler_delete_2);*/
-	SUITE_ADD_TEST(suite, test_linear_hash_handler_capacity);
+	SUITE_ADD_TEST(suite, test_linear_hash_handler_delete_2);
+	SUITE_ADD_TEST(suite, test_linear_hash_handler_capacity);*/
 	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_predicate_equality);
 	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_predicate_range_signed);
 	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_predicate_range_unsigned);
@@ -1424,7 +1419,9 @@ linear_hash_handler_getsuite()
 	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_cursor_range_signed_3);
 	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_cursor_range_signed_4);
 	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_handler_query_with_results);
+	//
 	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_handler_query_no_results);
+	//
 	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_cursor_range);
 	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_cursor_range_2);
 	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_cursor_range_3);

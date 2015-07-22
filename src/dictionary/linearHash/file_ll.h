@@ -25,7 +25,7 @@ extern "C" {
 #define LOW			0
 #define MEDIUM		1
 #define HIGH		2
-//#define DEBUG 		1
+#define DEBUG 		1
 #define DEBUG_LEVEL	LOW
 
 

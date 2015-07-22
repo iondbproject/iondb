@@ -16,6 +16,18 @@ extern "C" {
 
 #include "./../kv_system.h"
 
+/**
+@brief 		Dictionary ID
+*/
+typedef unsigned int 				ion_dictionary_id_t;
+
+typedef struct {
+	ion_dictionary_id_t 	id;
+	key_type_t				type;
+	ion_key_size_t			key_size;
+	ion_value_size_t 		value_size;
+	ion_dictionary_size_t 	dictionary_size;
+} ion_dictionary_config_info_t;
 
 /**
 @brief		A dictionary instance variable.
@@ -74,7 +86,7 @@ struct dictionary_handler
 {
 	err_t	(* insert)(dictionary_t *, ion_key_t, ion_value_t);
 		/**< A pointer to the dictionaries insertion function. */
-	err_t	(* create_dictionary)(key_type_t, int, int, int, char (* compare)(ion_key_t, ion_key_t, ion_key_size_t), dictionary_handler_t * , dictionary_t *);
+	err_t	(* create_dictionary)(ion_dictionary_id_t, key_type_t, int, int, int, char (* compare)(ion_key_t, ion_key_t, ion_key_size_t), dictionary_handler_t * , dictionary_t *);
 		/**< A pointer to the dictionaries creation function. */
 	err_t	(* get)(dictionary_t *, ion_key_t, ion_value_t);
 		/**< A pointer to the dictionaries get function. */
@@ -86,8 +98,8 @@ struct dictionary_handler
 		/**< A pointer to the dictionaries key-value deletion function. */
 	err_t	(* delete_dictionary)(dictionary_t *);
 		/**< A pointer to the dictionaries dictionary removal function. */
-	err_t	(* dictionary_open)(dictionary_t *);
-		/**< A pointer to the dictionaries open function with opens a dictionary on disk */
+	err_t	(* open_dictionary)(dictionary_handler_t *, dictionary_t *, ion_dictionary_config_info_t *);
+			/**< A pointer to the dictionaries open function. */
 	err_t	(* close_dictionary)(dictionary_t *);
 		/**< A pointer to the dictionaries close function which leaves the dictionary intact */
 	/** @todo When a dictionary is open/closed it will need to pull meta-information about structure from somewhere.
@@ -121,6 +133,7 @@ struct dictionary_parent
 	record_info_t 			record;			/**< The record structure for items*/
 	char 					(* compare)(ion_key_t, ion_key_t, ion_key_size_t);
 										/**< Comparison function for instance of map */
+	ion_dictionary_id_t		id;				/**< ID of dictionary instance */
 };
 
 /**
@@ -248,6 +261,7 @@ enum write_concern
 	 	 	 	 	 	 	 	 in dictionary */
 	wc_insert_unique,		/**< allows for unique inserts only
 								(no overwrite) */
+	wc_duplicate,			/**< allows for duplicate keys to be inserted into dictionary */
 };
 
 /**

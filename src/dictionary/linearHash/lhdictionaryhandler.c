@@ -18,6 +18,27 @@ void lhdict_init(dictionary_handler_t *handler)
 	handler->find = lhdict_find;
 	handler->remove = lhdict_delete;
 	handler->delete_dictionary = lhdict_delete_dictionary;
+	handler->open_dictionary = NULL;
+	handler->close_dictionary = NULL;
+}
+
+
+err_t
+lhdict_open(
+	dictionary_handler_t 			*handler,
+	dictionary_t 					*dict,
+	ion_dictionary_config_info_t 	*config
+)
+{
+	return err_not_implemented;
+}
+
+err_t
+lhdict_close(
+	dictionary_t					*dict
+)
+{
+	return err_not_implemented;
 }
 
 err_t lhdict_insert(dictionary_t *dictionary, ion_key_t key, ion_value_t value)
@@ -31,6 +52,7 @@ err_t lhdict_query(dictionary_t *dictionary, ion_key_t key, ion_value_t value)
 }
 
 err_t lhdict_create_dictionary(
+	ion_dictionary_id_t id,
     key_type_t key_type,
     int key_size,
     int value_size,
@@ -46,8 +68,7 @@ err_t lhdict_create_dictionary(
 
 	//this registers the dictionary the dictionary
 	err_t err = lh_initialize((linear_hashmap_t *)dictionary->instance, lh_compute_hash,
-	        key_type, key_size, value_size, dictionary_size, 0); 	/** @todo fix id */
-
+	        key_type, key_size, value_size, dictionary_size, id);
 	/**@TODO The correct comparison operator needs to be bound at run time
 	 * based on the type of key defined
 	 */
@@ -60,6 +81,8 @@ err_t lhdict_create_dictionary(
 	}
 	else
 	{
+		/** free instance as dictionary cannot be created */
+		free(dictionary->instance);
 		return err;
 	}
 }
@@ -277,6 +300,7 @@ cursor_status_t lhdict_next(dict_cursor_t *cursor, ion_record_t *record)
 					if (((lhdict_cursor_t *)cursor)->overflow == NULL)		/** no open overflow file */
 					{
 						((lhdict_cursor_t *)cursor)->overflow = (ll_file_t *)malloc(sizeof(ll_file_t));
+
 						if (fll_open(((lhdict_cursor_t *)cursor)->overflow,
 								fll_compare,
 								hash_map->super.key_type,
@@ -339,8 +363,10 @@ cursor_status_t lhdict_next(dict_cursor_t *cursor, ion_record_t *record)
 					if(cursor->predicate == predicate_equality)
 					{
 						cursor->status = cs_end_of_results;
+						free(item);
 						return cursor->status;
 					}
+
 				}
 				else
 				{	/** that value is already sitting at the cursor */
@@ -354,6 +380,7 @@ cursor_status_t lhdict_next(dict_cursor_t *cursor, ion_record_t *record)
 				/** and if you get this far, close the file*/
 				free(item);
 				fll_close(((lhdict_cursor_t *)cursor)->overflow);
+				free(((lhdict_cursor_t *)cursor)->overflow);
 				((lhdict_cursor_t *)cursor)->overflow = NULL;
 			}
 
@@ -393,13 +420,19 @@ boolean_t lhdict_is_equal(dictionary_t *dict, ion_key_t key1, ion_key_t key2)
 
 	}
 }
+
 void lhdict_destroy_cursor(dict_cursor_t **cursor)
 {
+	DUMP(((lhdict_cursor_t *)*cursor)->overflow,"%x");
+	DUMP((*cursor)->type,"%i");
+	DUMP((*cursor)->predicate->type,"%i");
+
 	/** Free any internal memory allocations */
 	switch ((*cursor)->type)
 	{
 		case predicate_equality:
 		{
+			io_printf("freeing\n");
 			free((*cursor)->predicate->statement.equality.equality_value);
 			break;
 		}
@@ -414,13 +447,16 @@ void lhdict_destroy_cursor(dict_cursor_t **cursor)
 			break;
 		}
 	}
+	io_printf("done freeing\n");
+
 	/** free overflow file info */
 	if (((lhdict_cursor_t *)*cursor)->overflow != NULL)
 	{
 		fll_close(((lhdict_cursor_t *)*cursor)->overflow);
+		free(((lhdict_cursor_t *)*cursor)->overflow);
 	}
 	/** and free cursor pointer */
-	free((*cursor)->predicate);
+	free((*cursor)->predicate);				/** This assumes that the predicate has been malloc'd */
 	free(*cursor);
 	*cursor = NULL;
 }
