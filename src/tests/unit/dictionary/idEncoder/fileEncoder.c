@@ -25,34 +25,34 @@ test_encode_parent(
 )
 {
 
-	filename_t parent_file;
+	fe_filename_t parent_file;
 
 	parent_file.instance_id 	= 0;
 
 	parent_file.parent.type		= mastertable;
 
-	encode_parent_id(&parent_file);
+	fe_encode_parent_id(&parent_file);
 	CuAssertTrue(tc, 0								== strcmp(parent_file.parent.parent_filename, "00000AAA.000"));
 
 	free(parent_file.parent.parent_filename);
 
 	parent_file.instance_id 	= 0;
 	parent_file.parent.type		= flatfile;
-	encode_parent_id(&parent_file);
+	fe_encode_parent_id(&parent_file);
 	CuAssertTrue(tc, 0								== strcmp(parent_file.parent.parent_filename, "00000AAA.100"));
 
 	free(parent_file.parent.parent_filename);
 
 	parent_file.instance_id 	= 0;
 	parent_file.parent.type		= file_based_open_address_hash;
-	encode_parent_id(&parent_file);
+	fe_encode_parent_id(&parent_file);
 	CuAssertTrue(tc, 0								== strcmp(parent_file.parent.parent_filename, "00000AAA.400"));
 
 	free(parent_file.parent.parent_filename);
 
 	parent_file.instance_id 	= 4095;
 	parent_file.parent.type		= file_based_open_address_hash;
-	encode_parent_id(&parent_file);
+	fe_encode_parent_id(&parent_file);
 	CuAssertTrue(tc, 0								== strcmp(parent_file.parent.parent_filename, "00000PPP.400"));
 
 	free(parent_file.parent.parent_filename);
@@ -72,58 +72,58 @@ test_encode_child(
 )
 {
 
-	filename_t parent_file;
+	fe_filename_t parent_file;
 
 	parent_file.instance_id 	= 0;
 	parent_file.child.child_id	= 0;
-	encode_child_id(&parent_file);
+	fe_encode_child_id(&parent_file);
 
 	CuAssertTrue(tc, 0								== strcmp(parent_file.child.child_filename, "AAAAAAAA.AAA"));
 
 	free(parent_file.child.child_filename);
 
 	parent_file.instance_id 	= 15;
-	encode_child_id(&parent_file);
+	fe_encode_child_id(&parent_file);
 	CuAssertTrue(tc, 0								== strcmp(parent_file.child.child_filename, "AAAAAAAA.PAA"));
 
 	free(parent_file.child.child_filename);
 
 	parent_file.instance_id 	= 16;
-	encode_child_id(&parent_file);
+	fe_encode_child_id(&parent_file);
 	CuAssertTrue(tc, 0								== strcmp(parent_file.child.child_filename, "AAAAAAAA.ABA"));
 
 	free(parent_file.child.child_filename);
 
 	parent_file.instance_id 	= 17;
-	encode_child_id(&parent_file);
+	fe_encode_child_id(&parent_file);
 	CuAssertTrue(tc, 0								== strcmp(parent_file.child.child_filename, "AAAAAAAA.BBA"));
 
 	free(parent_file.child.child_filename);
 
 	parent_file.instance_id 	= 4095;
 
-	encode_child_id(&parent_file);
+	fe_encode_child_id(&parent_file);
 	CuAssertTrue(tc, 0								== strcmp(parent_file.child.child_filename, "AAAAAAAA.PPP"));
 
 	free(parent_file.child.child_filename);
 
 	parent_file.instance_id 	= 4095;
 	parent_file.child.child_id	= 1;
-	encode_child_id(&parent_file);
+	fe_encode_child_id(&parent_file);
 	CuAssertTrue(tc, 0								== strcmp(parent_file.child.child_filename, "BAAAAAAA.PPP"));
 
 	free(parent_file.child.child_filename);
 
 	parent_file.instance_id 	= 4095;
 	parent_file.child.child_id	= 15;
-	encode_child_id(&parent_file);
+	fe_encode_child_id(&parent_file);
 	CuAssertTrue(tc, 0								== strcmp(parent_file.child.child_filename, "PAAAAAAA.PPP"));
 
 	free(parent_file.child.child_filename);
 
 	parent_file.instance_id 	= 4095;
 	parent_file.child.child_id	= 16;
-	encode_child_id(&parent_file);
+	fe_encode_child_id(&parent_file);
 	CuAssertTrue(tc, 0								== strcmp(parent_file.child.child_filename, "ABAAAAAA.PPP"));
 
 	free(parent_file.child.child_filename);
@@ -131,7 +131,7 @@ test_encode_child(
 	parent_file.instance_id 	= 4095;
 	parent_file.child.child_id	= 4294967295;
 
-	encode_child_id(&parent_file);
+	fe_encode_child_id(&parent_file);
 	CuAssertTrue(tc, 0								== strcmp(parent_file.child.child_filename, "PPPPPPPP.PPP"));
 
 	free(parent_file.child.child_filename);
@@ -150,22 +150,22 @@ test_encode_config(
 )
 {
 
-	filename_t parent_file;
+	fe_filename_t parent_file;
 
 	parent_file.parent.type		= mastertable;
 
 	parent_file.instance_id 	= 0;
-	encode_config_id(&parent_file);
+	fe_encode_config_id(&parent_file);
 	CuAssertTrue(tc, 0								== strcmp(parent_file.config.config_filename, "00000000.AAA"));
 	free(parent_file.parent.parent_filename);
 
 	parent_file.instance_id 	= 4095;
-	encode_config_id(&parent_file);
+	fe_encode_config_id(&parent_file);
 	CuAssertTrue(tc, 0								== strcmp(parent_file.config.config_filename, "00000000.PPP"));
 	free(parent_file.parent.parent_filename);
 
 	parent_file.instance_id 	= 4096;
-	CuAssertTrue(tc, err_illegal_state				== encode_config_id(&parent_file)		);
+	CuAssertTrue(tc, err_illegal_state				== fe_encode_config_id(&parent_file)		);
 
 }
 
@@ -181,13 +181,13 @@ test_encode_parent_illegal_state(
 )
 {
 
-	filename_t parent_file;
+	fe_filename_t parent_file;
 
 	parent_file.instance_id 	= 4096;
 
 	parent_file.parent.type		= mastertable;
 
-	CuAssertTrue(tc, err_illegal_state							== encode_parent_id(&parent_file));
+	CuAssertTrue(tc, err_illegal_state							== fe_encode_parent_id(&parent_file));
 
 	free(parent_file.parent.parent_filename);
 
@@ -196,7 +196,7 @@ test_encode_parent_illegal_state(
 
 	parent_file.parent.type		= 4096;
 
-	CuAssertTrue(tc, err_illegal_state							== encode_parent_id(&parent_file));
+	CuAssertTrue(tc, err_illegal_state							== fe_encode_parent_id(&parent_file));
 
 	free(parent_file.parent.parent_filename);
 }
@@ -215,17 +215,17 @@ test_encode_child_illegal_state(
 )
 {
 
-	filename_t parent_file;
+	fe_filename_t parent_file;
 
 	parent_file.instance_id 	= 4096;
 
-	CuAssertTrue(tc, err_illegal_state							== encode_child_id(&parent_file));
+	CuAssertTrue(tc, err_illegal_state							== fe_encode_child_id(&parent_file));
 
 	free(parent_file.parent.parent_filename);
 
 	parent_file.instance_id 	= 1;
 
-	CuAssertTrue(tc, err_ok										== encode_child_id(&parent_file));
+	CuAssertTrue(tc, err_ok										== fe_encode_child_id(&parent_file));
 
 	free(parent_file.parent.parent_filename);
 }
@@ -244,24 +244,24 @@ test_destroy(
 )
 {
 
-	filename_t parent_file;
+	fe_filename_t parent_file;
 
 	parent_file.instance_id 	= 4096;
 
-	CuAssertTrue(tc, err_illegal_state							== encode_child_id(&parent_file));
+	CuAssertTrue(tc, err_illegal_state							== fe_encode_child_id(&parent_file));
 
 	parent_file.destroy(&parent_file);
 
 	parent_file.instance_id 	= 1;
 
-	CuAssertTrue(tc, err_ok										== encode_child_id(&parent_file));
+	CuAssertTrue(tc, err_ok										== fe_encode_child_id(&parent_file));
 
 	parent_file.destroy(&parent_file);
 
 	parent_file.instance_id 	= 1;
 	parent_file.parent.type = flatfile;
 
-	CuAssertTrue(tc, err_ok										== encode_parent_id(&parent_file));
+	CuAssertTrue(tc, err_ok										== fe_encode_parent_id(&parent_file));
 
 	parent_file.destroy(&parent_file);
 

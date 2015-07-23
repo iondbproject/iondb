@@ -1,15 +1,16 @@
-/*
- * idEncoder.c
- *
- *  Created on: Jul 22, 2015
- *      Author: workstation
- */
+/******************************************************************************/
+/**
+@file		fileEncoder.c
+@author		Scott Fazackerley
+@see		For more information, refer to @ref fileEncoder.h.
+*/
+/******************************************************************************/
 
 #include "fileEncoder.h"
 
 void
-destroy(
-	filename_t						*file
+fe_destroy(
+	fe_filename_t						*file
 )
 {
 	if (file->parent.parent_filename != NULL)
@@ -20,17 +21,12 @@ destroy(
 }
 
 err_t
-encode_parent_id(
-	filename_t						*file
+fe_encode_parent_id(
+	fe_filename_t						*file
 )
 {
 
-	/** parent file name is 00000XXX.YYY
-	 * 							 	 ^^^-----encoded file type
-	 * 							 ^^^---------encoded parent id
-	 */
-
-	file->destroy = destroy;
+	file->destroy = fe_destroy;
 
 	if ((file->instance_id > 4095) || (file->parent.type > 4095))
 	{
@@ -38,7 +34,7 @@ encode_parent_id(
 		return err_illegal_state;
 	}
 
-	if (0 == (file->parent.parent_filename 		= (char*)malloc(FILENAME_SIZE)))
+	if (0 == (file->parent.parent_filename = (char*)malloc(FILENAME_SIZE)))
 	{
 		file->child.child_filename = NULL;
 		return err_illegal_state;
@@ -47,7 +43,7 @@ encode_parent_id(
 	int idx = 0;
 
 	ion_dictionary_id_t	id			= file->instance_id;
-	datastore_e file_type			= file->parent.type;
+	fe_datastore_e file_type		= file->parent.type;
 
 	for (; idx < (8 - MAX_PARENT_NIBBLES);idx++)
 	{
@@ -75,12 +71,12 @@ encode_parent_id(
 }
 
 err_t
-encode_child_id(
-	filename_t						*file
+fe_encode_child_id(
+	fe_filename_t						*file
 )
 {
 
-	file->destroy = destroy;
+	file->destroy = fe_destroy;
 
 	if (file->instance_id > 4095)
 	{
@@ -124,12 +120,12 @@ encode_child_id(
 
 
 err_t
-encode_config_id(
-	filename_t						*file
+fe_encode_config_id(
+	fe_filename_t						*file
 )
 {
 
-	file->destroy = destroy;
+	file->destroy = fe_destroy;
 
 	if (file->instance_id > 4095)
 	{
