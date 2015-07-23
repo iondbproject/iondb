@@ -19,6 +19,7 @@ extern "C" {
 
 #include "./../dicttypes.h"
 #include "./../dictionary.h"
+#include "./../idEncoder/fileEncoder.h"
 //#include "oadictionary.h"
 #include "file_ll.h"
 

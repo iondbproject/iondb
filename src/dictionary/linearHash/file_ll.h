@@ -16,7 +16,7 @@ extern "C" {
 
 #include "./../dicttypes.h"
 #include "./../dictionary.h"
-//#include "oadictionary.h"
+#include "./../idEncoder/fileEncoder.h"
 
 #include "./../../kv_system.h"
 #include "./../../kv_io.h"
@@ -25,7 +25,7 @@ extern "C" {
 #define LOW			0
 #define MEDIUM		1
 #define HIGH		2
-#define DEBUG 		1
+//#define DEBUG 		1
 #define DEBUG_LEVEL	LOW
 
 

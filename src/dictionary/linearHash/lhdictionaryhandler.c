@@ -423,16 +423,11 @@ boolean_t lhdict_is_equal(dictionary_t *dict, ion_key_t key1, ion_key_t key2)
 
 void lhdict_destroy_cursor(dict_cursor_t **cursor)
 {
-	DUMP(((lhdict_cursor_t *)*cursor)->overflow,"%x");
-	DUMP((*cursor)->type,"%i");
-	DUMP((*cursor)->predicate->type,"%i");
-
 	/** Free any internal memory allocations */
 	switch ((*cursor)->type)
 	{
 		case predicate_equality:
 		{
-			io_printf("freeing\n");
 			free((*cursor)->predicate->statement.equality.equality_value);
 			break;
 		}
@@ -447,7 +442,6 @@ void lhdict_destroy_cursor(dict_cursor_t **cursor)
 			break;
 		}
 	}
-	io_printf("done freeing\n");
 
 	/** free overflow file info */
 	if (((lhdict_cursor_t *)*cursor)->overflow != NULL)

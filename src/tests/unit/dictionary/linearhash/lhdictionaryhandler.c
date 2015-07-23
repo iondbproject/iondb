@@ -17,8 +17,6 @@ extern "C" {
 #include "./../../../../dictionary/dictionary.h"
 #include "./../../../../dictionary/linearhash/lhdictionaryhandler.h"
 
-#define TEST_FILE	"lh.bin"
-
 /**
 @brief		A helper function to build a test collection
 
@@ -739,7 +737,8 @@ test_linear_hash_dictionary_predicate_equality(
 	cursor->destroy 		= lhdict_destroy_cursor;
 
 	//create a new predicate statement
-	/** IMPORTANT - This must be put on the heap as the destory method will attempt to free */
+
+	/** IMPORTANT - This must be put on the heap as the destroy method will attempt to free */
 	cursor->predicate 		= (predicate_t *)malloc(sizeof(predicate_t));
 	cursor->predicate->type	= predicate_equality;
 
@@ -759,32 +758,21 @@ test_linear_hash_dictionary_predicate_equality(
 
 	((lhdict_cursor_t*)cursor)->overflow = NULL;
 
-	io_printf("test 1\n");
 	memcpy(key_under_test,(ion_key_t)&(int){1},sizeof(int));
 
 	CuAssertTrue(tc, IS_EQUAL 	== lhdict_test_predicate(cursor, key_under_test));
-	io_printf("test 2\n");
+
 	memcpy(key_under_test,(ion_key_t)&(int){2},sizeof(int));
 
 	CuAssertTrue(tc, IS_EQUAL 	!= lhdict_test_predicate(cursor, key_under_test));
-	io_printf("test 3\n");
+
 	memcpy(key_under_test,(ion_key_t)&(int){-1},sizeof(int));
 
 	CuAssertTrue(tc, IS_EQUAL 	!= lhdict_test_predicate(cursor, key_under_test));
 
-	io_printf("freeing key\n");
 	free(key_under_test);
 
-	/** @FIXME this does not need to be done */
-	//free up the correct predicate
-	//io_printf("freeing predicate\n");
-	//DUMP(cursor->predicate->statement.equality.equality_value,"%p");
-	//free(cursor->predicate->statement.equality.equality_value);
-
-	//predicate->statement.equality.equality_value = NULL;
-
 	//destroy cursor for cleanup
-	io_printf("destroying cursor\n");
 	cursor->destroy(&cursor);
 	//and destroy the collection
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -1174,9 +1162,7 @@ test_linear_hash_dictionary_cursor_range_3(
 //		io_printf("** result2:%i  %s\n",*(int*)record.key,str);
 
 		CuAssertTrue(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
-#if DEBUG
-		io_printf("** result:%i  %s\n",*(int*)record.key,(char*)record.value);
-#endif
+
 		result_count++;
 		free(str);
 	}

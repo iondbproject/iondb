@@ -59,10 +59,16 @@ test_file_linked_list_initialize(
 	//create linked list file struct
 	ll_file_t linked_list_file;
 	create_test_linked_list(&linked_list_file, id);
-	char filename[20];
-	sprintf(filename,"%i_%i.ovf",id,0);
+
+	fe_filename_t	filename;
+	filename.instance_id 		= id;				/** This is the parent id */
+	filename.child.child_id 	= 0;
+	fe_encode_child_id(&filename);
+
 	//valid correct map settings
-	CuAssertTrue(tc, 0	 							== strcmp(linked_list_file.file_name,filename));
+	CuAssertTrue(tc, 0	 							== strcmp(linked_list_file.file_name,filename.child.child_filename));
+	/** clean up filename */
+	filename.destroy(&filename);
 	//check that the first node is actually the head
 	char * node;
 	//when reading raw, allocate entire node

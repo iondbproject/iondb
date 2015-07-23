@@ -38,13 +38,19 @@ fll_open
 {
 
 	//get the file details for a bucket
-	char 	*extension = "ovf";
-	char  	filename[20];
+	//char 	*extension = "ovf";
+	//char  	filename[20];
 	/** @todo need to put a check here in the even a file has already been malloc'd */
-	sprintf(filename,"%i_%i.%s",id,bucket,extension);
+	//sprintf(filename,"%i_%i.%s",id,bucket,extension);
+
+	fe_filename_t	filename;
+	filename.instance_id 		= id;				/** This is the parent id */
+	filename.child.child_id 	= bucket;
+	fe_encode_child_id(&filename);
 	//allocation space for file name
-	linked_list_file->file_name 			= (char*)malloc(strlen(filename)+1);
-	strcpy(linked_list_file->file_name,filename);
+	linked_list_file->file_name 			= (char*)malloc(FILENAME_SIZE);
+	strcpy(linked_list_file->file_name,filename.child.child_filename);
+	filename.destroy(&filename);
 
 	//attempt to open the file
 	linked_list_file->file 					= fopen(linked_list_file->file_name,"r+b");
@@ -85,14 +91,24 @@ fll_create(
 	 * list
 	 */
 
-	char 	*extension = "ovf";
-	//itoa(bucket,bucket_string,10);
-	char  	filename[20];
-
-	sprintf(filename,"%i_%i.%s",id,bucket,extension);
+	fe_filename_t	filename;
+	filename.instance_id 		= id;				/** This is the parent id */
+	filename.child.child_id 	= bucket;
+	fe_encode_child_id(&filename);
 	//allocation space for file name
-	linked_list_file->file_name 			= (char*)malloc(strlen(filename)+1);
-	strcpy(linked_list_file->file_name,filename);
+	linked_list_file->file_name 			= (char*)malloc(FILENAME_SIZE);
+	strcpy(linked_list_file->file_name,filename.child.child_filename);
+	filename.destroy(&filename);
+
+//	char 	*extension = "ovf";
+	//itoa(bucket,bucket_string,10);
+//	char  	filename[20];
+
+//	sprintf(filename,"%i_%i.%s",id,bucket,extension);
+//	//allocation space for file name
+//	linked_list_file->file_name 			= (char*)malloc(strlen(filename)+1);
+//	strcpy(linked_list_file->file_name,filename);
+
 	linked_list_file->file 					= fopen(linked_list_file->file_name,"w+b");
 														/** NOTE: On windows machines file !!MUST!! be opened with +b to allow for binary mode,
 																						otherwise when 0x0A is encountered 0x0D will be included (\r\n)*/

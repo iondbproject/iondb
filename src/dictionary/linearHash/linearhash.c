@@ -58,10 +58,20 @@ lh_initialize(
 	DUMP(hashmap->initial_map_size,"%i");
 #endif
 
-	char filename[14];
-	sprintf(filename,"%i_%s",id,TEST_FILE);
+
+	fe_filename_t				filename;
+	filename.instance_id 		= id;				/** This is the parent id */
+	filename.parent.type		= linear_hash;
+	fe_encode_parent_id(&filename);
+	hashmap->file 				= fopen(filename.parent.parent_filename,"w+b");		//main hash file
+	filename.destroy(&filename);
+
+
+//	char filename[14];
+//	//sprintf(filename,"%i_%s",id,TEST_FILE);
 	//open the file
-	hashmap->file = fopen(filename,"w+b");		//main hash file
+
+//	hashmap->file = fopen(filename,"w+b");		//main hash file
 	//initital the hash map with a min number of buckets
 	//Assumes that there is only one record per bucket
 	/** @todo Correct the minimum block size as this will need to be increased to improve performance */
@@ -150,11 +160,17 @@ lh_destroy(
 
 	for (bucket_idx = 0; bucket_idx < (hash_map->initial_map_size*(1 << hash_map->file_level)+hash_map->bucket_pointer); bucket_idx ++)
 	{
-		char 	*extension = "ovf";
-		sprintf(filename,".\\%i_%i.%s",hash_map->id,bucket_idx,extension);
+
+		fe_filename_t	filename;
+		filename.instance_id	= hash_map->id;
+		filename.child.child_id = bucket_idx;
+		fe_encode_child_id(&filename);
+	//	char 	*extension = "ovf";
+	//	sprintf(filename,".\\%i_%i.%s",hash_map->id,bucket_idx,extension);
+
 		//allocation space for file name
 		FILE * bucket_file;
-		if ((bucket_file = fopen(filename,"rb")) != NULL)
+		if ((bucket_file = fopen(filename.child.child_filename,"rb")) != NULL)
 		{
 			if (fclose(bucket_file) == 0)
 			{
@@ -162,12 +178,12 @@ lh_destroy(
 				//bucket_file = NULL;
 #if ARDUINO == 1
 
-				if ( fremove(filename) != 0)
+				if ( fremove(filename.child.child_filename) != 0)
 				{
 					error = err_colllection_destruction_error;
 				}
 #else
-				if ( remove(filename) != 0)
+				if ( remove(filename.child.child_filename) != 0)
 				{
 					error = err_colllection_destruction_error;
 				}
@@ -178,22 +194,30 @@ lh_destroy(
 				error = err_colllection_destruction_error;
 			}
 		}
+		filename.destroy(&filename);						/** clean up file name */
 	}
 	if (hash_map->file != NULL)			//check to ensure that you are not freeing something already free
 	{
 		fclose(hash_map->file);
-		sprintf(filename,"%i_%s",hash_map->id,TEST_FILE);			/** @todo fix name */
+		fe_filename_t 	filename;
+		filename.instance_id 	= hash_map->id;
+		filename.parent.type	= linear_hash;
+		fe_encode_parent_id(&filename);
+
+	//	sprintf(filename,"%i_%s",hash_map->id,TEST_FILE);			/** @todo fix name */
 #if ARDUINO == 1
 
-		if ( fremove(filename) != 0)
+		if ( fremove(filename.parent.parent_filename) != 0)
 		{
 			error = err_colllection_destruction_error;
 		}
 #else
-		if ( remove(filename) != 0)
+		if ( remove(filename.parent.parent_filename) != 0)
 		{
 			error = err_colllection_destruction_error;
 		}
+
+		filename.destroy(&filename);								/** and cleanup filename */
 #endif
 		hash_map->file						= NULL;
 		hash_map->compute_hash 				= NULL;
