@@ -42,6 +42,10 @@ typedef struct parent {
 	datastore_e					type;
 } parent_t;
 
+typedef struct config {
+	char						*config_filename;
+} config_t;
+
 typedef struct filename			filename_t;
 
 struct filename{
@@ -50,12 +54,17 @@ struct filename{
 	union {
 		parent_t				parent;
 		child_t					child;
+		config_t				config;
 	};
-} ;
+};
 
 
+/**
+ * @brief		cleans up memory, if need be.
+ * @param file
+ */
 void
-destory(
+destroy(
 	filename_t						*file
 );
 /**
@@ -70,6 +79,12 @@ encode_parent_id(
 
 err_t
 encode_child_id(
+	filename_t						*file
+);
+
+
+err_t
+encode_config_id(
 	filename_t						*file
 );
 

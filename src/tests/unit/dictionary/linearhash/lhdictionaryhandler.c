@@ -1419,9 +1419,7 @@ linear_hash_handler_getsuite()
 	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_cursor_range_signed_3);
 	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_cursor_range_signed_4);
 	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_handler_query_with_results);
-	//
 	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_handler_query_no_results);
-	//
 	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_cursor_range);
 	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_cursor_range_2);
 	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_cursor_range_3);

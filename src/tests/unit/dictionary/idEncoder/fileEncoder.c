@@ -14,7 +14,7 @@
 
 
 /**
-@brief
+@brief 		Tests the encoding of dictionary id to encoded file name.
 
 @param 		tc
 				CuTest
@@ -61,7 +61,7 @@ test_encode_parent(
 
 
 /**
-@brief
+@brief		Tests the encoding of child file ID's for an associated parent file.
 
 @param 		tc
 				CuTest
@@ -139,7 +139,38 @@ test_encode_child(
 }
 
 /**
-@brief
+@brief		Tests the encoding of a config file name for an associated parent file.
+
+@param 		tc
+				CuTest
+ */
+void
+test_encode_config(
+	CuTest		*tc
+)
+{
+
+	filename_t parent_file;
+
+	parent_file.parent.type		= mastertable;
+
+	parent_file.instance_id 	= 0;
+	encode_config_id(&parent_file);
+	CuAssertTrue(tc, 0								== strcmp(parent_file.config.config_filename, "00000000.AAA"));
+	free(parent_file.parent.parent_filename);
+
+	parent_file.instance_id 	= 4095;
+	encode_config_id(&parent_file);
+	CuAssertTrue(tc, 0								== strcmp(parent_file.config.config_filename, "00000000.PPP"));
+	free(parent_file.parent.parent_filename);
+
+	parent_file.instance_id 	= 4096;
+	CuAssertTrue(tc, err_illegal_state				== encode_config_id(&parent_file)		);
+
+}
+
+/**
+@brief		Tests error checking on ranges for IDs for parent files.
 
 @param 		tc
 				CuTest
@@ -173,7 +204,7 @@ test_encode_parent_illegal_state(
 
 
 /**
-@brief
+@brief		Tests error checking on ranges for IDs for child files.
 
 @param 		tc
 				CuTest
@@ -192,7 +223,6 @@ test_encode_child_illegal_state(
 
 	free(parent_file.parent.parent_filename);
 
-
 	parent_file.instance_id 	= 1;
 
 	CuAssertTrue(tc, err_ok										== encode_child_id(&parent_file));
@@ -200,8 +230,10 @@ test_encode_child_illegal_state(
 	free(parent_file.parent.parent_filename);
 }
 
+
+
 /**
-@brief
+@brief		Tests the operation of the destroy function.
 
 @param 		tc
 				CuTest
@@ -224,7 +256,7 @@ test_destroy(
 
 	CuAssertTrue(tc, err_ok										== encode_child_id(&parent_file));
 
-	//sparent_file.destroy(&parent_file);
+	parent_file.destroy(&parent_file);
 
 	parent_file.instance_id 	= 1;
 	parent_file.parent.type = flatfile;
@@ -243,6 +275,7 @@ encode_file_id_getsuite()
 
 	SUITE_ADD_TEST(suite, test_encode_parent);
 	SUITE_ADD_TEST(suite, test_encode_child);
+	SUITE_ADD_TEST(suite, test_encode_config);
 	SUITE_ADD_TEST(suite, test_encode_parent_illegal_state);
 	SUITE_ADD_TEST(suite, test_encode_child_illegal_state);
 	SUITE_ADD_TEST(suite, test_destroy);

@@ -8,7 +8,7 @@
 #include "fileEncoder.h"
 
 void
-destory(
+destroy(
 	filename_t						*file
 )
 {
@@ -30,7 +30,7 @@ encode_parent_id(
 	 * 							 ^^^---------encoded parent id
 	 */
 
-	file->destroy = destory;
+	file->destroy = destroy;
 
 	if ((file->instance_id > 4095) || (file->parent.type > 4095))
 	{
@@ -80,7 +80,7 @@ encode_child_id(
 )
 {
 
-	file->destroy = destory;
+	file->destroy = destroy;
 
 	if (file->instance_id > 4095)
 	{
@@ -117,6 +117,54 @@ encode_child_id(
 	}
 
 	file->child.child_filename[idx] = 0;
+
+	return err_ok;
+
+}
+
+
+err_t
+encode_config_id(
+	filename_t						*file
+)
+{
+
+	file->destroy = destroy;
+
+	if (file->instance_id > 4095)
+	{
+		file->config.config_filename = NULL;
+		return err_illegal_state;
+	}
+	/** parent file name is 00000000.AAA
+	 * 							 	 ^^^-----encoded file type
+	 * 							 ^^^---------encoded parent id
+	 */
+
+	if (0 == (file->config.config_filename 		= (char*)malloc(FILENAME_SIZE)))
+	{
+		file->config.config_filename = NULL;
+		return err_illegal_state;
+	}
+
+	ion_dictionary_id_t	id			= file->instance_id;
+
+	int idx = 0;
+
+	for (; idx < 8; idx++)
+	{
+		file->config.config_filename[idx] = '0';
+	}
+
+	file->config.config_filename[idx++] = '.';
+
+	for (; idx < 12; idx++)
+	{
+		file->config.config_filename[idx] = encode[(((unsigned char)id) & 0x0F)];	/** extract value */
+		id = (id >> NUMBER_OF_BITS);								/** shift down */
+	}
+
+	file->config.config_filename[idx] = 0;
 
 	return err_ok;
 
