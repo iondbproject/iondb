@@ -1072,6 +1072,97 @@ test_file_linear_hash_delete(
 	delete_linear_hash(&hashmap);
 
 }
+
+/**
+@brief 		Tests the initialization of the linear hash
+
+@param 		tc
+				CuTest
+ */
+void
+test_linear_hash_load_factor(
+	CuTest		*tc
+)
+{
+	linear_hashmap_t hashmap;
+	int structure_ID = 5;
+
+	int size;										/** number of pages */
+	record_info_t record;
+	record.key_size = 4;
+	record.value_size = 10;
+
+	hashmap.super.key_type = key_type_numeric_signed;			//default to use int key type
+
+	size = 4;
+
+	lh_initialize(
+		&hashmap,
+		lh_compute_hash,
+		hashmap.super.key_type,
+		record.key_size,
+		record.value_size,
+		size,
+		structure_ID
+		);
+
+	/** and don't forget to bind the compare as this is usually done at dict level */
+	hashmap.super.compare = dictionary_compare_signed_value;
+
+
+	/*empty so load should be 0 */
+	/*Initial size = 4 with 2 records per page*/
+	//CuAssertTrue(tc, 0						==	lh_compute_load_factor(&hashmap));
+	DUMP(lh_compute_load_factor(&hashmap),"%i");
+
+	char * value = "value";
+
+	int key = 1;
+
+	for (;key < 9; key++)
+	{
+		lh_insert(&hashmap,(ion_key_t)&key,(ion_value_t)value);
+		int actual_load = 100 * (key) / (RECORDS_PER_BUCKET * size);
+		CuAssertTrue(tc, actual_load			==	lh_compute_load_factor(&hashmap));
+	}
+
+	key--;
+
+	for (;key > 0 ; key--)
+	{
+		lh_delete(&hashmap,(ion_key_t)&key);
+		int actual_load = 100 * (key-1) / (RECORDS_PER_BUCKET * size);
+		CuAssertTrue(tc, actual_load			==	lh_compute_load_factor(&hashmap));
+	}
+
+	CuAssertTrue(tc, 0			==	hashmap.number_of_records);
+
+	key++;						/** start back at 1 */
+
+	/** test with overflow without split */
+	for (;key < 19; key++)
+	{
+		lh_insert(&hashmap,(ion_key_t)&key,(ion_value_t)value);
+		int actual_load = 100 * (key) / (RECORDS_PER_BUCKET * size);
+		CuAssertTrue(tc, actual_load			==	lh_compute_load_factor(&hashmap));
+	}
+
+	key--;
+	/** Test load factor under split */
+
+	int split_cnt = 0;
+	for(;split_cnt < key;split_cnt++)
+	{
+		lh_split(&hashmap);
+		size++;												/** number of pages is increased */
+		int actual_load = 100 * (key) / (RECORDS_PER_BUCKET * size);
+		CuAssertTrue(tc, actual_load			==	lh_compute_load_factor(&hashmap));
+	}
+
+	lh_close(&hashmap);									/** closes the structure */
+
+	delete_linear_hash(&hashmap);						/** closes and deletes? */
+}
 CuSuite*
 linear_hash_getsuite()
 {
@@ -1089,6 +1180,7 @@ linear_hash_getsuite()
 	SUITE_ADD_TEST(suite, test_file_linear_hash_query_2);
 	SUITE_ADD_TEST(suite, test_file_linear_hash_delete);
 	SUITE_ADD_TEST(suite, test_file_linear_hash_destroy);
+	SUITE_ADD_TEST(suite, test_linear_hash_load_factor);
 	return suite;
 }
 

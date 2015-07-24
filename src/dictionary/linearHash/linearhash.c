@@ -41,6 +41,7 @@ lh_initialize(
 	hashmap->record_size				= key_size + value_size + SIZEOF(STATUS);
 																	/** record size, while it can be computed on the fly is a commonly computed value
 																	 * 	and adds significant overhead so it can be precomputed */
+	hashmap->number_of_records			= 0;						/** starts empty :) */
 
 	int i;
 	for (i = 0; i < CACHE_SIZE; i++)
@@ -296,6 +297,7 @@ lh_insert(
 		io_printf("flushing!\n");
 #endif
 		lh_flush_cache(hash_map,cache,PRESERVE_CACHE_MEMORY);
+		hash_map->number_of_records++;				/** increase record count */
 		return status.err;
 	}
 
@@ -329,7 +331,7 @@ lh_insert(
 	fll_insert(&linked_list_file,node);
 	fll_close(&linked_list_file);
 	free(node);
-
+	hash_map->number_of_records++;				/** increase record count */
 	return err_ok;
 }
 
@@ -552,10 +554,11 @@ lh_delete(
 		}
 		free(value);
 
-		fll_close(&linked_list_file);											/** and close the file */
+		fll_close(&linked_list_file);													/** and close the file */
 	}
 	if (num_deleted != 0)
 	{
+		hash_map->number_of_records  = hash_map->number_of_records - num_deleted;		/** decrease count */
 		return err_ok;
 	}
 	else
@@ -1238,7 +1241,10 @@ lh_action_primary_page(
 		lh_read_cache(hash_map,cache,count,(void*)&item);
 #if DEBUG
 		DUMP(count * hash_map->record_size,"%i");
+		DUMP(*(int*)item->data,"%i");
+		DUMP(*(int*)key,"%i");
 #endif
+
 		/** scan through block performing action*/
 		action_status_t record_status = action(hash_map, key, item, value);
 
@@ -1297,4 +1303,14 @@ lh_search_primary_page(
 		cursor->record_pntr++;
 	}
 	return err_not_in_primary_page;
+}
+
+
+int
+lh_compute_load_factor(
+	linear_hashmap_t		*hash_map
+)
+{
+	int number_of_primary_pages 	= (hash_map->initial_map_size*(1 << hash_map->file_level)+hash_map->bucket_pointer);
+	return (int)((unsigned long long)100 * hash_map->number_of_records)/(RECORDS_PER_BUCKET * number_of_primary_pages);
 }

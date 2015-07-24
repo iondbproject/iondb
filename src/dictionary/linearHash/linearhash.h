@@ -134,6 +134,8 @@ struct linear_hashmap
 	int					id;			/**< id for files in system */
 									/** @todo this could be moved to parent */
 	int					record_size;/**< the size of the record in the pp */
+	int 				number_of_records;
+									/**< the number of records in the linear_hash */
 	lh_page_cache_t		cache[CACHE_SIZE];
 									/**< holds pp for cacheing */
 };
@@ -588,6 +590,23 @@ lh_search_primary_page(
 	linear_hashmap_t		*hash_map,
 	lh_page_cache_t			*cache,
 	lhdict_cursor_t			*cursor  /*predicate is in here */
+);
+
+/**
+ * @brief	Determines the current load factor in the hashmap as
+ *
+ * 				load_factor = number_of_records/(page_size*number_of_primary_pages).
+ *
+ * 			The load factor does not take into consideration the number of
+ * 			available pages available in overflow files.
+ *
+ * @param 	hash_map
+ * 				The hashmap to compute the load factor for.
+ * @return
+ */
+int
+lh_compute_load_factor(
+	linear_hashmap_t		*hash_map
 );
 
 #ifdef __cplusplus
