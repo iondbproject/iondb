@@ -392,10 +392,7 @@ bpptree_find(
 		case predicate_all_records:
 		{
 			bErrType err;
-			(*cursor)->predicate->statement.range.leq_value = malloc(key_size);
 
-			(*cursor)->predicate->statement.range.geq_value = malloc(key_size);
-			
 			/* We search for first key in B++ tree. */
 			err	= bFindFirstKey(
 					bpptree->tree,
