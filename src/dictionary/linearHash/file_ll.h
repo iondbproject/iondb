@@ -259,6 +259,22 @@ fll_update_node(
 );
 
 /**
+ * @brief		Updates the node at the position currently being pointed to.
+ *
+ * @param 		linked_list_file
+ * 					The file to update.
+ * @param 		ll_probe
+ * 					The node that is being updated.
+ * 					Do not change key value.
+ * @return
+ */
+err_t
+fll_update(
+	ll_file_t					*linked_list_file,
+	ll_file_node_t				*ll_probe
+);
+
+/**
  * Resets iterator to the start of list.
  * @param linked_list_file
  * 			The linked list being operated on

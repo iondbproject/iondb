@@ -158,7 +158,7 @@ test_file_linear_initialization(
 	CuAssertTrue(tc, hashmap.initial_map_size 			== initial_size);
 	CuAssertTrue(tc, hashmap.compute_hash
 		== &lh_compute_hash);
-	CuAssertTrue(tc, hashmap.write_concern 				== wc_insert_unique);
+	CuAssertTrue(tc, hashmap.write_concern 				== wc_duplicate);
 	CuAssertTrue(tc, hashmap.bucket_pointer				== 0);
 	CuAssertTrue(tc, hashmap.file_level 				== 0);
 
@@ -274,6 +274,72 @@ test_file_linear_hash_insert(
 	lh_insert(&hashmap,(ion_key_t)&key,(ion_value_t)value);
 	key = 22;
 	lh_insert(&hashmap,(ion_key_t)&key,(ion_value_t)value);
+
+	lh_close(&hashmap);									/** closes the structure */
+
+	delete_linear_hash(&hashmap);						/** closes and deletes? */
+}
+
+/**
+@brief 		Tests the initialization of the linear hash
+
+@param 		tc
+				CuTest
+ */
+void
+test_file_linear_hash_insert_negative(
+	CuTest		*tc
+)
+{
+	linear_hashmap_t hashmap;
+	int structure_ID = 5;
+
+	int initial_size;
+	record_info_t record;
+	record.key_size = 4;
+	record.value_size = 10;
+
+	hashmap.super.key_type = key_type_numeric_signed;			//default to use int key type
+	hashmap.super.compare  = dictionary_compare_signed_value;
+
+	initial_size = 4;
+	lh_initialize(
+		&hashmap,
+		lh_compute_hash,
+		hashmap.super.key_type,
+		record.key_size,
+		record.value_size,
+		initial_size,
+		structure_ID
+		);
+
+	int key[4] = {0, -4, -8, -12};
+	char value[hashmap.super.record.value_size];
+	char query_value[hashmap.super.record.value_size];
+#if DEBUG
+	io_printf("inserting a new value\n");
+#endif
+	int idx = 0;
+	for (;idx<4;idx++)
+	{
+		sprintf(value,"value:%i",key[idx]);
+		CuAssertTrue(tc, err_ok 		== lh_insert(&hashmap,(ion_key_t)&key[idx],(ion_value_t)value));
+	}
+
+	for (idx = 0; idx < 4; idx++)
+	{
+	#if DEBUG
+		io_printf("starting search for key: %i",key[idx]);
+	#endif
+		CuAssertTrue(tc, err_ok				==	lh_query(&hashmap, (ion_key_t)&key[idx],(ion_value_t)query_value));
+		sprintf(value,"value:%i",key[idx]);
+
+	#if DEBUG
+		DUMP(value,"%s");
+		DUMP(query_value,"%s");
+	#endif
+		CuAssertTrue(tc, 0 					== strcmp(value,(char *)query_value));
+	}
 
 	lh_close(&hashmap);									/** closes the structure */
 
@@ -1112,8 +1178,8 @@ test_linear_hash_load_factor(
 
 	/*empty so load should be 0 */
 	/*Initial size = 4 with 2 records per page*/
-	//CuAssertTrue(tc, 0						==	lh_compute_load_factor(&hashmap));
-	DUMP(lh_compute_load_factor(&hashmap),"%i");
+	CuAssertTrue(tc, 0						==	lh_compute_load_factor(&hashmap));
+	//DUMP(lh_compute_load_factor(&hashmap),"%i");
 
 	char * value = "value";
 
@@ -1163,6 +1229,129 @@ test_linear_hash_load_factor(
 
 	delete_linear_hash(&hashmap);						/** closes and deletes? */
 }
+
+/**
+@brief 		Tests the initialization of the linear hash
+
+@param 		tc
+				CuTest
+ */
+void
+test_file_linear_hash_update(
+	CuTest		*tc
+)
+{
+	linear_hashmap_t hashmap;
+	int structure_ID = 5;
+
+	int initial_size;
+	record_info_t record;
+	record.key_size = 4;
+	record.value_size = 10;
+
+	hashmap.super.key_type = key_type_numeric_signed;			//default to use int key type
+
+	initial_size = 4;
+
+	lh_initialize(
+		&hashmap,
+		lh_compute_hash,
+		hashmap.super.key_type,
+		record.key_size,
+		record.value_size,
+		initial_size,
+		structure_ID
+		);
+
+	hashmap.super.compare = dictionary_compare_signed_value;
+
+	int key = 1;
+
+	char * value = "value";
+
+	for (;key<9;key++)
+	{
+		lh_insert(&hashmap,(ion_key_t)&key,(ion_value_t)value);
+	}
+
+	char * new_value = "eulav";
+
+	key = 1;
+	return_status_t status = lh_update(&hashmap,(ion_key_t)&key,(ion_value_t)new_value);
+
+	CuAssertTrue(tc,1			== status.count );
+
+	ion_value_t query_value = (ion_value_t)malloc(record.value_size);
+
+	CuAssertTrue(tc, err_ok		==	lh_query(&hashmap, (ion_key_t)&key,query_value));
+
+	CuAssertTrue(tc,0			== memcmp(query_value,new_value,hashmap.super.record.value_size));
+
+	free(query_value);
+
+	key = 5;
+
+	status = lh_update(&hashmap,(ion_key_t)&key,(ion_value_t)new_value);
+
+	CuAssertTrue(tc,1			== status.count );
+
+	query_value = (ion_value_t)malloc(record.value_size);
+
+	CuAssertTrue(tc, err_ok		==	lh_query(&hashmap, (ion_key_t)&key,query_value));
+
+	CuAssertTrue(tc,0			== memcmp(query_value,new_value,hashmap.super.record.value_size));
+
+	free(query_value);
+
+
+	key = 1;
+
+	CuAssertTrue(tc,err_ok		== lh_insert(&hashmap,(ion_key_t)&key,(ion_value_t)value));
+
+	CuAssertTrue(tc,err_ok		== lh_insert(&hashmap,(ion_key_t)&key,(ion_value_t)value));
+
+	char * next_value = "abcde";
+
+	status = lh_update(&hashmap,(ion_key_t)&key,(ion_value_t)next_value);
+
+	CuAssertTrue(tc,3			== status.count );
+
+	/** Delete records in pp to ensure that updates will happen in overflow */
+	key = 1;
+	CuAssertTrue(tc, err_ok		== lh_delete(&hashmap, (ion_key_t)&key));
+
+	key = 5;
+	CuAssertTrue(tc, err_ok		== lh_delete(&hashmap, (ion_key_t)&key));
+
+	char * next_value2 = "fghij";
+
+	key = 1;
+
+	status = lh_update(&hashmap,(ion_key_t)&key,(ion_value_t)next_value2);
+	CuAssertTrue(tc,1			== status.count );
+
+	status = lh_update(&hashmap,(ion_key_t)&key,(ion_value_t)next_value2);
+	CuAssertTrue(tc,1			== status.count );
+
+	CuAssertTrue(tc,err_ok		== lh_insert(&hashmap,(ion_key_t)&key,(ion_value_t)value));
+
+	/** Insert key and it should go into overflow page */
+	key = 9;
+	CuAssertTrue(tc,err_ok		== lh_insert(&hashmap,(ion_key_t)&key,(ion_value_t)value));
+
+	key = 5;
+	status = lh_update(&hashmap,(ion_key_t)&key,(ion_value_t)next_value2);
+	CuAssertTrue(tc,1			== status.count );
+
+	key = 13;
+	status = lh_update(&hashmap,(ion_key_t)&key,(ion_value_t)next_value2);
+	CuAssertTrue(tc,1			== status.count );
+
+	lh_close(&hashmap);									/** closes the structure */
+
+	delete_linear_hash(&hashmap);						/** closes and deletes? */
+}
+
 CuSuite*
 linear_hash_getsuite()
 {
@@ -1172,6 +1361,7 @@ linear_hash_getsuite()
 	SUITE_ADD_TEST(suite, test_file_linear_size_test);
 	SUITE_ADD_TEST(suite, test_file_linear_initialization);
 	SUITE_ADD_TEST(suite, test_file_linear_hash_insert);
+	SUITE_ADD_TEST(suite, test_file_linear_hash_insert_negative);
 	SUITE_ADD_TEST(suite, test_file_linear_hash_split_1);
 	SUITE_ADD_TEST(suite, test_file_linear_hash_split_2);
 	SUITE_ADD_TEST(suite, test_file_linear_hash_split_3);
@@ -1181,6 +1371,7 @@ linear_hash_getsuite()
 	SUITE_ADD_TEST(suite, test_file_linear_hash_delete);
 	SUITE_ADD_TEST(suite, test_file_linear_hash_destroy);
 	SUITE_ADD_TEST(suite, test_linear_hash_load_factor);
+	SUITE_ADD_TEST(suite, test_file_linear_hash_update);
 	return suite;
 }
 

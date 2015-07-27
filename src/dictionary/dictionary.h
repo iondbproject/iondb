@@ -17,6 +17,8 @@ extern "C" {
 #include "dicttypes.h"
 #include <stdarg.h>
 
+#define ION_USING_MASTER_TABLE 1
+
 /**
 @brief		Creates as instance of a specific type of dictionary.
 

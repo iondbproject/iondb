@@ -95,7 +95,8 @@ fe_encode_child_id(
 	}
 
 	ion_dictionary_id_t	id			= file->instance_id;
-		ion_dictionary_id_t	child_id	= file->child.child_id;
+	ion_dictionary_id_t	child_id	= file->child.child_id;
+
 	int idx = 0;
 
 	for (; idx < 8; idx++)

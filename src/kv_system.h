@@ -18,6 +18,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+#define IONIZE(x) ({volatile typeof(x) _tmp = x; (ion_key_t) &_tmp; })
+#define NEUTRALIZE(type, x) ( *((type *) x) )
+
 enum status
 {
 	status_ok,            				/**< status_ok*/
@@ -26,6 +30,10 @@ enum status
 };
 
 typedef char status_t;
+
+#ifndef ION_ARDUINO
+typedef unsigned char byte;
+#endif
 
 /**
 This is the available key types for ION_DB.  All types will be based on system
@@ -50,6 +58,7 @@ typedef enum key_type
 enum error
 {
 	err_ok,
+	err_dictionary_initialization_failed,
 	err_item_not_found,
 	err_duplicate_key,
 	err_max_capacity,
@@ -60,6 +69,7 @@ enum error
 	err_file_write_error,
 	err_file_read_error,
 	err_file_close_error,
+	err_file_open_error,
 	err_file_delete_error,
 	err_uninitialized,
 	err_illegal_state,

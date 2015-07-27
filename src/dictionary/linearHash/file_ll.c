@@ -61,6 +61,7 @@ fll_open
 		io_printf("file does note exist!\n");
 #endif
 		free(linked_list_file->file_name);				/** free up before you call again*/
+		linked_list_file->file_name = NULL;
 		return err_item_not_found;
 	}
 	else
@@ -178,6 +179,7 @@ fll_insert(
 	ll_probe = (ll_file_node_t  *)malloc(linked_list_file->node_size);
 
 	/**Rest iterator to the start of the list */
+	/** @TODO add check to improve performance as list may already be active for multiple inserts*/
 	fll_reset(linked_list_file);
 
 	fll_get(linked_list_file,ll_probe);									/** Read in the head node and determine what to do*/
@@ -285,6 +287,7 @@ fll_delete(
 	return 0;			/** @fix return codes*/
 }
 
+/** @TODO Clean up memory management */
 err_t
 fll_find(
 	ll_file_t				*linked_list_file,
@@ -447,6 +450,16 @@ fll_update_node(
 	return 0;
 }
 
+
+err_t
+fll_update(
+	ll_file_t					*linked_list_file,
+	ll_file_node_t				*ll_probe
+)
+{
+	return fll_update_node(linked_list_file,ll_probe,linked_list_file->current);
+}
+
 err_t
 fll_remove(
 	ll_file_t					*linked_list_file
@@ -469,7 +482,7 @@ fll_remove(
 		{
 			//load the previous node
 			ll_file_node_t * ll_node 			= (ll_file_node_t *)malloc(linked_list_file->node_size);
-			long int current 					= linked_list_file->current;/** store the current node */
+			//long int current 					= linked_list_file->current;/** store the current node */
 			long int next  						= linked_list_file->next;
 
 			linked_list_file->current 			= linked_list_file->previous;
@@ -477,7 +490,8 @@ fll_remove(
 			fll_get(linked_list_file,ll_node);
 			ll_node->next = next;											/** and point the previous node to the next */
 			fll_update_node(linked_list_file,ll_node,linked_list_file->previous);
-			linked_list_file->current 			= current;					/** return state */
+			/** This does not have to get updated ? */
+			//linked_list_file->current 			= current;					/** return state */
 			linked_list_file->next				= next;
 			linked_list_file->iterator_state 	= removed;					/** note that the item has been removed */
 			free(ll_node);

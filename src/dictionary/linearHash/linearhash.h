@@ -42,12 +42,14 @@ extern "C" {
 
 #define CACHE_SIZE			2				/** defines how many cache blocks are available */
 
+#define SPLIT_THRESHOLD		70				/** 70/100 as split threshold as per recommendation Litwin */
+
 #define MAX_FILE_LENGTH  	20
 /** @TODO The location of hash_t needs to be resolved */
 /**
 @brief		The position in the hashmap.
  */
-typedef int 			hash_t;
+typedef unsigned int 			hash_t;
 
 /**
 @brief		Prototype declaration for hashmap
@@ -124,8 +126,6 @@ struct linear_hashmap
 									/**< The hashing function to be used for
 										 	 the instance.
 										 	 In fact it will return both possible hash.*/
-/*	char 				(* compare)(ion_key_t, ion_key_t, ion_key_size_t);
-										*< Comparison function for instance of map */
 	char 				*entry;		/**< Pointer to the entries in the hashmap*/
 	FILE				*file;		/**< file pointer */
 	int					file_level;	/**< the current file level for hash */
@@ -138,6 +138,7 @@ struct linear_hashmap
 									/**< the number of records in the linear_hash */
 	lh_page_cache_t		cache[CACHE_SIZE];
 									/**< holds pp for cacheing */
+	char 				use_split;	/**< controls splitying behaviour */
 };
 
 /**
@@ -264,13 +265,29 @@ lh_insert(
 				The value that is being inserted.
 @return		The status of the update
 */
-err_t
+return_status_t
 lh_update(
 		linear_hashmap_t 	*hash_map,
 		ion_key_t			key,
 		ion_value_t 		value
 );
 
+/**
+ * @brief 		Checks to see if the item in the cache can be updated and updates it
+ * 				if a match.
+ * @param 		hash_map
+ * @param key
+ * @param item
+ * @param value
+ * @return
+ */
+action_status_t
+lh_update_item_action(
+	linear_hashmap_t	*hash_map,
+	ion_key_t			key,
+	l_hash_bucket_t		*item,
+	ion_value_t			value
+);
 /**
 @brief 		Locates item in map.
 

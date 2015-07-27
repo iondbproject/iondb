@@ -43,7 +43,17 @@ lhdict_close(
 
 err_t lhdict_insert(dictionary_t *dictionary, ion_key_t key, ion_value_t value)
 {
-	return lh_insert((linear_hashmap_t *)dictionary->instance, key, value);
+	err_t err = lh_insert((linear_hashmap_t *)dictionary->instance, key, value);
+	/** Check load factor and split if necessary*/
+
+	if (((linear_hashmap_t *)dictionary->instance)->use_split)
+	{
+		if (SPLIT_THRESHOLD < lh_compute_load_factor((linear_hashmap_t *)dictionary->instance))
+		{
+			lh_split((linear_hashmap_t *)dictionary->instance);
+		}
+	}
+	return err;
 }
 
 err_t lhdict_query(dictionary_t *dictionary, ion_key_t key, ion_value_t value)
@@ -51,7 +61,8 @@ err_t lhdict_query(dictionary_t *dictionary, ion_key_t key, ion_value_t value)
 	return lh_query((linear_hashmap_t *)dictionary->instance, key, value);
 }
 
-err_t lhdict_create_dictionary(
+err_t
+lhdict_create_dictionary(
 	ion_dictionary_id_t id,
     key_type_t key_type,
     int key_size,
@@ -62,6 +73,7 @@ err_t lhdict_create_dictionary(
     dictionary_t *dictionary)
 {
 	//this is the instance of the hashmap
+
 	dictionary->instance = (dictionary_parent_t *)malloc(sizeof(linear_hashmap_t));
 
 	dictionary->instance->compare = compare;
@@ -102,7 +114,8 @@ err_t lhdict_delete_dictionary(dictionary_t *dictionary)
 
 err_t lhdict_update(dictionary_t *dictionary, ion_key_t key, ion_value_t value)
 {
-	return lh_update((linear_hashmap_t *)dictionary->instance, key, value);
+	return_status_t status = lh_update((linear_hashmap_t *)dictionary->instance, key, value);
+	return status.err;
 }
 
 /** @todo What do we do if the cursor is already active? */
@@ -287,7 +300,7 @@ cursor_status_t lhdict_next(dict_cursor_t *cursor, ion_record_t *record)
 
 					memcpy(record->key,item->data,hash_map->super.record.key_size);
 					memcpy(record->value,item->data+hash_map->super.record.key_size,hash_map->super.record.value_size);
-
+//					DUMP(((lhdict_cursor_t*)cursor)->record_pntr,"%i");
 					/**and update current cursor position to point to the next position*/
 					((lhdict_cursor_t*)cursor)->record_pntr++;	/** what happens if we exceed page */
 					return cursor->status;
@@ -316,7 +329,7 @@ cursor_status_t lhdict_next(dict_cursor_t *cursor, ion_record_t *record)
 								cursor->status = cs_end_of_results;
 								free(((lhdict_cursor_t *)cursor)->overflow);
 								((lhdict_cursor_t *)cursor)->overflow = NULL;
-								return  err_item_not_found;
+								return  cursor->status;
 							}
 							else	/**need to process next page */
 							{
@@ -423,18 +436,22 @@ boolean_t lhdict_is_equal(dictionary_t *dict, ion_key_t key1, ion_key_t key2)
 
 void lhdict_destroy_cursor(dict_cursor_t **cursor)
 {
+
 	/** Free any internal memory allocations */
 	switch ((*cursor)->type)
 	{
 		case predicate_equality:
 		{
 			free((*cursor)->predicate->statement.equality.equality_value);
+			(*cursor)->predicate->statement.equality.equality_value = NULL;
 			break;
 		}
 		case predicate_range:
 		{
 			free((*cursor)->predicate->statement.range.geq_value);
 			free((*cursor)->predicate->statement.range.leq_value);
+			(*cursor)->predicate->statement.range.geq_value = NULL;
+			(*cursor)->predicate->statement.range.leq_value = NULL;
 			break;
 		}
 		case predicate_predicate:
@@ -448,6 +465,7 @@ void lhdict_destroy_cursor(dict_cursor_t **cursor)
 	{
 		fll_close(((lhdict_cursor_t *)*cursor)->overflow);
 		free(((lhdict_cursor_t *)*cursor)->overflow);
+		((lhdict_cursor_t *)*cursor)->overflow = NULL;
 	}
 	/** and free cursor pointer */
 	free((*cursor)->predicate);				/** This assumes that the predicate has been malloc'd */

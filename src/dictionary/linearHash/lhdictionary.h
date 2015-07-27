@@ -16,7 +16,6 @@ extern "C" {
 /**
 @brief		The position in the hashmap.
  */
-typedef int 			hash_t;
 typedef char			troolean_t;
 
 /**@ todo update this so it works with lh */

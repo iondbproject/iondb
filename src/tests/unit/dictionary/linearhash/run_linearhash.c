@@ -1,4 +1,5 @@
 
+#define NO_SPLIT 1
 
 void
 runalltests_file_linked_list();

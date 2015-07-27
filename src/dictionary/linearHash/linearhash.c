@@ -20,6 +20,7 @@
 #define INVALID -1
 
 
+
 err_t
 lh_initialize(
     linear_hashmap_t 	*hashmap,
@@ -31,7 +32,7 @@ lh_initialize(
     int					id
 )
 {
-	hashmap->write_concern 				= wc_insert_unique;			/* By default allow unique inserts only */
+	hashmap->write_concern 				= wc_duplicate;				/** By default allow duplicate keys */
 	hashmap->file_level					= 0;
 	hashmap->bucket_pointer 			= 0;
 	hashmap->super.record.key_size 		= key_size;
@@ -42,7 +43,7 @@ lh_initialize(
 																	/** record size, while it can be computed on the fly is a commonly computed value
 																	 * 	and adds significant overhead so it can be precomputed */
 	hashmap->number_of_records			= 0;						/** starts empty :) */
-
+	hashmap->use_split					= 1;
 	int i;
 	for (i = 0; i < CACHE_SIZE; i++)
 	{
@@ -155,7 +156,6 @@ lh_destroy(
 	/** close all the overflow files associated with LH*/
 	int bucket_idx;
 	int cache_idx;
-	char  	filename[20];
 
 	err_t error = err_ok;
 
@@ -166,17 +166,14 @@ lh_destroy(
 		filename.instance_id	= hash_map->id;
 		filename.child.child_id = bucket_idx;
 		fe_encode_child_id(&filename);
-	//	char 	*extension = "ovf";
-	//	sprintf(filename,".\\%i_%i.%s",hash_map->id,bucket_idx,extension);
 
-		//allocation space for file name
 		FILE * bucket_file;
+
 		if ((bucket_file = fopen(filename.child.child_filename,"rb")) != NULL)
 		{
 			if (fclose(bucket_file) == 0)
 			{
-				//free(bucket_file);
-				//bucket_file = NULL;
+				bucket_file = NULL;
 #if ARDUINO == 1
 
 				if ( fremove(filename.child.child_filename) != 0)
@@ -205,7 +202,6 @@ lh_destroy(
 		filename.parent.type	= linear_hash;
 		fe_encode_parent_id(&filename);
 
-	//	sprintf(filename,"%i_%s",hash_map->id,TEST_FILE);			/** @todo fix name */
 #if ARDUINO == 1
 
 		if ( fremove(filename.parent.parent_filename) != 0)
@@ -243,19 +239,131 @@ lh_destroy(
 }
 
 /** @TODO */
-err_t
+return_status_t
 lh_update(
 	linear_hashmap_t	 	*hash_map,
 	ion_key_t 				key,
 	ion_value_t				value
 )
 {
-	/** updates all values for a given key and if not found, then it is inserted */
-	write_concern_t current_write_concern 	= hash_map->write_concern;
+/** @TODO The write concern still needs to be addressed */
+
+/*	write_concern_t current_write_concern 	= hash_map->write_concern;
 	hash_map->write_concern 				= wc_update;								//change write concern to allow update
 	err_t result 							= lh_insert(hash_map, key, value);			//updates all values for a given key
 	hash_map->write_concern 				= current_write_concern;
-	return result;
+	return result;*/
+
+	return_status_t status;
+
+	/** cache pp  */
+	hash_set_t hash_set;
+
+	err_t err = hash_map->compute_hash(hash_map,key,hash_map->super.record.key_size,hash_map->file_level,&hash_set);
+
+	if (err == err_uninitialized)
+	{
+		status.err = err_uninitialized;
+		return status;
+	}
+
+	/** compute the primary page to search */
+	int bucket_number = lh_compute_bucket_number(hash_map, &hash_set);
+
+	lh_page_cache_t * cache = NULL;
+
+	/** Bring the primary page into cache */
+	lh_cache_pp(hash_map,0,bucket_number,&cache);
+
+	/** This will check the pp to see if there is an available spot or update exisitIng */
+	status = lh_action_primary_page(hash_map, cache, bucket_number, key, lh_update_item_action, value);
+
+#if DEBUG
+	io_printf("flushing!\n");
+#endif
+
+	ll_file_t * overflow = (ll_file_t *)malloc(sizeof(ll_file_t));
+
+	/** check the overflow file */
+	if (fll_open(
+			overflow, fll_compare, hash_map->super.key_type, hash_map->super.record.key_size, hash_map->super.record.value_size, bucket_number, hash_map->id
+			) != err_item_not_found)
+	{
+		/** this scans the list for the first instance of the item in the ll */
+		ll_file_node_t * ll_node = (ll_file_node_t *)malloc(overflow->node_size);
+
+		if (err_ok == fll_find(overflow, key, ll_node))			/** this will setup the cursor and find the fist available item in the list */
+		{
+				/** once the item has been found, update and move on to the next item */
+				ll_file_node_t * update_node;
+				fll_create_node(overflow,&(hash_map->super.record), key, value, &update_node);
+
+				update_node->next = ll_node->next;				/** and make sure pointers are updated */
+				fll_update(overflow,update_node);
+
+				status.count++;
+				/** and keep on checking and updating as there could be more **/
+				while (fll_next(overflow,ll_node) !=	err_item_not_found)
+				{
+					/** We know we are starting at a node that is equal so, just leave if not */
+					if (IS_EQUAL == fll_compare(overflow,update_node,ll_node))
+					{
+						update_node->next = ll_node->next;		/** update pointers */
+						fll_update(overflow,update_node);
+						status.count++;
+					}
+				}
+				free(update_node);
+		}
+		free(ll_node);
+	}
+
+	if (status.count == 0)  /** then it wasn't found in either pp or of so go back to pp and try to insert*/
+	{
+		status = lh_action_primary_page(hash_map, cache, bucket_number, key, lh_insert_item_action,value);
+
+		if (status.count == 0) 	/** then there was no room in the pp so insert into overflow page */
+		{
+			if(overflow->file == NULL) 	/** File is not open as it did not exist, so open */
+			{
+				fll_create(
+					overflow,
+					fll_compare,
+					hash_map->super.key_type,
+					hash_map->super.record.key_size,
+					hash_map->super.record.value_size,
+					bucket_number,
+					hash_map->id
+					);
+
+			}
+			/** and create new node to insert into overflow page */
+			ll_file_node_t * update_node;			/** malloc'd in create */
+			fll_create_node(overflow, &(hash_map->super.record), key, value, &update_node);
+
+			/** @TODO this needs to be improved on update as the iterator is already in the correct spot */
+			fll_insert(overflow,update_node);
+
+			status.count ++;
+			free(update_node);
+		}
+	}
+
+	fll_close(overflow);
+	free(overflow);
+
+	lh_flush_cache(hash_map,cache,PRESERVE_CACHE_MEMORY);
+
+	if (status.count > 0)
+	{
+		status.err = err_ok;
+	}
+	else
+	{
+		status.err = err_item_not_found;
+	}
+
+	return status;
 }
 
 err_t
@@ -287,6 +395,7 @@ lh_insert(
 
 	/** Bring the primary page into cache */
 	lh_cache_pp(hash_map,0,bucket_number,&cache);
+
 
 	/** @FIXME - need cache block mgr */
 	return_status_t status = lh_action_primary_page(hash_map, cache, bucket_number, key, lh_insert_item_action,value);
@@ -332,6 +441,7 @@ lh_insert(
 	fll_close(&linked_list_file);
 	free(node);
 	hash_map->number_of_records++;				/** increase record count */
+
 	return err_ok;
 }
 
@@ -893,6 +1003,7 @@ lh_compute_hash(
 		hash_set_t			*hash_set
 )
 {
+		/** @TODO address hash function for strings or variable lengths */
 		//convert to a hashable value
 		if (hash_set == NULL)
 		{
@@ -901,8 +1012,8 @@ lh_compute_hash(
 		else
 		{
 			/** @todo Endian issue */
-			hash_set->lower_hash = ((hash_t)(*(int *)key)) % ((1 << file_level) * hashmap->initial_map_size);
-			hash_set->upper_hash = ((hash_t)(*(int *)key)) % ((1 << (file_level+1)) * hashmap->initial_map_size);
+			hash_set->lower_hash = ((hash_t)(*(unsigned int *)key)) % ((1 << file_level) * hashmap->initial_map_size);
+			hash_set->upper_hash = ((hash_t)(*(unsigned int *)key)) % ((1 << (file_level+1)) * hashmap->initial_map_size);
 			return err_ok;
 		}
 }
@@ -952,21 +1063,50 @@ lh_insert_item_action(
 	)
 {
 	action_status_t status;
+
 	if (item->status != IN_USE )	/** if location is not being used, use it */
 	{
-		lh_write_cache_record(hash_map,item,key,value);
-#if DEBUG
-		DUMP(*(int*)item->data,"%i");
-#endif
-		status.err = err_ok;
-		status.action = action_exit;
-		return status;
+			lh_write_cache_record(hash_map,item,key,value);
+		#if DEBUG
+			DUMP(*(int*)item->data,"%i");
+		#endif
+			status.err = err_ok;
+			status.action = action_exit;
+			return status;
 	}
 	status.err = err_unable_to_insert;
 	status.action = action_continue;
 	return status;
 }
 
+action_status_t
+lh_update_item_action(
+	linear_hashmap_t	*hash_map,
+	ion_key_t			key,
+	l_hash_bucket_t		*item,
+	ion_value_t			value
+	)
+{
+	action_status_t status;
+
+	if (item->status == IN_USE) 			/** if location is being used, check it */
+	{
+		/**if it's in use, compare the keys */
+		if (hash_map->super.compare(key, item->data,
+				hash_map->super.record.key_size) == IS_EQUAL)
+		{
+			/**@TODO could be more efficient */
+			lh_write_cache_record(hash_map,item,key,value);
+			status.err = err_ok;			/** an item has been updated, so continue */
+			status.action = action_continue;
+			return status;
+		}
+	}
+
+	status.err = err_item_not_found;
+	status.action = action_continue;
+	return status;
+}
 action_status_t
 lh_delete_item_action(
 	linear_hashmap_t	*hash_map,
@@ -1067,22 +1207,6 @@ calculate_cache_location(
 	l_hash_bucket_t		*item
 )
 {
-	/** This assumes a contiguous memory cache block allocation
-	 * 	which is not the case currently :(
-	 */
-	/*
-	int size_of_cache_page = hash_map->record_size * RECORDS_PER_BUCKET;
-
-	int page_number = (item - hash_map->cache[0].cached_bucket)
-	        / size_of_cache_page;
-	DUMP(item,"%p");
-	DUMP(hash_map->cache[0].cached_bucket,"%p");
-	DUMP(size_of_cache_page,"%i");
-	DUMP(page_number,"%i");
-
-	* compute with cache the item is in
-	return page_number;*/
-
 	int size_of_cache_page = hash_map->record_size * RECORDS_PER_BUCKET;
 
 	int page_number = 0;
@@ -1129,7 +1253,7 @@ lh_write_cache_raw(
 	}
 
 	memcpy(to,item,length);								/** copy in record which may or may not include status of data - its just raw */
-	cache->status								= cache_active_written;
+	cache->status						= cache_active_written;
 														/** update status of cache */
 	return err_ok;
 }
@@ -1239,6 +1363,7 @@ lh_action_primary_page(
 		/** advance through page */
 		/*lh_read_cache(hash_map, );*/
 		lh_read_cache(hash_map,cache,count,(void*)&item);
+
 #if DEBUG
 		DUMP(count * hash_map->record_size,"%i");
 		DUMP(*(int*)item->data,"%i");
@@ -1260,6 +1385,7 @@ lh_action_primary_page(
 		}
 		count++;
 	}
+	/** @TODO check err code on return! */
 	return status;
 }
 
