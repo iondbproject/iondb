@@ -49,18 +49,12 @@ dictionary_test_init(
 	);
 	
 	CuAssertTrue(tc, err_ok == error);
-	CuAssertTrue(
-		tc, ((dictionary_parent_t *)(
-			test->dictionary.instance)
-		    )->record.key_size
-				==
-			 test->key_size);
-	CuAssertTrue(
-		tc, ((dictionary_parent_t *)(
-			test->dictionary.instance)
-		    )->record.value_size
-				==
-			 test->value_size);
+	CuAssertTrue(tc, NULL != test->dictionary.handler);
+	CuAssertTrue(tc, NULL != test->dictionary.instance);
+	CuAssertTrue(tc, NULL != test->dictionary.instance->compare);
+	CuAssertTrue(tc, test->dictionary.instance->key_type == test->key_type);
+	CuAssertTrue(tc, test->dictionary.instance->record.key_size == test->key_size);
+	CuAssertTrue(tc, test->dictionary.instance->record.value_size == test->value_size);
 }
 
 void
@@ -245,12 +239,10 @@ dictionary_test_equality(
 {
 	err_t error;
 
-	dict_cursor_t 	*cursor = NULL;
-	predicate_t 	predicate;
-	predicate.type 	= predicate_equality;
-	predicate.statement.equality.equality_value = eq_key;
-
-	error = test->dictionary.handler->find(&test->dictionary, &predicate, &cursor);
+	dict_cursor_t 	*cursor 	= NULL;
+	predicate_t 	*predicate 	= NULL;
+	dictionary_build_predicate(&test->dictionary, &predicate, predicate_equality, eq_key);
+	error = dictionary_find(&test->dictionary, predicate, &cursor);
 
 	CuAssertTrue(tc, err_ok == error);
 	CuAssertTrue(tc, cs_cursor_initialized == cursor->status);
@@ -284,13 +276,10 @@ dictionary_test_range(
 {
 	err_t error;
 
-	dict_cursor_t 	*cursor = NULL;
-	predicate_t 	predicate;
-	predicate.type 	= predicate_range;
-	predicate.statement.range.leq_value 	= leq_key;
-	predicate.statement.range.geq_value 	= geq_key;
-
-	error = test->dictionary.handler->find(&test->dictionary, &predicate, &cursor);
+	dict_cursor_t 	*cursor 	= NULL;
+	predicate_t 	*predicate 	= NULL;
+	dictionary_build_predicate(&test->dictionary, &predicate, predicate_range, leq_key, geq_key);
+	error = dictionary_find(&test->dictionary, predicate, &cursor);
 
 	CuAssertTrue(tc, err_ok == error);
 	CuAssertTrue(tc, cs_cursor_initialized == cursor->status);
@@ -324,11 +313,10 @@ dictionary_test_all_records(
 {
 	err_t error;
 
-	dict_cursor_t 	*cursor = NULL;
-	predicate_t 	predicate;
-	predicate.type 	= predicate_all_records;
-
-	error = test->dictionary.handler->find(&test->dictionary, &predicate, &cursor);
+	dict_cursor_t 	*cursor 	= NULL;
+	predicate_t 	*predicate 	= NULL;
+	dictionary_build_predicate(&test->dictionary, &predicate, predicate_all_records);
+	error = dictionary_find(&test->dictionary, predicate, &cursor);
 
 	CuAssertTrue(tc, err_ok == error);
 	CuAssertTrue(tc, cs_cursor_initialized == cursor->status);
@@ -375,35 +363,26 @@ dictionary_test_open_close(
 
 	CuAssertTrue(tc, err_ok == error);
 
-	dictionary_handler_t 	handler_temp;
 	dictionary_t 			dictionary_temp;
+	dictionary_handler_t 	handler_temp;
 
 	test->init_dict_handler(&handler_temp);
 
 	error = ion_open_dictionary(&handler_temp, &dictionary_temp, gdict_id);
 
 	CuAssertTrue(tc, err_ok == error);
-	CuAssertTrue(
-		tc, ((dictionary_parent_t *)(
-			dictionary_temp.instance)
-		    )->record.key_size
-				==
-			 test->key_size);
-	CuAssertTrue(
-		tc, ((dictionary_parent_t *)(
-			dictionary_temp.instance)
-		    )->record.value_size
-				==
-			 test->value_size);
+	CuAssertTrue(tc, dictionary_temp.instance->record.key_size == test->key_size);
+	CuAssertTrue(tc, dictionary_temp.instance->record.value_size == test->value_size);
 
 	/* Check the test record */
-	unsigned char 	test_val[test->value_size];
+	IONIZE_VAL(test_val, test->value_size);
 	error	= dictionary_get(&dictionary_temp, IONIZE(66650), test_val);
 
 	CuAssertTrue(tc, err_ok == error);
 	int j	= memcmp(GTEST_DATA, test_val, test->value_size);
 	CuAssertTrue(tc, 0 == j);
 
-	test->handler 		= handler_temp;
-	test->dictionary 	= dictionary_temp;
+	test->dictionary 			= dictionary_temp;
+	test->handler 				= handler_temp;
+	test->dictionary.handler 	= &test->handler;
 }

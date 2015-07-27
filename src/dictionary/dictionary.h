@@ -53,27 +53,6 @@ dictionary_insert(
 );
 
 /**
-@brief		Retrieve the value data given an iterator
-			state.
-
-@param		cursor
-				A pointer to the dictionary iterator
-				whose cursor is pointing at the item to
-				retrieve.
-@param		value
-				A pointer the memory segment to write
-				the retrieved value to.
-@returns	A status describing the result of the call.
-*/
-//todo  this will generate cursor -> need to decide how to deal with concurrency
-status_t
-dictionary_find(
-	dictionary_t		*dictionary,
-	predicate_t 		*predicate,
-	dict_cursor_t 		*cursor
-);
-
-/**
 @brief		Retrieve a value given a key.
 
 @param		dictionary
@@ -216,68 +195,6 @@ dictionary_compare_char_array(
 	ion_key_size_t	key_size
 );
 
-
-/**
-@brief		Allocates memory and creates predicate based on caller input.
-
-@details	Builds predicate based on type requested by caller.  This
-			function is variadic as it will take a different number of
-			parameters depending on the type of predicate required.
-
-
-@param 		dictionary
-				The dictionary the predicate is being build for.
-@param 		predicate
-				The pointer to a predicate reference created by caller.
-@param 		type
-				The type of predicate being requested.
-@param 		key
-				The first key used to be used in the predicate.  If this
-				is a single key comparison, then this is the only key
-				required.  If this is a range query, the first key will
-				be the lower bound as @p key >= value.  The first optional
-				parameter will be used as the upper bound value.
-@return		The status of the predicate.
- */
-err_t
-dictionary_build_predicate(
-	dictionary_t			*dictionary,
-	predicate_t				**predicate,
-	predicate_operator_t	type,
-	ion_key_t				key,
-	...
-);
-
-/**
-@brief			Destroys a predicate statement for a range query and cleans up
-				memory
-
-@details		Destroys a predicate statement for range query and cleans up
-				memory internally allocated for specific instance.
-
-@param 			predicate
-					Pointer pointer to predicate to destroy.
- */
-void
-dictonary_destroy_predicate_range(
-	predicate_t		**predicate
-);
-
-/**
-@brief			Destroys a predicate statement for single operator and cleans up
-				memory
-
-@details		Destroys a predicate statement for single operator and cleans up
-				memory internally allocated for specific instance.
-
-@param 			predicate
-					Pointer pointer to predicate to destroy.
-*/
-void
-dictonary_destroy_predicate_statement(
-	predicate_t		**predicate
-);
-
 /**
 @brief Opens a dictionary, given the desired config. 
 */
@@ -294,6 +211,55 @@ dictionary_open(
 err_t
 dictionary_close(
     dictionary_t 					*dictionary
+);
+
+/**
+@brief 	Builds a predicate based on the type given.
+		Equality: 		1st vparam is target key.
+		Range: 			1st vparam is lower bound, 2nd vparam is upper bound.
+		All_records: 	No vparams used.
+		Predicate: 		TODO to be implemented
+*/
+err_t
+dictionary_build_predicate(
+	dictionary_t			*dictionary,
+	predicate_t				**predicate,
+	predicate_type_t		type,
+	...
+);
+
+/**
+@brief Destroys an equality predicate.
+*/
+void
+dictonary_destroy_predicate_equality(
+	predicate_t		**predicate
+);
+
+/**
+@brief Destroys a range predicate.
+*/
+void
+dictonary_destroy_predicate_range(
+	predicate_t		**predicate
+);
+
+/**
+@brief Destroys an all records predicate.
+*/
+void
+dictionary_destroy_predicate_all_records(
+	predicate_t 	**predicate
+);
+
+/**
+@brief Uses the given predicate and cursor to search on the dictionary.
+*/
+err_t
+dictionary_find(
+	dictionary_t 	*dictionary,
+	predicate_t 	*predicate,
+	dict_cursor_t 	**cursor
 );
 
 #ifdef __cplusplus

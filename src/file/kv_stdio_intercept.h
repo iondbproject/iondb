@@ -33,12 +33,12 @@ typedef long fpos_t;
 #define		fsetpos(x, y)			sd_fsetpos(x, y)
 #define	 	fgetpos(x, y)			sd_fgetpos(x, y)
 #define 	fflush(x)			sd_fflush(x)
+#define     fseek(x ,y ,z)          sd_fseek(x ,y ,z)
+#define     fread(w, x, y, z)       sd_fread(w, x, y, z)
+#define     feof(x)             sd_feof(x)
+#define     ftell(x)            sd_ftell(x)
 #define		fremove(x)			sd_remove(x)
-#define		fseek(x ,y ,z)			sd_fseek(x ,y ,z)
-#define		fread(w, x, y, z)		sd_fread(w, x, y, z)
-#define 	feof(x)				sd_feof(x)
-#define		ftell(x)			sd_ftell(x)
-#define 	rewind(x)			sd_rewind(x)
+#define     frewind(x)           sd_frewind(x)
 
 #ifdef __cplusplus
 }

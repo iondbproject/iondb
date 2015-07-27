@@ -89,11 +89,7 @@ oafh_destroy(
 	if (hash_map->file != NULL)			//check to ensure that you are not freeing something already free
 	{
 		fclose(hash_map->file);
-#if ARDUINO == 1
 		fremove(TEST_FILE);
-#else
-		remove(TEST_FILE);
-#endif
 		hash_map->file = NULL;
 		return err_ok;
 	}
@@ -207,7 +203,7 @@ oafh_insert(
 		{
 			loc = 0;
 			//rewind the file
-			rewind(hash_map->file);
+			frewind(hash_map->file);
 		}
 
 #if DEBUG
@@ -280,7 +276,7 @@ oafh_find_item_loc(
 			if (loc >= hash_map->map_size)	// Perform wrapping
 			{
 				loc = 0;
-				rewind(hash_map->file);
+				frewind(hash_map->file);
 			}
 		}
 

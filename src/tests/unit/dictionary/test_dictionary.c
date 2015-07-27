@@ -171,7 +171,7 @@ test_dictionary_master_table(
 {
 	err_t err;
 	/* Cleanup, just in case */
-	remove(ION_MASTER_TABLE_FILENAME);
+	fremove(ION_MASTER_TABLE_FILENAME);
 
 	/* Test init */
 	err = ion_init_master_table();

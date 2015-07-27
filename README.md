@@ -179,3 +179,7 @@ void setup() {
 
 void loop() {}
 ```
+
+##License
+
+Unless explicitly stated otherwise, IonDB and all its constituent files are licensed under the Apache License 2.0 (Apache-2.0).

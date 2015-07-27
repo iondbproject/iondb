@@ -33,7 +33,7 @@ check_file_map(
 	int i;
 	int bucket_size = map->super.record.key_size + map->super.record.value_size + sizeof(char);
 
-	rewind(map->file);
+	frewind(map->file);
 	hash_bucket_t * record;
 	record = (hash_bucket_t *)malloc(bucket_size);
 	for (i = 0; i < map->map_size; i++)
@@ -109,7 +109,7 @@ test_open_address_file_hashmap_initialize(
 	CuAssertTrue(tc, map.write_concern 				== wc_insert_unique);
 
 	fclose(map.file);
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 }
 
 /**
@@ -196,7 +196,7 @@ test_open_address_file_hashmap_find_item_location(
 									+ record.value_size;
 
 	//rewind
-	rewind(map.file);
+	frewind(map.file);
 
 	for (offset = 0; offset < map.map_size; offset ++)
 	{
@@ -239,7 +239,7 @@ test_open_address_file_hashmap_find_item_location(
 
 	free(item);
 	fclose(map.file);
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 
 }
 
@@ -268,7 +268,7 @@ test_open_address_file_hashmap_simple_insert(
 	int bucket_size 			= sizeof(char)
 									+ record.key_size + record.value_size;
 	//rewind
-	rewind(map.file);
+	frewind(map.file);
 
 	for (offset = 0; offset < map.map_size; offset ++)
 	{
@@ -303,7 +303,7 @@ test_open_address_file_hashmap_simple_insert(
 		}
 	}
 	fclose(map.file);
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 }
 /**
 @brief 		Tests a simple insert into dictionary and simple query
@@ -347,7 +347,7 @@ test_open_address_file_hashmap_simple_insert_and_query(
 	}
 
 	fclose(map.file);
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 
 }
 
@@ -411,7 +411,7 @@ test_open_address_file_hashmap_simple_delete(
 	free(value);
 
 	fclose(map.file);
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 
 }
 
@@ -462,7 +462,7 @@ test_open_address_file_hashmap_duplicate_insert_1(
 	}
 
 	fclose(map.file);
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 
 }
 
@@ -548,7 +548,7 @@ test_open_address_file_hashmap_duplicate_insert_2(
 		}
 	}
 	fclose(map.file);
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 }
 
 /**
@@ -627,7 +627,7 @@ test_open_address_file_hashmap_update_1(
 		}
 	}
 	fclose(map.file);
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 }
 
 /**
@@ -707,7 +707,7 @@ test_open_address_file_hashmap_update_2(
 			}							//must free value after query
 	}
 	fclose(map.file);
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 }
 
 /**
@@ -748,7 +748,7 @@ test_open_address_file_hashmap_delete_1(
 	CuAssertTrue(tc, err_item_not_found
 								== oafh_delete(&map, (ion_key_t)(&i)));
 	fclose(map.file);
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 }
 
 /**
@@ -857,7 +857,7 @@ test_open_address_file_hashmap_delete_2(
 		}
 	}
 	fclose(map.file);
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 }
 
 /**
@@ -933,7 +933,7 @@ test_open_address_file_hashmap_capacity(
 
 	fclose(map.file);
 
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 }
 
 
@@ -975,5 +975,5 @@ runalltests_open_address_file_hash()
 	CuSuiteDelete(suite);
 	CuStringDelete(output);
 
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 }

@@ -121,23 +121,23 @@ sldict_find(
 	dict_cursor_t 	**cursor
 )
 {
-	*cursor 					= malloc(sizeof(sldict_cursor_t));
+	*cursor 						= malloc(sizeof(sldict_cursor_t));
 	if(NULL == *cursor) { return err_out_of_memory; }
 
-	(*cursor)->dictionary 		= dictionary;
-	(*cursor)->type 			= predicate->type;
-	(*cursor)->status 			= cs_cursor_uninitialized;
-
-	(*cursor)->destroy 			= sldict_destroy_cursor;
-	(*cursor)->next 			= sldict_next;
-
-	(*cursor)->predicate 		= malloc(sizeof(predicate_t));
+	(*cursor)->dictionary 			= dictionary;
+	(*cursor)->status 				= cs_cursor_uninitialized;
+	
+	(*cursor)->destroy 				= sldict_destroy_cursor;
+	(*cursor)->next 				= sldict_next;
+	
+	(*cursor)->predicate 			= malloc(sizeof(predicate_t));
 	if(NULL == (*cursor)->predicate)
 	{
 		free(*cursor);
 		return err_out_of_memory;
 	}
-	(*cursor)->predicate->type 	= predicate->type;
+	(*cursor)->predicate->type 		= predicate->type;
+	(*cursor)->predicate->destroy 	= predicate->destroy;
 
 
 	ion_key_size_t 	key_size 	= dictionary->instance->record.key_size;
@@ -310,27 +310,7 @@ sldict_destroy_cursor(
 	dict_cursor_t 		**cursor
 )
 {
-	switch( (*cursor)->type)
-	{
-		case predicate_equality:
-		{
-			free( (*cursor)->predicate->statement.equality.equality_value);
-			break;
-		}
-		case predicate_range:
-		{
-			free( (*cursor)->predicate->statement.range.geq_value);
-			free( (*cursor)->predicate->statement.range.leq_value);
-			break;
-		}
-		case predicate_predicate:
-		{
-			/* TODO not implemented yet */
-			break;
-		}
-	}
-
-	free( (*cursor)->predicate);
+	(*cursor)->predicate->destroy(&(*cursor)->predicate);
 	free(*cursor);
 	*cursor = NULL;
 }
@@ -345,9 +325,9 @@ sldict_test_predicate(
 	ion_key_size_t 	key_size	= cursor->dictionary->instance->record.key_size;
 	boolean_t 		result 		= boolean_false;
 
-	switch(cursor->type)
+	switch(cursor->predicate->type)
 	{
-		case cursor_equality:
+		case predicate_equality:
 		{
 			if(skiplist->super.compare(
 						key,
@@ -360,7 +340,7 @@ sldict_test_predicate(
 			}
 			break;
 		}
-		case cursor_range:
+		case predicate_range:
 		{
 			ion_key_t lower_b 	= cursor->predicate->statement.range.leq_value;
 			ion_key_t upper_b 	= cursor->predicate->statement.range.geq_value;

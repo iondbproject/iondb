@@ -81,7 +81,8 @@ err_t oafdict_update(dictionary_t *dictionary, ion_key_t key, ion_value_t value)
 err_t oafdict_find(
     dictionary_t *dictionary,
     predicate_t *predicate,
-    dict_cursor_t **cursor)
+    dict_cursor_t **cursor
+)
 {
 
 	//allocate memory for cursor
@@ -90,7 +91,6 @@ err_t oafdict_find(
 		return err_out_of_memory;
 	}
 	(*cursor)->dictionary = dictionary;
-	(*cursor)->type = predicate->type;				//* types align
 	(*cursor)->status = cs_cursor_uninitialized;
 
 	//bind destroy method for cursor
@@ -101,7 +101,8 @@ err_t oafdict_find(
 
 	//allocate predicate
 	(*cursor)->predicate = (predicate_t *)malloc(sizeof(predicate_t));
-	(*cursor)->predicate->type = predicate->type; /**@todo repair as there are duplicate types */
+	(*cursor)->predicate->type = predicate->type;
+	(*cursor)->predicate->destroy = predicate->destroy;
 
 	//based on the type of predicate that is being used, need to create the correct cursor
 	switch (predicate->type)
@@ -284,27 +285,7 @@ boolean_t oafdict_is_equal(dictionary_t *dict, ion_key_t key1, ion_key_t key2)
 
 void oafdict_destroy_cursor(dict_cursor_t **cursor)
 {
-	/** Free any internal memory allocations */
-	switch ((*cursor)->type)
-	{
-		case predicate_equality:
-		{
-			free((*cursor)->predicate->statement.equality.equality_value);
-			break;
-		}
-		case predicate_range:
-		{
-			free((*cursor)->predicate->statement.range.geq_value);
-			free((*cursor)->predicate->statement.range.leq_value);
-			break;
-		}
-		case predicate_predicate:
-		{
-			break;
-		}
-	}
-	/** and free cursor pointer */
-	free((*cursor)->predicate);
+	(*cursor)->predicate->destroy(&(*cursor)->predicate);
 	free(*cursor);
 	*cursor = NULL;
 }
@@ -322,9 +303,9 @@ boolean_t oafdict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
 	//pre-prime value for faster exit
 	key_satisfies_predicate = boolean_false;
 
-	switch (cursor->type)
+	switch (cursor->predicate->type)
 	{
-		case cursor_equality: //equality scan check
+		case predicate_equality: //equality scan check
 		{
 			if (IS_EQUAL
 			        == hash_map->super.compare(
@@ -335,7 +316,7 @@ boolean_t oafdict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
 			}
 			break;
 		}
-		case cursor_range: // range check
+		case predicate_range: // range check
 		{
 			if (		// leq_value <= key <==> !(leq_value > key)
 			(!(A_gt_B

@@ -186,6 +186,7 @@ test_slhandler_cursor_equality(
 	dict_cursor_t 			*cursor;
 	predicate_t 			predicate;
 	predicate.type 									= predicate_equality;
+	predicate.destroy 								= &dictonary_destroy_predicate_equality;
 	predicate.statement.equality.equality_value 	= malloc(dict.instance->record.key_size);
 	memcpy(predicate.statement.equality.equality_value, IONIZE(33), dict.instance->record.key_size);
 
@@ -219,6 +220,7 @@ test_slhandler_cursor_equality_with_results(
 	dict_cursor_t 			*cursor;
 	predicate_t 			predicate;
 	predicate.type 									= predicate_equality;
+	predicate.destroy 								= &dictonary_destroy_predicate_equality;
 	predicate.statement.equality.equality_value 	= malloc(dict.instance->record.key_size);
 	memcpy(predicate.statement.equality.equality_value, IONIZE(56), dict.instance->record.key_size);
 
@@ -269,6 +271,7 @@ test_slhandler_cursor_range(
 	dict_cursor_t 			*cursor;
 	predicate_t 			predicate;
 	predicate.type 									= predicate_range;
+	predicate.destroy 								= &dictonary_destroy_predicate_range;
 	predicate.statement.range.leq_value 	= malloc(dict.instance->record.key_size);
 	predicate.statement.range.geq_value 	= malloc(dict.instance->record.key_size);
 	memcpy(predicate.statement.range.leq_value, IONIZE(15), dict.instance->record.key_size);
@@ -304,6 +307,7 @@ test_slhandler_cursor_range_with_results(
 	dict_cursor_t 			*cursor;
 	predicate_t 			predicate;
 	predicate.type 									= predicate_range;
+	predicate.destroy 								= &dictonary_destroy_predicate_range;
 	predicate.statement.range.leq_value 	= malloc(dict.instance->record.key_size);
 	predicate.statement.range.geq_value 	= malloc(dict.instance->record.key_size);
 	memcpy(predicate.statement.range.leq_value, IONIZE(5), dict.instance->record.key_size);

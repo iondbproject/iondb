@@ -140,6 +140,7 @@ test_open_address_file_dictionary_cursor_equality(
 	//create a new predicate statement
 	predicate_t 			predicate;
 	predicate.type = predicate_equality;
+	predicate.destroy = &dictonary_destroy_predicate_equality;
 	//need to prepare predicate correctly
 	predicate.statement.equality.equality_value = (ion_key_t)malloc(sizeof(int));
 
@@ -188,6 +189,7 @@ test_open_address_file_dictionary_handler_query_with_results(
 	//create a new predicate statement
 	predicate_t 			predicate;
 	predicate.type 			= predicate_equality;
+	predicate.destroy 		= &dictonary_destroy_predicate_equality;
 
 	//need to prepare predicate correctly
 	predicate.statement.equality.equality_value = (ion_key_t)malloc(sizeof(int));
@@ -258,6 +260,7 @@ test_open_address_file_dictionary_handler_query_no_results(
 	//create a new predicate statement
 	predicate_t 			predicate;
 	predicate.type 			= predicate_equality;
+	predicate.destroy 		= &dictonary_destroy_predicate_equality;
 
 	//need to prepare predicate correctly
 	predicate.statement.equality.equality_value = (ion_key_t)malloc(sizeof(int));
@@ -327,7 +330,6 @@ test_open_address_file_dictionary_predicate_equality(
 
 	cursor->dictionary 		= &test_dictionary;				//register test dictionary
 	cursor->predicate 		= &predicate;					//register predicate
-	cursor->type			= cursor_equality;
 
 	memcpy(key_under_test,(ion_key_t)&(int){1},sizeof(int));
 
@@ -392,7 +394,6 @@ test_open_address_file_dictionary_predicate_range_signed(
 
 	cursor->dictionary 		= &test_dictionary;				//register test dictionary
 	cursor->predicate 		= &predicate;					//register predicate
-	cursor->type			= cursor_range;
 
 	memcpy(key_under_test, (ion_key_t)&(int){0}, sizeof(int));
 
@@ -465,7 +466,6 @@ test_open_address_file_dictionary_predicate_range_unsigned(
 
 	cursor->dictionary 		= &test_dictionary;				//register test dictionary
 	cursor->predicate 		= &predicate;					//register predicate
-	cursor->type			= cursor_range;
 
 	memcpy(key_under_test,(ion_key_t)&(unsigned int){0},sizeof(unsigned int));
 
@@ -524,6 +524,7 @@ test_open_address_file_dictionary_cursor_range(
 	//create a new predicate statement
 	predicate_t 			predicate;
 	predicate.type = predicate_range;
+	predicate.destroy = &dictonary_destroy_predicate_range;
 	//need to prepare predicate correctly
 	predicate.statement.range.geq_value = (ion_key_t)malloc(sizeof(int));
 

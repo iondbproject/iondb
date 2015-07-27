@@ -11,9 +11,7 @@
 FILE *ion_master_table_file = NULL;
 ion_dictionary_id_t ion_master_table_next_id = 1;
 
-/* Returns the next dictionary ID, then increments. 
-   TODO How to set this properly on restart?
-*/
+/* Returns the next dictionary ID, then increments. */
 ion_dictionary_id_t
 ion_master_table_get_next_id(
    void
@@ -69,6 +67,19 @@ ion_close_master_table(
     }
 
     ion_master_table_file = NULL;
+
+    return err_ok;
+}
+
+err_t
+ion_delete_master_table(
+    void
+)
+{
+    if (NULL != ion_master_table_file)
+    {
+        if (0 != fremove(ION_MASTER_TABLE_FILENAME)) { return err_could_not_delete_file; }
+    }
 
     return err_ok;
 }

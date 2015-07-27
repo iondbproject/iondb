@@ -57,13 +57,9 @@ ion_fremove(
 	char		*name
 )
 {
-#ifdef ION_ARDUINO
-	fremove(name);
-	return err_ok;
-#else
 	int	status;
 	
-	status	= remove(name);
+	status	= fremove(name);
 	
 	if (0 == status)
 	{
@@ -73,7 +69,6 @@ ion_fremove(
 	{
 		return err_could_not_delete_file;
 	}
-#endif
 }
 
 err_t

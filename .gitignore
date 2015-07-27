@@ -5,3 +5,6 @@ docs/
 .settings
 .cproject
 .project
+changetracker.txt
+iondb.sublime-project
+iondb.sublime-workspace

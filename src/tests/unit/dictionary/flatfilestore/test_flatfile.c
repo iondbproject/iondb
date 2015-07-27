@@ -31,7 +31,7 @@ check_flat_file(
 {
 	int bucket_size = flat_file->super.record.key_size + flat_file->super.record.value_size + sizeof(char);
 
-	rewind(flat_file->file_ptr);
+	frewind(flat_file->file_ptr);
 	f_file_record_t * record;
 	record = (f_file_record_t *)malloc(bucket_size);
 	DUMP(bucket_size,"%i");
@@ -98,7 +98,7 @@ test_flat_file_simple_insert(
 	int bucket_size 				= sizeof(char)
 											+ record.key_size + record.value_size;
 	//rewind
-	rewind(flat_file.file_ptr);
+	frewind(flat_file.file_ptr);
 
 
 		for (i = 0; i<STD_KV_SIZE; i++)
@@ -130,7 +130,7 @@ test_flat_file_simple_insert(
 			CuAssertStrEquals(tc, (char *)value, (char *)str);
 		}
 	fclose(flat_file.file_ptr);
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 }
 /**
 @brief 		Tests a simple insert into dictionary and simple query
@@ -175,7 +175,7 @@ test_flat_file_simple_insert_and_query(
 	}
 
 	fclose(flat_file.file_ptr);
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 
 }
 
@@ -201,7 +201,7 @@ test_flat_file_initialize(
 	CuAssertTrue(tc, flat_file.write_concern 				== wc_insert_unique);
 
 	fclose(flat_file.file_ptr);
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 }
 
 /**
@@ -267,7 +267,7 @@ test_flat_file_simple_delete(
 	free(value);
 
 	fclose(file.file_ptr);
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 
 }
 
@@ -318,7 +318,7 @@ test_flat_file_duplicate_insert_1(
 	}
 
 	fclose(file.file_ptr);
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 
 }
 
@@ -404,7 +404,7 @@ test_flat_file_duplicate_insert_2(
 		}
 	}
 	fclose(file.file_ptr);
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 }
 
 /**
@@ -483,7 +483,7 @@ test_flat_file_update_1(
 		}
 	}
 	fclose(file.file_ptr);
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 }
 
 /**
@@ -563,7 +563,7 @@ test_flat_file_update_2(
 			}							//must free value after query
 	}
 	fclose(file.file_ptr);
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 }
 
 /**
@@ -609,7 +609,7 @@ test_flat_file_delete_1(
 	CuAssertTrue(tc, 0	 		== status.count);
 
 	fclose(file.file_ptr);
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 }
 
 /**
@@ -720,7 +720,7 @@ test_flat_file_delete_2(
 		}
 	}
 	fclose(file.file_ptr);
-	remove(TEST_FILE);
+	fremove(TEST_FILE);
 }
 
 CuSuite*

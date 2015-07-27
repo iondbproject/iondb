@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "kv_io.h"
+
 // #define ION_ARDUINO
 #define ION_USING_MASTER_TABLE 	1
 #define USING_ECLIPSE 			0
@@ -29,8 +31,10 @@
 #define PANIC(stuff) printf("\t\t%s\n", stuff)
 #endif /* Clause ION_ARDUINO */
 
-#define IONIZE(x) ({volatile typeof(x) _tmp = x; (ion_key_t) &_tmp; })
-#define NEUTRALIZE(type, x) ( *((type *) x) )
+#define IONIZE(something) ({volatile typeof(something) _tmp = something; (ion_key_t) &_tmp; })
+#define NEUTRALIZE(type, something) ( *((type *) something) )
+
+#define IONIZE_VAL(varname, size) unsigned char varname[size];
 
 enum status
 {

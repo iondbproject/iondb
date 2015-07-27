@@ -202,85 +202,6 @@ dictionary_compare_char_array(
 }
 
 err_t
-dictionary_build_predicate(
-	dictionary_t			*dictionary,
-	predicate_t				**predicate,
-	predicate_operator_t	type,
-	ion_key_t				key,
-	...
-)
-{
-	va_list arg_list;
-
-	va_start (arg_list, key);         // Initialize the argument list.
-
-	(*predicate) = (predicate_t *)malloc(sizeof(predicate_t));
-
-	(*predicate)->type = type;
-
-	ion_key_size_t key_size = ((dictionary_parent_t *)dictionary->instance)->record.key_size;
-
-	switch(type)
-	{
-		case predicate_equality:
-		{
-			(*predicate)->statement.equality.equality_value = (ion_key_t) malloc (key_size);
-			memcpy((*predicate)->statement.equality.equality_value, key, key_size);
-			(*predicate)->destroy = dictonary_destroy_predicate_statement;
-			break;
-		}
-		case predicate_range:
-		{
-			if (((*predicate)->statement.range.geq_value = (ion_key_t) malloc (key_size)) == NULL)
-			{
-				return err_out_of_memory;
-			}
-			if(((*predicate)->statement.range.leq_value = (ion_key_t) malloc (key_size)) == NULL)
-			{
-				free((*predicate)->statement.range.geq_value);
-				return err_out_of_memory;
-			}
-			(*predicate)->destroy = dictonary_destroy_predicate_range;
-			//copy in first value
-			memcpy((*predicate)->statement.range.geq_value, key, key_size);
-			//extract optional parameter
-			va_start(arg_list,key);
-			//and extract the second key from the list
-			memcpy((*predicate)->statement.range.geq_value,	 (ion_key_t)(va_arg(arg_list,ion_key_t)), key_size);
-			va_end(arg_list);
-			break;
-		}
-		default:
-		{
-			return err_invalid_predicate;
-			break;
-		}
-	}
-	return err_ok;
-}
-
-void
-dictonary_destroy_predicate_statement(
-	predicate_t		**predicate
-)
-{
-	free((*predicate)->statement.equality.equality_value);
-	free(*predicate);
-	*predicate = NULL;
-}
-
-void
-dictonary_destroy_predicate_range(
-	predicate_t		**predicate
-)
-{
-	free((*predicate)->statement.range.geq_value);
-	free((*predicate)->statement.range.leq_value);
-	free(*predicate);
-	*predicate = NULL;
-}
-
-err_t
 dictionary_open(
  	dictionary_handler_t 			*handler,
     dictionary_t 					*dictionary,
@@ -298,4 +219,130 @@ dictionary_close(
 )
 {
 	return dictionary->handler->close_dictionary(dictionary);
+}
+
+err_t
+dictionary_build_predicate(
+	dictionary_t			*dictionary,
+	predicate_t				**predicate,
+	predicate_type_t		type,
+	...
+)
+{
+	ion_key_size_t key_size = ((dictionary_parent_t *)dictionary->instance)->record.key_size;
+
+	va_list arg_list;
+	va_start (arg_list, type);
+
+	if ( NULL == ((*predicate) = malloc(sizeof(predicate_t))))
+	{
+		return err_out_of_memory;
+	}
+	(*predicate)->type = type;
+
+	switch(type)
+	{
+		case predicate_equality:
+		{
+			ion_key_t key = va_arg(arg_list, ion_key_t);
+			if ( NULL == ((*predicate)->statement.equality.equality_value = malloc(key_size)))
+			{
+				free( (*predicate));
+				return err_out_of_memory;
+			}
+			memcpy((*predicate)->statement.equality.equality_value, key, key_size);
+			(*predicate)->destroy = dictonary_destroy_predicate_equality;
+			break;
+		}
+		case predicate_range:
+		{
+			if (NULL == ((*predicate)->statement.range.geq_value = malloc(key_size)))
+			{
+				free( (*predicate));
+				return err_out_of_memory;
+			}
+			if( NULL == ((*predicate)->statement.range.leq_value = malloc(key_size)))
+			{
+				free((*predicate)->statement.range.geq_value);
+				free( (*predicate));
+				return err_out_of_memory;
+			}
+			(*predicate)->destroy = dictonary_destroy_predicate_range;
+
+			ion_key_t leq = va_arg(arg_list, ion_key_t);
+			ion_key_t geq = va_arg(arg_list, ion_key_t);
+
+			memcpy((*predicate)->statement.range.leq_value, leq, key_size);
+			memcpy((*predicate)->statement.range.geq_value, geq, key_size);
+			break;
+		}
+		case predicate_all_records:
+		{
+
+			(*predicate)->destroy = dictionary_destroy_predicate_all_records;
+			break;
+		}
+		case predicate_predicate:
+		{
+			/* TODO not implemented */
+			return err_invalid_predicate;
+		}
+		default:
+		{
+			return err_invalid_predicate;
+			break;
+		}
+	}
+
+	va_end(arg_list);
+	return err_ok;
+}
+
+void
+dictonary_destroy_predicate_equality(
+	predicate_t		**predicate
+)
+{
+	if (*predicate != NULL)
+	{
+		free((*predicate)->statement.equality.equality_value);
+		free(*predicate);
+		*predicate = NULL;
+	}
+}
+
+void
+dictonary_destroy_predicate_range(
+	predicate_t		**predicate
+)
+{
+	if (*predicate != NULL)
+	{
+		free((*predicate)->statement.range.geq_value);
+		free((*predicate)->statement.range.leq_value);
+		free(*predicate);
+		*predicate = NULL;
+	}
+}
+
+void
+dictionary_destroy_predicate_all_records(
+	predicate_t 	**predicate
+)
+{
+	if (*predicate != NULL)
+	{
+		free(*predicate);
+		*predicate = NULL;
+	}
+}
+
+err_t
+dictionary_find(
+	dictionary_t 	*dictionary,
+	predicate_t 	*predicate,
+	dict_cursor_t 	**cursor
+)
+{
+	return dictionary->handler->find(dictionary, predicate, cursor);
 }

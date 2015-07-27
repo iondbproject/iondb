@@ -143,20 +143,8 @@ struct dictionary_parent
 	key_type_t					key_type;		/**< The key type stored in the map*/
 	record_info_t 				record;			/**< The record structure for items*/
 	ion_dictionary_compare_t 	compare; 		/**< Comparison function for instance of map */
-	ion_dictionary_id_t		id;					/**< ID of dictionary instance */
+	ion_dictionary_id_t			id;				/**< ID of dictionary instance */
 };
-
-/**
-@brief		Dictionary cursor type designator.
-*/
-enum cursor_type
-{
-	cursor_equality,	/**< Equality cursor. */
-	cursor_range,		/**< Range cursor. */
-	cursor_predicate	/**< Predicate cursor. */
-};
-
-typedef char 		cursor_type_t;
 
 /**
 @brief		Predicate type designator.
@@ -220,7 +208,7 @@ union predicate_statement
 	other_predicate_statement_t		other_predicate;
 };
 
-//FIXME
+//FIXME TODO This doc is outdated
 /**
 @brief		Predicate supertype.
 @details	This is a super type. The state information
@@ -251,7 +239,6 @@ struct predicate
 */
 struct dictionary_cursor
 {
-	cursor_type_t			type;			/**< Cursor type designator. */
 	cursor_status_t			status;			/**< Status of last cursor call. */
 	dictionary_t			*dictionary;	/**< Reference to the dictionary */
 	predicate_t				*predicate;		/**< The predicate for the cursor */
@@ -261,16 +248,11 @@ struct dictionary_cursor
 											/**< Destroy the cursor (frees internal memory) */
 };
 
-typedef enum
-{
-	po_equalty,
-	po_range
-} predicate_operator_t;
-
 /**
 @brief		Options for write concern for for overwriting (updating) of values
 			on insert and if not it will insert value insert_unique which
-			allows for unique insert only
+			allows for unique insert only. Usage of this by implementations is
+			optional.
  */
 enum write_concern
 {
