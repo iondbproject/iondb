@@ -240,9 +240,9 @@ dictionary_test_equality(
 	err_t error;
 
 	dict_cursor_t 	*cursor 	= NULL;
-	predicate_t 	*predicate 	= NULL;
-	dictionary_build_predicate(&test->dictionary, &predicate, predicate_equality, eq_key);
-	error = dictionary_find(&test->dictionary, predicate, &cursor);
+	predicate_t 	predicate;
+	dictionary_build_predicate(&predicate, predicate_equality, eq_key);
+	error = dictionary_find(&test->dictionary, &predicate, &cursor);
 
 	CuAssertTrue(tc, err_ok == error);
 	CuAssertTrue(tc, cs_cursor_initialized == cursor->status);
@@ -277,9 +277,9 @@ dictionary_test_range(
 	err_t error;
 
 	dict_cursor_t 	*cursor 	= NULL;
-	predicate_t 	*predicate 	= NULL;
-	dictionary_build_predicate(&test->dictionary, &predicate, predicate_range, leq_key, geq_key);
-	error = dictionary_find(&test->dictionary, predicate, &cursor);
+	predicate_t 	predicate;
+	dictionary_build_predicate(&predicate, predicate_range, leq_key, geq_key);
+	error = dictionary_find(&test->dictionary, &predicate, &cursor);
 
 	CuAssertTrue(tc, err_ok == error);
 	CuAssertTrue(tc, cs_cursor_initialized == cursor->status);
@@ -314,9 +314,9 @@ dictionary_test_all_records(
 	err_t error;
 
 	dict_cursor_t 	*cursor 	= NULL;
-	predicate_t 	*predicate 	= NULL;
-	dictionary_build_predicate(&test->dictionary, &predicate, predicate_all_records);
-	error = dictionary_find(&test->dictionary, predicate, &cursor);
+	predicate_t 	predicate;
+	dictionary_build_predicate(&predicate, predicate_all_records);
+	error = dictionary_find(&test->dictionary, &predicate, &cursor);
 
 	CuAssertTrue(tc, err_ok == error);
 	CuAssertTrue(tc, cs_cursor_initialized == cursor->status);

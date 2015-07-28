@@ -221,9 +221,8 @@ bench_equality(
         ion_key_t   key     = MAKE_ION_KEY(lfsr_get_next(&keygen));
         dict_cursor_t *cursor = NULL;
         predicate_t predicate;
-        predicate.type = predicate_equality;
-        predicate.statement.equality.equality_value = key;
-        err_t status = dict.handler->find(&dict, &predicate, &cursor);
+        dictionary_build_predicate(&predicate, predicate_equality, key);
+        err_t status = dictionary_find(&dict, &predicate, &cursor);
         ion_record_t record;
         record.key      = (ion_key_t) malloc(dict.instance->record.key_size);
         record.value    = (ion_value_t) malloc(dict.instance->record.value_size);
@@ -290,10 +289,8 @@ bench_range(
     benchmark_start();
     dict_cursor_t *cursor = NULL;
     predicate_t predicate;
-    predicate.type = predicate_range;
-    predicate.statement.range.leq_value = leq;
-    predicate.statement.range.geq_value = geq;
-    err_t status = dict.handler->find(&dict, &predicate, &cursor);
+    dictionary_build_predicate(&predicate, predicate_range, leq, geq);
+    err_t status = dictionary_find(&dict, &predicate, &cursor);
     ion_record_t record;
     record.key      = (ion_key_t) malloc(dict.instance->record.key_size);
     record.value    = (ion_value_t) malloc(dict.instance->record.value_size);

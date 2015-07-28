@@ -155,7 +155,7 @@ enum predicate_type
 {
 	predicate_equality,		/**< Equality cursor. */
 	predicate_range,		/**< Range cursor. */
-	predicate_all_records,		/**< Cursor over all elements. */
+	predicate_all_records,	/**< Cursor over all elements. */
 	predicate_predicate		/**< Predicate cursor. */
 };
 

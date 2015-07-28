@@ -222,8 +222,7 @@ dictionary_close(
 */
 err_t
 dictionary_build_predicate(
-	dictionary_t			*dictionary,
-	predicate_t				**predicate,
+	predicate_t				*predicate,
 	predicate_type_t		type,
 	...
 );

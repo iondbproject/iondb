@@ -185,12 +185,9 @@ test_slhandler_cursor_equality(
 	create_test_collection_std_conditions(&dict, &handler);
 	dict_cursor_t 			*cursor;
 	predicate_t 			predicate;
-	predicate.type 									= predicate_equality;
-	predicate.destroy 								= &dictonary_destroy_predicate_equality;
-	predicate.statement.equality.equality_value 	= malloc(dict.instance->record.key_size);
-	memcpy(predicate.statement.equality.equality_value, IONIZE(33), dict.instance->record.key_size);
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(33));
 
-	err_t 	status = dict.handler->find(&dict, &predicate, &cursor);
+	err_t 	status = dictionary_find(&dict, &predicate, &cursor);
 
 	CuAssertTrue(tc, err_ok == status);
 
@@ -219,12 +216,9 @@ test_slhandler_cursor_equality_with_results(
 	create_test_collection_std_conditions(&dict, &handler);
 	dict_cursor_t 			*cursor;
 	predicate_t 			predicate;
-	predicate.type 									= predicate_equality;
-	predicate.destroy 								= &dictonary_destroy_predicate_equality;
-	predicate.statement.equality.equality_value 	= malloc(dict.instance->record.key_size);
-	memcpy(predicate.statement.equality.equality_value, IONIZE(56), dict.instance->record.key_size);
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(56));
 
-	err_t 	status = dict.handler->find(&dict, &predicate, &cursor);
+	err_t 	status = dictionary_find(&dict, &predicate, &cursor);
 
 	CuAssertTrue(tc, err_ok 				== status);
 	CuAssertTrue(tc, cs_cursor_initialized 	== cursor->status);
@@ -270,14 +264,9 @@ test_slhandler_cursor_range(
 	create_test_collection_std_conditions(&dict, &handler);
 	dict_cursor_t 			*cursor;
 	predicate_t 			predicate;
-	predicate.type 									= predicate_range;
-	predicate.destroy 								= &dictonary_destroy_predicate_range;
-	predicate.statement.range.leq_value 	= malloc(dict.instance->record.key_size);
-	predicate.statement.range.geq_value 	= malloc(dict.instance->record.key_size);
-	memcpy(predicate.statement.range.leq_value, IONIZE(15), dict.instance->record.key_size);
-	memcpy(predicate.statement.range.geq_value, IONIZE(60), dict.instance->record.key_size);
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(15), IONIZE(60));
 
-	err_t 	status = dict.handler->find(&dict, &predicate, &cursor);
+	err_t 	status = dictionary_find(&dict, &predicate, &cursor);
 
 	CuAssertTrue(tc, err_ok == status);
 
@@ -306,14 +295,9 @@ test_slhandler_cursor_range_with_results(
 	create_test_collection_std_conditions(&dict, &handler);
 	dict_cursor_t 			*cursor;
 	predicate_t 			predicate;
-	predicate.type 									= predicate_range;
-	predicate.destroy 								= &dictonary_destroy_predicate_range;
-	predicate.statement.range.leq_value 	= malloc(dict.instance->record.key_size);
-	predicate.statement.range.geq_value 	= malloc(dict.instance->record.key_size);
-	memcpy(predicate.statement.range.leq_value, IONIZE(5), dict.instance->record.key_size);
-	memcpy(predicate.statement.range.geq_value, IONIZE(78), dict.instance->record.key_size);
+	dictionary_build_predicate(&predicate, predicate_range, IONIZE(5), IONIZE(78));
 
-	err_t 	status = dict.handler->find(&dict, &predicate, &cursor);
+	err_t 	status = dictionary_find(&dict, &predicate, &cursor);
 
 	CuAssertTrue(tc, err_ok 				== status);
 	CuAssertTrue(tc, cs_cursor_initialized 	== cursor->status);

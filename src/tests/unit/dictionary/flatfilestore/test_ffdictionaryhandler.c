@@ -243,22 +243,12 @@ test_flat_file_dictionary_cursor_equality(
 
 	//create a new predicate statement
 	predicate_t 			predicate;
-	predicate.type = predicate_equality;
-	predicate.destroy = &dictonary_destroy_predicate_equality;
-	//need to prepare predicate correctly
-	predicate.statement.equality.equality_value = (ion_key_t)malloc(sizeof(int));
-
-	/** @Todo This needs to be improved */
-	memcpy(predicate.statement.equality.equality_value,(ion_key_t)&(int){1},sizeof(int));
-
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(1));
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+	CuAssertTrue(tc, err_ok 				== dictionary_find(&test_dictionary, &predicate, &cursor));
 
 	//check the status of the cursor as it should be initialized
 	CuAssertTrue(tc, cs_cursor_initialized	== cursor->status);
-
-	//free up the correct predicate
-	free(predicate.statement.equality.equality_value);
 
 	//destroy the cursor
 	cursor->destroy(&cursor);
@@ -267,7 +257,7 @@ test_flat_file_dictionary_cursor_equality(
 	CuAssertTrue(tc, NULL 					== cursor);
 
 	//and destory the collection
-	test_dictionary.handler->delete_dictionary(&test_dictionary);
+	dictionary_delete_dictionary(&test_dictionary);
 }
 
 void
@@ -292,16 +282,10 @@ test_flat_file_dictionary_handler_query_with_results(
 
 	//create a new predicate statement
 	predicate_t 			predicate;
-	predicate.type 			= predicate_equality;
-	predicate.destroy 		= &dictonary_destroy_predicate_equality;
-
-	//need to prepare predicate correctly
-	predicate.statement.equality.equality_value = (ion_key_t)malloc(sizeof(int));
-	/** @Todo This needs to be improved */
-	memcpy(predicate.statement.equality.equality_value,(ion_key_t)&(int){1},sizeof(int));
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(1));
 
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+	CuAssertTrue(tc, err_ok 				== dictionary_find(&test_dictionary, &predicate, &cursor));
 
 	//check the status of the cursor as it should be initialized
 	CuAssertTrue(tc, cs_cursor_initialized	== cursor->status);
@@ -328,14 +312,12 @@ test_flat_file_dictionary_handler_query_with_results(
 	//and as there is only 1 result, the next call should return empty
 	CuAssertTrue(tc, cs_end_of_results		== cursor->next(cursor, &record));
 
-	//free up the correct predicate
-	free(predicate.statement.equality.equality_value);
 	free(record.value);
 	free(record.key);
 	//destory cursor for cleanup
 	cursor->destroy(&cursor);
 	//and destory the collection
-	test_dictionary.handler->delete_dictionary(&test_dictionary);
+	dictionary_delete_dictionary(&test_dictionary);
 }
 
 void
@@ -360,16 +342,10 @@ test_flat_file_dictionary_handler_query_no_results(
 
 	//create a new predicate statement
 	predicate_t 			predicate;
-	predicate.type 			= predicate_equality;
-	predicate.destroy 		= &dictonary_destroy_predicate_equality;
-
-	//need to prepare predicate correctly
-	predicate.statement.equality.equality_value = (ion_key_t)malloc(sizeof(int));
-	/** @Todo This needs to be improved */
-	memcpy(predicate.statement.equality.equality_value,(ion_key_t)&(int){-1},sizeof(int));
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(-1));
 
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+	CuAssertTrue(tc, err_ok 				== dictionary_find(&test_dictionary, &predicate, &cursor));
 
 	//check the status of the cursor as it should be at the end of results as no values exist
 	CuAssertTrue(tc, cs_end_of_results	== cursor->status);
@@ -381,14 +357,12 @@ test_flat_file_dictionary_handler_query_no_results(
 
 	CuAssertTrue(tc, cs_end_of_results		== cursor->next(cursor, &record));
 
-	//free up the correct predicate
-	free(predicate.statement.equality.equality_value);
 	free(record.key);
 	free(record.value);
 	//destroy cursor for cleanup
 	cursor->destroy(&cursor);
 	//and destroy the collection
-	test_dictionary.handler->delete_dictionary(&test_dictionary);
+	dictionary_delete_dictionary(&test_dictionary);
 }
 
 void
@@ -419,11 +393,7 @@ test_flat_file_dictionary_predicate_equality(
 
 	//create a new predicate statement
 	predicate_t 			predicate;
-	predicate.type 			= predicate_equality;
-
-	//need to prepare predicate correctly
-	predicate.statement.equality.equality_value = (ion_key_t)malloc(sizeof(int));
-	memcpy(predicate.statement.equality.equality_value,(ion_key_t)&(int){1},sizeof(int));
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(1));
 
 	cursor->dictionary 		= &test_dictionary;				//register test dictionary
 	cursor->predicate 		= &predicate;					//register predicate
@@ -444,9 +414,7 @@ test_flat_file_dictionary_predicate_equality(
 
 	free(key_under_test);
 
-	//free up the correct predicate
-	free(predicate.statement.equality.equality_value);
-	//destroy cursor for cleanup
+	//destroy cursor for cleanup TODO TODO This is a memory leak but you CANNOT free here!!!
 	// cursor->destroy(&cursor);
 	//and destroy the collection
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -480,14 +448,7 @@ test_flat_file_dictionary_predicate_range_signed(
 
 	//create a new predicate statement
 	predicate_t 			predicate;
-	predicate.type 			= predicate_range;
-
-	//need to prepare predicate correctly
-	predicate.statement.range.geq_value = (ion_key_t)malloc(sizeof(int));
-	predicate.statement.range.leq_value = (ion_key_t)malloc(sizeof(int));
-
-	memcpy(predicate.statement.range.geq_value,(ion_key_t)&(int){-1},sizeof(int));
-	memcpy(predicate.statement.range.leq_value,(ion_key_t)&(int){1},sizeof(int));
+	dictionary_build_predicate(&predicate, predicate_range, IONIZE(-1), IONIZE(1));
 
 	cursor->dictionary 		= &test_dictionary;				//register test dictionary
 	cursor->predicate 		= &predicate;					//register predicate
@@ -516,10 +477,7 @@ test_flat_file_dictionary_predicate_range_signed(
 
 	free(key_under_test);
 
-	//free up the correct predicate
-	free(predicate.statement.range.geq_value);
-	free(predicate.statement.range.leq_value);
-	//destroy cursor for cleanup
+	//destroy cursor for cleanup TODO TODO This is a memory leak but you CANNOT free here!!!
 	// cursor->destroy(&cursor);
 	//and destroy the collection
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -552,14 +510,7 @@ test_flat_file_dictionary_predicate_range_unsigned(
 
 	//create a new predicate statement
 	predicate_t 			predicate;
-	predicate.type 			= predicate_range;
-
-	//need to prepare predicate correctly
-	predicate.statement.range.geq_value = (ion_key_t)malloc(sizeof(unsigned int));
-	predicate.statement.range.leq_value = (ion_key_t)malloc(sizeof(unsigned int));
-
-	memcpy(predicate.statement.range.geq_value,(ion_key_t)&(unsigned int){0},sizeof(unsigned int));
-	memcpy(predicate.statement.range.leq_value,(ion_key_t)&(unsigned int){2},sizeof(unsigned int));
+	dictionary_build_predicate(&predicate, predicate_range, IONIZE(0), IONIZE(2));
 
 	cursor->dictionary 		= &test_dictionary;				//register test dictionary
 	cursor->predicate 		= &predicate;					//register predicate
@@ -587,11 +538,8 @@ test_flat_file_dictionary_predicate_range_unsigned(
 	CuAssertTrue(tc, boolean_false 	== ffdict_test_predicate(cursor, key_under_test));
 
 	free(key_under_test);
-
-	//free up the correct predicate
-	free(predicate.statement.range.geq_value);
-	free(predicate.statement.range.leq_value);
-	//destroy cursor for cleanup
+	
+	//destroy cursor for cleanup TODO TODO This is a memory leak but you CANNOT free here!!!
 	// cursor->destroy(&cursor);
 	//and destroy the collection
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -620,18 +568,9 @@ test_flat_file_dictionary_cursor_range(
 	//create a new predicate statement
 	predicate_t 			predicate;
 	predicate.type = predicate_range;
-	predicate.destroy = &dictonary_destroy_predicate_range;
-	//need to prepare predicate correctly
-	predicate.statement.range.geq_value = (ion_key_t)malloc(sizeof(int));
-
-	memcpy(predicate.statement.range.geq_value,(ion_key_t)&(int){1},sizeof(int));
-
-	predicate.statement.range.leq_value = (ion_key_t)malloc(sizeof(int));
-
-	memcpy(predicate.statement.range.leq_value,(ion_key_t)&(int){5},sizeof(int));
-
+	dictionary_build_predicate(&predicate, predicate_range, IONIZE(1), IONIZE(5));
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+	CuAssertTrue(tc, err_ok 				== dictionary_find(&test_dictionary, &predicate, &cursor));
 
 	//check the status of the cursor as it should be initialized
 	CuAssertTrue(tc, cs_cursor_initialized	== cursor->status);
@@ -664,10 +603,6 @@ test_flat_file_dictionary_cursor_range(
 	//and as there is only 1 result, the next call should return empty
 	CuAssertTrue(tc, cs_end_of_results		== cursor->next(cursor, &record));
 
-	//free up the correct predicate
-	free(predicate.statement.range.geq_value);
-	free(predicate.statement.range.leq_value);
-
 	//free up record
 	free(record.key);
 	free(record.value);
@@ -679,7 +614,7 @@ test_flat_file_dictionary_cursor_range(
 	CuAssertTrue(tc, NULL 					== cursor);
 
 	//and destory the collection
-	test_dictionary.handler->delete_dictionary(&test_dictionary);
+	dictionary_delete_dictionary(&test_dictionary);
 }
 
 CuSuite*

@@ -223,63 +223,40 @@ dictionary_close(
 
 err_t
 dictionary_build_predicate(
-	dictionary_t			*dictionary,
-	predicate_t				**predicate,
+	predicate_t				*predicate,
 	predicate_type_t		type,
 	...
 )
 {
-	ion_key_size_t key_size = ((dictionary_parent_t *)dictionary->instance)->record.key_size;
-
 	va_list arg_list;
 	va_start (arg_list, type);
 
-	if ( NULL == ((*predicate) = malloc(sizeof(predicate_t))))
-	{
-		return err_out_of_memory;
-	}
-	(*predicate)->type = type;
+	predicate->type = type;
 
 	switch(type)
 	{
 		case predicate_equality:
 		{
 			ion_key_t key = va_arg(arg_list, ion_key_t);
-			if ( NULL == ((*predicate)->statement.equality.equality_value = malloc(key_size)))
-			{
-				free( (*predicate));
-				return err_out_of_memory;
-			}
-			memcpy((*predicate)->statement.equality.equality_value, key, key_size);
-			(*predicate)->destroy = dictonary_destroy_predicate_equality;
+			predicate->statement.equality.equality_value = key;
+			predicate->destroy = dictonary_destroy_predicate_equality;
 			break;
 		}
 		case predicate_range:
 		{
-			if (NULL == ((*predicate)->statement.range.geq_value = malloc(key_size)))
-			{
-				free( (*predicate));
-				return err_out_of_memory;
-			}
-			if( NULL == ((*predicate)->statement.range.leq_value = malloc(key_size)))
-			{
-				free((*predicate)->statement.range.geq_value);
-				free( (*predicate));
-				return err_out_of_memory;
-			}
-			(*predicate)->destroy = dictonary_destroy_predicate_range;
 
 			ion_key_t leq = va_arg(arg_list, ion_key_t);
 			ion_key_t geq = va_arg(arg_list, ion_key_t);
 
-			memcpy((*predicate)->statement.range.leq_value, leq, key_size);
-			memcpy((*predicate)->statement.range.geq_value, geq, key_size);
+			predicate->statement.range.leq_value = leq;
+			predicate->statement.range.geq_value = geq;
+			predicate->destroy = dictonary_destroy_predicate_range;
 			break;
 		}
 		case predicate_all_records:
 		{
 
-			(*predicate)->destroy = dictionary_destroy_predicate_all_records;
+			predicate->destroy = dictionary_destroy_predicate_all_records;
 			break;
 		}
 		case predicate_predicate:
