@@ -92,7 +92,7 @@ SD_FILE
 	Serial.write((uint8_t*)mode,2);
 	Serial.println();
 #endif	
-	if ( strcmp(mode,"r") == 0) //	Open a file for reading. The file must exist.
+	if ( strcmp(mode,"r") == 0 || strcmp(mode,"rb") == 0) //	Open a file for reading. The file must exist.
 	{
 		//check to see if file exists
 #if DEBUG
@@ -110,7 +110,7 @@ SD_FILE
 #endif
 		operation = FILE_READ;
 	}
-	else if (strcmp(mode, "w") == 0) 	// Create an empty file for writing. 
+	else if (strcmp(mode, "w") == 0 || strcmp(mode, "wb") == 0) 	// Create an empty file for writing. 
 						// If a file with the same name already exists 
 						// its content is erased and the file is 
 						// considered as a new empty file.
@@ -123,15 +123,18 @@ SD_FILE
 			SD.remove(filename);
 		}
 		operation = FILE_WRITE;
-	}else if (strcmp(mode, "r+") == 0) //Open a file for update both reading and writing. The file must exist.
+	//Open a file for update both reading and writing. The file must exist.
+	}
+	else if (strstr(mode, "r+") != NULL)
 	{
 		if (!SD.exists(filename))
 		{
 			return NULL;
 		}
 		operation = FILE_WRITE;
-
-	}else if (strcmp(mode, "w+") == 0) //Create an empty file for both reading and writing.
+	}
+	//Create an empty file for both reading and writing.
+	else if (strstr(mode, "w+") != NULL)
 	{
 #if DEBUG	
 		Serial.println("opening file");
