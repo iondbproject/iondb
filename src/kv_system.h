@@ -51,9 +51,13 @@ defines.
 */
 typedef enum key_type
 {
-	key_type_numeric_signed,			/**< key is a signed numeric value */
-	key_type_numeric_unsigned,			/**< key is a signed numeric value */
-	key_type_char_array,				/**< key is char array (string) */
+	key_type_numeric_signed,			/**< Key is a signed numeric value. */
+	key_type_numeric_unsigned,			/**< Key is an unsigned numeric value.*/
+	key_type_char_array,				/**< Key is char array. */
+	key_type_null_terminated_string,	/**< Key is a null-terminated string.
+										     Note that this needs padding out
+										     to avoid reading memory one does
+										     not own. */
 } key_type_t;
 
 enum error

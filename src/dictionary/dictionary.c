@@ -31,6 +31,11 @@ dictionary_switch_compare(
 			compare = dictionary_compare_char_array;
 			break;
 		}
+		case key_type_null_terminated_string:
+		{
+				compare	= dictionary_compare_null_terminated_string;
+				break;
+		}
 		default:
 		{
 			//do something - you must bind the correct comparison function
@@ -202,6 +207,16 @@ dictionary_compare_char_array(
 )
 {
 	return memcmp((char *)first_key, (char *)second_key, key_size);
+}
+
+char
+dictionary_compare_null_terminated_string(
+	ion_key_t 		first_key,
+	ion_key_t		second_key,
+	ion_key_size_t	key_size
+)
+{
+	return strncmp((char *)first_key, (char *)second_key, key_size);
 }
 
 err_t
