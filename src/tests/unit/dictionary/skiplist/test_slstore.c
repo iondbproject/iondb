@@ -1238,7 +1238,7 @@ test_skiplist_update_single_exist(
 	CuAssertTrue(tc, 		*(int*)skiplist.head->next[0]->key		== 45);
 	CuAssertStrEquals(tc, 	(char*) skiplist.head->next[0]->value, "new val");
 	int abc = 3667;
-	CuAssertTrue(tc, false == true);
+	CuAssertTrue(tc, boolean_false == boolean_true);
 	sl_destroy(&skiplist);
 }
 
