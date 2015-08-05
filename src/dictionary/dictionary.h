@@ -180,16 +180,38 @@ dictionary_compare_signed_value(
 	ion_key_t 		first_key,
 	ion_key_t		second_key,
 	ion_key_size_t	key_size
-	);
+);
+
 /**
- TODO This doc needs to be fleshed out
- @param first_key
- @param second_key
- @param key_size
- @return
- */
+@brief	Compare any two character (byte) arrays. These are not assumed
+		to be null-terminated.
+@param	first_key
+				The first (left) key being compared.
+@param	second_key
+				The second (right) key being compared.
+@param	key_size
+				The size of the keys being compared.
+@return	The resulting comparison value.
+*/
 char
 dictionary_compare_char_array(
+	ion_key_t 		first_key,
+	ion_key_t		second_key,
+	ion_key_size_t	key_size
+);
+
+/**
+@brief	Compare any two null-terminated strings.
+@param	first_key
+				The first (left) key being compared.
+@param	second_key
+				The second (right) key being compared.
+@param	key_size
+				The (maximum) size of the keys being compared.
+@return	The resulting comparison value.
+*/
+char
+dictionary_compare_null_terminated_string(
 	ion_key_t 		first_key,
 	ion_key_t		second_key,
 	ion_key_size_t	key_size
