@@ -9,7 +9,7 @@
 #include <string.h>
 #include <limits.h>
 #include "./../../../CuTest.h"
-#include "./../../../../util/idEncoder/fileEncoder.h"
+#include "./../../../../util/idencoder/fileEncoder.h"
 
 
 

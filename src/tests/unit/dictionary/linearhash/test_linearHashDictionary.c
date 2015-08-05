@@ -1,5 +1,5 @@
 #include "./../generic_dictionary_test.h"
-#include "./../../../../dictionary/linearHash/lhdictionaryhandler.h"
+#include "./../../../../dictionary/linearhash/lhdictionaryhandler.h"
 
 void
 run_linearHashDictionary_generic_test_set_1(

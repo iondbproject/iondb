@@ -19,7 +19,7 @@ extern "C" {
 
 #include "./../dicttypes.h"
 #include "./../dictionary.h"
-#include "./../../util/idEncoder/fileEncoder.h"
+#include "./../../util/idencoder/fileEncoder.h"
 #include "file_ll.h"
 
 #include "./../../kv_system.h"

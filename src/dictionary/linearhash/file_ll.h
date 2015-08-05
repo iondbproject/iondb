@@ -16,7 +16,7 @@ extern "C" {
 
 #include "./../dicttypes.h"
 #include "./../dictionary.h"
-#include "./../../util/idEncoder/fileEncoder.h"
+#include "./../../util/idencoder/fileEncoder.h"
 
 #include "./../../kv_system.h"
 #include "./../../kv_io.h"
