@@ -241,7 +241,7 @@ test_flat_file_simple_delete(
 	{
 
 		//delete the record (single record)
-		return_status_t status;
+		ion_status_t status;
 		status = ff_delete(&file, (ion_key_t)(&j));
 		CuAssertTrue(tc, err_ok				== status.err);
 		CuAssertTrue(tc, 1					== status.count);
@@ -588,7 +588,7 @@ test_flat_file_delete_1(
 									(ion_key_t)(&i),
 									(ion_value_t)str));
 
-	return_status_t status;
+	ion_status_t status;
 	status = ff_delete(&file, (ion_key_t)(&i));
 	CuAssertTrue(tc, err_ok  	== status.err);
 	CuAssertTrue(tc, 1	 		== status.count);
@@ -669,7 +669,7 @@ test_flat_file_delete_2(
 #if DEBUG
 		printf("Deleting key: %i \n",i);
 #endif
-		return_status_t status;
+		ion_status_t status;
 		status = ff_delete(&file, (ion_key_t)(&i));
 		CuAssertTrue(tc, err_ok  		== status.err);
 		CuAssertTrue(tc, 1  			== status.count);

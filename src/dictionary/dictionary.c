@@ -56,7 +56,10 @@ dictionary_create(
 	ion_dictionary_compare_t compare = dictionary_switch_compare(key_type);
 
 	err = handler->create_dictionary(id, key_type, key_size, value_size, dictionary_size, compare, handler, dictionary);
-	dictionary->instance->id = id;
+	if (err_ok == err)
+	{
+		dictionary->instance->id = id;
+	}
 
 	return err;
 }
@@ -123,7 +126,7 @@ dictionary_compare_unsigned_value(
 	 * a direct comparison of bytes in memory starting for MSB.
 	 */
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-	for (idx = key_size -1; idx >= 0; idx--)
+	for (idx = key_size - 1; idx >= 0; idx--)
 	{
 		if ((return_value = ((*(first_key+idx) > *(second_key+idx)) - (*(first_key+idx) < *(second_key+idx)))) != ZERO)
 		{
@@ -245,11 +248,11 @@ dictionary_build_predicate(
 		case predicate_range:
 		{
 
-			ion_key_t leq = va_arg(arg_list, ion_key_t);
-			ion_key_t geq = va_arg(arg_list, ion_key_t);
+			ion_key_t lower_bound = va_arg(arg_list, ion_key_t);
+			ion_key_t upper_bound = va_arg(arg_list, ion_key_t);
 
-			predicate->statement.range.leq_value = leq;
-			predicate->statement.range.geq_value = geq;
+			predicate->statement.range.lower_bound = lower_bound;
+			predicate->statement.range.upper_bound = upper_bound;
 			predicate->destroy = dictonary_destroy_predicate_range;
 			break;
 		}
@@ -295,8 +298,8 @@ dictonary_destroy_predicate_range(
 {
 	if (*predicate != NULL)
 	{
-		free((*predicate)->statement.range.geq_value);
-		free((*predicate)->statement.range.leq_value);
+		free((*predicate)->statement.range.upper_bound);
+		free((*predicate)->statement.range.lower_bound);
 		free(*predicate);
 		*predicate = NULL;
 	}

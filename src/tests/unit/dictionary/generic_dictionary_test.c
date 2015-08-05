@@ -15,8 +15,6 @@ init_generic_dictionary_test(
 	test->key_size		= key_size;
 	test->value_size	= value_size;
 	test->dictionary_size	= dictionary_size;
-
-	ion_init_master_table();
 }
 
 void
@@ -25,7 +23,6 @@ cleanup_generic_dictionary_test(
 )
 {
 	dictionary_delete_dictionary(&test->dictionary);
-	ion_close_master_table();
 }
 
 
@@ -39,9 +36,10 @@ dictionary_test_init(
 
 	test->init_dict_handler(&(test->handler));
 
-	error = ion_master_table_create_dictionary(
+	error = dictionary_create(
 		&test->handler,
 		&test->dictionary,
+		1,
 		test->key_type,
 		test->key_size,
 		test->value_size,
@@ -79,7 +77,7 @@ dictionary_test_insert_get(
 
 	unsigned char 	test_buf[test->value_size];
 	ion_value_t		test_val = test_buf;
-	err_t			error;
+	err_t	err;
 	
 	int		i;
 	int		j;
@@ -116,23 +114,23 @@ dictionary_test_insert_get(
 			j
 		);
 		
-		error	= dictionary_insert(
-				&(test->dictionary),
-				&keys[(i*test->key_size)],
-				&vals[(i*test->value_size)]
-			);
-		CuAssertTrue(tc, err_ok == error);
+		err	= dictionary_insert(
+			&(test->dictionary),
+			&keys[(i*test->key_size)],
+			&vals[(i*test->value_size)]
+		);
+		CuAssertTrue(tc, err_ok == err);
 	}
 	
 	for (i = 0; i < num_to_insert; i++)
 	{
-		error	= dictionary_get(
-				&(test->dictionary),
-				&keys[(i*test->key_size)],
-				test_val
-			);
+		err = dictionary_get(
+			&(test->dictionary),
+			&keys[(i*test->key_size)],
+			test_val
+		);
 		
-		CuAssertTrue(tc, err_ok == error);
+		CuAssertTrue(tc, err_ok == err);
 		
 		j	= memcmp(
 				&(vals[i*test->value_size]),
@@ -150,24 +148,24 @@ dictionary_test_insert_get_edge_cases(
     CuTest      *tc
 )
 {
-	err_t error;
+	err_t err;
 
-	error = dictionary_insert(
+	err = dictionary_insert(
 		&(test->dictionary),
 		IONIZE(-10),
 		GTEST_DATA
 	);
 
-	CuAssertTrue(tc, err_ok == error);
+	CuAssertTrue(tc, err_ok == err);
 
 	unsigned char 	test_buf[test->value_size];
-	error = dictionary_get(
+	err = dictionary_get(
 		&test->dictionary,
 		IONIZE(-10),
 		test_buf
-		);
+	);
 
-	CuAssertTrue(tc, err_ok == error);
+	CuAssertTrue(tc, err_ok == err);
 	CuAssertTrue(tc, 0 == test->dictionary.instance->compare(GTEST_DATA, test_buf, test->key_size));
 }
 
@@ -178,24 +176,25 @@ dictionary_test_delete(
 	CuTest		*tc
 )
 {
-	err_t			error;
+	err_t err;
+
 	unsigned char 	test_buf[test->value_size];
 	ion_value_t		test_val = test_buf;
-	
-	error	= dictionary_delete(
+
+	err	= dictionary_delete(
 			&(test->dictionary),
 			key_to_delete
 		);
+
+	CuAssertTrue(tc, err_ok == err);
+
+	err 	= dictionary_get(
+		&(test->dictionary),
+		key_to_delete,
+		test_val
+	);
 	
-	CuAssertTrue(tc, err_ok == error);
-	
-	error	= dictionary_get(
-			&(test->dictionary),
-			key_to_delete,
-			test_val
-		);
-	
-	CuAssertTrue(tc, err_item_not_found == error);
+	CuAssertTrue(tc, err_item_not_found == err);
 }
 
 void
@@ -206,26 +205,27 @@ dictionary_test_update(
 	CuTest		*tc
 )
 {
-	err_t			error;
+	err_t err;
+
 	unsigned char 	test_buf[test->value_size];
 	ion_value_t		test_val = test_buf;
+
+	err	= dictionary_update(
+		&(test->dictionary),
+		key_to_update,
+		update_with
+	);
 	
-	error	= dictionary_update(
-			&(test->dictionary),
-			key_to_update,
-			update_with
-		);
+	CuAssertTrue(tc, err_ok == err);
 	
-	CuAssertTrue(tc, err_ok == error);
-	
-	error	= dictionary_get(
-			&(test->dictionary),
-			key_to_update,
-			test_val
-		);
-	
-	CuAssertTrue(tc, err_ok == error);
-	
+	err	= dictionary_get(
+		&(test->dictionary),
+		key_to_update,
+		test_val
+	);
+
+	CuAssertTrue(tc, err_ok == err);
+
 	CuAssertTrue(tc, 0 == memcmp(update_with, test_val, test->value_size));
 
 }
@@ -269,8 +269,8 @@ dictionary_test_equality(
 void
 dictionary_test_range(
     generic_test_t 	*test,
-    ion_key_t 		leq_key,
-    ion_key_t 		geq_key,
+    ion_key_t 		lower_bound,
+    ion_key_t 		upper_bound,
     CuTest			*tc
 )
 {
@@ -278,7 +278,7 @@ dictionary_test_range(
 
 	dict_cursor_t 	*cursor 	= NULL;
 	predicate_t 	predicate;
-	dictionary_build_predicate(&predicate, predicate_range, leq_key, geq_key);
+	dictionary_build_predicate(&predicate, predicate_range, lower_bound, upper_bound);
 	error = dictionary_find(&test->dictionary, &predicate, &cursor);
 
 	CuAssertTrue(tc, err_ok == error);
@@ -290,8 +290,8 @@ dictionary_test_range(
 
 	while(cs_end_of_results != cursor->next(cursor, &record))
 	{
-		CuAssertTrue(tc, test->dictionary.instance->compare(record.key, leq_key, test->key_size) >= 0);
-		CuAssertTrue(tc, test->dictionary.instance->compare(record.key, geq_key, test->key_size) <= 0);
+		CuAssertTrue(tc, test->dictionary.instance->compare(record.key, lower_bound, test->key_size) >= 0);
+		CuAssertTrue(tc, test->dictionary.instance->compare(record.key, upper_bound, test->key_size) <= 0);
 		CuAssertTrue(tc, err_ok == error);
 	}
 
@@ -351,7 +351,7 @@ dictionary_test_open_close(
     CuTest			*tc
 )
 {
-	err_t error;
+	err_t 			error;
 	ion_dictionary_id_t gdict_id = test->dictionary.instance->id;
 
 	/* Insert test record so we can check data integrity after we close/open */
@@ -359,7 +359,7 @@ dictionary_test_open_close(
 
 	CuAssertTrue(tc, err_ok == error);
 
-	error = ion_close_dictionary(&test->dictionary);
+	error = dictionary_close(&test->dictionary);
 
 	CuAssertTrue(tc, err_ok == error);
 
@@ -368,7 +368,15 @@ dictionary_test_open_close(
 
 	test->init_dict_handler(&handler_temp);
 
-	error = ion_open_dictionary(&handler_temp, &dictionary_temp, gdict_id);
+	ion_dictionary_config_info_t config = {
+		gdict_id, 
+		test->key_type, 
+		test->key_size, 
+		test->value_size, 
+		test->dictionary_size
+	};
+	
+	error = dictionary_open(&handler_temp, &dictionary_temp, &config);
 
 	CuAssertTrue(tc, err_ok == error);
 	CuAssertTrue(tc, dictionary_temp.instance->record.key_size == test->key_size);

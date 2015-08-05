@@ -3,8 +3,15 @@ lib/
 docs/
 .build/
 .settings
+*.o
+*.d
+*.a
+*.swp
+*.back
+*~
 .cproject
 .project
 changetracker.txt
+out.txt
 iondb.sublime-project
 iondb.sublime-workspace

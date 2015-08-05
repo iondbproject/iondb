@@ -347,9 +347,7 @@ test_open_address_dictionary_predicate_range_signed(
 
 	//create a new predicate statement
 	predicate_t 			predicate;
-	predicate.type 			= predicate_range;
-
-	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(-1), IONIZE(1));
+	dictionary_build_predicate(&predicate, predicate_range, IONIZE(-1), IONIZE(1));
 
 	cursor->dictionary 		= &test_dictionary;				//register test dictionary
 	cursor->predicate 		= &predicate;					//register predicate
@@ -491,11 +489,11 @@ test_open_address_dictionary_cursor_range(
 		//check that value is correct that has been returned
 		ion_value_t	str;
 		str = (ion_value_t)malloc(record_info.value_size);
-		sprintf((char*)str,"value : %i ", (*(int *)predicate.statement.range.geq_value) + result_count);
+		sprintf((char*)str,"value : %i ", (*(int *)predicate.statement.range.lower_bound) + result_count);
 
 		CuAssertTrue(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
-		CuAssertTrue(tc, *(int*)(record.key)  	<= *(int *)(cursor->predicate->statement.range.leq_value));
-		CuAssertTrue(tc, *(int*)(record.key)  	>= *(int *)(cursor->predicate->statement.range.geq_value));
+		CuAssertTrue(tc, *(int*)(record.key)  	>= *(int *)(cursor->predicate->statement.range.lower_bound));
+		CuAssertTrue(tc, *(int*)(record.key)  	<= *(int *)(cursor->predicate->statement.range.upper_bound));
 		result_count++;
 		free(str);
 	}

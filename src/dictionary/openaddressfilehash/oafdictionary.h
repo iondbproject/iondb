@@ -21,7 +21,7 @@ extern "C" {
  */
 typedef int 			hash_t;
 
-typedef struct oadict_cursor
+typedef struct oafdict_cursor
 {
 	dict_cursor_t 		super;		/**< Cursor supertype this type inherits from */
 	hash_t				first;		/**<First visited spot*/
@@ -33,4 +33,4 @@ typedef struct oadict_cursor
 }
 #endif
 
-#endif /* OADICTIONARY_H_ */
+#endif /* OAFDICTIONARY_H_ */

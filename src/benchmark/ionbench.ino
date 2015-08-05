@@ -273,23 +273,23 @@ bench_range(
         dictionary_insert(&dict, key, test_value);
     }
 
-    int int_leq;
-    int int_geq;
+    int int_lower_bound;
+    int int_upper_bound;
 
     if(whichhalf == 0) { // Pick lower half
-        int_leq = min;
-        int_geq = min + (max - min) / 2;
+        int_lower_bound = min;
+        int_upper_bound = min + (max - min) / 2;
     }
     else if(whichhalf == 1) {
-        int_leq = min + (max - min) / 2;
-        int_geq = max;
+        int_lower_bound = min + (max - min) / 2;
+        int_upper_bound = max;
     }
-    ion_key_t   leq     = (ion_key_t) &int_leq;
-    ion_key_t   geq     = (ion_key_t) &int_geq;
+    ion_key_t   lower_bound     = (ion_key_t) &int_lower_bound;
+    ion_key_t   upper_bound     = (ion_key_t) &int_upper_bound;
     benchmark_start();
     dict_cursor_t *cursor = NULL;
     predicate_t predicate;
-    dictionary_build_predicate(&predicate, predicate_range, leq, geq);
+    dictionary_build_predicate(&predicate, predicate_range, lower_bound, upper_bound);
     err_t status = dictionary_find(&dict, &predicate, &cursor);
     ion_record_t record;
     record.key      = (ion_key_t) malloc(dict.instance->record.key_size);

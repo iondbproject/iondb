@@ -87,8 +87,8 @@ dictionary_test_equality(
 void
 dictionary_test_range(
     generic_test_t 	*test,
-    ion_key_t 		leq_key,
-    ion_key_t 		geq_key,
+    ion_key_t 		lower_bound,
+    ion_key_t 		upper_bound,
     CuTest			*tc
 );
 

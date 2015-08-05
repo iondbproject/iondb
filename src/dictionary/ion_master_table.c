@@ -17,6 +17,13 @@ ion_master_table_get_next_id(
    void
 )
 {
+    int oldpos = ftell(ion_master_table_file);
+    fseek(ion_master_table_file, 0, SEEK_SET);
+    /* Flush master row                           This writes the next ID to be used, so +1 */
+    ion_dictionary_config_info_t master_config = {ion_master_table_next_id + 1, 0, 0, 0, 0};
+    fwrite(&master_config, sizeof(master_config), 1, ion_master_table_file);
+    fseek(ion_master_table_file, oldpos, SEEK_SET);
+
     return ion_master_table_next_id++;
 }
 
@@ -59,10 +66,6 @@ ion_close_master_table(
 {
     if (NULL != ion_master_table_file)
     {
-        fseek(ion_master_table_file, 0, SEEK_SET);
-        /* Flush master row */
-        ion_dictionary_config_info_t master_config = {ion_master_table_next_id, 0, 0, 0, 0 };
-        fwrite(&master_config, sizeof(master_config), 1, ion_master_table_file);
         if (0 != fclose(ion_master_table_file)) { return err_file_close_error; } 
     }
 
@@ -78,7 +81,7 @@ ion_delete_master_table(
 {
     if (NULL != ion_master_table_file)
     {
-        if (0 != fremove(ION_MASTER_TABLE_FILENAME)) { return err_could_not_delete_file; }
+        if (0 != fremove(ION_MASTER_TABLE_FILENAME)) { return err_file_delete_error; }
     }
 
     return err_ok;

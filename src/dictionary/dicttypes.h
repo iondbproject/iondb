@@ -176,9 +176,9 @@ typedef struct equality_statement
 */
 typedef struct range_statement
 {
-	ion_key_t		leq_value;
+	ion_key_t		lower_bound;
 					/**< The lower value in the range */
-	ion_key_t		geq_value;
+	ion_key_t		upper_bound;
 					/**< The upper value in the range */
 } range_statement_t;
 
@@ -260,6 +260,7 @@ enum write_concern
 	 	 	 	 	 	 	 	 in dictionary */
 	wc_insert_unique,		/**< allows for unique inserts only
 								(no overwrite) */
+	wc_duplicate,			/**< allows for duplicate keys to be inserted into dictionary */
 };
 
 /**

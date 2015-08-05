@@ -36,7 +36,7 @@ oafh_initialize(
 	hashmap->map_size 			= size;
 
 	//open the file
-	hashmap->file = fopen(TEST_FILE,"w+");
+	hashmap->file = fopen(TEST_FILE,"w+b");
 
 	hash_bucket_t *file_record;
 

@@ -13,7 +13,7 @@ extern "C" {
 #endif
 
 #include "kv_stdio_intercept.h"
-	
+
 /**
 @brief		Wrapper around Arduino File type.
 */

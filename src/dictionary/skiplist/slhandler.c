@@ -185,8 +185,8 @@ sldict_find(
 		}
 		case predicate_range:
 		{
-			(*cursor)->predicate->statement.range.leq_value = malloc(key_size);
-			if(NULL == (*cursor)->predicate->statement.range.leq_value)
+			(*cursor)->predicate->statement.range.lower_bound = malloc(key_size);
+			if(NULL == (*cursor)->predicate->statement.range.lower_bound)
 			{
 				free( (*cursor)->predicate);
 				free(*cursor);
@@ -194,34 +194,34 @@ sldict_find(
 			}
 
 			memcpy(
-				(*cursor)->predicate->statement.range.leq_value,
-				predicate->statement.range.leq_value,
+				(*cursor)->predicate->statement.range.lower_bound,
+				predicate->statement.range.lower_bound,
 				key_size
 			);
 
-			(*cursor)->predicate->statement.range.geq_value = malloc(key_size);
-			if(NULL == (*cursor)->predicate->statement.range.geq_value)
+			(*cursor)->predicate->statement.range.upper_bound = malloc(key_size);
+			if(NULL == (*cursor)->predicate->statement.range.upper_bound)
 			{
-				free((*cursor)->predicate->statement.range.leq_value);
+				free((*cursor)->predicate->statement.range.lower_bound);
 				free((*cursor)->predicate);
 				free(*cursor);
 				return err_out_of_memory;
 			}
 
 			memcpy(
-				(*cursor)->predicate->statement.range.geq_value,
-				predicate->statement.range.geq_value,
+				(*cursor)->predicate->statement.range.upper_bound,
+				predicate->statement.range.upper_bound,
 				key_size
 			);
 
 			sl_node_t *loc = sl_find_node(
 								(skiplist_t *) dictionary->instance,
-								(*cursor)->predicate->statement.range.leq_value
+								(*cursor)->predicate->statement.range.lower_bound
 							 );
 			if(NULL == loc->key ||
 							dictionary->instance->compare(
 								loc->key,
-								(*cursor)->predicate->statement.range.leq_value,
+								(*cursor)->predicate->statement.range.lower_bound,
 								key_size
 							) < 0)
 			/* This means the returned node is smaller than the lower bound */
@@ -342,8 +342,8 @@ sldict_test_predicate(
 		}
 		case predicate_range:
 		{
-			ion_key_t lower_b 	= cursor->predicate->statement.range.leq_value;
-			ion_key_t upper_b 	= cursor->predicate->statement.range.geq_value;
+			ion_key_t lower_b 	= cursor->predicate->statement.range.lower_bound;
+			ion_key_t upper_b 	= cursor->predicate->statement.range.upper_bound;
 
 			/* Check if key >= lower bound */
 			boolean_t comp_lower = skiplist->super.compare(key, lower_b, key_size) >= 0;

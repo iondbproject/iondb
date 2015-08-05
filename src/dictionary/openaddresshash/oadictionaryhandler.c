@@ -147,8 +147,8 @@ err_t oadict_find(
 		}
 		case predicate_range:
 		{
-			//as this is a range, need to malloc leq key
-			if (((*cursor)->predicate->statement.range.leq_value =
+			//as this is a range, need to malloc lower bound key
+			if (((*cursor)->predicate->statement.range.lower_bound =
 			        (ion_key_t)malloc((((hashmap_t*)dictionary->instance)->super.record.key_size)))
 			        == NULL)
 			{
@@ -157,24 +157,24 @@ err_t oadict_find(
 				return err_out_of_memory;
 			}
 			//copy across the key value as the predicate may be destroyed
-			memcpy((*cursor)->predicate->statement.range.leq_value,
-			        predicate->statement.range.leq_value,
+			memcpy((*cursor)->predicate->statement.range.lower_bound,
+			        predicate->statement.range.lower_bound,
 			        (((hashmap_t *)dictionary->instance)->super.record.key_size));
 
-			//as this is a range, need to malloc leq key
-			if (((*cursor)->predicate->statement.range.geq_value =
+			//as this is a range, need to malloc upper bound key
+			if (((*cursor)->predicate->statement.range.upper_bound =
 			        (ion_key_t)malloc(
 			        		(((hashmap_t*)dictionary->instance)->super.record.key_size)))
 			        == NULL)
 			{
-				free((*cursor)->predicate->statement.range.leq_value);
+				free((*cursor)->predicate->statement.range.lower_bound);
 				free((*cursor)->predicate);
 				free(*cursor);					//cleanup
 				return err_out_of_memory;
 			}
 			//copy across the key value as the predicate may be destroyed
-			memcpy((*cursor)->predicate->statement.range.geq_value,
-			        predicate->statement.range.geq_value,
+			memcpy((*cursor)->predicate->statement.range.upper_bound,
+			        predicate->statement.range.upper_bound,
 			        (((hashmap_t*)dictionary->instance)->super.record.key_size));
 
 			//find the location of the first element as this is a straight equality
@@ -182,7 +182,7 @@ err_t oadict_find(
 
 			//start at the lowest end of the range and check
 			if (oah_find_item_loc((hashmap_t*)dictionary->instance,
-			        (*cursor)->predicate->statement.range.geq_value, &location)
+			        (*cursor)->predicate->statement.range.lower_bound, &location)
 			        == err_item_not_found)
 			{
 				//this will still have to be returned?
@@ -321,15 +321,17 @@ boolean_t oadict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
 		}
 		case predicate_range: // range check
 		{
-			if (		// leq_value <= key <==> !(leq_value > key)
-			(!(A_gt_B
-			        == hash_map->super.compare(key,
-			                cursor->predicate->statement.range.leq_value,
-			                hash_map->super.record.key_size))) &&// key <= geq_value <==> !(key > geq_key)
+			if (		
+			(!(A_gt_B 			// lower_bound <= key <==> !(lower_bound > key)
+			        == hash_map->super.compare(
+			                cursor->predicate->statement.range.lower_bound,
+			        		key,
+			                hash_map->super.record.key_size))) && // key <= upper_bound <==> !(key > upper_bound)
 			        (!(A_gt_B
 			                == hash_map->super.compare(
-			                        cursor->predicate->statement.range.geq_value,
-			                        key, hash_map->super.record.key_size))))
+			                        key, 
+			                        cursor->predicate->statement.range.upper_bound,
+			                        hash_map->super.record.key_size))))
 			{
 				key_satisfies_predicate = boolean_true;
 			}

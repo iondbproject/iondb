@@ -117,7 +117,11 @@ libsources :=  	$(SRC)/kv_io.c \
 				$(SRC)/dictionary/openaddressfilehash/oafdictionaryhandler.c \
 				$(SRC)/dictionary/openaddressfilehash/oafhash.c \
 				$(SRC)/dictionary/bpptree/bpptree.c \
-				$(SRC)/dictionary/bpptree/bpptreehandler.c
+				$(SRC)/dictionary/bpptree/bpptreehandler.c \
+				$(SRC)/dictionary/linearhash/file_ll.c \
+				$(SRC)/dictionary/linearhash/linearhash.c \
+				$(SRC)/dictionary/linearhash/lhdictionaryhandler.c \
+				$(SRC)/util/idEncoder/fileEncoder.c
 
 # Generate list of libraries to compile.
 libs        := $(addprefix $(BIN_LIB)/,$(subst .c,.o,$(notdir $(libsources))))
@@ -147,7 +151,11 @@ tlsources   := 	$(TESTS)/CuTest.c  \
 				$(TESTS)/unit/dictionary/openaddressfilehash/test_oafhash.c \
 				$(TESTS)/unit/dictionary/openaddressfilehash/test_oafdictionaryhandler.c \
 				$(TESTS)/unit/dictionary/generic_dictionary_test.c \
-				$(TESTS)/unit/dictionary/bpptree/test_bpptreehandler.c
+				$(TESTS)/unit/dictionary/bpptree/test_bpptreehandler.c \
+				$(TESTS)/unit/dictionary/linearhash/test_file_ll.c \
+				$(TESTS)/unit/dictionary/linearhash/test_linearhash.c \
+				$(TESTS)/unit/dictionary/linearhash/test_lhdictionaryhandler.c \
+				$(TESTS)/unit/dictionary/idEncoder/test_fileEncoder.c
 
 # Generate list of libraries to compile.
 testlibs    := $(addprefix $(BIN_TESTS)/,$(subst .c,.o,$(notdir $(tlsources))))
@@ -163,7 +171,9 @@ testsources := 	$(EXAMPLES)/skiplist.c	\
 				$(TESTS)/unit/dictionary/openaddresshash/run_oahash.c \
 				$(TESTS)/unit/dictionary/flatfilestore/run_flatfile.c \
 				$(TESTS)/unit/dictionary/openaddressfilehash/run_oafhash.c \
-				$(TESTS)/unit/dictionary/bpptree/run_bpptree.c 
+				$(TESTS)/unit/dictionary/bpptree/run_bpptree.c  \
+				$(TESTS)/unit/dictionary/linearhash/run_linearhash.c \
+				$(TESTS)/unit/dictionary/idEncoder/run_fileEncoder.c
 				
 # Generate list of libraries to compile.
 testexecs   := $(addprefix $(BIN_TESTS)/,$(subst .c,,$(notdir $(testsources))))

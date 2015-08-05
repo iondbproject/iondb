@@ -87,13 +87,13 @@ bpptree_insert(
 		if (bErrOk != bErr)
 		{
 			// TODO: lfb_delete from values
-			return err_could_not_insert;
+			return err_unable_to_insert;
 		}
 		return err_ok;
 	}
 	else
 	{
-		return err_could_not_insert;
+		return err_unable_to_insert;
 	}
 }
 
@@ -337,8 +337,8 @@ bpptree_find(
 		}
 		case predicate_range:
 		{
-			(*cursor)->predicate->statement.range.leq_value = malloc(key_size);
-			if(NULL == (*cursor)->predicate->statement.range.leq_value)
+			(*cursor)->predicate->statement.range.lower_bound = malloc(key_size);
+			if(NULL == (*cursor)->predicate->statement.range.lower_bound)
 			{
 				free( (*cursor)->predicate);
 				free(bCursor->cur_key);
@@ -347,15 +347,15 @@ bpptree_find(
 			}
 
 			memcpy(
-				(*cursor)->predicate->statement.range.leq_value,
-				predicate->statement.range.leq_value,
+				(*cursor)->predicate->statement.range.lower_bound,
+				predicate->statement.range.lower_bound,
 				key_size
 			);
 
-			(*cursor)->predicate->statement.range.geq_value = malloc(key_size);
-			if(NULL == (*cursor)->predicate->statement.range.geq_value)
+			(*cursor)->predicate->statement.range.upper_bound = malloc(key_size);
+			if(NULL == (*cursor)->predicate->statement.range.upper_bound)
 			{
-				free((*cursor)->predicate->statement.range.leq_value);
+				free((*cursor)->predicate->statement.range.lower_bound);
 				free((*cursor)->predicate);
 				free(bCursor->cur_key);
 				free(*cursor);
@@ -363,15 +363,15 @@ bpptree_find(
 			}
 
 			memcpy(
-				(*cursor)->predicate->statement.range.geq_value,
-				predicate->statement.range.geq_value,
+				(*cursor)->predicate->statement.range.upper_bound,
+				predicate->statement.range.upper_bound,
 				key_size
 			);
 
 			/* We search for the FGEQ of the Lower bound. */
 			bFindFirstGreaterOrEqual(
 			                         bpptree->tree,
-			                         (*cursor)->predicate->statement.range.leq_value,
+			                         (*cursor)->predicate->statement.range.lower_bound,
 			                         bCursor->cur_key,
 			                         &bCursor->offset
 			                        );
@@ -558,8 +558,8 @@ bpptree_test_predicate(
 		}
 		case predicate_range:
 		{
-			ion_key_t lower_b 	= cursor->predicate->statement.range.leq_value;
-			ion_key_t upper_b 	= cursor->predicate->statement.range.geq_value;
+			ion_key_t lower_b 	= cursor->predicate->statement.range.lower_bound;
+			ion_key_t upper_b 	= cursor->predicate->statement.range.upper_bound;
 
 			/* Check if key >= lower bound */
 			boolean_t comp_lower = bpptree->super.compare(key, lower_b, key_size) >= 0;

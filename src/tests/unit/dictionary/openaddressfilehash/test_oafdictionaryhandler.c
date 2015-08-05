@@ -50,7 +50,6 @@ createFileTestCollection(
 		sprintf((char*)str, "value : %i ", i);
 		test_dictionary->handler->insert(test_dictionary, (ion_key_t)&i, str);
 	}
-	//printf("Current str: 0x%p\n", str);
 	free(str);
 }
 /**
@@ -495,7 +494,7 @@ test_open_address_file_dictionary_cursor_range(
 		//check that value is correct that has been returned
 		ion_value_t	str;
 		str = (ion_value_t)malloc(record_info.value_size);
-		sprintf((char*)str,"value : %i ", (*(int *)predicate.statement.range.geq_value) + result_count);
+		sprintf((char*)str,"value : %i ", (*(int *)predicate.statement.range.lower_bound) + result_count);
 
 		CuAssertTrue(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
 		result_count++;

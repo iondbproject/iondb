@@ -21,14 +21,14 @@ ff_initialize(
 
 	//check to see if file exists and if it does, throw exception
 
-	if ((file->file_ptr = fopen("file.bin", "r")) != NULL)
+	if ((file->file_ptr = fopen("file.bin", "rb")) != NULL)
 	{
 		fclose(file->file_ptr);
 		return -1;			/** @todo correct error return code*/
 	}
 
 	//assume the the file does not exists -> this will come from the upper layers
-	file->file_ptr = fopen("file.bin","w+");
+	file->file_ptr = fopen("file.bin","w+b");
 
 
 	if (!file->file_ptr)
@@ -249,14 +249,14 @@ ff_find_item_loc(
 	return err_item_not_found; 				//key have not been found
 }
 
-return_status_t
+ion_status_t
 ff_delete(
 	ff_file_t 		*file,
 	ion_key_t 		key
 )
 {
 	ion_fpos_t loc 		= UNINITIALISED;		// position to delete
-	return_status_t status;					// return status
+	ion_status_t status;					// return status
 	status.err 		= err_item_not_found;	// init such that record will not be found
 	status.count 	= 0;					// number of items deleted
 

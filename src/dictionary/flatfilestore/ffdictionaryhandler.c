@@ -46,7 +46,6 @@ err_t ffdict_create_dictionary(
 
 	//this registers the dictionary the dictionary
 	ff_initialize((ff_file_t *)(dictionary->instance), key_type, key_size, value_size);
-
 	/**@TODO The correct comparison operator needs to be bound at run time
 	 * based on the type of key defined
 	 */
@@ -60,7 +59,7 @@ err_t ffdict_create_dictionary(
 /** @todo correct return type */
 err_t ffdict_delete(dictionary_t *dictionary, ion_key_t key)
 {
-	return_status_t status = ff_delete((ff_file_t *)dictionary->instance, key);
+	ion_status_t status = ff_delete((ff_file_t *)dictionary->instance, key);
 	return status.err;
 }
 
@@ -148,8 +147,8 @@ err_t ffdict_find(
 		}
 		case predicate_range:
 		{
-			//as this is a range, need to malloc leq key
-			if (((*cursor)->predicate->statement.range.leq_value =
+			//as this is a range, need to malloc lower bound key
+			if (((*cursor)->predicate->statement.range.lower_bound =
 			        (ion_key_t)malloc((((ff_file_t*)dictionary->instance)->super.record.key_size)))
 			        == NULL)
 			{
@@ -158,24 +157,24 @@ err_t ffdict_find(
 				return err_out_of_memory;
 			}
 			//copy across the key value as the predicate may be destroyed
-			memcpy((*cursor)->predicate->statement.range.leq_value,
-			        predicate->statement.range.leq_value,
+			memcpy((*cursor)->predicate->statement.range.lower_bound,
+			        predicate->statement.range.lower_bound,
 			        (int)(dictionary->instance->record.key_size));
 
-			//as this is a range, need to malloc leq kesbWy
-			if (((*cursor)->predicate->statement.range.geq_value =
+			//as this is a range, need to malloc upper bound key
+			if (((*cursor)->predicate->statement.range.upper_bound =
 			        malloc(
 		        		(int)(dictionary->instance->record.key_size)))
 			        == NULL)
 			{
-				free((*cursor)->predicate->statement.range.leq_value);
+				free((*cursor)->predicate->statement.range.lower_bound);
 				free((*cursor)->predicate);
 				free(*cursor);					//cleanup
 				return err_out_of_memory;
 			}
 			//copy across the key value as the predicate may be destroyed
-			memcpy((*cursor)->predicate->statement.range.geq_value,
-			        predicate->statement.range.geq_value,
+			memcpy((*cursor)->predicate->statement.range.upper_bound,
+			        predicate->statement.range.upper_bound,
 			        		(int)(dictionary->instance->record.key_size));
 
 			ffdict_cursor_t *ffdict_cursor = (ffdict_cursor_t *)(*cursor);
@@ -274,7 +273,6 @@ boolean_t ffdict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
 	int key_satisfies_predicate;
 
 	ff_file_t * file = (ff_file_t *)(cursor->dictionary->instance);
-
 	//pre-prime value for faster exit
 	key_satisfies_predicate = boolean_false;
 
@@ -293,15 +291,17 @@ boolean_t ffdict_test_predicate(dict_cursor_t *cursor, ion_key_t key)
 		}
 		case predicate_range: // range check
 		{
-			if (		// leq_value <= key <==> !(leq_value > key)
+			if (		// lower_bound <= key <==> !(lower_bound > key)
 			(!(A_gt_B
-			        == file->super.compare(key,
-			                cursor->predicate->statement.range.leq_value,
-			                file->super.record.key_size))) &&// key <= geq_value <==> !(key > geq_key)
+			        == file->super.compare(
+			                cursor->predicate->statement.range.lower_bound,
+			        		key,
+			                file->super.record.key_size))) &&// key <= upper_bound <==> !(key > upper_bound)
 			        (!(A_gt_B
 			                == file->super.compare(
-			                        cursor->predicate->statement.range.geq_value,
-			                        key, file->super.record.key_size))))
+			                        key,
+			                        cursor->predicate->statement.range.upper_bound,
+			                        file->super.record.key_size))))
 			{
 				key_satisfies_predicate = boolean_true;
 			}

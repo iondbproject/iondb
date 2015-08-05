@@ -67,7 +67,7 @@ ion_fremove(
 	}
 	else
 	{
-		return err_could_not_delete_file;
+		return err_file_delete_error;
 	}
 }
 

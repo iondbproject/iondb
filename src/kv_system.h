@@ -16,6 +16,8 @@
 #define USING_ECLIPSE 			0
 #define DEBUG 					0
 #define IS_EQUAL 				0
+#define IS_GREATER				1
+#define IS_LESS					-1
 #define ZERO					0
 
 /* Only if we're on desktop do we want to flush. Otherwise we only do a printf. */
@@ -35,13 +37,6 @@
 #define NEUTRALIZE(type, something) ( *((type *) something) )
 
 #define IONIZE_VAL(varname, size) unsigned char varname[size];
-
-enum status
-{
-	status_ok,            				/**< status_ok*/
-	status_item_not_found,				/**< status_item_not_found */
-	status_duplicate_key, 				/**< status_duplicate_key */
-};
 
 typedef char status_t;
 
@@ -72,15 +67,20 @@ enum error
 	err_invalid_predicate,
 	err_out_of_memory,
 	err_file_write_error,
+	err_file_read_error,
 	err_file_open_error,
 	err_file_close_error,
+	err_file_delete_error,
 	err_dictionary_initialization_failed,
-	err_could_not_delete_file,
-	err_could_not_insert,
-	err_unimplemented,
+	err_unable_to_insert,
 	err_file_incomplete_write,
 	err_file_incomplete_read,
 	err_file_bad_seek,
+	err_not_in_primary_page,
+	err_not_implemented,
+	err_illegal_state,
+	err_invalid_initial_size,
+	err_uninitialized
 };
 
 typedef char err_t;
@@ -118,18 +118,18 @@ typedef enum
 	boolean_true = 1,
 } boolean_e;
 
-typedef struct return_status{
+typedef struct {
 	err_t	err;						/**< the error code */
 	int		count;						/**< the number of items affected */
-} return_status_t;
+} ion_status_t;
 
 /**
 @brief		Struct used to maintain information about size of key and value.
  */
 typedef struct record_info
 {
-	int 			key_size;			/**< the size of the key in bytes */
-	int 			value_size;			/**< the size of the value in bytes */
+	ion_key_size_t 			key_size;			/**< the size of the key in bytes */
+	ion_value_size_t 		value_size;			/**< the size of the value in bytes */
 } record_info_t;
 
 /**

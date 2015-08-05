@@ -8,8 +8,6 @@
 #ifndef FLATFILE_H_
 #define FLATFILE_H_
 
-//#include "target.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -166,7 +164,7 @@ ff_find_item_loc(
 @param		size
 				The number of buckets available in the map.
 */
-return_status_t
+ion_status_t
 ff_delete(
 		ff_file_t 		*file,
 		ion_key_t		key
