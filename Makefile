@@ -50,7 +50,7 @@ endef
 define gen-lib-rule
  $(call transform-csource,$1,$(BIN_LIB)/,.o): $1 $(subst .c,.h,$1)
 	$$(call make-depend,$$<, $$@, $$(subst .o,.d,$$@))
-	$(COMPILE.c) $$< $(CFLAGS) -o $$@
+	$(COMPILE.c) $$< $(CFLAGS) -o $$@ -lm
 endef
 
 # Generate a single library compilation rule.
@@ -58,7 +58,7 @@ endef
 define gen-testlib-rule
  $(call transform-csource,$1,$(BIN_TESTS)/,.o): $1
 	$$(call make-depend,$$<, $$@, $$(subst .o,.d,$$@))
-	$(COMPILE.c) $$< $(CFLAGS) -o $$@
+	$(COMPILE.c) $$< $(CFLAGS) -o $$@ -lm
 endef
 
 # $(call transform-csource,$(subst run_,,$1),$(BIN_TEST)/,): $1
@@ -67,7 +67,7 @@ endef
 define gen-test-rule
  $(call transform-csource,$1,$(BIN_TESTS)/,): $1
 	$$(call make-depend,$$<, $$@, $$(addsuffix .d,$$@))
-	$(CC) $(CFLAGS) -o $$@ $$< $(libs) $(testlibs)
+	$(CC) $(CFLAGS) -o $$@ $$< $(libs) $(testlibs) -lm
 endef
 
 # Generate a single library compilation rule.
@@ -75,7 +75,7 @@ endef
 define gen-util-rule
  $(call transform-csource,$1,$(BIN_UTILS)/,): $1
 	$$(call make-depend,$$<, $$@, $$(addsuffix .d,$$@))
-	$(CC) $(CFLAGS) -o $$@ $$< $(libs)
+	$(CC) $(CFLAGS) -o $$@ $$< $(libs) -lm
 endef
 
 # If this doesn't work, an ugly SED-based solution is required.
@@ -88,7 +88,7 @@ $(GCC)	-MM                     \
         $(CFLAGS)               \
         $(CPPFLAGS)             \
         $(TARGET_ARCH)          \
-        $1
+        $1	
 endef
 
 ################################################################################
