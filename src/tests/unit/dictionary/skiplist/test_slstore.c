@@ -162,44 +162,6 @@ test_skiplist_free_all(
 }
 
 /**
-@brief 		Tests random height generation with a known seed against prior
-			known values. Sample size is 100.
-
-@param 		tc
-				CuTest dependency
- */
-void
-test_skiplist_generate_levels_std_conditions(
-	CuTest 		*tc
-)
-{
-	PRINT_HEADER();
-	skiplist_t skiplist;
-	initialize_skiplist_std_conditions(&skiplist);
-
-	/*
-	 * This is 100 level generations with maxheight = 7, pnum = 1, pden = 4.
-	 * The seed used is 0xDEADBEEF.
-	 */
-	int prediction[] =
-	{		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1, 0, 1, 0, 0,
-			1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0, 3, 0, 0, 0,
-			1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1,
-			0, 3, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 3, 0,
-			0, 0, 0, 1, 0, 0, 1
-	};
-
-	srand(0xDEADBEEF);
-	int i;
-	for(i = 0; i < 99; i++)
-	{
-		CuAssertTrue(tc, sl_gen_level(&skiplist) == prediction[i]);
-	}
-
-	sl_destroy(&skiplist);
-}
-
-/**
 @brief 		Tests a single insert into the skiplist.
 
 @param 		tc
@@ -1845,9 +1807,6 @@ skiplist_getsuite()
 	/* Initialization Tests */
 	SUITE_ADD_TEST(suite, test_skiplist_initialize);
 	SUITE_ADD_TEST(suite, test_skiplist_free_all);
-
-	/* Level Tests */
-	SUITE_ADD_TEST(suite, test_skiplist_generate_levels_std_conditions);
 
 	/* Insertion Tests */
 	SUITE_ADD_TEST(suite, test_skiplist_single_insert);
