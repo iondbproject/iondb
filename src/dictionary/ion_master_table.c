@@ -47,7 +47,7 @@ ion_init_master_table(
         ion_dictionary_config_info_t master_config = {ion_master_table_next_id, 0, 0, 0, 0, 0 };
         if (1 != fwrite(&master_config, sizeof(master_config), 1, ion_master_table_file))
 		{
-			return err_file_read_error;
+			return err_file_write_error;
 		}
     }
     else
