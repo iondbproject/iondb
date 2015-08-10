@@ -17,16 +17,34 @@ extern "C" {
 #include "./../kv_system.h"
 
 /**
-@brief 		Dictionary ID
+@brief 		Dictionary ID.
 */
 typedef unsigned int 				ion_dictionary_id_t;
 
+/**
+@brief		An enum describing how a dictionary is used.
+@details	This type allows users of the library to find certain
+			dictionaries in the key-value store that might be special.
+			See @ref ion_find_by_use_master_table.
+*/
+typedef unsigned char				ion_dict_use_t;
+
+/**
+@brief		Struct containing details for opening a dictionary previously
+			created.
+*/
 typedef struct {
-	ion_dictionary_id_t 	id;
-	key_type_t				type;
-	ion_key_size_t			key_size;
-	ion_value_size_t 		value_size;
-	ion_dictionary_size_t 	dictionary_size;
+	ion_dictionary_id_t 	id;					/**< The dictionary ID to open.
+												*/
+	ion_dict_use_t			use_type;			/**< How the dictionary will be
+												     used. Ignore if N/A. */
+	key_type_t				type;				/**< The type of key to store.*/
+	ion_key_size_t			key_size;			/**< The size of the key. */
+	ion_value_size_t 		value_size;			/**< The size of the value. */
+	ion_dictionary_size_t 	dictionary_size;	/**< The dictionary size
+												     parameter. Dependent on
+												     the dictionary
+												     implementation used. */
 } ion_dictionary_config_info_t;
 
 /**

@@ -25,22 +25,42 @@ extern "C" {
 #endif
 
 #include "dictionary.h"
+#include "../file/SD_stdio_c_iface.h"
+#include "../file/kv_stdio_intercept.h"
 
 #if ION_USING_MASTER_TABLE
 
-
-#define ION_MASTER_TABLE_FILENAME "ion_master_table.tbl"
+/**
+@brief		File name for IonDB master table.
+@details	Needs to be relatively short for devices.
+*/
+#define ION_MASTER_TABLE_FILENAME "ion_mt.tbl"
 
 /**
-@brief ID of the master table.
+@brief		ID of the master table.
 */
 #define ION_MASTER_TABLE_ID 0
 
 /**
-@brief Master table resposible for managing instances. 
+@brief		Flag used when searching master table; search for first instance
+			matching criteria.
+*/
+#define ION_MASTER_TABLE_FIND_FIRST	1
+
+/**
+@brief		Flag used when searching master table; search for last instance
+			matching criteria.
+*/
+#define ION_MASTER_TABLE_FIND_LAST	-1
+
+/**
+@brief		Master table resposible for managing instances. 
 */
 extern ion_dictionary_id_t ion_master_table_next_id;
 
+/**
+@brief		Master table file.
+*/
 extern FILE                *ion_master_table_file;
 
 /**
@@ -91,12 +111,36 @@ ion_add_to_master_table(
 );
 
 /**
-@brief Looks up the config of the given id.
+@brief		Looks up the config of the given id.
 */
 err_t
 ion_lookup_in_master_table(
     ion_dictionary_id_t             id,
     ion_dictionary_config_info_t    *config
+);
+
+/**
+@brief		Find first or last dictionary in master table with a given use.
+@param		config
+				A pointer to an already allocated configuration struct
+				that will be used to open the found dictionary.
+@param		use_type
+				The integral usage type for the dictionary. This is
+				user defined.
+@param		whence
+				Whether to find the first or the last dictionary
+				having @p use_type. This can take exactly two values,
+				@ref ION_MASTER_TABLE_FIND_FIRST or
+				@ref ION_MASTER_TABLE_FIND_LAST.
+@returns	@c err_ok if a dictionary having usage type @p use_type
+			is found, otherwise an error code properly describing
+			the situation and outcome.
+*/
+err_t
+ion_find_by_use_master_table(
+	ion_dictionary_config_info_t    *config,
+	ion_dict_use_t					use_type,
+	char							whence
 );
 
 /**

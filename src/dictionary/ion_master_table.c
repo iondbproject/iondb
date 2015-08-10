@@ -29,30 +29,42 @@ ion_master_table_get_next_id(
 
 err_t
 ion_init_master_table(
-  void
+	void
 )
 {
     /* If it's already open, then we don't do anything */
     if (NULL != ion_master_table_file) { return err_ok; }
 
     ion_master_table_file = fopen(ION_MASTER_TABLE_FILENAME, "r+b");
-    /* File may not exist */
+    /* File may not exist. */
     if (NULL == ion_master_table_file)
     { 
         ion_master_table_file = fopen(ION_MASTER_TABLE_FILENAME, "w+b");
         if (NULL == ion_master_table_file) { return err_file_open_error; }
-
-        /* Clean fresh file was opened */
-        /* Write master row */
-        ion_dictionary_config_info_t master_config = {ion_master_table_next_id, 0, 0, 0, 0 };
-        fwrite(&master_config, sizeof(master_config), 1, ion_master_table_file);
+		
+        /* Clean fresh file was opened. */
+        /* Write master row. */
+        ion_dictionary_config_info_t master_config = {ion_master_table_next_id, 0, 0, 0, 0, 0 };
+        if (1 != fwrite(&master_config, sizeof(master_config), 1, ion_master_table_file))
+		{
+			return err_file_read_error;
+		}
     }
     else
     {
-        /* Here we read an existing file */
-        /* Find existing ID count */
+        /* Here we read an existing file. */
+		/* Make sure that the file is pointing at first slot in table. */
+		if (0 != fseek(ion_master_table_file, 0, SEEK_SET))
+		{
+			return err_file_bad_seek;
+		}
+		
+        /* Find existing ID count. */
         ion_dictionary_config_info_t master_config;
-        fread(&master_config, sizeof(master_config), 1, ion_master_table_file);
+        if (1 != fread(&master_config, sizeof(master_config), 1, ion_master_table_file))
+		{
+			return err_file_read_error;
+		}
         ion_master_table_next_id = master_config.id;
     }
 
@@ -66,7 +78,7 @@ ion_close_master_table(
 {
     if (NULL != ion_master_table_file)
     {
-        if (0 != fclose(ion_master_table_file)) { return err_file_close_error; } 
+        if (0 != fclose(ion_master_table_file)) { return err_file_close_error; }
     }
 
     ion_master_table_file = NULL;
@@ -139,8 +151,8 @@ ion_add_to_master_table(
 
 err_t
 ion_lookup_in_master_table(
-    ion_dictionary_id_t             id,
-    ion_dictionary_config_info_t    *config
+	ion_dictionary_id_t             id,
+	ion_dictionary_config_info_t    *config
 )
 {
     fseek(ion_master_table_file, id * sizeof(ion_dictionary_config_info_t), SEEK_SET);
@@ -151,12 +163,52 @@ ion_lookup_in_master_table(
 }
 
 err_t
+ion_find_by_use_master_table(
+	ion_dictionary_config_info_t    *config,
+	ion_dict_use_t					use_type,
+	char							whence
+)
+{
+	ion_dictionary_id_t				id;
+	ion_dictionary_config_info_t	tconfig;
+	err_t							error;
+	
+	tconfig.id						= 0;
+	
+	id								= 1;	
+	if (ION_MASTER_TABLE_FIND_LAST == whence)
+	{
+		id							= ion_master_table_next_id - 1;
+	}
+	
+	/* Loop through all items. */
+	for (; id < ion_master_table_next_id && id > 0; id += whence)
+	{
+		error	= ion_lookup_in_master_table(id, &tconfig);
+		if (err_ok != error)
+		{
+			return error;
+		}
+		
+		/* If this config has the right type, set the output pointer. */
+		if (tconfig.use_type == use_type)
+		{
+			*config					= tconfig;
+			
+			return err_ok;
+		}
+	}
+	
+	return err_item_not_found;
+}
+
+err_t
 ion_delete_from_master_table(
-    dictionary_t        *dictionary
+	dictionary_t        *dictionary
 )
 {
     fseek(ion_master_table_file, dictionary->instance->id * sizeof(ion_dictionary_config_info_t), SEEK_SET);
-    ion_dictionary_config_info_t blank = {0,0,0,0,0};
+    ion_dictionary_config_info_t blank = {0,0,0,0,0,0};
     fwrite(&blank, sizeof(blank), 1, ion_master_table_file);
 
     return err_ok;
