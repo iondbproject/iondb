@@ -370,6 +370,7 @@ dictionary_test_open_close(
 
 	ion_dictionary_config_info_t config = {
 		gdict_id, 
+		0,
 		test->key_type, 
 		test->key_size, 
 		test->value_size, 
