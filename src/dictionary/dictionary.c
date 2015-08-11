@@ -7,6 +7,7 @@
 /******************************************************************************/
 
 #include "dictionary.h"
+#include <string.h>
 
 ion_dictionary_compare_t
 dictionary_switch_compare(
