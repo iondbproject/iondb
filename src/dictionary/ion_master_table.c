@@ -185,6 +185,10 @@ ion_find_by_use_master_table(
 	for (; id < ion_master_table_next_id && id > 0; id += whence)
 	{
 		error	= ion_lookup_in_master_table(id, &tconfig);
+		if (err_item_not_found == error)
+		{
+			continue;
+		}
 		if (err_ok != error)
 		{
 			return error;
