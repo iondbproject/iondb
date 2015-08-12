@@ -138,6 +138,7 @@ ion_add_to_master_table(
     ion_dictionary_config_info_t config =
     {
         dictionary->instance->id,
+	0,
         dictionary->instance->key_type,
         dictionary->instance->record.key_size,
         dictionary->instance->record.value_size,
