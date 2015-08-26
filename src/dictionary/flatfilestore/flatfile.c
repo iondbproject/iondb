@@ -30,8 +30,7 @@ ff_initialize(
 	//assume the the file does not exists -> this will come from the upper layers
 	file->file_ptr = fopen("file.bin","w+b");
 
-
-	if (!file->file_ptr)
+	if (file->file_ptr == NULL)
 	{
 		return -2;				/** @todo correct error return code */
 	}
@@ -107,7 +106,6 @@ ff_insert(
 
 	int record_size = file->super.record.key_size + file->super.record.value_size
 					+ SIZEOF(STATUS);
-
 #if DEBUG
 	printf("inserting record of size %i \n",record_size);
 #endif
@@ -128,7 +126,6 @@ ff_insert(
 
 	do
 	{
-
 		fread(record, record_size, 1, file->file_ptr);
 
 		if (feof(file->file_ptr) /*== EOF*//*|| (record->status == DELETED)*/ )

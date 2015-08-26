@@ -66,12 +66,12 @@ initialize_flat_file_std_conditions(
 )
 {
 
-	record_info_t record;
-	record.key_size 		= 4;
-	record.value_size 		= 10;
+	record_info_t * record = (record_info_t*)malloc(sizeof(record_info_t));
+	record->key_size 		= 4;
+	record->value_size 		= 10;
 	flat_file->super.key_type 	= key_type_numeric_signed;
-	initialize_flat_file(&record, flat_file);
-
+	initialize_flat_file(record, flat_file);
+	free(record);
 }
 
 /**
@@ -155,7 +155,7 @@ test_flat_file_simple_insert_and_query(
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		ff_insert(&flat_file, (ion_key_t)(&i), (ion_value_t)str);			//this is will wrap
+		ff_insert(&flat_file, IONIZE(i), (ion_value_t)str);			//this is will wrap
 	}
 
 	printf("starting lookup\n");
