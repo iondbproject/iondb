@@ -4,6 +4,14 @@ import os
 import os.path
 import re
 
+def copy_dir(src, dst, *, follow_sym=True):
+    if os.path.isdir(dst):
+        dst = os.path.join(dst, os.path.basename(src))
+    if os.path.isdir(src):
+        shutil.copyfile(src, dst, follow_symlinks=follow_sym)
+        shutil.copystat(src, dst, follow_symlinks=follow_sym)
+    return dst
+
 ###
 #Config
 ###
@@ -47,7 +55,7 @@ for dirpath, dirnames, filenames in os.walk(source_folder):
         print("Copying {} to {}...".format(old_src_file_path, new_src_file_path), end="")
         if not os.path.exists(new_src_directory):
             print("(With directory creation)...", end="")
-            shutil.copytree(dirpath, new_src_directory)
+            shutil.copytree(dirpath, new_src_directory, copy_function=copy_dir)
         shutil.copy(old_src_file_path, new_src_file_path)
         print("Done.")
 
