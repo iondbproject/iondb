@@ -10,6 +10,7 @@ extern "C" {
 #include <stdlib.h>
 #include <limits.h>
 #include "./../../CuTest.h"
+#include "./../../planckunit.h"
 #include "./../../../kv_system.h"
 #include "./../../../dictionary/dicttypes.h"
 #include "./../../../dictionary/dictionary.h"
@@ -46,27 +47,27 @@ cleanup_generic_dictionary_test(
 void
 dictionary_test_init(
 	generic_test_t		*test,
-	CuTest			*tc
+	planck_unit_test_t			*tc
 );
 
 void
 dictionary_test_insert_get(
 	generic_test_t	*test,
 	int		num_to_insert,
-	CuTest		*tc
+	planck_unit_test_t		*tc
 );
 
 void
 dictionary_test_insert_get_edge_cases(
     generic_test_t  *test,
-    CuTest      *tc
+    planck_unit_test_t      *tc
 );
 
 void
 dictionary_test_delete(
 	generic_test_t	*test,
 	ion_key_t	key_to_delete,
-	CuTest		*tc
+	planck_unit_test_t		*tc
 );
 
 void
@@ -74,14 +75,14 @@ dictionary_test_update(
 	generic_test_t	*test,
 	ion_key_t	key_to_update,
 	ion_value_t	update_with,
-	CuTest		*tc
+	planck_unit_test_t		*tc
 );
 
 void
 dictionary_test_equality(
     generic_test_t 	*test,
     ion_key_t 		eq_key,
-    CuTest			*tc
+    planck_unit_test_t			*tc
 );
 
 void
@@ -89,20 +90,20 @@ dictionary_test_range(
     generic_test_t 	*test,
     ion_key_t 		lower_bound,
     ion_key_t 		upper_bound,
-    CuTest			*tc
+    planck_unit_test_t			*tc
 );
 
 void
 dictionary_test_all_records(
     generic_test_t 	*test,
     int				expected_count,
-    CuTest			*tc
+    planck_unit_test_t			*tc
 );
 
 void
 dictionary_test_open_close(
     generic_test_t  *test,
-    CuTest          *tc
+    planck_unit_test_t          *tc
 );
 
 #ifdef  __cplusplus

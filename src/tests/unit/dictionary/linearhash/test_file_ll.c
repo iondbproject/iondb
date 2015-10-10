@@ -9,6 +9,7 @@
 #include <string.h>
 #include <limits.h>
 #include "./../../../CuTest.h"
+#include "./../../../planckunit.h"
 #include "./../../../../dictionary/linearhash/file_ll.h"
 
 /**
@@ -52,7 +53,7 @@ remove_linked_list(
  */
 void
 test_file_linked_list_initialize(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	int id = 9;
@@ -66,7 +67,7 @@ test_file_linked_list_initialize(
 	fe_encode_child_id(&filename);
 
 	//valid correct map settings
-	CuAssertTrue(tc, 0	 							== strcmp(linked_list_file.file_name,filename.child.child_filename));
+	PLANCK_UNIT_ASSERT_TRUE(tc, 0	 							== strcmp(linked_list_file.file_name,filename.child.child_filename));
 	/** clean up filename */
 	filename.destroy(&filename);
 	//check that the first node is actually the head
@@ -79,7 +80,7 @@ test_file_linked_list_initialize(
 	linked_list_file.current = HEAD_NODE;
 	fll_get(&linked_list_file,(ll_file_node_t *)node);
 	//This should find the head node
-	CuAssertTrue(tc, END_OF_LIST	 					== ((ll_file_node_t*)node)->next);
+	PLANCK_UNIT_ASSERT_TRUE(tc, END_OF_LIST	 					== ((ll_file_node_t*)node)->next);
 
 	//cleanup node
 	free(node);
@@ -94,7 +95,7 @@ test_file_linked_list_initialize(
  */
 void
 test_file_linked_list_node_creation(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	int id = 0;
@@ -115,9 +116,9 @@ test_file_linked_list_node_creation(
 	ll_file_node_t * ll_node = (ll_file_node_t *)node;
 
 	//validate node that is created
-	CuAssertTrue(tc, END_OF_LIST	 				== ll_node->next);
-	CuAssertTrue(tc, key 							== *(int*)ll_node->data);
-	CuAssertTrue(tc, 0	 							== strcmp((char *)(ll_node->data+record.key_size),value));
+	PLANCK_UNIT_ASSERT_TRUE(tc, END_OF_LIST	 				== ll_node->next);
+	PLANCK_UNIT_ASSERT_TRUE(tc, key 							== *(int*)ll_node->data);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 0	 							== strcmp((char *)(ll_node->data+record.key_size),value));
 
 	ll_file_node_t * node2;
 	key = 11;
@@ -126,14 +127,14 @@ test_file_linked_list_node_creation(
 	ll_file_node_t * ll_node2 = (ll_file_node_t *)node2;
 
 	//validate node that is created
-	CuAssertTrue(tc, END_OF_LIST	 				== ll_node2->next);
-	CuAssertTrue(tc, key 							== *(int*)ll_node2->data);
-	CuAssertTrue(tc, 0	 							== strcmp((char *)(ll_node2->data+record.key_size),value));
+	PLANCK_UNIT_ASSERT_TRUE(tc, END_OF_LIST	 				== ll_node2->next);
+	PLANCK_UNIT_ASSERT_TRUE(tc, key 							== *(int*)ll_node2->data);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 0	 							== strcmp((char *)(ll_node2->data+record.key_size),value));
 
 	//compare nodes
-	CuAssertTrue(tc, -1	 							== linked_list_file.compare(&linked_list_file,ll_node,ll_node2));
-	CuAssertTrue(tc, 1	 							== linked_list_file.compare(&linked_list_file,ll_node2,ll_node));
-	CuAssertTrue(tc, 0 								== linked_list_file.compare(&linked_list_file,ll_node,ll_node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, -1	 							== linked_list_file.compare(&linked_list_file,ll_node,ll_node2));
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1	 							== linked_list_file.compare(&linked_list_file,ll_node2,ll_node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, 0 								== linked_list_file.compare(&linked_list_file,ll_node,ll_node));
 
 	//cleanup node
 	free(node);
@@ -148,7 +149,7 @@ test_file_linked_list_node_creation(
  */
 void
 test_file_linked_list_insert(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	int id = 1;
@@ -169,9 +170,9 @@ test_file_linked_list_insert(
 	ll_file_node_t * ll_node = (ll_file_node_t *)node;
 
 	//validate node that is created
-	CuAssertTrue(tc, END_OF_LIST	 				== ll_node->next);
-	CuAssertTrue(tc, key 							== *(int*)ll_node->data);
-	CuAssertTrue(tc, 0	 							== strcmp((char *)(ll_node->data+record.key_size),value));
+	PLANCK_UNIT_ASSERT_TRUE(tc, END_OF_LIST	 				== ll_node->next);
+	PLANCK_UNIT_ASSERT_TRUE(tc, key 							== *(int*)ll_node->data);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 0	 							== strcmp((char *)(ll_node->data+record.key_size),value));
 
 	fll_insert(&linked_list_file,ll_node);
 	free(node);
@@ -212,39 +213,39 @@ test_file_linked_list_insert(
 	fread(read_node,linked_list_file.node_size,1,linked_list_file.file);
 	int next_node = 1;
 
-	CuAssertTrue(tc, linked_list_file.node_size * next_node		== ftell(linked_list_file.file));
-	CuAssertTrue(tc, 54 										== read_node->next);
+	PLANCK_UNIT_ASSERT_TRUE(tc, linked_list_file.node_size * next_node		== ftell(linked_list_file.file));
+	PLANCK_UNIT_ASSERT_TRUE(tc, 54 										== read_node->next);
 
 
 	fread(read_node,linked_list_file.node_size,1,linked_list_file.file);
 	next_node = 2;
-	CuAssertTrue(tc, linked_list_file.node_size * next_node		== ftell(linked_list_file.file));
-	CuAssertTrue(tc, 36	 						 				== read_node->next);
-	CuAssertTrue(tc, 10 										== *(int*)read_node->data);
+	PLANCK_UNIT_ASSERT_TRUE(tc, linked_list_file.node_size * next_node		== ftell(linked_list_file.file));
+	PLANCK_UNIT_ASSERT_TRUE(tc, 36	 						 				== read_node->next);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 10 										== *(int*)read_node->data);
 
 	fread(read_node,linked_list_file.node_size,1,linked_list_file.file);
 	next_node = 3;
-	CuAssertTrue(tc, linked_list_file.node_size * next_node		== ftell(linked_list_file.file));
-	CuAssertTrue(tc, 90	 						 				== read_node->next);
-	CuAssertTrue(tc, 11 										== *(int*)read_node->data);
+	PLANCK_UNIT_ASSERT_TRUE(tc, linked_list_file.node_size * next_node		== ftell(linked_list_file.file));
+	PLANCK_UNIT_ASSERT_TRUE(tc, 90	 						 				== read_node->next);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 11 										== *(int*)read_node->data);
 
 	fread(read_node,linked_list_file.node_size,1,linked_list_file.file);
 	next_node = 4;
-	CuAssertTrue(tc, linked_list_file.node_size * next_node		== ftell(linked_list_file.file));
-	CuAssertTrue(tc, 18	 						 				== read_node->next);
-	CuAssertTrue(tc, 8 											== *(int*)read_node->data);
+	PLANCK_UNIT_ASSERT_TRUE(tc, linked_list_file.node_size * next_node		== ftell(linked_list_file.file));
+	PLANCK_UNIT_ASSERT_TRUE(tc, 18	 						 				== read_node->next);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 8 											== *(int*)read_node->data);
 
 	fread(read_node,linked_list_file.node_size,1,linked_list_file.file);
 	next_node = 5;
-	CuAssertTrue(tc, linked_list_file.node_size * next_node		== ftell(linked_list_file.file));
-	CuAssertTrue(tc, END_OF_LIST	 						 	== read_node->next);
-	CuAssertTrue(tc, 50 										== *(int*)read_node->data);
+	PLANCK_UNIT_ASSERT_TRUE(tc, linked_list_file.node_size * next_node		== ftell(linked_list_file.file));
+	PLANCK_UNIT_ASSERT_TRUE(tc, END_OF_LIST	 						 	== read_node->next);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 50 										== *(int*)read_node->data);
 
 	fread(read_node,linked_list_file.node_size,1,linked_list_file.file);
 	next_node = 6;
-	CuAssertTrue(tc, linked_list_file.node_size * next_node		== ftell(linked_list_file.file));
-	CuAssertTrue(tc, 72	 						 				== read_node->next);
-	CuAssertTrue(tc, 13 										== *(int*)read_node->data);
+	PLANCK_UNIT_ASSERT_TRUE(tc, linked_list_file.node_size * next_node		== ftell(linked_list_file.file));
+	PLANCK_UNIT_ASSERT_TRUE(tc, 72	 						 				== read_node->next);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 13 										== *(int*)read_node->data);
 
 	free(read_node);
 	remove_linked_list(&linked_list_file);
@@ -258,7 +259,7 @@ test_file_linked_list_insert(
  */
 void
 test_file_linked_list_next(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	int id = 2;
@@ -292,9 +293,9 @@ test_file_linked_list_next(
 	node = (ll_file_node_t *)malloc(linked_list_file.node_size);
 	while (fll_next(&linked_list_file,node) != err_item_not_found)
 	{
-		CuAssertTrue(tc, key_array_ans[idx++]					== *(int*)node->data);
+		PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++]					== *(int*)node->data);
 	}
-	CuAssertTrue(tc, err_item_not_found							== fll_next(&linked_list_file,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found							== fll_next(&linked_list_file,node));
 
 	//cleanup node
 	free(node);
@@ -310,7 +311,7 @@ test_file_linked_list_next(
  */
 void
 test_file_linked_list_find(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	int id = 3;
@@ -338,31 +339,31 @@ test_file_linked_list_find(
 
 	int key_to_find = 13;
 	node = (ll_file_node_t *)malloc(linked_list_file.node_size);
-	CuAssertTrue(tc, err_ok							== fll_find(&linked_list_file,(ion_key_t)&key_to_find,node));
-	CuAssertTrue(tc, key_to_find					== *(int*)node->data);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok							== fll_find(&linked_list_file,(ion_key_t)&key_to_find,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, key_to_find					== *(int*)node->data);
 	free(node);
 
 	key_to_find = 10;
 	node = (ll_file_node_t *)malloc(linked_list_file.node_size);
-	CuAssertTrue(tc, err_ok							== fll_find(&linked_list_file,(ion_key_t)&key_to_find,node));
-	CuAssertTrue(tc, key_to_find					== *(int*)node->data);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok							== fll_find(&linked_list_file,(ion_key_t)&key_to_find,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, key_to_find					== *(int*)node->data);
 	free(node);
 
 	key_to_find = 11;
 	node = (ll_file_node_t *)malloc(linked_list_file.node_size);
-	CuAssertTrue(tc, err_ok							== fll_find(&linked_list_file,(ion_key_t)&key_to_find,node));
-	CuAssertTrue(tc, key_to_find					== *(int*)node->data);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok							== fll_find(&linked_list_file,(ion_key_t)&key_to_find,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, key_to_find					== *(int*)node->data);
 	free(node);
 
 	key_to_find = 50;
 	node = (ll_file_node_t *)malloc(linked_list_file.node_size);
-	CuAssertTrue(tc, err_ok							== fll_find(&linked_list_file,(ion_key_t)&key_to_find,node));
-	CuAssertTrue(tc, key_to_find					== *(int*)node->data);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok							== fll_find(&linked_list_file,(ion_key_t)&key_to_find,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, key_to_find					== *(int*)node->data);
 	free(node);
 
 	key_to_find = 60;
 	node = (ll_file_node_t *)malloc(linked_list_file.node_size);
-	CuAssertTrue(tc, err_item_not_found				== fll_find(&linked_list_file,(ion_key_t)&key_to_find,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found				== fll_find(&linked_list_file,(ion_key_t)&key_to_find,node));
 	free(node);
 	//cleanup node
 	remove_linked_list(&linked_list_file);
@@ -376,7 +377,7 @@ test_file_linked_list_find(
  */
 void
 test_file_linked_list_delete(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	int id = 4;
@@ -412,9 +413,9 @@ test_file_linked_list_delete(
 	node = (ll_file_node_t *)malloc(linked_list_file.node_size);
 	while (fll_next(&linked_list_file,node) != err_item_not_found)
 	{
-		CuAssertTrue(tc, key_array_ans[idx++]					== *(int*)node->data);
+		PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++]					== *(int*)node->data);
 	}
-	CuAssertTrue(tc, err_item_not_found							== fll_next(&linked_list_file,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found							== fll_next(&linked_list_file,node));
 
 	delete_key = 13;
 	fll_delete(&linked_list_file, (ion_key_t)&delete_key);
@@ -423,9 +424,9 @@ test_file_linked_list_delete(
 	idx = 0;
 	while (fll_next(&linked_list_file,node) != err_item_not_found)
 	{
-		CuAssertTrue(tc, key_array_ans_2[idx++]						== *(int*)node->data);
+		PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans_2[idx++]						== *(int*)node->data);
 	}
-	CuAssertTrue(tc, err_item_not_found							== fll_next(&linked_list_file,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found							== fll_next(&linked_list_file,node));
 
 	delete_key = 11;
 	fll_delete(&linked_list_file, (ion_key_t)&delete_key);
@@ -435,9 +436,9 @@ test_file_linked_list_delete(
 	idx = 0;
 	while (fll_next(&linked_list_file,node) != err_item_not_found)
 	{
-		CuAssertTrue(tc, key_array_ans_3[idx++]						== *(int*)node->data);
+		PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans_3[idx++]						== *(int*)node->data);
 	}
-	CuAssertTrue(tc, err_item_not_found							== fll_next(&linked_list_file,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found							== fll_next(&linked_list_file,node));
 
 	delete_key = 50;
 	fll_delete(&linked_list_file, (ion_key_t)&delete_key);
@@ -447,9 +448,9 @@ test_file_linked_list_delete(
 	idx = 0;
 	while (fll_next(&linked_list_file,node) != err_item_not_found)
 	{
-		CuAssertTrue(tc, key_array_ans_4[idx++]						== *(int*)node->data);
+		PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans_4[idx++]						== *(int*)node->data);
 	}
-	CuAssertTrue(tc, err_item_not_found							== fll_next(&linked_list_file,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found							== fll_next(&linked_list_file,node));
 
 	delete_key = 10;
 	fll_delete(&linked_list_file, (ion_key_t)&delete_key);
@@ -458,9 +459,9 @@ test_file_linked_list_delete(
 	idx = 0;
 	while (fll_next(&linked_list_file,node) != err_item_not_found)
 	{
-		CuAssertTrue(tc, key_array_ans_5[idx++]					== *(int*)node->data);
+		PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans_5[idx++]					== *(int*)node->data);
 	}
-	CuAssertTrue(tc, err_item_not_found							== fll_next(&linked_list_file,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found							== fll_next(&linked_list_file,node));
 
 	//cleanup node
 	free(node);
@@ -475,7 +476,7 @@ brief 		Tests for remove operation of linked list
  */
 void
 test_file_linked_list_remove (
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	int id = 5;
@@ -507,9 +508,9 @@ test_file_linked_list_remove (
 	node = (ll_file_node_t *)malloc(linked_list_file.node_size);
 	while (fll_next(&linked_list_file,node) != err_item_not_found)
 	{
-		CuAssertTrue(tc, key_array_ans[idx++]					== *(int*)node->data);
+		PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++]					== *(int*)node->data);
 	}
-	CuAssertTrue(tc, err_item_not_found							== fll_next(&linked_list_file,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found							== fll_next(&linked_list_file,node));
 	free(node);
 
 	fll_reset(&linked_list_file);								/** reset iterator */
@@ -517,11 +518,11 @@ test_file_linked_list_remove (
 	node = (ll_file_node_t *)malloc(linked_list_file.node_size);
 	while (fll_next(&linked_list_file,node) != err_item_not_found)
 	{
-		CuAssertTrue(tc, key_array_ans[idx++]					== *(int*)node->data);
-		CuAssertTrue(tc, err_ok									== fll_remove(&linked_list_file));
-		CuAssertTrue(tc, err_illegal_state						== fll_remove(&linked_list_file));
+		PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++]					== *(int*)node->data);
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok									== fll_remove(&linked_list_file));
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_illegal_state						== fll_remove(&linked_list_file));
 	}
-	CuAssertTrue(tc, err_item_not_found							== fll_next(&linked_list_file,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found							== fll_next(&linked_list_file,node));
 
 	//cleanup node
 	free(node);
@@ -537,7 +538,7 @@ brief 		Tests for remove operation of linked list
  */
 void
 test_file_linked_list_remove2 (
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	int id = 6;
@@ -568,80 +569,80 @@ test_file_linked_list_remove2 (
 	fll_reset(&linked_list_file);								/** reset iterator */
 	int key_array_ans[] = {8,10,11,13,50};
 
-	CuAssertTrue(tc, err_illegal_state							== fll_remove(&linked_list_file));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_illegal_state							== fll_remove(&linked_list_file));
 
 	idx = 0;
-	CuAssertTrue(tc, err_ok										== fll_next(&linked_list_file,node));
-	CuAssertTrue(tc, key_array_ans[idx++]						== *(int*)node->data);
-	CuAssertTrue(tc, err_ok										== fll_remove(&linked_list_file));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok										== fll_next(&linked_list_file,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++]						== *(int*)node->data);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok										== fll_remove(&linked_list_file));
 
 	fll_reset(&linked_list_file);								/** reset iterator and check list*/
 
 	while (fll_next(&linked_list_file,node) != err_item_not_found)
 	{
-		CuAssertTrue(tc, key_array_ans[idx++]					== *(int*)node->data);
+		PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++]					== *(int*)node->data);
 	}
-	CuAssertTrue(tc, err_item_not_found							== fll_next(&linked_list_file,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found							== fll_next(&linked_list_file,node));
 
 	fll_reset(&linked_list_file);								/** reset iterator and check list*/
 	idx = 1;
-	CuAssertTrue(tc,err_ok										== fll_next(&linked_list_file,node));
-	CuAssertTrue(tc, key_array_ans[idx++]						== *(int*)node->data);
-	CuAssertTrue(tc, err_ok										== fll_remove(&linked_list_file));
+	PLANCK_UNIT_ASSERT_TRUE(tc,err_ok										== fll_next(&linked_list_file,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++]						== *(int*)node->data);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok										== fll_remove(&linked_list_file));
 
 	fll_reset(&linked_list_file);								/** reset iterator and check list*/
 
 	while (fll_next(&linked_list_file,node) != err_item_not_found)
 	{
-		CuAssertTrue(tc, key_array_ans[idx++]					== *(int*)node->data);
+		PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++]					== *(int*)node->data);
 	}
-	CuAssertTrue(tc, err_item_not_found							== fll_next(&linked_list_file,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found							== fll_next(&linked_list_file,node));
 
 	fll_reset(&linked_list_file);								/** reset iterator and check list*/
 	idx = 2;
-	CuAssertTrue(tc,err_ok										== fll_next(&linked_list_file,node));
-	CuAssertTrue(tc, key_array_ans[idx++]						== *(int*)node->data);
-	CuAssertTrue(tc, err_ok										== fll_remove(&linked_list_file));
+	PLANCK_UNIT_ASSERT_TRUE(tc,err_ok										== fll_next(&linked_list_file,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++]						== *(int*)node->data);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok										== fll_remove(&linked_list_file));
 
 	fll_reset(&linked_list_file);								/** reset iterator and check list*/
 
 	while (fll_next(&linked_list_file,node) != err_item_not_found)
 	{
-		CuAssertTrue(tc, key_array_ans[idx++]					== *(int*)node->data);
+		PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++]					== *(int*)node->data);
 	}
-	CuAssertTrue(tc, err_item_not_found							== fll_next(&linked_list_file,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found							== fll_next(&linked_list_file,node));
 
 	fll_reset(&linked_list_file);								/** reset iterator and check list*/
 	idx = 3;
-	CuAssertTrue(tc,err_ok										== fll_next(&linked_list_file,node));
-	CuAssertTrue(tc, key_array_ans[idx++]						== *(int*)node->data);
-	CuAssertTrue(tc, err_ok										== fll_remove(&linked_list_file));
+	PLANCK_UNIT_ASSERT_TRUE(tc,err_ok										== fll_next(&linked_list_file,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++]						== *(int*)node->data);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok										== fll_remove(&linked_list_file));
 
 	fll_reset(&linked_list_file);								/** reset iterator and check list*/
 
 	while (fll_next(&linked_list_file,node) != err_item_not_found)
 	{
-		CuAssertTrue(tc, key_array_ans[idx++]					== *(int*)node->data);
+		PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++]					== *(int*)node->data);
 	}
-	CuAssertTrue(tc, err_item_not_found							== fll_next(&linked_list_file,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found							== fll_next(&linked_list_file,node));
 
 	fll_reset(&linked_list_file);								/** reset iterator and check list*/
 	idx = 4;
-	CuAssertTrue(tc,err_ok										== fll_next(&linked_list_file,node));
-	CuAssertTrue(tc, key_array_ans[idx++]						== *(int*)node->data);
-	CuAssertTrue(tc, err_ok										== fll_remove(&linked_list_file));
+	PLANCK_UNIT_ASSERT_TRUE(tc,err_ok										== fll_next(&linked_list_file,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++]						== *(int*)node->data);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok										== fll_remove(&linked_list_file));
 
 	fll_reset(&linked_list_file);								/** reset iterator and check list*/
 
 	while (fll_next(&linked_list_file,node) != err_item_not_found)
 	{
-		CuAssertTrue(tc, key_array_ans[idx++]					== *(int*)node->data);
+		PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++]					== *(int*)node->data);
 	}
-	CuAssertTrue(tc, err_item_not_found							== fll_next(&linked_list_file,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found							== fll_next(&linked_list_file,node));
 
 	fll_reset(&linked_list_file);								/** reset iterator and check list*/
-	CuAssertTrue(tc,err_item_not_found							== fll_next(&linked_list_file,node));
-	CuAssertTrue(tc, err_illegal_state							== fll_remove(&linked_list_file));
+	PLANCK_UNIT_ASSERT_TRUE(tc,err_item_not_found							== fll_next(&linked_list_file,node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_illegal_state							== fll_remove(&linked_list_file));
 
 
 	//cleanup node
@@ -657,7 +658,7 @@ test_file_linked_list_remove2 (
  */
 void
 test_file_linked_list_reopen(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	int id = 7;
@@ -678,9 +679,9 @@ test_file_linked_list_reopen(
 	ll_file_node_t * ll_node = (ll_file_node_t *)node;
 
 	//validate node that is created
-	CuAssertTrue(tc, END_OF_LIST	 				== ll_node->next);
-	CuAssertTrue(tc, key 							== *(int*)ll_node->data);
-	CuAssertTrue(tc, 0	 							== strcmp((char *)(ll_node->data+record.key_size),value));
+	PLANCK_UNIT_ASSERT_TRUE(tc, END_OF_LIST	 				== ll_node->next);
+	PLANCK_UNIT_ASSERT_TRUE(tc, key 							== *(int*)ll_node->data);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 0	 							== strcmp((char *)(ll_node->data+record.key_size),value));
 
 	fll_insert(&linked_list_file,ll_node);
 	free(node);
@@ -709,29 +710,29 @@ test_file_linked_list_reopen(
 
 	while (fll_next(&linked_list_file,read_node) != err_item_not_found)
 	{
-		CuAssertTrue(tc, key_array_ans[idx++]					== *(int*)read_node->data);
+		PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++]					== *(int*)read_node->data);
 	}
-	CuAssertTrue(tc, err_item_not_found							== fll_next(&linked_list_file,read_node));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found							== fll_next(&linked_list_file,read_node));
 
 	free(read_node);
 	remove_linked_list(&linked_list_file);
 
 }
 
-CuSuite*
+planck_unit_suite_t*
 file_linked_list_getsuite()
 {
-	CuSuite *suite = CuSuiteNew();
+	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	SUITE_ADD_TEST(suite, test_file_linked_list_initialize);
-	SUITE_ADD_TEST(suite, test_file_linked_list_node_creation);
-	SUITE_ADD_TEST(suite, test_file_linked_list_insert);
-	SUITE_ADD_TEST(suite, test_file_linked_list_next);
-	SUITE_ADD_TEST(suite, test_file_linked_list_find);
-	SUITE_ADD_TEST(suite, test_file_linked_list_delete);
-	SUITE_ADD_TEST(suite, test_file_linked_list_remove);
-	SUITE_ADD_TEST(suite, test_file_linked_list_remove2);
-	SUITE_ADD_TEST(suite, test_file_linked_list_reopen);
+	planck_unit_add_to_suite(suite, test_file_linked_list_initialize);
+	planck_unit_add_to_suite(suite, test_file_linked_list_node_creation);
+	planck_unit_add_to_suite(suite, test_file_linked_list_insert);
+	planck_unit_add_to_suite(suite, test_file_linked_list_next);
+	planck_unit_add_to_suite(suite, test_file_linked_list_find);
+	planck_unit_add_to_suite(suite, test_file_linked_list_delete);
+	planck_unit_add_to_suite(suite, test_file_linked_list_remove);
+	planck_unit_add_to_suite(suite, test_file_linked_list_remove2);
+	planck_unit_add_to_suite(suite, test_file_linked_list_reopen);
 	return suite;
 }
 
@@ -739,14 +740,14 @@ file_linked_list_getsuite()
 void
 runalltests_file_linked_list()
 {
-	CuString	*output	= CuStringNew();
-	CuSuite		*suite	= file_linked_list_getsuite();
+	//CuString	*output	= CuStringNew();
+	planck_unit_suite_t		*suite	= file_linked_list_getsuite();
 
-	CuSuiteRun(suite);
-	CuSuiteSummary(suite, output);
-	CuSuiteDetails(suite, output);
-	printf("%s\n", output->buffer);
+	planck_unit_run_suite(suite);
+	//CuSuiteSummary(suite, output);
+	//CuSuiteDetails(suite, output);
+	//printf("%s\n", output->buffer);
 
-	CuSuiteDelete(suite);
-	CuStringDelete(output);
+	//CuSuiteDelete(suite);
+	//CuStringDelete(output);
 }

@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "./../../CuTest.h"
+#include "./../../planckunit.h"
 #include "./../../../dictionary/dicttypes.h"
 #include "./../../../dictionary/dictionary.h"
 #include "./../../../dictionary/ion_master_table.h"
@@ -16,7 +17,7 @@
 
 void
 test_dictionary_compare_numerics(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 
@@ -26,24 +27,24 @@ test_dictionary_compare_numerics(
 	key_one 		= (ion_key_t)&(int){1};
 	key_two 		= (ion_key_t)&(int){1};
 
-	CuAssertTrue(tc, IS_EQUAL ==
+	PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL ==
 			dictionary_compare_signed_value(key_one, key_two, sizeof(int)));
 
 	key_one 		= (ion_key_t)&(int){1};
 	key_two 		= (ion_key_t)&(int){2};
 
-	CuAssertTrue(tc, ZERO >
+	PLANCK_UNIT_ASSERT_TRUE(tc, ZERO >
 				dictionary_compare_signed_value(key_one, key_two,sizeof(int)));
 
 	key_one 		= (ion_key_t)&(int){2};
 	key_two 		= (ion_key_t)&(int){0};
 
-	CuAssertTrue(tc, ZERO <
+	PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
 					dictionary_compare_signed_value(key_one, key_two,sizeof(int)));
 	int i;
 	for (i = 1; i< 10; i++)
 	{
-		CuAssertTrue(tc, ZERO <
+		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
 						dictionary_compare_signed_value((ion_key_t)&i, key_two ,sizeof(int)));
 	}
 
@@ -56,7 +57,7 @@ test_dictionary_compare_numerics(
 		key_one 		= &(unsigned char){UCHAR_MAX};
 		key_two 		= &(unsigned char){0};
 
-		CuAssertTrue(tc, ZERO <
+		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
 							dictionary_compare_unsigned_value(key_one, key_two, sizeof(unsigned char)));
 
 	}
@@ -68,7 +69,7 @@ test_dictionary_compare_numerics(
 		key_one 		= &(unsigned short){USHRT_MAX};
 		key_two 		= &(unsigned short){0};
 
-		CuAssertTrue(tc, ZERO <
+		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
 							dictionary_compare_unsigned_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(unsigned short)));
 
 	}
@@ -80,7 +81,7 @@ test_dictionary_compare_numerics(
 			key_one 		= &(unsigned int){UINT_MAX};
 			key_two 		= &(unsigned int){0};
 
-			CuAssertTrue(tc, ZERO <
+			PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
 								dictionary_compare_unsigned_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(unsigned int)));
 
 	}
@@ -92,7 +93,7 @@ test_dictionary_compare_numerics(
 			key_one 		= &(unsigned long){ULONG_MAX};
 			key_two 		= &(unsigned long){0};
 
-			CuAssertTrue(tc, ZERO <
+			PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
 								dictionary_compare_unsigned_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(unsigned long)));
 
 	}
@@ -104,7 +105,7 @@ test_dictionary_compare_numerics(
 		key_one 		= &(long){LONG_MAX};
 		key_two 		= &(long){0};
 
-		CuAssertTrue(tc, ZERO <
+		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
 							dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(long)));
 
 	}
@@ -115,7 +116,7 @@ test_dictionary_compare_numerics(
 		key_one 		= &(char){CHAR_MAX};
 		key_two 		= &(char){0};
 
-		CuAssertTrue(tc, ZERO <
+		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
 							dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(char)));
 
 		}
@@ -127,7 +128,7 @@ test_dictionary_compare_numerics(
 			key_one 		= &(char){0};
 			key_two 		= &(char){-1};
 
-			CuAssertTrue(tc, ZERO <
+			PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
 								dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(char)));
 
 			}
@@ -148,15 +149,15 @@ test_dictionary_compare_numerics(
 				{
 					if (i < j)
 					{
-						CuAssertTrue(tc, ZERO >
+						PLANCK_UNIT_ASSERT_TRUE(tc, ZERO >
 								dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(short)));
 					}else if (i == j)
 					{
-						CuAssertTrue(tc, ZERO ==
+						PLANCK_UNIT_ASSERT_TRUE(tc, ZERO ==
 								dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(short)));
 					}else
 					{
-						CuAssertTrue(tc, ZERO <
+						PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
 											dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(short)));
 					}
 				}
@@ -166,7 +167,7 @@ test_dictionary_compare_numerics(
 
 void
 test_dictionary_master_table(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	err_t err;
@@ -176,9 +177,9 @@ test_dictionary_master_table(
 	/* Test init */
 	err = ion_init_master_table();
 
-	CuAssertTrue(tc, err_ok == err);
-	CuAssertTrue(tc, NULL != ion_master_table_file);
-	CuAssertTrue(tc, 1 == ion_master_table_next_id);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL != ion_master_table_file);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == ion_master_table_next_id);
 	/*************/
 
 	/* Test create */
@@ -187,35 +188,35 @@ test_dictionary_master_table(
 	sldict_init(&handler);
 	err = ion_master_table_create_dictionary(&handler, &dictionary, key_type_numeric_signed, 4, 10, 20);
 
-	CuAssertTrue(tc, err_ok == err);
-	CuAssertTrue(tc, 2 == ion_master_table_next_id);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 2 == ion_master_table_next_id);
 	/***************/
 
 	/* Test close */
 	err = ion_close_master_table();
 
-	CuAssertTrue(tc, err_ok == err);
-	CuAssertTrue(tc, NULL == ion_master_table_file);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == ion_master_table_file);
 	/**************/
 
 	/* Test re-open */
 	err = ion_init_master_table();
 
-	CuAssertTrue(tc, err_ok == err);
-	CuAssertTrue(tc, NULL != ion_master_table_file);
-	CuAssertTrue(tc, 2 == ion_master_table_next_id);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL != ion_master_table_file);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 2 == ion_master_table_next_id);
 	/****************/
 
 	/* Test lookup 1st dictionary */
 	ion_dictionary_config_info_t config;
 	err = ion_lookup_in_master_table(1, &config);
 
-	CuAssertTrue(tc, err_ok == err);
-	CuAssertTrue(tc, 1 == config.id);
-	CuAssertTrue(tc, key_type_numeric_signed == config.type);
-	CuAssertTrue(tc, 4 == config.key_size);
-	CuAssertTrue(tc, 10 == config.value_size);
-	CuAssertTrue(tc, 20 == config.dictionary_size);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == config.id);
+	PLANCK_UNIT_ASSERT_TRUE(tc, key_type_numeric_signed == config.type);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 4 == config.key_size);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 10 == config.value_size);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 20 == config.dictionary_size);
 	/******************************/
 
 	/* Test create 2nd dictionary */
@@ -224,48 +225,48 @@ test_dictionary_master_table(
 	sldict_init(&handler2);
 	err = ion_master_table_create_dictionary(&handler2, &dictionary2, key_type_numeric_signed, 2, 7, 14);
 
-	CuAssertTrue(tc, err_ok == err);
-	CuAssertTrue(tc, 3 == ion_master_table_next_id);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 3 == ion_master_table_next_id);
 	/******************************/
 
 	/* Test 2nd lookup */
 	err = ion_lookup_in_master_table(2, &config);
 
-	CuAssertTrue(tc, err_ok == err);
-	CuAssertTrue(tc, 2 == config.id);
-	CuAssertTrue(tc, key_type_numeric_signed == config.type);
-	CuAssertTrue(tc, 2 == config.key_size);
-	CuAssertTrue(tc, 7 == config.value_size);
-	CuAssertTrue(tc, 14 == config.dictionary_size);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 2 == config.id);
+	PLANCK_UNIT_ASSERT_TRUE(tc, key_type_numeric_signed == config.type);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 2 == config.key_size);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 7 == config.value_size);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 14 == config.dictionary_size);
 	/*******************/
 
 	/* Test delete */
 	err = ion_delete_from_master_table(&dictionary);
 
-	CuAssertTrue(tc, err_ok == err);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
 	/***************/
 	
 	/* Test lookup on non-existent row */
 	err = ion_lookup_in_master_table(1, &config);
 
-	CuAssertTrue(tc, err_item_not_found == err);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == err);
 	/***********************************/
 	
 	/* Test close */
 	err = ion_close_master_table();
 
-	CuAssertTrue(tc, err_ok == err);
-	CuAssertTrue(tc, NULL == ion_master_table_file);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == ion_master_table_file);
 	/**************/
 }
 
-CuSuite*
+planck_unit_suite_t*
 dictionary_getsuite()
 {
-	CuSuite *suite = CuSuiteNew();
+	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	SUITE_ADD_TEST(suite, test_dictionary_compare_numerics);
-	SUITE_ADD_TEST(suite, test_dictionary_master_table);
+	planck_unit_add_to_suite(suite, test_dictionary_compare_numerics);
+	planck_unit_add_to_suite(suite, test_dictionary_master_table);
 
 	return suite;
 }
@@ -273,13 +274,13 @@ dictionary_getsuite()
 void
 runalltests_dictionary()
 {
-	CuString	*output	= CuStringNew();
-	CuSuite		*suite	= dictionary_getsuite();
+	//CuString	*output	= CuStringNew();
+	planck_unit_suite_t	*suite	= dictionary_getsuite();
 
-	CuSuiteRun(suite);
-	CuSuiteDetails(suite, output);
-	printf("%s\n", output->buffer);
+	planck_unit_run_suite(suite);
+	//CuSuiteDetails(suite, output);
+	//printf("%s\n", output->buffer);
 
-	CuSuiteDelete(suite);
-	CuStringDelete(output);
+	//CuSuiteDelete(suite);
+	//CuStringDelete(output);
 }

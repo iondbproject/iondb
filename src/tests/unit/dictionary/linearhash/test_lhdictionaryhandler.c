@@ -12,6 +12,7 @@ extern "C" {
 #include <stdio.h>
 #include <string.h>
 #include "./../../../CuTest.h"
+#include "./../../../planckunit.h"
 #include "./../../../../dictionary/linearhash/linearhash.h"
 #include "./../../../../dictionary/dicttypes.h"
 #include "./../../../../dictionary/dictionary.h"
@@ -67,7 +68,7 @@ create_linear_hash_test_collection(
  */
 void
 test_linear_hash_handler_function_registration(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	dictionary_handler_t map_handler;			//create handler for hashmap
@@ -76,11 +77,11 @@ test_linear_hash_handler_function_registration(
 
 	//check to ensure that function pointers are correctly registered
 
-	CuAssertTrue(tc, map_handler.insert				== &lhdict_insert);
-	CuAssertTrue(tc, map_handler.create_dictionary	== &lhdict_create_dictionary);
-	CuAssertTrue(tc, map_handler.update				== &lhdict_update);
-	CuAssertTrue(tc, map_handler.remove				== &lhdict_delete);
-	CuAssertTrue(tc, map_handler.delete_dictionary	== &lhdict_delete_dictionary);
+	PLANCK_UNIT_ASSERT_TRUE(tc, map_handler.insert				== &lhdict_insert);
+	PLANCK_UNIT_ASSERT_TRUE(tc, map_handler.create_dictionary	== &lhdict_create_dictionary);
+	PLANCK_UNIT_ASSERT_TRUE(tc, map_handler.update				== &lhdict_update);
+	PLANCK_UNIT_ASSERT_TRUE(tc, map_handler.remove				== &lhdict_delete);
+	PLANCK_UNIT_ASSERT_TRUE(tc, map_handler.delete_dictionary	== &lhdict_delete_dictionary);
 
 }
 
@@ -92,7 +93,7 @@ test_linear_hash_handler_function_registration(
  */
 void
 test_linear_hash_handler_create_destroy(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	record_info_t record;
@@ -114,9 +115,9 @@ test_linear_hash_handler_create_destroy(
 	//register the appropriate handler for a given collection
 	dictionary_create(&map_handler, &test_dictionary, key_type_numeric_signed, id, record.key_size, record.value_size, initial_size);
 
-	CuAssertTrue(tc, (((linear_hashmap_t *)test_dictionary.instance)->super.record.key_size) == record.key_size);
-	CuAssertTrue(tc, (((linear_hashmap_t *)test_dictionary.instance)->super.record.value_size) == record.value_size);
-	CuAssertTrue(tc, (((linear_hashmap_t *)test_dictionary.instance)->write_concern) == wc_duplicate);
+	PLANCK_UNIT_ASSERT_TRUE(tc, (((linear_hashmap_t *)test_dictionary.instance)->super.record.key_size) == record.key_size);
+	PLANCK_UNIT_ASSERT_TRUE(tc, (((linear_hashmap_t *)test_dictionary.instance)->super.record.value_size) == record.value_size);
+	PLANCK_UNIT_ASSERT_TRUE(tc, (((linear_hashmap_t *)test_dictionary.instance)->write_concern) == wc_duplicate);
 
 	/** and clean up dictionary when done */
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -132,7 +133,7 @@ test_linear_hash_handler_create_destroy(
  */
 void
 test_linear_hash_handler_simple_insert_and_query(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 
@@ -155,26 +156,26 @@ test_linear_hash_handler_simple_insert_and_query(
 	dictionary_t test_dictionary;
 
 	//register the appropriate handler for a given collection
-	CuAssertTrue(tc, err_invalid_initial_size 	==	dictionary_create(&dict_handler, &test_dictionary, key_type_numeric_signed, id, record.key_size, record.value_size, 0));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_invalid_initial_size 	==	dictionary_create(&dict_handler, &test_dictionary, key_type_numeric_signed, id, record.key_size, record.value_size, 0));
 
-	CuAssertTrue(tc, err_ok	==	dictionary_create(&dict_handler, &test_dictionary, key_type_numeric_signed, id,  record.key_size, record.value_size, 4));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok	==	dictionary_create(&dict_handler, &test_dictionary, key_type_numeric_signed, id,  record.key_size, record.value_size, 4));
 
 	sprintf((char*)test_value, "value : %i", test_key);
 
-	CuAssertTrue(tc, err_ok 	== 	test_dictionary.handler->insert(&test_dictionary,(ion_key_t)&test_key,(ion_value_t)test_value));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 	== 	test_dictionary.handler->insert(&test_dictionary,(ion_key_t)&test_key,(ion_value_t)test_value));
 
 	ion_value_t read_value = (ion_value_t)malloc(test_dictionary.instance->record.value_size );
 
-	CuAssertTrue(tc, err_ok	==	test_dictionary.handler->get(&test_dictionary,(ion_key_t)&test_key,(ion_value_t)read_value));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok	==	test_dictionary.handler->get(&test_dictionary,(ion_key_t)&test_key,(ion_value_t)read_value));
 
-	CuAssertTrue(tc,0		== memcmp(test_value,(char *)read_value,record.value_size));
+	PLANCK_UNIT_ASSERT_TRUE(tc,0		== memcmp(test_value,(char *)read_value,record.value_size));
 
 	free(read_value);
 
 	//delete the dictionary
-	CuAssertTrue(tc, err_ok == test_dictionary.handler->delete_dictionary(&test_dictionary));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == test_dictionary.handler->delete_dictionary(&test_dictionary));
 
-	CuAssertTrue(tc, test_dictionary.instance == NULL);
+	PLANCK_UNIT_ASSERT_TRUE(tc, test_dictionary.instance == NULL);
 
 
 }
@@ -187,7 +188,7 @@ test_linear_hash_handler_simple_insert_and_query(
  */
 void
 test_linear_hash_handler_update_1(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	/** create collection with single entry and update wih no overflow pages */
@@ -220,10 +221,10 @@ test_linear_hash_handler_update_1(
 	memcpy(predicate.statement.equality.equality_value,(ion_key_t)&(int){1},sizeof(int));
 
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
 
 	//check the status of the cursor as it should be initialized
-	CuAssertTrue(tc, cs_cursor_initialized	== cursor->status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized	== cursor->status);
 
 	//user must allocate memory before calling next()
 	ion_record_t			record;
@@ -231,16 +232,16 @@ test_linear_hash_handler_update_1(
 	record.value 			= (ion_value_t)malloc(sizeof(ion_value_t)*record_info.value_size);
 	record.key 				= (ion_key_t)malloc(sizeof(ion_value_t)*record_info.key_size);
 
-	CuAssertTrue(tc, cs_cursor_active		== cursor->next(cursor, &record));
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active		== cursor->next(cursor, &record));
 
 	//check that value is correct that has been returned
 	ion_value_t				str;
 	str 					= (ion_value_t)malloc(sizeof(ion_value_t)*record_info.value_size);
 	sprintf((char*)str,"value : %i ", *(int *)predicate.statement.equality.equality_value);
 
-	CuAssertTrue(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
+	PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
 
-	CuAssertTrue(tc, cs_end_of_results == cursor->next(cursor, &record));
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results == cursor->next(cursor, &record));
 
 	cursor->destroy(&cursor);
 
@@ -249,9 +250,9 @@ test_linear_hash_handler_update_1(
 	free(record.value);
 
 	//delete the dictionary
-	CuAssertTrue(tc, err_ok == test_dictionary.handler->delete_dictionary(&test_dictionary));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == test_dictionary.handler->delete_dictionary(&test_dictionary));
 
-	CuAssertTrue(tc, test_dictionary.instance == NULL);
+	PLANCK_UNIT_ASSERT_TRUE(tc, test_dictionary.instance == NULL);
 
 }
 
@@ -264,7 +265,7 @@ test_linear_hash_handler_update_1(
  */
 void
 test_linear_hash_handler_update_2(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	/** create collection with single entry and update wih no overflow pages */
@@ -297,36 +298,36 @@ test_linear_hash_handler_update_2(
 	memcpy(predicate.statement.equality.equality_value,(ion_key_t)&(int){1},sizeof(int));
 
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
 
 	//check the status of the cursor as it should be initialized
-	CuAssertTrue(tc, cs_cursor_initialized	== cursor->status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized	== cursor->status);
 
 	//user must allocate memory before calling next()
 	ion_record_t			record;
 	record.value 			= (ion_value_t)malloc(sizeof(ion_value_t)*record_info.value_size);
 	record.key 				= (ion_key_t)malloc(sizeof(ion_value_t)*record_info.key_size);
 
-	CuAssertTrue(tc, cs_cursor_active		== cursor->next(cursor, &record));
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active		== cursor->next(cursor, &record));
 
 	//check that value is correct that has been returned
 	ion_value_t				str;
 	str 					= (ion_value_t)malloc(sizeof(ion_value_t)*record_info.value_size);
 	sprintf((char*)str,"value : %i ", *(int *)predicate.statement.equality.equality_value);
 
-	CuAssertTrue(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
+	PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
 
-	CuAssertTrue(tc, cs_end_of_results == cursor->next(cursor, &record));
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results == cursor->next(cursor, &record));
 
 	cursor->destroy(&cursor);
 
 	int key = 1;
 	char * value = "value : 1 ";
 
-	CuAssertTrue(tc, err_ok				== test_dictionary.handler->insert(&test_dictionary,(ion_key_t)&(int){key},(ion_value_t)value));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok				== test_dictionary.handler->insert(&test_dictionary,(ion_key_t)&(int){key},(ion_value_t)value));
 
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 			== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 			== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
 
 	int count = 0;
 
@@ -334,54 +335,54 @@ test_linear_hash_handler_update_2(
 	{
 		count++;
 		sprintf((char*)str,"value : %i ", *(int *)predicate.statement.equality.equality_value);
-		CuAssertTrue(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
+		PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
 	}
 
-	CuAssertTrue(tc, 2							== count);
-	CuAssertTrue(tc, cs_end_of_results			== cursor->next(cursor, &record));
+	PLANCK_UNIT_ASSERT_TRUE(tc, 2							== count);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results			== cursor->next(cursor, &record));
 
 	cursor->destroy(&cursor);
 
 	char * newValue = "new value";
 
-	CuAssertTrue(tc, err_ok				== test_dictionary.handler->update(&test_dictionary,(ion_key_t)&(int){key},(ion_value_t)newValue));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok				== test_dictionary.handler->update(&test_dictionary,(ion_key_t)&(int){key},(ion_value_t)newValue));
 
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
 
 	count = 0;
 
 	while(cs_end_of_results != cursor->next(cursor, &record))
 	{
 		count++;
-		CuAssertTrue(tc, IS_EQUAL				== memcmp(record.value, newValue, record_info.value_size));
+		PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL				== memcmp(record.value, newValue, record_info.value_size));
 	}
 
-	CuAssertTrue(tc, 2							== count);
-	CuAssertTrue(tc, cs_end_of_results			== cursor->next(cursor, &record));
+	PLANCK_UNIT_ASSERT_TRUE(tc, 2							== count);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results			== cursor->next(cursor, &record));
 
 	cursor->destroy(&cursor);
 
 	/** Insert more record so that they should be spanning both pp and overflow */
-	CuAssertTrue(tc, err_ok				== test_dictionary.handler->insert(&test_dictionary,(ion_key_t)&(int){key},(ion_value_t)value));
-	CuAssertTrue(tc, err_ok				== test_dictionary.handler->insert(&test_dictionary,(ion_key_t)&(int){key},(ion_value_t)value));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok				== test_dictionary.handler->insert(&test_dictionary,(ion_key_t)&(int){key},(ion_value_t)value));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok				== test_dictionary.handler->insert(&test_dictionary,(ion_key_t)&(int){key},(ion_value_t)value));
 
 	char * newValue2 = "ZOZOZO";
-	CuAssertTrue(tc, err_ok				== test_dictionary.handler->update(&test_dictionary,(ion_key_t)&(int){key},(ion_value_t)newValue2));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok				== test_dictionary.handler->update(&test_dictionary,(ion_key_t)&(int){key},(ion_value_t)newValue2));
 
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
 
 	count = 0;
 
 	while(cs_end_of_results != cursor->next(cursor, &record))
 	{
 		count++;
-		CuAssertTrue(tc, IS_EQUAL				== memcmp(record.value, newValue2, record_info.value_size));
+		PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL				== memcmp(record.value, newValue2, record_info.value_size));
 	}
 
-	CuAssertTrue(tc, 4							== count);
-	CuAssertTrue(tc, cs_end_of_results			== cursor->next(cursor, &record));
+	PLANCK_UNIT_ASSERT_TRUE(tc, 4							== count);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results			== cursor->next(cursor, &record));
 
 	cursor->destroy(&cursor);
 
@@ -391,15 +392,15 @@ test_linear_hash_handler_update_2(
 	free(record.value);
 
 	//delete the dictionary
-	CuAssertTrue(tc, err_ok == test_dictionary.handler->delete_dictionary(&test_dictionary));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == test_dictionary.handler->delete_dictionary(&test_dictionary));
 
-	CuAssertTrue(tc, test_dictionary.instance == NULL);
+	PLANCK_UNIT_ASSERT_TRUE(tc, test_dictionary.instance == NULL);
 
 }
 
 void
 test_linear_hash_dictionary_cursor_equality(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	int 			size;
@@ -430,12 +431,12 @@ test_linear_hash_dictionary_cursor_equality(
 	memcpy(predicate->statement.equality.equality_value,(ion_key_t)&(int){1},sizeof(int));
 
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, predicate, &cursor));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, predicate, &cursor));
 #if DEBUG
 	DUMP(cursor->status,"%i");
 #endif
 	//check the status of the cursor as it should be initialized
-	CuAssertTrue(tc, cs_cursor_initialized	== cursor->status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized	== cursor->status);
 
 	free(predicate->statement.equality.equality_value);
 	free(predicate);
@@ -444,7 +445,7 @@ test_linear_hash_dictionary_cursor_equality(
 	cursor->destroy(&cursor);
 
 	//and check that cursor has been destroyed correctly
-	CuAssertTrue(tc, NULL 					== cursor);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL 					== cursor);
 
 	//and destory the collection
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -453,7 +454,7 @@ test_linear_hash_dictionary_cursor_equality(
 
 void
 test_linear_hash_dictionary_cursor_range_signed(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	int size;
@@ -484,12 +485,12 @@ test_linear_hash_dictionary_cursor_range_signed(
 	memcpy(predicate.statement.range.lower_bound,(ion_key_t)&(int){6},sizeof(int));
 
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
 #if DEBUG
 	DUMP(cursor->status,"%i");
 #endif
 	//check the status of the cursor as it should be initialized
-	CuAssertTrue(tc, cs_cursor_initialized	== cursor->status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized	== cursor->status);
 
 	//free up the correct predicate
 	free(predicate.statement.range.upper_bound);
@@ -499,7 +500,7 @@ test_linear_hash_dictionary_cursor_range_signed(
 	cursor->destroy(&cursor);
 
 	//and check that cursor has been destroyed correctly
-	CuAssertTrue(tc, NULL 					== cursor);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL 					== cursor);
 
 	//and destory the collection
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -508,7 +509,7 @@ test_linear_hash_dictionary_cursor_range_signed(
 
 void
 test_linear_hash_dictionary_cursor_range_signed_2(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	int size;
@@ -539,12 +540,12 @@ test_linear_hash_dictionary_cursor_range_signed_2(
 	memcpy(predicate.statement.range.lower_bound,(ion_key_t)&(int){13},sizeof(int));
 
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
 #if DEBUG
 	DUMP(cursor->status,"%i");
 #endif
 	//check the status of the cursor as it should be initialized
-	CuAssertTrue(tc, cs_end_of_results	== cursor->status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results	== cursor->status);
 
 	//free up the correct predicate
 	free(predicate.statement.range.upper_bound);
@@ -554,7 +555,7 @@ test_linear_hash_dictionary_cursor_range_signed_2(
 	cursor->destroy(&cursor);
 
 	//and check that cursor has been destroyed correctly
-	CuAssertTrue(tc, NULL 					== cursor);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL 					== cursor);
 
 	//and destory the collection
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -563,7 +564,7 @@ test_linear_hash_dictionary_cursor_range_signed_2(
 
 void
 test_linear_hash_dictionary_cursor_range_signed_3(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	int size;
@@ -594,12 +595,12 @@ test_linear_hash_dictionary_cursor_range_signed_3(
 	memcpy(predicate.statement.range.lower_bound,(ion_key_t)&(int){13},sizeof(int));
 
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
 #if DEBUG
 	DUMP(cursor->status,"%i");
 #endif
 	//check the status of the cursor as it should be initialized
-	CuAssertTrue(tc, cs_end_of_results	== cursor->status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results	== cursor->status);
 
 	//free up the correct predicate
 	free(predicate.statement.range.upper_bound);
@@ -609,7 +610,7 @@ test_linear_hash_dictionary_cursor_range_signed_3(
 	cursor->destroy(&cursor);
 
 	//and check that cursor has been destroyed correctly
-	CuAssertTrue(tc, NULL 					== cursor);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL 					== cursor);
 
 	//and destory the collection
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -618,7 +619,7 @@ test_linear_hash_dictionary_cursor_range_signed_3(
 
 void
 test_linear_hash_dictionary_cursor_range_signed_4(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	int size;
@@ -650,12 +651,12 @@ test_linear_hash_dictionary_cursor_range_signed_4(
 	memcpy(predicate.statement.range.lower_bound,(ion_key_t)&(int){10},sizeof(int));
 
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
 #if DEBUG
 	DUMP(cursor->status,"%i");
 #endif
 	//check the status of the cursor as it should be initialized
-	CuAssertTrue(tc, cs_cursor_initialized	== cursor->status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized	== cursor->status);
 
 	//free up the correct predicate
 	free(predicate.statement.range.upper_bound);
@@ -665,7 +666,7 @@ test_linear_hash_dictionary_cursor_range_signed_4(
 	cursor->destroy(&cursor);
 
 	//and check that cursor has been destroyed correctly
-	CuAssertTrue(tc, NULL 					== cursor);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL 					== cursor);
 
 	//and destory the collection
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -674,7 +675,7 @@ test_linear_hash_dictionary_cursor_range_signed_4(
 
 void
 test_linear_hash_dictionary_handler_query_with_results(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	int size;
@@ -703,32 +704,32 @@ test_linear_hash_dictionary_handler_query_with_results(
 	memcpy(predicate.statement.equality.equality_value,(ion_key_t)&(int){1},sizeof(int));
 
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
 
 	//check the status of the cursor as it should be initialized
-	CuAssertTrue(tc, cs_cursor_initialized	== cursor->status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized	== cursor->status);
 
 	//user must allocate memory before calling next()
 	ion_record_t			record;
 	record.value 			= (ion_value_t)malloc(sizeof(ion_value_t)*record_info.value_size);
 	record.key 				= (ion_key_t)malloc(sizeof(ion_value_t)*record_info.key_size);
 
-	CuAssertTrue(tc, cs_cursor_active		== cursor->next(cursor, &record));
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active		== cursor->next(cursor, &record));
 
 	//check that value is correct that has been returned
 	ion_value_t				str;
 	str 					= (ion_value_t)malloc(sizeof(ion_value_t)*record_info.value_size);
 	sprintf((char*)str,"value : %i ", *(int *)predicate.statement.equality.equality_value);
 
-	CuAssertTrue(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
+	PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
 
 	free(str);
 
 	//and as there is only 1 result, the next call should return empty
-	CuAssertTrue(tc, cs_end_of_results		== cursor->next(cursor, &record));
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results		== cursor->next(cursor, &record));
 
 	//and as there is only 1 result, the next call should return empty
-	CuAssertTrue(tc, cs_end_of_results		== cursor->next(cursor, &record));
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results		== cursor->next(cursor, &record));
 
 	//free up the correct predicate
 	free(predicate.statement.equality.equality_value);
@@ -742,7 +743,7 @@ test_linear_hash_dictionary_handler_query_with_results(
 
 void
 test_linear_hash_dictionary_handler_query_no_results(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	int size;
@@ -771,17 +772,17 @@ test_linear_hash_dictionary_handler_query_no_results(
 	memcpy(predicate.statement.equality.equality_value,(ion_key_t)&(int){-1},sizeof(int));
 
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
 
 	//check the status of the cursor as it should be at the end of results as no values exist
-	CuAssertTrue(tc, cs_end_of_results	== cursor->status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results	== cursor->status);
 
 	//user must allocate memory before calling next()
 	ion_record_t 			record;
 	record.key 				= (ion_key_t)malloc(sizeof(ion_key_t)*record_info.value_size);
 	record.value 			= (ion_value_t)malloc(sizeof(ion_value_t)*record_info.value_size);
 
-	CuAssertTrue(tc, cs_end_of_results		== cursor->next(cursor, &record));
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results		== cursor->next(cursor, &record));
 
 	//free up the correct predicate
 	free(predicate.statement.equality.equality_value);
@@ -795,7 +796,7 @@ test_linear_hash_dictionary_handler_query_no_results(
 
 void
 test_linear_hash_dictionary_predicate_equality(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	ion_key_t key_under_test;
@@ -840,15 +841,15 @@ test_linear_hash_dictionary_predicate_equality(
 
 	memcpy(key_under_test,(ion_key_t)&(int){1},sizeof(int));
 
-	CuAssertTrue(tc, IS_EQUAL 	== lhdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL 	== lhdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(int){2},sizeof(int));
 
-	CuAssertTrue(tc, IS_EQUAL 	!= lhdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL 	!= lhdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(int){-1},sizeof(int));
 
-	CuAssertTrue(tc, IS_EQUAL 	!= lhdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL 	!= lhdict_test_predicate(cursor, key_under_test));
 
 	free(key_under_test);
 
@@ -860,7 +861,7 @@ test_linear_hash_dictionary_predicate_equality(
 
 void
 test_linear_hash_dictionary_predicate_range_signed(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	ion_key_t key_under_test;
@@ -905,23 +906,23 @@ test_linear_hash_dictionary_predicate_range_signed(
 
 	memcpy(key_under_test,(ion_key_t)&(int){0},sizeof(int));
 
-	CuAssertTrue(tc, IS_EQUAL 	== lhdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL 	== lhdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(int){-1},sizeof(int));
 
-	CuAssertTrue(tc, IS_EQUAL == lhdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL == lhdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(int){1},sizeof(int));
 
-	CuAssertTrue(tc, IS_EQUAL == lhdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL == lhdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(int){2},sizeof(int));
 
-	CuAssertTrue(tc, IS_GREATER == lhdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, IS_GREATER == lhdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(int){-2},sizeof(int));
 
-	CuAssertTrue(tc, IS_LESS 	== lhdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, IS_LESS 	== lhdict_test_predicate(cursor, key_under_test));
 
 	free(key_under_test);
 
@@ -932,7 +933,7 @@ test_linear_hash_dictionary_predicate_range_signed(
 }
 void
 test_linear_hash_dictionary_predicate_range_unsigned(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	ion_key_t key_under_test;
@@ -976,23 +977,23 @@ test_linear_hash_dictionary_predicate_range_unsigned(
 
 	memcpy(key_under_test,(ion_key_t)&(unsigned int){0},sizeof(unsigned int));
 
-	CuAssertTrue(tc, IS_EQUAL 	== lhdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL 	== lhdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(unsigned int){1},sizeof(unsigned int));
 
-	CuAssertTrue(tc, IS_EQUAL 	== lhdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL 	== lhdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(unsigned int){2},sizeof(unsigned int));
 
-	CuAssertTrue(tc, IS_EQUAL 	== lhdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL 	== lhdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(unsigned int){3},sizeof(unsigned int));
 
-	CuAssertTrue(tc, IS_GREATER 	== lhdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, IS_GREATER 	== lhdict_test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test,(ion_key_t)&(unsigned int){4},sizeof(unsigned int));
 
-	CuAssertTrue(tc, IS_GREATER 	== lhdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, IS_GREATER 	== lhdict_test_predicate(cursor, key_under_test));
 
 	free(key_under_test);
 
@@ -1004,7 +1005,7 @@ test_linear_hash_dictionary_predicate_range_unsigned(
 
 void
 test_linear_hash_dictionary_cursor_range(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	int 			size;
@@ -1036,10 +1037,10 @@ test_linear_hash_dictionary_cursor_range(
 	memcpy(predicate.statement.range.lower_bound,(ion_key_t)&(int){5},sizeof(int));
 
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
 
 	//check the status of the cursor as it should be initialized
-	CuAssertTrue(tc, cs_cursor_initialized	== cursor->status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized	== cursor->status);
 
 	//user must allocate memory before calling next()
 	ion_record_t 					record;
@@ -1052,21 +1053,21 @@ test_linear_hash_dictionary_cursor_range(
 	while( cs_cursor_active == (cursor_status = cursor->next(cursor, &record)))
 	{
 
-		CuAssertTrue(tc, cs_cursor_active		== cursor_status);
+		PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active		== cursor_status);
 
 		//check that value is correct that has been returned
 		ion_value_t	str;
 		str = (ion_value_t)malloc(record_info.value_size + 1);			/** make sure to include null */
 		sprintf((char*)str,"value : %i ", (*(int *)predicate.statement.range.upper_bound) + result_count);
 
-		CuAssertTrue(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
+		PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
 		result_count++;
 		free(str);
 	}
-	CuAssertTrue(tc, 5						== result_count);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 5						== result_count);
 
 	//and as there is only 1 result, the next call should return empty
-	CuAssertTrue(tc, cs_end_of_results		== cursor->next(cursor, &record));
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results		== cursor->next(cursor, &record));
 
 	//free up the correct predicate
 	free(predicate.statement.range.upper_bound);
@@ -1080,7 +1081,7 @@ test_linear_hash_dictionary_cursor_range(
 	cursor->destroy(&cursor);
 
 	//and check that cursor has been destroyed correctly
-	CuAssertTrue(tc, NULL 					== cursor);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL 					== cursor);
 
 	//and destory the collection
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -1092,7 +1093,7 @@ test_linear_hash_dictionary_cursor_range(
  */
 void
 test_linear_hash_dictionary_cursor_range_2(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	int 			size;
@@ -1124,10 +1125,10 @@ test_linear_hash_dictionary_cursor_range_2(
 	memcpy(predicate.statement.range.lower_bound,(ion_key_t)&(int){5},sizeof(int));
 
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
 
 	//check the status of the cursor as it should be initialized
-	CuAssertTrue(tc, cs_cursor_initialized	== cursor->status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized	== cursor->status);
 
 	//user must allocate memory before calling next()
 	ion_record_t 					record;
@@ -1140,24 +1141,24 @@ test_linear_hash_dictionary_cursor_range_2(
 	while( cs_cursor_active == (cursor_status = cursor->next(cursor, &record)))
 	{
 
-		CuAssertTrue(tc, cs_cursor_active		== cursor_status);
+		PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active		== cursor_status);
 
 		//check that value is correct that has been returned
 		ion_value_t	str;
 		str = (ion_value_t)malloc(record_info.value_size + 1);
 		sprintf((char*)str,"value : %i ", expected_results[result_count]);
 
-		CuAssertTrue(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
+		PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
 #if DEBUG
 		io_printf("result:%i  %s\n",*(int*)record.key,(char*)record.value);
 #endif
 		result_count++;
 		free(str);
 	}
-	CuAssertTrue(tc, 5						== result_count);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 5						== result_count);
 
 	//and as there is only 1 result, the next call should return empty
-	CuAssertTrue(tc, cs_end_of_results		== cursor->next(cursor, &record));
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results		== cursor->next(cursor, &record));
 
 	//free up the correct predicate
 	free(predicate.statement.range.upper_bound);
@@ -1171,7 +1172,7 @@ test_linear_hash_dictionary_cursor_range_2(
 	cursor->destroy(&cursor);
 
 	//and check that cursor has been destroyed correctly
-	CuAssertTrue(tc, NULL 					== cursor);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL 					== cursor);
 
 	//and destory the collection
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -1183,7 +1184,7 @@ test_linear_hash_dictionary_cursor_range_2(
  */
 void
 test_linear_hash_dictionary_cursor_range_3(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	int 			size;
@@ -1217,10 +1218,10 @@ test_linear_hash_dictionary_cursor_range_3(
 	memcpy(predicate.statement.range.lower_bound,(ion_key_t)&(int){5},sizeof(int));
 
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
 
 	//check the status of the cursor as it should be initialized
-	CuAssertTrue(tc, cs_cursor_initialized	== cursor->status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized	== cursor->status);
 
 	//user must allocate memory before calling next()
 	ion_record_t 					record;
@@ -1234,22 +1235,22 @@ test_linear_hash_dictionary_cursor_range_3(
 	while( cs_cursor_active == (cursor_status = cursor->next(cursor, &record)))
 	{
 
-		CuAssertTrue(tc, cs_cursor_active		== cursor_status);
+		PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active		== cursor_status);
 
 		//check that value is correct that has been returned
 		ion_value_t	str;
 		str = (ion_value_t)malloc(record_info.value_size + 1);
 		sprintf((char*)str,"value : %i ", expected_results[result_count]);
 
-		CuAssertTrue(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
+		PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
 
 		result_count++;
 		free(str);
 	}
-	CuAssertTrue(tc, 5						== result_count);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 5						== result_count);
 
 	//and as there is only 1 result, the next call should return empty
-	CuAssertTrue(tc, cs_end_of_results		== cursor->next(cursor, &record));
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results		== cursor->next(cursor, &record));
 
 	//free up the correct predicate
 	free(predicate.statement.range.upper_bound);
@@ -1263,7 +1264,7 @@ test_linear_hash_dictionary_cursor_range_3(
 	cursor->destroy(&cursor);
 
 	//and check that cursor has been destroyed correctly
-	CuAssertTrue(tc, NULL 					== cursor);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL 					== cursor);
 
 	//and destory the collection
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -1276,7 +1277,7 @@ test_linear_hash_dictionary_cursor_range_3(
  */
 void
 test_linear_hash_dictionary_cursor_range_4(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	int 			size;
@@ -1314,10 +1315,10 @@ test_linear_hash_dictionary_cursor_range_4(
 
 
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
 
 	//check the status of the cursor as it should be initialized
-	CuAssertTrue(tc, cs_cursor_initialized	== cursor->status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized	== cursor->status);
 
 	//user must allocate memory before calling next()
 	ion_record_t 					record;
@@ -1330,22 +1331,22 @@ test_linear_hash_dictionary_cursor_range_4(
 	while( cs_cursor_active == (cursor_status = cursor->next(cursor, &record)))
 	{
 
-		CuAssertTrue(tc, cs_cursor_active		== cursor_status);
+		PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active		== cursor_status);
 
 		//check that value is correct that has been returned
 		ion_value_t	str;
 		str = (ion_value_t)malloc(record_info.value_size + 1);
 		sprintf((char*)str,"value : %i ", expected_results[result_count]);
 
-		CuAssertTrue(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
+		PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
 
 		result_count++;
 		free(str);
 	}
-	CuAssertTrue(tc, 2						== result_count);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 2						== result_count);
 
 	//and as there is only 1 result, the next call should return empty
-	CuAssertTrue(tc, cs_end_of_results		== cursor->next(cursor, &record));
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results		== cursor->next(cursor, &record));
 
 	//free up the correct predicate
 	free(predicate.statement.range.upper_bound);
@@ -1359,7 +1360,7 @@ test_linear_hash_dictionary_cursor_range_4(
 	cursor->destroy(&cursor);
 
 	//and check that cursor has been destroyed correctly
-	CuAssertTrue(tc, NULL 					== cursor);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL 					== cursor);
 
 	//and destory the collection
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -1373,7 +1374,7 @@ test_linear_hash_dictionary_cursor_range_4(
  */
 void
 test_linear_hash_dictionary_cursor_range_5(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	int 			size;
@@ -1410,10 +1411,10 @@ test_linear_hash_dictionary_cursor_range_5(
 	test_dictionary.handler->remove(&test_dictionary,(ion_key_t)&(int){3});
 
 	//test that the query runs on collection okay
-	CuAssertTrue(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
 
 	//check the status of the cursor as it should be initialized
-	CuAssertTrue(tc, cs_cursor_initialized	== cursor->status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized	== cursor->status);
 
 	//user must allocate memory before calling next()
 	ion_record_t 					record;
@@ -1426,22 +1427,22 @@ test_linear_hash_dictionary_cursor_range_5(
 	while( cs_cursor_active == (cursor_status = cursor->next(cursor, &record)))
 	{
 
-		CuAssertTrue(tc, cs_cursor_active		== cursor_status);
+		PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active		== cursor_status);
 
 		//check that value is correct that has been returned
 		ion_value_t	str;
 		str = (ion_value_t)malloc(record_info.value_size + 1);
 		sprintf((char*)str,"value : %i ", expected_results[result_count]);
 
-		CuAssertTrue(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
+		PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL				== memcmp(record.value, str, record_info.value_size));
 
 		result_count++;
 		free(str);
 	}
-	CuAssertTrue(tc, 2						== result_count);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 2						== result_count);
 
 	//and as there is only 1 result, the next call should return empty
-	CuAssertTrue(tc, cs_end_of_results		== cursor->next(cursor, &record));
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results		== cursor->next(cursor, &record));
 
 	//free up the correct predicate
 	free(predicate.statement.range.upper_bound);
@@ -1455,55 +1456,55 @@ test_linear_hash_dictionary_cursor_range_5(
 	cursor->destroy(&cursor);
 
 	//and check that cursor has been destroyed correctly
-	CuAssertTrue(tc, NULL 					== cursor);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL 					== cursor);
 
 	//and destory the collection
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
 }
 
-CuSuite*
+planck_unit_suite_t*
 linear_hash_handler_getsuite()
 {
-	CuSuite *suite = CuSuiteNew();
+	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	SUITE_ADD_TEST(suite, test_linear_hash_handler_function_registration);
-	SUITE_ADD_TEST(suite, test_linear_hash_handler_create_destroy);
-	SUITE_ADD_TEST(suite, test_linear_hash_handler_simple_insert_and_query);
+	planck_unit_add_to_suite(suite, test_linear_hash_handler_function_registration);
+	planck_unit_add_to_suite(suite, test_linear_hash_handler_create_destroy);
+	planck_unit_add_to_suite(suite, test_linear_hash_handler_simple_insert_and_query);
 	/** @tdodo need simple query*/
-	SUITE_ADD_TEST(suite, test_linear_hash_handler_update_1);
-	SUITE_ADD_TEST(suite, test_linear_hash_handler_update_2);
+	planck_unit_add_to_suite(suite, test_linear_hash_handler_update_1);
+	planck_unit_add_to_suite(suite, test_linear_hash_handler_update_2);
 
-	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_predicate_equality);
-	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_predicate_range_signed);
-	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_predicate_range_unsigned);
-	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_cursor_equality);
-	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_cursor_range_signed);
-	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_cursor_range_signed_2);
-	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_cursor_range_signed_3);
-	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_cursor_range_signed_4);
-	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_handler_query_with_results);
-	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_handler_query_no_results);
-	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_cursor_range);
-	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_cursor_range_2);
-	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_cursor_range_3);
-	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_cursor_range_4);
-	SUITE_ADD_TEST(suite, test_linear_hash_dictionary_cursor_range_5);
+	planck_unit_add_to_suite(suite, test_linear_hash_dictionary_predicate_equality);
+	planck_unit_add_to_suite(suite, test_linear_hash_dictionary_predicate_range_signed);
+	planck_unit_add_to_suite(suite, test_linear_hash_dictionary_predicate_range_unsigned);
+	planck_unit_add_to_suite(suite, test_linear_hash_dictionary_cursor_equality);
+	planck_unit_add_to_suite(suite, test_linear_hash_dictionary_cursor_range_signed);
+	planck_unit_add_to_suite(suite, test_linear_hash_dictionary_cursor_range_signed_2);
+	planck_unit_add_to_suite(suite, test_linear_hash_dictionary_cursor_range_signed_3);
+	planck_unit_add_to_suite(suite, test_linear_hash_dictionary_cursor_range_signed_4);
+	planck_unit_add_to_suite(suite, test_linear_hash_dictionary_handler_query_with_results);
+	planck_unit_add_to_suite(suite, test_linear_hash_dictionary_handler_query_no_results);
+	planck_unit_add_to_suite(suite, test_linear_hash_dictionary_cursor_range);
+	planck_unit_add_to_suite(suite, test_linear_hash_dictionary_cursor_range_2);
+	planck_unit_add_to_suite(suite, test_linear_hash_dictionary_cursor_range_3);
+	planck_unit_add_to_suite(suite, test_linear_hash_dictionary_cursor_range_4);
+	planck_unit_add_to_suite(suite, test_linear_hash_dictionary_cursor_range_5);
 	return suite;
 }
 
 void
 runalltests_linear_hash_handler()
 {
-	CuString	*output	= CuStringNew();
-	CuSuite		*suite	= linear_hash_handler_getsuite();
+	//CuString	*output	= CuStringNew();
+	planck_unit_suite_t		*suite	= linear_hash_handler_getsuite();
 
-	CuSuiteRun(suite);
-	CuSuiteSummary(suite, output);
-	CuSuiteDetails(suite, output);
-	printf("%s\n", output->buffer);
+	planck_unit_run_suite(suite);
+	//CuSuiteSummary(suite, output);
+	//CuSuiteDetails(suite, output);
+	//printf("%s\n", output->buffer);
 
-	CuSuiteDelete(suite);
-	CuStringDelete(output);
+	//CuSuiteDelete(suite);
+	//CuStringDelete(output);
 }
 
 

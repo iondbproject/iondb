@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "./../../../CuTest.h"
+#include "./../../../planckunit.h"
 #include "./../../../../dictionary/skiplist/sltypes.h"
 #include "./../../../../dictionary/skiplist/slstore.h"
 #include "./../../../../dictionary/skiplist/slhandler.h"

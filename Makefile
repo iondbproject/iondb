@@ -141,6 +141,7 @@ utildepends := $(addprefix $(BIN_UTILS)/,$(subst .c,.d,$(notdir $(utilssources))
 
 # List of test library sources.
 tlsources   := 	$(TESTS)/CuTest.c  \
+				$(TESTS)/planckunit.c	\
 				$(TESTS)/unit/dictionary/skiplist/test_slstore.c	\
 				$(TESTS)/unit/dictionary/skiplist/test_slhandler.c \
 				$(TESTS)/unit/dictionary/test_dictionary.c \

@@ -97,7 +97,7 @@ initialize_skiplist_std_conditions(
  */
 void
 test_skiplist_initialize(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -132,13 +132,13 @@ test_skiplist_initialize(
 	ion_key_size_t 		t_key_size 		= skiplist.super.record.key_size;
 	ion_value_size_t 	t_value_size 	= skiplist.super.record.value_size;
 
-	CuAssertTrue(tc, skiplist.super.key_type 	== key_type_numeric_signed);
-	CuAssertTrue(tc, skiplist.super.compare 	== dictionary_compare_signed_value);
-	CuAssertTrue(tc, t_key_size 				== key_size);
-	CuAssertTrue(tc, t_value_size 				== value_size);
-	CuAssertTrue(tc, skiplist.maxheight 		== maxheight);
-	CuAssertTrue(tc, skiplist.pnum 				== pnum);
-	CuAssertTrue(tc, skiplist.pden 				== pden);
+	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist.super.key_type 	== key_type_numeric_signed);
+	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist.super.compare 	== dictionary_compare_signed_value);
+	PLANCK_UNIT_ASSERT_TRUE(tc, t_key_size 				== key_size);
+	PLANCK_UNIT_ASSERT_TRUE(tc, t_value_size 				== value_size);
+	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist.maxheight 		== maxheight);
+	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist.pnum 				== pnum);
+	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist.pden 				== pden);
 }
 
 /**
@@ -149,7 +149,7 @@ test_skiplist_initialize(
  */
 void
 test_skiplist_free_all(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -158,7 +158,7 @@ test_skiplist_free_all(
 
 	sl_destroy(&skiplist);
 
-	CuAssertTrue(tc, skiplist.head 	== NULL);
+	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist.head 	== NULL);
 }
 
 /**
@@ -169,7 +169,7 @@ test_skiplist_free_all(
  */
 void
 test_skiplist_single_insert(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -188,8 +188,8 @@ test_skiplist_single_insert(
 	print_skiplist(&skiplist);
 #endif
 
-	CuAssertTrue(tc, 		*((int*) skiplist.head->next[0]->key) 	== 6);
-	CuAssertStrEquals(tc, 	(char*) skiplist.head->next[0]->value, "single.");
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		*((int*) skiplist.head->next[0]->key) 	== 6);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*) skiplist.head->next[0]->value, "single.");
 
 	sl_destroy(&skiplist);
 }
@@ -204,7 +204,7 @@ test_skiplist_single_insert(
  */
 void
 test_skiplist_insert_multiple(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -232,24 +232,24 @@ test_skiplist_insert_multiple(
 	sl_node_t 	*cursor;
 
 	cursor = skiplist.head->next[0];
-	CuAssertTrue(tc, 		*((int*) cursor->key) 	== 1);
-	CuAssertStrEquals(tc, 	(char*) cursor->value, "one");
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		*((int*) cursor->key) 	== 1);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*) cursor->value, "one");
 
 	cursor = skiplist.head->next[0]->next[0];
-	CuAssertTrue(tc,		*((int*) cursor->key) 	== 2);
-	CuAssertStrEquals(tc, 	(char*) cursor->value, "two");
+	PLANCK_UNIT_ASSERT_TRUE(tc,		*((int*) cursor->key) 	== 2);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*) cursor->value, "two");
 
 	cursor = skiplist.head->next[0]->next[0]->next[0];
-	CuAssertTrue(tc, 		*((int*) cursor->key) 	== 3);
-	CuAssertStrEquals(tc, 	(char*) cursor->value, "three");
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		*((int*) cursor->key) 	== 3);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*) cursor->value, "three");
 
 	cursor = skiplist.head->next[0]->next[0]->next[0]->next[0];
-	CuAssertTrue(tc, 		*((int*) cursor->key) 	== 4);
-	CuAssertStrEquals(tc, 	(char*) cursor->value, "four");
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		*((int*) cursor->key) 	== 4);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*) cursor->value, "four");
 
 	cursor = skiplist.head->next[0]->next[0]->next[0]->next[0]->next[0];
-	CuAssertTrue(tc, 		*((int*) cursor->key) 	== 5);
-	CuAssertStrEquals(tc, 	(char*) cursor->value, "five");
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		*((int*) cursor->key) 	== 5);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*) cursor->value, "five");
 
 	sl_destroy(&skiplist);
 }
@@ -264,7 +264,7 @@ test_skiplist_insert_multiple(
  */
 void
 test_skiplist_randomized_insert(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -291,7 +291,7 @@ test_skiplist_randomized_insert(
 		int 	now 	= *((int*)cursor->next[0]->key);
 		int 	next 	= *((int*)cursor->next[0]->next[0]->key);
 
-		CuAssertTrue(tc, next >= now);
+		PLANCK_UNIT_ASSERT_TRUE(tc, next >= now);
 
 		cursor 			= cursor->next[0];
 	}
@@ -312,7 +312,7 @@ test_skiplist_randomized_insert(
  */
 void
 test_skiplist_get_node_single(
-	CuTest 			*tc
+	planck_unit_test_t		*tc
 )
 {
 	PRINT_HEADER();
@@ -329,9 +329,9 @@ test_skiplist_get_node_single(
 	int search 	= 3;
 	sl_node_t *node = sl_find_node(&skiplist, (ion_key_t) &search);
 
-	CuAssertTrue(tc, 		node					!= NULL);
-	CuAssertTrue(tc, 		*((int*)node->key) 		== key);
-	CuAssertStrEquals(tc, 	(char*) str, (char*) node->value);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		node					!= NULL);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		*((int*)node->key) 		== key);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*) str, (char*) node->value);
 
 	sl_destroy(&skiplist);
 }
@@ -350,7 +350,7 @@ test_skiplist_get_node_single(
  */
 void
 test_skiplist_get_node_single_high(
-	CuTest 			*tc
+	planck_unit_test_t		*tc
 )
 {
 	PRINT_HEADER();
@@ -371,8 +371,8 @@ test_skiplist_get_node_single_high(
 	int 		search 	= 10;
 	sl_node_t 	*node 	= sl_find_node(&skiplist, (ion_key_t) &search);
 
-	CuAssertTrue(tc, 		*((int*)node->key) 	== key);
-	CuAssertStrEquals(tc, 	(char*) str, (char*) node->value);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		*((int*)node->key) 	== key);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*) str, (char*) node->value);
 
 	sl_destroy(&skiplist);
 }
@@ -392,7 +392,7 @@ test_skiplist_get_node_single_high(
  */
 void
 test_skiplist_get_node_single_low(
-	CuTest 			*tc
+	planck_unit_test_t		*tc
 )
 {
 	PRINT_HEADER();
@@ -413,7 +413,7 @@ test_skiplist_get_node_single_low(
 	int search 	= 2;
 	sl_node_t *node = sl_find_node(&skiplist, (ion_key_t) &search);
 
-	CuAssertTrue(tc, node == skiplist.head);
+	PLANCK_UNIT_ASSERT_TRUE(tc, node == skiplist.head);
 
 	sl_destroy(&skiplist);
 }
@@ -431,7 +431,7 @@ test_skiplist_get_node_single_low(
  */
 void
 test_skiplist_get_node_single_many(
-	CuTest 			*tc
+	planck_unit_test_t		*tc
 )
 {
 	PRINT_HEADER();
@@ -465,8 +465,8 @@ test_skiplist_get_node_single_many(
 	int 		search 	= 25;
 	sl_node_t 	*node 	= sl_find_node(&skiplist, (ion_key_t) &search);
 
-	CuAssertTrue(tc,		*((int*)node->key) 		== key);
-	CuAssertStrEquals(tc, 	(char*) str, (char*) node->value);
+	PLANCK_UNIT_ASSERT_TRUE(tc,		*((int*)node->key) 		== key);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*) str, (char*) node->value);
 
 	sl_destroy(&skiplist);
 }
@@ -481,7 +481,7 @@ test_skiplist_get_node_single_many(
  */
 void
 test_skiplist_get_node_several(
-	CuTest 			*tc
+	planck_unit_test_t		*tc
 )
 {
 	PRINT_HEADER();
@@ -513,8 +513,8 @@ test_skiplist_get_node_several(
 		int 		key		= targets[i];
 		sl_node_t 	*node 	= sl_find_node(&skiplist, (ion_key_t) &key);
 		sprintf((char*) buffer, "TEST %d", key);
-		CuAssertTrue(tc, 		*((int*)node->key) 			== key);
-		CuAssertStrEquals(tc, 	(char*) node->value, (char*) buffer);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 		*((int*)node->key) 			== key);
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*) node->value, (char*) buffer);
 	}
 
 	sl_destroy(&skiplist);
@@ -530,7 +530,7 @@ test_skiplist_get_node_several(
  */
 void
 test_skiplist_query_nonexist_empty(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -546,8 +546,8 @@ test_skiplist_query_nonexist_empty(
 	print_skiplist(&skiplist);
 #endif
 
-	CuAssertTrue(tc, status == err_item_not_found);
-	CuAssertStrEquals(tc, (char*) value, "NULL");
+	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_item_not_found);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char*) value, "NULL");
 
 	sl_destroy(&skiplist);
 }
@@ -563,7 +563,7 @@ test_skiplist_query_nonexist_empty(
  */
 void
 test_skiplist_query_nonexist_populated_single(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -585,8 +585,8 @@ test_skiplist_query_nonexist_populated_single(
 
 	err_t 			status 	= sl_query(&skiplist, (ion_key_t) &key, value);
 
-	CuAssertTrue(tc, status == err_item_not_found);
-	CuAssertStrEquals(tc, (char*) value, "NULL");
+	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_item_not_found);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char*) value, "NULL");
 
 	sl_destroy(&skiplist);
 }
@@ -602,7 +602,7 @@ test_skiplist_query_nonexist_populated_single(
  */
 void
 test_skiplist_query_nonexist_populated_several(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -629,8 +629,8 @@ test_skiplist_query_nonexist_populated_several(
 
 	err_t 			status 	= sl_query(&skiplist, (ion_key_t) &key, value);
 
-	CuAssertTrue(tc, status == err_item_not_found);
-	CuAssertStrEquals(tc, (char*) value, "NULL");
+	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_item_not_found);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char*) value, "NULL");
 
 	sl_destroy(&skiplist);
 }
@@ -646,7 +646,7 @@ test_skiplist_query_nonexist_populated_several(
  */
 void
 test_skiplist_query_exist_single(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -668,8 +668,8 @@ test_skiplist_query_exist_single(
 
 	err_t 			status 	= sl_query(&skiplist, (ion_key_t) &key, value);
 
-	CuAssertTrue(tc, status == err_ok);
-	CuAssertStrEquals(tc, (char*) value, "Find me!");
+	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char*) value, "Find me!");
 
 	sl_destroy(&skiplist);
 }
@@ -685,7 +685,7 @@ test_skiplist_query_exist_single(
  */
 void
 test_skiplist_query_exist_populated_single(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -710,8 +710,8 @@ test_skiplist_query_exist_populated_single(
 
 	err_t 			status 	= sl_query(&skiplist, (ion_key_t) &key, value);
 
-	CuAssertTrue(tc, status == err_ok);
-	CuAssertStrEquals(tc, (char*) value, "Find 24");
+	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char*) value, "Find 24");
 
 	sl_destroy(&skiplist);
 }
@@ -727,7 +727,7 @@ test_skiplist_query_exist_populated_single(
  */
 void
 test_skiplist_query_exist_populated_several(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -754,8 +754,8 @@ test_skiplist_query_exist_populated_several(
 		sprintf(find_value, "Find %d", i);
 		err_t status = sl_query(&skiplist, (ion_key_t) &i, value);
 
-		CuAssertTrue(tc, 		status == err_ok);
-		CuAssertStrEquals(tc, 	(char*) value, find_value);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 		status == err_ok);
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*) value, find_value);
 	}
 
 	sl_destroy(&skiplist);
@@ -771,7 +771,7 @@ test_skiplist_query_exist_populated_several(
  */
 void
 test_skiplist_delete_empty(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -785,7 +785,7 @@ test_skiplist_delete_empty(
 	print_skiplist(&skiplist);
 #endif
 
-	CuAssertTrue(tc, status == err_item_not_found);
+	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_item_not_found);
 
 	sl_destroy(&skiplist);
 }
@@ -801,7 +801,7 @@ test_skiplist_delete_empty(
  */
 void
 test_skiplist_delete_nonexist_single(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -820,7 +820,7 @@ test_skiplist_delete_nonexist_single(
 	print_skiplist(&skiplist);
 #endif
 
-	CuAssertTrue(tc, status == err_item_not_found);
+	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_item_not_found);
 
 	sl_destroy(&skiplist);
 }
@@ -836,7 +836,7 @@ test_skiplist_delete_nonexist_single(
  */
 void
 test_skiplist_delete_nonexist_several(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -861,7 +861,7 @@ test_skiplist_delete_nonexist_several(
 	print_skiplist(&skiplist);
 #endif
 
-	CuAssertTrue(tc, status == err_item_not_found);
+	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_item_not_found);
 
 	sl_destroy(&skiplist);
 }
@@ -877,7 +877,7 @@ test_skiplist_delete_nonexist_several(
  */
 void
 test_skiplist_delete_single(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -902,8 +902,8 @@ test_skiplist_delete_single(
 	print_skiplist(&skiplist);
 #endif
 
-	CuAssertTrue(tc, status					 == err_ok);
-	CuAssertTrue(tc, skiplist.head->next[0]	 == NULL);
+	PLANCK_UNIT_ASSERT_TRUE(tc, status					 == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist.head->next[0]	 == NULL);
 
 	sl_destroy(&skiplist);
 }
@@ -919,7 +919,7 @@ test_skiplist_delete_single(
  */
 void
 test_skiplist_delete_single_several(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -964,10 +964,10 @@ test_skiplist_delete_single_several(
 	print_skiplist(&skiplist);
 #endif
 
-	CuAssertTrue(tc, 		status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		status == err_ok);
 	for(i = 0; i < (theone_h >= onebefore_h ? onebefore_h : theone_h); i++)
 	{
-		CuAssertTrue(tc, 	onebefore->next[i] == oldnextarr[i]);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 	onebefore->next[i] == oldnextarr[i]);
 	}
 
 	sl_destroy(&skiplist);
@@ -985,7 +985,7 @@ test_skiplist_delete_single_several(
  */
 void
 test_skiplist_delete_single_several_noncont(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -1030,10 +1030,10 @@ test_skiplist_delete_single_several_noncont(
 	print_skiplist(&skiplist);
 #endif
 
-	CuAssertTrue(tc,	 status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc,	 status == err_ok);
 	for(i = 0; i < (theone_h >= onebefore_h ? onebefore_h : theone_h); i++)
 	{
-		CuAssertTrue(tc, onebefore->next[i] == oldnextarr[i]);
+		PLANCK_UNIT_ASSERT_TRUE(tc, onebefore->next[i] == oldnextarr[i]);
 	}
 
 	sl_destroy(&skiplist);
@@ -1049,7 +1049,7 @@ test_skiplist_delete_single_several_noncont(
  */
 void
 test_skiplist_delete_several_all(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -1073,7 +1073,7 @@ test_skiplist_delete_several_all(
 	for(i = 9; i < 99; i+= 3)
 	{
 		err_t status = sl_delete(&skiplist, (ion_key_t) &i);
-		CuAssertTrue(tc, status == err_ok);
+		PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
 	}
 
 #if DEBUG
@@ -1085,7 +1085,7 @@ test_skiplist_delete_several_all(
 	sl_level_t 	h;
 	for(h = cursor->height; h >= 0; h--)
 	{
-		CuAssertTrue(tc, cursor->next[h] == NULL);
+		PLANCK_UNIT_ASSERT_TRUE(tc, cursor->next[h] == NULL);
 	}
 
 	sl_destroy(&skiplist);
@@ -1100,7 +1100,7 @@ test_skiplist_delete_several_all(
  */
 void
 test_skiplist_update_single_nonexist(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -1113,9 +1113,9 @@ test_skiplist_update_single_nonexist(
 	print_skiplist(&skiplist);
 #endif
 
-	CuAssertTrue(tc, 		status								== err_ok);
-	CuAssertTrue(tc, 		*(int*)skiplist.head->next[0]->key	== 72);
-	CuAssertStrEquals(tc, 	(char*) skiplist.head->next[0]->value, "test val");
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		status								== err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		*(int*)skiplist.head->next[0]->key	== 72);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*) skiplist.head->next[0]->value, "test val");
 
 	sl_destroy(&skiplist);
 }
@@ -1130,7 +1130,7 @@ test_skiplist_update_single_nonexist(
  */
 void
 test_skiplist_update_single_nonexist_nonempty(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -1151,9 +1151,9 @@ test_skiplist_update_single_nonexist_nonempty(
 	print_skiplist(&skiplist);
 #endif
 
-	CuAssertTrue(tc, 		status								 == err_ok);
-	CuAssertTrue(tc, 		*(int*)skiplist.head->next[0]->key	 == 13);
-	CuAssertStrEquals(tc, 	(char*) skiplist.head->next[0]->value, "test val");
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		status								 == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		*(int*)skiplist.head->next[0]->key	 == 13);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*) skiplist.head->next[0]->value, "test val");
 
 	sl_destroy(&skiplist);
 }
@@ -1168,7 +1168,7 @@ test_skiplist_update_single_nonexist_nonempty(
  */
 void
 test_skiplist_update_many_nonexist_nonempty(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -1195,9 +1195,9 @@ test_skiplist_update_many_nonexist_nonempty(
 
 	sl_node_t 		*cursor = sl_find_node(&skiplist, IONIZE(38));
 
-	CuAssertTrue(tc, 		status							== err_ok);
-	CuAssertTrue(tc, 		*(int*)cursor->next[0]->key		== 45);
-	CuAssertStrEquals(tc, 	(char*) cursor->next[0]->value, "test val");
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		status							== err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		*(int*)cursor->next[0]->key		== 45);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*) cursor->next[0]->value, "test val");
 
 	sl_destroy(&skiplist);
 }
@@ -1213,7 +1213,7 @@ test_skiplist_update_many_nonexist_nonempty(
  */
 void
 test_skiplist_update_single_exist(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -1234,9 +1234,9 @@ test_skiplist_update_single_exist(
 	print_skiplist(&skiplist);
 #endif
 
-	CuAssertTrue(tc,		status									== err_ok);
-	CuAssertTrue(tc, 		*(int*)skiplist.head->next[0]->key		== 45);
-	CuAssertStrEquals(tc, 	(char*) skiplist.head->next[0]->value, "new val");
+	PLANCK_UNIT_ASSERT_TRUE(tc,		status									== err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		*(int*)skiplist.head->next[0]->key		== 45);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*) skiplist.head->next[0]->value, "new val");
 
 	sl_destroy(&skiplist);
 }
@@ -1252,7 +1252,7 @@ test_skiplist_update_single_exist(
  */
 void
 test_skiplist_update_single_many_exist(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -1280,9 +1280,9 @@ test_skiplist_update_single_many_exist(
 
 	sl_node_t 		*cursor = sl_find_node(&skiplist, IONIZE(30));
 
-	CuAssertTrue(tc, 		status								 == err_ok);
-	CuAssertTrue(tc, 		*(int*)cursor->key					 == 30);
-	CuAssertStrEquals(tc, 	(char*) cursor->value, "COSC");
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		status								 == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		*(int*)cursor->key					 == 30);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*) cursor->value, "COSC");
 
 	sl_destroy(&skiplist);
 }
@@ -1298,7 +1298,7 @@ test_skiplist_update_single_many_exist(
  */
 void
 test_skiplist_update_several_many_exist(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -1323,9 +1323,9 @@ test_skiplist_update_several_many_exist(
 
 		sl_node_t 		*cursor = sl_find_node(&skiplist, (ion_key_t) &i);
 
-		CuAssertTrue(tc, 		status								== err_ok);
-		CuAssertTrue(tc, 		*(int*)cursor->key					== i);
-		CuAssertStrEquals(tc, 	(char*) cursor->value, "VALUE");
+		PLANCK_UNIT_ASSERT_TRUE(tc, 		status								== err_ok);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 		*(int*)cursor->key					== i);
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*) cursor->value, "VALUE");
 	}
 
 #if DEBUG
@@ -1346,7 +1346,7 @@ test_skiplist_update_several_many_exist(
  */
 void
 test_skiplist_update_several_same_key(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -1373,12 +1373,12 @@ test_skiplist_update_several_same_key(
 	print_skiplist(&skiplist);
 #endif
 
-	CuAssertTrue(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
 	sl_node_t 	*cursor = skiplist.head;
 	for(i = 0; i < 100; i++)
 	{
 		cursor = cursor->next[0];
-		CuAssertStrEquals(tc, "new same", (char*) cursor->value);
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, "new same", (char*) cursor->value);
 	}
 
 	sl_destroy(&skiplist);
@@ -1394,7 +1394,7 @@ test_skiplist_update_several_same_key(
  */
 void
 test_skiplist_update_several_same_key_in_mix(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -1429,13 +1429,13 @@ test_skiplist_update_several_same_key_in_mix(
 	print_skiplist(&skiplist);
 #endif
 
-	CuAssertTrue(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
 	
 	sl_node_t 	*find = sl_find_node(&skiplist, IONIZE(55));
 	for(i = 0; i < 100; i++)
 	{
 		
-		CuAssertStrEquals(tc, (char*) find->value, (char*){"new same"});
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char*) find->value, (char*){"new same"});
 		find = find->next[0];
 	}
 
@@ -1452,7 +1452,7 @@ test_skiplist_update_several_same_key_in_mix(
  */
 void
 test_skiplist_delete_then_insert_single(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -1468,7 +1468,7 @@ test_skiplist_delete_then_insert_single(
 #endif
 
 	err_t status = sl_delete(&skiplist, IONIZE(66));
-	CuAssertTrue(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
 
 #if DEBUG
 	printf("%s\n", "** DELETE **");
@@ -1483,9 +1483,9 @@ test_skiplist_delete_then_insert_single(
 	print_skiplist(&skiplist);
 #endif
 
-	CuAssertTrue(tc, 		skiplist.head->next[0] 					!= NULL);
-	CuAssertTrue(tc, 		*(int*) skiplist.head->next[0]->key 	== 365);
-	CuAssertStrEquals(tc, 	(char*) skiplist.head->next[0]->value, "potato");
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		skiplist.head->next[0] 					!= NULL);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		*(int*) skiplist.head->next[0]->key 	== 365);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*) skiplist.head->next[0]->value, "potato");
 
 	sl_destroy(&skiplist);
 }
@@ -1501,7 +1501,7 @@ test_skiplist_delete_then_insert_single(
  */
 void
 test_skiplist_delete_then_insert_several(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -1522,7 +1522,7 @@ test_skiplist_delete_then_insert_several(
 	for(i = 0; i < 50; i++)
 	{
 		err_t status = sl_delete(&skiplist, (ion_key_t) &i);
-		CuAssertTrue(tc, status == err_ok);
+		PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
 	}
 
 #if DEBUG
@@ -1543,7 +1543,7 @@ test_skiplist_delete_then_insert_several(
 	sl_node_t *cursor = skiplist.head;
 	for(i = 50; i < 100; i++)
 	{
-		CuAssertStrEquals(tc, (char*) cursor->next[0]->value, "pie");
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char*) cursor->next[0]->value, "pie");
 		cursor = cursor->next[0];
 	}
 
@@ -1560,7 +1560,7 @@ test_skiplist_delete_then_insert_several(
  */
 void
 test_skiplist_delete_several_same_key(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -1586,11 +1586,11 @@ test_skiplist_delete_several_same_key(
 	print_skiplist(&skiplist);
 #endif
 
-	CuAssertTrue(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
 	int h;
 	for(h = skiplist.head->height; h >= 0; h--)
 	{
-		CuAssertTrue(tc, skiplist.head->next[h] == NULL);
+		PLANCK_UNIT_ASSERT_TRUE(tc, skiplist.head->next[h] == NULL);
 	}
 
 	sl_destroy(&skiplist);
@@ -1606,7 +1606,7 @@ test_skiplist_delete_several_same_key(
  */
 void
 test_skiplist_delete_several_same_key_in_mix(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -1640,10 +1640,10 @@ test_skiplist_delete_several_same_key_in_mix(
 	print_skiplist(&skiplist);
 #endif
 
-	CuAssertTrue(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
 	
 	sl_node_t 	*find = sl_find_node(&skiplist, IONIZE(55));
-	CuAssertTrue(tc, skiplist.super.compare(find->key, IONIZE(55), skiplist.super.record.key_size) != 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist.super.compare(find->key, IONIZE(55), skiplist.super.record.key_size) != 0);
 
 	sl_destroy(&skiplist);
 }
@@ -1658,7 +1658,7 @@ test_skiplist_delete_several_same_key_in_mix(
  */
 void
 test_skiplist_different_size(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -1698,40 +1698,40 @@ test_skiplist_different_size(
 	sl_node_t	*cursor;
 
 	cursor = skiplist.head->next[0];
-	CuAssertTrue(tc, 		*(long long*) cursor->key 			== 16);
-	CuAssertStrEquals(tc, 	(char*)  cursor->value, "tot");
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		*(long long*) cursor->key 			== 16);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*)  cursor->value, "tot");
 
 	cursor = skiplist.head->next[0]->next[0];
-	CuAssertTrue(tc, 		*(long long*) cursor->key 			== 32);
-	CuAssertStrEquals(tc, 	(char*)  cursor->value, "bep");
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		*(long long*) cursor->key 			== 32);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*)  cursor->value, "bep");
 
 	cursor = skiplist.head->next[0]->next[0]->next[0];
-	CuAssertTrue(tc, 		*(long long*) cursor->key 			== 64);
-	CuAssertStrEquals(tc, 	(char*)  cursor->value, "pop");
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		*(long long*) cursor->key 			== 64);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*)  cursor->value, "pop");
 
 	unsigned 	char 		value[10];
 				err_t 		status;
 
 	status = sl_query(&skiplist, (ion_key_t) &(long long){64}, value);
-	CuAssertTrue(tc, 		status == err_ok);
-	CuAssertStrEquals(tc, 	(char*) value, "pop");
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		status == err_ok);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*) value, "pop");
 
 	status = sl_query(&skiplist, (ion_key_t) &(long long){32}, value);
-	CuAssertTrue(tc, 		status == err_ok);
-	CuAssertStrEquals(tc, 	(char*) value, "bep");
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		status == err_ok);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*) value, "bep");
 
 	status = sl_query(&skiplist, (ion_key_t) &(long long){16}, value);
-	CuAssertTrue(tc, 		status == err_ok);
-	CuAssertStrEquals(tc, 	(char*) value, "tot");
+	PLANCK_UNIT_ASSERT_TRUE(tc, 		status == err_ok);
+	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*) value, "tot");
 
 	status = sl_delete(&skiplist, (ion_key_t) &(long long){64});
-	CuAssertTrue(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
 
 	status = sl_delete(&skiplist, (ion_key_t) &(long long){32});
-	CuAssertTrue(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
 
 	status = sl_delete(&skiplist, (ion_key_t) &(long long){16});
-	CuAssertTrue(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
 
 #if DEBUG
 	printf("%s\n", "** DELETE **");
@@ -1751,7 +1751,7 @@ test_skiplist_different_size(
  */
 void
 test_skiplist_big_keys(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -1767,8 +1767,8 @@ test_skiplist_big_keys(
 	for(i = 230; i < 999; i++)
 	{
 		sl_node_t 		*cursor = sl_find_node(&skiplist, (ion_key_t) &i);
-		CuAssertTrue(tc, 		*(int*)cursor->key == i);
-		CuAssertStrEquals(tc, 	(char*) cursor->value, "BIG!");
+		PLANCK_UNIT_ASSERT_TRUE(tc, 		*(int*)cursor->key == i);
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, 	(char*) cursor->value, "BIG!");
 	}
 
 #if DEBUG
@@ -1789,7 +1789,7 @@ test_skiplist_big_keys(
 	int h;
 	for(h = skiplist.head->height; h >= 0; h--)
 	{
-		CuAssertTrue(tc, skiplist.head->next[h] == NULL);
+		PLANCK_UNIT_ASSERT_TRUE(tc, skiplist.head->next[h] == NULL);
 	}
 
 	sl_destroy(&skiplist);
@@ -1799,63 +1799,63 @@ test_skiplist_big_keys(
 @brief 		Creates the suite to test using CuTest.
 @return 	Pointer to a CuTest suite.
  */
-CuSuite*
+planck_unit_suite_t*
 skiplist_getsuite()
 {
-	CuSuite *suite = CuSuiteNew();
+	planck_unit_suite_t *suite = planck_unit_new_suite();
 
 	/* Initialization Tests */
-	SUITE_ADD_TEST(suite, test_skiplist_initialize);
-	SUITE_ADD_TEST(suite, test_skiplist_free_all);
+	planck_unit_add_to_suite(suite, test_skiplist_initialize);
+	planck_unit_add_to_suite(suite, test_skiplist_free_all);
 
 	/* Insertion Tests */
-	SUITE_ADD_TEST(suite, test_skiplist_single_insert);
-	SUITE_ADD_TEST(suite, test_skiplist_insert_multiple);
-	SUITE_ADD_TEST(suite, test_skiplist_randomized_insert);
+	planck_unit_add_to_suite(suite, test_skiplist_single_insert);
+	planck_unit_add_to_suite(suite, test_skiplist_insert_multiple);
+	planck_unit_add_to_suite(suite, test_skiplist_randomized_insert);
 
 	/* Get Node Tests */
-	SUITE_ADD_TEST(suite, test_skiplist_get_node_single);
-	SUITE_ADD_TEST(suite, test_skiplist_get_node_single_high);
-	SUITE_ADD_TEST(suite, test_skiplist_get_node_single_low);
-	SUITE_ADD_TEST(suite, test_skiplist_get_node_single_many);
-	SUITE_ADD_TEST(suite, test_skiplist_get_node_several);
+	planck_unit_add_to_suite(suite, test_skiplist_get_node_single);
+	planck_unit_add_to_suite(suite, test_skiplist_get_node_single_high);
+	planck_unit_add_to_suite(suite, test_skiplist_get_node_single_low);
+	planck_unit_add_to_suite(suite, test_skiplist_get_node_single_many);
+	planck_unit_add_to_suite(suite, test_skiplist_get_node_several);
 
 	/* Query Tests */
-	SUITE_ADD_TEST(suite, test_skiplist_query_nonexist_empty);
-	SUITE_ADD_TEST(suite, test_skiplist_query_nonexist_populated_single);
-	SUITE_ADD_TEST(suite, test_skiplist_query_nonexist_populated_several);
-	SUITE_ADD_TEST(suite, test_skiplist_query_exist_single);
-	SUITE_ADD_TEST(suite, test_skiplist_query_exist_populated_single);
-	SUITE_ADD_TEST(suite, test_skiplist_query_exist_populated_several);
+	planck_unit_add_to_suite(suite, test_skiplist_query_nonexist_empty);
+	planck_unit_add_to_suite(suite, test_skiplist_query_nonexist_populated_single);
+	planck_unit_add_to_suite(suite, test_skiplist_query_nonexist_populated_several);
+	planck_unit_add_to_suite(suite, test_skiplist_query_exist_single);
+	planck_unit_add_to_suite(suite, test_skiplist_query_exist_populated_single);
+	planck_unit_add_to_suite(suite, test_skiplist_query_exist_populated_several);
 
 	/* Delete Tests */
-	SUITE_ADD_TEST(suite, test_skiplist_delete_empty);
-	SUITE_ADD_TEST(suite, test_skiplist_delete_nonexist_single);
-	SUITE_ADD_TEST(suite, test_skiplist_delete_nonexist_several);
-	SUITE_ADD_TEST(suite, test_skiplist_delete_single);
-	SUITE_ADD_TEST(suite, test_skiplist_delete_single_several);
-	SUITE_ADD_TEST(suite, test_skiplist_delete_single_several_noncont);
-	SUITE_ADD_TEST(suite, test_skiplist_delete_several_all);
-	SUITE_ADD_TEST(suite, test_skiplist_delete_several_same_key);
-	SUITE_ADD_TEST(suite, test_skiplist_delete_several_same_key_in_mix);
+	planck_unit_add_to_suite(suite, test_skiplist_delete_empty);
+	planck_unit_add_to_suite(suite, test_skiplist_delete_nonexist_single);
+	planck_unit_add_to_suite(suite, test_skiplist_delete_nonexist_several);
+	planck_unit_add_to_suite(suite, test_skiplist_delete_single);
+	planck_unit_add_to_suite(suite, test_skiplist_delete_single_several);
+	planck_unit_add_to_suite(suite, test_skiplist_delete_single_several_noncont);
+	planck_unit_add_to_suite(suite, test_skiplist_delete_several_all);
+	planck_unit_add_to_suite(suite, test_skiplist_delete_several_same_key);
+	planck_unit_add_to_suite(suite, test_skiplist_delete_several_same_key_in_mix);
 
 	/* Update Tests */
-	SUITE_ADD_TEST(suite, test_skiplist_update_single_nonexist);
-	SUITE_ADD_TEST(suite, test_skiplist_update_single_nonexist_nonempty);
-	SUITE_ADD_TEST(suite, test_skiplist_update_many_nonexist_nonempty);
-	SUITE_ADD_TEST(suite, test_skiplist_update_single_exist);
-	SUITE_ADD_TEST(suite, test_skiplist_update_single_many_exist);
-	SUITE_ADD_TEST(suite, test_skiplist_update_several_many_exist);
-	SUITE_ADD_TEST(suite, test_skiplist_update_several_same_key);
-	SUITE_ADD_TEST(suite, test_skiplist_update_several_same_key_in_mix);
+	planck_unit_add_to_suite(suite, test_skiplist_update_single_nonexist);
+	planck_unit_add_to_suite(suite, test_skiplist_update_single_nonexist_nonempty);
+	planck_unit_add_to_suite(suite, test_skiplist_update_many_nonexist_nonempty);
+	planck_unit_add_to_suite(suite, test_skiplist_update_single_exist);
+	planck_unit_add_to_suite(suite, test_skiplist_update_single_many_exist);
+	planck_unit_add_to_suite(suite, test_skiplist_update_several_many_exist);
+	planck_unit_add_to_suite(suite, test_skiplist_update_several_same_key);
+	planck_unit_add_to_suite(suite, test_skiplist_update_several_same_key_in_mix);
 
 	/* Hybrid Tests */
-	SUITE_ADD_TEST(suite, test_skiplist_delete_then_insert_single);
-	SUITE_ADD_TEST(suite, test_skiplist_delete_then_insert_several);
+	planck_unit_add_to_suite(suite, test_skiplist_delete_then_insert_single);
+	planck_unit_add_to_suite(suite, test_skiplist_delete_then_insert_several);
 
 	/* Variation Tests */
-	SUITE_ADD_TEST(suite, test_skiplist_different_size);
-	SUITE_ADD_TEST(suite, test_skiplist_big_keys);
+	planck_unit_add_to_suite(suite, test_skiplist_different_size);
+	planck_unit_add_to_suite(suite, test_skiplist_big_keys);
 
 	return suite;
 }
@@ -1866,14 +1866,14 @@ skiplist_getsuite()
 void
 runalltests_skiplist()
 {
-	CuString	*output	= CuStringNew();
-	CuSuite		*suite	= skiplist_getsuite();
+	//CuString	*output	= CuStringNew();
+	planck_unit_suite_t		*suite	= skiplist_getsuite();
 
-	CuSuiteRun(suite);
-	CuSuiteSummary(suite, output);
-	CuSuiteDetails(suite, output);
-	printf("----\nSkiplist Tests:\n%s\n", output->buffer);
+	planck_unit_run_suite(suite);
+	//CuSuiteSummary(suite, output);
+	//CuSuiteDetails(suite, output);
+	//printf("----\nSkiplist Tests:\n%s\n", output->buffer);
 
-	CuSuiteDelete(suite);
-	CuStringDelete(output);
+	//CuSuiteDelete(suite);
+	//CuStringDelete(output);
 }
