@@ -1,6 +1,8 @@
 IonDB
 =========
-##"What is this?"
+You might also be interested in our sister project, [LittleD - A relational database using 1kB of RAM or less](https://github.com/graemedouglas/LittleD).
+
+#"What is this?"
 
 Currently in the Arduino world, there doesn't exist an associative array or map implementation that is both easy to use *and* performance competitive. There also is little support for disk based storage options that don't involve writing it yourself. IonDB is fast, functional, and offers disk based storage out of the box.
 
@@ -11,7 +13,21 @@ In general, IonDB supports:
 * Range and Equality queries
 * Disk based persistent data storage
 
-##Preamble
+IonDB has a paper that was published at IEEE (CCECE) 2015, which can be found [here.](http://ieeexplore.ieee.org/xpl/articleDetails.jsp?reload=true&tp=&arnumber=7129178)
+
+##License
+
+IonDB is licensed under the Apache License. For more information, please refer to `LICENSE.md`.
+
+##Collaboration
+
+IonDB is currently pending a merge from the internal development repository -- pull requests are currently **not** recommended due to significant changes arriving soon. 
+
+Please feel free to open question issues to discuss your pull request with our team to see if the upcoming changes will have an affect on your changes.
+
+***
+
+#Usage Guide
 
 These inclusions are necessary for any IonDB usage:
 
@@ -41,7 +57,7 @@ void setup() {
     //Initialize handler
     sldict_init(&handler);
     
-    //Create dictionary: Given handler, dictionary, key type, key size, value size, dictionary size
+    //Create dictionary: Given handler, dictionary, key type, key size, value size, dict size
     dictionary_create(&handler, &dictionary, key_type_numeric_signed, sizeof(int), 60, 10);
 }
 ```
@@ -69,6 +85,8 @@ void setup() {
 ###Keys and values
 
 Keys and values are **specific type agnostic**, there are only three categories of keys. Two macros are provided to bridge the gap between IonDB keys and concrete keys.
+
+Note that keys and values are of a fixed size, which is set on a per-dictionary basis. Think carefully about the domain of the data being stored and pick appropriate sizes.
 
 ```c
 /* Key creation */
@@ -179,7 +197,3 @@ void setup() {
 
 void loop() {}
 ```
-
-##License
-
-Unless explicitly stated otherwise, IonDB and all its constituent files are licensed under the Apache License 2.0 (Apache-2.0).
