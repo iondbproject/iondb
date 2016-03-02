@@ -2,24 +2,24 @@
 
 void
 init_generic_dictionary_test(
-	generic_test_t		*test,
-	void			(*init_dict_handler)(dictionary_handler_t *),
-	key_type_t		key_type,
-	ion_key_size_t		key_size,
-	ion_value_size_t	value_size,
+	generic_test_t			*test,
+	void					(*init_dict_handler)(dictionary_handler_t *),
+	key_type_t				key_type,
+	ion_key_size_t			key_size,
+	ion_value_size_t		value_size,
 	ion_dictionary_size_t	dictionary_size
 )
 {
 	test->init_dict_handler	= init_dict_handler;
-	test->key_type		= key_type;
-	test->key_size		= key_size;
-	test->value_size	= value_size;
+	test->key_type			= key_type;
+	test->key_size			= key_size;
+	test->value_size		= value_size;
 	test->dictionary_size	= dictionary_size;
 }
 
 void
 cleanup_generic_dictionary_test(
-    generic_test_t      *test
+    generic_test_t			*test
 )
 {
 	dictionary_delete_dictionary(&test->dictionary);
@@ -28,11 +28,11 @@ cleanup_generic_dictionary_test(
 
 void
 dictionary_test_init(
-	generic_test_t		*test,
+	generic_test_t			*test,
 	planck_unit_test_t		*tc
 )
 {
-	err_t			error;
+	err_t					error;
 
 	test->init_dict_handler(&(test->handler));
 
@@ -57,9 +57,9 @@ dictionary_test_init(
 
 void
 dictionary_test_insert_get(
-	generic_test_t	*test,
-	int		num_to_insert,
-	planck_unit_test_t*tc
+	generic_test_t			*test,
+	int						num_to_insert,
+	planck_unit_test_t		*tc
 )
 {
 	srand(time(NULL));
@@ -72,29 +72,29 @@ dictionary_test_insert_get(
 		num_to_insert = 10;
 	}
 	
-	byte		keys[num_to_insert * test->key_size];
-	byte		vals[num_to_insert * test->value_size];
+	byte					keys[num_to_insert * test->key_size];
+	byte					vals[num_to_insert * test->value_size];
 
-	unsigned char 	test_buf[test->value_size];
-	ion_value_t		test_val = test_buf;
-	err_t	err;
+	unsigned char 			test_buf[test->value_size];
+	ion_value_t				test_val = test_buf;
+	err_t					err;
 	
-	int		i;
-	int		j;
+	int						i;
+	int						j;
 	
 	for (i = 0; i < num_to_insert; i++)
 	{
 
 		for (j = 0; j < test->key_size; j++)
 		{
-			keys[j]	= 0x0;
+			keys[j]			= 0x0;
 		}
 		for (j = 0; j < test->value_size; j++)
 		{
-			vals[j]		= 0;
+			vals[j]			= 0;
 		}
 		
-		j		= test->key_size;
+		j					= test->key_size;
 		if (j > sizeof(int))
 			j	= sizeof(int);
 		
@@ -144,8 +144,8 @@ dictionary_test_insert_get(
 
 void
 dictionary_test_insert_get_edge_cases(
-    generic_test_t  *test,
-    planck_unit_test_t      *tc
+    generic_test_t 					*test,
+    planck_unit_test_t				*tc
 )
 {
 	err_t err;
@@ -171,15 +171,15 @@ dictionary_test_insert_get_edge_cases(
 
 void
 dictionary_test_delete(
-	generic_test_t	*test,
-	ion_key_t	key_to_delete,
-	planck_unit_test_t*tc
+	generic_test_t					*test,
+	ion_key_t						key_to_delete,
+	planck_unit_test_t				*tc
 )
 {
 	err_t err;
 
-	unsigned char 	test_buf[test->value_size];
-	ion_value_t		test_val = test_buf;
+	unsigned char 					test_buf[test->value_size];
+	ion_value_t						test_val = test_buf;
 
 	err	= dictionary_delete(
 			&(test->dictionary),

@@ -11,7 +11,6 @@ extern "C" {
 
 #include <stdio.h>
 #include <string.h>
-#include "./../../../CuTest.h"
 #include "./../../../planckunit.h"
 #include "./../../../../dictionary/dicttypes.h"
 #include "./../../../../dictionary/dictionary.h"
@@ -58,7 +57,7 @@ createFlatFileTestCollection(
 			for open address dictionary structure.
 
 @param 		tc
-				CuTest
+				plank_unit_test_t
  */
 void
 test_flat_file_handler_function_registration(
@@ -82,7 +81,7 @@ test_flat_file_handler_function_registration(
 @brief 		Tests for creatation and deletion of open address hash.
 
 @param 		tc
-				CuTest
+				plank_unit_test_t
  */
 void
 test_flat_file_handler_create_destroy(
@@ -115,7 +114,7 @@ test_flat_file_handler_create_destroy(
 	ff_file_t file;
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1						== fread(&(file.super),sizeof(file.super),1,((ff_file_t *)test_dictionary.instance)->file_ptr));
 	PLANCK_UNIT_ASSERT_TRUE(tc, record.key_size  		== file.super.record.key_size);
-	PLANCK_UNIT_ASSERT_TRUE(tc, record.value_size  	== file.super.record.value_size);
+	PLANCK_UNIT_ASSERT_TRUE(tc, record.value_size		== file.super.record.value_size);
 	PLANCK_UNIT_ASSERT_TRUE(tc, key_type_numeric_signed
 											== file.super.key_type);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dictionary_compare_signed_value
@@ -124,8 +123,8 @@ test_flat_file_handler_create_destroy(
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0						!= feof(((ff_file_t *)test_dictionary.instance)->file_ptr));
 */
 	//delete the dictionary
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				==
-												test_dictionary.handler->delete_dictionary(&test_dictionary) );
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 
+											== test_dictionary.handler->delete_dictionary(&test_dictionary) );
 	PLANCK_UNIT_ASSERT_TRUE(tc, test_dictionary.instance
 											== NULL);
 
@@ -139,7 +138,7 @@ test_flat_file_handler_create_destroy(
 @details	Tests a simple insert into dictionary and simple query with the
 			write_concern set to insert only
 @param 		tc
-				CuTest
+				plank_unit_test_t
  */
 void
 test_flat_file_handler_simple_insert(
@@ -180,12 +179,11 @@ test_flat_file_handler_simple_insert(
 	file_record = (f_file_record_t *)malloc(sizeof(char) * record_size);
 
 	//read the record_info back and check
-	PLANCK_UNIT_ASSERT_TRUE(tc, 1					==
-			fread(file_record, record_size, 1, ((ff_file_t *)test_dictionary.instance)->file_ptr));
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1					== fread(file_record, record_size, 1, ((ff_file_t *)test_dictionary.instance)->file_ptr));
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, IN_USE	 			== file_record->status);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == memcmp((char *)(file_record->data+test_dictionary.instance->record.key_size), test_value,test_dictionary.instance->record.value_size));
+	PLANCK_UNIT_ASSERT_TRUE(tc, 0 					== memcmp((char *)(file_record->data+test_dictionary.instance->record.key_size), test_value,test_dictionary.instance->record.value_size));
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, test_key			== *(int*)(file_record->data));
 
@@ -206,14 +204,13 @@ test_flat_file_handler_simple_insert(
 	{
 		sprintf((char*)test_value, "value : %i ", i);
 		//read the record_info back and check
-		PLANCK_UNIT_ASSERT_TRUE(tc, 1					==
-				fread(file_record, record_size, 1, ((ff_file_t *)test_dictionary.instance)->file_ptr));
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1					== fread(file_record, record_size, 1, ((ff_file_t *)test_dictionary.instance)->file_ptr));
 		//check status
 		PLANCK_UNIT_ASSERT_TRUE(tc, IN_USE	 			== file_record->status);
 		//check value
 		PLANCK_UNIT_ASSERT_TRUE(tc, 0 == memcmp((char *)(file_record->data+test_dictionary.instance->record.key_size), test_value,test_dictionary.instance->record.value_size));
 		//check key
-		PLANCK_UNIT_ASSERT_TRUE(tc, i			== *(int*)(file_record->data));
+		PLANCK_UNIT_ASSERT_TRUE(tc, i					== *(int*)(file_record->data));
 	}
 
 	//delete the dictionary
@@ -240,7 +237,7 @@ test_flat_file_dictionary_cursor_equality(
 
 	createFlatFileTestCollection(&file_handler, &record, size, &test_dictionary, key_type_numeric_signed);
 
-	dict_cursor_t 			*cursor;			//create a new cursor pointer
+	dict_cursor_t 			*cursor;				//create a new cursor pointer
 
 	//create a new predicate statement
 	predicate_t 			predicate;
@@ -286,7 +283,7 @@ test_flat_file_dictionary_handler_query_with_results(
 	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(1));
 
 	//test that the query runs on collection okay
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== dictionary_find(&test_dictionary, &predicate, &cursor));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 					== dictionary_find(&test_dictionary, &predicate, &cursor));
 
 	//check the status of the cursor as it should be initialized
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized	== cursor->status);
@@ -346,10 +343,10 @@ test_flat_file_dictionary_handler_query_no_results(
 	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(-1));
 
 	//test that the query runs on collection okay
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== dictionary_find(&test_dictionary, &predicate, &cursor));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 					== dictionary_find(&test_dictionary, &predicate, &cursor));
 
 	//check the status of the cursor as it should be at the end of results as no values exist
-	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results	== cursor->status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results		== cursor->status);
 
 	//user must allocate memory before calling next()
 	ion_record_t 			record;
@@ -495,12 +492,12 @@ test_flat_file_dictionary_predicate_range_unsigned(
 	record_info.value_size = 10;
 	size = 10;
 
-	dictionary_handler_t 	map_handler;			//create handler for hashmap
-	dictionary_t 			test_dictionary;		//collection handler for test collection
+	dictionary_handler_t 	map_handler;					//create handler for hashmap
+	dictionary_t 			test_dictionary;				//collection handler for test collection
 
 	createFlatFileTestCollection(&map_handler, &record_info, size, &test_dictionary,key_type_numeric_unsigned);
 
-	dict_cursor_t 			*cursor;				//create a new cursor pointer
+	dict_cursor_t 			*cursor;						//create a new cursor pointer
 
 	cursor = (dict_cursor_t *)malloc(sizeof(dict_cursor_t));
 	cursor->destroy 		= ffdict_destroy_cursor;
@@ -559,16 +556,16 @@ test_flat_file_dictionary_cursor_range(
 
 	createFlatFileTestCollection(&map_handler, &record_info, size, &test_dictionary, key_type_numeric_signed);
 
-	dict_cursor_t 			*cursor;			//create a new cursor pointer
+	dict_cursor_t 			*cursor;				//create a new cursor pointer
 
 	//create a new predicate statement
 	predicate_t 			predicate;
 	dictionary_build_predicate(&predicate, predicate_range, IONIZE(1), IONIZE(5));
 	//test that the query runs on collection okay
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== dictionary_find(&test_dictionary, &predicate, &cursor));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 						== dictionary_find(&test_dictionary, &predicate, &cursor));
 
 	//check the status of the cursor as it should be initialized
-	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized	== cursor->status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized		== cursor->status);
 
 	//user must allocate memory before calling next()
 	ion_record_t 					record;
@@ -593,10 +590,10 @@ test_flat_file_dictionary_cursor_range(
 		result_count++;
 		free(str);
 	}
-	PLANCK_UNIT_ASSERT_TRUE(tc, 5						== result_count);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 5							== result_count);
 
 	//and as there is only 1 result, the next call should return empty
-	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results		== cursor->next(cursor, &record));
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results			== cursor->next(cursor, &record));
 
 	//free up record
 	free(record.key);
@@ -606,7 +603,7 @@ test_flat_file_dictionary_cursor_range(
 	cursor->destroy(&cursor);
 
 	//and check that cursor has been destroyed correctly
-	PLANCK_UNIT_ASSERT_TRUE(tc, NULL 					== cursor);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL 						== cursor);
 
 	//and destory the collection
 	dictionary_delete_dictionary(&test_dictionary);
@@ -634,16 +631,9 @@ flat_file_handler_getsuite()
 void
 runalltests_flat_file_handler()
 {
-	//CuString	*output	= CuStringNew();
 	planck_unit_suite_t		*suite	= flat_file_handler_getsuite();
 
 	planck_unit_run_suite(suite);
-	//CuSuiteSummary(suite, output);
-	//CuSuiteDetails(suite, output);
-	//printf("%s\n", output->buffer);
-
-	//CuSuiteDelete(suite);
-	//CuStringDelete(output);
 }
 
 

@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
-#include "./../../../CuTest.h"
 #include "./../../../planckunit.h"
 #include "./../../../../dictionary/flatfilestore/flatfile.h"
 #include "./../../../../dictionary/dicttypes.h"
@@ -79,7 +78,7 @@ initialize_flat_file_std_conditions(
 @brief 		Tests a simple insert into map and reads results directly from map
 
 @param 		tc
-				CuTest
+				plank_unit_test_t
  */
 void
 test_flat_file_simple_insert(
@@ -139,7 +138,7 @@ test_flat_file_simple_insert(
 @details	Tests a simple insert into dictionary and simple query with the
 			write_concern set to insert only
 @param 		tc
-				CuTest
+				plank_unit_test_t
  */
 void
 test_flat_file_simple_insert_and_query(
@@ -214,7 +213,7 @@ test_flat_file_initialize(
 			been perturbed.
 
 @param 		tc
-				CuTest
+				plank_unit_test_t
  */
 void
 test_flat_file_simple_delete(
@@ -254,7 +253,7 @@ test_flat_file_simple_delete(
 		{
 			ion_value_t value2;
 			value2 = (ion_value_t)malloc(file.super.record.value_size);
-			PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 		== ff_query(&file,(ion_key_t)&i, value2));
+			PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 			== ff_query(&file,(ion_key_t)&i, value2));
 			//build up expected value
 			char str[10];
 			sprintf(str,"%02i is key",i);
@@ -280,7 +279,7 @@ test_flat_file_simple_delete(
 			is set for wc_insert_unique.   Will generate error.
 
 @param 		tc
-				CuTest
+				plank_unit_test_t
  */
 void
 test_flat_file_duplicate_insert_1(
@@ -331,7 +330,7 @@ test_flat_file_duplicate_insert_1(
 			is set for wc_update but will update the value.
 
 @param 		tc
-				CuTest
+				plank_unit_test_t
  */
 void
 test_flat_file_duplicate_insert_2(
@@ -394,7 +393,9 @@ test_flat_file_duplicate_insert_2(
 		ion_value_t value;
 		value = (ion_value_t)malloc(file.super.record.value_size);
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 	== ff_query(&file,(ion_key_t)&i, value));
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 		== ff_query(&file,
+													(ion_key_t)&i,
+													value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is new",i);
@@ -412,7 +413,7 @@ test_flat_file_duplicate_insert_2(
 @brief		Tests that values can be updated.
 
 @param 		tc
-				CuTest
+				plank_unit_test_t
  */
 void
 test_flat_file_update_1(
@@ -446,7 +447,7 @@ test_flat_file_update_1(
 	{
 		ion_value_t value;;
 		value = (ion_value_t)malloc(file.super.record.value_size);
-		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 	== ff_query(&file,(ion_key_t)&i, value));
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 		== ff_query(&file,(ion_key_t)&i, value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
@@ -492,7 +493,7 @@ test_flat_file_update_1(
  	 	 	in dictionary already.
 
 @param 		tc
-				CuTest
+				plank_unit_test_t
  */
 void
 test_flat_file_update_2(
@@ -526,7 +527,9 @@ test_flat_file_update_2(
 	{
 		ion_value_t value;
 		value = (ion_value_t)malloc(file.super.record.value_size);
-		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 	== ff_query(&file,(ion_key_t)&i, value));
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 		== ff_query(&file,
+													(ion_key_t)&i,
+													value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
@@ -553,7 +556,9 @@ test_flat_file_update_2(
 	{
 		ion_value_t value;
 		value = (ion_value_t)malloc(file.super.record.value_size);
-		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 	== ff_query(&file,(ion_key_t)&i, value));
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 		== ff_query(&file,
+													(ion_key_t)&i, 
+													value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is new",i);
@@ -586,8 +591,8 @@ test_flat_file_delete_1(
 	char str[10];
 	sprintf(str,"%02i is key",i);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok  	== ff_insert(&file,
-									(ion_key_t)(&i),
-									(ion_value_t)str));
+												(ion_key_t)(&i),
+												(ion_value_t)str));
 
 	ion_status_t status;
 	status = ff_delete(&file, (ion_key_t)(&i));
@@ -597,7 +602,9 @@ test_flat_file_delete_1(
 	ion_value_t value;
 	value = (ion_value_t)malloc(file.super.record.value_size);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found
-								== ff_query(&file, (ion_key_t)(&i), value));
+											== ff_query(&file, 
+												(ion_key_t)(&i),
+												value));
 	if (value != NULL)
 	{
 		free(value);
@@ -606,7 +613,7 @@ test_flat_file_delete_1(
 	//Check that value can not be deleted if it is not there already
 	status =  ff_delete(&file, (ion_key_t)(&i));
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found
-								== status.err);
+											== status.err);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0	 		== status.count);
 
 	fclose(file.file_ptr);
@@ -623,7 +630,7 @@ test_flat_file_delete_1(
 			undisturbed.
 
 @param 		tc
-				CuTest
+				plank_unit_test_t
  */
 void
 test_flat_file_delete_2(
@@ -641,7 +648,7 @@ test_flat_file_delete_2(
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok  		== ff_insert(&file,
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok  == ff_insert(&file,
 												(ion_key_t)(&i),
 												(ion_value_t)str));
 	}
@@ -651,7 +658,7 @@ test_flat_file_delete_2(
 	{
 		ion_value_t value;
 		value = (ion_value_t)malloc(file.super.record.value_size);
-		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 		== ff_query(&file,
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 	== ff_query(&file,
 												(ion_key_t)&i,
 												value));
 		//build up expected value
@@ -672,14 +679,14 @@ test_flat_file_delete_2(
 #endif
 		ion_status_t status;
 		status = ff_delete(&file, (ion_key_t)(&i));
-		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok  		== status.err);
-		PLANCK_UNIT_ASSERT_TRUE(tc, 1  			== status.count);
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok  == status.err);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1  		== status.count);
 
 		//Check that value is not there
 		ion_value_t value;
 		value = (ion_value_t)malloc(file.super.record.value_size);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found
-										== ff_query(&file,
+											== ff_query(&file,
 												(ion_key_t)(&i),
 												value));
 		if (value != NULL)
@@ -692,7 +699,8 @@ test_flat_file_delete_2(
 		{
 			ion_value_t value;
 			value = (ion_value_t)malloc(file.super.record.value_size);
-			PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 	== ff_query(&file,
+			PLANCK_UNIT_ASSERT_TRUE(tc, err_ok
+											== ff_query(&file,
 												(ion_key_t)&j,
 												value));
 			//build up expected value
@@ -712,7 +720,7 @@ test_flat_file_delete_2(
 		ion_value_t value;
 		value = (ion_value_t)malloc(file.super.record.value_size);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found
-										== ff_query(&file,
+											== ff_query(&file,
 												(ion_key_t)&i,
 												value));
 		if (value != NULL)							//must free value after query
@@ -747,14 +755,7 @@ flat_file_getsuite()
 void
 runalltests_flat_file()
 {
-	//CuString	*output	= CuStringNew();
 	planck_unit_suite_t		*suite	= flat_file_getsuite();
 
 	planck_unit_run_suite(suite);
-	//CuSuiteSummary(suite, output);
-	//CuSuiteDetails(suite, output);
-	//printf("%s\n", output->buffer);
-
-	//CuSuiteDelete(suite);
-	//CuStringDelete(output);
 }

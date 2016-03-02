@@ -8,7 +8,6 @@
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
-#include "./../../CuTest.h"
 #include "./../../planckunit.h"
 #include "./../../../dictionary/dicttypes.h"
 #include "./../../../dictionary/dictionary.h"
@@ -45,7 +44,7 @@ test_dictionary_compare_numerics(
 	for (i = 1; i< 10; i++)
 	{
 		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
-						dictionary_compare_signed_value((ion_key_t)&i, key_two ,sizeof(int)));
+					dictionary_compare_signed_value((ion_key_t)&i, key_two ,sizeof(int)));
 	}
 
 
@@ -54,11 +53,11 @@ test_dictionary_compare_numerics(
 		unsigned char * key_one;
 		unsigned char * key_two;
 
-		key_one 		= &(unsigned char){UCHAR_MAX};
-		key_two 		= &(unsigned char){0};
+		key_one 	= &(unsigned char){UCHAR_MAX};
+		key_two 	= &(unsigned char){0};
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
-							dictionary_compare_unsigned_value(key_one, key_two, sizeof(unsigned char)));
+					dictionary_compare_unsigned_value(key_one, key_two, sizeof(unsigned char)));
 
 	}
 
@@ -66,35 +65,35 @@ test_dictionary_compare_numerics(
 		unsigned short * key_one;
 		unsigned short * key_two;
 
-		key_one 		= &(unsigned short){USHRT_MAX};
-		key_two 		= &(unsigned short){0};
+		key_one 	= &(unsigned short){USHRT_MAX};
+		key_two 	= &(unsigned short){0};
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
-							dictionary_compare_unsigned_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(unsigned short)));
+					dictionary_compare_unsigned_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(unsigned short)));
 
 	}
 
 	{
-			unsigned int * key_one;
-			unsigned int * key_two;
+		unsigned int * key_one;
+		unsigned int * key_two;
 
-			key_one 		= &(unsigned int){UINT_MAX};
-			key_two 		= &(unsigned int){0};
+		key_one 	= &(unsigned int){UINT_MAX};
+		key_two 	= &(unsigned int){0};
 
-			PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
-								dictionary_compare_unsigned_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(unsigned int)));
+		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
+					dictionary_compare_unsigned_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(unsigned int)));
 
 	}
 
 	{
-			unsigned long * key_one;
-			unsigned long * key_two;
+		unsigned long * key_one;
+		unsigned long * key_two;
 
-			key_one 		= &(unsigned long){ULONG_MAX};
-			key_two 		= &(unsigned long){0};
+		key_one 	= &(unsigned long){ULONG_MAX};
+		key_two 	= &(unsigned long){0};
 
-			PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
-								dictionary_compare_unsigned_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(unsigned long)));
+		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
+					dictionary_compare_unsigned_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(unsigned long)));
 
 	}
 
@@ -102,67 +101,67 @@ test_dictionary_compare_numerics(
 		long * key_one;
 		long * key_two;
 
-		key_one 		= &(long){LONG_MAX};
-		key_two 		= &(long){0};
+		key_one 	= &(long){LONG_MAX};
+		key_two 	= &(long){0};
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
-							dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(long)));
+					dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(long)));
 
 	}
 	{
 		char * key_one;
 		char * key_two;
 
-		key_one 		= &(char){CHAR_MAX};
-		key_two 		= &(char){0};
+		key_one 	= &(char){CHAR_MAX};
+		key_two 	= &(char){0};
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
-							dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(char)));
+					dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(char)));
 
-		}
+	}
 
+	{
+		char * key_one;
+		char * key_two;
+
+		key_one		= &(char){0};
+		key_two		= &(char){-1};
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
+					dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(char)));
+
+	}
+
+
+	{
+		short * key_one;
+		short * key_two;
+
+		short i,j;
+
+		key_one 	= &i;
+		key_two 	= &j;
+
+		for (i = SHRT_MIN/10; i < SHRT_MAX/10; i++)
 		{
-			char * key_one;
-			char * key_two;
-
-			key_one 		= &(char){0};
-			key_two 		= &(char){-1};
-
-			PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
-								dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(char)));
-
-			}
-
-
-		{
-			short * key_one;
-			short * key_two;
-
-			short i,j;
-
-			key_one 		= &i;
-			key_two 		= &j;
-
-			for (i = SHRT_MIN/10; i < SHRT_MAX/10; i++)
+			for (j = SHRT_MIN/10; j < SHRT_MAX/10; j++)
 			{
-				for (j = SHRT_MIN/10; j < SHRT_MAX/10; j++)
+				if (i < j)
 				{
-					if (i < j)
-					{
-						PLANCK_UNIT_ASSERT_TRUE(tc, ZERO >
-								dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(short)));
-					}else if (i == j)
-					{
-						PLANCK_UNIT_ASSERT_TRUE(tc, ZERO ==
-								dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(short)));
-					}else
-					{
-						PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
-											dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(short)));
-					}
+					PLANCK_UNIT_ASSERT_TRUE(tc, ZERO >
+							dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(short)));
+				}else if (i == j)
+				{
+					PLANCK_UNIT_ASSERT_TRUE(tc, ZERO ==
+							dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(short)));
+				}else
+				{
+					PLANCK_UNIT_ASSERT_TRUE(tc, ZERO <
+							dictionary_compare_signed_value((ion_key_t)key_one, (ion_key_t)key_two,sizeof(short)));
 				}
 			}
-			}
+		}
+	}
 }
 
 void
@@ -274,13 +273,6 @@ dictionary_getsuite()
 void
 runalltests_dictionary()
 {
-	//CuString	*output	= CuStringNew();
 	planck_unit_suite_t	*suite	= dictionary_getsuite();
-
 	planck_unit_run_suite(suite);
-	//CuSuiteDetails(suite, output);
-	//printf("%s\n", output->buffer);
-
-	//CuSuiteDelete(suite);
-	//CuStringDelete(output);
 }

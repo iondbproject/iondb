@@ -11,7 +11,6 @@ extern "C" {
 
 #include <stdio.h>
 #include <string.h>
-#include "./../../../CuTest.h"
 #include "./../../../planckunit.h"
 #include "./../../../../dictionary/linearhash/linearhash.h"
 #include "./../../../../dictionary/dicttypes.h"
@@ -64,7 +63,7 @@ create_linear_hash_test_collection(
 			for disk based linear hash.
 
 @param 		tc
-				CuTest
+				planck_unit_test_t
  */
 void
 test_linear_hash_handler_function_registration(
@@ -89,7 +88,7 @@ test_linear_hash_handler_function_registration(
 @brief 		Tests for creatation and deletion of open address hash.
 
 @param 		tc
-				CuTest
+				planck_unit_test_t
  */
 void
 test_linear_hash_handler_create_destroy(
@@ -129,7 +128,7 @@ test_linear_hash_handler_create_destroy(
 @details	Tests a simple insert into dictionary and simple query with the
 		**	write_concern set to insert only
 @param 		tc
-				CuTest
+				planck_unit_test_t
  */
 void
 test_linear_hash_handler_simple_insert_and_query(
@@ -184,7 +183,7 @@ test_linear_hash_handler_simple_insert_and_query(
 @brief		Tests that values can be updated.
 
 @param 		tc
-				CuTest
+				planck_unit_test_t
  */
 void
 test_linear_hash_handler_update_1(
@@ -261,7 +260,7 @@ test_linear_hash_handler_update_1(
  	 	 	in dictionary already.
 
 @param 		tc
-				CuTest
+				planck_unit_test_t
  */
 void
 test_linear_hash_handler_update_2(

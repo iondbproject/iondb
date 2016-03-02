@@ -124,8 +124,7 @@ run_linearHashDictionary_generic_test_set_1(
 }
 
 planck_unit_suite_t*
-linearHashDictionary_get_suite(
-)
+linearHashDictionary_get_suite()
 {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
@@ -135,8 +134,7 @@ linearHashDictionary_get_suite(
 }
 
 void
-run_all_tests_linearHashDictionary(
-)
+run_all_tests_linearHashDictionary()
 {
 	//CuString	*output	= CuStringNew();
 	planck_unit_suite_t	*suite	= linearHashDictionary_get_suite();

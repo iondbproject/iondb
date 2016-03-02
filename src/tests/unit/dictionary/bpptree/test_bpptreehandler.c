@@ -134,14 +134,7 @@ void
 run_all_tests_bpptreehandler(
 )
 {
-	//CuString	*output	= CuStringNew();
 	planck_unit_suite_t		*suite	= bpptreehandler_get_suite();
 	
 	planck_unit_run_suite(suite);
-	//CuSuiteSummary(suite, output);
-	//CuSuiteDetails(suite, output);
-	//printf("%s\n", output->buffer);
-	
-	//CuSuiteDelete(suite);
-	//CuStringDelete(output);
 }
