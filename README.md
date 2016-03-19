@@ -1,4 +1,4 @@
-<img src="http://stickerpants.com/uploads/IonDB_logo_final.svg" alt="IonDB" style="width: 280px;"/>
+![IonDB](http://stickerpants.com/uploads/IonDB_logo_final.svg)
 =========
 You might also be interested in our sister project, [LittleD - A relational database using 1kB of RAM or less](https://github.com/graemedouglas/LittleD).
 
