@@ -19,7 +19,7 @@ IonDB has a paper that was published at IEEE (CCECE) 2015, which can be found [h
 
 ##License
 
-IonDB is licensed under the Apache License. For more information, please refer to `LICENSE.md`.
+IonDB is licensed under the Apache License. For more information, please refer to [the license file](License.md).
 
 ##Collaboration
 
@@ -114,8 +114,8 @@ unsigned long long my_key = NEUTRALIZE(unsigned long long, key);
 ####Ionization functions
 | Function | Type |
 |----------|------|
-| IONIZE(any) | IONIZE :: any -> ion_key_t |
-| NEUTRALIZE(atype, key) | NEUTRALIZE :: ion_key_t -> atype |
+| `IONIZE(any)` | `IONIZE :: any -> ion_key_t` |
+| `NEUTRALIZE(atype, key)` | `NEUTRALIZE :: ion_key_t -> atype` |
 
 ####Key categories:
 
