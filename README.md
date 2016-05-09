@@ -2,6 +2,8 @@
 =========
 You might also be interested in our sister project, [LittleD - A relational database using 1kB of RAM or less](https://github.com/graemedouglas/LittleD).
 
+> **Note:** IonDB is entering a period of rapid development and restructuring for the next few months. See the [Collaboration](#collaboration) section for more information.
+
 #"What is this?"
 
 Currently in the Arduino world, there doesn't exist an associative array or map implementation that is both easy to use *and* performance competitive. There also is little support for disk based storage options that don't involve writing it yourself. IonDB is fast, functional, and offers disk based storage out of the box.
@@ -21,9 +23,7 @@ IonDB is licensed under the Apache License. For more information, please refer t
 
 ##Collaboration
 
-IonDB is currently pending a merge from the internal development repository -- pull requests are currently **not** recommended due to significant changes arriving soon. 
-
-Please feel free to open question issues to discuss your pull request with our team to see if the upcoming changes will have an affect on your changes.
+Pull requests are currently **not** recommended due to significant changes arriving in the near future. 
 
 ***
 
