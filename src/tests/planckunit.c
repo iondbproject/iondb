@@ -527,6 +527,13 @@ planck_unit_run_suite(
 	{
 		state->test_func(state);
 		suite->total_tests++;
+#ifdef DEBUG
+		printf("%p",state->line);
+#endif
+		if (NULL == state->line)		//Do we want this? In the JSON, they look no different than regular success scenarios --Heath //FIXME
+		{
+			state->line = -1;//suite->total_passed++;
+		}
 		if (-1 == state->line)
 		{
 			suite->total_passed++;
