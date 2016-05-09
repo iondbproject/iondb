@@ -19,7 +19,7 @@ IonDB has a paper that was published at IEEE (CCECE) 2015, which can be found [h
 
 ##License
 
-IonDB is licensed under the Apache License. For more information, please refer to [the license file](License.md).
+IonDB is licensed under the Apache License. For more information, please refer to [the license file](LICENSE.md).
 
 ##Collaboration
 
