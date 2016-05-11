@@ -1,6 +1,6 @@
 
-#ifndef GENERIC_DICTIONARY_TEST_H
-#define GENERIC_DICTIONARY_TEST_H
+#ifndef GENERIC_DICTIONARY_TEST_H_
+#define GENERIC_DICTIONARY_TEST_H_
 
 #ifdef  __cplusplus
 extern "C" {
@@ -11,7 +11,7 @@ extern "C" {
 #include <limits.h>
 #include "./../../CuTest.h"
 #include "./../../../kv_system.h"
-#include "./../../../dictionary/dicttypes.h"
+#include "../../../dictionary/dictionary_types.h"
 #include "./../../../dictionary/dictionary.h"
 #include "./../../../dictionary/ion_master_table.h"
 

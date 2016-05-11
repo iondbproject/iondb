@@ -7,8 +7,8 @@
 */
 /******************************************************************************/
 
-#ifndef ION_FILE_H
-#define ION_FILE_H
+#ifndef ION_FILE_H_
+#define ION_FILE_H_
 
 #ifdef  __cplusplus
 extern "C" {

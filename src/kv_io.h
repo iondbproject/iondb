@@ -1,12 +1,12 @@
 /*
- * io.h
+ * kv_io.h
  *
  *  Created on: May 23, 2014
  *      Author: workstation
  */
 
-#ifndef IO_H_
-#define IO_H_
+#ifndef KV_IO_H_
+#define KV_IO_H_
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -29,4 +29,4 @@
  */
 int io_printf( const char * format, ... );
 
-#endif /* IO_H_ */
+#endif /* KV_IO_H_ */

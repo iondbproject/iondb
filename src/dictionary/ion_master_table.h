@@ -17,8 +17,8 @@
 */
 /******************************************************************************/
 
-#ifndef ION_MASTER_TABLE_H
-#define ION_MASTER_TABLE_H
+#ifndef ION_MASTER_TABLE_H_
+#define ION_MASTER_TABLE_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -175,4 +175,4 @@ ion_close_dictionary(
 
 #endif /* ION_USING_MASTER_TABLE */
 
-#endif /* ION_MASTER_TABLE_H */
+#endif /* ION_MASTER_TABLE_H_ */

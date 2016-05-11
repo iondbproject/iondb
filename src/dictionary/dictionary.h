@@ -6,8 +6,8 @@
 */
 /******************************************************************************/
 
-#ifndef DICTIONARY_H
-#define DICTIONARY_H
+#ifndef DICTIONARY_H_
+#define DICTIONARY_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,7 +15,7 @@ extern "C" {
 
 #include <stdarg.h>
 #include "./../kv_system.h"
-#include "dicttypes.h"
+#include "dictionary_types.h"
 
 /**
 @brief		Creates as instance of a specific type of dictionary.

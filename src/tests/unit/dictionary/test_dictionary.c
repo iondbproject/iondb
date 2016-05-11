@@ -9,10 +9,10 @@
 #include <stdio.h>
 #include <string.h>
 #include "./../../CuTest.h"
-#include "./../../../dictionary/dicttypes.h"
+#include "../../../dictionary/dictionary_types.h"
 #include "./../../../dictionary/dictionary.h"
 #include "./../../../dictionary/ion_master_table.h"
-#include "./../../../dictionary/skiplist/slhandler.h"
+#include "../../../dictionary/skip_list/skip_list_handler.h"
 
 void
 test_dictionary_compare_numerics(
