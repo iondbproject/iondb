@@ -8,7 +8,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/file/linked_file_bag.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/kv_system.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/dictionary/dictionary.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/dictionary/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/dictionary/flat_file/flat_file_dictionary_handler.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/dictionary/flat_file/flat_file.c" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/dictionary/flat_file/flat_file_dictionary.h" isTestSource="false" />

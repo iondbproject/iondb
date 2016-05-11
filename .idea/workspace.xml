@@ -32,82 +32,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="673330aa-19a6-4586-92b0-fbdfda7510ad" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/linearhash/run_linearhashdict.c" afterPath="" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/makeino.py" afterPath="$PROJECT_DIR$/make_ino.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/benchmark/ionbench.ino" afterPath="$PROJECT_DIR$/src/benchmark/ion_bench.ino" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/benchmark/ram/ramutil.c" afterPath="$PROJECT_DIR$/src/benchmark/ram/ram_util.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/benchmark/ram/ramutil.h" afterPath="$PROJECT_DIR$/src/benchmark/ram/ram_util.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/bpptree/bpptree.c" afterPath="$PROJECT_DIR$/src/dictionary/bpp_tree/bpp_tree.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/bpptree/bpptree.h" afterPath="$PROJECT_DIR$/src/dictionary/bpp_tree/bpp_tree.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/bpptree/bpptreehandler.c" afterPath="$PROJECT_DIR$/src/dictionary/bpp_tree/bpp_tree_handler.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/bpptree/bpptreehandler.h" afterPath="$PROJECT_DIR$/src/dictionary/bpp_tree/bpp_tree_handler.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/dicttypes.h" afterPath="$PROJECT_DIR$/src/dictionary/dictionary_types.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/flatfilestore/ffdictionary.h" afterPath="$PROJECT_DIR$/src/dictionary/flat_file/flat_file_dictionary.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/flatfilestore/ffdictionaryhandler.c" afterPath="$PROJECT_DIR$/src/dictionary/flat_file/flat_file_dictionary_handler.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/flatfilestore/ffdictionaryhandler.h" afterPath="$PROJECT_DIR$/src/dictionary/flat_file/flat_file_dictionary_handler.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/flatfilestore/filehandler.h" afterPath="$PROJECT_DIR$/src/dictionary/flat_file/file_handler.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/flatfilestore/flatfile.c" afterPath="$PROJECT_DIR$/src/dictionary/flat_file/flat_file.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/flatfilestore/flatfile.h" afterPath="$PROJECT_DIR$/src/dictionary/flat_file/flat_file.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/linearhash/file_ll.c" afterPath="$PROJECT_DIR$/src/dictionary/linear_hash/file_linked_list.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/linearhash/file_ll.h" afterPath="$PROJECT_DIR$/src/dictionary/linear_hash/file_linked_list.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/linearhash/lhdictionary.h" afterPath="$PROJECT_DIR$/src/dictionary/linear_hash/linear_hash_dictionary.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/linearhash/lhdictionaryhandler.c" afterPath="$PROJECT_DIR$/src/dictionary/linear_hash/linear_hash_dictionary_handler.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/linearhash/lhdictionaryhandler.h" afterPath="$PROJECT_DIR$/src/dictionary/linear_hash/linear_hash_dictionary_handler.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/linearhash/linearhash.c" afterPath="$PROJECT_DIR$/src/dictionary/linear_hash/linear_hash.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/linearhash/linearhash.h" afterPath="$PROJECT_DIR$/src/dictionary/linear_hash/linear_hash.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/linearhash/linearhashtypes.h" afterPath="$PROJECT_DIR$/src/dictionary/linear_hash/linear_hash_types.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/openaddressfilehash/oafdictionary.h" afterPath="$PROJECT_DIR$/src/dictionary/open_address_file_hash/open_address_file_hash_dictionary.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/openaddressfilehash/oafdictionaryhandler.c" afterPath="$PROJECT_DIR$/src/dictionary/open_address_file_hash/open_address_file_hash_dictionary_handler.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/openaddressfilehash/oafdictionaryhandler.h" afterPath="$PROJECT_DIR$/src/dictionary/open_address_file_hash/open_address_file_hash_dictionary_handler.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/openaddressfilehash/oafhash.c" afterPath="$PROJECT_DIR$/src/dictionary/open_address_file_hash/open_address_file_hash.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/openaddressfilehash/oafhash.h" afterPath="$PROJECT_DIR$/src/dictionary/open_address_file_hash/open_address_file_hash.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/openaddresshash/oadictionary.h" afterPath="$PROJECT_DIR$/src/dictionary/open_address_hash/open_address_hash_dictionary.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/openaddresshash/oadictionaryhandler.c" afterPath="$PROJECT_DIR$/src/dictionary/open_address_hash/open_address_hash_dictionary_handler.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/openaddresshash/oadictionaryhandler.h" afterPath="$PROJECT_DIR$/src/dictionary/open_address_hash/open_address_hash_dictionary_handler.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/openaddresshash/oahash.c" afterPath="$PROJECT_DIR$/src/dictionary/open_address_hash/open_address_hash.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/openaddresshash/oahash.h" afterPath="$PROJECT_DIR$/src/dictionary/open_address_hash/open_address_hash.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/skiplist/slhandler.c" afterPath="$PROJECT_DIR$/src/dictionary/skip_list/skip_list_handler.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/skiplist/slhandler.h" afterPath="$PROJECT_DIR$/src/dictionary/skip_list/skip_list_handler.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/skiplist/slstore.c" afterPath="$PROJECT_DIR$/src/dictionary/skip_list/skip_list.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/skiplist/slstore.h" afterPath="$PROJECT_DIR$/src/dictionary/skip_list/skip_list.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/dictionary/skiplist/sltypes.h" afterPath="$PROJECT_DIR$/src/dictionary/skip_list/skip_list_types.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/examples/hashmap.c" afterPath="$PROJECT_DIR$/src/examples/hash_map_example.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/examples/skiplist.c" afterPath="$PROJECT_DIR$/src/examples/skip_list_example.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/file/linkedfilebag.c" afterPath="$PROJECT_DIR$/src/file/linked_file_bag.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/file/linkedfilebag.h" afterPath="$PROJECT_DIR$/src/file/linked_file_bag.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/bpptree/run_bpptree.c" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/bpp_tree/run_bpp_tree.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/bpptree/test_bpptreehandler.c" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/bpp_tree/test_bpp_tree_handler.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/flatfilestore/run_flatfile.c" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/flat_file/run_flat_file.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/flatfilestore/test_ffdictionaryhandler.c" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/flat_file/test_flat_file_dictionary_handler.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/flatfilestore/test_flatfile.c" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/flat_file/test_flat_file.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/idencoder/run_fileEncoder.c" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/id_encoder/run_file_encoder.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/idencoder/test_fileEncoder.c" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/id_encoder/test_file_encoder.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/linearhash/run_linearhash.c" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/linear_hash/run_linear_hash.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/linearhash/test_file_ll.c" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/linear_hash/test_file_linked_list.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/linearhash/test_lhdictionaryhandler.c" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/linear_hash/test_linear_hash_dictionary_handler.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/linearhash/test_linearHashDictionary.c" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/linear_hash/test_linear_hash_dictionary.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/linearhash/test_linearhash.c" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/linear_hash/test_linear_hash.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/openaddressfilehash/run_oafhash.c" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/open_address_file_hash/run_open_address_file_hash.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/openaddressfilehash/test_oafdictionaryhandler.c" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/open_address_file_hash/test_open_address_file_hash_dictionary_handler.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/openaddressfilehash/test_oafhash.c" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/open_address_file_hash/test_open_address_file_hash.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/openaddresshash/run_oahash.c" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/open_address_hash/run_open_address_hash.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/openaddresshash/test_oadictionaryhandler.c" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/open_address_hash/test_open_address_hash_dictionary_handler.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/openaddresshash/test_oahash.c" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/open_address_hash/test_open_address_hash.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/skiplist/run_slstore.c" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/skip_list/run_skip_list.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/skiplist/sltests.h" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/skip_list/skip_list_tests.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/skiplist/test_slhandler.c" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/skip_list/test_skip_list_handler.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/skiplist/test_slstore.c" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/skip_list/test_skip_list.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/util/idencoder/fileEncoder.c" afterPath="$PROJECT_DIR$/src/util/id_encoder/file_encoder.c" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/util/idencoder/fileEncoder.h" afterPath="$PROJECT_DIR$/src/util/id_encoder/file_encoder.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/benchmark/benchmark.h" afterPath="$PROJECT_DIR$/src/benchmark/benchmark.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/dictionary/dictionary.h" afterPath="$PROJECT_DIR$/src/dictionary/dictionary.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/dictionary/ion_master_table.h" afterPath="$PROJECT_DIR$/src/dictionary/ion_master_table.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/file/SD_stdio_c_iface.h" afterPath="$PROJECT_DIR$/src/file/SD_stdio_c_iface.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/file/ion_file.h" afterPath="$PROJECT_DIR$/src/file/ion_file.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/kv_io.c" afterPath="$PROJECT_DIR$/src/kv_io.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/kv_io.h" afterPath="$PROJECT_DIR$/src/kv_io.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/generic_dictionary_test.h" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/generic_dictionary_test.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/tests/unit/dictionary/test_dictionary.c" afterPath="$PROJECT_DIR$/src/tests/unit/dictionary/test_dictionary.c" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/Makefile" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/dictionary/CMakeLists.txt" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeLists.txt" afterPath="$PROJECT_DIR$/CMakeLists.txt" />
     </list>
     <ignored path="iondb.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -131,8 +60,8 @@
       <file leaf-file-name="CMakeLists.txt" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
-              <caret line="10" column="54" selection-start-line="10" selection-start-column="54" selection-end-line="10" selection-end-column="54" />
+            <state relative-caret-position="105">
+              <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -146,7 +75,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/dictionary/skip_list/skip_list_handler.h" />
         <option value="$PROJECT_DIR$/src/dictionary/skip_list/skip_list_store.c" />
         <option value="$PROJECT_DIR$/src/dictionary/skip_list/skip_list_store.h" />
         <option value="$PROJECT_DIR$/src/dictionary/skip_list/skip_list_types.h" />
@@ -191,12 +119,13 @@
         <option value="$PROJECT_DIR$/src/tests/unit/dictionary/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/src/tests/unit/dictionary/linear_hash/test_linear_hash_dictionary_handler.c" />
         <option value="$PROJECT_DIR$/src/tests/unit/dictionary/open_address_file_hash/test_open_address_file_dictionary_handler.c" />
-        <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/src/util/id_encoder/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/src/dictionary/linear_hash/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/src/tests/unit/dictionary/linear_hash/run_linear_hash_dictionary.c" />
         <option value="$PROJECT_DIR$/src/tests/unit/dictionary/linear_hash/run_linear_hash.c" />
         <option value="$PROJECT_DIR$/src/tests/unit/dictionary/linear_hash/CMakeLists.txt" />
+        <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/CMakeLists.txt" />
       </list>
     </option>
   </component>
@@ -1029,17 +958,17 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="873" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290653" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290653" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3290653" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290653" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Unicode Browser" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24947146" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24947146" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290653" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
@@ -1052,6 +981,9 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.gitignore" />
+  </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
@@ -1060,22 +992,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/tests/unit/dictionary/flat_file/test_flat_file_dictionary_handler.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="245" column="0" selection-start-line="245" selection-start-column="0" selection-end-line="245" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/tests/unit/dictionary/skip_list/skip_list_tests.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="22" column="28" selection-start-line="22" selection-start-column="28" selection-end-line="22" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/tests/unit/dictionary/flat_file/test_flat_file.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="165">
@@ -1232,14 +1148,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
           <caret line="9" column="56" selection-start-line="9" selection-start-column="56" selection-end-line="9" selection-end-column="56" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/dictionary/skip_list/CMakeLists.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
           <folding />
         </state>
       </provider>
@@ -1460,10 +1368,34 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/dictionary/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dictionary/skip_list/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="615">
+          <caret line="41" column="5" selection-start-line="41" selection-start-column="5" selection-end-line="41" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="10" column="54" selection-start-line="10" selection-start-column="54" selection-end-line="10" selection-end-column="54" />
+        <state relative-caret-position="105">
+          <caret line="7" column="0" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
           <folding />
         </state>
       </provider>

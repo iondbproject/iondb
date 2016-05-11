@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.5)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g")
 
-add_subdirectory(src/dictionary)
 add_subdirectory(src/tests)
 add_subdirectory(src/tests/unit/dictionary)
 
