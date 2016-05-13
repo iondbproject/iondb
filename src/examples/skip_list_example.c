@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include "./../kv_system.h"
 #include "./../dictionary/dictionary.h"
-#include "./../dictionary/skiplist/slhandler.h"
+#include "../dictionary/skiplist/skip_list_handler.h"
 #include "./../kv_io.h"
 
 int

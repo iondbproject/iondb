@@ -3,7 +3,7 @@
 
 void
 run_linearHashDictionary_generic_test_set_1(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	generic_test_t	test;
@@ -123,29 +123,27 @@ run_linearHashDictionary_generic_test_set_1(
 	cleanup_generic_dictionary_test(&test);
 }
 
-CuSuite*
-linearHashDictionary_get_suite(
-)
+planck_unit_suite_t*
+linearHashDictionary_get_suite()
 {
-	CuSuite *suite = CuSuiteNew();
+	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	SUITE_ADD_TEST(suite, run_linearHashDictionary_generic_test_set_1);
+	planck_unit_add_to_suite(suite, run_linearHashDictionary_generic_test_set_1);
 
 	return suite;
 }
 
 void
-run_all_tests_linearHashDictionary(
-)
+run_all_tests_linearHashDictionary()
 {
-	CuString	*output	= CuStringNew();
-	CuSuite		*suite	= linearHashDictionary_get_suite();
+	//CuString	*output	= CuStringNew();
+	planck_unit_suite_t	*suite	= linearHashDictionary_get_suite();
 
-	CuSuiteRun(suite);
-	CuSuiteSummary(suite, output);
-	CuSuiteDetails(suite, output);
-	printf("%s\n", output->buffer);
+	planck_unit_run_suite(suite);
+	//CuSuiteSummary(suite, output);
+	//CuSuiteDetails(suite, output);
+	//printf("%s\n", output->buffer);
 
-	CuSuiteDelete(suite);
-	CuStringDelete(output);
+	//CuSuiteDelete(suite);
+	//CuStringDelete(output);
 }

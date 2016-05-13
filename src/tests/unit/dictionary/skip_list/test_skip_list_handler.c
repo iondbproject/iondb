@@ -104,18 +104,18 @@ create_test_collection_std_conditions(
  */
 void
 test_collection_handler_binding(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
 	dictionary_handler_t 	handler;
 	sldict_init(&handler);
 
-	CuAssertTrue(tc, handler.insert				== &sldict_insert);
-	CuAssertTrue(tc, handler.create_dictionary	== &sldict_create_dictionary);
-	CuAssertTrue(tc, handler.update				== &sldict_update);
-	CuAssertTrue(tc, handler.remove				== &sldict_delete);
-	CuAssertTrue(tc, handler.delete_dictionary	== &sldict_delete_dictionary);
+	PLANCK_UNIT_ASSERT_TRUE(tc, handler.insert				== &sldict_insert);
+	PLANCK_UNIT_ASSERT_TRUE(tc, handler.create_dictionary	== &sldict_create_dictionary);
+	PLANCK_UNIT_ASSERT_TRUE(tc, handler.update				== &sldict_update);
+	PLANCK_UNIT_ASSERT_TRUE(tc, handler.remove				== &sldict_delete);
+	PLANCK_UNIT_ASSERT_TRUE(tc, handler.delete_dictionary	== &sldict_delete_dictionary);
 }
 
 /**
@@ -131,7 +131,7 @@ test_collection_handler_binding(
  */
 void
 test_collection_creation(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -153,16 +153,16 @@ test_collection_creation(
 
 	skiplist_t		*skiplist = (skiplist_t*) dict.instance;
 
-	CuAssertTrue(tc, dict.instance->key_type 			== key_type_numeric_signed);
-	CuAssertTrue(tc, dict.instance->compare 			== dictionary_compare_signed_value);
-	CuAssertTrue(tc, dict.instance->record.key_size 	== 4);
-	CuAssertTrue(tc, dict.instance->record.value_size == 10);
-	CuAssertTrue(tc, skiplist 							!= NULL);
-	CuAssertTrue(tc, skiplist->head 					!= NULL);
-	CuAssertTrue(tc, skiplist->maxheight 				== 50);
-	CuAssertTrue(tc, skiplist->pden 					== 4);
-	CuAssertTrue(tc, skiplist->pnum 					== 1);
-	CuAssertTrue(tc, &skiplist->super 					!= NULL);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->key_type 			== key_type_numeric_signed);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare 			== dictionary_compare_signed_value);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->record.key_size 	== 4);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->record.value_size == 10);
+	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist 							!= NULL);
+	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist->head 					!= NULL);
+	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist->maxheight 				== 50);
+	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist->pden 					== 4);
+	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist->pnum 					== 1);
+	PLANCK_UNIT_ASSERT_TRUE(tc, &skiplist->super 					!= NULL);
 
 	dictionary_delete_dictionary(&dict);
 }
@@ -176,7 +176,7 @@ test_collection_creation(
 */
 void
 test_slhandler_cursor_equality(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -189,11 +189,11 @@ test_slhandler_cursor_equality(
 
 	err_t 	status = dictionary_find(&dict, &predicate, &cursor);
 
-	CuAssertTrue(tc, err_ok == status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status);
 
 	cursor->destroy(&cursor);
 
-	CuAssertTrue(tc, NULL == cursor);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == cursor);
 
 	dictionary_delete_dictionary(&dict);
 }
@@ -207,7 +207,7 @@ test_slhandler_cursor_equality(
 */
 void
 test_slhandler_cursor_equality_with_results(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -220,28 +220,28 @@ test_slhandler_cursor_equality_with_results(
 
 	err_t 	status = dictionary_find(&dict, &predicate, &cursor);
 
-	CuAssertTrue(tc, err_ok 				== status);
-	CuAssertTrue(tc, cs_cursor_initialized 	== cursor->status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized 	== cursor->status);
 
 	ion_record_t 	record;
 	record.key 					= malloc(dict.instance->record.key_size);
 	record.value 				= malloc(dict.instance->record.value_size);
 
 	cursor_status_t c_status = cursor->next(cursor, &record);
-	CuAssertTrue(tc, cs_cursor_active == c_status);
-	CuAssertTrue(tc, dict.instance->compare(record.key, IONIZE(56), dict.instance->record.key_size) == 0);
-	CuAssertTrue(tc, dict.instance->compare(record.value, (ion_value_t) (char*){"DATA"}, dict.instance->record.value_size) == 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(56), dict.instance->record.key_size) == 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.value, (ion_value_t) (char*){"DATA"}, dict.instance->record.value_size) == 0);
 
 	while( cursor->next(cursor, &record) != cs_end_of_results)
 	{
-		CuAssertTrue(tc, dict.instance->compare(record.key, IONIZE(56), dict.instance->record.key_size) == 0);
-		CuAssertTrue(tc, dict.instance->compare(record.value, (ion_value_t) (char*){"DATA"}, dict.instance->record.value_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(56), dict.instance->record.key_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.value, (ion_value_t) (char*){"DATA"}, dict.instance->record.value_size) == 0);
 	}
 
-	CuAssertTrue(tc, cs_end_of_results 	== cursor->status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results 	== cursor->status);
 
 	cursor->destroy(&cursor);
-	CuAssertTrue(tc, NULL == cursor);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == cursor);
 
 	dictionary_delete_dictionary(&dict);
 }
@@ -255,7 +255,7 @@ test_slhandler_cursor_equality_with_results(
 */
 void
 test_slhandler_cursor_range(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -268,11 +268,11 @@ test_slhandler_cursor_range(
 
 	err_t 	status = dictionary_find(&dict, &predicate, &cursor);
 
-	CuAssertTrue(tc, err_ok == status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status);
 
 	cursor->destroy(&cursor);
 
-	CuAssertTrue(tc, NULL == cursor);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == cursor);
 
 	dictionary_delete_dictionary(&dict);
 }
@@ -286,7 +286,7 @@ test_slhandler_cursor_range(
 */
 void
 test_slhandler_cursor_range_with_results(
-	CuTest 		*tc
+	planck_unit_test_t	*tc
 )
 {
 	PRINT_HEADER();
@@ -299,30 +299,30 @@ test_slhandler_cursor_range_with_results(
 
 	err_t 	status = dictionary_find(&dict, &predicate, &cursor);
 
-	CuAssertTrue(tc, err_ok 				== status);
-	CuAssertTrue(tc, cs_cursor_initialized 	== cursor->status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized 	== cursor->status);
 
 	ion_record_t 	record;
 	record.key 					= malloc(dict.instance->record.key_size);
 	record.value 				= malloc(dict.instance->record.value_size);
 
 	cursor_status_t c_status = cursor->next(cursor, &record);
-	CuAssertTrue(tc, cs_cursor_active == c_status);
-	CuAssertTrue(tc, dict.instance->compare(record.key, IONIZE(5), dict.instance->record.key_size) >= 0);
-	CuAssertTrue(tc, dict.instance->compare(record.key, IONIZE(78), dict.instance->record.key_size) <= 0);
-	CuAssertTrue(tc, dict.instance->compare(record.value, (ion_value_t) (char*){"DATA"}, dict.instance->record.value_size) == 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(5), dict.instance->record.key_size) >= 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(78), dict.instance->record.key_size) <= 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.value, (ion_value_t) (char*){"DATA"}, dict.instance->record.value_size) == 0);
 
 	while( cursor->next(cursor, &record) != cs_end_of_results)
 	{
-		CuAssertTrue(tc, dict.instance->compare(record.key, IONIZE(5), dict.instance->record.key_size) >= 0);
-		CuAssertTrue(tc, dict.instance->compare(record.key, IONIZE(78), dict.instance->record.key_size) <= 0);
-		CuAssertTrue(tc, dict.instance->compare(record.value, (ion_value_t) (char*){"DATA"}, dict.instance->record.value_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(5), dict.instance->record.key_size) >= 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(78), dict.instance->record.key_size) <= 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.value, (ion_value_t) (char*){"DATA"}, dict.instance->record.value_size) == 0);
 	}
 
-	CuAssertTrue(tc, cs_end_of_results 	== cursor->status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results 	== cursor->status);
 
 	cursor->destroy(&cursor);
-	CuAssertTrue(tc, NULL == cursor);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == cursor);
 
 	dictionary_delete_dictionary(&dict);
 }
@@ -331,22 +331,22 @@ test_slhandler_cursor_range_with_results(
 @brief 		Creates the suite to test using CuTest.
 @return 	Pointer to a CuTest suite.
  */
-CuSuite*
+planck_unit_suite_t*
 skiplist_handler_getsuite()
 {
-	CuSuite *suite = CuSuiteNew();
+	planck_unit_suite_t *suite = planck_unit_new_suite();
 
 	/* Creation tests */
-	SUITE_ADD_TEST(suite, test_collection_handler_binding);
-	SUITE_ADD_TEST(suite, test_collection_creation);
+	planck_unit_add_to_suite(suite, test_collection_handler_binding);
+	planck_unit_add_to_suite(suite, test_collection_creation);
 
 	/* Cursor Equality tests */
-	SUITE_ADD_TEST(suite, test_slhandler_cursor_equality);
-	SUITE_ADD_TEST(suite, test_slhandler_cursor_equality_with_results);
+	planck_unit_add_to_suite(suite, test_slhandler_cursor_equality);
+	planck_unit_add_to_suite(suite, test_slhandler_cursor_equality_with_results);
 
 	/* Cursor Range tests */
-	SUITE_ADD_TEST(suite, test_slhandler_cursor_range);
-	SUITE_ADD_TEST(suite, test_slhandler_cursor_range_with_results);
+	planck_unit_add_to_suite(suite, test_slhandler_cursor_range);
+	planck_unit_add_to_suite(suite, test_slhandler_cursor_range_with_results);
 
 	return suite;
 }
@@ -357,14 +357,14 @@ skiplist_handler_getsuite()
 void
 runalltests_skiplist_handler()
 {
-	CuString	*output	= CuStringNew();
-	CuSuite		*suite	= skiplist_handler_getsuite();
+	//CuString	*output	= CuStringNew();
+	planck_unit_suite_t	*suite	= skiplist_handler_getsuite();
 
-	CuSuiteRun(suite);
-	CuSuiteSummary(suite, output);
-	CuSuiteDetails(suite, output);
-	printf("----\nSkiplist Handler Tests:\n%s\n", output->buffer);
+	planck_unit_run_suite(suite);
+	//CuSuiteSummary(suite, output);
+	//CuSuiteDetails(suite, output);
+	//printf("----\nSkiplist Handler Tests:\n%s\n", output->buffer);
 
-	CuSuiteDelete(suite);
-	CuStringDelete(output);
+	//CuSuiteDelete(suite);
+	//CuStringDelete(output);
 }
