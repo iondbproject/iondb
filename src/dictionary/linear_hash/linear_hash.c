@@ -73,7 +73,7 @@ lh_initialize(
 	/** @todo Correct the minimum block size as this will need to be increased to improve performance */
 	l_hash_bucket_t *file_record;
 	int record_size = SIZEOF(STATUS) + hashmap->super.record.key_size + hashmap->super.record.value_size;
-	file_record = (l_hash_bucket_t *)malloc(record_size);
+	file_record = (l_hash_bucket_t *)malloc(record_size); //Valgrind thinks somethings up with this; it definetly is free'd at the end. --Heath
 	file_record->status = EMPTY;
 
 	//write out the records to disk to prep
@@ -130,10 +130,12 @@ lh_close(
 {
 	if (fclose(hash_map->file) == 0)
 	{
+		hash_map->file = NULL;	//Required for lh_destroy to not segfault -- Heath
 		return err_ok;
 	}
 	else
 	{
+		hash_map->file = NULL;
 		return err_file_close_error;
 	}
 }
@@ -496,7 +498,15 @@ lh_split(
 		/** split file */
 		ll_file_t new_ll;														/** new ll for bucket */
 
-		fll_create(&new_ll, NULL, hash_map->super.key_type, hash_map->super.record.key_size, hash_map->super.record.value_size, hash_set.upper_hash, hash_map->id);
+		fll_create(
+			&new_ll, 
+			fll_compare,//NULL, 
+			hash_map->super.key_type, 
+			hash_map->super.record.key_size, 
+			hash_map->super.record.value_size, 
+			hash_set.upper_hash, 
+			hash_map->id
+		);
 
 		ll_file_node_t * ll_node = (ll_file_node_t*)malloc(split_ll.node_size);
 
@@ -551,6 +561,10 @@ lh_split(
 					upper_bucket_idx++;												/** advance counter to next record */
 				}else																/** and if not, add to file */
 				{
+#if DEBUG
+					DUMP(new_ll,"%i");
+					DUMP(ll_node,"%i");
+#endif
 					fll_insert(&new_ll,ll_node);									/** just copy over the node */
 				}
 				/** and remove node from list */
@@ -1186,9 +1200,8 @@ lh_write_record_status_in_cache(
 )
 {
 	int page_number = calculate_cache_location(hash_map, item);
-
 	if (status != item->status)							/** Only change is the status is different */
-	{
+	{		//item->status is sometimes NULL; should it be null? --Heath //FIXME
 		item->status 							= status;
 		hash_map->cache[page_number].status 	= cache_active_written;
 	}

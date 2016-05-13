@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
-#include "./../../../CuTest.h"
+#include "../../../planck_unit.h"
 #include "../../../../dictionary/open_address_hash/open_address_hash.h"
 #include "../../../../dictionary/dictionary_types.h"
 #include "./../../../../dictionary/dictionary.h"
@@ -75,7 +75,7 @@ initialize_hash_map_std_conditions(
  */
 void
 test_open_address_hashmap_initialize(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 
@@ -91,11 +91,11 @@ test_open_address_hashmap_initialize(
 	initialize_hash_map(size, &record, &map);
 
 	//valid correct map settings
-	CuAssertTrue(tc, map.super.record.key_size 		== record.key_size);
-	CuAssertTrue(tc, map.super.record.value_size	== record.value_size);
-	CuAssertTrue(tc, map.map_size 					== size);
-	CuAssertTrue(tc, map.compute_hash 				== &oah_compute_simple_hash);
-	CuAssertTrue(tc, map.write_concern 				== wc_insert_unique);
+	PLANCK_UNIT_ASSERT_TRUE(tc, map.super.record.key_size 		== record.key_size);
+	PLANCK_UNIT_ASSERT_TRUE(tc, map.super.record.value_size	== record.value_size);
+	PLANCK_UNIT_ASSERT_TRUE(tc, map.map_size 					== size);
+	PLANCK_UNIT_ASSERT_TRUE(tc, map.compute_hash 				== &oah_compute_simple_hash);
+	PLANCK_UNIT_ASSERT_TRUE(tc, map.write_concern 				== wc_insert_unique);
 
 }
 
@@ -107,7 +107,7 @@ test_open_address_hashmap_initialize(
  */
 void
 test_open_address_hashmap_compute_simple_hash(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 
@@ -118,7 +118,7 @@ test_open_address_hashmap_compute_simple_hash(
 
 	for (i = 0; i< MAX_HASH_TEST; i++)
 	{
-		CuAssertTrue(tc, (i % map.map_size) ==
+		PLANCK_UNIT_ASSERT_TRUE(tc, (i % map.map_size) ==
 			oah_compute_simple_hash(&map, (ion_key_t)((int *)&i), sizeof(i)));
 	}
 }
@@ -132,14 +132,14 @@ test_open_address_hashmap_compute_simple_hash(
  */
 void
 test_open_address_hashmap_get_location(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	int i;
 
 	for (i = 0; i< MAX_HASH_TEST; i++)
 	{
-		CuAssertTrue(tc, (i % STD_MAP_SIZE) == oah_get_location((hash_t)i, STD_MAP_SIZE));
+		PLANCK_UNIT_ASSERT_TRUE(tc, (i % STD_MAP_SIZE) == oah_get_location((hash_t)i, STD_MAP_SIZE));
 	}
 }
 
@@ -156,7 +156,7 @@ test_open_address_hashmap_get_location(
  */
 void
 test_open_address_hashmap_find_item_location(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	hashmap_t map;			//create handler for hashmap
@@ -205,8 +205,8 @@ test_open_address_hashmap_find_item_location(
 		for (i = 0; i<map.map_size; i++)
 		{
 			int location;
-			CuAssertTrue(tc, err_ok	== oah_find_item_loc(&map, (ion_key_t)(&i), &location));
-			CuAssertTrue(tc, (i+offset)%map.map_size == location);
+			PLANCK_UNIT_ASSERT_TRUE(tc, err_ok	== oah_find_item_loc(&map, (ion_key_t)(&i), &location));
+			PLANCK_UNIT_ASSERT_TRUE(tc, (i+offset)%map.map_size == location);
 		}
 	}
 
@@ -220,7 +220,7 @@ test_open_address_hashmap_find_item_location(
  */
 void
 test_open_address_hashmap_simple_insert(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	hashmap_t map;			//create handler for hashmap
@@ -266,9 +266,9 @@ test_open_address_hashmap_simple_insert(
 			//build up expected value
 			char str[10];
 			sprintf(str,"%02i is key", (i+offset)%map.map_size);
-			CuAssertTrue(tc, status		== IN_USE);
-			CuAssertTrue(tc, key 		== (i+offset)%map.map_size);
-			CuAssertStrEquals(tc, (char *)value, (char *)str);
+			PLANCK_UNIT_ASSERT_TRUE(tc, status		== IN_USE);
+			PLANCK_UNIT_ASSERT_TRUE(tc, key 		== (i+offset)%map.map_size);
+			PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *)value, (char *)str);
 		}
 	}
 }
@@ -282,7 +282,7 @@ test_open_address_hashmap_simple_insert(
  */
 void
 test_open_address_hashmap_simple_insert_and_query(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	hashmap_t map;								//create handler for hashmap
@@ -304,11 +304,11 @@ test_open_address_hashmap_simple_insert_and_query(
 	for (i = 0; i<map.map_size; i++)
 	{
 
-		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, value));
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertStrEquals(tc, (char *)value, str);
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *)value, str);
 	}
 	if (value != NULL)							//must free value after query
 		{
@@ -329,7 +329,7 @@ test_open_address_hashmap_simple_insert_and_query(
  */
 void
 test_open_address_hashmap_simple_delete(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	hashmap_t map;								//create handler for hashmap
@@ -353,20 +353,20 @@ test_open_address_hashmap_simple_delete(
 	{
 
 		//delete the record
-		CuAssertTrue(tc, err_ok				== oah_delete(&map, (ion_key_t)(&j)));
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok				== oah_delete(&map, (ion_key_t)(&j)));
 		//check to make sure that the record has been deleted
-		CuAssertTrue(tc, err_item_not_found	== oah_query(&map,(ion_key_t)(&j), value));
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found	== oah_query(&map,(ion_key_t)(&j), value));
 
 		//and then check to make sure that the rest of the map is undisturbed
 		for (i = j+1; i<map.map_size; i++)
 		{
 			ion_value_t value;
 			value = (ion_value_t)malloc(10);
-			CuAssertTrue(tc, err_ok 		== oah_query(&map,(ion_key_t)&i, value));
+			PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 		== oah_query(&map,(ion_key_t)&i, value));
 			//build up expected value
 			char str[10];
 			sprintf(str,"%02i is key",i);
-			CuAssertStrEquals(tc, (char *)value, str);
+			PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *)value, str);
 			if (value != NULL)							//must free value after query
 			{
 				free(value);
@@ -387,7 +387,7 @@ test_open_address_hashmap_simple_delete(
  */
 void
 test_open_address_hashmap_duplicate_insert_1(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	hashmap_t map;								//create handler for hashmap
@@ -396,7 +396,7 @@ test_open_address_hashmap_duplicate_insert_1(
 	initialize_hash_map_std_conditions(&map);
 
 	//check to make sure that the write concern is set to wc_insert_unique (default)
-	CuAssertTrue(tc, wc_insert_unique == map.write_concern);
+	PLANCK_UNIT_ASSERT_TRUE(tc, wc_insert_unique == map.write_concern);
 
 	//populate the map to only half capacity to make sure there is room
 	for (i = 0; i<(map.map_size/2); i++)
@@ -404,7 +404,7 @@ test_open_address_hashmap_duplicate_insert_1(
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertTrue(tc, err_ok  	== oah_insert(&map,
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok  	== oah_insert(&map,
 													(ion_key_t)(&i),
 													(ion_value_t)str));
 	}
@@ -416,7 +416,7 @@ test_open_address_hashmap_duplicate_insert_1(
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertTrue(tc, err_duplicate_key  	== oah_insert(&map,
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_duplicate_key  	== oah_insert(&map,
 													(ion_key_t)(&i),
 													(ion_value_t)str));
 	}
@@ -435,7 +435,7 @@ test_open_address_hashmap_duplicate_insert_1(
  */
 void
 test_open_address_hashmap_duplicate_insert_2(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	hashmap_t map;								//create handler for hashmap
@@ -447,7 +447,7 @@ test_open_address_hashmap_duplicate_insert_2(
 	map.write_concern = wc_update;
 
 	//check to make sure that the write concern is set to wc_insert_unique (default)
-	CuAssertTrue(tc, wc_update == map.write_concern);
+	PLANCK_UNIT_ASSERT_TRUE(tc, wc_update == map.write_concern);
 
 	//populate the map to only half capacity to make sure there is room
 	for (i = 0; i<(map.map_size); i++)
@@ -455,7 +455,7 @@ test_open_address_hashmap_duplicate_insert_2(
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertTrue(tc, err_ok  	== oah_insert(&map,
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok  	== oah_insert(&map,
 													(ion_key_t)(&i),
 													(ion_value_t)str));
 	}
@@ -465,11 +465,11 @@ test_open_address_hashmap_duplicate_insert_2(
 	{
 		ion_value_t value;
 		value = (ion_value_t)malloc(10);
-		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, value));
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertStrEquals(tc, (char *)value, str);
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *)value, str);
 		if (value != NULL)							//must free value after query
 		{
 			free(value);
@@ -483,7 +483,7 @@ test_open_address_hashmap_duplicate_insert_2(
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is new",i);
-		CuAssertTrue(tc, err_ok  	== oah_insert(&map,
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok  	== oah_insert(&map,
 													(ion_key_t)(&i),
 													(ion_value_t)str));
 	}
@@ -493,11 +493,11 @@ test_open_address_hashmap_duplicate_insert_2(
 	{
 		ion_value_t value;
 		value = (ion_value_t)malloc(10);
-		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, value));
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is new",i);
-		CuAssertStrEquals(tc, (char *)value, str);
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *)value, str);
 		if (value != NULL)							//must free value after query
 		{
 			free(value);
@@ -514,7 +514,7 @@ test_open_address_hashmap_duplicate_insert_2(
  */
 void
 test_open_address_hashmap_update_1(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	hashmap_t map;								//create handler for hashmap
@@ -526,7 +526,7 @@ test_open_address_hashmap_update_1(
 	map.write_concern = wc_insert_unique;
 
 	//check to make sure that the write concern is set to wc_insert_unique (default)
-	CuAssertTrue(tc, wc_insert_unique == map.write_concern);
+	PLANCK_UNIT_ASSERT_TRUE(tc, wc_insert_unique == map.write_concern);
 
 	//populate the map to only half capacity to make sure there is room
 	for (i = 0; i<(map.map_size); i++)
@@ -534,7 +534,7 @@ test_open_address_hashmap_update_1(
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertTrue(tc, err_ok  	== oah_insert(&map,
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok  	== oah_insert(&map,
 													(ion_key_t)(&i),
 													(ion_value_t)str));
 	}
@@ -544,11 +544,11 @@ test_open_address_hashmap_update_1(
 	{
 		ion_value_t value;
 		value = (ion_value_t)malloc(10);
-		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, value));
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertStrEquals(tc, (char *)value, str);
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *)value, str);
 		if (value != NULL)							//must free value after query
 		{
 			free(value);
@@ -561,7 +561,7 @@ test_open_address_hashmap_update_1(
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is new",i);
-		CuAssertTrue(tc, err_ok  	== oah_update(&map,
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok  	== oah_update(&map,
 													(ion_key_t)(&i),
 													(ion_value_t)str));
 	}
@@ -571,11 +571,11 @@ test_open_address_hashmap_update_1(
 	{
 		ion_value_t value;
 		value = (ion_value_t)malloc(10);
-		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, value));
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is new",i);
-		CuAssertStrEquals(tc, (char *)value, str);
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *)value, str);
 		if (value != NULL)							//must free value after query
 		{
 			free(value);
@@ -592,7 +592,7 @@ test_open_address_hashmap_update_1(
  */
 void
 test_open_address_hashmap_update_2(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	hashmap_t map;								//create handler for hashmap
@@ -604,7 +604,7 @@ test_open_address_hashmap_update_2(
 	map.write_concern = wc_insert_unique;
 
 	//check to make sure that the write concern is set to wc_insert_unique (default)
-	CuAssertTrue(tc, wc_insert_unique == map.write_concern);
+	PLANCK_UNIT_ASSERT_TRUE(tc, wc_insert_unique == map.write_concern);
 
 	//populate the map to only half capacity to make sure there is room
 	for (i = 0; i<(map.map_size/2); i++)
@@ -612,7 +612,7 @@ test_open_address_hashmap_update_2(
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertTrue(tc, err_ok  	== oah_insert(&map,
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok  	== oah_insert(&map,
 													(ion_key_t)(&i),
 													(ion_value_t)str));
 	}
@@ -622,11 +622,11 @@ test_open_address_hashmap_update_2(
 	{
 		ion_value_t value;
 		value = (ion_value_t)malloc(10);
-		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, value));
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertStrEquals(tc, (char *)value, str);
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *)value, str);
 		if (value != NULL)							//must free value after query
 		{
 			free(value);
@@ -639,7 +639,7 @@ test_open_address_hashmap_update_2(
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is new",i);
-		CuAssertTrue(tc, err_ok  	== oah_update(&map,
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok  	== oah_update(&map,
 													(ion_key_t)(&i),
 													(ion_value_t)str));
 	}
@@ -649,11 +649,11 @@ test_open_address_hashmap_update_2(
 	{
 		ion_value_t value;
 		value = (ion_value_t)malloc(10);
-		CuAssertTrue(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, value));
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is new",i);
-		CuAssertStrEquals(tc, (char *)value, str);
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *)value, str);
 		if (value != NULL)
 			{
 				free(value);
@@ -669,7 +669,7 @@ test_open_address_hashmap_update_2(
  */
 void
 test_open_address_hashmap_delete_1(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	hashmap_t map;								//create handler for hashmap
@@ -679,16 +679,16 @@ test_open_address_hashmap_delete_1(
 
 	char str[10];
 	sprintf(str,"%02i is key",i);
-	CuAssertTrue(tc, err_ok  	== oah_insert(&map,
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok  	== oah_insert(&map,
 									(ion_key_t)(&i),
 									(ion_value_t)str));
 
-	CuAssertTrue(tc, err_ok  	== oah_delete(&map, (ion_key_t)(&i)));
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok  	== oah_delete(&map, (ion_key_t)(&i)));
 
 	//Check that value is not there
 	ion_value_t value;
 	value = (ion_value_t)malloc(10);
-	CuAssertTrue(tc, err_item_not_found
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found
 								== oah_query(&map, (ion_key_t)(&i), value));
 	if (value != NULL)
 	{
@@ -696,7 +696,7 @@ test_open_address_hashmap_delete_1(
 	}
 
 	//Check that value can not be deleted if it is not there already
-	CuAssertTrue(tc, err_item_not_found
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found
 								== oah_delete(&map, (ion_key_t)(&i)));
 }
 
@@ -714,7 +714,7 @@ test_open_address_hashmap_delete_1(
  */
 void
 test_open_address_hashmap_delete_2(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	hashmap_t map;								//create handler for hashmap
@@ -728,7 +728,7 @@ test_open_address_hashmap_delete_2(
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertTrue(tc, err_ok  		== oah_insert(&map,
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok  		== oah_insert(&map,
 												(ion_key_t)(&i),
 												(ion_value_t)str));
 	}
@@ -738,13 +738,13 @@ test_open_address_hashmap_delete_2(
 	{
 		ion_value_t value;
 		value = (ion_value_t)malloc(10);
-		CuAssertTrue(tc, err_ok 		== oah_query(&map,
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 		== oah_query(&map,
 												(ion_key_t)&i,
 												value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertStrEquals(tc, (char *)value, str);
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *)value, str);
 		if (value != NULL)							//must free value after query
 		{
 			free(value);
@@ -757,13 +757,13 @@ test_open_address_hashmap_delete_2(
 #if DEBUG
 		printf("Deleting key: %i \n",i);
 #endif
-		CuAssertTrue(tc, err_ok  		== oah_delete(&map,
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok  		== oah_delete(&map,
 												(ion_key_t)(&i)));
 
 		//Check that value is not there
 		ion_value_t value;
 		value = (ion_value_t)malloc(10);
-		CuAssertTrue(tc, err_item_not_found
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found
 										== oah_query(&map,
 												(ion_key_t)(&i),
 												value));
@@ -777,13 +777,13 @@ test_open_address_hashmap_delete_2(
 		{
 			ion_value_t value;
 			value = (ion_value_t)malloc(10);
-			CuAssertTrue(tc, err_ok 	== oah_query(&map,
+			PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 	== oah_query(&map,
 												(ion_key_t)&j,
 												value));
 			//build up expected value
 			char str[10];
 			sprintf(str,"%02i is key",j);
-			CuAssertStrEquals(tc, (char *)value, str);
+			PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *)value, str);
 			if (value != NULL)							//must free value after query
 			{
 				free(value);
@@ -796,7 +796,7 @@ test_open_address_hashmap_delete_2(
 	{
 		ion_value_t value;
 		value = (ion_value_t)malloc(10);
-		CuAssertTrue(tc, err_item_not_found
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found
 										== oah_query(&map,
 												(ion_key_t)&i,
 												value));
@@ -816,7 +816,7 @@ test_open_address_hashmap_delete_2(
  */
 void
 test_open_address_hashmap_capacity(
-	CuTest		*tc
+	planck_unit_test_t	*tc
 )
 {
 	hashmap_t map;								//create handler for hashmap
@@ -830,7 +830,7 @@ test_open_address_hashmap_capacity(
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertTrue(tc, err_ok  		== oah_insert(&map,
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok  		== oah_insert(&map,
 												(ion_key_t)(&i),
 												(ion_value_t)str));
 	}
@@ -842,13 +842,13 @@ test_open_address_hashmap_capacity(
 	for (i = 0; i<map.map_size; i++)
 	{
 
-		CuAssertTrue(tc, err_ok 		== oah_query(&map,
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 		== oah_query(&map,
 												(ion_key_t)&i,
 												value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertStrEquals(tc, (char *)value, str);
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *)value, str);
 
 	}
 
@@ -857,7 +857,7 @@ test_open_address_hashmap_capacity(
 	char str[10];
 	i = 11;
 	sprintf(str,"%02i is key",i);
-	CuAssertTrue(tc, err_max_capacity 	== oah_insert(&map,
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_max_capacity 	== oah_insert(&map,
 												(ion_key_t)(&i),
 												(ion_value_t)str));
 
@@ -869,13 +869,13 @@ test_open_address_hashmap_capacity(
 	for (i = 0; i<map.map_size; i++)
 	{
 
-		CuAssertTrue(tc, err_ok 		== oah_query(&map,
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 		== oah_query(&map,
 												(ion_key_t)&i,
 												value));
 		//build up expected value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		CuAssertStrEquals(tc, (char *)value, str);
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *)value, str);
 	}
 
 	free(value);
@@ -883,25 +883,25 @@ test_open_address_hashmap_capacity(
 
 
 
-CuSuite*
+planck_unit_suite_t*
 open_address_hashmap_getsuite()
 {
-	CuSuite *suite = CuSuiteNew();
+	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	SUITE_ADD_TEST(suite, test_open_address_hashmap_initialize);
-	SUITE_ADD_TEST(suite, test_open_address_hashmap_compute_simple_hash);
-	SUITE_ADD_TEST(suite, test_open_address_hashmap_get_location);
-	SUITE_ADD_TEST(suite, test_open_address_hashmap_find_item_location);
-	SUITE_ADD_TEST(suite, test_open_address_hashmap_simple_insert);
-	SUITE_ADD_TEST(suite, test_open_address_hashmap_simple_insert_and_query);
-	SUITE_ADD_TEST(suite, test_open_address_hashmap_simple_delete);
-	SUITE_ADD_TEST(suite, test_open_address_hashmap_duplicate_insert_1);
-	SUITE_ADD_TEST(suite, test_open_address_hashmap_duplicate_insert_2);
-	SUITE_ADD_TEST(suite, test_open_address_hashmap_update_1);
-	SUITE_ADD_TEST(suite, test_open_address_hashmap_update_2);
-	SUITE_ADD_TEST(suite, test_open_address_hashmap_delete_1);
-	SUITE_ADD_TEST(suite, test_open_address_hashmap_delete_2);
-	SUITE_ADD_TEST(suite, test_open_address_hashmap_capacity);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_initialize);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_compute_simple_hash);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_get_location);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_find_item_location);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_simple_insert);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_simple_insert_and_query);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_simple_delete);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_duplicate_insert_1);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_duplicate_insert_2);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_update_1);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_update_2);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_delete_1);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_delete_2);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_capacity);
 
 	return suite;
 }
@@ -909,14 +909,14 @@ open_address_hashmap_getsuite()
 void
 runalltests_open_address_hash()
 {
-	CuString	*output	= CuStringNew();
-	CuSuite		*suite	= open_address_hashmap_getsuite();
+	//CuString	*output	= CuStringNew();
+	planck_unit_suite_t		*suite	= open_address_hashmap_getsuite();
 
-	CuSuiteRun(suite);
-	CuSuiteSummary(suite, output);
-	CuSuiteDetails(suite, output);
-	printf("%s\n", output->buffer);
+	planck_unit_run_suite(suite);
+	//CuSuiteSummary(suite, output);
+	//CuSuiteDetails(suite, output);
+	//printf("%s\n", output->buffer);
 
-	CuSuiteDelete(suite);
-	CuStringDelete(output);
+	//CuSuiteDelete(suite);
+	//CuStringDelete(output);
 }

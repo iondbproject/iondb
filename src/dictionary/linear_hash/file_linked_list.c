@@ -41,7 +41,11 @@ fll_open
 	filename.child.child_id 	= bucket;
 	fe_encode_child_id(&filename);
 	//allocation space for file name
-	linked_list_file->file_name 			= (char*)malloc(FILENAME_SIZE);
+	//io_printf("%i",FILENAME_SIZE);
+	//io_printf("%p\n",linked_list_file->file_name);
+	//if(linked_list_file->file_name == NULL) {io_printf("NULL\n");}
+	//free(linked_list_file->file_name);
+	linked_list_file->file_name 			= malloc(FILENAME_SIZE);//malloc(strlen(filename.child.child_filename)+1 * sizeof(char));//(char*)malloc(FILENAME_SIZE);
 	strcpy(linked_list_file->file_name,filename.child.child_filename);
 	filename.destroy(&filename);
 
@@ -91,13 +95,12 @@ fll_create(
 	fe_encode_child_id(&filename);
 	//allocation space for file name
 	linked_list_file->file_name 			= (char*)malloc(FILENAME_SIZE);
-	strcpy(linked_list_file->file_name,filename.child.child_filename);
+	strcpy(linked_list_file->file_name,filename.child.child_filename);	//VALGRIND HATES THIS --Heath
 	filename.destroy(&filename);
 
 	linked_list_file->file 					= fopen(linked_list_file->file_name,"w+b");
 														/** NOTE: On windows machines file !!MUST!! be opened with +b to allow for binary mode,
 																						otherwise when 0x0A is encountered 0x0D will be included (\r\n)*/
-
 	//create head node and update
 	ll_file_node_t head_node;
 	head_node.next = END_OF_LIST;
@@ -123,7 +126,7 @@ fll_create(
 }
 
 err_t
-fll_next(
+fll_next(		//HEATH //When this method is called, something seems to overflow; cannot see what though.
 	ll_file_t				*linked_list_file,
 	volatile ll_file_node_t			*ll_node
 )
@@ -212,8 +215,9 @@ fll_insert(
 				DUMP(ll_probe->next,"%i");
 				DUMP(*(int *)node->data,"%i");
 				DUMP(*(int *)ll_probe->data,"%i");
+				DUMP(linked_list_file->compare,"%p");
 #endif
-				if (linked_list_file->compare(linked_list_file,node,ll_probe) < 0)
+				if (linked_list_file->compare(linked_list_file,node,ll_probe) < 0)		//HEATH //NEEDS TO BE INSPECTED FURTHER
 																			/** this is where the node gets inserted*/
 				{
 					node->next = linked_list_file->current;					/** update forward link */
