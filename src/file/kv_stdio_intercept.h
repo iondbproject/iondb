@@ -18,7 +18,7 @@
 #ifndef KV_STDIO_INTERCEPT_H_
 #define KV_STDIO_INTERCEPT_H_
 
-#ifdef ION_ARDUINO
+#ifdef ARDUINO
 
 #ifdef __cplusplus
 extern "C" {
@@ -44,6 +44,6 @@ typedef long fpos_t;
 }
 #endif
 
-#endif /* Clause ION_ARDUINO */
+#endif /* Clause ARDUINO */
 
 #endif /* KV_STDIO_INTERCEPT_H_ */
