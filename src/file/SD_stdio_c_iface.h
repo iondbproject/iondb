@@ -4,7 +4,7 @@
 
 #include "./../kv_system.h"
 
-#ifdef ION_ARDUINO
+#ifdef ARDUINO
 
 #include <Arduino.h>
 
@@ -133,6 +133,6 @@ int SD_File_Exists(char *filepath);
 }
 #endif
 
-#endif /* Clause ION_ARDUINO */
+#endif /* Clause ARDUINO */
 
 #endif

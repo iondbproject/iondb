@@ -11,7 +11,6 @@
 
 #include "kv_io.h"
 
-// #define ION_ARDUINO
 #define ION_USING_MASTER_TABLE 	1
 #define USING_ECLIPSE 			0
 #define DEBUG 					0
@@ -21,17 +20,17 @@
 #define ZERO					0
 
 /* Only if we're on desktop do we want to flush. Otherwise we only do a printf. */
-#ifndef ION_ARDUINO
+#ifndef ARDUINO
 #define DUMP(varname, format) printf("Variable %s = " format "\n", #varname, varname); fflush(stdout)
 #else
 #define DUMP(varname, format) printf("Variable %s = " format "\n", #varname, varname)
-#endif /* Clause ION_ARDUINO */
+#endif /* Clause ARDUINO */
 
-#ifndef ION_ARDUINO
+#ifndef ARDUINO
 #define PANIC(stuff) printf("\t\t%s\n", stuff); fflush(stdout)
 #else
 #define PANIC(stuff) printf("\t\t%s\n", stuff)
-#endif /* Clause ION_ARDUINO */
+#endif /* Clause ARDUINO */
 
 #define IONIZE(something) ({volatile typeof(something) _tmp = something; (ion_key_t) &_tmp; })
 #define NEUTRALIZE(type, something) ( *((type *) something) )
@@ -40,7 +39,7 @@
 
 typedef char status_t;
 
-#ifndef ION_ARDUINO
+#ifndef ARDUINO
 typedef unsigned char byte;
 #endif
 
