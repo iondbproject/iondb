@@ -3,15 +3,73 @@ lib/
 docs/
 .build/
 .settings
-*.o
 *.d
-*.a
 *.swp
 *.back
 *~
-.cproject
-.project
 changetracker.txt
 out.txt
+
+# IDE
+.cproject
+.project
+.settings
+.classpath
+.sass-cache/
+.idea/
 iondb.sublime-project
 iondb.sublime-workspace
+
+# OS generated files
+*/.DS_Store
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+
+# Packages
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/

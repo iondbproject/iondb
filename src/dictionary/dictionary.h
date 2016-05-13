@@ -15,7 +15,7 @@ extern "C" {
 
 #include <stdarg.h>
 #include "./../kv_system.h"
-#include "dicttypes.h"
+#include "dictionary_types.h"
 
 /**
 @brief		Creates as instance of a specific type of dictionary.

@@ -9,9 +9,9 @@ extern "C" {
 #include <time.h>
 #include <stdlib.h>
 #include <limits.h>
-#include "./../../planckunit.h"
+#include "../../planck_unit.h"
 #include "./../../../kv_system.h"
-#include "./../../../dictionary/dicttypes.h"
+#include "../../../dictionary/dictionary_types.h"
 #include "./../../../dictionary/dictionary.h"
 #include "./../../../dictionary/ion_master_table.h"
 

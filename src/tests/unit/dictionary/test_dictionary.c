@@ -8,11 +8,11 @@
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
-#include "./../../planckunit.h"
-#include "./../../../dictionary/dicttypes.h"
+#include "../../planck_unit.h"
+#include "../../../dictionary/dictionary_types.h"
 #include "./../../../dictionary/dictionary.h"
 #include "./../../../dictionary/ion_master_table.h"
-#include "./../../../dictionary/skiplist/slhandler.h"
+#include "../../../dictionary/skiplist/skip_list_handler.h"
 
 void
 test_dictionary_compare_numerics(
