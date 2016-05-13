@@ -7,4 +7,4 @@ set(SOURCE_FILES
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
-target_link_libraries(${PROJECT_NAME} cu_test id_encoder)
+target_link_libraries(${PROJECT_NAME} planck_unit id_encoder)

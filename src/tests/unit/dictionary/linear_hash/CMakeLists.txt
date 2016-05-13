@@ -12,4 +12,4 @@ set(SOURCE_FILES
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
-target_link_libraries(${PROJECT_NAME} cu_test linear_hash)
+target_link_libraries(${PROJECT_NAME} planck_unit linear_hash)

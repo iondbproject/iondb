@@ -92,7 +92,7 @@ planck_unit_print_result_human(
 	planck_unit_test_t		*state
 )
 {
-	if (-1 == state->line)
+	if (PLANCK_UNIT_SUCCESS == state->result)
 	{
 		return;
 	}
@@ -122,7 +122,7 @@ planck_unit_print_postamble_summary(
 	state			= suite->head;
 	while (NULL != state)
 	{
-		if (-1 == state->line)
+		if (PLANCK_UNIT_SUCCESS == state->result)
 		{
 			printf("*");PLANCK_UNIT_FLUSH;
 		}
@@ -136,19 +136,17 @@ planck_unit_print_postamble_summary(
 }
 
 planck_unit_print_funcs_t planck_unit_print_funcs_json =
-(planck_unit_print_funcs_t)
 {
-	.print_result   = planck_unit_print_result_json,
-	.print_preamble = planck_unit_print_preamble_json,
-	.print_postamble= planck_unit_print_postamble_json
+	planck_unit_print_result_json,
+	planck_unit_print_preamble_json,
+	planck_unit_print_postamble_json
 };
 
 planck_unit_print_funcs_t planck_unit_print_funcs_human =
-(planck_unit_print_funcs_t)
 {
-	.print_result   = planck_unit_print_result_human,
-	.print_preamble = planck_unit_print_preamble_none,
-	.print_postamble= planck_unit_print_postamble_summary
+	planck_unit_print_result_human,
+	planck_unit_print_preamble_none,
+	planck_unit_print_postamble_summary
 };
 
 void
@@ -217,10 +215,15 @@ planck_unit_assert_true(
 {
 	if (condition)
 	{
+		/* Do this now, since message pointer gets replaced */
+		if (1 == state->allocated_message) { free(message); }
+
 		line		= -1;
 		file		= "";
 		func		= "";
 		message		= "";
+		/* Message has been freed or replaced, and is no longer allocated */
+		state->allocated_message = 0;
 		state->result	= PLANCK_UNIT_SUCCESS;
 	}
 	else
@@ -522,19 +525,12 @@ planck_unit_run_suite(
 	{
 		state->test_func(state);
 		suite->total_tests++;
-#ifdef DEBUG
-		printf("%p",state->line);
-#endif
-		if (NULL == state->line)		//Do we want this? In the JSON, they look no different than regular success scenarios --Heath //FIXME
-		{
-			state->line = -1;//suite->total_passed++;
-		}
-		if (-1 == state->line)
+		if (PLANCK_UNIT_SUCCESS == state->result)
 		{
 			suite->total_passed++;
 		}
 		suite->print_functions.print_result(state);
-		if (-1 != state->line && 1==state->allocated_message)
+		if (PLANCK_UNIT_FAILURE == state->result && 1==state->allocated_message)
 		{
 			free(state->message);
 		}

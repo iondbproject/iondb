@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
-project(cu_test)
+project(planck_unit)
 
 set(SOURCE_FILES
-    CuTest.h
-    CuTest.c)
+    planck_unit.h
+    planck_unit.c)
 
 add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 

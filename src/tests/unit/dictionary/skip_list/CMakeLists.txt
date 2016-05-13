@@ -9,4 +9,4 @@ set(SOURCE_FILES
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
-target_link_libraries(${PROJECT_NAME} cu_test skip_list)
+target_link_libraries(${PROJECT_NAME} planck_unit skip_list)

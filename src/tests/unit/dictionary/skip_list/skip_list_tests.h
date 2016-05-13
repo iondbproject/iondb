@@ -13,9 +13,9 @@
 #include <string.h>
 #include "./../../../CuTest.h"
 #include "../../../planck_unit.h"
-#include "../../../../dictionary/skiplist/skip_list_types.h"
-#include "../../../../dictionary/skiplist/skip_list.h"
-#include "../../../../dictionary/skiplist/skip_list_handler.h"
+#include "../../../../dictionary/skip_list/skip_list_types.h"
+#include "../../../../dictionary/skip_list/skip_list.h"
+#include "../../../../dictionary/skip_list/skip_list_handler.h"
 #include "../../../../dictionary/dictionary_types.h"
 #include "./../../../../dictionary/dictionary.h"
 

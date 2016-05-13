@@ -39,7 +39,7 @@ extern "C" {
 //#if !(defined (__unix__) || (defined (__APPLE__) && defined (__MACH__)) || defined(WIN32) || defined(_WIN32) || defined(__WIN32) || defined(__CYGWIN))
 /* If we are compiling for the arduino, include the serial interface. */
 #ifdef ARDUINO
-#include "../serial/serial_c_iface.h"
+#include "serial_c_iface.h"
 #endif
 
 /**
@@ -391,6 +391,16 @@ planck_unit_destroy_suite(
 */
 #define PLANCK_UNIT_ASSERT_TRUE(state, condition)\
 if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), (condition), __LINE__, __FILE__, __func__, "condition was false, expected true")) {return;}
+
+/**
+@brief		Assert that a condition is false.
+
+@param  	state
+			The test's state information tracking
+			the result of the test.
+*/
+#define PLANCK_UNIT_ASSERT_FALSE(state)\
+if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), 0, __LINE__, __FILE__, __func__, "asserted as false")) {return;}
 
 /**
 @brief		Assert that two integers are equal.
