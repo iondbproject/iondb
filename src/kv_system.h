@@ -2,7 +2,7 @@
  @todo	Resolve issue between status_t and err_t.  Status_t is a struct that should have
  	 	 and err_t and number of item affected.
  */
-#ifndef KV_SYSTEM_H_
+#if !defined(KV_SYSTEM_H_)
 #define KV_SYSTEM_H_
 
 #include <stdio.h>
@@ -21,13 +21,13 @@
 #define ZERO					0
 
 /* Only if we're on desktop do we want to flush. Otherwise we only do a printf. */
-#ifndef ION_ARDUINO
+#if !defined(ION_ARDUINO)
 #define DUMP(varname, format) printf("Variable %s = " format "\n", #varname, varname); fflush(stdout)
 #else
 #define DUMP(varname, format) printf("Variable %s = " format "\n", #varname, varname)
 #endif /* Clause ION_ARDUINO */
 
-#ifndef ION_ARDUINO
+#if !defined(ION_ARDUINO)
 #define PANIC(stuff) printf("\t\t%s\n", stuff); fflush(stdout)
 #else
 #define PANIC(stuff) printf("\t\t%s\n", stuff)
@@ -40,7 +40,7 @@
 
 typedef char status_t;
 
-#ifndef ION_ARDUINO
+#if !defined(ION_ARDUINO)
 typedef unsigned char byte;
 #endif
 

@@ -5,10 +5,10 @@
  *      Author: workstation
  */
 
-#ifndef FLAT_FILE_H_
+#if !defined(FLAT_FILE_H_)
 #define FLAT_FILE_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -212,7 +212,7 @@ ff_print(
 		record_t	*record
 );*/
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

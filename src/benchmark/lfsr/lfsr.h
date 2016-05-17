@@ -1,7 +1,7 @@
-#ifndef _LFSR_H_
+#if !defined(_LFSR_H_)
 #define _LFSR_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -29,7 +29,7 @@ lfsr_reset(
 	lfsr_t * instance
 );
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

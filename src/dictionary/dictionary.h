@@ -6,10 +6,10 @@
 */
 /******************************************************************************/
 
-#ifndef DICTIONARY_H_
+#if !defined(DICTIONARY_H_)
 #define DICTIONARY_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -283,7 +283,7 @@ dictionary_find(
 	dict_cursor_t 	**cursor
 );
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

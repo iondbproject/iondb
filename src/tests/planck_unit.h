@@ -25,10 +25,10 @@
 */
 /******************************************************************************/
 
-#ifndef PLANCKUNIT_H
+#if !defined(PLANCKUNIT_H)
 #define PLANCKUNIT_H
 
-#ifdef  __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -38,14 +38,14 @@ extern "C" {
 /* If this is any sort of workstation system, don't include Arduino junk. */
 //#if !(defined (__unix__) || (defined (__APPLE__) && defined (__MACH__)) || defined(WIN32) || defined(_WIN32) || defined(__WIN32) || defined(__CYGWIN))
 /* If we are compiling for the arduino, include the serial interface. */
-#ifdef ARDUINO
+#if defined(ARDUINO)
 #include "serial_c_iface.h"
 #endif
 
 /**
 @brief		NULL pointer constant, if not already defined.
 */
-#ifndef NULL
+#if !defined(NULL)
 #define NULL			((void *)0)
 #endif
 
@@ -459,7 +459,7 @@ if (PLANCK_UNIT_FAILURE == planck_unit_assert_str_are_equal((state), (expected),
 #define PLANCK_UNIT_ASSERT_STR_ARE_NOT_EQUAL(state, expected, actual)\
 if (PLANCK_UNIT_FAILURE == planck_unit_assert_str_are_not_equal((state), (expected), (actual), __LINE__, __FILE__, __func__)) {return;}
 
-#ifdef  __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

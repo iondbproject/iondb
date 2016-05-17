@@ -4,10 +4,10 @@
 * Date: Feb. 4th 2015
 */
 
-#ifndef BENCHMARK_H_
+#if !defined(BENCHMARK_H_)
 #define BENCHMARK_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -29,7 +29,7 @@ benchmark_stop(
     void
 );
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

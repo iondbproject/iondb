@@ -1,7 +1,7 @@
-#ifndef BPP_TREE_H_
+#if !defined(BPP_TREE_H_)
 #define BPP_TREE_H_
 
-#ifdef  __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -219,7 +219,7 @@ bErrType bFindPrevKey(bHandleType handle, void *key, eAdrType *rec);
      *   bErrKeyNotFound        key not found
      */
 
-#ifdef  __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

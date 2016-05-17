@@ -6,7 +6,7 @@ ion_fexists(
 	char		*name
 )
 {
-#ifdef ION_ARDUINO
+#if defined(ION_ARDUINO)
 	return (boolean_t)SD_File_Exists(name);
 #else
 	return (-1 != access(name, F_OK));
@@ -18,7 +18,7 @@ ion_fopen(
 	char		*name
 )
 {
-#ifdef ION_ARDUINO
+#if defined(ION_ARDUINO)
 	file_handle_t toret;
 	toret.file = fopen(name,"r+");
 	if(NULL == toret.file)
@@ -43,7 +43,7 @@ ion_fclose(
 	file_handle_t	file
 )
 {
-#ifdef ION_ARDUINO
+#if defined(ION_ARDUINO)
 	fclose(file.file);
 	return err_ok;
 #else
@@ -78,7 +78,7 @@ ion_fseek(
 	int		origin
 )
 {
-#ifdef ION_ARDUINO
+#if defined(ION_ARDUINO)
 	fseek(file.file, seek_to, origin);
 	return err_ok;
 #else
@@ -92,7 +92,7 @@ ion_ftell(
 	file_handle_t	file
 )
 {
-#ifdef ION_ARDUINO
+#if defined(ION_ARDUINO)
 	return ftell(file.file);
 #else
 	return ftell(file);
@@ -122,7 +122,7 @@ ion_fwrite(
 	byte*		to_write
 )
 {
-#ifdef ION_ARDUINO
+#if defined(ION_ARDUINO)
 	if (num_bytes != (fwrite(to_write, num_bytes, 1, file.file) * num_bytes))
 	{
 		return err_file_incomplete_write;
@@ -181,7 +181,7 @@ ion_fread(
 	byte		*write_to
 )
 {
-#ifdef ION_ARDUINO
+#if defined(ION_ARDUINO)
 	if (num_bytes != (fread(write_to, num_bytes, 1, file.file) * num_bytes)) {
 		return err_file_incomplete_read;
 	}
