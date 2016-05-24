@@ -361,9 +361,9 @@ endfunction()
 function(GENERATE_ARDUINO_LIBRARY INPUT_NAME)
     message(STATUS "Generating ${INPUT_NAME}")
     parse_generator_arguments(${INPUT_NAME} INPUT
-                              "NO_AUTOLIBS;MANUAL"                  # Options
-                              "BOARD"                               # One Value Keywords
-                              "SRCS;HDRS;LIBS"                      # Multi Value Keywords
+                              "NO_AUTOLIBS;MANUAL;PROCESSOR"    # Options
+                              "BOARD"                           # One Value Keywords
+                              "SRCS;HDRS;LIBS"                  # Multi Value Keywords
                               ${ARGN})
 
     if(NOT INPUT_BOARD)
@@ -378,7 +378,7 @@ function(GENERATE_ARDUINO_LIBRARY INPUT_NAME)
     set(ALL_SRCS ${INPUT_SRCS} ${INPUT_HDRS})
 
     if(NOT INPUT_MANUAL)
-      setup_arduino_core(CORE_LIB ${INPUT_BOARD})
+      setup_arduino_core(CORE_LIB ${INPUT_BOARD} ${INPUT_PROCESSOR})
     endif()
 
     find_arduino_libraries(TARGET_LIBS "${ALL_SRCS}" "")
@@ -388,14 +388,14 @@ function(GENERATE_ARDUINO_LIBRARY INPUT_NAME)
     endforeach()
 
     if(NOT ${INPUT_NO_AUTOLIBS})
-        setup_arduino_libraries(ALL_LIBS  ${INPUT_BOARD} "${ALL_SRCS}" "" "${LIB_DEP_INCLUDES}" "")
+        setup_arduino_libraries(ALL_LIBS  ${INPUT_BOARD} ${INPUT_PROCESSOR} "${ALL_SRCS}" "" "${LIB_DEP_INCLUDES}" "")
     endif()
 
     list(APPEND ALL_LIBS ${CORE_LIB} ${INPUT_LIBS})
 
     add_library(${INPUT_NAME} ${ALL_SRCS})
 
-    get_arduino_flags(ARDUINO_COMPILE_FLAGS ARDUINO_LINK_FLAGS  ${INPUT_BOARD} ${INPUT_MANUAL})
+    get_arduino_flags(ARDUINO_COMPILE_FLAGS ARDUINO_LINK_FLAGS  ${INPUT_BOARD} ${INPUT_PROCESSOR} ${INPUT_MANUAL})
 
     set_target_properties(${INPUT_NAME} PROPERTIES
                 COMPILE_FLAGS "${ARDUINO_COMPILE_FLAGS} ${COMPILE_FLAGS} ${LIB_DEP_INCLUDES}"
@@ -411,9 +411,9 @@ endfunction()
 function(GENERATE_AVR_LIBRARY INPUT_NAME)
     message(STATUS "Generating ${INPUT_NAME}")
     parse_generator_arguments(${INPUT_NAME} INPUT
-                              "NO_AUTOLIBS;MANUAL"                  # Options
-                              "BOARD"                               # One Value Keywords
-                              "SRCS;HDRS;LIBS"                      # Multi Value Keywords
+                              "NO_AUTOLIBS;MANUAL;PROCESSOR"    # Options
+                              "BOARD"                           # One Value Keywords
+                              "SRCS;HDRS;LIBS"                  # Multi Value Keywords
                               ${ARGN})
 
     if(NOT INPUT_BOARD)
@@ -441,6 +441,7 @@ function(GENERATE_AVR_LIBRARY INPUT_NAME)
         NO_AUTOLIBS
         MANUAL
         BOARD ${INPUT_BOARD}
+        PROCESSOR ${INPUT_PROCESSOR}
         SRCS ${INPUT_SRCS}
         ${INPUT_HDRS}
         ${INPUT_LIBS} )
@@ -454,9 +455,9 @@ endfunction()
 function(GENERATE_ARDUINO_FIRMWARE INPUT_NAME)
     message(STATUS "Generating ${INPUT_NAME}")
     parse_generator_arguments(${INPUT_NAME} INPUT
-                              "NO_AUTOLIBS;MANUAL"                  # Options
-                              "BOARD;PORT;SKETCH;PROGRAMMER"        # One Value Keywords
-                              "SERIAL;SRCS;HDRS;LIBS;ARDLIBS;AFLAGS"  # Multi Value Keywords
+                              "NO_AUTOLIBS;MANUAL;PROCESSOR"            # Options
+                              "BOARD;PORT;SKETCH;PROGRAMMER"            # One Value Keywords
+                              "SERIAL;SRCS;HDRS;LIBS;ARDLIBS;AFLAGS"    # Multi Value Keywords
                               ${ARGN})
 
     if(NOT INPUT_BOARD)
@@ -481,7 +482,7 @@ function(GENERATE_ARDUINO_FIRMWARE INPUT_NAME)
     set(LIB_DEP_INCLUDES)
 
     if(NOT INPUT_MANUAL)
-      setup_arduino_core(CORE_LIB ${INPUT_BOARD})
+      setup_arduino_core(CORE_LIB ${INPUT_BOARD} ${INPUT_PROCESSOR})
     endif()
 
     if(NOT "${INPUT_SKETCH}" STREQUAL "")
@@ -504,7 +505,7 @@ function(GENERATE_ARDUINO_FIRMWARE INPUT_NAME)
     endforeach()
 
     if(NOT INPUT_NO_AUTOLIBS)
-        setup_arduino_libraries(ALL_LIBS  ${INPUT_BOARD} "${ALL_SRCS}" "${INPUT_ARDLIBS}" "${LIB_DEP_INCLUDES}" "")
+        setup_arduino_libraries(ALL_LIBS  ${INPUT_BOARD} ${INPUT_PROCESSOR} "${ALL_SRCS}" "${INPUT_ARDLIBS}" "${LIB_DEP_INCLUDES}" "")
         foreach(LIB_INCLUDES ${ALL_LIBS_INCLUDES})
             arduino_debug_msg("Arduino Library Includes: ${LIB_INCLUDES}")
             set(LIB_DEP_INCLUDES "${LIB_DEP_INCLUDES} ${LIB_INCLUDES}")
@@ -513,10 +514,10 @@ function(GENERATE_ARDUINO_FIRMWARE INPUT_NAME)
 
     list(APPEND ALL_LIBS ${CORE_LIB} ${INPUT_LIBS})
 
-    setup_arduino_target(${INPUT_NAME} ${INPUT_BOARD} "${ALL_SRCS}" "${ALL_LIBS}" "${LIB_DEP_INCLUDES}" "" "${INPUT_MANUAL}")
+    setup_arduino_target(${INPUT_NAME} ${INPUT_BOARD} ${INPUT_PROCESSOR} "${ALL_SRCS}" "${ALL_LIBS}" "${LIB_DEP_INCLUDES}" "" "${INPUT_MANUAL}")
 
     if(INPUT_PORT)
-        setup_arduino_upload(${INPUT_BOARD} ${INPUT_NAME} ${INPUT_PORT} "${INPUT_PROGRAMMER}" "${INPUT_AFLAGS}")
+        setup_arduino_upload(${INPUT_BOARD} ${INPUT_PROCESSOR} ${INPUT_NAME} ${INPUT_PORT} "${INPUT_PROGRAMMER}" "${INPUT_AFLAGS}")
     endif()
 
     if(INPUT_SERIAL)
@@ -533,9 +534,9 @@ function(GENERATE_AVR_FIRMWARE INPUT_NAME)
     # TODO: This is not optimal!!!!
     message(STATUS "Generating ${INPUT_NAME}")
     parse_generator_arguments(${INPUT_NAME} INPUT
-                              "NO_AUTOLIBS;MANUAL"            # Options
-                              "BOARD;PORT;PROGRAMMER"  # One Value Keywords
-                              "SERIAL;SRCS;HDRS;LIBS;AFLAGS"  # Multi Value Keywords
+                              "NO_AUTOLIBS;MANUAL;PROCESSOR"    # Options
+                              "BOARD;PORT;PROGRAMMER"           # One Value Keywords
+                              "SERIAL;SRCS;HDRS;LIBS;AFLAGS"    # Multi Value Keywords
                               ${ARGN})
 
     if(NOT INPUT_BOARD)
@@ -567,6 +568,7 @@ function(GENERATE_AVR_FIRMWARE INPUT_NAME)
         NO_AUTOLIBS
         MANUAL
         BOARD ${INPUT_BOARD}
+        PROCESSOR ${INPUT_PROCESSOR}
         PORT ${INPUT_PORT}
         PROGRAMMER ${INPUT_PROGRAMMER}
         SERIAL ${INPUT_SERIAL}
@@ -583,9 +585,9 @@ endfunction()
 #=============================================================================#
 function(GENERATE_ARDUINO_EXAMPLE INPUT_NAME)
     parse_generator_arguments(${INPUT_NAME} INPUT
-                              ""                                       # Options
-                              "LIBRARY;EXAMPLE;BOARD;PORT;PROGRAMMER"  # One Value Keywords
-                              "SERIAL;AFLAGS"                          # Multi Value Keywords
+                              "PROCESSOR"                               # Options
+                              "LIBRARY;EXAMPLE;BOARD;PORT;PROGRAMMER"   # One Value Keywords
+                              "SERIAL;AFLAGS"                           # Multi Value Keywords
                               ${ARGN})
 
 
@@ -609,7 +611,7 @@ function(GENERATE_ARDUINO_EXAMPLE INPUT_NAME)
     set(ALL_LIBS)
     set(ALL_SRCS)
 
-    setup_arduino_core(CORE_LIB ${INPUT_BOARD})
+    setup_arduino_core(CORE_LIB ${INPUT_BOARD} ${INPUT_PROCESSOR})
 
     setup_arduino_example("${INPUT_NAME}" "${INPUT_LIBRARY}" "${INPUT_EXAMPLE}" ALL_SRCS)
 
@@ -623,14 +625,14 @@ function(GENERATE_ARDUINO_EXAMPLE INPUT_NAME)
         set(LIB_DEP_INCLUDES "${LIB_DEP_INCLUDES} -I\"${LIB_DEP}\"")
     endforeach()
 
-    setup_arduino_libraries(ALL_LIBS ${INPUT_BOARD} "${ALL_SRCS}" "" "${LIB_DEP_INCLUDES}" "")
+    setup_arduino_libraries(ALL_LIBS ${INPUT_BOARD} ${INPUT_PROCESSOR} "${ALL_SRCS}" "" "${LIB_DEP_INCLUDES}" "")
 
     list(APPEND ALL_LIBS ${CORE_LIB} ${INPUT_LIBS})
 
-    setup_arduino_target(${INPUT_NAME} ${INPUT_BOARD}  "${ALL_SRCS}" "${ALL_LIBS}" "${LIB_DEP_INCLUDES}" "" FALSE)
+    setup_arduino_target(${INPUT_NAME} ${INPUT_BOARD} ${INPUT_PROCESSOR} "${ALL_SRCS}" "${ALL_LIBS}" "${LIB_DEP_INCLUDES}" "" FALSE)
 
     if(INPUT_PORT)
-        setup_arduino_upload(${INPUT_BOARD} ${INPUT_NAME} ${INPUT_PORT} "${INPUT_PROGRAMMER}" "${INPUT_AFLAGS}")
+        setup_arduino_upload(${INPUT_BOARD} ${INPUT_PROCESSOR} ${INPUT_NAME} ${INPUT_PORT} "${INPUT_PROGRAMMER}" "${INPUT_AFLAGS}")
     endif()
 
     if(INPUT_SERIAL)
@@ -794,7 +796,10 @@ endfunction()
 # Configures the the build settings for the specified Arduino Board.
 #
 #=============================================================================#
-function(get_arduino_flags COMPILE_FLAGS_VAR LINK_FLAGS_VAR BOARD_ID MANUAL)
+function(get_arduino_flags COMPILE_FLAGS_VAR LINK_FLAGS_VAR BOARD_ID PROCESSOR MANUAL)
+    if(PROCESSOR)
+        set(ARDUINO_CPUMENU ".menu.cpu.${PROCESSOR}")
+    endif()
 
     set(BOARD_CORE ${${BOARD_ID}.build.core})
     if(BOARD_CORE)
@@ -864,16 +869,17 @@ endfunction()
 #=============================================================================#
 # [PRIVATE/INTERNAL]
 #
-# setup_arduino_core(VAR_NAME BOARD_ID)
+# setup_arduino_core(VAR_NAME BOARD_ID PROCESSOR)
 #
 #        VAR_NAME    - Variable name that will hold the generated library name
 #        BOARD_ID    - Arduino board id
+#        PROCESSOR   - CPU type
 #
 # Creates the Arduino Core library for the specified board,
 # each board gets it's own version of the library.
 #
 #=============================================================================#
-function(setup_arduino_core VAR_NAME BOARD_ID)
+function(setup_arduino_core VAR_NAME BOARD_ID PROCESSOR)
     set(CORE_LIB_NAME ${BOARD_ID}_CORE)
     set(BOARD_CORE ${${BOARD_ID}.build.core})
     if(BOARD_CORE)
@@ -883,7 +889,7 @@ function(setup_arduino_core VAR_NAME BOARD_ID)
             # Debian/Ubuntu fix
             list(REMOVE_ITEM CORE_SRCS "${BOARD_CORE_PATH}/main.cxx")
             add_library(${CORE_LIB_NAME} ${CORE_SRCS})
-            get_arduino_flags(ARDUINO_COMPILE_FLAGS ARDUINO_LINK_FLAGS ${BOARD_ID} FALSE)
+            get_arduino_flags(ARDUINO_COMPILE_FLAGS ARDUINO_LINK_FLAGS ${BOARD_ID} ${PROCESSOR} FALSE)
             set_target_properties(${CORE_LIB_NAME} PROPERTIES
                 COMPILE_FLAGS "${ARDUINO_COMPILE_FLAGS}"
                 LINK_FLAGS "${ARDUINO_LINK_FLAGS}")
@@ -929,7 +935,7 @@ function(find_arduino_libraries VAR_NAME SRCS ARDLIBS)
 
         # Skipping generated files. They are, probably, not exist yet.
         # TODO: Maybe it's possible to skip only really nonexisting files,
-        # but then it wiil be less deterministic.
+        # but then it will be less deterministic.
         get_source_file_property(_srcfile_generated ${SRC} GENERATED)
         # Workaround for sketches, which are marked as generated
         get_source_file_property(_sketch_generated ${SRC} GENERATED_SKETCH)
@@ -942,16 +948,29 @@ function(find_arduino_libraries VAR_NAME SRCS ARDLIBS)
             endif()
             file(STRINGS ${SRC} SRC_CONTENTS)
 
-            foreach(LIBNAME ${ARDLIBS})
+            foreach(LIBNAME ${ARDLIBS}) # TODO: Duplicate ARDLIBS
                 list(APPEND SRC_CONTENTS "#include <${LIBNAME}.h>")
             endforeach()
 
+            set(SRC_DEPENDS)
+            get_filename_component(SRC_DIR "${SRC}" DIRECTORY)
             foreach(SRC_LINE ${SRC_CONTENTS})
                 if("#${SRC_LINE}#" MATCHES "^#[ \t]*#[ \t]*include[ \t]*[<\"]([^>\"]*)[>\"]#")
+#                    set(file "${CMAKE_MATCH_1}")
                     get_filename_component(INCLUDE_NAME ${CMAKE_MATCH_1} NAME_WE)
                     get_property(LIBRARY_SEARCH_PATH
                                  DIRECTORY     # Property Scope
                                  PROPERTY LINK_DIRECTORIES)
+
+#                    foreach(LIB_SEARCH_PATH ${SRC_DIR} ${LIBRARY_SEARCH_PATH} ${ARDUINO_LIBRARIES_PATH}  ${ARDUINO_EXTRA_LIBRARIES_PATH})
+#                        file(GLOB_RECURSE paths ${LIB_SEARCH_PATH}/${CMAKE_MATCH_1})
+#                        if("${paths}" STRGREATER "")
+#                            list(GET paths 0 path)
+#                            get_filename_component(path "${path}" DIRECTORY)
+#                            list(APPEND ARDUINO_LIBS ${path})
+#                            break()
+#                        endif()
+#                    endforeach()
                     foreach(LIB_SEARCH_PATH ${include_dirs} ${LIBRARY_SEARCH_PATH} ${ARDUINO_LIBRARIES_PATH} ${${ARDUINO_PLATFORM}_LIBRARIES_PATH} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/libraries ${ARDUINO_EXTRA_LIBRARIES_PATH})
                         if(EXISTS ${LIB_SEARCH_PATH}/${INCLUDE_NAME}/${CMAKE_MATCH_1})
                             list(APPEND ARDUINO_LIBS ${LIB_SEARCH_PATH}/${INCLUDE_NAME})
@@ -963,12 +982,14 @@ function(find_arduino_libraries VAR_NAME SRCS ARDLIBS)
                         endif()
                         get_source_file_property(_header_generated ${LIB_SEARCH_PATH}/${CMAKE_MATCH_1} GENERATED)
                         if((EXISTS ${LIB_SEARCH_PATH}/${CMAKE_MATCH_1}) OR ${_header_generated})
+                            list(APPEND SRC_DEPENDS "${LIB_SEARCH_PATH}/${CMAKE_MATCH_1}")
                             list(APPEND ARDUINO_LIBS ${LIB_SEARCH_PATH}/${INCLUDE_NAME})
                             break()
                         endif()
                     endforeach()
                 endif()
             endforeach()
+            set_source_files_properties("${SRC}" PROPERTIES OBJECT_DEPENDS "${SRC_DEPENDS}")
         endif()
     endforeach()
     if(ARDUINO_LIBS)
@@ -1007,7 +1028,7 @@ set(LiquidCrystal_RECURSE True)
 set(TFT_RECURSE True)
 set(WiFi_RECURSE True)
 set(Robot_Control_RECURSE True)
-function(setup_arduino_library VAR_NAME BOARD_ID LIB_PATH COMPILE_FLAGS LINK_FLAGS)
+function(setup_arduino_library VAR_NAME BOARD_ID PROCESSOR LIB_PATH COMPILE_FLAGS LINK_FLAGS)
     set(LIB_TARGETS)
     set(LIB_INCLUDES)
 
@@ -1030,7 +1051,7 @@ function(setup_arduino_library VAR_NAME BOARD_ID LIB_PATH COMPILE_FLAGS LINK_FLA
             include_directories(${LIB_PATH}/src)
             include_directories(${LIB_PATH}/utility)
 
-            get_arduino_flags(ARDUINO_COMPILE_FLAGS ARDUINO_LINK_FLAGS ${BOARD_ID} FALSE)
+            get_arduino_flags(ARDUINO_COMPILE_FLAGS ARDUINO_LINK_FLAGS ${BOARD_ID} ${PROCESSOR} FALSE)
 
             find_arduino_libraries(LIB_DEPS "${LIB_SRCS}" "")
 
@@ -1039,7 +1060,7 @@ function(setup_arduino_library VAR_NAME BOARD_ID LIB_PATH COMPILE_FLAGS LINK_FLA
                   message(STATUS "Found library ${LIB_NAME} needs ${DEP_LIB_SRCS}")
 		endif()
 
-                setup_arduino_library(DEP_LIB_SRCS ${BOARD_ID} ${LIB_DEP} "${COMPILE_FLAGS}" "${LINK_FLAGS}")
+                setup_arduino_library(DEP_LIB_SRCS ${BOARD_ID} ${PROCESSOR} ${LIB_DEP} "${COMPILE_FLAGS}" "${LINK_FLAGS}")
                 # Do not link to this library. DEP_LIB_SRCS will always be only one entry
                 # if we are looking at the same library.
                 if(NOT DEP_LIB_SRCS STREQUAL TARGET_LIB_NAME)
@@ -1086,14 +1107,14 @@ endfunction()
 # Finds and creates all dependency libraries based on sources.
 #
 #=============================================================================#
-function(setup_arduino_libraries VAR_NAME BOARD_ID SRCS ARDLIBS COMPILE_FLAGS LINK_FLAGS)
+function(setup_arduino_libraries VAR_NAME BOARD_ID PROCESSOR SRCS ARDLIBS COMPILE_FLAGS LINK_FLAGS)
     set(LIB_TARGETS)
     set(LIB_INCLUDES)
 
     find_arduino_libraries(TARGET_LIBS "${SRCS}" ARDLIBS)
     foreach(TARGET_LIB ${TARGET_LIBS})
         # Create static library instead of returning sources
-        setup_arduino_library(LIB_DEPS ${BOARD_ID} ${TARGET_LIB} "${COMPILE_FLAGS}" "${LINK_FLAGS}")
+        setup_arduino_library(LIB_DEPS ${BOARD_ID} ${PROCESSOR} ${TARGET_LIB} "${COMPILE_FLAGS}" "${LINK_FLAGS}")
         list(APPEND LIB_TARGETS ${LIB_DEPS})
         list(APPEND LIB_INCLUDES ${LIB_DEPS_INCLUDES})
     endforeach()
@@ -1119,16 +1140,27 @@ endfunction()
 # Creates an Arduino firmware target.
 #
 #=============================================================================#
-function(setup_arduino_target TARGET_NAME BOARD_ID ALL_SRCS ALL_LIBS COMPILE_FLAGS LINK_FLAGS MANUAL)
+function(setup_arduino_target TARGET_NAME BOARD_ID PROCESSOR ALL_SRCS ALL_LIBS COMPILE_FLAGS LINK_FLAGS MANUAL)
+    if(PROCESSOR)
+        set(ARDUINO_CPUMENU ".menu.cpu.${PROCESSOR}")
+    endif()
 
     add_executable(${TARGET_NAME} ${ALL_SRCS})
     set_target_properties(${TARGET_NAME} PROPERTIES SUFFIX ".elf")
 
-    get_arduino_flags(ARDUINO_COMPILE_FLAGS ARDUINO_LINK_FLAGS  ${BOARD_ID} ${MANUAL})
+    get_arduino_flags(ARDUINO_COMPILE_FLAGS ARDUINO_LINK_FLAGS  ${BOARD_ID} ${PROCESSOR} ${MANUAL})
 
     set_target_properties(${TARGET_NAME} PROPERTIES
                 COMPILE_FLAGS "${ARDUINO_COMPILE_FLAGS} ${COMPILE_FLAGS}"
                 LINK_FLAGS "${ARDUINO_LINK_FLAGS} ${LINK_FLAGS}")
+
+#        list(REMOVE_ITEM ALL_LIBS mega_SPI)
+#    list(REMOVE_ITEM ALL_LIBS uno_SD)
+#    list(REMOVE_ITEM ALL_LIBS uno_CORE)
+
+    foreach(L ${ALL_LIBS})
+        message(${L})
+    endforeach()
     target_link_libraries(${TARGET_NAME} ${ALL_LIBS} "-lc -lm")
 
     if(NOT EXECUTABLE_OUTPUT_PATH)
@@ -1190,13 +1222,13 @@ endfunction()
 # Create an upload target (${TARGET_NAME}-upload) for the specified Arduino target.
 #
 #=============================================================================#
-function(setup_arduino_upload BOARD_ID TARGET_NAME PORT PROGRAMMER_ID AVRDUDE_FLAGS)
-    setup_arduino_bootloader_upload(${TARGET_NAME} ${BOARD_ID} ${PORT} "${AVRDUDE_FLAGS}")
+function(setup_arduino_upload BOARD_ID PROCESSOR TARGET_NAME PORT PROGRAMMER_ID AVRDUDE_FLAGS)
+    setup_arduino_bootloader_upload(${TARGET_NAME} ${BOARD_ID} ${PROCESSOR} ${PORT} "${AVRDUDE_FLAGS}")
 
     # Add programmer support if defined
     if(PROGRAMMER_ID AND ${PROGRAMMER_ID}.protocol)
-        setup_arduino_programmer_burn(${TARGET_NAME} ${BOARD_ID} ${PROGRAMMER_ID} ${PORT} "${AVRDUDE_FLAGS}")
-        setup_arduino_bootloader_burn(${TARGET_NAME} ${BOARD_ID} ${PROGRAMMER_ID} ${PORT} "${AVRDUDE_FLAGS}")
+        setup_arduino_programmer_burn(${TARGET_NAME} ${BOARD_ID} ${PROCESSOR} ${PROGRAMMER_ID} ${PORT} "${AVRDUDE_FLAGS}")
+        setup_arduino_bootloader_burn(${TARGET_NAME} ${BOARD_ID} ${PROCESSOR} ${PROGRAMMER_ID} ${PORT} "${AVRDUDE_FLAGS}")
     endif()
 endfunction()
 
@@ -1216,11 +1248,11 @@ endfunction()
 # The target for uploading the firmware is ${TARGET_NAME}-upload .
 #
 #=============================================================================#
-function(setup_arduino_bootloader_upload TARGET_NAME BOARD_ID PORT AVRDUDE_FLAGS)
+function(setup_arduino_bootloader_upload TARGET_NAME BOARD_ID PROCESSOR PORT AVRDUDE_FLAGS)
     set(UPLOAD_TARGET ${TARGET_NAME}-upload)
     set(AVRDUDE_ARGS)
 
-    setup_arduino_bootloader_args(${BOARD_ID} ${TARGET_NAME} ${PORT} "${AVRDUDE_FLAGS}" AVRDUDE_ARGS)
+    setup_arduino_bootloader_args(${BOARD_ID} ${PROCESSOR} ${TARGET_NAME} ${PORT} "${AVRDUDE_FLAGS}" AVRDUDE_ARGS)
 
     if(NOT AVRDUDE_ARGS)
         message("Could not generate default avrdude bootloader args, aborting!")
@@ -1263,12 +1295,12 @@ endfunction()
 # The target for burning the firmware is ${TARGET_NAME}-burn .
 #
 #=============================================================================#
-function(setup_arduino_programmer_burn TARGET_NAME BOARD_ID PROGRAMMER PORT AVRDUDE_FLAGS)
+function(setup_arduino_programmer_burn TARGET_NAME BOARD_ID PROCESSOR PROGRAMMER PORT AVRDUDE_FLAGS)
     set(PROGRAMMER_TARGET ${TARGET_NAME}-burn)
 
     set(AVRDUDE_ARGS)
 
-    setup_arduino_programmer_args(${BOARD_ID} ${PROGRAMMER} ${TARGET_NAME} ${PORT} "${AVRDUDE_FLAGS}" AVRDUDE_ARGS)
+    setup_arduino_programmer_args(${BOARD_ID} ${PROCESSOR} ${PROGRAMMER} ${TARGET_NAME} ${PORT} "${AVRDUDE_FLAGS}" AVRDUDE_ARGS)
 
     if(NOT AVRDUDE_ARGS)
         message("Could not generate default avrdude programmer args, aborting!")
@@ -1304,12 +1336,16 @@ endfunction()
 # The target for burning the bootloader is ${TARGET_NAME}-burn-bootloader
 #
 #=============================================================================#
-function(setup_arduino_bootloader_burn TARGET_NAME BOARD_ID PROGRAMMER PORT AVRDUDE_FLAGS)
+function(setup_arduino_bootloader_burn TARGET_NAME BOARD_ID PROCESSOR PROGRAMMER PORT AVRDUDE_FLAGS)
+    if(PROCESSOR)
+        set(ARDUINO_CPUMENU ".menu.cpu.${PROCESSOR}")
+    endif()
+
     set(BOOTLOADER_TARGET ${TARGET_NAME}-burn-bootloader)
 
     set(AVRDUDE_ARGS)
 
-    setup_arduino_programmer_args(${BOARD_ID} ${PROGRAMMER} ${TARGET_NAME} ${PORT} "${AVRDUDE_FLAGS}" AVRDUDE_ARGS)
+    setup_arduino_programmer_args(${BOARD_ID} ${PROCESSOR} ${PROGRAMMER} ${TARGET_NAME} ${PORT} "${AVRDUDE_FLAGS}" AVRDUDE_ARGS)
 
     if(NOT AVRDUDE_ARGS)
         message("Could not generate default avrdude programmer args, aborting!")
@@ -1369,7 +1405,11 @@ endfunction()
 #
 # Sets up default avrdude settings for burning firmware via a programmer.
 #=============================================================================#
-function(setup_arduino_programmer_args BOARD_ID PROGRAMMER TARGET_NAME PORT AVRDUDE_FLAGS OUTPUT_VAR)
+function(setup_arduino_programmer_args BOARD_ID PROCESSOR PROGRAMMER TARGET_NAME PORT AVRDUDE_FLAGS OUTPUT_VAR)
+    if(PROCESSOR)
+        set(ARDUINO_CPUMENU ".menu.cpu.${PROCESSOR}")
+    endif()
+
     set(AVRDUDE_ARGS ${${OUTPUT_VAR}})
 
     if(NOT AVRDUDE_FLAGS)
@@ -1422,7 +1462,11 @@ endfunction()
 #
 # Sets up default avrdude settings for uploading firmware via the bootloader.
 #=============================================================================#
-function(setup_arduino_bootloader_args BOARD_ID TARGET_NAME PORT AVRDUDE_FLAGS OUTPUT_VAR)
+function(setup_arduino_bootloader_args BOARD_ID PROCESSOR TARGET_NAME PORT AVRDUDE_FLAGS OUTPUT_VAR)
+    if(PROCESSOR)
+        set(ARDUINO_CPUMENU ".menu.cpu.${PROCESSOR}")
+    endif()
+
     set(AVRDUDE_ARGS ${${OUTPUT_VAR}})
 
     if(NOT AVRDUDE_FLAGS)
@@ -1785,7 +1829,7 @@ function(SETUP_ARDUINO_SKETCH TARGET_NAME SKETCH_PATH OUTPUT_VAR)
     if(EXISTS "${SKETCH_PATH}")
         set(SKETCH_CPP  ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}_${SKETCH_NAME}.cpp)
 
-        if (IS_DIRECTORY "${SKETCH_PATH}")
+        if(IS_DIRECTORY "${SKETCH_PATH}")
             # Sketch directory specified, try to find main sketch...
             set(MAIN_SKETCH ${SKETCH_PATH}/${SKETCH_NAME})
 
@@ -1797,7 +1841,7 @@ function(SETUP_ARDUINO_SKETCH TARGET_NAME SKETCH_PATH OUTPUT_VAR)
                 message(FATAL_ERROR "Could not find main sketch (${SKETCH_NAME}.pde or ${SKETCH_NAME}.ino) at ${SKETCH_PATH}! Please specify the main sketch file path instead of directory.")
             endif()
         else()
-            # Sektch file specified, assuming parent directory as sketch directory
+            # Sketch file specified, assuming parent directory as sketch directory
             set(MAIN_SKETCH ${SKETCH_PATH})
             get_filename_component(SKETCH_PATH "${SKETCH_PATH}" PATH)
         endif()
@@ -1805,12 +1849,8 @@ function(SETUP_ARDUINO_SKETCH TARGET_NAME SKETCH_PATH OUTPUT_VAR)
 
         # Find all sketch files
         file(GLOB SKETCH_SOURCES ${SKETCH_PATH}/*.pde ${SKETCH_PATH}/*.ino)
-        set(ALL_SRCS ${SKETCH_SOURCES})
-
         list(REMOVE_ITEM SKETCH_SOURCES ${MAIN_SKETCH})
         list(SORT SKETCH_SOURCES)
-
-
 
         generate_cpp_from_sketch("${MAIN_SKETCH}" "${SKETCH_SOURCES}" "${SKETCH_CPP}")
 

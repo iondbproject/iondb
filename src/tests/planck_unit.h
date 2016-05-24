@@ -39,7 +39,7 @@ extern "C" {
 //#if !(defined (__unix__) || (defined (__APPLE__) && defined (__MACH__)) || defined(WIN32) || defined(_WIN32) || defined(__WIN32) || defined(__CYGWIN))
 /* If we are compiling for the arduino, include the serial interface. */
 #ifdef ARDUINO
-#include "serial_c_iface.h"
+#include "../serial/serial_c_iface.h"
 #endif
 
 /**

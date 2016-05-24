@@ -1,13 +1,16 @@
 #include <SPI.h>
 #include <SD.h>
-#include "test_bpp_tree_handler.h"
+
+void
+runalltests_file_encode_id(
+);
 
 void
 setup(
 )
 {
     Serial.begin(9600);
-    run_all_tests_bpptreehandler();
+    runalltests_file_encode_id();
     Serial.end();
 }
 
