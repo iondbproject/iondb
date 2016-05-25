@@ -384,11 +384,15 @@ function(GENERATE_ARDUINO_LIBRARY INPUT_NAME)
     find_arduino_libraries(TARGET_LIBS "${ALL_SRCS}" "")
     set(LIB_DEP_INCLUDES)
     foreach(LIB_DEP ${TARGET_LIBS})
-        set(LIB_DEP_INCLUDES "${LIB_DEP_INCLUDES} -I\"${LIB_DEP}\"")
+        set(LIB_DEP_INCLUDES "${LIB_DEP_INCLUDES} -I\"${LIB_DEP}\" -I\"${LIB_DEP}/src\"")
     endforeach()
 
     if(NOT ${INPUT_NO_AUTOLIBS})
         setup_arduino_libraries(ALL_LIBS  ${INPUT_BOARD} ${INPUT_PROCESSOR} "${ALL_SRCS}" "" "${LIB_DEP_INCLUDES}" "")
+        foreach(LIB_INCLUDES ${ALL_LIBS_INCLUDES})
+            arduino_debug_msg("Arduino Library Includes: ${LIB_INCLUDES}")
+            set(LIB_DEP_INCLUDES "${LIB_DEP_INCLUDES} ${LIB_INCLUDES}")
+        endforeach()
     endif()
 
     list(APPEND ALL_LIBS ${CORE_LIB} ${INPUT_LIBS})
@@ -397,8 +401,10 @@ function(GENERATE_ARDUINO_LIBRARY INPUT_NAME)
 
     get_arduino_flags(ARDUINO_COMPILE_FLAGS ARDUINO_LINK_FLAGS  ${INPUT_BOARD} ${INPUT_PROCESSOR} ${INPUT_MANUAL})
 
+    set(ARDUINO_LINK_FLAGS) #TODO: Is this necessary?
+    set(LINK_FLAGS)
     set_target_properties(${INPUT_NAME} PROPERTIES
-                COMPILE_FLAGS "${ARDUINO_COMPILE_FLAGS} ${COMPILE_FLAGS} ${LIB_DEP_INCLUDES}"
+                COMPILE_FLAGS "${ARDUINO_COMPILE_FLAGS} ${LIB_DEP_INCLUDES}" # TODO: ${COMPILE_FLAGS}
                 LINK_FLAGS "${ARDUINO_LINK_FLAGS} ${LINK_FLAGS}")
 
     target_link_libraries(${INPUT_NAME} ${ALL_LIBS} "-lc -lm")
@@ -956,21 +962,11 @@ function(find_arduino_libraries VAR_NAME SRCS ARDLIBS)
             get_filename_component(SRC_DIR "${SRC}" DIRECTORY)
             foreach(SRC_LINE ${SRC_CONTENTS})
                 if("#${SRC_LINE}#" MATCHES "^#[ \t]*#[ \t]*include[ \t]*[<\"]([^>\"]*)[>\"]#")
-#                    set(file "${CMAKE_MATCH_1}")
                     get_filename_component(INCLUDE_NAME ${CMAKE_MATCH_1} NAME_WE)
                     get_property(LIBRARY_SEARCH_PATH
                                  DIRECTORY     # Property Scope
                                  PROPERTY LINK_DIRECTORIES)
 
-#                    foreach(LIB_SEARCH_PATH ${SRC_DIR} ${LIBRARY_SEARCH_PATH} ${ARDUINO_LIBRARIES_PATH}  ${ARDUINO_EXTRA_LIBRARIES_PATH})
-#                        file(GLOB_RECURSE paths ${LIB_SEARCH_PATH}/${CMAKE_MATCH_1})
-#                        if("${paths}" STRGREATER "")
-#                            list(GET paths 0 path)
-#                            get_filename_component(path "${path}" DIRECTORY)
-#                            list(APPEND ARDUINO_LIBS ${path})
-#                            break()
-#                        endif()
-#                    endforeach()
                     foreach(LIB_SEARCH_PATH ${include_dirs} ${LIBRARY_SEARCH_PATH} ${ARDUINO_LIBRARIES_PATH} ${${ARDUINO_PLATFORM}_LIBRARIES_PATH} ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/libraries ${ARDUINO_EXTRA_LIBRARIES_PATH})
                         if(EXISTS ${LIB_SEARCH_PATH}/${INCLUDE_NAME}/${CMAKE_MATCH_1})
                             list(APPEND ARDUINO_LIBS ${LIB_SEARCH_PATH}/${INCLUDE_NAME})
@@ -995,6 +991,7 @@ function(find_arduino_libraries VAR_NAME SRCS ARDLIBS)
     if(ARDUINO_LIBS)
         list(REMOVE_DUPLICATES ARDUINO_LIBS)
     endif()
+
     set(${VAR_NAME} ${ARDUINO_LIBS} PARENT_SCOPE)
 endfunction()
 
@@ -1056,9 +1053,9 @@ function(setup_arduino_library VAR_NAME BOARD_ID PROCESSOR LIB_PATH COMPILE_FLAG
             find_arduino_libraries(LIB_DEPS "${LIB_SRCS}" "")
 
             foreach(LIB_DEP ${LIB_DEPS})
-	        if(NOT DEP_LIB_SRCS STREQUAL TARGET_LIB_NAME AND DEP_LIB_SRCS)
-                  message(STATUS "Found library ${LIB_NAME} needs ${DEP_LIB_SRCS}")
-		endif()
+	            if(NOT DEP_LIB_SRCS STREQUAL TARGET_LIB_NAME AND DEP_LIB_SRCS)
+                    message("Found library ${LIB_NAME} needs ${DEP_LIB_SRCS}")
+		        endif()
 
                 setup_arduino_library(DEP_LIB_SRCS ${BOARD_ID} ${PROCESSOR} ${LIB_DEP} "${COMPILE_FLAGS}" "${LINK_FLAGS}")
                 # Do not link to this library. DEP_LIB_SRCS will always be only one entry
@@ -1154,13 +1151,6 @@ function(setup_arduino_target TARGET_NAME BOARD_ID PROCESSOR ALL_SRCS ALL_LIBS C
                 COMPILE_FLAGS "${ARDUINO_COMPILE_FLAGS} ${COMPILE_FLAGS}"
                 LINK_FLAGS "${ARDUINO_LINK_FLAGS} ${LINK_FLAGS}")
 
-#        list(REMOVE_ITEM ALL_LIBS mega_SPI)
-#    list(REMOVE_ITEM ALL_LIBS uno_SD)
-#    list(REMOVE_ITEM ALL_LIBS uno_CORE)
-
-    foreach(L ${ALL_LIBS})
-        message(${L})
-    endforeach()
     target_link_libraries(${TARGET_NAME} ${ALL_LIBS} "-lc -lm")
 
     if(NOT EXECUTABLE_OUTPUT_PATH)

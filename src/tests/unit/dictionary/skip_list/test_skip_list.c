@@ -7,6 +7,7 @@
 /******************************************************************************/
 
 #include "skip_list_tests.h"
+#include "test_skip_list.h"
 
 /**
 @brief 		Helper function that creates a skip_list based on the given

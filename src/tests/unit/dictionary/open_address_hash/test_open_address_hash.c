@@ -13,6 +13,7 @@
 #include "../../../../dictionary/open_address_hash/open_address_hash.h"
 #include "../../../../dictionary/dictionary_types.h"
 #include "./../../../../dictionary/dictionary.h"
+#include "test_open_address_hash.h"
 
 #define MAX_HASH_TEST 100
 #define STD_MAP_SIZE 10

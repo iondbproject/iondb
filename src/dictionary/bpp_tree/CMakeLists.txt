@@ -26,7 +26,10 @@ if(UseArduino)
         ${SOURCE_FILES}
         ../../file/kv_stdio_intercept.h
         ../../file/SD_stdio_c_iface.h
-        ../../file/SD_stdio_c_iface.cpp)
+        ../../file/SD_stdio_c_iface.cpp
+        ../../serial/serial_c_iface.h
+        ../../serial/serial_c_iface.cpp
+        ../../serial/printf_redirect.h)
 
     generate_arduino_library(${PROJECT_NAME})
 else()
