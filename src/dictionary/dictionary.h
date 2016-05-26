@@ -253,16 +253,16 @@ dictionary_build_predicate(
 @brief Destroys an equality predicate.
 */
 void
-dictonary_destroy_predicate_equality(
-	predicate_t		**predicate
+dictionary_destroy_predicate_equality(
+		predicate_t **predicate
 );
 
 /**
 @brief Destroys a range predicate.
 */
 void
-dictonary_destroy_predicate_range(
-	predicate_t		**predicate
+dictionary_destroy_predicate_range(
+		predicate_t **predicate
 );
 
 /**
