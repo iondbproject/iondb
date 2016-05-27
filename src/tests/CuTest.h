@@ -1,4 +1,4 @@
-#ifndef CU_TEST_H
+#if !defined(CU_TEST_H)
 #define CU_TEST_H
 
 #include <setjmp.h>

@@ -7,10 +7,10 @@
 */
 /******************************************************************************/
 
-#ifndef LINKED_FILE_BAG_H_
+#if !defined(LINKED_FILE_BAG_H_)
 #define LINKED_FILE_BAG_H_
 
-#ifdef  __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -79,7 +79,7 @@ lfb_update_all(
 	byte		*to_write
 );
 
-#ifdef  __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

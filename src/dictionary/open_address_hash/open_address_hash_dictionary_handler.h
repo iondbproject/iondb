@@ -6,10 +6,10 @@
 */
 /******************************************************************************/
 
-#ifndef OPEN_ADDRESS_DICTIONARY_HANDLER_H_
+#if !defined(OPEN_ADDRESS_DICTIONARY_HANDLER_H_)
 #define OPEN_ADDRESS_DICTIONARY_HANDLER_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -351,7 +351,7 @@ oadict_scan(
         oadict_cursor_t     *cursor  //don't need to pass in the cursor
 );
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 
