@@ -688,7 +688,7 @@ bErrType bOpen(bOpenType info, bHandleType *handle) {
         if ((h->nextFreeAdr = ion_ftell(h->fp)) == -1) return error(bErrIO);
     }
     /** TODO make this cleaner **/
-#ifdef ION_ARDUINO
+#if defined(ION_ARDUINO)
     else if (NULL != (h->fp = ion_fopen(info.iName)).file) {
 #else
     else if (NULL != (h->fp = ion_fopen(info.iName))) {
@@ -715,7 +715,7 @@ bErrType bClose(bHandleType handle) {
 
     /* flush idx */
 /** TODO: Cleanup **/
-#ifdef ION_ARDUINO
+#if defined(ION_ARDUINO)
     if (h->fp.file) {
 #else
     if (h->fp) {

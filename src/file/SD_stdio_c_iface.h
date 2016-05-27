@@ -1,14 +1,14 @@
 
-#ifndef SD_STDIO_C_IFACE_H_
+#if !defined(SD_STDIO_C_IFACE_H_)
 #define SD_STDIO_C_IFACE_H_
 
 #include "./../kv_system.h"
 
-#ifdef ION_ARDUINO
+#if defined(ION_ARDUINO)
 
 #include <Arduino.h>
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -129,7 +129,7 @@ int SD_File_Begin(uint8_t csPin);
 */
 int SD_File_Exists(char *filepath);
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

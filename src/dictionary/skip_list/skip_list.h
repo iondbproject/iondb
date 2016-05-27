@@ -5,10 +5,10 @@
 @brief		Implementation of a Skiplist data store
 */
 /******************************************************************************/
-#ifndef SKIP_LIST_STORE_H_
+#if !defined(SKIP_LIST_STORE_H_)
 #define SKIP_LIST_STORE_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -186,7 +186,7 @@ print_skiplist(
 	skiplist_t 		*skiplist
 );
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

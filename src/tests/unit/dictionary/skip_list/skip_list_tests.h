@@ -5,7 +5,7 @@
 @brief		Contains test defines and constants unique to skip_list tests.
 */
 /******************************************************************************/
-#ifndef SLTESTS_H_
+#if !defined(SLTESTS_H_)
 #define SLTESTS_H_
 
 #include <stdio.h>
