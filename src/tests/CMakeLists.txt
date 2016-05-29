@@ -2,18 +2,21 @@ cmake_minimum_required(VERSION 3.5)
 project(planck_unit)
 
 set(SOURCE_FILES
+    ../benchmark/ram/ram_util.h
+    ../benchmark/ram/ram_util.c
     planck_unit.h
-    planck_unit.c
-    ../serial/serial_c_iface.h
-    ../serial/serial_c_iface.cpp
-    ../serial/printf_redirect.h)
+    planck_unit.c)
 
 if(UseArduino)
-    set(${PROJECT_NAME}_BOARD ${BOARD})
-    set(${PROJECT_NAME}_PROCESSOR ${PROCESSOR})
-    set(${PROJECT_NAME}_MANUAL ${MANUAL})
+    set(${PROJECT_NAME}_BOARD       ${BOARD})
+    set(${PROJECT_NAME}_PROCESSOR   ${PROCESSOR})
+    set(${PROJECT_NAME}_MANUAL      ${MANUAL})
 
-    set(${PROJECT_NAME}_SRCS ${SOURCE_FILES})
+    set(${PROJECT_NAME}_SRCS
+        ${SOURCE_FILES}
+        ../serial/serial_c_iface.h
+        ../serial/serial_c_iface.cpp
+        ../serial/printf_redirect.h)
 
     generate_arduino_library(${PROJECT_NAME})
 else()

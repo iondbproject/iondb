@@ -6,11 +6,8 @@
 */
 /******************************************************************************/
 
-void
-runalltests_skiplist();
-
-void
-runalltests_skiplist_handler();
+#include "test_skip_list.h"
+#include "test_skip_list_handler.h"
 
 int
 main(void)

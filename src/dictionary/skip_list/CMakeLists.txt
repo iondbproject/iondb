@@ -15,9 +15,9 @@ set(SOURCE_FILES
     ../../kv_system.h)
 
 if(UseArduino)
-    set(${PROJECT_NAME}_BOARD ${BOARD})
-    set(${PROJECT_NAME}_PROCESSOR ${PROCESSOR})
-    set(${PROJECT_NAME}_MANUAL ${MANUAL})
+    set(${PROJECT_NAME}_BOARD       ${BOARD})
+    set(${PROJECT_NAME}_PROCESSOR   ${PROCESSOR})
+    set(${PROJECT_NAME}_MANUAL      ${MANUAL})
 
     set(${PROJECT_NAME}_SRCS
         ${SOURCE_FILES}

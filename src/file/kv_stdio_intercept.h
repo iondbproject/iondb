@@ -38,7 +38,7 @@ typedef long fpos_t;
 #define     feof(x)             sd_feof(x)
 #define     ftell(x)            sd_ftell(x)
 #define		fremove(x)			sd_remove(x)
-#define     frewind(x)           sd_frewind(x)
+#define     frewind(x)           sd_rewind(x)
 
 #ifdef __cplusplus
 }

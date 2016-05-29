@@ -5,14 +5,7 @@
 @details	Tests base operations for open address hash map
  */
 
-
-#include <stdio.h>
-#include <string.h>
-#include <limits.h>
-#include "../../../planck_unit.h"
-#include "../../../../dictionary/open_address_file_hash/open_address_file_hash.h"
-#include "../../../../dictionary/dictionary_types.h"
-#include "./../../../../dictionary/dictionary.h"
+#include "test_open_address_file_hash.h"
 
 #define MAX_HASH_TEST 100
 #define STD_MAP_SIZE 10

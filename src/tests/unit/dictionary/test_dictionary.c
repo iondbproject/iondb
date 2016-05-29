@@ -5,14 +5,7 @@
  *      Author: workstation
  */
 
-#include <limits.h>
-#include <stdio.h>
-#include <string.h>
-#include "../../planck_unit.h"
-#include "../../../dictionary/dictionary_types.h"
-#include "./../../../dictionary/dictionary.h"
-#include "./../../../dictionary/ion_master_table.h"
-#include "../../../dictionary/skip_list/skip_list_handler.h"
+#include "test_dictionary.h"
 
 void
 test_dictionary_compare_numerics(

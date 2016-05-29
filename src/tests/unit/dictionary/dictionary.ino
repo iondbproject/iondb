@@ -1,6 +1,6 @@
 #include <SPI.h>
-#include <SD.h>
-#include "test_file_encoder.h"
+#include <Arduino.h>
+#include "test_dictionary.h"
 
 void
 setup(
@@ -8,7 +8,7 @@ setup(
 {
     SPI.begin();
     Serial.begin(BAUD_RATE);
-    runalltests_file_encode_id();
+    runalltests_dictionary();
 }
 
 void

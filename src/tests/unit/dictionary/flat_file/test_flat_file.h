@@ -1,11 +1,11 @@
-#ifndef TEST_OPEN_ADDRESS_HASH_H_
-#define TEST_OPEN_ADDRESS_HASH_H_
+#ifndef TEST_FLAT_FILE_H_
+#define TEST_FLAT_FILE_H_
 
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
 #include "../../../planck_unit.h"
-#include "../../../../dictionary/open_address_hash/open_address_hash.h"
+#include "../../../../dictionary/flat_file/flat_file.h"
 #include "../../../../dictionary/dictionary_types.h"
 #include "./../../../../dictionary/dictionary.h"
 
@@ -14,7 +14,7 @@ extern "C" {
 #endif
 
 void
-runalltests_open_address_hash();
+runalltests_flat_file();
 
 #ifdef  __cplusplus
 }

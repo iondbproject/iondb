@@ -1,6 +1,4 @@
-
-void
-runalltests_file_encode_id();
+#include "test_file_encoder.h"
 
 int
 main()
