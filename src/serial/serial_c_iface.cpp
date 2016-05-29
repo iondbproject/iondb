@@ -15,10 +15,10 @@ serial_printf_c(
 	...
 )
 {
-	char buf[128]; 							// resulting string limited to 128 chars
+	char buf[512]; 							// resulting string limited to 128 chars
     va_list args;
     va_start (args, format);
-    vsnprintf(buf, 128, format, args);
+    vsnprintf(buf, 512, format, args);
     va_end(args);
     return serial_print(buf);
 }

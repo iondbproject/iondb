@@ -35,11 +35,15 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-/* If this is any sort of workstation system, don't include Arduino junk. */
-//#if !(defined (__unix__) || (defined (__APPLE__) && defined (__MACH__)) || defined(WIN32) || defined(_WIN32) || defined(__WIN32) || defined(__CYGWIN))
-/* If we are compiling for the arduino, include the serial interface. */
+
+#define PLANCK_UNIT_OUTPUT_STYLE_CONCISE
+
 #ifdef ARDUINO
 #include "../serial/serial_c_iface.h"
+#if defined(__FILE__)
+#undef __FILE__
+#define __FILE__ ""
+#endif
 #endif
 
 /**
@@ -48,9 +52,6 @@ extern "C" {
 #ifndef NULL
 #define NULL			((void *)0)
 #endif
-
-#define PLANCK_UNIT_MODE_JSON	0
-#define PLANCK_UNIT_MODE_HUMAN	1
 
 /**
 @brief		An assertion result, either a success or a failure.
@@ -109,6 +110,10 @@ typedef struct planck_unit_print_functions
 	void (*print_postamble)(planck_unit_suite_t *);
 } planck_unit_print_funcs_t;
 
+
+/* Output style depends on build-time arguments. See @ref CMakeLists.txt for information. */
+#if defined(PLANCK_UNIT_OUTPUT_STYLE_JSON)
+
 /**
 @brief		Print the result of a test as a JSON object.
 @param		state
@@ -143,6 +148,14 @@ planck_unit_print_postamble_json(
 );
 
 /**
+@brief		JSON printing functions, for easy reference.
+*/
+extern planck_unit_print_funcs_t planck_unit_print_funcs_json;
+
+#endif
+#if defined(PLANCK_UNIT_OUTPUT_STYLE_HUMAN)
+
+/**
 @brief		Print the result of a test's execution in human-readable
 		format.
 @param		state
@@ -174,21 +187,116 @@ planck_unit_print_postamble_summary(
 );
 
 /**
-@brief		JSON printing functions, for easy reference.
-*/
-extern planck_unit_print_funcs_t planck_unit_print_funcs_json;
-
-/**
 @brief		Human readable printing functions for easy reference.
 */
 extern planck_unit_print_funcs_t planck_unit_print_funcs_human;
+
+#endif
+#if defined(PLANCK_UNIT_OUTPUT_STYLE_XML)
+
+/**
+@brief		Print the result of a test in key:value (colon separated) form,
+		with each pair listed in comma separated form.
+@param		state
+			A pointer to the test structure describing the result
+			of the test's execution.
+*/
+void
+planck_unit_print_result_xml(
+	planck_unit_test_t *suite
+);
+
+/**
+@brief		Print the preamble for the XML-like document before suite
+		execution.
+@details	This just prints the start of the suite XML tag.
+*/
+void
+planck_unit_print_preamble_xml(
+	void
+);
+
+/**
+@brief		Print any concluding information after the suite
+		has been executed. For the XML-like document, this is just the close
+		suite tag.
+@param		suite
+			A pointer to the suite that has just been executed.
+*/
+void
+planck_unit_print_postamble_xml(
+	planck_unit_suite_t *suite
+);
+
+/**
+@brief		XML-like printing functions for easy reference.
+*/
+extern planck_unit_print_funcs_t planck_unit_print_funcs_xml;
+
+#endif
+#if defined(PLANCK_UNIT_OUTPUT_STYLE_CONCISE)
+
+/**
+@brief		Print the result of a test's execution in a concise format.
+@param		state
+			A pointer to the test structure describing the result
+			of the test's execution.
+*/
+void
+planck_unit_print_result_concise(
+        planck_unit_test_t *suite
+);
+
+/**
+@brief		Print the preamble for the concise style before suite
+		execution.
+@details	This prints a shortcode-style opening tag.
+*/
+void
+planck_unit_print_preamble_concise(
+	void
+);
+
+/**
+@brief		Print any concluding information after the suite
+		has been executed.
+@param		suite
+			A pointer to the suite that has just been executed.
+*/
+void
+planck_unit_print_postamble_concise(
+        planck_unit_suite_t *suite
+);
+
+/**
+@brief      Concise-output printing functions for easy reference.
+*/
+extern planck_unit_print_funcs_t planck_unit_print_funcs_concise;
+
+/* End of build-time-enabled output styles. */
+#endif
+
+/**
+@brief      Utility functions to check whether a test case
+            will be able to run properly in its environment.
+*/
+typedef struct planck_unit_check_functions
+{
+    /**> Check whether enough memory space is available for a
+         test's output to be defined and printed. */
+    int (*planck_unit_check_enough_space)(const char* message, void* expected, void* actual);
+} planck_unit_check_funcs_t;
+
+extern int planck_unit_check_string_space(const char* message, void* expected, void* actual);
+extern int planck_unit_check_int_space(const char* message, void* expected, void* actual);
+
 
 /**
 @brief		A test suite for execution.
 */
 struct planck_unit_suite
 {
-	/**> The print functions used to format the reuslt
+	/**> The print functions used to format the result
 	     of the suite's execution. */
 	planck_unit_print_funcs_t	print_functions;
 	/**> The total number of tests attempted. This number
@@ -392,15 +500,30 @@ planck_unit_destroy_suite(
 #define PLANCK_UNIT_ASSERT_TRUE(state, condition)\
 if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), (condition), __LINE__, __FILE__, __func__, "condition was false, expected true")) {return;}
 
+
 /**
 @brief		Assert that a condition is false.
+
+@param		state
+ 			The test's state information tracking
+ 			the result of the test.
+@param		condition
+ 			The condition expression to evaluate.
+ 			If this condition is false, the assertion
+ 			passes. Otherwise, the assertion fails.
+*/
+#define PLANCK_UNIT_ASSERT_FALSE(state, condition)\
+if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), !(condition), __LINE__, __FILE__, __func__, "condition was true, expected false")) {return;}
+
+/**
+@brief		Auto-fail a test.
 
 @param  	state
 			The test's state information tracking
 			the result of the test.
 */
-#define PLANCK_UNIT_ASSERT_FALSE(state)\
-if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), 0, __LINE__, __FILE__, __func__, "asserted as false")) {return;}
+#define PLANCK_UNIT_SET_FAIL(state)\
+if (PLANCK_UNIT_FAILURE == planck_unit_assert_true((state), 0, __LINE__, __FILE__, __func__, "asserted to fail")) {return;}
 
 /**
 @brief		Assert that two integers are equal.

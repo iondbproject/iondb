@@ -6,10 +6,9 @@ void
 setup(
 )
 {
-    Serial.begin(9600);
-    Serial.println("test");
+    Serial.begin(BAUD_RATE);
     runalltests_skiplist();
-    runalltests_skiplist_handler();
+//    runalltests_skiplist_handler();
 }
 
 void

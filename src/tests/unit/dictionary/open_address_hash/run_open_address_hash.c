@@ -1,9 +1,5 @@
-
-void
-runalltests_open_address_hash();
-
-void
-runalltests_open_address_hash_handler();
+#include "test_open_address_hash.h"
+#include "test_open_address_hash_dictionary_handler.h"
 
 int
 main()

@@ -1,6 +1,3 @@
-
-#include "./../generic_dictionary_test.h"
-#include "./../../../../dictionary/bpp_tree/bpp_tree_handler.h"
 #include "test_bpp_tree_handler.h"
 
 void

@@ -19,6 +19,7 @@ extern "C" {
 #include "linear_hash.h"
 #include "linear_hash_dictionary.h"
 #include "file_linked_list.h"
+#include "./../../file/SD_stdio_c_iface.h"
 
 /**
 @brief Struct used to for instance of a given dictionary.

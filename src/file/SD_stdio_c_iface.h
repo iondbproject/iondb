@@ -1,4 +1,3 @@
-
 #ifndef SD_STDIO_C_IFACE_H_
 #define SD_STDIO_C_IFACE_H_
 

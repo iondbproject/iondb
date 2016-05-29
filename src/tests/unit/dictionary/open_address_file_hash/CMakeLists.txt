@@ -2,10 +2,25 @@ cmake_minimum_required(VERSION 3.5)
 project(test_open_address_file_hash)
 
 set(SOURCE_FILES
-        run_open_address_file_hash.c
-        test_open_address_file_hash.c
-        test_open_address_file_hash_dictionary_handler.c)
+    test_open_address_file_hash.h
+    test_open_address_file_hash.c
+    test_open_address_file_hash_dictionary_handler.h
+    test_open_address_file_hash_dictionary_handler.c)
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+if(UseArduino)
+    set(${PROJECT_NAME}_BOARD       ${BOARD})
+    set(${PROJECT_NAME}_PROCESSOR   ${PROCESSOR})
+    set(${PROJECT_NAME}_MANUAL      ${MANUAL})
+    set(${PROJECT_NAME}_PORT        ${PORT})
+    set(${PROJECT_NAME}_SERIAL      ${SERIAL})
 
-target_link_libraries(${PROJECT_NAME} planck_unit open_address_file_hash)
+    set(${PROJECT_NAME}_SKETCH      open_address_file_hash.ino)
+    set(${PROJECT_NAME}_SRCS        ${SOURCE_FILES})
+    set(${PROJECT_NAME}_LIBS        planck_unit open_address_file_hash)
+
+    generate_arduino_firmware(${PROJECT_NAME})
+else()
+    add_executable(${PROJECT_NAME}          ${SOURCE_FILES} run_open_address_file_hash.c)
+
+    target_link_libraries(${PROJECT_NAME}   planck_unit open_address_file_hash)
+endif()

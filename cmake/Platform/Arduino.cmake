@@ -1040,6 +1040,7 @@ function(setup_arduino_library VAR_NAME BOARD_ID PROCESSOR LIB_PATH COMPILE_FLAG
         endif()
 
         find_sources(LIB_SRCS ${LIB_PATH} ${${LIB_SHORT_NAME}_RECURSE})
+#        message("LIB PATH: ${LIB_PATH}")
         if(LIB_SRCS)
             message(STATUS "Generating ${TARGET_LIB_NAME} for library ${LIB_NAME}")
             arduino_debug_msg("Generating Arduino ${LIB_NAME} library")
@@ -1051,8 +1052,13 @@ function(setup_arduino_library VAR_NAME BOARD_ID PROCESSOR LIB_PATH COMPILE_FLAG
             get_arduino_flags(ARDUINO_COMPILE_FLAGS ARDUINO_LINK_FLAGS ${BOARD_ID} ${PROCESSOR} FALSE)
 
             find_arduino_libraries(LIB_DEPS "${LIB_SRCS}" "")
+#            foreach(L ${LIB_SRCS})
+#                message("LIB_SRC: ${L}")
+#            endforeach()
 
+#            message("DEP_LIB_SRC: ${DEP_LIB_SRCS} : ${LIB_DEPS}")
             foreach(LIB_DEP ${LIB_DEPS})
+#                message(${TARGET_LIB_NAME} : ${LIB_DEP})
 	            if(NOT DEP_LIB_SRCS STREQUAL TARGET_LIB_NAME AND DEP_LIB_SRCS)
                     message("Found library ${LIB_NAME} needs ${DEP_LIB_SRCS}")
 		        endif()
@@ -1109,12 +1115,25 @@ function(setup_arduino_libraries VAR_NAME BOARD_ID PROCESSOR SRCS ARDLIBS COMPIL
     set(LIB_INCLUDES)
 
     find_arduino_libraries(TARGET_LIBS "${SRCS}" ARDLIBS)
+
+#    foreach(L ${TARGET_LIBS})
+#        message("DEP PATH: ${L}")
+#    endforeach()
+
     foreach(TARGET_LIB ${TARGET_LIBS})
         # Create static library instead of returning sources
         setup_arduino_library(LIB_DEPS ${BOARD_ID} ${PROCESSOR} ${TARGET_LIB} "${COMPILE_FLAGS}" "${LINK_FLAGS}")
         list(APPEND LIB_TARGETS ${LIB_DEPS})
         list(APPEND LIB_INCLUDES ${LIB_DEPS_INCLUDES})
     endforeach()
+
+    if(LIB_TARGETS)
+        list(REMOVE_DUPLICATES LIB_TARGETS)
+    endif()
+
+#    foreach(L ${LIB_TARGETS})
+#        message("LIB TARGETS: ${L}")
+#    endforeach()
 
     set(${VAR_NAME}          ${LIB_TARGETS}  PARENT_SCOPE)
     set(${VAR_NAME}_INCLUDES ${LIB_INCLUDES} PARENT_SCOPE)

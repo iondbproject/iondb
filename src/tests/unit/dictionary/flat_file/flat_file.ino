@@ -1,20 +1,16 @@
 #include <SPI.h>
 #include <SD.h>
-
-void
-runalltests_flat_file();
-
-void
-runalltests_flat_file_handler();
+#include "test_flat_file.h"
+#include "test_flat_file_dictionary_handler.h"
 
 void
 setup(
 )
 {
-    Serial.begin(9600);
+    SPI.begin();
+    Serial.begin(BAUD_RATE);
     runalltests_flat_file();
     runalltests_flat_file_handler();
-    Serial.end();
 }
 
 void

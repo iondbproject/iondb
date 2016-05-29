@@ -6,8 +6,7 @@ void
 setup(
 )
 {
-    Serial.begin(9600);
-    Serial.println("test");
+    Serial.begin(BAUD_RATE);
     runalltests_open_address_hash();
     runalltests_open_address_hash_handler();
 }

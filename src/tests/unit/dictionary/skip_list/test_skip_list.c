@@ -6,7 +6,6 @@
 */
 /******************************************************************************/
 
-#include "skip_list_tests.h"
 #include "test_skip_list.h"
 
 /**
@@ -1760,12 +1759,12 @@ test_skiplist_big_keys(
 	initialize_skiplist_std_conditions(&skiplist);
 
 	int i;
-	for(i = 230; i < 999; i++)
+	for(i = 900; i < 999; i++)
 	{
 		sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char*){"BIG!"});
 	}
 
-	for(i = 230; i < 999; i++)
+	for(i = 900; i < 999; i++)
 	{
 		sl_node_t 		*cursor = sl_find_node(&skiplist, (ion_key_t) &i);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 		*(int*)cursor->key == i);
@@ -1777,7 +1776,7 @@ test_skiplist_big_keys(
 	print_skiplist(&skip_list);
 #endif
 
-	for(i = 230; i < 999; i++)
+	for(i = 900; i < 999; i++)
 	{
 		sl_delete(&skiplist, (ion_key_t) &i);
 	}
