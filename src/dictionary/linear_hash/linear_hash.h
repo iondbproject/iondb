@@ -5,11 +5,11 @@
  *      Author: workstation
  */
 
-#ifndef LINEAR_HASH_H_
+#if !defined(LINEAR_HASH_H_)
 #define LINEAR_HASH_H_
 
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -607,7 +607,7 @@ lh_compute_load_factor(
 	linear_hashmap_t		*hash_map
 );
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

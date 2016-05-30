@@ -6,10 +6,10 @@
 */
 /******************************************************************************/
 
-#ifndef OPEN_ADDRESS_H_
+#if !defined(OPEN_ADDRESS_H_)
 #define OPEN_ADDRESS_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -270,7 +270,7 @@ oah_compute_simple_hash(
 		int 			size_of_key
 );
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

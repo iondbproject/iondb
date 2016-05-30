@@ -4,10 +4,10 @@
 
 */
 
-#ifndef LINEAR_HASH_DICTIONARY_H_
+#if !defined(LINEAR_HASH_DICTIONARY_H_)
 #define LINEAR_HASH_DICTIONARY_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -35,7 +35,7 @@ typedef struct lhdict_cursor
 	ll_file_t			*overflow;	/**<Overflow file that is currently being used */
 } lhdict_cursor_t;
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

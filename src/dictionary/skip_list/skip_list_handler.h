@@ -5,10 +5,10 @@
 @brief		Handler liaison between dictionary API and skip_list implementation
 */
 /******************************************************************************/
-#ifndef SKIP_LIST_HANDLER_H_
+#if !defined(SKIP_LIST_HANDLER_H_)
 #define SKIP_LIST_HANDLER_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -230,7 +230,7 @@ sldict_test_predicate(
 	ion_key_t 		key
 );
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

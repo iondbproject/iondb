@@ -6,10 +6,10 @@
 */
 /******************************************************************************/
 
-#ifndef LINEAR_HASH_DICTIONARY_HANDLER_H_
+#if !defined(LINEAR_HASH_DICTIONARY_HANDLER_H_)
 #define LINEAR_HASH_DICTIONARY_HANDLER_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -302,7 +302,7 @@ lhdict_close(
 );
 
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

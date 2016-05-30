@@ -6,10 +6,10 @@
 */
 /******************************************************************************/
 
-#ifndef OPEN_ADDRESS_FILE_H_
+#if !defined(OPEN_ADDRESS_FILE_H_)
 #define OPEN_ADDRESS_FILE_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -256,7 +256,7 @@ oafh_compute_simple_hash(
 static_hash_init(dictonary_handler_t * client);*/
 
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

@@ -6,7 +6,7 @@
 */
 /******************************************************************************/
 
-#ifndef FILE_ENCODER_H_
+#if !defined(FILE_ENCODER_H_)
 #define FILE_ENCODER_H_
 
 

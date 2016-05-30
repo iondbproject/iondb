@@ -43,6 +43,8 @@ if(USE_ARDUINO)
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
     set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -Wall -g")
+
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 endif()
 
 # Add all of the CMakeLists.txt for the sub projects.
