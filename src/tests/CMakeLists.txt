@@ -7,7 +7,7 @@ set(SOURCE_FILES
     planck_unit.h
     planck_unit.c)
 
-if(UseArduino)
+if(USE_ARDUINO)
     set(${PROJECT_NAME}_BOARD       ${BOARD})
     set(${PROJECT_NAME}_PROCESSOR   ${PROCESSOR})
     set(${PROJECT_NAME}_MANUAL      ${MANUAL})

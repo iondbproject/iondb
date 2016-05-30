@@ -19,7 +19,7 @@ set(SOURCE_FILES
     ../../kv_io.c
     ../../kv_system.h)
 
-if(UseArduino)
+if(USE_ARDUINO)
     set(${PROJECT_NAME}_BOARD       ${BOARD})
     set(${PROJECT_NAME}_PROCESSOR   ${PROCESSOR})
     set(${PROJECT_NAME}_MANUAL      ${MANUAL})

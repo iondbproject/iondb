@@ -5,7 +5,7 @@ set(SOURCE_FILES
     test_file_encoder.h
     test_file_encoder.c)
 
-if(UseArduino)
+if(USE_ARDUINO)
     set(${PROJECT_NAME}_BOARD       ${BOARD})
     set(${PROJECT_NAME}_PROCESSOR   ${PROCESSOR})
     set(${PROJECT_NAME}_MANUAL      ${MANUAL})

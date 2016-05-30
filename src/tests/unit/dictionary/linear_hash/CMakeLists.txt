@@ -13,7 +13,7 @@ set(SOURCE_FILES
     ../generic_dictionary_test.h
     ../generic_dictionary_test.c)
 
-if(UseArduino)
+if(USE_ARDUINO)
     set(${PROJECT_NAME}_BOARD       ${BOARD})
     set(${PROJECT_NAME}_PROCESSOR   ${PROCESSOR})
     set(${PROJECT_NAME}_MANUAL      ${MANUAL})
