@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.5)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g")
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 add_subdirectory(src/tests)
 add_subdirectory(src/tests/unit/dictionary)
 

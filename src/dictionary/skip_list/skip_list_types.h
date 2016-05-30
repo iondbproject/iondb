@@ -6,10 +6,10 @@
 */
 /******************************************************************************/
 
-#ifndef SKIP_LIST_TYPES_H_
+#if !defined(SKIP_LIST_TYPES_H_)
 #define SKIP_LIST_TYPES_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -59,7 +59,7 @@ typedef struct sldict_cursor
 } sldict_cursor_t;
 
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

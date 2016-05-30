@@ -1,10 +1,10 @@
 /**
  * @file flat_file_dictionary.h
  */
-#ifndef FLAT_FILE_DICTIONARY_H_
+#if !defined(FLAT_FILE_DICTIONARY_H_)
 #define FLAT_FILE_DICTIONARY_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -21,7 +21,7 @@ typedef struct ffdict_cursor
 	char				status;		/**@todo what is this for again as there are two status */
 } ffdict_cursor_t;
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

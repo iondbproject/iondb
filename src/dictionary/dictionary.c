@@ -258,7 +258,7 @@ dictionary_build_predicate(
 		{
 			ion_key_t key = va_arg(arg_list, ion_key_t);
 			predicate->statement.equality.equality_value = key;
-			predicate->destroy = dictonary_destroy_predicate_equality;
+			predicate->destroy = dictionary_destroy_predicate_equality;
 			break;
 		}
 		case predicate_range:
@@ -269,7 +269,7 @@ dictionary_build_predicate(
 
 			predicate->statement.range.lower_bound = lower_bound;
 			predicate->statement.range.upper_bound = upper_bound;
-			predicate->destroy = dictonary_destroy_predicate_range;
+			predicate->destroy = dictionary_destroy_predicate_range;
 			break;
 		}
 		case predicate_all_records:
@@ -295,8 +295,8 @@ dictionary_build_predicate(
 }
 
 void
-dictonary_destroy_predicate_equality(
-	predicate_t		**predicate
+dictionary_destroy_predicate_equality(
+	predicate_t 	**predicate
 )
 {
 	if (*predicate != NULL)
@@ -308,8 +308,8 @@ dictonary_destroy_predicate_equality(
 }
 
 void
-dictonary_destroy_predicate_range(
-	predicate_t		**predicate
+dictionary_destroy_predicate_range(
+	predicate_t 	**predicate
 )
 {
 	if (*predicate != NULL)

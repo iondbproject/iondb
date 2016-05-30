@@ -7,10 +7,10 @@
 */
 /******************************************************************************/
 
-#ifndef DICTIONARY_TYPES_H_
+#if !defined(DICTIONARY_TYPES_H_)
 #define DICTIONARY_TYPES_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -286,7 +286,7 @@ enum write_concern
  */
 typedef char 			write_concern_t;
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

@@ -5,7 +5,7 @@
 @brief		Utility function to check how many bytes of available RAM remains.
 */
 /******************************************************************************/
-#ifndef RAMUTIL_H_
+#if !defined(RAMUTIL_H_)
 #define RAMUTIL_H_
 
 int

@@ -5,10 +5,10 @@
  *      Author: workstation
  */
 
-#ifndef FILE_LINKED_LIST_H_
+#if !defined(FILE_LINKED_LIST_H_)
 #define FILE_LINKED_LIST_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -296,7 +296,7 @@ fll_remove(
 	ll_file_t					*linked_list_file
 );
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

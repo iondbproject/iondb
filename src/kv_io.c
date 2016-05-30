@@ -19,7 +19,7 @@ int io_printf( const char * format, ... )
 	result = vprintf(format, args);
 	va_end( args );
 
-#ifdef USING_ECLIPSE
+#if defined(USING_ECLIPSE)
 	fflush (stdout);
 #endif
 

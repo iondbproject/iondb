@@ -7,10 +7,10 @@
 */
 /******************************************************************************/
 
-#ifndef ION_FILE_H_
+#if !defined(ION_FILE_H_)
 #define ION_FILE_H_
 
-#ifdef  __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -21,7 +21,7 @@ typedef long		file_offset_t;
 #define ION_FILE_START	SEEK_SET
 #define ION_FILE_END	SEEK_END
 
-#ifdef ARDUINO
+#if defined(ARDUINO)
 
 #include "SD_stdio_c_iface.h"
 
@@ -120,7 +120,7 @@ ion_fread_at(
 	byte*		write_to
 );
 
-#ifdef  __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

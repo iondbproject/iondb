@@ -5,10 +5,10 @@
 @brief		redirects printf statement for Arduino
 */
 /******************************************************************************/
-#ifndef PRINTF_REDIRECT_H_
+#if !defined(PRINTF_REDIRECT_H_)
 #define PRINTF_REDIRECT_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -16,7 +16,7 @@ extern "C" {
 #define printf(format, ...) {char buf[128]; snprintf(buf,128,format,##__VA_ARGS__); serial_print(buf);}
 
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

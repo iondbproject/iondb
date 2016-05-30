@@ -2,6 +2,8 @@ bin/
 lib/
 docs/
 build/
+target/
+work/
 .build/
 .settings
 *.d
@@ -20,6 +22,7 @@ out.txt
 .idea/
 iondb.sublime-project
 iondb.sublime-workspace
+*.iml
 
 # OS generated files
 */.DS_Store
