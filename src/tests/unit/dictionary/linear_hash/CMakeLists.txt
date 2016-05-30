@@ -28,5 +28,5 @@ if(USE_ARDUINO)
 else()
     add_executable(${PROJECT_NAME}          ${SOURCE_FILES} run_linear_hash.c)
 
-    target_link_libraries(${PROJECT_NAME}   planck_unit linear_hash)
+    target_link_libraries(${PROJECT_NAME}   planck_unit linear_hash m)
 endif()
