@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
+#include <math.h>
 #include "../../../planckunit/src/planck_unit.h"
 #include "../../../../dictionary/linear_hash/linear_hash.h"
 
