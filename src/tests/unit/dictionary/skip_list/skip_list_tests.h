@@ -18,6 +18,10 @@
 #include "../../../../dictionary/dictionary_types.h"
 #include "./../../../../dictionary/dictionary.h"
 
+#if DEBUG
 #define PRINT_HEADER() io_printf("=== [%d:%s] ===\n", __LINE__, __func__);
+#else
+#define PRINT_HEADER()
+#endif
 
 #endif /* SLTESTS_H_ */
