@@ -1,19 +1,34 @@
 cmake_minimum_required(VERSION 3.5)
 
-# Use cmake -DUseArduino=ON <project_folder> to compile to Arduino.
-if(UseArduino)
+# Use cmake -DUSE_ARDUINO=ON <project_folder> to compile to Arduino.
+if(USE_ARDUINO)
     message("Linking against Arduino...")
-
     set(CMAKE_TOOLCHAIN_FILE    ${CMAKE_SOURCE_DIR}/cmake/ArduinoToolchain.cmake)
     set(PROJECT_NAME            IonDB)
     project(IonDB               C CXX)
 
     # User options
-    set(BOARD       mega)
-    set(PROCESSOR   atmega2560)
-    set(PORT        /dev/cu.usbmodem1411)
-    set(BAUD_RATE   115200)
-    set(MANUAL      false)
+    set(BOARD           ${BOARD})
+
+    if(PROCESSOR)
+        set(PROCESSOR   ${MCU})
+    else()
+        set(PROCESSOR)
+    endif()
+
+    set(PORT            ${PORT})
+
+    if(BAUD_RATE)
+        set(BAUD_RATE   ${BAUD_RATE})
+    else()
+        set(BAUD_RATE   9600)
+    endif()
+
+    if(MANUAL)
+        set(MANUAL      ${MANUAL})
+    else()
+        set(MANUAL      FALSE)
+    endif()
 
     add_definitions(-DBAUD_RATE=${BAUD_RATE})
 
@@ -28,6 +43,8 @@ if(UseArduino)
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
     set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -Wall -g")
+
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 endif()
 
 # Add all of the CMakeLists.txt for the sub projects.

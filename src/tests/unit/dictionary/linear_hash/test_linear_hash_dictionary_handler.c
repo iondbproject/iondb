@@ -5,7 +5,7 @@
 
  */
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -206,7 +206,7 @@ test_linear_hash_handler_update_1(
 	//create a new predicate statement
 	predicate_t 			predicate;
 	predicate.type 			= predicate_equality;
-	predicate.destroy 		= &dictonary_destroy_predicate_equality;
+	predicate.destroy 		= &dictionary_destroy_predicate_equality;
 
 	//need to prepare predicate correctly
 	predicate.statement.equality.equality_value = (ion_key_t)malloc(sizeof(int));
@@ -283,7 +283,7 @@ test_linear_hash_handler_update_2(
 	//create a new predicate statement
 	predicate_t 			predicate;
 	predicate.type 			= predicate_equality;
-	predicate.destroy 		= &dictonary_destroy_predicate_equality;
+	predicate.destroy 		= &dictionary_destroy_predicate_equality;
 
 	//need to prepare predicate correctly
 	predicate.statement.equality.equality_value = (ion_key_t)malloc(sizeof(int));
@@ -416,7 +416,7 @@ test_linear_hash_dictionary_cursor_equality(
 	predicate_t *predicate;
 	predicate = (predicate_t*)malloc(sizeof(predicate_t));
 	predicate->type = predicate_equality;
-	predicate->destroy = &dictonary_destroy_predicate_equality;
+	predicate->destroy = &dictionary_destroy_predicate_equality;
 	//need to prepare predicate correctly
 	predicate->statement.equality.equality_value = (ion_key_t)malloc(sizeof(int));
 
@@ -468,7 +468,7 @@ test_linear_hash_dictionary_cursor_range_signed(
 	//create a new predicate statement
 	predicate_t 			predicate;
 	predicate.type 			= predicate_range;
-	predicate.destroy 		= &dictonary_destroy_predicate_range;
+	predicate.destroy 		= &dictionary_destroy_predicate_range;
 
 	//need to prepare predicate correctly
 	predicate.statement.range.upper_bound = (ion_key_t)malloc(sizeof(int));
@@ -523,7 +523,7 @@ test_linear_hash_dictionary_cursor_range_signed_2(
 	//create a new predicate statement
 	predicate_t 			predicate;
 	predicate.type 			= predicate_range;
-	predicate.destroy 		= &dictonary_destroy_predicate_range;
+	predicate.destroy 		= &dictionary_destroy_predicate_range;
 
 	//need to prepare predicate correctly
 	predicate.statement.range.upper_bound = (ion_key_t)malloc(sizeof(int));
@@ -578,7 +578,7 @@ test_linear_hash_dictionary_cursor_range_signed_3(
 	//create a new predicate statement
 	predicate_t 			predicate;
 	predicate.type 			= predicate_range;
-	predicate.destroy 		= &dictonary_destroy_predicate_range;
+	predicate.destroy 		= &dictionary_destroy_predicate_range;
 
 	//need to prepare predicate correctly
 	predicate.statement.range.upper_bound = (ion_key_t)malloc(sizeof(int));
@@ -633,7 +633,7 @@ test_linear_hash_dictionary_cursor_range_signed_4(
 	//create a new predicate statement
 	predicate_t 			predicate;
 	predicate.type 			= predicate_range;
-	predicate.destroy 		= &dictonary_destroy_predicate_range;
+	predicate.destroy 		= &dictionary_destroy_predicate_range;
 
 	//need to prepare predicate correctly
 	predicate.statement.range.upper_bound = (ion_key_t)malloc(sizeof(int));
@@ -689,7 +689,7 @@ test_linear_hash_dictionary_handler_query_with_results(
 	//create a new predicate statement
 	predicate_t 			predicate;
 	predicate.type 			= predicate_equality;
-	predicate.destroy 		= &dictonary_destroy_predicate_equality;
+	predicate.destroy 		= &dictionary_destroy_predicate_equality;
 
 	//need to prepare predicate correctly
 	predicate.statement.equality.equality_value = (ion_key_t)malloc(sizeof(int));
@@ -757,7 +757,7 @@ test_linear_hash_dictionary_handler_query_no_results(
 	//create a new predicate statement
 	predicate_t 			predicate;
 	predicate.type 			= predicate_equality;
-	predicate.destroy 		= &dictonary_destroy_predicate_equality;
+	predicate.destroy 		= &dictionary_destroy_predicate_equality;
 
 	//need to prepare predicate correctly
 	predicate.statement.equality.equality_value = (ion_key_t)malloc(sizeof(int));
@@ -820,7 +820,7 @@ test_linear_hash_dictionary_predicate_equality(
 	/** IMPORTANT - This must be put on the heap as the destroy method will attempt to free */
 	cursor->predicate 		= (predicate_t *)malloc(sizeof(predicate_t));
 	cursor->predicate->type	= predicate_equality;
-	cursor->predicate->destroy 		= &dictonary_destroy_predicate_equality;
+	cursor->predicate->destroy 		= &dictionary_destroy_predicate_equality;
 
 	//need to prepare predicate correctly
 	cursor->predicate->statement.equality.equality_value = (ion_key_t)malloc(sizeof(int));
@@ -885,7 +885,7 @@ test_linear_hash_dictionary_predicate_range_signed(
 	//create a new predicate statement
 	predicate_t 			*predicate = (predicate_t *)malloc(sizeof(predicate_t));
 	predicate->type 			= predicate_range;
-	predicate->destroy 		= &dictonary_destroy_predicate_range;
+	predicate->destroy 		= &dictionary_destroy_predicate_range;
 
 	//need to prepare predicate correctly
 	predicate->statement.range.upper_bound = (ion_key_t)malloc(sizeof(int));
@@ -956,7 +956,7 @@ test_linear_hash_dictionary_predicate_range_unsigned(
 	//create a new predicate statement
 	predicate_t 			*predicate = (predicate_t *)malloc(sizeof(predicate_t));
 	predicate->type 		= predicate_range;
-	predicate->destroy 		= &dictonary_destroy_predicate_range;
+	predicate->destroy 		= &dictionary_destroy_predicate_range;
 
 	//need to prepare predicate correctly
 	predicate->statement.range.upper_bound = (ion_key_t)malloc(sizeof(unsigned int));
@@ -1019,7 +1019,7 @@ test_linear_hash_dictionary_cursor_range(
 	//create a new predicate statement
 	predicate_t 			predicate;
 	predicate.type = predicate_range;
-	predicate.destroy 		= &dictonary_destroy_predicate_range;
+	predicate.destroy 		= &dictionary_destroy_predicate_range;
 	//need to prepare predicate correctly
 	predicate.statement.range.upper_bound = (ion_key_t)malloc(sizeof(int));
 
@@ -1107,7 +1107,7 @@ test_linear_hash_dictionary_cursor_range_2(
 	//create a new predicate statement
 	predicate_t 			predicate;
 	predicate.type = predicate_range;
-	predicate.destroy 		= &dictonary_destroy_predicate_range;
+	predicate.destroy 		= &dictionary_destroy_predicate_range;
 	//need to prepare predicate correctly
 	predicate.statement.range.upper_bound = (ion_key_t)malloc(sizeof(int));
 
@@ -1200,7 +1200,7 @@ test_linear_hash_dictionary_cursor_range_3(
 	//create a new predicate statement
 	predicate_t 			predicate;
 	predicate.type = predicate_range;
-	predicate.destroy 		= &dictonary_destroy_predicate_range;
+	predicate.destroy 		= &dictionary_destroy_predicate_range;
 	//need to prepare predicate correctly
 	predicate.statement.range.upper_bound = (ion_key_t)malloc(sizeof(int));
 
@@ -1293,7 +1293,7 @@ test_linear_hash_dictionary_cursor_range_4(
 	//create a new predicate statement
 	predicate_t 			predicate;
 	predicate.type 			= predicate_range;
-	predicate.destroy 		= &dictonary_destroy_predicate_range;
+	predicate.destroy 		= &dictionary_destroy_predicate_range;
 	//need to prepare predicate correctly
 	predicate.statement.range.upper_bound = (ion_key_t)malloc(sizeof(int));
 
@@ -1390,7 +1390,7 @@ test_linear_hash_dictionary_cursor_range_5(
 	//create a new predicate statement
 	predicate_t 			predicate;
 	predicate.type = predicate_range;
-	predicate.destroy 		= &dictonary_destroy_predicate_range;
+	predicate.destroy 		= &dictionary_destroy_predicate_range;
 	//need to prepare predicate correctly
 	predicate.statement.range.upper_bound = (ion_key_t)malloc(sizeof(int));
 

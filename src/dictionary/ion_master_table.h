@@ -17,10 +17,10 @@
 */
 /******************************************************************************/
 
-#ifndef ION_MASTER_TABLE_H_
+#if !defined(ION_MASTER_TABLE_H_)
 #define ION_MASTER_TABLE_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -169,7 +169,7 @@ ion_close_dictionary(
     dictionary_t        *dictionary
 );
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif /* C++ Guard */
 

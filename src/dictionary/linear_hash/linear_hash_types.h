@@ -8,7 +8,7 @@
  */
 /******************************************************************************/
 
-#ifndef LINEAR_HASH_TYPES_H_
+#if !defined(LINEAR_HASH_TYPES_H_)
 #define LINEAR_HASH_TYPES_H_
 
 #include <stdint.h>

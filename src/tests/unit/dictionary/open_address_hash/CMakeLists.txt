@@ -7,7 +7,7 @@ set(SOURCE_FILES
     test_open_address_hash_dictionary_handler.h
     test_open_address_hash_dictionary_handler.c)
 
-if(UseArduino)
+if(USE_ARDUINO)
     set(${PROJECT_NAME}_BOARD       ${BOARD})
     set(${PROJECT_NAME}_PROCESSOR   ${PROCESSOR})
     set(${PROJECT_NAME}_MANUAL      ${MANUAL})

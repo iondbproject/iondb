@@ -5,7 +5,7 @@
  *      Author: workstation
  */
 
-#ifndef KV_IO_H_
+#if !defined(KV_IO_H_)
 #define KV_IO_H_
 
 #include <stdarg.h>
@@ -14,7 +14,7 @@
 
 #include "kv_system.h"
 
-#ifndef ARDUINO /* Only on PC */
+#if !defined(ARDUINO) /* Only on PC */
 #define fremove(x) remove(x)
 #define frewind(x) rewind(x)
 #endif

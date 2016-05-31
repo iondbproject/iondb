@@ -4,10 +4,10 @@
 
 */
 
-#ifndef OPEN_ADDRESS_FILE_DICTIONARY_H_
+#if !defined(OPEN_ADDRESS_FILE_DICTIONARY_H_)
 #define OPEN_ADDRESS_FILE_DICTIONARY_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -29,7 +29,7 @@ typedef struct oafdict_cursor
 	char				status;		/**@todo what is this for again as there are two status */
 } oafdict_cursor_t;
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

@@ -6,10 +6,10 @@
 */
 /******************************************************************************/
 
-#ifndef DICTIONARY_H_
+#if !defined(DICTIONARY_H_)
 #define DICTIONARY_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -253,16 +253,16 @@ dictionary_build_predicate(
 @brief Destroys an equality predicate.
 */
 void
-dictonary_destroy_predicate_equality(
-	predicate_t		**predicate
+dictionary_destroy_predicate_equality(
+		predicate_t **predicate
 );
 
 /**
 @brief Destroys a range predicate.
 */
 void
-dictonary_destroy_predicate_range(
-	predicate_t		**predicate
+dictionary_destroy_predicate_range(
+		predicate_t **predicate
 );
 
 /**
@@ -283,7 +283,7 @@ dictionary_find(
 	dict_cursor_t 	**cursor
 );
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

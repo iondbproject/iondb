@@ -1,14 +1,14 @@
 
-#ifndef GENERIC_DICTIONARY_TEST_H_
+#if !defined(GENERIC_DICTIONARY_TEST_H_)
 #define GENERIC_DICTIONARY_TEST_H_
 
-#ifdef  __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
 #include <stdlib.h>
 #include <limits.h>
-#include "../../planck_unit.h"
+#include "../../planckunit/src/planck_unit.h"
 #include "./../../../kv_system.h"
 #include "../../../dictionary/dictionary_types.h"
 #include "./../../../dictionary/dictionary.h"
@@ -104,7 +104,7 @@ dictionary_test_open_close(
     planck_unit_test_t		*tc
 );
 
-#ifdef  __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

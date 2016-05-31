@@ -4,7 +4,7 @@
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
-#include "../../planck_unit.h"
+#include "../../planckunit/src/planck_unit.h"
 #include "../../../dictionary/dictionary_types.h"
 #include "./../../../dictionary/dictionary.h"
 #include "./../../../dictionary/ion_master_table.h"
