@@ -1,9 +1,9 @@
 /******************************************************************************/
 /**
-@file		dictionary_library.cpp
+@file		CursorIterator.cpp
 @author		Dana Klamut
 @brief
 */
 /******************************************************************************/
 
-#include "dictionary_library.h"
+#include "CursorIterator.h"
