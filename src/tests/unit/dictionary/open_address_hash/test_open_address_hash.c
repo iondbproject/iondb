@@ -184,12 +184,12 @@ test_open_address_hashmap_find_item_location(
 		for (i = 0; i<map.map_size; i++)
 		{
 			item_ptr->status 	= IN_USE;
-			memcpy (item_ptr->data, (int *)&i, sizeof(int));
+			memcpy (item_ptr->data, (int *)&i, sizeof(ion_key_t));
 			char str[10];
 			//build up the value
 			sprintf(str,"%02i is key",i);
 			//and copy it directly into the slot
-			memcpy((item_ptr->data + sizeof(int)), str, 10);
+			memcpy((item_ptr->data + sizeof(ion_key_t)), str, 10);
 			memcpy(pos_ptr, item_ptr, bucket_size);
 			pos_ptr = map.entry + ((((i+1+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size));
 		}
