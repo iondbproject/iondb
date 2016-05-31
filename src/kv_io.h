@@ -1,9 +1,11 @@
-/*
- * kv_io.h
- *
- *  Created on: May 23, 2014
- *      Author: workstation
- */
+/******************************************************************************/
+/**
+@file		kv_io.h
+@author		Scott Fazackerley
+@brief		Key-Value I/O functionality.
+*/
+/******************************************************************************/
+
 
 #if !defined(KV_IO_H_)
 #define KV_IO_H_
@@ -20,13 +22,17 @@
 #endif
 
 /**
- * @brief Allows for output in a tidy format.
- *
- * @details Used as an alternate printf to deal with device specific issues
- *
- * @param format
- * @return
- */
-int io_printf( const char * format, ... );
+@brief		The function outputs a string in a tidy format.
+@details	Used as an alternate printf to deal with device specific issues.
+@param		format
+				Format string to specify print output.
+@return		If successful, the total number of characters written is returned.
+ 			Otherwise, a negative number is returned.
+*/
+int
+io_printf(
+	const char *format,
+	...
+);
 
 #endif /* KV_IO_H_ */

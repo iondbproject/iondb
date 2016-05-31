@@ -1,26 +1,28 @@
-/*
- * kv_io.c
- *
- *  Created on: May 22, 2014
- *      Author: Scott Fazackerley
- */
+/******************************************************************************/
+/**
+@file		kv_io.c
+@author		Scott Fazackerley
+@brief		Key-Value I/O functionality.
+*/
+/******************************************************************************/
 
 #include "kv_io.h"
-#include "stdlib.h"
 
+int
+io_printf(
+	const char *format,
+	...
+) {
 
-int io_printf( const char * format, ... )
-{
-
-	int result;
-
+	int 	result;
 	va_list args;
+
 	va_start(args, format);
 	result = vprintf(format, args);
-	va_end( args );
+	va_end(args);
 
 #if defined(USING_ECLIPSE)
-	fflush (stdout);
+	fflush(stdout);
 #endif
 
 	return result;
