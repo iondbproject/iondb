@@ -3,7 +3,7 @@
 //
 
 //#include <iostream>
-#include "BppTree.h"
+#include "../BppTree.h"
 
 int main() {
     //std::cout << "hello";

@@ -8,7 +8,6 @@
 /******************************************************************************/
 
 #include "CppDictionary.h"
-#include "../dictionary/dictionary_types.h"
 
 CppDictionary::CppDictionary(
         key_type_t type_key,
