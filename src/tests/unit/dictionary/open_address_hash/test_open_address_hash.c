@@ -159,22 +159,26 @@ test_open_address_hashmap_find_item_location(
 	initialize_hash_map_std_conditions(&map);
 
 	/** Manually populate records */
-	record_info_t record 			= map.super.record;
+	record_info_t record 		= map.super.record;
 
 	char *item;
 
-	//manually map out item stucture
-	item = (char *)malloc(sizeof(char) * (record.key_size + record.value_size +sizeof(char)));
+	/* manually map out item stucture */
+	item 						= (char *)malloc(
+									sizeof(char) * (record.key_size + record.value_size +sizeof(char))
+								);
 
 	//manually populate array
 	hash_bucket_t *item_ptr 	= (hash_bucket_t *)item;
 	char *pos_ptr 				= map.entry;
+
+	/* Bucket size includes flags, data, value */
 	int bucket_size 			= sizeof(char) + record.key_size
 									+ record.value_size;
 
 	for (offset = 0; offset < map.map_size; offset ++)
 	{
-		// apply continual offsets
+		/* apply continual offsets to traverse map */
 #if DEBUG
 		printf("entry loc: %p %p \n",map.entry,pos_ptr);
 #endif
@@ -184,14 +188,17 @@ test_open_address_hashmap_find_item_location(
 		for (i = 0; i<map.map_size; i++)
 		{
 			item_ptr->status 	= IN_USE;
-			memcpy (item_ptr->data, (int *)&i, sizeof(ion_key_t));
+			/* Ensure to use key_size */
+			memcpy(item_ptr->data, (int *)&i, record.key_size);
+
+			/* build up the value */
 			char str[10];
-			//build up the value
 			sprintf(str,"%02i is key",i);
-			//and copy it directly into the slot
-			memcpy((item_ptr->data + sizeof(ion_key_t)), str, 10);
+			/* Copy it directly into the slot */
+			memcpy((item_ptr->data + record.key_size), str, 10);
 			memcpy(pos_ptr, item_ptr, bucket_size);
-			pos_ptr = map.entry + ((((i+1+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size));
+			pos_ptr 			= map.entry
+								 + ((((i+1+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size));
 		}
 
 		//and now check key positions
