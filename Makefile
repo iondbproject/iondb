@@ -50,9 +50,9 @@ all: init_dirs $(BUILD_DIR)/Makefile
 
 # Utility goals for scripts and such.
 
-.PHONY: setuprepo
-setuprepo: $(SCRIPTS_DIR)/setuprepo.py
-	$(PY) $(SCRIPTS_DIR)/setuprepo.py
+.PHONY: hooks
+hooks: $(SCRIPTS_DIR)/setuprepo.py
+	$(PY) $(SCRIPTS_DIR)/setuphooks.py
 
 .PHONY: format
 format: $(SCRIPTS_DIR)/uncrustify.py
