@@ -1,6 +1,5 @@
 /******************************************************************************/
 /**
-@file		kv_io.c
 @author		Scott Fazackerley
 @brief		Key-Value I/O functionality.
 */

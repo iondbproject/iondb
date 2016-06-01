@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		kv_io.h
+@file
 @author		Scott Fazackerley
 @brief		Key-Value I/O functionality.
 */
@@ -16,7 +16,8 @@
 
 #include "kv_system.h"
 
-#if !defined(ARDUINO) /* Only on PC */
+/* Only on PC */
+#if !defined(ARDUINO)
 #define fremove(x) remove(x)
 #define frewind(x) rewind(x)
 #endif
