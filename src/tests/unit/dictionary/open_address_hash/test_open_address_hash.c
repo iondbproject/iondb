@@ -221,9 +221,8 @@ test_open_address_hashmap_find_item_location(
 void
 test_open_address_hashmap_simple_insert(
 	planck_unit_test_t	*tc
-)
-{
-	hashmap_t map;			//create handler for hashmap
+){
+	hashmap_t map;					/* create handler for hashmap */
 	int i;
 	int offset;
 
@@ -237,38 +236,34 @@ test_open_address_hashmap_simple_insert(
 	char *pos_ptr 				= map.entry;
 #endif
 
-	int bucket_size 			= sizeof(char)
+	int bucket_size 				= sizeof(char)
 									+ record.key_size + record.value_size;
 
-	for (offset = 0; offset < map.map_size; offset ++)
-	{
-		// apply continual offsets
+	for (offset = 0; offset < map.map_size; offset ++) {
+		/* apply continual offsets */
 #if DEBUG
 		printf("entry loc: %p %p \n",map.entry,pos_ptr);
 		pos_ptr = (map.entry + (offset*bucket_size)%(map.map_size*bucket_size));
 #endif
-
-
-		for (i = 0; i<map.map_size; i++)
-		{
+		for (i = 0; i<map.map_size; i++) {
 			//build up the value
 			char str[10];
 			sprintf(str,"%02i is key",i);
-			oah_insert(&map, (ion_key_t)(&i), (unsigned char *)str);			//this is will wrap
+			oah_insert(&map, (ion_key_t)(&i), (ion_value_t)str);			//this is will wrap
 		}
 
 		for (i = 0; i<map.map_size; i++)
 		{
 			status_t status 		= ((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->status;
-			int key					= *(int *)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data );
-			unsigned char * value 	= (ion_value_t)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data + sizeof(int));
+			ion_key_t key			= *(ion_key_t)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data );
+			ion_value_t value 		= (ion_value_t)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data + record.key_size);
 
 			//build up expected value
 			char str[10];
 			sprintf(str,"%02i is key", (i+offset)%map.map_size);
-			PLANCK_UNIT_ASSERT_TRUE(tc, status		== IN_USE);
-			PLANCK_UNIT_ASSERT_TRUE(tc, key 		== (i+offset)%map.map_size);
-			PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *)value, (char *)str);
+			PLANCK_UNIT_ASSERT_TRUE(tc, status == IN_USE);
+			PLANCK_UNIT_ASSERT_TRUE(tc, key == (i+offset)%map.map_size);
+			PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (ion_value_t)str, (ion_value_t)value);
 		}
 	}
 }
