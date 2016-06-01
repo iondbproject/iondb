@@ -38,6 +38,8 @@ python setuprepo.py
 
 in the repository root to setup necessary pre-commit hooks for formatting.
 
+If you move the directory of your repository to a different path, make sure you re-run this command!
+
 #Usage Guide
 
 These inclusions are necessary for any IonDB usage:
