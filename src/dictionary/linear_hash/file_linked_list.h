@@ -21,6 +21,8 @@ extern "C" {
 #include "./../../kv_system.h"
 #include "./../../kv_io.h"
 
+#include "./../../file/SD_stdio_c_iface.h"
+
 
 #define LOW			0
 #define MEDIUM		1

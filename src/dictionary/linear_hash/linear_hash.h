@@ -25,6 +25,8 @@ extern "C" {
 #include "./../../kv_system.h"
 #include "./../../kv_io.h"
 
+#include "./../../file/SD_stdio_c_iface.h"
+
 #include "linear_hash_dictionary.h"
 
 

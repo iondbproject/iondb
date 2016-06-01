@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../../../CuTest.h"
 #include "../../../planckunit/src/planck_unit.h"
 #include "../../../../dictionary/skip_list/skip_list_types.h"
 #include "../../../../dictionary/skip_list/skip_list.h"
@@ -19,6 +18,10 @@
 #include "../../../../dictionary/dictionary_types.h"
 #include "./../../../../dictionary/dictionary.h"
 
+#if DEBUG
 #define PRINT_HEADER() io_printf("=== [%d:%s] ===\n", __LINE__, __func__);
+#else
+#define PRINT_HEADER()
+#endif
 
 #endif /* SLTESTS_H_ */

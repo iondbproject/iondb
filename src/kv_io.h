@@ -14,7 +14,7 @@
 
 #include "kv_system.h"
 
-#if !defined(ION_ARDUINO) /* Only on PC */
+#if !defined(ARDUINO) /* Only on PC */
 #define fremove(x) remove(x)
 #define frewind(x) rewind(x)
 #endif

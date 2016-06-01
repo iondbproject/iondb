@@ -5,12 +5,7 @@
  *      Author: workstation
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <limits.h>
-#include "../../../planckunit/src/planck_unit.h"
-#include "../../../../dictionary/linear_hash/linear_hash.h"
-
+#include "test_linear_hash.h"
 
 #define TEST_FILE	"lh_main.bin"
 

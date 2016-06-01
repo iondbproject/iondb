@@ -62,8 +62,6 @@ dictionary_test_insert_get(
 	planck_unit_test_t		*tc
 )
 {
-	srand(time(NULL));
-	
 	if (0 > num_to_insert ||
 	    num_to_insert * test->key_size > INT_MAX - 1000 ||
 	    num_to_insert * test->value_size > INT_MAX - 1000

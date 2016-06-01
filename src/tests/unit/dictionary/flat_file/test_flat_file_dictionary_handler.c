@@ -9,13 +9,7 @@
 extern "C" {
 #endif
 
-#include <stdio.h>
-#include <string.h>
-#include "../../../planckunit/src/planck_unit.h"
-#include "../../../../dictionary/dictionary_types.h"
-#include "./../../../../dictionary/dictionary.h"
-#include "./../../../../dictionary/flat_file/flat_file.h"
-#include "../../../../dictionary/flat_file/flat_file_dictionary_handler.h"
+#include "test_flat_file_dictionary_handler.h"
 
 #define TEST_FILE	"file.bin"
 /**

@@ -6,7 +6,6 @@
 extern "C" {
 #endif
 
-#include <time.h>
 #include <stdlib.h>
 #include <limits.h>
 #include "../../planckunit/src/planck_unit.h"

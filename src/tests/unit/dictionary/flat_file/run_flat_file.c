@@ -1,8 +1,5 @@
-void
-runalltests_flat_file();
-
-void
-runalltests_flat_file_handler();
+#include "test_flat_file.h"
+#include "test_flat_file_dictionary_handler.h"
 
 int
 main()

@@ -5,13 +5,7 @@
  *      Author: workstation
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <limits.h>
-#include "../../../planckunit/src/planck_unit.h"
-#include "../../../../util/id_encoder/file_encoder.h"
-
-
+#include "test_file_encoder.h"
 
 /**
 @brief 		Tests the encoding of dictionary id to encoded file name.

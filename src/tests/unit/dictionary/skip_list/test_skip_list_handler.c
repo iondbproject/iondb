@@ -6,7 +6,7 @@
 */
 /******************************************************************************/
 
-#include "skip_list_tests.h"
+#include "test_skip_list_handler.h"
 
 /**
 @brief 		Helper function that constructs a sample dictionary based on the

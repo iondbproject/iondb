@@ -1,7 +1,4 @@
-
-void
-run_all_tests_bpptreehandler(
-);
+#include "test_bpp_tree_handler.h"
 
 int
 main(void)

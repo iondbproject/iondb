@@ -18,7 +18,7 @@
 #if !defined(KV_STDIO_INTERCEPT_H_)
 #define KV_STDIO_INTERCEPT_H_
 
-#if defined(ION_ARDUINO)
+#if defined(ARDUINO)
 
 #if defined(__cplusplus)
 extern "C" {
@@ -38,12 +38,12 @@ typedef long fpos_t;
 #define     feof(x)             sd_feof(x)
 #define     ftell(x)            sd_ftell(x)
 #define		fremove(x)			sd_remove(x)
-#define     frewind(x)           sd_frewind(x)
+#define     frewind(x)           sd_rewind(x)
 
 #if defined(__cplusplus)
 }
 #endif
 
-#endif /* Clause ION_ARDUINO */
+#endif /* Clause ARDUINO */
 
 #endif /* KV_STDIO_INTERCEPT_H_ */

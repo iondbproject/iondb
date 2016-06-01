@@ -21,7 +21,7 @@ typedef long		file_offset_t;
 #define ION_FILE_START	SEEK_SET
 #define ION_FILE_END	SEEK_END
 
-#if defined(ION_ARDUINO)
+#if defined(ARDUINO)
 
 #include "SD_stdio_c_iface.h"
 
@@ -33,7 +33,7 @@ typedef struct file_handle
 } file_handle_t;
 
 
-#else /* Clause ION_ARDUINO */
+#else /* Clause ARDUINO */
 
 #include "stdio.h"
 #include "unistd.h"
@@ -42,7 +42,7 @@ typedef FILE*		file_handle_t;
 
 #define ION_NOFILE	((file_handle_t)(NULL))
 
-#endif /* Clause ION_ARDUINO */
+#endif /* Clause ARDUINO */
 
 #define FILE_NULL	-1
 

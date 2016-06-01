@@ -9,13 +9,7 @@
 extern "C" {
 #endif
 
-#include <stdio.h>
-#include <string.h>
-#include "../../../planckunit/src/planck_unit.h"
-#include "../../../../dictionary/dictionary_types.h"
-#include "./../../../../dictionary/dictionary.h"
-#include "../../../../dictionary/open_address_hash/open_address_hash.h"
-#include "../../../../dictionary/open_address_hash/open_address_hash_dictionary_handler.h"
+#include "test_open_address_hash_dictionary_handler.h"
 
 #define MAX_HASH_TEST 100
 

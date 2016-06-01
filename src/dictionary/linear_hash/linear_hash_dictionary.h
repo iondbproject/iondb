@@ -13,6 +13,8 @@ extern "C" {
 
 #include "../dictionary_types.h"
 
+#include "./../../file/SD_stdio_c_iface.h"
+
 /**
 @brief		The position in the hashmap.
  */
