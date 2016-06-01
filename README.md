@@ -27,6 +27,17 @@ Pull requests are currently **not** recommended due to significant changes arriv
 
 ***
 
+##Repository Setup for Contributors
+
+Before editing any code, make sure you have `uncrustify` installed, version
+0.63 or newer, and run
+
+```bash
+python setuprepo.py
+```
+
+in the repository root to setup necessary pre-commit hooks for formatting.
+
 #Usage Guide
 
 These inclusions are necessary for any IonDB usage:
