@@ -51,6 +51,8 @@ endif()
 add_subdirectory(src/tests)
 add_subdirectory(src/tests/unit/dictionary)
 
+add_subdirectory(src/util/lfsr)
+
 add_subdirectory(src/util/id_encoder)
 add_subdirectory(src/tests/unit/dictionary/id_encoder)
 
