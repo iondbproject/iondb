@@ -14,5 +14,5 @@ files		= subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)\
 print files
 for fname in files.split():
 	#print(fname)
-	#os.system("uncrustify -c dotfiles/iondb_style.cfg --replace --no-backup " + fname)
+	os.system("uncrustify -c dotfiles/iondb_style.cfg --replace --no-backup " + fname)
 	subprocess.call(["python", "dotfiles/scripts/spacestotabs.py", fname, fname])
