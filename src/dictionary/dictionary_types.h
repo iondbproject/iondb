@@ -4,6 +4,21 @@
 @author		Scott Fazackerley, Graeme Douglas
 @brief		Types used for dictionaries.
 @details	This file exists mostly to avoid circular dependencies.
+@copyright	Copyright 2016
+				The University of British Columbia,
+				IonDB Project Contributors (see @ref AUTHORS.md)
+@par
+			Licensed under the Apache License, Version 2.0 (the "License");
+			you may not use this file except in compliance with the License.
+			You may obtain a copy of the License at
+					http://www.apache.org/licenses/LICENSE-2.0
+@par
+			Unless required by applicable law or agreed to in writing,
+			software distributed under the License is distributed on an
+			"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+			either express or implied. See the License for the specific
+			language governing permissions and limitations under the
+			License.
 */
 /******************************************************************************/
 
@@ -17,12 +32,13 @@ extern "C" {
 #include "./../kv_system.h"
 
 /**
-@brief 		Dictionary ID.
+@brief 		A type used to identify dictionaries, specifically in the master
+			table.
 */
 typedef unsigned int 				ion_dictionary_id_t;
 
 /**
-@brief		An enum describing how a dictionary is used.
+@brief		A type describing how a dictionary is used.
 @details	This type allows users of the library to find certain
 			dictionaries in the key-value store that might be special.
 			See @ref ion_find_by_use_master_table.
@@ -34,11 +50,12 @@ typedef unsigned char				ion_dict_use_t;
 			created.
 */
 typedef struct {
-	ion_dictionary_id_t 	id;					/**< The dictionary ID to open.
-												*/
+	ion_dictionary_id_t 	id;					/**< The identifier used to
+													 identify the dictionary. */
 	ion_dict_use_t			use_type;			/**< How the dictionary will be
 												     used. Ignore if N/A. */
-	key_type_t				type;				/**< The type of key to store.*/
+	key_type_t				type;				/**< The type of key to store.
+												*/
 	ion_key_size_t			key_size;			/**< The size of the key. */
 	ion_value_size_t 		value_size;			/**< The size of the value. */
 	ion_dictionary_size_t 	dictionary_size;	/**< The dictionary size
@@ -72,38 +89,77 @@ typedef char (*ion_dictionary_compare_t)(ion_key_t, ion_key_t, ion_key_size_t);
 */
 typedef struct dictionary_cursor	dict_cursor_t;
 
+/**
+@brief		The dictionary predicate type.
+@see		@ref struct predicate
+*/
 typedef struct predicate 			predicate_t;
 
+/**
+@brief		The dictionary predicate statement type.
+@see		@ref struct predicate_statement
+*/
 typedef union predicate_statement	predicate_statement_t;
 
+/**
+@brief		The dictionary parent type.
+@see		@ref struct dictionary_parent
+*/
 typedef struct dictionary_parent	dictionary_parent_t;
 
+/**
+@brief		A comparison result type that describes the result of a comparison.
+*/
 typedef enum comparison
 {
-	A_lt_B	= -1,							/**<The result for the comparison operation is A <= B */
-	A_equ_B = 0,							/**<The result for the comparison operation is A == B */
-	A_gt_B = 1								/**<The result for the comparison operation is A >= B */
-}comparsion_t;
+	A_lt_B	= -1,	/**< The result for the comparison operation is A <= B. */
+	A_equ_B = 0,	/**< The result for the comparison operation is A == B. */
+	A_gt_B = 1		/**< The result for the comparison operation is A >= B. */
+} comparsion_t;
 
+/**
+@brief		A status type describing the current state of an initialized cursor.
+*/
 enum cursor_status
 {
-	cs_invalid_index = -1,					/**<Invalid index within cursor*/
-	cs_invalid_cursor,						/**<Cursor is not valid */
-	cs_end_of_results,						/**<cursor has reached end */
-	cs_cursor_initialized,					/**<cursor is valid but data has need been accessed */
-	cs_cursor_uninitialized,				/**<cursor is not atttaced to query */
-	cs_cursor_active,						/**<cursor is active in data traversal */
-	cs_possible_data_inconsistency,			/**<The collection has changed
-												during the life of the
-												cursor*/
-	cs_valid_data
+	cs_invalid_index = -1,				/**< A cursor status stating that
+											 the cursor has an invalid index. */
+	cs_invalid_cursor,					/**< A cursor status stating that the
+										     cursor is generally invalid. */
+	cs_end_of_results,					/**< A cursor status stating that the
+											 the cursor has reached the end of
+											 the results. */
+	cs_cursor_initialized,				/**< A cursor status stating that the
+											 cursor has been intialized but has
+											 data thats hasn't yet been
+											 accessed.
+										     Cursor is valid but data has need
+											 been accessed. */
+	cs_cursor_uninitialized,			/**< A cursor status stating that
+											 the cursor has not yet been
+											 attached to a predicate statement
+											 and associated data. */
+	cs_cursor_active,					/**< A cursor status stating that
+											 the cursor is active and is
+											 traversing data. */
+	cs_possible_data_inconsistency,		/**< A cursor status stating that the
+											 data in the underlying dictionary
+											 has been changed, making the cursor
+											 invalid. */
+	cs_valid_data						/**< The data in the cursor is valid. @todo we should delete this. */
 };
 
+/**
+@brief		A type for the status of a cursor.
+@details	This allows us to control the size of the status type,
+			rather than depending on the enum.
+*/
 typedef char cursor_status_t;
 
 /**
-@brief		A dictionary_handler is responsible for dealing with the specific interface
-			for an underlying dictionary, but is decoupled from a specific collection
+@brief		A dictionary_handler is responsible for dealing with the specific
+			interface for an underlying dictionary, but is decoupled from a
+			specific collection.
 */
 struct dictionary_handler
 {
@@ -147,88 +203,98 @@ struct dictionary_handler
 */
 struct dictionary
 {
-	dictionary_parent_t		*instance;		/**< Specific instance of a
-											     collection (but we don't
-											     know type) */
-	dictionary_handler_t 	*handler;		/**< Handler for the specific type. */
+	dictionary_parent_t		*instance;	/**< Specific instance of a
+										     collection (but we don't
+										     know type). */
+	dictionary_handler_t 	*handler;	/**< Handler for the specific type. */
 };
 
 /**
-@brief 		This is the parent for all collections
- */
+@brief 		This is the super type for all dictionaries.
+*/
 struct dictionary_parent
 {
-	key_type_t					key_type;		/**< The key type stored in the map*/
-	record_info_t 				record;			/**< The record structure for items*/
-	ion_dictionary_compare_t 	compare; 		/**< Comparison function for instance of map */
-	ion_dictionary_id_t			id;				/**< ID of dictionary instance */
+	key_type_t					key_type;/**< The key type stored in the map. */
+	record_info_t 				record;	 /**< The record structure for items. */
+	ion_dictionary_compare_t 	compare; /**< Comparison function for
+											  instance of map. */
+	ion_dictionary_id_t			id;		 /**< ID of dictionary instance. */
 };
 
 /**
-@brief		Predicate type designator.
+@brief		A type for storing predicate type data.
 */
 typedef char 						predicate_type_t;
 
+/**
+@brief		The predicate type flag list.
+@details	These type flags tell internal code what type of predicate is
+			being described.
+*/
 enum predicate_type
 {
-	predicate_equality,		/**< Equality cursor. */
-	predicate_range,		/**< Range cursor. */
-	predicate_all_records,	/**< Cursor over all elements. */
-	predicate_predicate		/**< Predicate cursor. */
+	predicate_equality,		/**< Predicate type for equality cursors. */
+	predicate_range,		/**< Predicate tyoe for range cursors. */
+	predicate_all_records,	/**< Predicate type for cursors over all records. */
+	predicate_predicate		/**< Predicate type for predicate cursors. */
 };
 
 
 /**
-@brief		predicate for equality queries.
-@details	Used by the user to setup a predicate for evaluation.
+@brief		This is a predicate data object for equality queries.
+@details	This is to be used by the user to setup a predicate for evaluation.
 */
 typedef struct equality_statement
 {
 	ion_key_t		equality_value;
-					/**< The value to match in the equality */
+		/**< The value to match in the equality. */
 } equality_statement_t;
 
 /**
-@brief		predicate for range queries.
-@details	Used by the user to setup a predicate for evaluation.
+@brief		This is a predicate data object for range queries.
+@details	This is to be used by the user to setup a predicate for evaluation.
 */
 typedef struct range_statement
 {
 	ion_key_t		lower_bound;
-					/**< The lower value in the range */
+		/**< The lower value in the range */
 	ion_key_t		upper_bound;
-					/**< The upper value in the range */
+		/**< The upper value in the range */
 } range_statement_t;
 
 /**
-@brief		Predicate for cursors that iterate over all records in set.
+@brief		Predicate type for cursors that iterate over all records in set.
+@details	This is to be used by the user to setup a predicate for evaluation.
 */
 typedef struct ion_all_records_statement
 {
 } ion_all_records_statement_t;
 
 /**
-@brief		predicate for predicate queries.
-@details	Used by the user to setup a predicate for evaluation.
+@brief		Predicate type for predicate (conditional) queries.
+@details	This is to be used by the user to setup a predicate for evaluation.
 */
 typedef struct other_predicate_statement
 {
-					/** @TODO this needs to be resolved */
+	/** @TODO this needs to be resolved */
 } other_predicate_statement_t;
 
 /**
-@brief used to pass predicate into query
+@brief		This is used to pass predicate into a cursor-based query over
+			a dictionary.
 */
 union predicate_statement
 {
+	/**> An equality predicate statement. */
 	equality_statement_t 			equality;
+	/**> A range predicate statement. */
 	range_statement_t				range;
+	/**> A general predicate statement. */
 	other_predicate_statement_t		other_predicate;
 };
 
-//FIXME TODO This doc is outdated
 /**
-@brief		Predicate supertype.
+@brief		A supertype for cursor predicate objects.
 @details	This is a super type. The state information
 			must be stored within a subtype that makes
 			sense to the particular dictionary implementation.
@@ -236,18 +302,22 @@ union predicate_statement
 			There are different types of predicates for different types of
 			dictionary operations.
 
-			@todo A predicate is used with the find statement to produce a
-			collection with multiple values
+			A predicate is used with the find statement to produce a
+			collection with multiple values.
 */
 struct predicate
 {
+	/**> Predicate type data for this predicate. */
 	predicate_type_t		type;
+	/**> Predicate statement data. This is specific to the type of predicate. */
 	predicate_statement_t 	statement;
-	void					(*destroy)(predicate_t **);
+	/**> A function pointer used to later free memory associated with the
+		 predicate. */
+	void					(* destroy)(predicate_t **);
 };
 
 /**
-@brief		Dictionary cursor supertype.
+@brief		A supertype for dictionary cursor objects.
 @details	This is a super type. The state information
 			must be stored within a subtype that makes
 			sense to the particular dictionary implementation.
@@ -258,32 +328,41 @@ struct predicate
 struct dictionary_cursor
 {
 	cursor_status_t			status;			/**< Status of last cursor call. */
-	dictionary_t			*dictionary;	/**< Reference to the dictionary */
-	predicate_t				*predicate;		/**< The predicate for the cursor */
+	dictionary_t			*dictionary;	/**< A pointer to the dictionary
+												 object. */
+	predicate_t				*predicate;		/**< The predicate for the cursor.
+											*/
 	cursor_status_t			(* next)(dict_cursor_t *, ion_record_t *record);
-											/**< Next function binding *cursor_status_t)*/
+											/**< A pointer to the next function,
+												 which sets cursor_status_t). */
 	void					(* destroy)(dict_cursor_t **);
-											/**< Destroy the cursor (frees internal memory) */
+											/**< A pointer to the function used
+												 to destroy the cursor (frees
+												 internal memory). */
 };
 
 /**
-@brief		Options for write concern for for overwriting (updating) of values
-			on insert and if not it will insert value insert_unique which
-			allows for unique insert only. Usage of this by implementations is
-			optional.
- */
+@brief		The list of write concern options for supported dictionary
+			implementations.
+@details	The write concern level describes dictionary behaviour when multiple
+			values are inserted with the same key. Not all implementations are
+			required to support different write concern levels.
+*/
 enum write_concern
 {
-	wc_update,				/**< allows for values to be overwritten if already
-	 	 	 	 	 	 	 	 in dictionary */
-	wc_insert_unique,		/**< allows for unique inserts only
-								(no overwrite) */
-	wc_duplicate,			/**< allows for duplicate keys to be inserted into dictionary */
+	wc_update,				/**< Write concern which allows for values to be
+								 overwritten if their associated key
+								 already exists in the dictionary. */
+	wc_insert_unique,		/**< Write concern which allows for unique inserts
+								 only (no overwrite). */
+	wc_duplicate,			/**< Write concern which allows for duplicate keys
+								 to be inserted into dictionary. */
 };
 
 /**
-@brief		Write concern for hashmap which limits insert/update of values.
- */
+@brief		A type for write concern information used by hash table based
+			dictionaries which limit insert/update of values.
+*/
 typedef char 			write_concern_t;
 
 #if defined(__cplusplus)
