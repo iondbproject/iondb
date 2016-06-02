@@ -1,8 +1,23 @@
 /******************************************************************************/
 /**
-@file       ion_master_table.c
+@file
 @author     Eric Huang, Graeme Douglas, Scott Fazackerley, Wade Penson
 @brief      Master table handling.
+@copyright	Copyright 2016
+				The University of British Columbia,
+				IonDB Project Contributors (see @ref AUTHORS.md)
+@par
+			Licensed under the Apache License, Version 2.0 (the "License");
+			you may not use this file except in compliance with the License.
+			You may obtain a copy of the License at
+					http://www.apache.org/licenses/LICENSE-2.0
+@par
+			Unless required by applicable law or agreed to in writing,
+			software distributed under the License is distributed on an
+			"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+			either express or implied. See the License for the specific
+			language governing permissions and limitations under the
+			License.
 */
 /******************************************************************************/
 
@@ -19,7 +34,7 @@ ion_master_table_get_next_id(
 {
     int oldpos = ftell(ion_master_table_file);
     fseek(ion_master_table_file, 0, SEEK_SET);
-    /* Flush master row                           This writes the next ID to be used, so +1 */
+    /* Flush master row. This writes the next ID to be used, so add 1. */
     ion_dictionary_config_info_t master_config = {ion_master_table_next_id + 1, 0, 0, 0, 0};
     fwrite(&master_config, sizeof(master_config), 1, ion_master_table_file);
     fseek(ion_master_table_file, oldpos, SEEK_SET);
@@ -32,8 +47,10 @@ ion_init_master_table(
 	void
 )
 {
-    /* If it's already open, then we don't do anything */
-    if (NULL != ion_master_table_file) { return err_ok; }
+    /* If it's already open, then we don't do anything. */
+    if (NULL != ion_master_table_file) {
+		return err_ok;
+	}
 
     ion_master_table_file = fopen(ION_MASTER_TABLE_FILENAME, "r+b");
     /* File may not exist. */
@@ -221,8 +238,8 @@ ion_delete_from_master_table(
 
 err_t
 ion_open_dictionary(
-    dictionary_handler_t    *handler, /* Initialized */
-    dictionary_t            *dictionary, /* Empty, to be returned */
+    dictionary_handler_t    *handler,		/* This is already initialized. */
+    dictionary_t            *dictionary,	/* Passed in empty, to be set. */
     ion_dictionary_id_t     id
 )
 {
@@ -230,7 +247,10 @@ ion_open_dictionary(
 
     ion_dictionary_config_info_t config;
     err = ion_lookup_in_master_table(id, &config);
-    if (err_ok != err) { return err_dictionary_initialization_failed; } /* Lookup for id failed */
+	/* Lookup for id failed. */
+    if (err_ok != err) {
+		return err_dictionary_initialization_failed;
+	}
 
     err = dictionary_open(handler, dictionary, &config);
     return err;
