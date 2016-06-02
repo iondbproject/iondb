@@ -45,8 +45,16 @@ elif "totabs" == mode:
 			continue
 		newstr	+= string[cur:m.start()]
 		newstr	+= '\t'
-		cur	= m.end()+1
+		cur	= m.end()
 	if cur < len(string):
 		newstr	+= string[cur:]
 		
-print(newstr)
+if len(sys.argv) > 2:
+	try:
+		with open(sys.argv[2], 'w+') as content_file:
+			string = content_file.write(newstr)
+	except:
+		eprint("Could not write to file: " + sys.argv[1])
+		sys.exit()
+else:
+	print(newstr)
