@@ -56,5 +56,5 @@ hooks: $(SCRIPTS_DIR)/setuprepo.py
 
 .PHONY: format
 format: $(SCRIPTS_DIR)/uncrustify.py
-	$(PY) $(SCRIPTS_DIR)/uncrustify.py
+	$(PY) $(SCRIPTS_DIR)/format.py
 ################################################################################
