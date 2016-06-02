@@ -12,12 +12,12 @@ gh	= os.path.join(pwd, '.git', 'hooks')
 files	= [
 	{'copy': False, 'exec': True,  'file': 'pre-commit-uncrustify',
 	 'replacements': {
-		'%CONFIG_FILE%': os.path.join(gh, 'iondb_style.cfg')
+		'%CONFIG_FILE%': os.path.join(df, 'iondb_style.cfg')
 	 }
 	},
 	{'copy': True,  'exec': True,  'file': 'pre-commit'},
 	{'copy': True,  'exec': True,  'file': 'canonicalize_filename.sh'},
-	{'copy': True,  'exec': False, 'file': 'iondb_style.cfg'},
+	#{'copy': True,  'exec': False, 'file': 'iondb_style.cfg'},
 ]
 
 for f in files:

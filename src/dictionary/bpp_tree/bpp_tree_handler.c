@@ -480,10 +480,12 @@ bpptree_next(
 							is_valid = boolean_false;
 						}
 					}
+					break;
 				}
 				case predicate_predicate:
 				{
 					/*TODO Not implemented */
+					break;
 				}
 				/*No default since we can assume the predicate is valid. */
 			}
