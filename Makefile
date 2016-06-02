@@ -48,6 +48,10 @@ $(BUILD_DIR)/Makefile: init_dirs
 all: init_dirs $(BUILD_DIR)/Makefile
 	cd $(BUILD_DIR) ; make all
 
+.PHONY: test
+test: init_dirs $(SCRIPTS_DIR)/runalltests.py
+	cd $(TEST_BIN_DIR) ; python ../../dotfiles/scripts/runalltests.py
+
 # Utility goals for scripts and such.
 
 .PHONY: hooks
