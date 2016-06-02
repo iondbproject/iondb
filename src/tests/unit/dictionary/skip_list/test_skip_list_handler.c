@@ -185,7 +185,7 @@ test_slhandler_cursor_equality(
 	create_test_collection_std_conditions(&dict, &handler);
 	dict_cursor_t 			*cursor;
 	predicate_t 			predicate;
-	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(33));
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(33, int));
 
 	err_t 	status = dictionary_find(&dict, &predicate, &cursor);
 
@@ -216,7 +216,7 @@ test_slhandler_cursor_equality_with_results(
 	create_test_collection_std_conditions(&dict, &handler);
 	dict_cursor_t 			*cursor;
 	predicate_t 			predicate;
-	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(56));
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(56, int));
 
 	err_t 	status = dictionary_find(&dict, &predicate, &cursor);
 
@@ -229,12 +229,12 @@ test_slhandler_cursor_equality_with_results(
 
 	cursor_status_t c_status = cursor->next(cursor, &record);
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
-	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(56), dict.instance->record.key_size) == 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(56, int), dict.instance->record.key_size) == 0);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.value, (ion_value_t) (char*){"DATA"}, dict.instance->record.value_size) == 0);
 
 	while( cursor->next(cursor, &record) != cs_end_of_results)
 	{
-		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(56), dict.instance->record.key_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(56, int), dict.instance->record.key_size) == 0);
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.value, (ion_value_t) (char*){"DATA"}, dict.instance->record.value_size) == 0);
 	}
 
@@ -264,7 +264,7 @@ test_slhandler_cursor_range(
 	create_test_collection_std_conditions(&dict, &handler);
 	dict_cursor_t 			*cursor;
 	predicate_t 			predicate;
-	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(15), IONIZE(60));
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(15, int), IONIZE(60, int));
 
 	err_t 	status = dictionary_find(&dict, &predicate, &cursor);
 
@@ -295,7 +295,7 @@ test_slhandler_cursor_range_with_results(
 	create_test_collection_std_conditions(&dict, &handler);
 	dict_cursor_t 			*cursor;
 	predicate_t 			predicate;
-	dictionary_build_predicate(&predicate, predicate_range, IONIZE(5), IONIZE(78));
+	dictionary_build_predicate(&predicate, predicate_range, IONIZE(5, int), IONIZE(78, int));
 
 	err_t 	status = dictionary_find(&dict, &predicate, &cursor);
 
@@ -308,14 +308,14 @@ test_slhandler_cursor_range_with_results(
 
 	cursor_status_t c_status = cursor->next(cursor, &record);
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
-	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(5), dict.instance->record.key_size) >= 0);
-	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(78), dict.instance->record.key_size) <= 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(5, int), dict.instance->record.key_size) >= 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(78, int), dict.instance->record.key_size) <= 0);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.value, (ion_value_t) (char*){"DATA"}, dict.instance->record.value_size) == 0);
 
 	while( cursor->next(cursor, &record) != cs_end_of_results)
 	{
-		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(5), dict.instance->record.key_size) >= 0);
-		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(78), dict.instance->record.key_size) <= 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(5, int), dict.instance->record.key_size) >= 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(78, int), dict.instance->record.key_size) <= 0);
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.value, (ion_value_t) (char*){"DATA"}, dict.instance->record.value_size) == 0);
 	}
 

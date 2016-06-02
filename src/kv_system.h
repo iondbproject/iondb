@@ -33,10 +33,9 @@
 #define PANIC(stuff) printf("\t\t%s\n", stuff)
 #endif /* Clause ARDUINO */
 
-#define IONIZE(something) ({volatile typeof(something) _tmp = something; (ion_key_t) &_tmp; })
-#define NEUTRALIZE(type, something) ( *((type *) something) )
-
-#define IONIZE_VAL(varname, size) unsigned char varname[size];
+#define IONIZE(something, type) (ion_key_t) &(type){(something)}
+#define NEUTRALIZE(something, type) ( *((type *) (something)) )
+#define IONIZE_VAL(varname, size) unsigned char varname[size]
 
 typedef char status_t;
 

@@ -134,7 +134,7 @@ test_open_address_dictionary_cursor_equality(
 
 	//create a new predicate statement
 	predicate_t 			predicate;
-	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(1));
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(1, int));
 
 	//test that the query runs on collection okay
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== dictionary_find(&test_dictionary, &predicate, &cursor));
@@ -174,7 +174,7 @@ test_open_address_dictionary_handler_query_with_results(
 
 	//create a new predicate statement
 	predicate_t 			predicate;
-	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(1));
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(1, int));
 
 	//test that the query runs on collection okay
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== dictionary_find(&test_dictionary, &predicate, &cursor));
@@ -235,7 +235,7 @@ test_open_address_dictionary_handler_query_no_results(
 
 	//create a new predicate statement
 	predicate_t 			predicate;
-	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(-1));
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(-1, int));
 
 	//test that the query runs on collection okay
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== dictionary_find(&test_dictionary, &predicate, &cursor));
@@ -286,7 +286,7 @@ test_open_address_dictionary_predicate_equality(
 
 	//create a new predicate statement
 	predicate_t 			predicate;
-	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(1));
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(1, int));
 
 	cursor->dictionary 		= &test_dictionary;				//register test dictionary
 	cursor->predicate 		= &predicate;					//register predicate
@@ -341,7 +341,7 @@ test_open_address_dictionary_predicate_range_signed(
 
 	//create a new predicate statement
 	predicate_t 			predicate;
-	dictionary_build_predicate(&predicate, predicate_range, IONIZE(-1), IONIZE(1));
+	dictionary_build_predicate(&predicate, predicate_range, IONIZE(-1, int), IONIZE(1, int));
 
 	cursor->dictionary 		= &test_dictionary;				//register test dictionary
 	cursor->predicate 		= &predicate;					//register predicate
@@ -403,7 +403,7 @@ test_open_address_dictionary_predicate_range_unsigned(
 
 	//create a new predicate statement
 	predicate_t 			predicate;
-	dictionary_build_predicate(&predicate, predicate_range, IONIZE(0), IONIZE(2));
+	dictionary_build_predicate(&predicate, predicate_range, IONIZE(0, int), IONIZE(2, int));
 
 	cursor->dictionary 		= &test_dictionary;				//register test dictionary
 	cursor->predicate 		= &predicate;					//register predicate
@@ -460,7 +460,7 @@ test_open_address_dictionary_cursor_range(
 
 	//create a new predicate statement
 	predicate_t 			predicate;
-	dictionary_build_predicate(&predicate, predicate_range, IONIZE(1), IONIZE(5));
+	dictionary_build_predicate(&predicate, predicate_range, IONIZE(1, int), IONIZE(5, int));
 	//test that the query runs on collection okay
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 				== dictionary_find(&test_dictionary, &predicate, &cursor));
 

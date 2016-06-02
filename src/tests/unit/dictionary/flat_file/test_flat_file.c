@@ -148,7 +148,7 @@ test_flat_file_simple_insert_and_query(
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		ff_insert(&flat_file, IONIZE(i), (ion_value_t)str);			//this is will wrap
+		ff_insert(&flat_file, IONIZE(i, int), (ion_value_t)str);			//this is will wrap
 	}
 
 	printf("starting lookup\n");

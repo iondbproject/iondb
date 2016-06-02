@@ -106,28 +106,28 @@ Note that keys and values are of a fixed size, which is set on a per-dictionary 
 
 //Suppose the key is an int
 int my_key = 64;
-ion_key_t key = IONIZE(my_key); //A prepared key
+ion_key_t key = IONIZE(my_key, int); //A prepared key
 
 //Inline is fine too:
-ion_key_t key = IONIZE(64);
+ion_key_t key = IONIZE(64, int);
 
 //Any type is supported
 unsigned long long my_key = 2147483648ull;
-ion_key_t key = IONIZE(my_key);
+ion_key_t key = IONIZE(my_key, unsigned long long);
 
 /* Key retrieval */
 
 //Retrieve an int from a key
-int my_key = NEUTRALIZE(int, key);
+int my_key = NEUTRALIZE(key, int);
 
 //Retrieve unsigned long long from a key
-unsigned long long my_key = NEUTRALIZE(unsigned long long, key);
+unsigned long long my_key = NEUTRALIZE(key, unsigned long long);
 ```
 
 ####Ionization functions
 | Function | Type |
 |----------|------|
-| `IONIZE(any)` | `IONIZE :: any -> ion_key_t` |
+| `IONIZE(key, atype)` | `IONIZE :: atype -> ion_key_t` |
 | `NEUTRALIZE(atype, key)` | `NEUTRALIZE :: ion_key_t -> atype` |
 
 ####Key categories:
@@ -152,7 +152,7 @@ SD.begin(4);
 ###Insert
 
 ```c
-ion_key_t key = IONIZE(some_key);
+ion_key_t key = IONIZE(some_key, int);
 ion_value_t value = some_value;
 dictionary_insert(&dictionary, key, value);
 ```
@@ -160,14 +160,14 @@ dictionary_insert(&dictionary, key, value);
 ###Delete
 
 ```c
-ion_key_t key = IONIZE(some_key);
+ion_key_t key = IONIZE(some_key, int);
 dictionary_delete(&dictionary, key);
 ```
 
 ###Query
 
 ```c
-ion_key_t key = IONIZE(some_key);
+ion_key_t key = IONIZE(some_key, int);
 ion_value_t my_value = malloc(value_size); // Create buffer to hold returned value
 dictionary_get(&dictionary, key, my_value);
 // Process data
@@ -197,7 +197,7 @@ void setup() {
     //Create dictionary: Given handler, dictionary, key type, key size, value size, dict size
     dictionary_create(&handler, &dictionary, key_type_numeric_signed, sizeof(int), 60, 10);
     
-    ion_key_t   key = IONIZE(42);
+    ion_key_t   key = IONIZE(42, int);
     ion_value_t value = (ion_value_t) "Hello IonDB";
     
     dictionary_insert(&dictionary, key, value);
