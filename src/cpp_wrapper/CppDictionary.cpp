@@ -8,6 +8,7 @@
 /******************************************************************************/
 
 #include "CppDictionary.h"
+#include "../dictionary/ion_master_table.h"
 
 CppDictionary::CppDictionary(
         key_type_t type_key,
@@ -44,16 +45,15 @@ CppDictionary::CppDictionary(
         type_key,
         key_size,
         value_size,
-        dictionary_size
+        0 /** What value should this default to? */
     );
 
 }
 
-template <typename V>
 err_t
-insert(
+CppDictionary::insert(
         key_type_t key,
-        V value
+        key_type_t value
 )
 {
     ion_key_t ion_key       = (ion_key_t)&key;
@@ -64,14 +64,13 @@ insert(
     return err;
 }
 
-template <typename V>
 err_t
-get(
+CppDictionary::get(
         key_type_t key,
-        V **value
+        key_type_t **value
 )
 {
-    *value                  = malloc(sizeof(V));
+    *value                  = (key_type_t *) malloc(sizeof(key_type_t));
 
     ion_key_t ion_key       = (ion_key_t)&key;
     ion_value_t ion_value   = (ion_value_t)&value;
@@ -82,7 +81,7 @@ get(
 }
 
 err_t
-deleteKey(
+CppDictionary::deleteKey(
         key_type_t key
 )
 {
@@ -92,11 +91,10 @@ deleteKey(
     return err;
 }
 
-template <typename V>
 err_t
-update(
+CppDictionary::update(
         key_type_t key,
-        V value
+        key_type_t value
 )
 {
     ion_key_t ion_key       = (ion_key_t)&key;
@@ -107,7 +105,7 @@ update(
 }
 
 err_t
-destroy()
+CppDictionary::destroy()
 {
     err_t err = dictionary_delete_dictionary(&dict);
 
@@ -117,7 +115,7 @@ destroy()
 
 /** Is config info of type ion_dictionary_config_info_t passed directly from user? */
 err_t
-open(
+CppDictionary::open(
         ion_dictionary_config_info_t config_info
 )
 {
@@ -127,7 +125,7 @@ open(
 }
 
 err_t
-close()
+CppDictionary::close()
 {
     err_t err = dictionary_close(&dict);
 
@@ -135,11 +133,10 @@ close()
 }
 
 /** Needs code review */
-template <typename V>
 err_t
-range(
-        V min_value,
-        V max_value
+CppDictionary::range(
+        key_type_t min_value,
+        key_type_t max_value
 )
 {
     predicate_t predicate;
@@ -158,7 +155,7 @@ range(
 
 /** Needs code review */
 err_t
-equality(
+CppDictionary::equality(
         key_type_t key
 )
 {
@@ -177,7 +174,7 @@ equality(
 
 /** Needs code review */
 err_t
-allRecords()
+CppDictionary::allRecords()
 {
     predicate_t predicate;
     /** How is cursor initialized? */
@@ -186,6 +183,35 @@ allRecords()
     dictionary_build_predicate(&predicate, predicate_all_records);
 
     err_t err = dictionary_find(&dict, &predicate, cursor);
+
+    return err;
+}
+
+err_t
+masterTableLookup(
+        unsigned int id,
+        ion_dictionary_config_info_t *config
+)
+{
+    err_t err           = ion_lookup_in_master_table(id, config);
+
+    return err;
+}
+
+err_t
+CppDictionary::masterTableOpenDictionary(
+    unsigned int id
+)
+{
+    err_t err = ion_open_dictionary(&handler, &dict, id);
+
+    return err;
+}
+
+err_t
+CppDictionary::masterTableCloseDictionary()
+{
+    err_t err = ion_close_dictionary(&dict);
 
     return err;
 }

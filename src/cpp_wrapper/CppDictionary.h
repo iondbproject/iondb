@@ -16,6 +16,8 @@
 class CppDictionary {
 
 protected:
+    dictionary_handler_t handler;
+    dictionary_t dict;
     enum dictionary_type {
         BPP_TREE,
         FLAT_FILE,
@@ -24,9 +26,6 @@ protected:
         OPEN_ADDRESS_HASH,
         SKIP_LIST
     };
-
-    dictionary_handler_t handler;
-    dictionary_t dict;
 
 public:
 /* BEFORE USE OF A FILE BASED DICTIONARY IMPLEMENTATION (BPP_TREE, FLAT_FILE),
@@ -44,7 +43,7 @@ public:
 @param      dictionary_size
                 The size desired for the dictionary.
 */
-CppDictionary(
+    CppDictionary(
             key_type_t type_key,
             int key_size,
             int value_size,
@@ -61,7 +60,7 @@ CppDictionary(
 @param      value_size
                 The size of the values to be stored in the dictionary.
 */
-CppDictionary(
+    CppDictionary(
             key_type_t type_key,
             int key_size,
             int value_size
@@ -76,11 +75,10 @@ CppDictionary(
 				The value to store under @p key.
 @returns	An error message describing the result of the insertion.
 */
-    template <typename V>
     err_t
-    insert(
+            insert(
             key_type_t key,
-            V value
+            key_type_t value /* Can a value be of a type other than a key type or is this legal? */
     );
 
 /**
@@ -96,11 +94,10 @@ CppDictionary(
 				A pointer to the value byte array to copy data into.
 @return		An error message describing the result of the retrieval.
 */
-    template <typename V>
     err_t
-    get(
+            get(
             key_type_t key,
-            V **value
+            key_type_t **value
     );
 
 /**
@@ -111,7 +108,7 @@ CppDictionary(
 @return		An error message describing the result of the deletion.
 */
     err_t
-    deleteKey(
+            deleteKey(
             key_type_t key
     );
 
@@ -124,11 +121,10 @@ CppDictionary(
 				The value to update records with.
 @return     An error message describing the result of the update.
 */
-    template <typename V>
     err_t
-    update(
+            update(
             key_type_t key,
-            V value
+            key_type_t value
     );
 
 /**
@@ -137,7 +133,7 @@ CppDictionary(
 @return		An error message describing the total destruction of the dictionary.
  */
     err_t
-    destroy();
+            destroy();
 
 
     /** Is config info of type ion_dictionary_config_info_t passed directly from user? */
@@ -149,7 +145,7 @@ CppDictionary(
 @return     An error message describing the result of of the open.
 */
     err_t
-    open(
+            open(
             ion_dictionary_config_info_t config_info
     );
 
@@ -157,7 +153,7 @@ CppDictionary(
 @brief      Closes a dictionary.
 */
     err_t
-    close();
+            close();
 
 /**
 @brief      Performs a range query on a dictionary.
@@ -168,11 +164,10 @@ CppDictionary(
                 The maximum value to be included in the query.
 @returns    An error message describing the result of the query.
 */
-    template <typename V>
     err_t
-    range(
-            V min_value,
-            V max_value
+            range(
+            key_type_t min_value,
+            key_type_t max_value
     );
 
 /**
@@ -183,7 +178,7 @@ CppDictionary(
 @returns    An error message describing the result of the query.
 */
     err_t
-    equality(
+            equality(
             key_type_t key
     );
 
@@ -193,7 +188,22 @@ CppDictionary(
 @returns    An error message describing the result of the query.
 */
     err_t
-    allRecords();
+            allRecords();
+
+
+    err_t
+            masterTableLookup(
+            unsigned int id,
+            ion_dictionary_config_info_t *config
+    );
+
+    err_t
+            masterTableOpenDictionary(
+            unsigned int id
+    );
+
+    err_t
+            masterTableCloseDictionary();
 
 };
 
