@@ -12,6 +12,7 @@
 
 #include "../dictionary/dictionary.h"
 #include "../dictionary/dictionary_types.h"
+#include "../dictionary/ion_master_table.h"
 
 class CppDictionary {
 
@@ -75,10 +76,11 @@ public:
 				The value to store under @p key.
 @returns	An error message describing the result of the insertion.
 */
+    template <typename T>
     err_t
             insert(
             key_type_t key,
-            key_type_t value /* Can a value be of a type other than a key type or is this legal? */
+            T value /* Can a value be of a type other than a key type or is this legal? */
     );
 
 /**
@@ -94,10 +96,11 @@ public:
 				A pointer to the value byte array to copy data into.
 @return		An error message describing the result of the retrieval.
 */
+    template <typename T>
     err_t
             get(
             key_type_t key,
-            key_type_t **value
+            T value
     );
 
 /**
@@ -121,10 +124,11 @@ public:
 				The value to update records with.
 @return     An error message describing the result of the update.
 */
+    template <typename T>
     err_t
             update(
             key_type_t key,
-            key_type_t value
+            T value
     );
 
 /**
@@ -164,10 +168,11 @@ public:
                 The maximum value to be included in the query.
 @returns    An error message describing the result of the query.
 */
+    template <typename T>
     err_t
             range(
-            key_type_t min_value,
-            key_type_t max_value
+            T min_value,
+            T max_value
     );
 
 /**
@@ -191,7 +196,7 @@ public:
             allRecords();
 
 
-    err_t
+/*    err_t
             masterTableLookup(
             unsigned int id,
             ion_dictionary_config_info_t *config
@@ -205,6 +210,9 @@ public:
     err_t
             masterTableCloseDictionary();
 
+    err_t
+            createMasterTable();
+*/
 };
 
 

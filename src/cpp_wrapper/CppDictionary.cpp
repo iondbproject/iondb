@@ -8,7 +8,6 @@
 /******************************************************************************/
 
 #include "CppDictionary.h"
-#include "../dictionary/ion_master_table.h"
 
 CppDictionary::CppDictionary(
         key_type_t type_key,
@@ -50,10 +49,11 @@ CppDictionary::CppDictionary(
 
 }
 
+template <typename T>
 err_t
 CppDictionary::insert(
         key_type_t key,
-        key_type_t value
+        T value
 )
 {
     ion_key_t ion_key       = (ion_key_t)&key;
@@ -64,10 +64,11 @@ CppDictionary::insert(
     return err;
 }
 
+template <typename T>
 err_t
 CppDictionary::get(
         key_type_t key,
-        key_type_t **value
+        T value
 )
 {
     *value                  = (key_type_t *) malloc(sizeof(key_type_t));
@@ -91,10 +92,11 @@ CppDictionary::deleteKey(
     return err;
 }
 
+template <typename T>
 err_t
 CppDictionary::update(
         key_type_t key,
-        key_type_t value
+        T value
 )
 {
     ion_key_t ion_key       = (ion_key_t)&key;
@@ -133,10 +135,11 @@ CppDictionary::close()
 }
 
 /** Needs code review */
+template <typename T>
 err_t
 CppDictionary::range(
-        key_type_t min_value,
-        key_type_t max_value
+        T min_value,
+        T max_value
 )
 {
     predicate_t predicate;
@@ -187,8 +190,8 @@ CppDictionary::allRecords()
     return err;
 }
 
-err_t
-masterTableLookup(
+/*err_t
+CppDictionary::masterTableLookup(
         unsigned int id,
         ion_dictionary_config_info_t *config
 )
@@ -215,4 +218,12 @@ CppDictionary::masterTableCloseDictionary()
 
     return err;
 }
+
+err_t
+CppDictionary::createMasterTable()
+{
+    err_t err = ion_init_master_table();
+
+    return err;
+}*/
 
