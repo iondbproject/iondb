@@ -33,7 +33,7 @@ Before editing any code, make sure you have `uncrustify` installed, version
 0.63 or newer, and run
 
 ```bash
-python setuprepo.py
+make hooks
 ```
 
 in the repository root to setup necessary pre-commit hooks for formatting.
