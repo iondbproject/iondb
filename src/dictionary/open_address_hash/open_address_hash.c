@@ -236,7 +236,6 @@ oah_delete(
 )
 {
 	int loc;
-
 	if (oah_find_item_loc(hash_map, key, &loc) == err_item_not_found)
 	{
 #if DEBUG
