@@ -10,11 +10,11 @@
 #define PROJECT_OPENADDRESSHASH_H
 
 
-#include "CppDictionary.h"
+#include "Dictionary.h"
 #include "../kv_system.h"
 #include "../dictionary/open_address_hash/open_address_hash_dictionary_handler.h"
 
-class OpenAddressHash : public CppDictionary {
+class OpenAddressHash : public Dictionary {
 
 public:
 /**
@@ -32,11 +32,16 @@ public:
                 The size desired for the dictionary.
  */
     OpenAddressHash(
-            const key_type_t &type_key,
+            key_type_t type_key,
             int key_size,
             int value_size,
             int dictionary_size
-    );
+    )
+    {
+        oadict_init(&handler);
+
+        initializeDictionary(type_key, key_size, value_size, dictionary_size);
+    }
 };
 
 

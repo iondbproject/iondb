@@ -9,12 +9,12 @@
 #ifndef PROJECT_BPPTREE_H
 #define PROJECT_BPPTREE_H
 
-#include "CppDictionary.h"
+#include "Dictionary.h"
 #include "../kv_system.h"
 #include "../dictionary/bpp_tree/bpp_tree_handler.h"
 
-
-class BppTree : public CppDictionary {
+template <class K>
+class BppTree : public Dictionary<K> {
 
 public:
 /**
@@ -33,7 +33,12 @@ public:
             key_type_t type_key,
             int key_size,
             int value_size
-    );
+    )
+    {
+        bpptree_init(&this->handler);
+
+        this->initializeDictionary(type_key, key_size, value_size, 0);
+    }
 };
 
 

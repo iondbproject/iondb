@@ -10,11 +10,11 @@
 #define PROJECT_LINEARHASH_H
 
 
-#include "CppDictionary.h"
+#include "Dictionary.h"
 #include "../kv_system.h"
 #include "../dictionary/linear_hash/linear_hash_dictionary_handler.h"
 
-class LinearHash : public CppDictionary{
+class LinearHash : public Dictionary{
 
 public:
 
@@ -33,11 +33,16 @@ public:
                 The size desired for the dictionary.
  */
     LinearHash(
-            const key_type_t &type_key,
+            key_type_t type_key,
             int key_size,
             int value_size,
             int dictionary_size
-    );
+    )
+    {
+        lhdict_init(&handler);
+
+        initializeDictionary(type_key, key_size, value_size, dictionary_size);
+    }
 };
 
 

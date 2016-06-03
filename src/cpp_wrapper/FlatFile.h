@@ -10,11 +10,11 @@
 #define PROJECT_FLATFILE_H
 
 
-#include "CppDictionary.h"
+#include "Dictionary.h"
 #include "../kv_system.h"
 #include "../dictionary/flat_file/flat_file_dictionary_handler.h"
 
-class FlatFile : public CppDictionary {
+class FlatFile : public Dictionary {
 
 public:
 /**
@@ -30,10 +30,17 @@ public:
                 The size of the values to be stored in the dictionary.
  */
     FlatFile(
-            const key_type_t &type_key,
+            key_type_t type_key,
             int key_size,
-            int value_size
-    );
+            int value_size,
+            int dictionary_size
+    )
+    {
+        ffdict_init(&handler);
+
+        initializeDictionary(type_key, key_size, value_size, dictionary_size);
+    }
+
 };
 
 

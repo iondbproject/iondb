@@ -10,11 +10,11 @@
 #define PROJECT_SKIPLIST_H
 
 
-#include "CppDictionary.h"
+#include "Dictionary.h"
 #include "../kv_system.h"
 #include "../dictionary/skip_list/skip_list_handler.h"
 
-class SkipList : public CppDictionary {
+class SkipList : public Dictionary {
 
 public:
 /**
@@ -32,11 +32,16 @@ public:
                 The size desired for the dictionary.
  */
     SkipList(
-            const key_type_t &type_key,
+            key_type_t type_key,
             int key_size,
             int value_size,
             int dictionary_size
-    );
+    )
+    {
+        sldict_init(&handler);
+
+        initializeDictionary(type_key, key_size, value_size, dictionary_size);
+    }
 };
 
 
