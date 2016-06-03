@@ -185,9 +185,9 @@ oah_find_item_loc(
 )
 {
 
+	/* compute hash value for given key */
 	hash_t hash 				= hash_map->compute_hash(hash_map, key,
 	        						hash_map->super.record.key_size);
-													//compute hash value for given key
 
 	int loc 					= oah_get_location(hash, hash_map->map_size);
 													//determine bucket based on hash
@@ -203,6 +203,7 @@ oah_find_item_loc(
 										+ hash_map->super.record.value_size
 											+ SIZEOF(STATUS)) * loc))));
 
+
 		if (item->status == EMPTY)
 		{
 			return err_item_not_found;		//if you hit an empty cell, exit
@@ -212,7 +213,13 @@ oah_find_item_loc(
 			if (item->status != DELETED)
 			{
 				/** @todo correct compare to use proper returen type*/
+
+				DUMP(*(int*)key,"%i");
+				DUMP(*(int*)item->data,"%i");
+
 				int key_is_equal 	= hash_map->super.compare(item->data, key, hash_map->super.record.key_size);
+
+				DUMP(key_is_equal, "%i");
 
 				if (IS_EQUAL == key_is_equal)
 				{
@@ -235,7 +242,7 @@ oah_delete(
 	ion_key_t 		key
 )
 {
-	int loc;
+	int loc = -1;
 	if (oah_find_item_loc(hash_map, key, &loc) == err_item_not_found)
 	{
 #if DEBUG
@@ -339,6 +346,7 @@ oah_compute_simple_hash(
 )
 {
 	//convert to a hashable value
+	/** @TODO int will cause an issues depending on sizeof int */
 	hash_t hash 	= ((hash_t)(*(int *)key)) % hashmap->map_size;
 
 	return hash;
