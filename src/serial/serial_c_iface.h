@@ -9,12 +9,12 @@
 */
 /******************************************************************************/
 
-#ifndef SERIAL_C_IFACE_H_
+#if !defined(SERIAL_C_IFACE_H_)
 #define SERIAL_C_IFACE_H_
 
 #include <Arduino.h>
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -74,7 +74,7 @@ void
 serial_close(
 );
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 #endif /* SERIAL_C_IFACE_H_ */

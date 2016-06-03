@@ -6,11 +6,11 @@
 */
 	/******************************************************************************/
 
-#ifndef FLAT_FILE_DICTIONARY_HANDLER_H_
+#if !defined(FLAT_FILE_DICTIONARY_HANDLER_H_)
 #define FLAT_FILE_DICTIONARY_HANDLER_H_
 
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -377,7 +377,7 @@ ffdict_scan(
 		ffdict_cursor_t		*cursor  //don't need to pass in the cursor
 );
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

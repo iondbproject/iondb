@@ -1,6 +1,4 @@
-
-#include "./../generic_dictionary_test.h"
-#include "./../../../../dictionary/bpp_tree/bpp_tree_handler.h"
+#include "test_bpp_tree_handler.h"
 
 void
 run_bpptreehandler_generic_test_set_1(
@@ -73,38 +71,38 @@ run_bpptreehandler_generic_test_set_1(
 		tc
 	);
 
-	dictionary_insert(&test.dictionary, IONIZE(5),  IONIZE(3));
-	dictionary_insert(&test.dictionary, IONIZE(5),  IONIZE(5));
-	dictionary_insert(&test.dictionary, IONIZE(5),  IONIZE(7));
+	dictionary_insert(&test.dictionary, IONIZE(5, int),  IONIZE(3, int));
+	dictionary_insert(&test.dictionary, IONIZE(5, int),  IONIZE(5, int));
+	dictionary_insert(&test.dictionary, IONIZE(5, int),  IONIZE(7, int));
 
-	dictionary_insert(&test.dictionary, IONIZE(-5),  IONIZE(14));
-	dictionary_insert(&test.dictionary, IONIZE(-7),  IONIZE(6));
-	dictionary_insert(&test.dictionary, IONIZE(-10),  IONIZE(23));
-	dictionary_insert(&test.dictionary, IONIZE(-205),  IONIZE(9));
+	dictionary_insert(&test.dictionary, IONIZE(-5, int),  IONIZE(14, int));
+	dictionary_insert(&test.dictionary, IONIZE(-7, int),  IONIZE(6, int));
+	dictionary_insert(&test.dictionary, IONIZE(-10, int),  IONIZE(23, int));
+	dictionary_insert(&test.dictionary, IONIZE(-205, int),  IONIZE(9, int));
 
 	dictionary_test_equality(
 	    &test,
-	    IONIZE(5),
+	    IONIZE(5, int),
 	    tc
     );
 
 	dictionary_test_equality(
 	    &test,
-	    IONIZE(-10),
+	    IONIZE(-10, int),
 	    tc
     );
 
 	dictionary_test_range(
 	    &test,
-	    IONIZE(5),
-	    IONIZE(3777),
+	    IONIZE(5, int),
+	    IONIZE(3777, int),
 	    tc
     );
 
 	dictionary_test_range(
 	    &test,
-	    IONIZE(-5),
-	    IONIZE(3777),
+	    IONIZE(-5, int),
+	    IONIZE(3777, int),
 	    tc
     );
 

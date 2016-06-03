@@ -4,7 +4,6 @@
  */
 
 #include "SD_stdio_c_iface.h"
-
 #include <SD.h>
 
 /**
@@ -197,7 +196,7 @@ sd_fread(
 
 
 int
- sd_fseek(
+sd_fseek(
 	SD_FILE 	*stream,
 	long int 	offset,
 	int 		whence

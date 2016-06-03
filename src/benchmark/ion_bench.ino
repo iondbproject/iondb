@@ -1,6 +1,8 @@
 #include "dictionary.h"
 #include "benchmark.h"
 
+/* NOTICE: Due to changes to IONIZE, this benchmarking suite will no longer compile. */
+
 //#include "slhandler.h"
 //#include "oadictionaryhandler.h"
 //#include "oafdictionaryhandler.h"
@@ -115,7 +117,7 @@ bench_insert_memusage(
     bench_dict_initialize();
 
     benchmark_start();
-    dictionary_insert(&dict, IONIZE(0), test_value);
+    dictionary_insert(&dict, IONIZE(0, int), test_value);
     benchmark_stop();
     
     bench_dict_cleanup();

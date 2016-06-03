@@ -5,11 +5,7 @@
  *      Author: workstation
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <limits.h>
-#include "../../../planck_unit.h"
-#include "../../../../dictionary/linear_hash/file_linked_list.h"
+#include "test_file_linked_list.h"
 
 /**
  * Creates an empty test linked list file as a starting point

@@ -5,11 +5,11 @@
  *      Author: workstation
  */
 
-#ifndef LINEAR_HASH_H_
+#if !defined(LINEAR_HASH_H_)
 #define LINEAR_HASH_H_
 
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -24,6 +24,8 @@ extern "C" {
 
 #include "./../../kv_system.h"
 #include "./../../kv_io.h"
+
+#include "./../../file/SD_stdio_c_iface.h"
 
 #include "linear_hash_dictionary.h"
 
@@ -605,7 +607,7 @@ lh_compute_load_factor(
 	linear_hashmap_t		*hash_map
 );
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

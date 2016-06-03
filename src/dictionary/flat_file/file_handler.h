@@ -5,10 +5,10 @@
  *      Author: workstation
  */
 
-#ifndef FILE_HANDLER_H_
+#if !defined(FILE_HANDLER_H_)
 #define FILE_HANDLER_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -28,7 +28,7 @@ typedef struct f_file_record
 	unsigned char 	data[];			/**< the data in the record */
 } f_file_record_t;
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

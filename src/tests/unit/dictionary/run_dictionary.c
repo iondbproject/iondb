@@ -1,6 +1,4 @@
-
-void
-runalltests_dictionary();
+#include "test_dictionary.h"
 
 int
 main()

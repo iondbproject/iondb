@@ -1,17 +1,9 @@
+#include "test_linear_hash.h"
+#include "test_linear_hash_dictionary.h"
+#include "test_linear_hash_dictionary_handler.h"
+#include "test_file_linked_list.h"
 
 #define NO_SPLIT 1
-
-void
-runalltests_file_linked_list();
-
-void
-runalltests_linear_hash();
-
-void
-runalltests_linear_hash_handler();
-
-void
-run_all_tests_linearHashDictionary();
 
 int
 main()

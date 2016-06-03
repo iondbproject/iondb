@@ -6,10 +6,10 @@
 */
 /******************************************************************************/
 
-#ifndef BPP_TREE_HANDLER_H_
+#if !defined(BPP_TREE_HANDLER_H_)
 #define BPP_TREE_HANDLER_H_
 
-#ifdef  __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -265,7 +265,7 @@ bpptree_close_dictionary(
 	dictionary_t 					*dictionary
 );
 
-#ifdef  __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

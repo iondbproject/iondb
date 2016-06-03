@@ -6,10 +6,10 @@
 */
 /******************************************************************************/
 
-#ifndef LINEAR_HASH_DICTIONARY_HANDLER_H_
+#if !defined(LINEAR_HASH_DICTIONARY_HANDLER_H_)
 #define LINEAR_HASH_DICTIONARY_HANDLER_H_
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -19,6 +19,7 @@ extern "C" {
 #include "linear_hash.h"
 #include "linear_hash_dictionary.h"
 #include "file_linked_list.h"
+#include "./../../file/SD_stdio_c_iface.h"
 
 /**
 @brief Struct used to for instance of a given dictionary.
@@ -301,7 +302,7 @@ lhdict_close(
 );
 
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 #endif
 

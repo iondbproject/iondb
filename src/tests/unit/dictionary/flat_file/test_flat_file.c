@@ -5,14 +5,7 @@
 @details	Tests base operations for open address hash map
  */
 
-
-#include <stdio.h>
-#include <string.h>
-#include <limits.h>
-#include "../../../planck_unit.h"
-#include "../../../../dictionary/flat_file/flat_file.h"
-#include "../../../../dictionary/dictionary_types.h"
-#include "./../../../../dictionary/dictionary.h"
+#include "test_flat_file.h"
 
 #define STD_KV_SIZE 10
 #define TEST_FILE	"file.bin"
@@ -155,7 +148,7 @@ test_flat_file_simple_insert_and_query(
 		//build up the value
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		ff_insert(&flat_file, IONIZE(i), (ion_value_t)str);			//this is will wrap
+		ff_insert(&flat_file, IONIZE(i, int), (ion_value_t)str);			//this is will wrap
 	}
 
 	printf("starting lookup\n");

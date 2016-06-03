@@ -1,10 +1,59 @@
 cmake_minimum_required(VERSION 3.5)
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g")
+# Use cmake -DUSE_ARDUINO=ON <project_folder> to compile to Arduino.
+if(USE_ARDUINO)
+    message("Linking against Arduino...")
+    set(CMAKE_TOOLCHAIN_FILE    ${CMAKE_SOURCE_DIR}/cmake/ArduinoToolchain.cmake)
+    set(PROJECT_NAME            IonDB)
+    project(IonDB               C CXX)
 
+    # User options
+    set(BOARD           ${BOARD})
+
+    if(PROCESSOR)
+        set(PROCESSOR   ${MCU})
+    else()
+        set(PROCESSOR)
+    endif()
+
+    set(PORT            ${PORT})
+
+    if(BAUD_RATE)
+        set(BAUD_RATE   ${BAUD_RATE})
+    else()
+        set(BAUD_RATE   9600)
+    endif()
+
+    if(MANUAL)
+        set(MANUAL      ${MANUAL})
+    else()
+        set(MANUAL      FALSE)
+    endif()
+
+    add_definitions(-DBAUD_RATE=${BAUD_RATE})
+
+    if(WIN32)
+        set(SERIAL putty -serial ${PORT} -sercfg ${BAUD_RATE})
+    else()
+        set(SERIAL screen ${PORT} ${BAUD_RATE})
+    endif()
+
+    print_board_list()
+    print_programmer_list()
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -Wall -g")
+
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+endif()
+
+# Add all of the CMakeLists.txt for the sub projects.
 add_subdirectory(src/tests)
 add_subdirectory(src/tests/unit/dictionary)
+
+add_subdirectory(src/examples)
+
+add_subdirectory(src/util/lfsr)
 
 add_subdirectory(src/util/id_encoder)
 add_subdirectory(src/tests/unit/dictionary/id_encoder)
