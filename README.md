@@ -33,12 +33,13 @@ Before editing any code, make sure you have `uncrustify` installed, version
 0.63 or newer, and run
 
 ```bash
+make setup
 make hooks
 ```
 
-in the repository root to setup necessary pre-commit hooks for formatting.
+in the repository root to setup necessary submodules and pre-commit hooks for formatting.
 
-If you move the directory of your repository to a different path, make sure you re-run this command!
+If you move the directory of your repository to a different path, make sure you re-run `make hooks`.
 
 #Usage Guide
 
