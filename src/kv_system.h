@@ -18,7 +18,6 @@
 #define IS_GREATER				1
 #define IS_LESS					-1
 #define ZERO					0
-#define BAUD_RATE				9600
 
 /* Only if we're on desktop do we want to flush. Otherwise we only do a printf. */
 #if !defined(ARDUINO)
