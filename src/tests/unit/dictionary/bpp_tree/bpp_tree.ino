@@ -8,6 +8,7 @@ setup(
 )
 {
     SPI.begin();
+    SD.begin(SD_CS_PIN);
     Serial.begin(BAUD_RATE);
     run_all_tests_bpptreehandler();
 }

@@ -30,6 +30,12 @@ if(USE_ARDUINO)
         set(MANUAL      FALSE)
     endif()
 
+    if(FORMATTED_SD_CARD_CS)
+        add_definitions(-DSD_CS_PIN=${FORMATTED_SD_CARD_CS})
+    else()
+        add_definitions(-DSD_CS_PIN=4)
+    endif()
+
     add_definitions(-DBAUD_RATE=${BAUD_RATE})
 
     if(WIN32)
