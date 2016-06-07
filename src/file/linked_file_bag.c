@@ -1,3 +1,26 @@
+/******************************************************************************/
+/**
+@file
+@author		Graeme Douglas
+@brief		API for a persistent bag. Items are linked together in a singly
+			linked list.
+@copyright	Copyright 2016
+				The University of British Columbia,
+				IonDB Project Contributors (see @ref AUTHORS.md)
+@par
+			Licensed under the Apache License, Version 2.0 (the "License");
+			you may not use this file except in compliance with the License.
+			You may obtain a copy of the License at
+					http://www.apache.org/licenses/LICENSE-2.0
+@par
+			Unless required by applicable law or agreed to in writing,
+			software distributed under the License is distributed on an
+			"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+			either express or implied. See the License for the specific
+			language governing permissions and limitations under the
+			License.
+*/
+/******************************************************************************/
 
 #include "linked_file_bag.h"
 
@@ -7,26 +30,26 @@
 
 err_t
 lfb_put(
-	lfb_t		*bag,
-	byte		*to_write,
+	lfb_t			*bag,
+	byte			*to_write,
 	unsigned int	num_bytes,
 	file_offset_t	next,
 	file_offset_t	*wrote_at
 )
 {
 	file_offset_t	next_empty;
-	err_t		error;
+	err_t			error;
 	
 	next_empty		= LFB_NULL;
 	
 	if (LFB_NULL != bag->next_empty)
 	{
 		error		= ion_fread_at(
-					bag->file_handle,
-					bag->next_empty,
-					sizeof(file_offset_t),
-					(byte *)&next_empty
-				);
+						bag->file_handle,
+						bag->next_empty,
+						sizeof(file_offset_t),
+						(byte *)&next_empty
+					);
 		
 		if (err_ok != error)
 		{
@@ -40,24 +63,24 @@ lfb_put(
 		*wrote_at	= ion_fend(bag->file_handle);
 	}	
 	
-	error		= ion_fwrite_at(
-				bag->file_handle,
-				*wrote_at,
-				sizeof(file_offset_t),
-				(byte *)&next
-			);
+	error			= ion_fwrite_at(
+						bag->file_handle,
+						*wrote_at,
+						sizeof(file_offset_t),
+						(byte *)&next
+					);
 	
 	if (err_ok != error)
 	{
 		return error;
 	}
 	
-	error		= ion_fwrite_at(
-				bag->file_handle,
-				*wrote_at + sizeof(file_offset_t),
-				num_bytes,
-				to_write
-			);
+	error			= ion_fwrite_at(
+						bag->file_handle,
+						*wrote_at + sizeof(file_offset_t),
+						num_bytes,
+						to_write
+					);
 	
 	if (err_ok != error)
 	{
@@ -71,21 +94,21 @@ lfb_put(
 
 err_t
 lfb_get(
-	lfb_t		*bag,
+	lfb_t			*bag,
 	file_offset_t	offset,
 	unsigned int	num_bytes,
-	byte		*write_to,
+	byte			*write_to,
 	file_offset_t	*next
 )
 {
 	err_t		error;
 	
 	error	= ion_fread_at(
-			bag->file_handle,
-			offset,
-			sizeof(file_offset_t),
-			(byte *)next
-		);
+				bag->file_handle,
+				offset,
+				sizeof(file_offset_t),
+				(byte *)next
+			);
 	
 	if (err_ok != error)
 	{
@@ -93,18 +116,18 @@ lfb_get(
 	}
 
 	error	= ion_fread_at(
-			bag->file_handle,
-			offset+sizeof(file_offset_t),
-			num_bytes,
-			write_to
-		);
+				bag->file_handle,
+				offset+sizeof(file_offset_t),
+				num_bytes,
+				write_to
+			);
 	
 	return error;
 }
 
 err_t
 lfb_update_next(
-	lfb_t		*bag,
+	lfb_t			*bag,
 	file_offset_t	offset,
 	file_offset_t	next
 )
@@ -112,11 +135,11 @@ lfb_update_next(
 	err_t		error;
 	
 	error		= ion_fwrite_at(
-				bag->file_handle,
-				offset,
-				sizeof(file_offset_t),
-				(byte *)&(next)
-			);
+					bag->file_handle,
+					offset,
+					sizeof(file_offset_t),
+					(byte *)&(next)
+				);
 	
 	if (err_ok == error)
 	{
@@ -128,7 +151,7 @@ lfb_update_next(
 
 err_t
 lfb_delete(
-	lfb_t		*bag,
+	lfb_t			*bag,
 	file_offset_t	offset
 )
 {
@@ -137,7 +160,7 @@ lfb_delete(
 
 err_t
 lfb_delete_all(
-	lfb_t		*bag,
+	lfb_t			*bag,
 	file_offset_t	offset
 )
 {
@@ -147,11 +170,11 @@ lfb_delete_all(
 	while (LFB_NULL != offset)
 	{
 		error	= ion_fread_at(
-				bag->file_handle,
-				offset,
-				sizeof(file_offset_t),
-				(byte *)&next
-			);
+					bag->file_handle,
+					offset,
+					sizeof(file_offset_t),
+					(byte *)&next
+				);
 		
 		if (err_ok != error)
 		{
@@ -173,10 +196,10 @@ lfb_delete_all(
 
 err_t
 lfb_update(
-	lfb_t		*bag,
+	lfb_t			*bag,
 	file_offset_t	offset,
 	unsigned int	num_bytes,
-	byte		*to_write,
+	byte			*to_write,
 	file_offset_t	*next
 )
 {
@@ -184,41 +207,41 @@ lfb_update(
 	
 	if (NULL != next)
 	{
-		error = lfb_update_next(bag, offset, *next);
+		error	= lfb_update_next(bag, offset, *next);
 		
 		if (err_ok != error)
 			return error;
 	}
 	
 	error		= ion_fwrite_at(
-				bag->file_handle,
-				offset + sizeof(file_offset_t),
-				num_bytes,
-				to_write
-			);
+					bag->file_handle,
+					offset + sizeof(file_offset_t),
+					num_bytes,
+					to_write
+				);
 	
 	return error;
 }
 
 err_t
 lfb_update_all(
-	lfb_t		*bag,
+	lfb_t			*bag,
 	file_offset_t	offset,
 	unsigned int	num_bytes,
-	byte		*to_write
+	byte			*to_write
 )
 {
-	err_t		error;
+	err_t			error;
 	file_offset_t	next;
 	
 	while (LFB_NULL != offset)
 	{
 		error	= ion_fread_at(
-				bag->file_handle,
-				offset,
-				sizeof(file_offset_t),
-				(byte *)&next
-			);
+					bag->file_handle,
+					offset,
+					sizeof(file_offset_t),
+					(byte *)&next
+				);
 		
 		if (err_ok != error)
 		{
