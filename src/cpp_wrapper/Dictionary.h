@@ -23,6 +23,7 @@ public:
 	dictionary_t dict;
 	int size_k;
 	int size_v;
+
 /* BEFORE USE OF A FILE BASED DICTIONARY IMPLEMENTATION (BPP_TREE, FLAT_FILE),
  * SD.begin(...) MUST BE CALLED. */
 
@@ -101,6 +102,7 @@ public:
 		if(err == err_ok)
 			return *((V*) ion_value);
 
+			/** Needs discussion */
 		else
 			return V();
 	}
@@ -179,7 +181,6 @@ public:
 		return err;
 	}
 
-	/** Is this to be used by user? */
 /**
 @brief      Closes a dictionary.
 */
@@ -192,21 +193,21 @@ public:
 	}
 
 /**
-@brief      Performs a range query on a dictionary.
+@brief      Sets up cursor and predicate to perform a range query on a
+ 			dictionary.
 
 @param      min_value
 				The minimum value to be included in the query.
 @param      max_value
 				The maximum value to be included in the query.
-@returns    An error message describing the result of the query.
+@returns    An initialized cursor for the particular query.
 */
-	err_t
+	dict_cursor_t*
 	range(
 		K min_key,
 		K max_key
 	)
 	{
-		/** Needs code review */
 		predicate_t predicate;
 		dict_cursor_t *cursor;
 
@@ -215,49 +216,20 @@ public:
 
 		dictionary_build_predicate(&predicate, predicate_range, ion_min_key, ion_max_key);
 
-		err_t err               = dictionary_find(&dict, &predicate, &cursor);
+		dictionary_find(&dict, &predicate, &cursor);
 
-		ion_record_t ion_record;
-
-		/** This creates an error, is it imperative to include? */
-//		ion_record.key      = malloc((size_t) key_size);
-//		ion_record.value    = malloc((size_t) value_size);
-
-		cursor_status_t cursor_status;
-		while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active ||
-			   cursor_status == cs_cursor_initialized) {
-			//V value			= (V)&ion_record.value;
-			printf("\tKey: %d, Value: %s\n", ion_record.key, ion_record.value);
-			printf("success");
-
-			/** This is where error occurs:
-			 * Loops through to find all the values with matching key, but does
-			 * not successfully complete loop (i.e., does not print final
-			 * success statement */
-		}
-
-		/* Check the end result, since the cursor may have terminated due to error instead finishing properly. */
-		if (cursor_status != cs_end_of_results) {
-			printf("Failed to read all of the records");
-			return 1;
-		}
-
-		/* Clean-up everything by removing the cursor. Also free the ion_record space we allocated. */
-		cursor->destroy(&cursor);
-		//free(ion_record.key);
-		//free(ion_record.value);
-
-		return err;
+		return cursor;
 	}
 
 /**
-@brief      Performs an equality query on a dictionary.
+@brief      Sets up cursor and predicate perform an equality query
+ 			on a dictionary for a given key.
 
 @param      key
 				The key used to determine equality.
-@returns    An error message describing the result of the query.
+@returns    An initialized cursor for the particular query.
 */
-	err_t
+	dict_cursor_t*
 	equality(
 			K key
 	)
@@ -269,38 +241,18 @@ public:
 
 		dictionary_build_predicate(&predicate, predicate_equality, ion_key);
 
-		err_t err = dictionary_find(&dict, &predicate, &cursor);
+		dictionary_find(&dict, &predicate, &cursor);
 
-		ion_record_t ion_record;
-
-		ion_record.key      = (ion_key_t) malloc((size_t) size_k);
-		ion_record.value    = (ion_value_t) malloc((size_t) size_v);
-
-		cursor_status_t cursor_status;
-		while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active ||
-			   cursor_status == cs_cursor_initialized) {
-
-			printf("\tKey: %d, Value: %s\n", key, ion_record.value);
-		}
-
-		if (cursor_status != cs_end_of_results) {
-			printf("Failed to read all of the records");
-			return 1;
-		}
-
-		cursor->destroy(&cursor);
-		free(ion_record.key);
-		free(ion_record.value);
-
-		return err;
+		return cursor;
 	}
 
 /**
-@brief      Selects all records present in the dictionary.
+@brief      Sets up cursor and predicate in order to find all records
+ 			present in the dictionary.
 
-@returns    An error message describing the result of the query.
+@returns    An initialized cursor for the particular query.
 */
-	err_t
+	dict_cursor_t*
 	allRecords()
 	{
 		predicate_t predicate;
@@ -308,34 +260,54 @@ public:
 
 		dictionary_build_predicate(&predicate, predicate_all_records);
 
-		err_t err = dictionary_find(&dict, &predicate, &cursor);
+		dictionary_find(&dict, &predicate, &cursor);
 
+		return cursor;
+	}
+
+/**
+@brief      Performs query given initialized cursor.
+
+@param      cursor
+				The initialized cursor for the particular query.
+@returns    The current record which satisfies the particular query.
+*/
+	ion_record_t
+	getRecord(dict_cursor_t *cursor)
+	{
 		ion_record_t ion_record;
 
 		ion_record.key      = (ion_key_t) malloc((size_t) size_k);
 		ion_record.value    = (ion_value_t) malloc((size_t) size_v);
 
 		cursor_status_t cursor_status;
-		while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active ||
-			   cursor_status == cs_cursor_initialized) {
-			/** How to cast from ion_record.key to key without error? */
-			printf("\tKey: %d, Value: %s\n", ion_record.key, ion_record.value);
+		if (((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active ||
+			cursor_status == cs_cursor_initialized) && (cursor_status != cs_end_of_results)) {
+			return ion_record;
 		}
 
-		if (cursor_status != cs_end_of_results) {
-			printf("Failed to read all of the records");
-			return 1;
-		}
-
-		cursor->destroy(&cursor);
 		free(ion_record.key);
 		free(ion_record.value);
-
-		return err;
+		cursor->destroy(&cursor);
 	}
 
+err_t
+createMasterTable()
+{
+    err_t err = ion_init_master_table();
 
-/*err_t
+    return err;
+}
+
+ /** Will user ever need to create a dictionary through the master table? */
+err_t
+masterTableCreateDictionary()
+ {
+
+ }
+
+	/** Is this to be used by user? */
+err_t
 masterTableLookup(
         unsigned int id,
         ion_dictionary_config_info_t *config
@@ -365,12 +337,29 @@ masterTableCloseDictionary()
 }
 
 err_t
-createMasterTable()
+deleteFromMasterTable()
 {
-    err_t err = ion_init_master_table();
+	err_t err = ion_delete_from_master_table(&dict);
 
-    return err;
-}*/
+	return err;
+}
+
+err_t
+closeMasterTable()
+{
+	err_t err = ion_close_master_table();
+
+	return err;
+}
+
+err_t
+deleteMasterTable()
+{
+	err_t err = ion_delete_master_table();
+
+	return err;
+}
+
 
 };
 
