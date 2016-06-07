@@ -53,6 +53,10 @@ test: init_dirs $(SCRIPTS_DIR)/runalltests.py
 	cd $(TEST_BIN_DIR) ; python ../../dotfiles/scripts/runalltests.py
 
 # Utility goals for scripts and such.
+.PHONY: setup
+setup:
+	git submodule init
+	git submodule update --remote --merge
 
 .PHONY: hooks
 hooks: $(SCRIPTS_DIR)/setuprepo.py

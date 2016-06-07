@@ -38,7 +38,6 @@
 #define IS_GREATER				1
 #define IS_LESS					-1
 #define ZERO					0
-#define BAUD_RATE				9600
 
 /* Only if we're on desktop do we want to flush. Otherwise we only do a printf. */
 #if !defined(ARDUINO)
@@ -53,10 +52,9 @@
 #define PANIC(stuff) printf("\t\t%s\n", stuff)
 #endif /* Clause ARDUINO */
 
-#define IONIZE(something) ({volatile typeof(something) _tmp = something; (ion_key_t) &_tmp; })
-#define NEUTRALIZE(type, something) ( *((type *) something) )
-
-#define IONIZE_VAL(varname, size) unsigned char varname[size];
+#define IONIZE(something, type) (ion_key_t) &(type){(something)}
+#define NEUTRALIZE(something, type) ( *((type *) (something)) )
+#define IONIZE_VAL(varname, size) unsigned char varname[size]
 
 /**
 @brief		A status object that describes the result of a dictionary

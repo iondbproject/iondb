@@ -8,6 +8,7 @@ setup(
 )
 {
     SPI.begin();
+    SD.begin(SD_CS_PIN);
     Serial.begin(BAUD_RATE);
     runalltests_flat_file();
     runalltests_flat_file_handler();

@@ -10,6 +10,7 @@ setup(
 )
 {
     SPI.begin();
+    SD.begin(SD_CS_PIN);
     Serial.begin(BAUD_RATE);
     runalltests_file_linked_list();
     runalltests_linear_hash();
