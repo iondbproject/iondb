@@ -6,7 +6,7 @@
 */
 /******************************************************************************/
 
-#ifndef PROJECT_FLATFILE_H
+#if !defined(PROJECT_FLATFILE_H)
 #define PROJECT_FLATFILE_H
 
 
