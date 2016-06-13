@@ -59,7 +59,7 @@ setup:
 	git submodule update --remote --merge
 
 .PHONY: hooks
-hooks: $(SCRIPTS_DIR)/setuprepo.py
+hooks: $(SCRIPTS_DIR)/setuphooks.py
 	$(PY) $(SCRIPTS_DIR)/setuphooks.py
 
 .PHONY: format
