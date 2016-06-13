@@ -22,7 +22,7 @@
 MKDIR := mkdir -p
 RM    := rm -rf
 CP    := cp
-PY    := python
+PY    := python3
 
 SRC          := src
 BUILD_DIR    := build
@@ -50,7 +50,7 @@ all: init_dirs $(BUILD_DIR)/Makefile
 
 .PHONY: test
 test: init_dirs $(SCRIPTS_DIR)/runalltests.py
-	cd $(TEST_BIN_DIR) ; python ../../dotfiles/scripts/runalltests.py
+	cd $(TEST_BIN_DIR) ; $(PY) ../../dotfiles/scripts/runalltests.py
 
 # Utility goals for scripts and such.
 .PHONY: setup
