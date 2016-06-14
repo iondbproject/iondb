@@ -1,7 +1,11 @@
+## Doxygen start of file template.
+
+```c
 /******************************************************************************/
 /**
-@author		Scott Fazackerley
-@brief		Key-Value I/O functionality.
+@file		
+@author		Scott Fazackerley, Eric Huang, Graeme Douglas
+@brief		This file contains commonly used types and some helpful macros.
 @copyright	Copyright 2016
 				The University of British Columbia,
 				IonDB Project Contributors (see @ref AUTHORS.md)
@@ -17,27 +21,8 @@
 			either express or implied. See the License for the specific
 			language governing permissions and limitations under the
 			License.
+@todo		Resolve issue between status_t and err_t. Status_t is a struct that
+			should have and err_t and number of item affected.
 */
 /******************************************************************************/
-
-#include "kv_io.h"
-
-int
-io_printf(
-	const char *format,
-	...
-) {
-
-	int 	result;
-	va_list args;
-
-	va_start(args, format);
-	result = vprintf(format, args);
-	va_end(args);
-
-#if defined(USING_ECLIPSE)
-	fflush(stdout);
-#endif
-
-	return result;
-}
+```

@@ -159,22 +159,26 @@ test_open_address_hashmap_find_item_location(
 	initialize_hash_map_std_conditions(&map);
 
 	/** Manually populate records */
-	record_info_t record 			= map.super.record;
+	record_info_t record 		= map.super.record;
 
 	char *item;
 
-	//manually map out item stucture
-	item = (char *)malloc(sizeof(char) * (record.key_size + record.value_size +sizeof(char)));
+	/* manually map out item stucture */
+	item 						= (char *)malloc(
+									sizeof(char) * (record.key_size + record.value_size + sizeof(char))
+								);
 
 	//manually populate array
 	hash_bucket_t *item_ptr 	= (hash_bucket_t *)item;
 	char *pos_ptr 				= map.entry;
+
+	/* Bucket size includes flags, data, value */
 	int bucket_size 			= sizeof(char) + record.key_size
 									+ record.value_size;
 
 	for (offset = 0; offset < map.map_size; offset ++)
 	{
-		// apply continual offsets
+		/* apply continual offsets to traverse map */
 #if DEBUG
 		printf("entry loc: %p %p \n",map.entry,pos_ptr);
 #endif
@@ -184,14 +188,17 @@ test_open_address_hashmap_find_item_location(
 		for (i = 0; i<map.map_size; i++)
 		{
 			item_ptr->status 	= IN_USE;
-			memcpy (item_ptr->data, (int *)&i, sizeof(int));
+			/* Ensure to use key_size */
+			memcpy(item_ptr->data, (ion_key_t)&i, record.key_size);
+
+			/* build up the value */
 			char str[10];
-			//build up the value
 			sprintf(str,"%02i is key",i);
-			//and copy it directly into the slot
-			memcpy((item_ptr->data + sizeof(int)), str, 10);
+			/* Copy it directly into the slot */
+			memcpy((item_ptr->data + record.key_size), str, 10);
 			memcpy(pos_ptr, item_ptr, bucket_size);
-			pos_ptr = map.entry + ((((i+1+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size));
+			pos_ptr 			= map.entry
+								 + ((((i+1+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size));
 		}
 
 		//and now check key positions
@@ -206,7 +213,7 @@ test_open_address_hashmap_find_item_location(
 }
 
 /**
-@brief 		Tests a simple insert into map and reads results directly from map
+@brief 		Tests a simple insert into map and reads results directly from map.
 
 @param 		tc
 				CuTest
@@ -214,16 +221,16 @@ test_open_address_hashmap_find_item_location(
 void
 test_open_address_hashmap_simple_insert(
 	planck_unit_test_t	*tc
-)
-{
-	hashmap_t map;			//create handler for hashmap
+){
+	/* create handler for hashmap */
+	hashmap_t map;
 	int i;
 	int offset;
 
 	initialize_hash_map_std_conditions(&map);
 
 	/** Manually populate records */
-	record_info_t record 			= map.super.record;
+	record_info_t record 		= map.super.record;
 
 	//manually populate array
 #if DEBUG
@@ -231,42 +238,41 @@ test_open_address_hashmap_simple_insert(
 #endif
 
 	int bucket_size 			= sizeof(char)
-									+ record.key_size + record.value_size;
+								 + record.key_size + record.value_size;
 
-	for (offset = 0; offset < map.map_size; offset ++)
-	{
-		// apply continual offsets
+	for (offset = 0; offset < map.map_size; offset ++) {
+		/* apply continual offsets */
 #if DEBUG
 		printf("entry loc: %p %p \n",map.entry,pos_ptr);
-		pos_ptr = (map.entry + (offset*bucket_size)%(map.map_size*bucket_size));
+		pos_ptr 				= (map.entry + (offset*bucket_size)%(map.map_size*bucket_size));
 #endif
-
-
-		for (i = 0; i<map.map_size; i++)
-		{
-			//build up the value
-			char str[10];
-			sprintf(str,"%02i is key",i);
-			oah_insert(&map, (ion_key_t)(&i), (unsigned char *)str);			//this is will wrap
+		for (i = 0; i<map.map_size; i++) {
+			/* build up the value */
+			unsigned char str[10];
+			sprintf((char *)str,"%02i is key",i);
+			oah_insert(&map, (ion_key_t)(&i), (ion_value_t)str);			//this is will wrap
 		}
 
 		for (i = 0; i<map.map_size; i++)
 		{
-			status_t status 		= ((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->status;
-			int key					= *(int *)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data );
-			unsigned char * value 	= (ion_value_t)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data + sizeof(int));
+			status_t status 	= ((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->status;
+			ion_key_t key = (ion_key_t)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data );
+			ion_value_t value 	= (ion_value_t)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data + record.key_size);
 
-			//build up expected value
-			char str[10];
-			sprintf(str,"%02i is key", (i+offset)%map.map_size);
-			PLANCK_UNIT_ASSERT_TRUE(tc, status		== IN_USE);
-			PLANCK_UNIT_ASSERT_TRUE(tc, key 		== (i+offset)%map.map_size);
-			PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *)value, (char *)str);
+			/* build up expected value */
+			unsigned char str[10];
+			sprintf((char *)str,"%02i is key", (i+offset)%map.map_size);
+			PLANCK_UNIT_ASSERT_TRUE(tc, status == IN_USE);
+			/* check to ensure key is pointing at correct location */
+			PLANCK_UNIT_ASSERT_TRUE(tc, *key == (i+offset)%map.map_size);
+			/* While str and value are unsigned, equality test is signed, so casting required */
+			PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *)str, (char *)value);
 		}
 	}
 }
+
 /**
-@brief 		Tests a simple insert into dictionary and simple query
+@brief 		Tests a simple insert into dictionary and simple query.
 
 @details	Tests a simple insert into dictionary and simple query with the
 			write_concern set to insert only
@@ -276,37 +282,39 @@ test_open_address_hashmap_simple_insert(
 void
 test_open_address_hashmap_simple_insert_and_query(
 	planck_unit_test_t	*tc
-)
-{
-	hashmap_t map;								//create handler for hashmap
+)  {
+
+	/* create handler for hashmap */
+	hashmap_t map;
 	int i;
 
 	initialize_hash_map_std_conditions(&map);
 
-	for (i = 0; i<map.map_size; i++)
-	{
-		//build up the value
+	for (i = 0; i<map.map_size; i++) {
+		/* build up the value */
 		char str[10];
 		sprintf(str,"%02i is key",i);
-		oah_insert(&map, (ion_key_t)(&i), (ion_value_t)str);			//this is will wrap
+		/* this is will wrap the map */
+		oah_insert(&map, (ion_key_t)(&i), (ion_value_t)str);
 	}
 
 	ion_value_t value;
-	value = (ion_value_t)malloc(10);
+	value 				= (ion_value_t)malloc(10);
 
-	for (i = 0; i<map.map_size; i++)
-	{
+	for (i = 0; i<map.map_size; i++) {
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 	== oah_query(&map,(ion_key_t)&i, value));
-		//build up expected value
+
+		/* build up expected value */
 		char str[10];
 		sprintf(str,"%02i is key",i);
 		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *)value, str);
 	}
-	if (value != NULL)							//must free value after query
-		{
-			free(value);
-		}
+
+	/* must free value after query */
+	if (value != NULL) {
+		free(value);
+	}
 }
 
 /**
@@ -323,48 +331,58 @@ test_open_address_hashmap_simple_insert_and_query(
 void
 test_open_address_hashmap_simple_delete(
 	planck_unit_test_t	*tc
-)
-{
-	hashmap_t map;								//create handler for hashmap
+) {
+
+	/* create handler for hashmap */
+	hashmap_t map;
 	int i,j;
 
 
 	initialize_hash_map_std_conditions(&map);
 
-	for (i = 0; i<map.map_size; i++)
-	{
-		//build up the value
-		char str[10];
-		sprintf(str,"%02i is key",i);
-		oah_insert(&map, (ion_key_t)(&i), (ion_value_t)str);			//this is will wrap
-	}
-
 	ion_value_t value;
-	value = (ion_value_t)malloc(10);
+	value 			= (ion_value_t)malloc(10);
 
-	for (j = 0; j<map.map_size;j++)
-	{
+	for (i = 0; i<map.map_size; i++) {
+		/* build up the value */
+		unsigned char str[10];
+		sprintf((char *)str,"%02i is key",i);
+		/* this is will wrap the map*/
+		oah_insert(&map, (ion_key_t)(&i), (ion_value_t)str);
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok	== oah_query(&map,(ion_key_t)(&i), value));
+	}
+	i = 0;
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok	== oah_query(&map,(ion_key_t)(&i), value));
 
-		//delete the record
+	for (j = 0; j<map.map_size;j++) {
+		/* delete the record */
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok				== oah_delete(&map, (ion_key_t)(&j)));
-		//check to make sure that the record has been deleted
+		/* check to make sure that the record has been deleted */
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found	== oah_query(&map,(ion_key_t)(&j), value));
 
-		//and then check to make sure that the rest of the map is undisturbed
-		for (i = j+1; i<map.map_size; i++)
-		{
+		/* and then check to make sure that the rest of the map is undisturbed */
+		for (i = j+1; i<map.map_size; i++) {
+
+/*
 			ion_value_t value;
-			value = (ion_value_t)malloc(10);
+*/
+			/*value 	= (ion_value_t)malloc(10);*/
+
 			PLANCK_UNIT_ASSERT_TRUE(tc, err_ok 		== oah_query(&map,(ion_key_t)&i, value));
-			//build up expected value
+
+			/* build up expected value */
 			char str[10];
 			sprintf(str,"%02i is key",i);
 			PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *)value, str);
-			if (value != NULL)							//must free value after query
-			{
+
+			/*if (value != NULL) {
 				free(value);
-			}
+			}*/
 		}
+	}
+	/* must free value after query */
+	if (value != NULL) {
+		free(value);
 	}
 }
 

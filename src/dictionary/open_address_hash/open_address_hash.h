@@ -20,6 +20,10 @@ extern "C" {
 #include "./../dictionary.h"
 #include "open_address_hash_dictionary.h"
 
+#if defined(ARDUINO)
+#include "./../../serial/serial_c_iface.h"
+#endif
+
 #include "./../../kv_system.h"
 #include "./../../kv_io.h"
 

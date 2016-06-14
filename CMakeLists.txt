@@ -8,29 +8,28 @@ if(USE_ARDUINO)
     project(IonDB               C CXX)
 
     # User options
-    set(BOARD           ${BOARD})
+    set(BOARD ${BOARD})
 
-    if(PROCESSOR)
-        set(PROCESSOR   ${MCU})
-    else()
+    if(NOT PROCESSOR)
         set(PROCESSOR)
     endif()
 
-    set(PORT            ${PORT})
+    set(PORT ${PORT})
 
-    if(BAUD_RATE)
-        set(BAUD_RATE   ${BAUD_RATE})
-    else()
-        set(BAUD_RATE   9600)
+    if(NOT BAUD_RATE)
+        set(BAUD_RATE 9600)
     endif()
 
-    if(MANUAL)
-        set(MANUAL      ${MANUAL})
-    else()
-        set(MANUAL      FALSE)
+    if(NOT MANUAL)
+        set(MANUAL FALSE)
     endif()
 
-    add_definitions(-DBAUD_RATE=${BAUD_RATE})
+    if(NOT FORMATTED_SD_CARD_CS)
+        set(FORMATTED_SD_CARD_CS 4)
+    endif()
+
+    message(${BAUD_RATE})
+    add_definitions("-D BAUD_RATE=${BAUD_RATE} -D SD_CS_PIN=${FORMATTED_SD_CARD_CS}")
 
     if(WIN32)
         set(SERIAL putty -serial ${PORT} -sercfg ${BAUD_RATE})

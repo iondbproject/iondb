@@ -2,21 +2,6 @@ cmake_minimum_required(VERSION 3.5)
 project(test_bpp_tree)
 
 set(SOURCE_FILES
-#                ../../../../dictionary/bpp_tree/bpp_tree.h
-#                ../../../../dictionary/bpp_tree/bpp_tree.c
-#                ../../../../dictionary/bpp_tree/bpp_tree_handler.h
-#                ../../../../dictionary/bpp_tree/bpp_tree_handler.c
-#                ../../../../file/linked_file_bag.h
-#                ../../../../file/linked_file_bag.c
-#                ../../../../file/ion_file.h
-#                ../../../../file/ion_file.c
-#                ../../../../dictionary/dictionary.h
-#                ../../../../dictionary/dictionary.c
-#                ../../../../dictionary/dictionary_types.h
-#                ../../../../kv_io.h
-#                ../../../../kv_io.c
-#                ../../../../kv_system.h
-#                ../../../../file/kv_stdio_intercept.h ../../../../file/SD_stdio_c_iface.h ../../../../file/SD_stdio_c_iface.cpp
     test_bpp_tree_handler.h
     test_bpp_tree_handler.c
     ../generic_dictionary_test.h

@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		open_address.c
+@file
 @author		Scott Ronald Fazackerley
 @brief		Open Address Hash Map
 @details	The open address hash map allows non-colliding entries into a hash table
@@ -23,8 +23,7 @@ oah_initialize(
     ion_key_size_t 		key_size,
     ion_value_size_t 	value_size,
     int 				size
-)
-{
+) {
 	int i;
 	hashmap->write_concern 				= wc_insert_unique;			/* By default allow unique inserts only */
 	hashmap->super.record.key_size 		= key_size;
@@ -34,48 +33,50 @@ oah_initialize(
 /*	hashmap->compare = compare;*/
 
 	/* The hash map is allocated as a single contiguous array*/
-	hashmap->map_size 			= size;
-	hashmap->entry = (void *)malloc(
-	        (hashmap->super.record.key_size + hashmap->super.record.value_size + 1)
-	                * hashmap->map_size);
-	hashmap->compute_hash 		= (*hashing_function);		/* Allows for binding of different hash functions
-																depending on requirements */
+	hashmap->map_size 					= size;
+	hashmap->entry 						= (void *)malloc(
+											(hashmap->super.record.key_size + hashmap->super.record.value_size + 1) * hashmap->map_size
+										);
+	/* Allows for binding of different hash function depending on requirements. */
+	hashmap->compute_hash 				= (*hashing_function);
 
-	if (hashmap->entry == NULL)
+	if (NULL == hashmap->entry) {
 		return 1;
+	}
 
 #if DEBUG
 	io_printf("Initializing hash table\n");
 #endif
 
 	/* Initialize hash table */
-	for (i = 0; i < size; i++)
-	{
+	for (i = 0; i < size; i++) {
 		((hash_bucket_t *)(hashmap->entry
-		        + ((hashmap->super.record.key_size + hashmap->super.record.value_size
-		                + SIZEOF(STATUS)) * i)))->status = EMPTY;
+						   + ((hashmap->super.record.key_size + hashmap->super.record.value_size
+							   + SIZEOF(STATUS)) * i)))->status = EMPTY;
 	}
+
 	return 0;
 }
 
 int
 oah_get_location(
-	hash_t 		num,
-	int 		size
-)
-{
+	hash_t	num,
+	int 	size
+) {
 	return num % size;
 }
 
 err_t
 oah_destroy(
-	hashmap_t 	*hash_map
+	hashmap_t	*hash_map
 )
 {
-	hash_map->compute_hash 		= NULL;
-	hash_map->map_size 			= 0;
+	hash_map->compute_hash 				= NULL;
+	hash_map->map_size 					= 0;
 	hash_map->super.record.key_size 	= 0;
 	hash_map->super.record.value_size	= 0;
+
+
 	if (hash_map->entry != NULL)			//check to ensure that you are not freeing something already free
 	{
 		free(hash_map->entry);
@@ -184,9 +185,9 @@ oah_find_item_loc(
 )
 {
 
+	/* compute hash value for given key */
 	hash_t hash 				= hash_map->compute_hash(hash_map, key,
 	        						hash_map->super.record.key_size);
-													//compute hash value for given key
 
 	int loc 					= oah_get_location(hash, hash_map->map_size);
 													//determine bucket based on hash
@@ -202,6 +203,7 @@ oah_find_item_loc(
 										+ hash_map->super.record.value_size
 											+ SIZEOF(STATUS)) * loc))));
 
+
 		if (item->status == EMPTY)
 		{
 			return err_item_not_found;		//if you hit an empty cell, exit
@@ -211,6 +213,9 @@ oah_find_item_loc(
 			if (item->status != DELETED)
 			{
 				/** @todo correct compare to use proper returen type*/
+				/** @todo An error exisits with the comparitor from the dictionary and will need to be
+				 * revisitied onced fixed */
+
 				int key_is_equal 	= hash_map->super.compare(item->data, key, hash_map->super.record.key_size);
 
 				if (IS_EQUAL == key_is_equal)
@@ -234,8 +239,7 @@ oah_delete(
 	ion_key_t 		key
 )
 {
-	int loc;
-
+	int loc = -1;
 	if (oah_find_item_loc(hash_map, key, &loc) == err_item_not_found)
 	{
 #if DEBUG
@@ -339,6 +343,7 @@ oah_compute_simple_hash(
 )
 {
 	//convert to a hashable value
+	/** @TODO int will cause an issues depending on sizeof int */
 	hash_t hash 	= ((hash_t)(*(int *)key)) % hashmap->map_size;
 
 	return hash;

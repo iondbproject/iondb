@@ -12,6 +12,7 @@ work/
 *~
 changetracker.txt
 out.txt
+__pycache__/
 
 # IDE
 .cproject
