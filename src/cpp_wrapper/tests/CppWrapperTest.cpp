@@ -16,7 +16,9 @@ int main() {
 	string s = "hello!";
 	btree->insert(3, s);
 
-	int buf = btree->get<int>(3);
+	cout << "\nCheck if key 3 is in dictionary and got back " << btree->keyFound(3) << endl;
+
+	string buf = btree->get<string>(3);
 	cout << "\nRetrieve key 3 and got back " << buf << endl;
 
 	cout << "\nUpdating value of key 3 to hi!" << endl;
@@ -24,15 +26,27 @@ int main() {
 	string t = "hi!";
 	btree->update(3, t);
 
+	cout << "\nCheck if key 3 is in dictionary and got back " << btree->keyFound(3) << endl;
+
 	string buf2 = btree->get<string>(3);
 	cout << "\nRetrieve key 3 after update and got back " << buf2 << endl;
 
 	cout << "\nDelete key 3" << endl;
 	btree->deleteRecord(3);
 
+	cout << "\nCheck if key 3 is in dictionary and got back " << btree->keyFound(3) << endl;
+
 	cout << "\nTry and retrieve key 3 after deletion" << endl;
 
-	string buf3 = btree->get<string>(3);
+	err_t buf3 = btree->get<err_t>(3);
+
+	btree->insert(5, 5);
+	int buf4 = btree->get<int>(5);
+	cout << "Retrieve key 5: " << buf4 << endl;
+	btree->deleteRecord(5);
+	int buf5 = btree->get<int>(5);
+	cout << "Retrieve key 5: " << buf5 << endl;
+
 	cout << "\nRetrieve key 3 and got back " << buf3 << endl;
 
 	printf("\nInsert %d [%s]\n", 3, "test1!");

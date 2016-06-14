@@ -88,9 +88,8 @@ public:
 				A pointer to the value byte array to copy data into.
 @return		An error message describing the result of the retrieval.
 */
-	template <typename V>
-	V
-	get(
+	bool
+	keyFound(
 		K key
 	)
 	{
@@ -100,11 +99,30 @@ public:
 		err_t err               = dictionary_get(&dict, ion_key, ion_value);
 
 		if(err == err_ok)
+			return true;
+
+		else
+			return false;
+	}
+
+	template <typename V>
+	boost::optional <V>
+	get(
+			K key
+	)
+	{
+		ion_key_t ion_key       = (ion_key_t)&key;
+		unsigned char ion_value[dict.instance->record.value_size];
+
+		err_t err = dictionary_get(&dict, ion_key, ion_value);
+
+		if(err == err_ok)
 			return *((V*) ion_value);
 
-			/** Needs discussion */
 		else
-			return V();
+		{
+			return boost::none;
+		}
 	}
 
 /**
