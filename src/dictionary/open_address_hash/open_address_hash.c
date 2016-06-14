@@ -213,13 +213,10 @@ oah_find_item_loc(
 			if (item->status != DELETED)
 			{
 				/** @todo correct compare to use proper returen type*/
-
-				DUMP(*(int*)key,"%i");
-				DUMP(*(int*)item->data,"%i");
+				/** @todo An error exisits with the comparitor from the dictionary and will need to be
+				 * revisitied onced fixed */
 
 				int key_is_equal 	= hash_map->super.compare(item->data, key, hash_map->super.record.key_size);
-
-				DUMP(key_is_equal, "%i");
 
 				if (IS_EQUAL == key_is_equal)
 				{

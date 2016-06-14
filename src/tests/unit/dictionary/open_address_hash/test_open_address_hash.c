@@ -356,7 +356,6 @@ test_open_address_hashmap_simple_delete(
 
 	for (j = 0; j<map.map_size;j++) {
 		/* delete the record */
-		DUMP(j,"%i");
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok				== oah_delete(&map, (ion_key_t)(&j)));
 		/* check to make sure that the record has been deleted */
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found	== oah_query(&map,(ion_key_t)(&j), value));
@@ -900,20 +899,20 @@ open_address_hashmap_getsuite()
 {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-//	planck_unit_add_to_suite(suite, test_open_address_hashmap_initialize);
-//	planck_unit_add_to_suite(suite, test_open_address_hashmap_compute_simple_hash);
-//	planck_unit_add_to_suite(suite, test_open_address_hashmap_get_location);
-//	planck_unit_add_to_suite(suite, test_open_address_hashmap_find_item_location);
-//	planck_unit_add_to_suite(suite, test_open_address_hashmap_simple_insert);
-//	planck_unit_add_to_suite(suite, test_open_address_hashmap_simple_insert_and_query);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_initialize);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_compute_simple_hash);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_get_location);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_find_item_location);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_simple_insert);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_simple_insert_and_query);
 	planck_unit_add_to_suite(suite, test_open_address_hashmap_simple_delete);
-//	planck_unit_add_to_suite(suite, test_open_address_hashmap_duplicate_insert_1);
-//	planck_unit_add_to_suite(suite, test_open_address_hashmap_duplicate_insert_2);
-//	planck_unit_add_to_suite(suite, test_open_address_hashmap_update_1);
-//	planck_unit_add_to_suite(suite, test_open_address_hashmap_update_2);
-//	planck_unit_add_to_suite(suite, test_open_address_hashmap_delete_1);
-//	planck_unit_add_to_suite(suite, test_open_address_hashmap_delete_2);
-//	planck_unit_add_to_suite(suite, test_open_address_hashmap_capacity);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_duplicate_insert_1);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_duplicate_insert_2);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_update_1);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_update_2);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_delete_1);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_delete_2);
+	planck_unit_add_to_suite(suite, test_open_address_hashmap_capacity);
 
 	return suite;
 }
