@@ -785,4 +785,6 @@ runalltests_file_linked_list()
 	planck_unit_suite_t		*suite	= file_linked_list_getsuite();
 
 	planck_unit_run_suite(suite);
+
+	planck_unit_destroy_suite(suite);
 }

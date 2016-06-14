@@ -968,6 +968,7 @@ runalltests_open_address_file_hash()
 	//CuSuiteDetails(suite, output);
 	//printf("%s\n", output->buffer);
 
+	planck_unit_destroy_suite(suite);
 	//CuSuiteDelete(suite);
 	//CuStringDelete(output);
 

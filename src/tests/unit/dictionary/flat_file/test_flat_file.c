@@ -751,4 +751,6 @@ runalltests_flat_file()
 	planck_unit_suite_t		*suite	= flat_file_getsuite();
 
 	planck_unit_run_suite(suite);
+
+	planck_unit_destroy_suite(suite);
 }

@@ -365,6 +365,7 @@ runalltests_skiplist_handler()
 	//CuSuiteDetails(suite, output);
 	//printf("----\nSkiplist Handler Tests:\n%s\n", output->buffer);
 
+	planck_unit_destroy_suite(suite);
 	//CuSuiteDelete(suite);
 	//CuStringDelete(output);
 }

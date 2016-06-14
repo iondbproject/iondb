@@ -1378,6 +1378,7 @@ runalltests_linear_hash()
 	//CuSuiteDetails(suite, output);
 	//io_printf("%s\n", output->buffer);
 
+	planck_unit_destroy_suite(suite);
 	//CuSuiteDelete(suite);
 	//CuStringDelete(output);
 }

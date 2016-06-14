@@ -301,4 +301,6 @@ runalltests_file_encode_id()
 	planck_unit_suite_t		*suite	= encode_file_id_getsuite();
 
 	planck_unit_run_suite(suite);
+
+	planck_unit_destroy_suite(suite);
 }

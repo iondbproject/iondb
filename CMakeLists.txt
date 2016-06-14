@@ -42,8 +42,15 @@ if(USE_ARDUINO)
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
     set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -Wall -g")
-
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+endif()
+
+# Use cmake -DCOVERAGE_TESTING=ON to include coverage testing information.
+option(COVERAGE_TESTING "Enable profiling and coverage report" OFF)
+if (CMAKE_COMPILER_IS_GNUCC AND COVERAGE_TESTING)
+    set(GCC_COVERAGE_COMPILE_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
+    set(CMAKE_C_OUTPUT_EXTENSION_REPLACE 1)
 endif()
 
 # Add all of the CMakeLists.txt for the sub projects.

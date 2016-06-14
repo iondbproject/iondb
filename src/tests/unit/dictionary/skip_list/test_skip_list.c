@@ -1874,6 +1874,7 @@ runalltests_skiplist()
 	//CuSuiteDetails(suite, output);
 	//printf("----\nSkiplist Tests:\n%s\n", output->buffer);
 
+	planck_unit_destroy_suite(suite);
 	//CuSuiteDelete(suite);
 	//CuStringDelete(output);
 }
