@@ -487,7 +487,7 @@ lhdict_test_predicate(
 
 err_t
 lhdict_scan(
-	lhdict_cursor_t *cursor				/* know exactly what implementation of cursor is */
+	lhdict_cursor_t *cursor	/* know exactly what implementation of cursor is */
 ) {
 	/* need to scan hashmap fully looking for values that satisfy - need to think about */
 	linear_hashmap_t *hash_map	= (linear_hashmap_t *) (cursor->super.dictionary->instance);

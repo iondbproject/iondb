@@ -34,10 +34,10 @@ oah_initialize(
 /*	hashmap->compare = compare;*/
 
 	/* The hash map is allocated as a single contiguous array*/
-	hashmap->map_size	= size;
-	hashmap->entry		= (void *) malloc((hashmap->super.record.key_size + hashmap->super.record.value_size + 1) * hashmap->map_size);
+	hashmap->map_size		= size;
+	hashmap->entry			= (void *) malloc((hashmap->super.record.key_size + hashmap->super.record.value_size + 1) * hashmap->map_size);
 	/* Allows for binding of different hash function depending on requirements. */
-	hashmap->compute_hash = (*hashing_function);
+	hashmap->compute_hash	= (*hashing_function);
 
 	if (NULL == hashmap->entry) {
 		return 1;

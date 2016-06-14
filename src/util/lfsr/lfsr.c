@@ -43,11 +43,11 @@ lfsr_get_next(
 ) {
 	unsigned lsb = instance->lfsr_value & 1;/* Get LSB (i.e., the output bit). */
 
-	instance->lfsr_value >>= 1;						/* Shift register */
+	instance->lfsr_value >>= 1;	/* Shift register */
 
 	if (lsb == 1) {
 		/* Only apply toggle mask if output bit is 1 */
-		instance->lfsr_value ^= 0xB400u;			/* Apply toggle mask, value has 1 at bits corresponding
+		instance->lfsr_value ^= 0xB400u;/* Apply toggle mask, value has 1 at bits corresponding
 													* to taps, 0 elsewhere. */
 	}
 

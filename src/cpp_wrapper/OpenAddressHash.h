@@ -41,4 +41,4 @@ OpenAddressHash(
 }
 };
 
-#endif	/* PROJECT_OPENADDRESSHASH_H */
+#endif /* PROJECT_OPENADDRESSHASH_H */

@@ -43,4 +43,4 @@ OpenAddressFileHash(
 }
 };
 
-#endif	/* PROJECT_OPENADDRESSFILEHASH_H */
+#endif /* PROJECT_OPENADDRESSFILEHASH_H */

@@ -99,7 +99,7 @@ test_flat_file_simple_insert(
 		char str[10];
 
 		sprintf(str, "%02i is key", i);
-		ff_insert(&flat_file, (ion_key_t) (&i), (unsigned char *) str);				/* this is will wrap */
+		ff_insert(&flat_file, (ion_key_t) (&i), (unsigned char *) str);	/* this is will wrap */
 	}
 
 	for (i = 0; i < STD_KV_SIZE; i++) {
@@ -558,7 +558,7 @@ test_flat_file_update_2(
 
 		if (value != NULL) {
 			free(value);
-		}								/* must free value after query */
+		}	/* must free value after query */
 	}
 
 	fclose(file.file_ptr);

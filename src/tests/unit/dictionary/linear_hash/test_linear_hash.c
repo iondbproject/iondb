@@ -708,7 +708,7 @@ test_file_linear_hash_query(
 	initial_size			= 4;
 	lh_initialize(&hashmap, lh_compute_hash, hashmap.super.key_type, record.key_size, record.value_size, initial_size, structure_ID);
 
-	hashmap.super.compare = dictionary_compare_signed_value;
+	hashmap.super.compare	= dictionary_compare_signed_value;
 
 	int		key[]	= { 0, 1, 2, 3, 4, 5, 6, 7 };
 	char	value[10];
@@ -811,7 +811,7 @@ test_file_linear_hash_query_2(
 	initial_size			= 4;
 	lh_initialize(&hashmap, lh_compute_hash, hashmap.super.key_type, record.key_size, record.value_size, initial_size, structure_ID);
 
-	hashmap.super.compare = dictionary_compare_signed_value;
+	hashmap.super.compare	= dictionary_compare_signed_value;
 
 	int		key[]	= { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
 	char	value[10];
@@ -915,7 +915,7 @@ test_file_linear_hash_delete(
 	initial_size			= 4;
 	lh_initialize(&hashmap, lh_compute_hash, hashmap.super.key_type, record.key_size, record.value_size, initial_size, structure_ID);
 
-	hashmap.super.compare = dictionary_compare_signed_value;
+	hashmap.super.compare	= dictionary_compare_signed_value;
 
 	int		key[]	= { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
 	char	value[10];

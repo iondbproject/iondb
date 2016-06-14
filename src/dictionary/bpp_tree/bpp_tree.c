@@ -134,7 +134,7 @@ flush(
 	len = h->sectorSize;
 
 	if (buf->adr == 0) {
-		len *= 3;						/* root */
+		len *= 3;	/* root */
 	}
 
 	if (err_ok != ion_fwrite_at(h->fp, buf->adr, len, (byte *) buf->p)) {
@@ -260,7 +260,7 @@ readDisk(
 		len = h->sectorSize;
 
 		if (adr == 0) {
-			len *= 3;					/* root */
+			len *= 3;	/* root */
 		}
 
 		if (err_ok != ion_fread_at(h->fp, adr, len, (byte *) buf->p)) {

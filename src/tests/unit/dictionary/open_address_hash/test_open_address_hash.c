@@ -653,7 +653,7 @@ test_open_address_hashmap_update_2(
 
 		if (value != NULL) {
 			free(value);
-		}								/* must free value after query */
+		}	/* must free value after query */
 	}
 }
 

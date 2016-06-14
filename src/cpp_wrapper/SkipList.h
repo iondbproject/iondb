@@ -41,4 +41,4 @@ SkipList(
 }
 };
 
-#endif	/* PROJECT_SKIPLIST_H */
+#endif /* PROJECT_SKIPLIST_H */

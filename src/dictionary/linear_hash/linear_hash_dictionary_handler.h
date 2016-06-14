@@ -286,7 +286,7 @@ lhdict_test_predicate(
  */
 err_t
 lhdict_scan(
-	lhdict_cursor_t *cursor			/* don't need to pass in the cursor */
+	lhdict_cursor_t *cursor	/* don't need to pass in the cursor */
 );
 
 err_t

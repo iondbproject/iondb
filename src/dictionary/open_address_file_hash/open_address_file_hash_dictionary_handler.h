@@ -370,7 +370,7 @@ oafdict_test_predicate(
  */
 err_t
 oafdict_scan(
-	oafdict_cursor_t *cursor			/* don't need to pass in the cursor */
+	oafdict_cursor_t *cursor/* don't need to pass in the cursor */
 );
 
 #if defined(__cplusplus)

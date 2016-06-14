@@ -347,7 +347,7 @@ oadict_test_predicate(
  */
 err_t
 oadict_scan(
-	oadict_cursor_t *cursor			/* don't need to pass in the cursor */
+	oadict_cursor_t *cursor	/* don't need to pass in the cursor */
 );
 
 #if defined(__cplusplus)

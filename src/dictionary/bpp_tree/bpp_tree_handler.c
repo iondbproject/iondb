@@ -350,9 +350,9 @@ bpptree_find(
 			bErrType err;
 
 			/* We search for first key in B++ tree. */
-			err = bFindFirstKey(bpptree->tree, bCursor->cur_key, &bCursor->offset);
+			err					= bFindFirstKey(bpptree->tree, bCursor->cur_key, &bCursor->offset);
 
-			(*cursor)->status = cs_cursor_initialized;
+			(*cursor)->status	= cs_cursor_initialized;
 
 			if (bErrOk != err) {
 				(*cursor)->status = cs_end_of_results;

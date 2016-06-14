@@ -255,7 +255,7 @@ lh_update(
 
 			fll_create_node(overflow, &(hash_map->super.record), key, value, &update_node);
 
-			update_node->next = ll_node->next;					/** and make sure pointers are updated */
+			update_node->next = ll_node->next;	/** and make sure pointers are updated */
 			fll_update(overflow, update_node);
 
 			status.count++;
@@ -264,7 +264,7 @@ lh_update(
 			while (fll_next(overflow, ll_node) != err_item_not_found) {
 				/** We know we are starting at a node that is equal so, just leave if not */
 				if (IS_EQUAL == fll_compare(overflow, update_node, ll_node)) {
-					update_node->next = ll_node->next;			/** update pointers */
+					update_node->next = ll_node->next;	/** update pointers */
 					fll_update(overflow, update_node);
 					status.count++;
 				}
@@ -493,10 +493,10 @@ lh_split(
 							lh_write_record_status_in_cache(hash_map, item, IN_USE);
 							lh_write_cache_raw(hash_map, lower_cache, item->data, (void *) ll_node->data, hash_map->record_size - 1);
 							/** copy in record which should change the state of the cache but does not include status coming from LL */
-							fll_remove(&split_ll);									/** and remove record */
+							fll_remove(&split_ll);	/** and remove record */
 						}
 
-						lower_bucket_idx++;											/** advance counter to next record */
+						lower_bucket_idx++;	/** advance counter to next record */
 					}
 				}	/**and of not, just leave it in the overflow file */
 			}
@@ -642,7 +642,7 @@ lh_find(
 			((lhdict_cursor_t *) cursor)->current_bucket	= ((lhdict_cursor_t *) cursor)->first_bucket;
 			/** and search it as the value must be in the page or the overflow page  */
 
-			lh_cache_pp(hash_map, 0, ((lhdict_cursor_t *) cursor)->first_bucket, &cache);		/** cache and leave page */
+			lh_cache_pp(hash_map, 0, ((lhdict_cursor_t *) cursor)->first_bucket, &cache);	/** cache and leave page */
 #if DEBUG
 			DUMP(((lhdict_cursor_t *) cursor)->first_bucket, "%i");
 #endif
@@ -679,7 +679,7 @@ lh_find(
 
 						if (IS_GREATER == value) {
 							/** If the value is not found on a strict equality, exit as it will be no where else */
-							break;											/** exit and clean up as there are no results */
+							break;	/** exit and clean up as there are no results */
 						}
 						else if (IS_EQUAL == value) {
 							/** and if it satisfies the predicate, the value has been found
@@ -758,14 +758,14 @@ lh_find(
 									/** If the value is not found in the predicate range,
 									 *	exit as it will need to check the next pp*/
 									/** If the value is about the upper range, then leave ll and move onto the next bucket*/
-									break;												/** exit while and continue*/
+									break;	/** exit while and continue*/
 								}
 								else if (IS_EQUAL == value) {
 									/** and if it satisfies the predicate, the value has been found
 									 * @TODO this value could be cached for better performance */
 									cursor->status = cs_cursor_initialized;
 									free(ll_node);
-									return err_ok;										/** Exit with cursor initialized */
+									return err_ok;	/** Exit with cursor initialized */
 								}
 							}
 
@@ -1083,7 +1083,7 @@ lh_cache_pp(
 		(*cache)->bucket_idx = EMPTY_BLOCK_REQUEST;
 	}
 
-	(*cache)->status = cache_active;								/** cache is now live*/
+	(*cache)->status = cache_active;/** cache is now live*/
 
 	return err_ok;	/** @TODO consider error codes on this */
 }
@@ -1175,7 +1175,7 @@ lh_write_cache_record(
 		return err_uninitialized;
 	}
 
-	item->status = IN_USE;
+	item->status						= IN_USE;
 	memcpy(item->data, key, (hash_map->super.record.key_size));
 	memcpy(item->data + hash_map->super.record.key_size, value, (hash_map->super.record.value_size));
 	hash_map->cache[page_number].status = cache_active_written;

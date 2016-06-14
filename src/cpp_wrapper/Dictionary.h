@@ -356,4 +356,4 @@ deleteMasterTable(
 }
 };
 
-#endif	/* PROJECT_CPP_DICTIONARY_H */
+#endif /* PROJECT_CPP_DICTIONARY_H */

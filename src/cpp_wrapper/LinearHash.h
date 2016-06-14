@@ -42,4 +42,4 @@ LinearHash(
 }
 };
 
-#endif	/* PROJECT_LINEARHASH_H */
+#endif /* PROJECT_LINEARHASH_H */

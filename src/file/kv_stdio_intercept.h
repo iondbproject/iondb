@@ -52,19 +52,19 @@ typedef long fpos_t;
 
 #endif
 
-#define	 FILE SD_FILE
-#define	 fopen(x, y)			sd_fopen(x, y)
-#define	 fclose(x)			sd_fclose(x)
-#define	 fwrite(w, x, y, z)	sd_fwrite(w, x, y, z)
-#define	 fsetpos(x, y)		sd_fsetpos(x, y)
-#define	 fgetpos(x, y)		sd_fgetpos(x, y)
-#define	 fflush(x)			sd_fflush(x)
-#define	 fseek(x, y, z)		sd_fseek(x, y, z)
-#define	 fread(w, x, y, z)	sd_fread(w, x, y, z)
-#define	 feof(x)				sd_feof(x)
-#define	 ftell(x)			sd_ftell(x)
-#define	 fremove(x)			sd_remove(x)
-#define	 frewind(x)			sd_rewind(x)
+#define  FILE SD_FILE
+#define  fopen(x, y)		sd_fopen(x, y)
+#define  fclose(x)			sd_fclose(x)
+#define  fwrite(w, x, y, z) sd_fwrite(w, x, y, z)
+#define  fsetpos(x, y)		sd_fsetpos(x, y)
+#define  fgetpos(x, y)		sd_fgetpos(x, y)
+#define  fflush(x)			sd_fflush(x)
+#define  fseek(x, y, z)		sd_fseek(x, y, z)
+#define  fread(w, x, y, z)	sd_fread(w, x, y, z)
+#define  feof(x)			sd_feof(x)
+#define  ftell(x)			sd_ftell(x)
+#define  fremove(x)			sd_remove(x)
+#define  frewind(x)			sd_rewind(x)
 
 #if defined(__cplusplus)
 }

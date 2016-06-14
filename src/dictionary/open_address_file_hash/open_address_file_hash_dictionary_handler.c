@@ -344,7 +344,7 @@ oafdict_test_predicate(
 
 err_t
 oafdict_scan(
-	oafdict_cursor_t *cursor				/* know exactly what implementation of cursor is */
+	oafdict_cursor_t *cursor/* know exactly what implementation of cursor is */
 ) {
 	/* need to scan hashmap fully looking for values that satisfy - need to think about */
 	file_hashmap_t *hash_map	= (file_hashmap_t *) (cursor->super.dictionary->instance);

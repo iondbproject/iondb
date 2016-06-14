@@ -372,7 +372,7 @@ ffdict_test_predicate(
  */
 err_t
 ffdict_scan(
-	ffdict_cursor_t *cursor			/* don't need to pass in the cursor */
+	ffdict_cursor_t *cursor	/* don't need to pass in the cursor */
 );
 
 #if defined(__cplusplus)
