@@ -24,7 +24,7 @@
 extern "C" {
 #endif
 
-/* This could work? */
+/* @TODO requires testing on previous versions of avr-gcc */
 #if __GNUC__ > 4 || \
               (__GNUC__ == 4 && (__GNUC_MINOR__ > 8 || \
                                  (__GNUC_MINOR__ == 1)))
