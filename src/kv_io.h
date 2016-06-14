@@ -37,7 +37,8 @@
 #endif
 
 /**
-@brief		The function outputs a string in a tidy format.
+@brief		The function outputs a string in a tidy format, according to the
+			format string.
 @details	Used as an alternate printf to deal with device specific issues.
 @param		format
 				Format string to specify print output.
