@@ -24,7 +24,14 @@
 extern "C" {
 #endif
 
-typedef long fpos_t;
+/* This could work? */
+#if __GNUC__ > 4 || \
+              (__GNUC__ == 4 && (__GNUC_MINOR__ > 8 || \
+                                 (__GNUC_MINOR__ == 1)))
+/* Stub */
+#else
+	typedef long fpos_t;
+#endif
 
 #define 	FILE  				SD_FILE
 #define 	fopen(x, y) 			sd_fopen(x ,y)
