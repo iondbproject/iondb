@@ -1,19 +1,36 @@
+/******************************************************************************/
 /**
-
-@brief		Intercepts stdio.h defined functions for use on AVR platform
-
-@details	stdio.h is not fully defined within avr-gcc.  As a result, function
+@file
+@author		Scott Fazackerley
+@brief		Intercepts stdio.h defined functions for use on AVR platform.
+@details	stdio.h is not fully defined within avr-gcc. As a result, functions
 			for file operations are defined and not implemented or not defined.
-			As a result, it is difficult to cross compile src that contains
-			defined functions.  Include this header at the top of the file,
+			This means it is difficult to cross compile src that contains
+			stdio.h functions. Include this header at the top of the file,
 			but after stdio.h and the functions defined below will override.
 
 			Flags: 	-DIntercept
 
-			Compiling with the -DIntercept flag will override functinons.  Leaving
-			the function out will allow for regular use.
-
- */
+			Compiling with the -DIntercept flag will override stdio.h functions.
+			Leaving the flag (and thus the functions) out will allow for
+			regular use.
+@copyright	Copyright 2016
+				The University of British Columbia,
+				IonDB Project Contributors (see @ref AUTHORS.md)
+@par
+			Licensed under the Apache License, Version 2.0 (the "License");
+			you may not use this file except in compliance with the License.
+			You may obtain a copy of the License at
+					http://www.apache.org/licenses/LICENSE-2.0
+@par
+			Unless required by applicable law or agreed to in writing,
+			software distributed under the License is distributed on an
+			"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+			either express or implied. See the License for the specific
+			language governing permissions and limitations under the
+			License.
+*/
+/******************************************************************************/
 
 #if !defined(KV_STDIO_INTERCEPT_H_)
 #define KV_STDIO_INTERCEPT_H_
@@ -33,19 +50,19 @@ extern "C" {
 	typedef long fpos_t;
 #endif
 
-#define 	FILE  				SD_FILE
-#define 	fopen(x, y) 			sd_fopen(x ,y)
+#define		FILE				SD_FILE
+#define		fopen(x, y)			sd_fopen(x ,y)
 #define		fclose(x)			sd_fclose(x)
-#define 	fwrite(w, x , y, z)		sd_fwrite(w, x, y, z)
-#define		fsetpos(x, y)			sd_fsetpos(x, y)
-#define	 	fgetpos(x, y)			sd_fgetpos(x, y)
-#define 	fflush(x)			sd_fflush(x)
-#define     fseek(x ,y ,z)          sd_fseek(x ,y ,z)
-#define     fread(w, x, y, z)       sd_fread(w, x, y, z)
-#define     feof(x)             sd_feof(x)
-#define     ftell(x)            sd_ftell(x)
+#define		fwrite(w, x , y, z)	sd_fwrite(w, x, y, z)
+#define		fsetpos(x, y)		sd_fsetpos(x, y)
+#define		fgetpos(x, y)		sd_fgetpos(x, y)
+#define		fflush(x)			sd_fflush(x)
+#define		fseek(x ,y ,z)		sd_fseek(x ,y ,z)
+#define		fread(w, x, y, z)	sd_fread(w, x, y, z)
+#define		feof(x)				sd_feof(x)
+#define		ftell(x)			sd_ftell(x)
 #define		fremove(x)			sd_remove(x)
-#define     frewind(x)           sd_rewind(x)
+#define		frewind(x)			sd_rewind(x)
 
 #if defined(__cplusplus)
 }

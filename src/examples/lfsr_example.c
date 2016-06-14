@@ -1,4 +1,4 @@
-#include "./../benchmark/lfsr/lfsr.h"
+#include "../util/lfsr/lfsr.h"
 #include <stdint.h>
 #include <stdio.h>
 

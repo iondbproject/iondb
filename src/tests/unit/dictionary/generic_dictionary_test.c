@@ -150,7 +150,7 @@ dictionary_test_insert_get_edge_cases(
 
 	err = dictionary_insert(
 		&(test->dictionary),
-		IONIZE(-10),
+		IONIZE(-10, int),
 		GTEST_DATA
 	);
 
@@ -159,7 +159,7 @@ dictionary_test_insert_get_edge_cases(
 	unsigned char 	test_buf[test->value_size];
 	err = dictionary_get(
 		&test->dictionary,
-		IONIZE(-10),
+		IONIZE(-10, int),
 		test_buf
 	);
 
@@ -353,7 +353,7 @@ dictionary_test_open_close(
 	ion_dictionary_id_t gdict_id = test->dictionary.instance->id;
 
 	/* Insert test record so we can check data integrity after we close/open */
-	error	= dictionary_insert(&(test->dictionary), IONIZE(66650), GTEST_DATA);
+	error	= dictionary_insert(&(test->dictionary), IONIZE(66650, int), GTEST_DATA);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == error);
 
@@ -383,7 +383,7 @@ dictionary_test_open_close(
 
 	/* Check the test record */
 	IONIZE_VAL(test_val, test->value_size);
-	error	= dictionary_get(&dictionary_temp, IONIZE(66650), test_val);
+	error	= dictionary_get(&dictionary_temp, IONIZE(66650, int), test_val);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == error);
 	int j	= memcmp(GTEST_DATA, test_val, test->value_size);

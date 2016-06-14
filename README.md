@@ -27,6 +27,20 @@ Pull requests are currently **not** recommended due to significant changes arriv
 
 ***
 
+##Repository Setup for Contributors
+
+Before editing any code, make sure you have `uncrustify` installed, version
+0.63 or newer, and run
+
+```bash
+make setup
+make hooks
+```
+
+in the repository root to setup necessary submodules and pre-commit hooks for formatting.
+
+If you move the directory of your repository to a different path, make sure you re-run `make hooks`.
+
 #Usage Guide
 
 These inclusions are necessary for any IonDB usage:
@@ -93,28 +107,28 @@ Note that keys and values are of a fixed size, which is set on a per-dictionary 
 
 //Suppose the key is an int
 int my_key = 64;
-ion_key_t key = IONIZE(my_key); //A prepared key
+ion_key_t key = IONIZE(my_key, int); //A prepared key
 
 //Inline is fine too:
-ion_key_t key = IONIZE(64);
+ion_key_t key = IONIZE(64, int);
 
 //Any type is supported
 unsigned long long my_key = 2147483648ull;
-ion_key_t key = IONIZE(my_key);
+ion_key_t key = IONIZE(my_key, unsigned long long);
 
 /* Key retrieval */
 
 //Retrieve an int from a key
-int my_key = NEUTRALIZE(int, key);
+int my_key = NEUTRALIZE(key, int);
 
 //Retrieve unsigned long long from a key
-unsigned long long my_key = NEUTRALIZE(unsigned long long, key);
+unsigned long long my_key = NEUTRALIZE(key, unsigned long long);
 ```
 
 ####Ionization functions
 | Function | Type |
 |----------|------|
-| `IONIZE(any)` | `IONIZE :: any -> ion_key_t` |
+| `IONIZE(key, atype)` | `IONIZE :: atype -> ion_key_t` |
 | `NEUTRALIZE(atype, key)` | `NEUTRALIZE :: ion_key_t -> atype` |
 
 ####Key categories:
@@ -139,7 +153,7 @@ SD.begin(4);
 ###Insert
 
 ```c
-ion_key_t key = IONIZE(some_key);
+ion_key_t key = IONIZE(some_key, int);
 ion_value_t value = some_value;
 dictionary_insert(&dictionary, key, value);
 ```
@@ -147,14 +161,14 @@ dictionary_insert(&dictionary, key, value);
 ###Delete
 
 ```c
-ion_key_t key = IONIZE(some_key);
+ion_key_t key = IONIZE(some_key, int);
 dictionary_delete(&dictionary, key);
 ```
 
 ###Query
 
 ```c
-ion_key_t key = IONIZE(some_key);
+ion_key_t key = IONIZE(some_key, int);
 ion_value_t my_value = malloc(value_size); // Create buffer to hold returned value
 dictionary_get(&dictionary, key, my_value);
 // Process data
@@ -184,7 +198,7 @@ void setup() {
     //Create dictionary: Given handler, dictionary, key type, key size, value size, dict size
     dictionary_create(&handler, &dictionary, key_type_numeric_signed, sizeof(int), 60, 10);
     
-    ion_key_t   key = IONIZE(42);
+    ion_key_t   key = IONIZE(42, int);
     ion_value_t value = (ion_value_t) "Hello IonDB";
     
     dictionary_insert(&dictionary, key, value);

@@ -940,8 +940,8 @@ test_skiplist_delete_single_several(
 	print_skiplist(&skip_list);
 #endif
 
-	sl_node_t 	*onebefore 	= sl_find_node(&skiplist, IONIZE(111));
-	sl_node_t 	*theone 	= sl_find_node(&skiplist, IONIZE(112));
+	sl_node_t 	*onebefore 	= sl_find_node(&skiplist, IONIZE(111, int));
+	sl_node_t 	*theone 	= sl_find_node(&skiplist, IONIZE(112, int));
 	sl_level_t 	theone_h 	= theone->height + 1;
 	sl_level_t 	onebefore_h = onebefore->height + 1;
 
@@ -1006,8 +1006,8 @@ test_skiplist_delete_single_several_noncont(
 	print_skiplist(&skip_list);
 #endif
 
-	sl_node_t 	*onebefore 	= sl_find_node(&skiplist, IONIZE(235));
-	sl_node_t 	*theone 	= sl_find_node(&skiplist, IONIZE(240));
+	sl_node_t 	*onebefore 	= sl_find_node(&skiplist, IONIZE(235, int));
+	sl_node_t 	*theone 	= sl_find_node(&skiplist, IONIZE(240, int));
 	sl_level_t 	theone_h 	= theone->height + 1;
 	sl_level_t 	onebefore_h = onebefore->height + 1;
 
@@ -1107,7 +1107,7 @@ test_skiplist_update_single_nonexist(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	err_t status = sl_update(&skiplist, IONIZE(72), (ion_value_t) (char*){"test val"});
+	err_t status = sl_update(&skiplist, IONIZE(72, int), (ion_value_t) (char*){"test val"});
 
 #if DEBUG
 	print_skiplist(&skip_list);
@@ -1137,14 +1137,14 @@ test_skiplist_update_single_nonexist_nonempty(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	sl_insert(&skiplist, IONIZE(99), (ion_value_t) (char*){"not val"});
+	sl_insert(&skiplist, IONIZE(99, int), (ion_value_t) (char*){"not val"});
 
 #if DEBUG
 	printf("%s\n", "** BEFORE **");
 	print_skiplist(&skip_list);
 #endif
 
-	err_t status = sl_update(&skiplist, IONIZE(13), (ion_value_t) (char*){"test val"});
+	err_t status = sl_update(&skiplist, IONIZE(13, int), (ion_value_t) (char*){"test val"});
 
 #if DEBUG
 	printf("%s\n", "** AFTER **");
@@ -1186,14 +1186,14 @@ test_skiplist_update_many_nonexist_nonempty(
 	print_skiplist(&skip_list);
 #endif
 
-	err_t status = sl_update(&skiplist, IONIZE(45), (ion_value_t) (char*){"test val"});
+	err_t status = sl_update(&skiplist, IONIZE(45, int), (ion_value_t) (char*){"test val"});
 
 #if DEBUG
 	printf("%s\n", "** AFTER **");
 	print_skiplist(&skip_list);
 #endif
 
-	sl_node_t 		*cursor = sl_find_node(&skiplist, IONIZE(38));
+	sl_node_t 		*cursor = sl_find_node(&skiplist, IONIZE(38, int));
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, 		status							== err_ok);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 		*(int*)cursor->next[0]->key		== 45);
@@ -1220,14 +1220,14 @@ test_skiplist_update_single_exist(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	sl_insert(&skiplist, IONIZE(45), (ion_value_t) (char*){"old val"});
+	sl_insert(&skiplist, IONIZE(45, int), (ion_value_t) (char*){"old val"});
 
 #if DEBUG
 	printf("%s\n", "** BEFORE **");
 	print_skiplist(&skip_list);
 #endif
 
-	err_t status = sl_update(&skiplist, IONIZE(45), (ion_value_t) (char*){"new val"});
+	err_t status = sl_update(&skiplist, IONIZE(45, int), (ion_value_t) (char*){"new val"});
 
 #if DEBUG
 	printf("%s\n", "** AFTER **");
@@ -1271,14 +1271,14 @@ test_skiplist_update_single_many_exist(
 #endif
 
 	
-	err_t status = sl_update(&skiplist, IONIZE(30), (ion_value_t) (char*){"COSC"});
+	err_t status = sl_update(&skiplist, IONIZE(30, int), (ion_value_t) (char*){"COSC"});
 
 #if DEBUG
 	printf("%s\n", "** AFTER **");
 	print_skiplist(&skip_list);
 #endif
 
-	sl_node_t 		*cursor = sl_find_node(&skiplist, IONIZE(30));
+	sl_node_t 		*cursor = sl_find_node(&skiplist, IONIZE(30, int));
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, 		status								 == err_ok);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 		*(int*)cursor->key					 == 30);
@@ -1357,7 +1357,7 @@ test_skiplist_update_several_same_key(
 	for(i = 0; i < 100; i++)
 	{
 		
-		sl_insert(&skiplist, IONIZE(64), (ion_value_t) (char*) {"samez U"});
+		sl_insert(&skiplist, IONIZE(64, int), (ion_value_t) (char*) {"samez U"});
 	}
 
 #if DEBUG
@@ -1366,7 +1366,7 @@ test_skiplist_update_several_same_key(
 #endif
 
 	
-	err_t status = sl_update(&skiplist, IONIZE(64), (ion_value_t) (char*) {"new same"});
+	err_t status = sl_update(&skiplist, IONIZE(64, int), (ion_value_t) (char*) {"new same"});
 
 #if DEBUG
 	printf("%s\n", "** UPDATE **");
@@ -1401,20 +1401,20 @@ test_skiplist_update_several_same_key_in_mix(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	sl_insert(&skiplist, IONIZE(32), (ion_value_t) (char*) {"samez U"});
-	sl_insert(&skiplist, IONIZE(33), (ion_value_t) (char*) {"samez U"});
-	sl_insert(&skiplist, IONIZE(35), (ion_value_t) (char*) {"samez U"});
+	sl_insert(&skiplist, IONIZE(32, int), (ion_value_t) (char*) {"samez U"});
+	sl_insert(&skiplist, IONIZE(33, int), (ion_value_t) (char*) {"samez U"});
+	sl_insert(&skiplist, IONIZE(35, int), (ion_value_t) (char*) {"samez U"});
 
 	int i;
 	for(i = 0; i < 100; i++)
 	{
 		
-		sl_insert(&skiplist, IONIZE(55), (ion_value_t) (char*) {"samez  U"});
+		sl_insert(&skiplist, IONIZE(55, int), (ion_value_t) (char*) {"samez  U"});
 	}
 
 
-	sl_insert(&skiplist, IONIZE(100), (ion_value_t) (char*) {"samez U"});
-	sl_insert(&skiplist, IONIZE(101), (ion_value_t) (char*) {"samez U"});
+	sl_insert(&skiplist, IONIZE(100, int), (ion_value_t) (char*) {"samez U"});
+	sl_insert(&skiplist, IONIZE(101, int), (ion_value_t) (char*) {"samez U"});
 
 #if DEBUG
 	printf("%s\n", "** INSERT **");
@@ -1422,7 +1422,7 @@ test_skiplist_update_several_same_key_in_mix(
 #endif
 
 	
-	err_t status = sl_update(&skiplist, IONIZE(55), (ion_value_t) (char*){"new same"});
+	err_t status = sl_update(&skiplist, IONIZE(55, int), (ion_value_t) (char*){"new same"});
 
 #if DEBUG
 	printf("%s\n", "** UPDATE **");
@@ -1431,7 +1431,7 @@ test_skiplist_update_several_same_key_in_mix(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
 	
-	sl_node_t 	*find = sl_find_node(&skiplist, IONIZE(55));
+	sl_node_t 	*find = sl_find_node(&skiplist, IONIZE(55, int));
 	for(i = 0; i < 100; i++)
 	{
 		
@@ -1460,14 +1460,14 @@ test_skiplist_delete_then_insert_single(
 	initialize_skiplist_std_conditions(&skiplist);
 
 	
-	sl_insert(&skiplist, IONIZE(66), (ion_value_t) (char*) {"toaster"});
+	sl_insert(&skiplist, IONIZE(66, int), (ion_value_t) (char*) {"toaster"});
 
 #if DEBUG
 	printf("%s\n", "** INSERT **");
 	print_skiplist(&skip_list);
 #endif
 
-	err_t status = sl_delete(&skiplist, IONIZE(66));
+	err_t status = sl_delete(&skiplist, IONIZE(66, int));
 	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
 
 #if DEBUG
@@ -1476,7 +1476,7 @@ test_skiplist_delete_then_insert_single(
 #endif
 
 	
-	sl_insert(&skiplist, IONIZE(365), (ion_value_t) (char*) {"potato"});
+	sl_insert(&skiplist, IONIZE(365, int), (ion_value_t) (char*) {"potato"});
 
 #if DEBUG
 	printf("%s\n", "** REINSERT **");
@@ -1571,7 +1571,7 @@ test_skiplist_delete_several_same_key(
 	for(i = 0; i < 100; i++)
 	{
 		
-		sl_insert(&skiplist, IONIZE(64), (ion_value_t) (char*) {"samez"});
+		sl_insert(&skiplist, IONIZE(64, int), (ion_value_t) (char*) {"samez"});
 	}
 
 #if DEBUG
@@ -1579,7 +1579,7 @@ test_skiplist_delete_several_same_key(
 	print_skiplist(&skip_list);
 #endif
 
-	err_t status = sl_delete(&skiplist, IONIZE(64));
+	err_t status = sl_delete(&skiplist, IONIZE(64, int));
 
 #if DEBUG
 	printf("%s\n", "** DELETE **");
@@ -1613,27 +1613,27 @@ test_skiplist_delete_several_same_key_in_mix(
 	skiplist_t skiplist;
 	initialize_skiplist_std_conditions(&skiplist);
 
-	sl_insert(&skiplist, IONIZE(32), (ion_value_t) (char*) {"samez"});
-	sl_insert(&skiplist, IONIZE(33), (ion_value_t) (char*) {"samez"});
-	sl_insert(&skiplist, IONIZE(35), (ion_value_t) (char*) {"samez"});
+	sl_insert(&skiplist, IONIZE(32, int), (ion_value_t) (char*) {"samez"});
+	sl_insert(&skiplist, IONIZE(33, int), (ion_value_t) (char*) {"samez"});
+	sl_insert(&skiplist, IONIZE(35, int), (ion_value_t) (char*) {"samez"});
 
 	int i;
 	for(i = 0; i < 100; i++)
 	{
 		
-		sl_insert(&skiplist, IONIZE(55), (ion_value_t) (char*) {"samez"});
+		sl_insert(&skiplist, IONIZE(55, int), (ion_value_t) (char*) {"samez"});
 	}
 
 
-	sl_insert(&skiplist, IONIZE(100), (ion_value_t) (char*) {"samez"});
-	sl_insert(&skiplist, IONIZE(101), (ion_value_t) (char*) {"samez"});
+	sl_insert(&skiplist, IONIZE(100, int), (ion_value_t) (char*) {"samez"});
+	sl_insert(&skiplist, IONIZE(101, int), (ion_value_t) (char*) {"samez"});
 
 #if DEBUG
 	printf("%s\n", "** INSERT **");
 	print_skiplist(&skip_list);
 #endif
 
-	err_t status = sl_delete(&skiplist, IONIZE(55));
+	err_t status = sl_delete(&skiplist, IONIZE(55, int));
 
 #if DEBUG
 	printf("%s\n", "** DELETE **");
@@ -1642,8 +1642,8 @@ test_skiplist_delete_several_same_key_in_mix(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
 	
-	sl_node_t 	*find = sl_find_node(&skiplist, IONIZE(55));
-	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist.super.compare(find->key, IONIZE(55), skiplist.super.record.key_size) != 0);
+	sl_node_t 	*find = sl_find_node(&skiplist, IONIZE(55, int));
+	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist.super.compare(find->key, IONIZE(55, int), skiplist.super.record.key_size) != 0);
 
 	sl_destroy(&skiplist);
 }

@@ -2,7 +2,22 @@
 /**
 @file
 @author		Graeme Douglas, Scott Fazackerley
-@see		For more information, refer to @ref dictionary.c.
+@see		For more information, refer to @ref dictionary.h.
+@copyright	Copyright 2016
+				The University of British Columbia,
+				IonDB Project Contributors (see @ref AUTHORS.md)
+@par
+			Licensed under the Apache License, Version 2.0 (the "License");
+			you may not use this file except in compliance with the License.
+			You may obtain a copy of the License at
+					http://www.apache.org/licenses/LICENSE-2.0
+@par
+			Unless required by applicable law or agreed to in writing,
+			software distributed under the License is distributed on an
+			"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+			either express or implied. See the License for the specific
+			language governing permissions and limitations under the
+			License.
 */
 /******************************************************************************/
 
@@ -163,7 +178,7 @@ dictionary_compare_signed_value(
 	int idx;
 	char return_value;
 
-	/**
+	/*
 	 * In this case, the endiannes of the process does matter as the code does
 	 * a direct comparison of bytes in memory starting for MSB.
 	 */
@@ -187,7 +202,7 @@ dictionary_compare_signed_value(
 	}
 	return return_value;
 #else
-	/** @TODO This is a potential issue and needs to be tested on SAMD3 */
+	/** @todo This is a potential issue and needs to be tested on SAMD3 */
 	for (idx = 0 ; idx < key_size ; idx++)
 	{
 		if ((return_value = ((*(first_key+idx) > *(second_key+idx)) - (*(first_key+idx) < *(second_key+idx)))) != ZERO)

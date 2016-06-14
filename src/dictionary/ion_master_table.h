@@ -2,18 +2,32 @@
 /**
 @file       ion_master_table.h
 @author     Eric Huang, Graeme Douglas, Scott Fazackerley, Wade Penson
-@brief      Master table handling.
-@details    At compile time, the master table is either used, OR it is not included
-            at all. The directive, ION_USING_MASTER_TABLE controls this.
+@brief      Master table API.
+@details    At compile time, the master table is either used, OR it is not
+			included at all. The directive, ION_USING_MASTER_TABLE controls
+			this.
             
-            If the master table is used, the assumption is that the user does not
-            bypass the master table and call dictionary_create directly.
+			If the master table is used, the assumption is that the user does
+			not bypass the master table and call dictionary_create directly.
 
-            If the master table is not used, the user must provide IDs directly to
-            dictionary creation and the onus is on the user to resolve conflicts,
-            if they occur.
-
-            Any files created by implementations have file
+            If the master table is not used, the user must provide IDs directly
+			to dictionary creation and the onus is on the user to resolve
+			conflicts, if they occur.
+@copyright	Copyright 2016
+				The University of British Columbia,
+				IonDB Project Contributors (see @ref AUTHORS.md)
+@par
+			Licensed under the Apache License, Version 2.0 (the "License");
+			you may not use this file except in compliance with the License.
+			You may obtain a copy of the License at
+					http://www.apache.org/licenses/LICENSE-2.0
+@par
+			Unless required by applicable law or agreed to in writing,
+			software distributed under the License is distributed on an
+			"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+			either express or implied. See the License for the specific
+			language governing permissions and limitations under the
+			License.
 */
 /******************************************************************************/
 
@@ -69,40 +83,63 @@ extern FILE                *ion_master_table_file;
 */
 err_t
 ion_init_master_table(
-  void
+	void
 );
 
 /**
-@brief Closes the master table.
+@brief		Closes the master table.
 */
 err_t
 ion_close_master_table(
-  void
+	void
 );
 
 /**
-@brief Deletes the master table.
+@brief		Deletes the master table.
 */
 err_t
 ion_delete_master_table(
-  void
+	void
 );
 
 /**
-@brief Creates a dictionary through use of the master table.
+@brief		Creates a dictionary through use of the master table.
+@param		handler
+				A pointer to an allocated and initialized dictionary handler
+				object that contains all implementation specific data
+				and function pointers.
+@param		dictionary
+				A pointer to an allocated dictionary object, which will be
+				written into when opened.
+@param		key_type
+				The type of key to be used with this dictionary, which
+				determines the key comparison operator.
+@param		key_size
+				The size of the key type to be used with this dictionary.
+@param		value_size
+				The size of the value type to be used with this dictionary.
+@param		dictionary_size
+				The dictionary implementation specific dictionary size
+				parameter.
+@returns	An error code describing the result of the operation.
 */
 err_t
 ion_master_table_create_dictionary(
-    dictionary_handler_t    *handler,
-    dictionary_t            *dictionary,
-    key_type_t              key_type,
-    int                     key_size,
-    int                     value_size,
-    int                     dictionary_size
+	dictionary_handler_t	*handler,
+	dictionary_t			*dictionary,
+	key_type_t				key_type,
+	int						key_size,
+	int						value_size,
+	int						dictionary_size
 );
 
 /**
-@brief Adds the given dictionary to the master table.
+@brief		Adds the given dictionary to the master table.
+@param		dictionary
+				A pointer to the dictionary object to add to the master table.
+@param		dictionary_size
+				The implementation specific size parameter used when
+				creating the dictionary.
 */
 err_t
 ion_add_to_master_table(
@@ -112,6 +149,12 @@ ion_add_to_master_table(
 
 /**
 @brief		Looks up the config of the given id.
+@param		id
+				The identifier identifying the dictionary metadata in the
+				master table which is to be looked up.
+@param		config
+				A pointer to an already allocated configuration object
+				that will be read into from the master table.
 */
 err_t
 ion_lookup_in_master_table(
@@ -122,7 +165,7 @@ ion_lookup_in_master_table(
 /**
 @brief		Find first or last dictionary in master table with a given use.
 @param		config
-				A pointer to an already allocated configuration struct
+				A pointer to an already allocated configuration object
 				that will be used to open the found dictionary.
 @param		use_type
 				The integral usage type for the dictionary. This is
@@ -144,7 +187,11 @@ ion_find_by_use_master_table(
 );
 
 /**
-@brief Deletes a dictionary from the master table.
+@brief		Deletes a dictionary from the master table.
+@param		dictionary
+				A pointer to the dictionary object to delete (it contains its
+				own identifier info for the master table).
+@returns	An error code describing the result of the operation.
 */
 err_t
 ion_delete_from_master_table(
@@ -152,7 +199,17 @@ ion_delete_from_master_table(
 );
 
 /**
-@brief Finds the target dictionary and opens it.
+@brief		Finds the target dictionary and opens it.
+@param		handler
+				A pointer to an initialized dictionary handler object
+				containing the implementation specific data and function
+				pointers for the dictionary to open.
+@param		dictionary
+				A pointer to the dictionary object to open.
+@param		id
+				The identifier identifying the dictionary metadata in the
+				master table.
+@returns	An error code describing the result of the operation.
 */
 err_t
 ion_open_dictionary(
@@ -162,7 +219,9 @@ ion_open_dictionary(
 );
 
 /**
-@brief Closes a given dictionary.
+@brief		Closes a given dictionary.
+@param		dictionary
+				A pointer to the dictionary object to close.
 */
 err_t
 ion_close_dictionary(

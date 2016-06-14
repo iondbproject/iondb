@@ -1,19 +1,41 @@
-/*
- * SD_stdio_c_iface.c
- *
- */
+/******************************************************************************/
+/**
+@file		
+@author		Scott Fazackerley
+@brief		This code contains implementations for stdio.h file functions
+			using Arduino SD File libraries.
+@details	Since the Arduino library doesn't have definitions for
+			standard I/O file functions, we have to write our own.
+@copyright	Copyright 2016
+				The University of British Columbia,
+				IonDB Project Contributors (see @ref AUTHORS.md)
+@par
+			Licensed under the Apache License, Version 2.0 (the "License");
+			you may not use this file except in compliance with the License.
+			You may obtain a copy of the License at
+					http://www.apache.org/licenses/LICENSE-2.0
+@par
+			Unless required by applicable law or agreed to in writing,
+			software distributed under the License is distributed on an
+			"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+			either express or implied. See the License for the specific
+			language governing permissions and limitations under the
+			License.
+*/
+/******************************************************************************/
 
 #include "SD_stdio_c_iface.h"
 #include <SD.h>
 
 /**
 @brief		A structure that translates a file object to a C-compatible
-		struct.
+			struct.
 */
 struct _SD_File
 {
 	File 			f;		/**< The Arduino SD File object we to use. */
-	int8_t 			eof;
+	int8_t 			eof;	/**< A position telling us where the end of the
+							     file currently is. */
 };
 
 
@@ -75,9 +97,6 @@ sd_fgetpos(
 	return 0;
 }
 
-
-
-//Opens the filename pointed to by filename using the given mode.
 /** @todo update to handle other modes */
 SD_FILE
 *sd_fopen(
@@ -168,7 +187,6 @@ SD_FILE
 		return file;
 }
 
-
 size_t
 sd_fread(
 	void 		*ptr,
@@ -193,8 +211,6 @@ sd_fread(
 	return  num_bytes / size;
 }
 
-
-
 int
 sd_fseek(
 	SD_FILE 	*stream,
@@ -212,7 +228,7 @@ sd_fseek(
 	Serial.print("Offset ");
 	Serial.println(offset);
 #endif
-	stream->eof 		= 0;
+	stream->eof				= 0;
 
 	switch (whence)
 	{
@@ -258,20 +274,18 @@ sd_fseek(
 	}
 }
 
-
 long int
 sd_ftell(
 	SD_FILE 	*stream
 )
 {
-	long int pos =  (stream) ? stream->f.position() : 0;
+	long int pos =  (stream) ? stream->f.position() : -1;
 #if DEBUG
 	Serial.print("cur pos: ");
 	Serial.println(pos);
 #endif	
 	return pos;
 }
-
 
 size_t
 sd_fwrite(
@@ -299,7 +313,6 @@ sd_fwrite(
 		return total_count;
 }
 
-
 int
 sd_remove(
 	char 	*filename
@@ -307,7 +320,6 @@ sd_remove(
 {
 	return SD.remove(filename);
 }
-
 
 void sd_rewind(
 	SD_FILE 	*stream
@@ -317,12 +329,10 @@ void sd_rewind(
 	stream->f.seek(0);
 }
 
-
 int SD_File_Begin(uint8_t csPin)
 {
 	return SD.begin(csPin);
 }
-
 
 void
 sd_printint(int i)
