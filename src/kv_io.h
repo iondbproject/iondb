@@ -2,7 +2,7 @@
 /**
 @file
 @author		Scott Fazackerley
-@brief		Key-Value I/O functionality.
+@brief		Key-Value Input/Output functionality.
 @copyright	Copyright 2016
 				The University of British Columbia,
 				IonDB Project Contributors (see @ref AUTHORS.md)
@@ -51,3 +51,4 @@ io_printf(
 );
 
 #endif /* KV_IO_H_ */
+
