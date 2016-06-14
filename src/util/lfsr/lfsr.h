@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		
+@file
 @author		Scott Fazackerley
 @brief		A linear-feedback shift register pseudo-random number generator.
 @details	This code implements a simple random number generator that
@@ -35,10 +35,9 @@ extern "C" {
 /**
 @brief		An instance type for the random number generator.
 */
-typedef struct lfsr
-{
-	uint16_t start_state;	/**< Any nonzero start state for the generator. */
-	uint16_t lfsr_value;	/**< The current state of the generator. */
+typedef struct lfsr {
+	uint16_t	start_state;/**< Any nonzero start state for the generator. */
+	uint16_t	lfsr_value;	/**< The current state of the generator. */
 } lfsr_t;
 
 /**
@@ -52,8 +51,8 @@ typedef struct lfsr
 */
 void
 lfsr_init_start_state(
-	uint16_t seed,
-	lfsr_t * instance
+	uint16_t	seed,
+	lfsr_t		*instance
 );
 
 /**
@@ -65,7 +64,7 @@ lfsr_init_start_state(
 */
 uint16_t
 lfsr_get_next(
-	lfsr_t * instance
+	lfsr_t *instance
 );
 
 /**
@@ -76,7 +75,7 @@ lfsr_get_next(
 */
 void
 lfsr_reset(
-	lfsr_t * instance
+	lfsr_t *instance
 );
 
 #if defined(__cplusplus)
@@ -84,5 +83,3 @@ lfsr_reset(
 #endif
 
 #endif
-
-

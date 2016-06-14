@@ -1,16 +1,16 @@
 /******************************************************************************/
 /**
-@file       ion_master_table.h
-@author     Eric Huang, Graeme Douglas, Scott Fazackerley, Wade Penson
-@brief      Master table API.
-@details    At compile time, the master table is either used, OR it is not
+@file	   ion_master_table.h
+@author	 Eric Huang, Graeme Douglas, Scott Fazackerley, Wade Penson
+@brief	  Master table API.
+@details	At compile time, the master table is either used, OR it is not
 			included at all. The directive, ION_USING_MASTER_TABLE controls
 			this.
-            
+
 			If the master table is used, the assumption is that the user does
 			not bypass the master table and call dictionary_create directly.
 
-            If the master table is not used, the user must provide IDs directly
+			If the master table is not used, the user must provide IDs directly
 			to dictionary creation and the onus is on the user to resolve
 			conflicts, if they occur.
 @copyright	Copyright 2016
@@ -48,18 +48,18 @@ extern "C" {
 @brief		File name for IonDB master table.
 @details	Needs to be relatively short for devices.
 */
-#define ION_MASTER_TABLE_FILENAME "ion_mt.tbl"
+#define ION_MASTER_TABLE_FILENAME	"ion_mt.tbl"
 
 /**
 @brief		ID of the master table.
 */
-#define ION_MASTER_TABLE_ID 0
+#define ION_MASTER_TABLE_ID			0
 
 /**
 @brief		Flag used when searching master table; search for first instance
 			matching criteria.
 */
-#define ION_MASTER_TABLE_FIND_FIRST	1
+#define ION_MASTER_TABLE_FIND_FIRST 1
 
 /**
 @brief		Flag used when searching master table; search for last instance
@@ -68,18 +68,18 @@ extern "C" {
 #define ION_MASTER_TABLE_FIND_LAST	-1
 
 /**
-@brief		Master table resposible for managing instances. 
+@brief		Master table resposible for managing instances.
 */
 extern ion_dictionary_id_t ion_master_table_next_id;
 
 /**
 @brief		Master table file.
 */
-extern FILE                *ion_master_table_file;
+extern FILE *ion_master_table_file;
 
 /**
-@brief      Opens the master table.
-@details    Can be safely called multiple times without closing.
+@brief	  Opens the master table.
+@details	Can be safely called multiple times without closing.
 */
 err_t
 ion_init_master_table(
@@ -143,8 +143,8 @@ ion_master_table_create_dictionary(
 */
 err_t
 ion_add_to_master_table(
-    dictionary_t    *dictionary,
-    int             dictionary_size
+	dictionary_t	*dictionary,
+	int				dictionary_size
 );
 
 /**
@@ -158,8 +158,8 @@ ion_add_to_master_table(
 */
 err_t
 ion_lookup_in_master_table(
-    ion_dictionary_id_t             id,
-    ion_dictionary_config_info_t    *config
+	ion_dictionary_id_t				id,
+	ion_dictionary_config_info_t	*config
 );
 
 /**
@@ -181,7 +181,7 @@ ion_lookup_in_master_table(
 */
 err_t
 ion_find_by_use_master_table(
-	ion_dictionary_config_info_t    *config,
+	ion_dictionary_config_info_t	*config,
 	ion_dict_use_t					use_type,
 	char							whence
 );
@@ -195,7 +195,7 @@ ion_find_by_use_master_table(
 */
 err_t
 ion_delete_from_master_table(
-    dictionary_t        *dictionary
+	dictionary_t *dictionary
 );
 
 /**
@@ -213,9 +213,9 @@ ion_delete_from_master_table(
 */
 err_t
 ion_open_dictionary(
-    dictionary_handler_t    *handler,
-    dictionary_t            *dictionary,
-    ion_dictionary_id_t     id
+	dictionary_handler_t	*handler,
+	dictionary_t			*dictionary,
+	ion_dictionary_id_t		id
 );
 
 /**
@@ -225,7 +225,7 @@ ion_open_dictionary(
 */
 err_t
 ion_close_dictionary(
-    dictionary_t        *dictionary
+	dictionary_t *dictionary
 );
 
 #if defined(__cplusplus)

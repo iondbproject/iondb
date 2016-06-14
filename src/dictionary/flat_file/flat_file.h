@@ -2,7 +2,7 @@
  * flat_file.h
  *
  *  Created on: Aug 14, 2014
- *      Author: workstation
+ *	  Author: workstation
  */
 
 #if !defined(FLAT_FILE_H_)
@@ -25,18 +25,17 @@ extern "C" {
 /**redefines file operations for arduino */
 #include "./../../file/SD_stdio_c_iface.h"
 
-typedef long int ion_fpos_t; /**< Flatfile file position type */
+typedef long int ion_fpos_t;/**< Flatfile file position type */
 
 /**
 @brief		Struct used to maintain an instance of a flat file store.
 */
-typedef struct ff_file
-{
-	dictionary_parent_t		super;
-	FILE 				*file_ptr;		/**< Pointer to file store */
-	ion_fpos_t 				start_of_data;	/**< indicates start of data block */
-	write_concern_t 		write_concern;	/**< The current @p write_concern level
-	 	 	 	 	 	 	 	 	 	 	 of the file*/
+typedef struct ff_file {
+	dictionary_parent_t super;
+	FILE				*file_ptr;		/**< Pointer to file store */
+	ion_fpos_t			start_of_data;		/**< indicates start of data block */
+	write_concern_t		write_concern;		/**< The current @p write_concern level
+											 of the file*/
 } ff_file_t;
 
 /**
@@ -52,7 +51,7 @@ typedef struct ff_file
 				collection.
 @param		key_type
 				The type of key that is being stored in the collection.
-@param 		key_size
+@param	  key_size
 				The size of the key in bytes.
 @param		value_size
 				The size of the value in bytes.
@@ -60,10 +59,10 @@ typedef struct ff_file
  */
 err_t
 ff_initialize(
-		ff_file_t			*file,
-    	key_type_t			key_type,
-		ion_key_size_t		key_size,
-		ion_value_size_t	value_size
+	ff_file_t			*file,
+	key_type_t			key_type,
+	ion_key_size_t		key_size,
+	ion_value_size_t	value_size
 );
 
 /**
@@ -77,7 +76,7 @@ ff_initialize(
 */
 err_t
 ff_destroy(
-		ff_file_t 	*file
+	ff_file_t *file
 );
 
 /**
@@ -85,28 +84,27 @@ ff_destroy(
 
 @todo update comment
 @details	Attempts to insert data of a given structure as dictated by record
- 			into the provided hashmap.  The record is used to determine the
- 			structure of the data <K,V> so that the key can be extracted.  The
- 			function will return the status of the insert.  If the record has
- 			been successfully inserted, the status will reflect success.  If
- 			the record can not be successfully inserted the error code will
- 			reflect failure.  Will only allow for insertion of unique records.
+			into the provided hashmap.  The record is used to determine the
+			structure of the data <K,V> so that the key can be extracted.  The
+			function will return the status of the insert.  If the record has
+			been successfully inserted, the status will reflect success.  If
+			the record can not be successfully inserted the error code will
+			reflect failure.  Will only allow for insertion of unique records.
 
-@param 		hash_map
- 				The map into which the data is going to be inserted.
+@param	  hash_map
+				The map into which the data is going to be inserted.
 @param		key
- 				The key that is being used to locate the position of the data.
+				The key that is being used to locate the position of the data.
 @param		value
 				The value that is being inserted.
-@return 	The status of the insert.
+@return	 The status of the insert.
 */
 err_t
 ff_insert(
-		ff_file_t 		*file,
-		ion_key_t 		key,
-		ion_value_t	 	value
+	ff_file_t	*file,
+	ion_key_t	key,
+	ion_value_t value
 );
-
 
 /**
 @brief		Updates a value in the map.
@@ -124,13 +122,13 @@ ff_insert(
 */
 err_t
 ff_update(
-		ff_file_t 		*file,
-		ion_key_t		key,
-		ion_value_t 	value
+	ff_file_t	*file,
+	ion_key_t	key,
+	ion_value_t value
 );
 
 /**
-@brief 		Locates item in map.
+@brief	  Locates item in map.
 
 @details	Based on a key, function locates the record in the map.
 
@@ -144,9 +142,9 @@ ff_update(
  */
 err_t
 ff_find_item_loc(
-		ff_file_t 			*file,
-		ion_key_t	 		key,
-		ion_fpos_t			*location
+	ff_file_t	*file,
+	ion_key_t	key,
+	ion_fpos_t	*location
 );
 
 /**
@@ -166,8 +164,8 @@ ff_find_item_loc(
 */
 ion_status_t
 ff_delete(
-		ff_file_t 		*file,
-		ion_key_t		key
+	ff_file_t	*file,
+	ion_key_t	key
 );
 
 /**
@@ -187,9 +185,9 @@ ff_delete(
 */
 err_t
 ff_query(
-		ff_file_t 		*file,
-		ion_key_t 		key,
-		ion_value_t 	value
+	ff_file_t	*file,
+	ion_key_t	key,
+	ion_value_t value
 );
 
 /**
@@ -207,15 +205,13 @@ ff_query(
 */
 /*void
 ff_print(
-		ff_file_t 	*file,
-		int 		size,
+		ff_file_t   *file,
+		int		 size,
 		record_t	*record
 );*/
 
 #if defined(__cplusplus)
 }
 #endif
-
-
 
 #endif /* FLAT_FILE_H_ */

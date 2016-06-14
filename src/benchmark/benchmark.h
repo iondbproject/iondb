@@ -16,17 +16,17 @@ extern "C" {
 #include "./../kv_io.h"
 #include "ram/ram_util.h"
 
-static unsigned volatile int ram_counter;
-static unsigned volatile int time_counter;
+static unsigned volatile int	ram_counter;
+static unsigned volatile int	time_counter;
 
 void
 benchmark_start(
-    void
+	void
 );
 
 void
 benchmark_stop(
-    void
+	void
 );
 
 #if defined(__cplusplus)

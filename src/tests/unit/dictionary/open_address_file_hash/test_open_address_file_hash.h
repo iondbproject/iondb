@@ -14,7 +14,8 @@ extern "C" {
 #endif
 
 void
-runalltests_open_address_file_hash();
+runalltests_open_address_file_hash(
+);
 
 #ifdef  __cplusplus
 }

@@ -12,7 +12,8 @@ extern "C" {
 #endif
 
 void
-runalltests_file_encode_id();
+runalltests_file_encode_id(
+);
 
 #ifdef  __cplusplus
 }

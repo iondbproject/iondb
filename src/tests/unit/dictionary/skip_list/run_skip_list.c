@@ -10,8 +10,9 @@
 #include "test_skip_list_handler.h"
 
 int
-main(void)
-{
+main(
+	void
+) {
 	runalltests_skiplist();
 	runalltests_skiplist_handler();
 	return 0;

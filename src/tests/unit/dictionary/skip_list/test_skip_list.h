@@ -8,7 +8,8 @@ extern "C" {
 #endif
 
 void
-runalltests_skiplist();
+runalltests_skiplist(
+);
 
 #ifdef  __cplusplus
 }

@@ -9,7 +9,7 @@
 			stdio.h functions. Include this header at the top of the file,
 			but after stdio.h and the functions defined below will override.
 
-			Flags: 	-DIntercept
+			Flags:  -DIntercept
 
 			Compiling with the -DIntercept flag will override stdio.h functions.
 			Leaving the flag (and thus the functions) out will allow for
@@ -41,21 +41,30 @@
 extern "C" {
 #endif
 
+/* @TODO requires testing on previous versions of avr-gcc */
+#if __GNUC__ > 4 || \
+	(__GNUC__ == 4 && (__GNUC_MINOR__ > 8 || \
+					   (__GNUC_MINOR__ == 1)))
+/* Stub */
+#else
+
 typedef long fpos_t;
 
-#define		FILE				SD_FILE
-#define		fopen(x, y)			sd_fopen(x ,y)
-#define		fclose(x)			sd_fclose(x)
-#define		fwrite(w, x , y, z)	sd_fwrite(w, x, y, z)
-#define		fsetpos(x, y)		sd_fsetpos(x, y)
-#define		fgetpos(x, y)		sd_fgetpos(x, y)
-#define		fflush(x)			sd_fflush(x)
-#define		fseek(x ,y ,z)		sd_fseek(x ,y ,z)
-#define		fread(w, x, y, z)	sd_fread(w, x, y, z)
-#define		feof(x)				sd_feof(x)
-#define		ftell(x)			sd_ftell(x)
-#define		fremove(x)			sd_remove(x)
-#define		frewind(x)			sd_rewind(x)
+#endif
+
+#define  FILE SD_FILE
+#define  fopen(x, y)		sd_fopen(x, y)
+#define  fclose(x)			sd_fclose(x)
+#define  fwrite(w, x, y, z) sd_fwrite(w, x, y, z)
+#define  fsetpos(x, y)		sd_fsetpos(x, y)
+#define  fgetpos(x, y)		sd_fgetpos(x, y)
+#define  fflush(x)			sd_fflush(x)
+#define  fseek(x, y, z)		sd_fseek(x, y, z)
+#define  fread(w, x, y, z)	sd_fread(w, x, y, z)
+#define  feof(x)			sd_feof(x)
+#define  ftell(x)			sd_ftell(x)
+#define  fremove(x)			sd_remove(x)
+#define  frewind(x)			sd_rewind(x)
 
 #if defined(__cplusplus)
 }

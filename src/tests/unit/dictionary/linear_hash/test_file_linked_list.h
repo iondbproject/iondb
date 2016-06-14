@@ -12,7 +12,8 @@ extern "C" {
 #endif
 
 void
-runalltests_file_linked_list();
+runalltests_file_linked_list(
+);
 
 #ifdef  __cplusplus
 }

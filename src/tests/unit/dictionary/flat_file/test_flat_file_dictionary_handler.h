@@ -14,7 +14,8 @@ extern "C" {
 #endif
 
 void
-runalltests_flat_file_handler();
+runalltests_flat_file_handler(
+);
 
 #ifdef  __cplusplus
 }

@@ -15,7 +15,8 @@ extern "C" {
 #endif
 
 void
-runalltests_dictionary();
+runalltests_dictionary(
+);
 
 #ifdef  __cplusplus
 }

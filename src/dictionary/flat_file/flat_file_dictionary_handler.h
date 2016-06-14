@@ -4,11 +4,10 @@
 @author		Scott Ronald Fazackerley
 @brief		The handler for a flat file to store data.
 */
-	/******************************************************************************/
+/******************************************************************************/
 
 #if !defined(FLAT_FILE_DICTIONARY_HANDLER_H_)
 #define FLAT_FILE_DICTIONARY_HANDLER_H_
-
 
 #if defined(__cplusplus)
 extern "C" {
@@ -28,12 +27,11 @@ typedef int record_idx_t;
 /**
 @brief Struct used to for instance of a given dictionary.
  */
-typedef struct ff_dictionary
-{
-	//what needs to go in here?
-	char 		*dictionary_name;	/**<The name of the dictionary*/
-	ff_file_t 	*file;			/**<The map that the operations
-	 	 	 	 	 	 	 	 		will operate upon*/
+typedef struct ff_dictionary {
+	/* what needs to go in here? */
+	char		*dictionary_name;	/**<The name of the dictionary*/
+	ff_file_t	*file;			/**<The map that the operations
+										will operate upon*/
 } ff_dictionary_t;
 
 /**
@@ -50,12 +48,11 @@ typedef struct ff_dictionary
 /*
 typedef struct equality_cursor
 {
-	dict_cursor_t 	super;
+	dict_cursor_t   super;
 		*< Cursor supertype this type inherits from.
 
 }equality_cursor_t;
 */
-
 
 /**
 @brief		Dictionary cursor for equality queries.
@@ -64,15 +61,17 @@ typedef struct equality_cursor
 			This subtype should be extended when supported for a given
 			dictionary.
 */
-typedef struct ffdict_equality_cursor
-{
-	dict_cursor_t			super;			/**<Super type this cursor inherits from*/
-	ffdict_cursor_t			cursor_info;	/**<Super type to dict implementation*/
-	ion_key_t				value;
-	boolean_t				(* equal)(dictionary_t *,
-								ion_key_t,
-								ion_key_t);
-											/**< A pointer to an equality function. */
+typedef struct ffdict_equality_cursor {
+	dict_cursor_t	super;					/**<Super type this cursor inherits from*/
+	ffdict_cursor_t cursor_info;/**<Super type to dict implementation*/
+	ion_key_t		value;
+
+	boolean_t (*equal)(
+		dictionary_t *,
+		ion_key_t,
+		ion_key_t
+	);
+	/**< A pointer to an equality function. */
 } ffdict_equality_cursor_t;
 
 /**
@@ -81,35 +80,35 @@ typedef struct ffdict_equality_cursor
 @details	Registers functions for handlers.  This only needs to be called
 			once for each type of dictionary that is present.
 
-@param 		handler
+@param	  handler
 				The handler for the dictionary instance that is to be
 				initialized.
  */
 void
 ffdict_init(
-	dictionary_handler_t 	*handler
+	dictionary_handler_t *handler
 );
 
 /**
 @brief		Inserts a @p key and @p value into the dictionary.
 
-@param 		dictionary
+@param	  dictionary
 				The dictionary instance to insert the value into.
-@param 		key
+@param	  key
 				The key to use.
-@param 		value
+@param	  value
 				The value to use.
 @return		The status on the insertion of the record.
  */
 err_t
 ffdict_insert(
-	dictionary_t 	*dictionary,
-	ion_key_t 		key,
-	ion_value_t 	value
+	dictionary_t	*dictionary,
+	ion_key_t		key,
+	ion_value_t		value
 );
 
 /**
-@brief 		Queries a dictionary instance for the given @p key and returns
+@brief	  Queries a dictionary instance for the given @p key and returns
 			the associated @p value.
 
 @details	Queries a dictionary instance for the given @p key and returns
@@ -121,11 +120,11 @@ ffdict_insert(
 			will be updated.  If the @p key does not exist, then a new item
 			will be inserted to hashmap.
 
-@param 		dictionary
+@param	  dictionary
 				The instance of the dictionary to query.
-@param 		key
+@param	  key
 				The key to search for.
-@param 		value
+@param	  value
 				A pointer that is used to return the value associated with
 				the provided key.  The function will malloc memory for the
 				value and it is up to the consumer the free the associated
@@ -134,8 +133,8 @@ ffdict_insert(
  */
 err_t
 ffdict_query(
-	dictionary_t 	*dictionary,
-	ion_key_t 		key,
+	dictionary_t	*dictionary,
+	ion_key_t		key,
 	ion_value_t		value
 );
 
@@ -144,61 +143,61 @@ ffdict_query(
 
 @details	Creates as instance of a dictionary given a @p key_size and
 			@p value_size, in bytes as well as the @p dictionary size
- 	 	 	which is the number of buckets available in the hashmap.
+			which is the number of buckets available in the hashmap.
 
-@param 		key_size
+@param	  key_size
 				The size of the key in bytes.
-@param 		value_size
+@param	  value_size
 				The size of the value in bytes.
-@param 		dictionary_size
+@param	  dictionary_size
 				The size of the hashmap in discrete units
 @param		compare
 				Function pointer for the comparison function for the collection.
-@param 		handler
- 	 	 	 	 THe handler for the specific dictionary being created.
-@param 		dictionary
- 	 	 	 	 The pointer declared by the caller that will reference
- 	 	 	 	 the instance of the dictionary created.
+@param	  handler
+				 THe handler for the specific dictionary being created.
+@param	  dictionary
+				 The pointer declared by the caller that will reference
+				 the instance of the dictionary created.
 @return		The status of the creation of the dictionary.
  */
 err_t
 ffdict_create_dictionary(
-		ion_dictionary_id_t 		id,
-		key_type_t					key_type,
-		ion_key_size_t 				key_size,
-		ion_value_size_t			value_size,
-		int 						dictionary_size, /** @todo this needs to be fixed or defined */
-		ion_dictionary_compare_t 	compare,
-		dictionary_handler_t 		*handler,
-		dictionary_t 				*dictionary
+	ion_dictionary_id_t			id,
+	key_type_t					key_type,
+	ion_key_size_t				key_size,
+	ion_value_size_t			value_size,
+	int							dictionary_size,	/** @todo this needs to be fixed or defined */
+	ion_dictionary_compare_t	compare,
+	dictionary_handler_t		*handler,
+	dictionary_t				*dictionary
 );
 
 /**
 @brief		Deletes the @p key and assoicated value from the dictionary
 			instance.
 
-@param 		dictionary
+@param	  dictionary
 				The instance of the dictionary to delete from.
-@param 		key
+@param	  key
 				The key that is to be deleted.
 @return		The status of the deletion
  */
 err_t
 ffdict_delete(
-		dictionary_t 	*dictionary,
-		ion_key_t 		key
+	dictionary_t	*dictionary,
+	ion_key_t		key
 );
 
 /**
-@brief 		Deletes an instance of the dictionary and associated data.
+@brief	  Deletes an instance of the dictionary and associated data.
 
-@param 		dictionary
+@param	  dictionary
 				The instance of the dictionary to delete.
 @return		The status of the dictionary deletion.
  */
 err_t
 ffdict_delete_dictionary(
-		dictionary_t 	*dictionary
+	dictionary_t *dictionary
 );
 
 /**
@@ -207,43 +206,43 @@ ffdict_delete_dictionary(
 @details	Updates the value for a given @pkey.  If the key does not currently
 			exist in the hashmap, it will be created and the value sorted.
 
-@param 		dictionary
+@param	  dictionary
 				The instance of the dictionary to be updated.
-@param 		key
+@param	  key
 				The key that is to be updated.
-@param 		value
+@param	  value
 				The value that is to be updated.
 @return		The status of the update.
  */
 err_t
 ffdict_update(
-		dictionary_t 	*dictionary,
-		ion_key_t 		key,
-		ion_value_t 	value
+	dictionary_t	*dictionary,
+	ion_key_t		key,
+	ion_value_t		value
 );
 
 /**
-@brief 		Finds multiple instances of a keys that satisfy the provided
- 	 	 	 predicate in the dictionary.
+@brief	  Finds multiple instances of a keys that satisfy the provided
+			 predicate in the dictionary.
 
-@details 	Generates a cursor that allows the traversal of items where
+@details	Generates a cursor that allows the traversal of items where
 			the items key satisfies the @p predicate (if the underlying
 			implementation allows it).
 
-@param 		dictionary
+@param	  dictionary
 				The instance of the dictionary to search.
-@param 		predicate
+@param	  predicate
 				The predicate to be used as the condition for matching.
-@param 		cursor
+@param	  cursor
 				The pointer to a cursor which is caller declared but callee
 				is responsible for populating.
 @return		The status of the operation.
  */
 err_t
 ffdict_find(
-		dictionary_t 	*dictionary,
-		predicate_t 	*predicate,
-		dict_cursor_t 	**cursor
+	dictionary_t	*dictionary,
+	predicate_t		*predicate,
+	dict_cursor_t	**cursor
 );
 
 /**
@@ -265,44 +264,43 @@ ffdict_find(
 			differing pair of bytes (interpreted as unsigned char objects,
 			then promoted to int).
 
-@param 		first_key
+@param	  first_key
 				The first key in the comparison.
-@param 		second_key
+@param	  second_key
 				The second key in the comparison.
 @return		The difference between the keys.
  */
 int
 ffdict_compare(
-		ion_key_t 		first_key,
-		ion_key_t		second_key
+	ion_key_t	first_key,
+	ion_key_t	second_key
 );
 
 /**
 @brief		Next function to query and retrieve the next
 			<K,V> that stratifies the predicate of the cursor.
 
-@param 		cursor
+@param	  cursor
 				The cursor to iterate over the results.
 @return		The status of the cursor.
  */
 /*err_t
 oadict_next(
-	dict_cursor_t 	*cursor,
+	dict_cursor_t   *cursor,
 	ion_value_t		*value
 );*/
-
 
 /**
 @brief		Next function to query and retrieve the next
 			<K,V> that stratifies the predicate of the cursor.
 
-@param 		cursor
+@param	  cursor
 				The cursor to iterate over the results.
 @return		The status of the cursor.
  */
 cursor_status_t
 ffdict_next(
-	dict_cursor_t 	*cursor,
+	dict_cursor_t	*cursor,
 	ion_record_t	*record
 );
 
@@ -310,20 +308,20 @@ ffdict_next(
 @brief		Compares two keys and determines if they are equal assuming
 			that they are equal is length (in size).
 
-@param 		dict
-	 	 	 	 	 The map the keys are associated with.
-@param 		key1
-	 	 	 	 	 The first key for comparison.
-@param 		key2
-	 	 	 	 	 The second key for comparison.
+@param	  dict
+					 The map the keys are associated with.
+@param	  key1
+					 The first key for comparison.
+@param	  key2
+					 The second key for comparison.
 @return		If the keys are equal.
  */
 boolean_t
 /**@TODO Fix name of function */
 ff_is_equal(
-	dictionary_t 	*dict,
-	ion_key_t 		key1,
-	ion_key_t 		key2
+	dictionary_t	*dict,
+	ion_key_t		key1,
+	ion_key_t		key2
 );
 
 /**
@@ -335,28 +333,28 @@ ff_is_equal(
 			will be set to NULL as per ION_DB specification for de-allocated
 			pointers.
 
-@param 		cursor
+@param	  cursor
 				** pointer to cursor.
  */
 void
 ffdict_destroy_cursor(
-	dict_cursor_t	 **cursor
+	dict_cursor_t **cursor
 );
 
 /**
 @brief		Tests the supplied @pkey against the predicate registered in the
 			cursor.
 
-@param 		cursor
+@param	  cursor
 				The cursor and predicate being used to test @pkey against.
-@param 		key
+@param	  key
 				The key to test.
 @return		The result is the key passes or fails the predicate test.
  */
 boolean_t
 ffdict_test_predicate(
-    dict_cursor_t* 	cursor,
-    ion_key_t 			key
+	dict_cursor_t	*cursor,
+	ion_key_t		key
 );
 
 /**
@@ -374,7 +372,7 @@ ffdict_test_predicate(
  */
 err_t
 ffdict_scan(
-		ffdict_cursor_t		*cursor  //don't need to pass in the cursor
+	ffdict_cursor_t *cursor	/* don't need to pass in the cursor */
 );
 
 #if defined(__cplusplus)
