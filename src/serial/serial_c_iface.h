@@ -41,54 +41,51 @@ extern "C" {
 */
 #define USE_INLINEPRINTF 0
 
-
-
 /**
 @brief		A version of printf that limits the number of characters
 			printed per call.
 @details	When additional characters are requested for printing, the
 			print fails.
-@param	 	format
- 	 	 	 	 The string that contains the text to be written to serial.
+@param		format
+				 The string that contains the text to be written to serial.
 @param		...
 				Variable arguments of data used by the format.
-@return 	The number of characters written. Returns a negative value on
+@return	 The number of characters written. Returns a negative value on
 			failure.
 */
 int
 serial_printf_c(
-	const char 	*format,
+	const char *format,
 	...
 );
 
 /* DO NOT CHANGE INCLUSION ORDER. */
 #if USE_INLINE_PRINTF == 1
-	#include "printf_redirect.h"
+#include "printf_redirect.h"
 #else
-	#define printf(format, ...) 	serial_printf_c(format, ##__VA_ARGS__)
+#define printf(format, ...) serial_printf_c(format, ## __VA_ARGS__)
 #endif
 
 /**
-@brief 		A print function wrapping Arduino's serial stream.
+@brief	  A print function wrapping Arduino's serial stream.
 @param		buffer
 				Pointer to the character array / buffer to print.
 @return		The number of characters outputted.
 */
 extern int
 serial_print(
-	const char 		*buffer
+	const char *buffer
 );
-
 
 /**
 @brief		Initializes serial port 0 for communications.
 @details	By default the port is set up at N-8-1.
-@param 		baud_rate
+@param	  baud_rate
 				The buad rate to be used.
 */
 void
 serial_init(
-	int			baud_rate
+	int baud_rate
 );
 
 /**

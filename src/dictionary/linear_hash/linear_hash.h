@@ -2,12 +2,11 @@
  * linear_hash.h
  *
  *  Created on: Apr 7, 2015
- *      Author: workstation
+ *	  Author: workstation
  */
 
 #if !defined(LINEAR_HASH_H_)
 #define LINEAR_HASH_H_
-
 
 #if defined(__cplusplus)
 extern "C" {
@@ -29,41 +28,40 @@ extern "C" {
 
 #include "linear_hash_dictionary.h"
 
+#define EMPTY_BLOCK_REQUEST		-1
+#define EMPTY					-1
+#define DELETED					-2
+#define IN_USE					-3
+#define SIZEOF(STATUS) 1
 
-#define EMPTY_BLOCK_REQUEST -1
-#define EMPTY 				-1
-#define DELETED 			-2
-#define IN_USE 				-3
-#define SIZEOF(STATUS) 		1
+#define RECORDS_PER_BUCKET		2			/** defines how may records will be stored in a hash bucket */
 
-#define RECORDS_PER_BUCKET	2				/** defines how may records will be stored in a hash bucket */
+#define FREE_CACHE_MEMORY		1
+#define PRESERVE_CACHE_MEMORY	0
 
-#define FREE_CACHE_MEMORY 	1
-#define PRESERVE_CACHE_MEMORY 0
+#define CACHE_SIZE				2			/** defines how many cache blocks are available */
 
-#define CACHE_SIZE			2				/** defines how many cache blocks are available */
+#define SPLIT_THRESHOLD			70			/** 70/100 as split threshold as per recommendation Litwin */
 
-#define SPLIT_THRESHOLD		70				/** 70/100 as split threshold as per recommendation Litwin */
+#define MAX_FILE_LENGTH			20
 
-#define MAX_FILE_LENGTH  	20
 /** @TODO The location of hash_t needs to be resolved */
 /**
 @brief		The position in the hashmap.
  */
-typedef unsigned int 			hash_t;
+typedef unsigned int hash_t;
 
 /**
 @brief		Prototype declaration for hashmap
  */
-typedef struct linear_hashmap 	linear_hashmap_t;
+typedef struct linear_hashmap linear_hashmap_t;
 
 /**
 @brief		Struct used to maintain individual records in the hashmap.
 */
-typedef struct linear_hash_bucket
-{
-	char 			status;			/**< the status of the bucket */
-	unsigned char 	data[];			/**< the data in the bucket */
+typedef struct linear_hash_bucket {
+	char			status;			/**< the status of the bucket */
+	unsigned char	data[];			/**< the data in the bucket */
 } l_hash_bucket_t;
 
 /**
@@ -74,18 +72,16 @@ typedef struct linear_hash_bucket
  * where L is the number of buckets and i is the file level
  */
 typedef struct hashset {
-	hash_t		lower_hash;				/**< lower hash value for linear hash set*/
-	hash_t		upper_hash;				/**< upper hash value for linear hash set*/
+	hash_t	lower_hash;					/**< lower hash value for linear hash set*/
+	hash_t	upper_hash;					/**< upper hash value for linear hash set*/
 } hash_set_t;
 
 /**
  * Actions for bound functions
  */
 typedef enum action {
-	action_continue,	/**< action_continue - function continues */
-	action_deleted,
-	action_flush_and_exit,
-	action_exit     	/**< action_exit - functions exits with error code */
+	action_continue,/**< action_continue - function continues */
+	action_deleted, action_flush_and_exit, action_exit	/**< action_exit - functions exits with error code */
 } action_t;
 
 /**
@@ -96,60 +92,65 @@ typedef struct action_status {
 } action_status_t;
 
 typedef enum cache_status {
-	cache_active,				/**< data in the cache is live but same as on disk */
-	cache_active_written,		/**< data is the cache has been changed from what was originally written to disk */
-	cache_flushed,				/**< data in the cache has been flushed to disk but is still in cache */
-	cache_invalid				/**< data in the cache is uncertian */
+	cache_active,	/**< data in the cache is live but same as on disk */
+	cache_active_written,	/**< data is the cache has been changed from what was originally written to disk */
+	cache_flushed,	/**< data in the cache has been flushed to disk but is still in cache */
+	cache_invalid	/**< data in the cache is uncertian */
 } cache_status_t;
 
 /**
  * @brief caches page from disk
  */
 typedef struct lh_page_cache {
-	cache_status_t		status;		/**< status of page cache */
-	int					bucket_idx;	/**< idx of page that is in cache */
-	l_hash_bucket_t		*cached_bucket;
-									/**< the actual data */
+	cache_status_t	status;			/**< status of page cache */
+	int				bucket_idx;		/**< idx of page that is in cache */
+	l_hash_bucket_t *cached_bucket;
+	/**< the actual data */
 } lh_page_cache_t;
 
 /**
 @brief		Struct used to maintain an instance of an in memory hashmap.
 */
-struct linear_hashmap
-{
-	dictionary_parent_t	super;
-	int 				initial_map_size;
-									/**< The size of the map in item capacity */
-	write_concern_t 	write_concern;
-									/**< The current @p write_concern level
-	 	 	 	 	 	 	 	 	 	 	 of the hashmap*/
-	err_t				(* compute_hash)(linear_hashmap_t *, ion_key_t, int, int, hash_set_t *);
-									/**< The hashing function to be used for
-										 	 the instance.
-										 	 In fact it will return both possible hash.*/
-	char 				*entry;		/**< Pointer to the entries in the hashmap*/
-	FILE				*file;		/**< file pointer */
-	int					file_level;	/**< the current file level for hash */
-	int 				bucket_pointer;
-									/**< pointer for current bucket being spilt */
-	int					id;			/**< id for files in system */
+struct linear_hashmap {
+	dictionary_parent_t super;
+	int					initial_map_size;
+	/**< The size of the map in item capacity */
+	write_concern_t		write_concern;
+
+	/**< The current @p write_concern level
+			 of the hashmap*/
+	err_t (*compute_hash)(
+		linear_hashmap_t *,
+		ion_key_t,
+		int,
+		int,
+		hash_set_t *
+	);
+
+	/**< The hashing function to be used for
+			 the instance.
+			 In fact it will return both possible hash.*/
+	char			*entry;			/**< Pointer to the entries in the hashmap*/
+	FILE			*file;			/**< file pointer */
+	int				file_level;		/**< the current file level for hash */
+	int				bucket_pointer;
+	/**< pointer for current bucket being spilt */
+	int				id;				/**< id for files in system */
 									/** @todo this could be moved to parent */
-	int					record_size;/**< the size of the record in the pp */
-	int 				number_of_records;
-									/**< the number of records in the linear_hash */
-	lh_page_cache_t		cache[CACHE_SIZE];
-									/**< holds pp for cacheing */
-	char 				use_split;	/**< controls splitying behaviour */
+	int				record_size;	/**< the size of the record in the pp */
+	int				number_of_records;
+	/**< the number of records in the linear_hash */
+	lh_page_cache_t cache[CACHE_SIZE];
+	/**< holds pp for cacheing */
+	char			use_split;		/**< controls splitying behaviour */
 };
 
 /**
- * @brief 	Keeps track of the current ll file
+ * @brief   Keeps track of the current ll file
  */
-struct file_ll
-{
-	FILE				*ll_file;	/**< The pointer for the current file open */
-	int					bucket_id;	/**< The bucket ID for the file */
-
+struct file_ll {
+	FILE	*ll_file;				/**< The pointer for the current file open */
+	int		bucket_id;				/**< The bucket ID for the file */
 };
 
 /**
@@ -159,7 +160,7 @@ struct file_ll
 				Pointer to the hashmap instance to initialize.
 @param		key_type
 				The type of key that is being stored in the collection.
-@param 		key_size
+@param	  key_size
 				The size of the key in bytes.
 @param		value_size
 				The size of the value in bytes.
@@ -170,13 +171,13 @@ struct file_ll
  */
 err_t
 lh_initialize(
-		linear_hashmap_t	*hashmap,
-	    err_t	 			(*compute_hash)(linear_hashmap_t *, ion_key_t, int, int, hash_set_t *),
-		key_type_t			key_type,
-		ion_key_size_t		key_size,
-		ion_value_size_t	value_size,
-		int					size,
-		int					id
+	linear_hashmap_t *hashmap,
+	err_t (*compute_hash)(linear_hashmap_t *, ion_key_t, int, int, hash_set_t *),
+	key_type_t key_type,
+	ion_key_size_t key_size,
+	ion_value_size_t value_size,
+	int size,
+	int id
 );
 
 /**
@@ -190,9 +191,8 @@ lh_initialize(
 */
 err_t
 lh_destroy(
-		linear_hashmap_t 	*hash_map
+	linear_hashmap_t *hash_map
 );
-
 
 /**
  * Closes the files for the linear hashmap structure.
@@ -203,35 +203,34 @@ lh_destroy(
  */
 err_t
 lh_close(
-	linear_hashmap_t	*hash_map
+	linear_hashmap_t *hash_map
 );
 
 /**
 @brief		Insert record into hashmap
 
 @details	Attempts to insert data of a given structure as dictated by record
- 			into the provided hashmap.  The record is used to determine the
- 			structure of the data <K,V> so that the key can be extracted.  The
- 			function will return the status of the insert.  If the record has
- 			been successfully inserted, the status will reflect success.  If
- 			the record can not be successfully inserted the error code will
- 			reflect failure.  Will only allow for insertion of unique records.
+			into the provided hashmap.  The record is used to determine the
+			structure of the data <K,V> so that the key can be extracted.  The
+			function will return the status of the insert.  If the record has
+			been successfully inserted, the status will reflect success.  If
+			the record can not be successfully inserted the error code will
+			reflect failure.  Will only allow for insertion of unique records.
 
-@param 		hash_map
- 				The map into which the data is going to be inserted.
+@param	  hash_map
+				The map into which the data is going to be inserted.
 @param		key
- 				The key that is being used to locate the position of the data.
+				The key that is being used to locate the position of the data.
 @param		value
 				The value that is being inserted.
-@return 	The status of the insert.
+@return	 The status of the insert.
 */
 err_t
 lh_insert(
-		linear_hashmap_t 	*hash_map,
-		ion_key_t 			key,
-		ion_value_t	 		value
+	linear_hashmap_t	*hash_map,
+	ion_key_t			key,
+	ion_value_t			value
 );
-
 
 /**
 @brief		Updates a value in the map.
@@ -249,15 +248,15 @@ lh_insert(
 */
 ion_status_t
 lh_update(
-		linear_hashmap_t 	*hash_map,
-		ion_key_t			key,
-		ion_value_t 		value
+	linear_hashmap_t	*hash_map,
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
- * @brief 		Checks to see if the item in the cache can be updated and updates it
- * 				if a match.
- * @param 		hash_map
+ * @brief	   Checks to see if the item in the cache can be updated and updates it
+ *			  if a match.
+ * @param	   hash_map
  * @param key
  * @param item
  * @param value
@@ -270,8 +269,9 @@ lh_update_item_action(
 	l_hash_bucket_t		*item,
 	ion_value_t			value
 );
+
 /**
-@brief 		Locates item in map.
+@brief	  Locates item in map.
 
 @details	Based on a key, function locates the record in the map.
 
@@ -285,8 +285,8 @@ lh_update_item_action(
  */
 /*err_t
 lh_find_item_loc(
-		linear_hashmap_t 	*hash_map,
-		ion_key_t	 		key,
+		linear_hashmap_t	*hash_map,
+		ion_key_t			key,
 		int					*location
 );*/
 
@@ -307,8 +307,8 @@ lh_find_item_loc(
 */
 err_t
 lh_delete(
-		linear_hashmap_t 	*hash_map,
-		ion_key_t			key
+	linear_hashmap_t	*hash_map,
+	ion_key_t			key
 );
 
 /**
@@ -326,9 +326,9 @@ lh_delete(
 */
 err_t
 lh_query(
-		linear_hashmap_t 	*hash_map,
-		ion_key_t 			key,
-		ion_value_t 		value
+	linear_hashmap_t	*hash_map,
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -347,8 +347,8 @@ lh_query(
 */
 err_t
 lh_find(
-		linear_hashmap_t 	*hash_map,
-		dict_cursor_t 		*cursor
+	linear_hashmap_t	*hash_map,
+	dict_cursor_t		*cursor
 );
 
 /**
@@ -366,9 +366,9 @@ lh_find(
 */
 void
 lh_print(
-		linear_hashmap_t 	*hash_map,
-		int 				size,
-		record_info_t		*record
+	linear_hashmap_t	*hash_map,
+	int					size,
+	record_info_t		*record
 );
 
 /**
@@ -389,11 +389,11 @@ lh_print(
 */
 err_t
 lh_compute_hash(
-		linear_hashmap_t 	*hashmap,
-		ion_key_t 			key,
-		int 				size_of_key,
-		int					file_level,
-		hash_set_t			*hash_set
+	linear_hashmap_t	*hashmap,
+	ion_key_t			key,
+	int					size_of_key,
+	int					file_level,
+	hash_set_t			*hash_set
 );
 
 /**
@@ -403,7 +403,7 @@ lh_compute_hash(
  */
 err_t
 lh_split(
-	linear_hashmap_t	*hash_map
+	linear_hashmap_t *hash_map
 );
 
 /*void
@@ -411,18 +411,17 @@ static_hash_init(dictonary_handler_t * client);*/
 
 err_t
 lh_get_next(
-    linear_hashmap_t			*hash_map,
-    ll_file_t					*linked_list_file,
-    ion_key_t 					key,
-    ion_value_t 				value
+	linear_hashmap_t	*hash_map,
+	ll_file_t			*linked_list_file,
+	ion_key_t			key,
+	ion_value_t			value
 );
-
 
 int
 lh_compute_bucket_number(
-	  linear_hashmap_t			*hash_map,
-	  hash_set_t				*hash_set
-  );
+	linear_hashmap_t	*hash_map,
+	hash_set_t			*hash_set
+);
 
 action_status_t
 lh_insert_item_action(
@@ -474,21 +473,20 @@ lh_cache_pp(
 	lh_page_cache_t		**cache
 );
 
-
 /**
- * @brief 	Accesses a memory location in the cache.
- * 			This does not actually copy the value out, but
- * 			points to a memory location is the cache.
- * 			The size of the data is already know.
+ * @brief   Accesses a memory location in the cache.
+ *		  This does not actually copy the value out, but
+ *		  points to a memory location is the cache.
+ *		  The size of the data is already know.
  *
- * @param 	hash_map
- * 				The hashmap the cache is associated with
- * @param 	cache_number
- * 				The cache number to operate on
- * @param 	idx
- * 				The position of the data in the cache, specifically the record number in the pp
- * @param 	item
- * 				The pntr that will used to reference the item in the cache
+ * @param   hash_map
+ *			  The hashmap the cache is associated with
+ * @param   cache_number
+ *			  The cache number to operate on
+ * @param   idx
+ *			  The position of the data in the cache, specifically the record number in the pp
+ * @param   item
+ *			  The pntr that will used to reference the item in the cache
  * @return
  */
 err_t
@@ -508,26 +506,26 @@ lh_read_cache(
  */
 err_t
 lh_write_record_status_in_cache(
-linear_hashmap_t	*hash_map,
+	linear_hashmap_t	*hash_map,
 	l_hash_bucket_t		*item,
 	char				status
 );
 
 /**
  * @brief	Writes data to cache and updates cache status bits
- * 			which will be used by system during cache flushing
- * 			to determine is cache actually needs to be flushed.
+ *		  which will be used by system during cache flushing
+ *		  to determine is cache actually needs to be flushed.
  *
- * @param 	hash_map
- * 				The hashmap the cache is associated with
- * @param 	cache_number
- * 				The cache number to operate on
- * @param 	to
- * 				The destination of where the data will be written
+ * @param   hash_map
+ *			  The hashmap the cache is associated with
+ * @param   cache_number
+ *			  The cache number to operate on
+ * @param   to
+ *			  The destination of where the data will be written
  * @param	from
- * 				The location of the the data to be read
- * @param 	length
- * 				The length in bytes of the data
+ *			  The location of the the data to be read
+ * @param   length
+ *			  The length in bytes of the data
  * @return
  */
 err_t
@@ -548,7 +546,6 @@ lh_write_cache_record(
 	ion_value_t			value
 );
 
-
 /**
  * @brief flushes a pp back to disk and clears up cach
  * @param hash_map
@@ -565,12 +562,12 @@ lh_flush_cache(
 
 ion_status_t
 lh_action_primary_page(
-	linear_hashmap_t	*hash_map,
-	lh_page_cache_t		*cache,
-	int					bucket,
-	ion_key_t			key,
-	action_status_t		(*action)(linear_hashmap_t*, ion_key_t, l_hash_bucket_t*, ion_value_t),
-	ion_value_t			value
+	linear_hashmap_t *hash_map,
+	lh_page_cache_t *cache,
+	int bucket,
+	ion_key_t key,
+	action_status_t (*action)(linear_hashmap_t *, ion_key_t, l_hash_bucket_t *, ion_value_t),
+	ion_value_t value
 );
 
 /** @FIXME - Make sure that value is malloc'd before call? */
@@ -585,26 +582,26 @@ lh_action_primary_page(
  */
 err_t
 lh_search_primary_page(
-	linear_hashmap_t		*hash_map,
-	lh_page_cache_t			*cache,
-	lhdict_cursor_t			*cursor  /*predicate is in here */
+	linear_hashmap_t	*hash_map,
+	lh_page_cache_t		*cache,
+	lhdict_cursor_t		*cursor		/*predicate is in here */
 );
 
 /**
  * @brief	Determines the current load factor in the hashmap as
  *
- * 				load_factor = number_of_records/(page_size*number_of_primary_pages).
+ *			  load_factor = number_of_records/(page_size*number_of_primary_pages).
  *
- * 			The load factor does not take into consideration the number of
- * 			available pages available in overflow files.
+ *		  The load factor does not take into consideration the number of
+ *		  available pages available in overflow files.
  *
- * @param 	hash_map
- * 				The hashmap to compute the load factor for.
+ * @param   hash_map
+ *			  The hashmap to compute the load factor for.
  * @return
  */
 int
 lh_compute_load_factor(
-	linear_hashmap_t		*hash_map
+	linear_hashmap_t *hash_map
 );
 
 #if defined(__cplusplus)

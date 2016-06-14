@@ -27,8 +27,7 @@ io_printf(
 	const char *format,
 	...
 ) {
-
-	int 	result;
+	int		result;
 	va_list args;
 
 	va_start(args, format);

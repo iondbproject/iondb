@@ -24,71 +24,66 @@
 #if !defined(FILE_ENCODER_H_)
 #define FILE_ENCODER_H_
 
-
 #include "./../../kv_system.h"
 #include "../../dictionary/dictionary_types.h"
 
 /** Parent ID can be no more that 3 nibbles. */
-#define MAX_PARENT_NIBBLES		3
+#define MAX_PARENT_NIBBLES	3
 /** 4 bits per nibble. */
-#define NUMBER_OF_BITS 			4
+#define NUMBER_OF_BITS		4
 /** 8.3 + null ( 8 + 1 + 3 + 1 )=13. */
-#define FILENAME_SIZE			13
+#define FILENAME_SIZE		13
 /** 3 digits for type code. */
-#define SIZE_OF_TYPE_CODE		3
+#define SIZE_OF_TYPE_CODE	3
 
 /**
-@brief 		Array for encoding for parent IDs.
+@brief	  Array for encoding for parent IDs.
 @todo		Add optimization for __flash for AVR.
 */
-static const char encode[16] =
-{'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P'};
+static const char encode[16] = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P' };
 
 /**
-@brief 		Array for encoding for child IDs.
+@brief	  Array for encoding for child IDs.
 */
-static const char parent_type[16] =
-{'0','1','2','3','4','5','6','7','8','9','Z','Y','X','W','V'};
-
+static const char parent_type[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Z', 'Y', 'X', 'W', 'V' };
 
 /**
 @brief		Descriptors for the available types of tables.
 */
 typedef enum {
-	mastertable,					/**< mastertable */
-	flatfile,						/**< flatfile */
-	linear_hash,					/**< linear_hash */
-	bplus_tree,						/**< bplus_tree	*/
+	mastertable,/**< mastertable */
+	flatfile,	/**< flatfile */
+	linear_hash,/**< linear_hash */
+	bplus_tree,	/**< bplus_tree	*/
 	file_based_open_address_hash,	/**< file_based_open_address_hash */
 } fe_datastore_e;
 
 /**
-@brief 		Struct for managing child file names associated with a parent
+@brief	  Struct for managing child file names associated with a parent
 			structure.
 */
 typedef struct child {
-	char					*child_filename;/**< The filename to be created. */
-	ion_dictionary_id_t		child_id;		/**< The caller provided ID of the
+	char				*child_filename;	/**< The filename to be created. */
+	ion_dictionary_id_t child_id;	/**< The caller provided ID of the
 												 child file. */
 } fe_child_t;
-
 
 /**
 @brief		Structure for managing parent file names.
 */
 typedef struct parent {
 	/**> The filename to be created */
-	char					*parent_filename;
+	char			*parent_filename;
 	/**> The caller provided type of parent file to create. */
-	fe_datastore_e			type;
+	fe_datastore_e	type;
 } fe_parent_t;
 
 /**
 @brief		Structure for managing config file names for a parent file.
 */
 typedef struct config {
-	/**> The filename of the configuration. */ 
-	char					*config_filename;
+	/**> The filename of the configuration. */
+	char *config_filename;
 } fe_config_t;
 
 /**
@@ -96,22 +91,24 @@ typedef struct config {
 			the file.
 @details	For more information, see @ref struct filename.
 */
-typedef struct filename		fe_filename_t;
+typedef struct filename fe_filename_t;
 
 /**
 @brief		A struct containing information for file operations.
 */
 struct filename {
-	ion_dictionary_id_t 	instance_id;	/**< Caller provided instance ID. */
-	void 					(* destroy)(fe_filename_t*);
-											/**< Bound destory function. */
+	ion_dictionary_id_t instance_id;/**< Caller provided instance ID. */
+
+	void				(*destroy)(
+		fe_filename_t *
+	);
+	/**< Bound destory function. */
 	union {
-		fe_parent_t			parent;			/**< Parent file specifics. */
-		fe_child_t			child;			/**< Child file specifics. */
-		fe_config_t			config;			/**< Config file specifics. */
+		fe_parent_t parent;	/**< Parent file specifics. */
+		fe_child_t	child;					/**< Child file specifics. */
+		fe_config_t config;	/**< Config file specifics. */
 	};
 };
-
 
 /**
 @brief		Cleans up memory, if need be.
@@ -119,14 +116,13 @@ struct filename {
 			bound to the file during encoding and will prevent callers
 			from unintentionally freeing memory that has been previously
 			feed.
-@param 		file
+@param	  file
 				The filename to destroy.
 */
 void
 fe_destroy(
-	fe_filename_t						*file
+	fe_filename_t *file
 );
-
 
 /**
 @brief		Generates an encoded filename for a parent file (main) based on
@@ -143,14 +139,14 @@ fe_destroy(
 			will also manage memory allocation such that the caller will not
 			have to preallocate memory.
 
-@param 		file
+@param	  file
 				The filename that will be encoded.  Memory will be allocated by
 				function.
 @return		Success or failure of filename creation.
 */
 err_t
 fe_encode_parent_id(
-	fe_filename_t						*file
+	fe_filename_t *file
 );
 
 /**
@@ -163,11 +159,11 @@ fe_encode_parent_id(
 				XXXXXXXX.YYY
 						 ^^^-----encoded parent ID
 				^^^^^^^^---------encoded child ID
- 			This function also binds the destroy function to the @p file
+			This function also binds the destroy function to the @p file
 			structure allowing the caller to cleanly destroy the item.
 			The function will also manage memory allocation such that the
 			caller will not have to preallocate memory.
-@param 		file
+@param	  file
 				The filename that will be encoded. Memory will be allocated
 				by this function.
 @return		An error code describing the success or failure of filename
@@ -175,7 +171,7 @@ fe_encode_parent_id(
 */
 err_t
 fe_encode_child_id(
-	fe_filename_t						*file
+	fe_filename_t *file
 );
 
 /**
@@ -191,7 +187,7 @@ fe_encode_child_id(
 			structure allowing the caller to cleanly destroy the item. The
 			function will also manage memory allocation such that the caller
 			will not have to preallocate memory.
-@param 		file
+@param	  file
 				The filename that will be encoded. Memory will be allocated by
 				this function.
 @return		An error code describing the success or failure of filename
@@ -199,7 +195,7 @@ fe_encode_child_id(
 */
 err_t
 fe_encode_config_id(
-	fe_filename_t						*file
+	fe_filename_t *file
 );
 
 #endif /* FILE_ENCODER_H_ */

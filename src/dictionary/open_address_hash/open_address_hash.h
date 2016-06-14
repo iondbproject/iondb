@@ -27,42 +27,42 @@ extern "C" {
 #include "./../../kv_system.h"
 #include "./../../kv_io.h"
 
-
-#define EMPTY 			-1
-#define DELETED 		-2
-#define IN_USE 			-3
-#define SIZEOF(STATUS) 	1
-
-
+#define EMPTY	-1
+#define DELETED -2
+#define IN_USE	-3
+#define SIZEOF(STATUS) 1
 
 /**
 @brief		Prototype declaration for hashmap
  */
-typedef struct hashmap 	hashmap_t;
+typedef struct hashmap hashmap_t;
 
 /**
 @brief		Struct used to maintain individual records in the hashmap.
 */
-typedef struct hash_bucket
-{
-	char 			status;			/**< the status of the bucket */
-	unsigned char 	data[];			/**< the data in the bucket */
+typedef struct hash_bucket {
+	char			status;			/**< the status of the bucket */
+	unsigned char	data[];			/**< the data in the bucket */
 } hash_bucket_t;
 
 /**
 @brief		Struct used to maintain an instance of an in memory hashmap.
 */
-struct hashmap
-{
-	dictionary_parent_t	super;
-	int 				map_size;		/**< The size of the map in item capacity */
-	write_concern_t 	write_concern;	/**< The current @p write_concern level
-	 	 	 	 	 	 	 	 	 	 	 of the hashmap*/
-	int					(* compute_hash)(hashmap_t *, ion_key_t, int);
-										/**< The hashing function to be used for
-										 	 the instance*/
-	char 				*entry;				/**< Pointer to the entries in the hashmap*/
+struct hashmap {
+	dictionary_parent_t super;
+	int					map_size;		/**< The size of the map in item capacity */
+	write_concern_t		write_concern;	/**< The current @p write_concern level
+											 of the hashmap*/
 
+	int					(*compute_hash)(
+		hashmap_t *,
+		ion_key_t,
+		int
+	);
+
+	/**< The hashing function to be used for
+		 the instance*/
+	char *entry;/**< Pointer to the entries in the hashmap*/
 };
 
 /**
@@ -74,7 +74,7 @@ struct hashmap
 				Function pointer to the hashing function for the instance.
 @param		key_type
 				The type of key that is being stored in the collection.
-@param 		key_size
+@param	  key_size
 				The size of the key in bytes.
 @param		value_size
 				The size of the value in bytes.
@@ -85,12 +85,12 @@ struct hashmap
  */
 err_t
 oah_initialize(
-		hashmap_t			*hashmap,
-		hash_t				(*hashing_function)(hashmap_t *, ion_key_t, int),
-	    key_type_t			key_type,
-		ion_key_size_t		key_size,
-		ion_value_size_t	value_size,
-		int					size
+	hashmap_t *hashmap,
+	hash_t (*hashing_function)(hashmap_t *, ion_key_t, int),
+	key_type_t key_type,
+	ion_key_size_t key_size,
+	ion_value_size_t value_size,
+	int size
 );
 
 /**
@@ -104,7 +104,7 @@ oah_initialize(
 */
 err_t
 oah_destroy(
-		hashmap_t 	*hash_map
+	hashmap_t *hash_map
 );
 
 /**
@@ -121,36 +121,35 @@ oah_destroy(
 */
 int
 oah_get_location(
-		hash_t 		num,
-		int 		size
+	hash_t	num,
+	int		size
 );
 
 /**
 @brief		Insert record into hashmap
 
 @details	Attempts to insert data of a given structure as dictated by record
- 			into the provided hashmap.  The record is used to determine the
- 			structure of the data <K,V> so that the key can be extracted.  The
- 			function will return the status of the insert.  If the record has
- 			been successfully inserted, the status will reflect success.  If
- 			the record can not be successfully inserted the error code will
- 			reflect failure.  Will only allow for insertion of unique records.
+			into the provided hashmap.  The record is used to determine the
+			structure of the data <K,V> so that the key can be extracted.  The
+			function will return the status of the insert.  If the record has
+			been successfully inserted, the status will reflect success.  If
+			the record can not be successfully inserted the error code will
+			reflect failure.  Will only allow for insertion of unique records.
 
-@param 		hash_map
- 				The map into which the data is going to be inserted.
+@param	  hash_map
+				The map into which the data is going to be inserted.
 @param		key
- 				The key that is being used to locate the position of the data.
+				The key that is being used to locate the position of the data.
 @param		value
 				The value that is being inserted.
-@return 	The status of the insert.
+@return	 The status of the insert.
 */
 err_t
 oah_insert(
-		hashmap_t 		*hash_map,
-		ion_key_t 		key,
-		ion_value_t	 	value
+	hashmap_t	*hash_map,
+	ion_key_t	key,
+	ion_value_t value
 );
-
 
 /**
 @brief		Updates a value in the map.
@@ -168,13 +167,13 @@ oah_insert(
 */
 err_t
 oah_update(
-		hashmap_t 		*hash_map,
-		ion_key_t		key,
-		ion_value_t 	value
+	hashmap_t	*hash_map,
+	ion_key_t	key,
+	ion_value_t value
 );
 
 /**
-@brief 		Locates item in map.
+@brief	  Locates item in map.
 
 @details	Based on a key, function locates the record in the map.
 
@@ -188,9 +187,9 @@ oah_update(
  */
 err_t
 oah_find_item_loc(
-		hashmap_t 		*hash_map,
-		ion_key_t	 	key,
-		int				*location
+	hashmap_t	*hash_map,
+	ion_key_t	key,
+	int			*location
 );
 
 /**
@@ -210,8 +209,8 @@ oah_find_item_loc(
 */
 err_t
 oah_delete(
-		hashmap_t 		*hash_map,
-		ion_key_t		key
+	hashmap_t	*hash_map,
+	ion_key_t	key
 );
 
 /**
@@ -231,9 +230,9 @@ oah_delete(
 */
 err_t
 oah_query(
-		hashmap_t 		*hash_map,
-		ion_key_t 		key,
-		ion_value_t 	value
+	hashmap_t	*hash_map,
+	ion_key_t	key,
+	ion_value_t value
 );
 
 /**
@@ -251,9 +250,9 @@ oah_query(
 */
 void
 oah_print(
-		hashmap_t 	*hash_map,
-		int 		size,
-		record_info_t	*record
+	hashmap_t		*hash_map,
+	int				size,
+	record_info_t	*record
 );
 
 /**
@@ -269,9 +268,9 @@ oah_print(
 */
 hash_t
 oah_compute_simple_hash(
-		hashmap_t 		*hashmap,
-		ion_key_t 		key,
-		int 			size_of_key
+	hashmap_t	*hashmap,
+	ion_key_t	key,
+	int			size_of_key
 );
 
 #if defined(__cplusplus)

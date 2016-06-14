@@ -9,7 +9,8 @@ extern "C" {
 #endif
 
 void
-run_all_tests_linearHashDictionary();
+run_all_tests_linearHashDictionary(
+);
 
 #ifdef  __cplusplus
 }

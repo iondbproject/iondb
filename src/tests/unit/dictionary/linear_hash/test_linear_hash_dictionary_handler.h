@@ -14,7 +14,8 @@ extern "C" {
 #include "../../../../dictionary/linear_hash/linear_hash_dictionary_handler.h"
 
 void
-runalltests_linear_hash_handler();
+runalltests_linear_hash_handler(
+);
 
 #ifdef  __cplusplus
 }

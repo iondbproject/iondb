@@ -13,7 +13,8 @@ extern "C" {
 #endif
 
 void
-runalltests_linear_hash();
+runalltests_linear_hash(
+);
 
 #ifdef  __cplusplus
 }

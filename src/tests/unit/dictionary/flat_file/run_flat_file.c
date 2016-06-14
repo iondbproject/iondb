@@ -2,9 +2,9 @@
 #include "test_flat_file_dictionary_handler.h"
 
 int
-main()
-{
+main(
+) {
 	runalltests_flat_file();
 	runalltests_flat_file_handler();
-    return 0;
+	return 0;
 }

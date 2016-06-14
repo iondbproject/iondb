@@ -6,8 +6,8 @@
 #define NO_SPLIT 1
 
 int
-main()
-{
+main(
+) {
 	runalltests_file_linked_list();
 	runalltests_linear_hash();
 	runalltests_linear_hash_handler();

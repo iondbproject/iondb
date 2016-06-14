@@ -2,7 +2,7 @@
 /**
 @file		BppTree.h
 @author		Dana Klamut
-@brief      The C++ implementation of a B+ tree dictionary.
+@brief	  The C++ implementation of a B+ tree dictionary.
 */
 /******************************************************************************/
 
@@ -13,9 +13,7 @@
 #include "../kv_system.h"
 #include "../dictionary/bpp_tree/bpp_tree_handler.h"
 
-template <class K>
-class BppTree : public Dictionary<K> {
-
+template <class K>class BppTree:public Dictionary<K> {
 public:
 /**
 @brief		Registers a specific B+ tree dictionary instance.
@@ -26,20 +24,18 @@ public:
 				The type of keys to be stored in the dictionary.
 @param		key_size
 				The size of keys to be stored in the dictionary.
-@param      value_size
-                The size of the values to be stored in the dictionary.
+@param	  value_size
+				The size of the values to be stored in the dictionary.
  */
-    BppTree(
-            key_type_t type_key,
-            int key_size,
-            int value_size
-    )
-    {
-        bpptree_init(&this->handler);
+BppTree(
+	key_type_t	type_key,
+	int			key_size,
+	int			value_size
+) {
+	bpptree_init(&this->handler);
 
-        this->initializeDictionary(type_key, key_size, value_size, 0);
-    }
+	this->initializeDictionary(type_key, key_size, value_size, 0);
+}
 };
 
-
-#endif //PROJECT_BPPTREE_H
+#endif	/* PROJECT_BPPTREE_H */

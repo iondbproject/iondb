@@ -34,19 +34,17 @@ extern "C" {
 #include "./../kv_system.h"
 #include "ion_file.h"
 
-#define LFB_NULL	FILE_NULL
+#define LFB_NULL FILE_NULL
 
 /**
 @brief		A handler struct for a linked file bag instance.
 */
-typedef struct linkedfilebag
-{
+typedef struct linkedfilebag {
 	/**> The file handle for the file where the data is stored. */
 	file_handle_t	file_handle;
 	/**> The offset for the next empty slot to write to. */
 	file_offset_t	next_empty;
 } lfb_t;
-
 
 /**
 @brief		Add an item to the linked file bag.
@@ -76,7 +74,7 @@ lfb_put(
 );
 
 /**
-@brief		
+@brief
 */
 /**
 @brief		Add an item to the linked file bag.

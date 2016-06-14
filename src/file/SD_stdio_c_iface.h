@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		
+@file
 @author		Scott Fazackerley
 @brief		This code contains definitions for stdio.h file functions
 			for Arduino flash libraries.
@@ -51,7 +51,10 @@ typedef struct _SD_File SD_FILE;
 				file object.
 @returns	@c 0, always.
 */
-int sd_fclose(SD_FILE *stream);
+int
+sd_fclose(
+	SD_FILE *stream
+);
 
 /**
 @brief		This function tests for the end-of-file indicator in the given
@@ -62,7 +65,10 @@ int sd_fclose(SD_FILE *stream);
 @returns	A non-zero (@c -1) value if the end of file has been reached,
 			@c 0 otherwise.
 */
-int sd_feof(SD_FILE *stream);
+int
+sd_feof(
+	SD_FILE *stream
+);
 
 /**
 @brief		Flush the output buffer of a stream to the file.
@@ -71,7 +77,10 @@ int sd_feof(SD_FILE *stream);
 				file object representing the file to flush.
 @returns	@c 0, always.
 */
-int sd_fflush(SD_FILE *stream);
+int
+sd_fflush(
+	SD_FILE *stream
+);
 
 /**
 @brief		Get the position of the file's cursor.
@@ -84,7 +93,11 @@ int sd_fflush(SD_FILE *stream);
 				position of the file's cursor.
 @returns	@c 0, always.
 */
-int sd_fgetpos(SD_FILE *stream, fpos_t *pos);
+int
+sd_fgetpos(
+	SD_FILE *stream,
+	fpos_t	*pos
+);
 
 /**
 @brief		Open a reference to an Arduino SD file given it's name.
@@ -97,13 +110,16 @@ int sd_fgetpos(SD_FILE *stream, fpos_t *pos);
 @returns	A pointer to a file struct representing a file for reading,
 			or @c NULL if an error occurred.
 */
-SD_FILE *sd_fopen(char *filename, char *mode);
-
+SD_FILE *
+sd_fopen(
+	char	*filename,
+	char	*mode
+);
 
 /**
 @brief		Read data from an Arduino SD file.
 @details	A wrapper around Arduino SD file read method.
-			
+
 			A total of @p size * @p nmemb bytes will be read into @p ptr
 			on a success.
 @param		ptr
@@ -117,7 +133,13 @@ SD_FILE *sd_fopen(char *filename, char *mode);
 				file object.
 @returns	The number of elements of size @p size that have been read.
 */
-size_t sd_fread(void *ptr, size_t size, size_t nmemb, SD_FILE *stream);
+size_t
+sd_fread(
+	void	*ptr,
+	size_t	size,
+	size_t	nmemb,
+	SD_FILE *stream
+);
 
 /**
 @brief		Wrapper around Arduino SD file read method.
@@ -133,7 +155,12 @@ size_t sd_fread(void *ptr, size_t size, size_t nmemb, SD_FILE *stream);
 					- SEEK_END: From the end of the file, moving backwards.
 @returns	@c 0 for success, a non-zero integer otherwise.
 */
-int sd_fseek(SD_FILE *stream, long int offset, int whence);
+int
+sd_fseek(
+	SD_FILE		*stream,
+	long int	offset,
+	int			whence
+);
 
 /**
 @brief		Set the current position of an Arduino SD file.
@@ -146,14 +173,21 @@ int sd_fseek(SD_FILE *stream, long int offset, int whence);
 				cursor to.
 @returns	@c 0 on success, a non-zero integer otherwise.
 */
-int sd_fsetpos(SD_FILE *stream, fpos_t *pos);
+int
+sd_fsetpos(
+	SD_FILE *stream,
+	fpos_t	*pos
+);
 
 /**
 @brief		Print an integer.
 @param		i
 				The integer to print.
 */
-void sd_printint(int i);
+void
+sd_printint(
+	int i
+);
 
 /**
 @brief		Reveals the file position of the given stream.
@@ -163,7 +197,10 @@ void sd_printint(int i);
 @returns	On success, the current position indicator of the file is returned.
 			Otherwise, @c -1L is returned.
 */
-long int sd_ftell(SD_FILE *stream);
+long int
+sd_ftell(
+	SD_FILE *stream
+);
 
 /**
 @brief		Write data to an Arduino SD file.
@@ -181,7 +218,13 @@ long int sd_ftell(SD_FILE *stream);
 @returns	The number of bytes written. On successes, this should be
 			@p size * @p nmemb.
 */
-size_t sd_fwrite(void *ptr, size_t size, size_t nmemb, SD_FILE *stream);
+size_t
+sd_fwrite(
+	void	*ptr,
+	size_t	size,
+	size_t	nmemb,
+	SD_FILE *stream
+);
 
 /**
 @brief		Remove a file from the Arduino SD file system.
@@ -192,7 +235,10 @@ size_t sd_fwrite(void *ptr, size_t size, size_t nmemb, SD_FILE *stream);
 @returns	@c 1 if the file was removed successfully, @c 0 otherwise.
 @todo		This mismatches the standard.
 */
-int sd_remove(char *filename);
+int
+sd_remove(
+	char *filename
+);
 
 /**
 @brief		Set the file position to the beginning of the file
@@ -201,7 +247,10 @@ int sd_remove(char *filename);
 				A pointer to a C file struct type associated with an SD
 				file object.
 */
-void sd_rewind(SD_FILE *stream);
+void
+sd_rewind(
+	SD_FILE *stream
+);
 
 /**
 @brief		Wrapper around Arduino SD file begin method.
@@ -212,7 +261,10 @@ void sd_rewind(SD_FILE *stream);
 				card.
 @todo		Is there a safe number to use as a signal to use the default pin?
 */
-int SD_File_Begin(uint8_t csPin);
+int
+SD_File_Begin(
+	uint8_t csPin
+);
 
 /**
 @brief		Check to see if an Arduino SD File exists.
@@ -221,7 +273,10 @@ int SD_File_Begin(uint8_t csPin);
 				file (basic filename).
 @returns	@c 1 if the file exists, @c 0 otherwise.
 */
-int SD_File_Exists(char *filepath);
+int
+SD_File_Exists(
+	char *filepath
+);
 
 #if defined(__cplusplus)
 }

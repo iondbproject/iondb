@@ -21,7 +21,6 @@
 */
 /******************************************************************************/
 
-
 #if !defined(KV_IO_H_)
 #define KV_IO_H_
 
@@ -33,8 +32,8 @@
 
 /* Only on PC */
 #if !defined(ARDUINO)
-#define fremove(x) remove(x)
-#define frewind(x) rewind(x)
+#define fremove(x)	remove(x)
+#define frewind(x)	rewind(x)
 #endif
 
 /**
@@ -43,7 +42,7 @@
 @param		format
 				Format string to specify print output.
 @return		If successful, the total number of characters written is returned.
- 			Otherwise, a negative number is returned.
+			Otherwise, a negative number is returned.
 */
 int
 io_printf(

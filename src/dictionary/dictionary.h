@@ -79,9 +79,9 @@ dictionary_create(
 */
 status_t
 dictionary_insert(
-	dictionary_t			*dictionary,
-	ion_key_t				key,
-	ion_value_t				value
+	dictionary_t	*dictionary,
+	ion_key_t		key,
+	ion_value_t		value
 );
 
 /**
@@ -97,9 +97,9 @@ dictionary_insert(
 */
 status_t
 dictionary_get(
-	dictionary_t		*dictionary,
-	ion_key_t			key,
-	ion_value_t			value
+	dictionary_t	*dictionary,
+	ion_key_t		key,
+	ion_value_t		value
 );
 
 /**
@@ -112,8 +112,8 @@ dictionary_get(
 */
 status_t
 dictionary_delete(
-	dictionary_t		*dictionary,
-	ion_key_t			key
+	dictionary_t	*dictionary,
+	ion_key_t		key
 );
 
 /**
@@ -128,23 +128,22 @@ dictionary_delete(
 */
 status_t
 dictionary_update(
-		dictionary_t	*dictionary,
-		ion_key_t		key,
-		ion_value_t		value
+	dictionary_t	*dictionary,
+	ion_key_t		key,
+	ion_value_t		value
 );
 
 /**
-@brief 		Destroys dictionay
+@brief	  Destroys dictionay
 
-@param 		dictionary
+@param	  dictionary
 				The dictionary instance to destroy.
 @return		The status of the total destruction of the dictionary.
 */
 status_t
 dictionary_delete_dictionary(
-	dictionary_t		*dictionary
+	dictionary_t *dictionary
 );
-
 
 /**
 @brief		Compares two unsigned integer numeric keys
@@ -158,17 +157,17 @@ dictionary_delete_dictionary(
 
 			This works for all integer numeric types for unsigned values
 			as long as both keys are of the same type.
-@param 		first_key
+@param	  first_key
 				The pointer to the first key in the comparison.
-@param 		second_key
+@param	  second_key
 				The pointer to the second key in the comaparison.
-@param 		key_size
+@param	  key_size
 				The length of the key in bytes.
 @return		The resulting comparison value.
  */
 char
 dictionary_compare_unsigned_value(
-	ion_key_t 		first_key,
+	ion_key_t		first_key,
 	ion_key_t		second_key,
 	ion_key_size_t	key_size
 );
@@ -185,17 +184,17 @@ dictionary_compare_unsigned_value(
 
 			This works for all integer numeric types for signed
 			values as long as both keys are of the same type.
-@param 		first_key
+@param	  first_key
 				The pointer to the first key in the comparison.
-@param 		second_key
+@param	  second_key
 				The pointer to the second key in the comparison.
-@param 		key_size
+@param	  key_size
 				The length of the key in bytes.
 @return		The resulting comparison value.
  */
 char
 dictionary_compare_signed_value(
-	ion_key_t 		first_key,
+	ion_key_t		first_key,
 	ion_key_t		second_key,
 	ion_key_size_t	key_size
 );
@@ -213,7 +212,7 @@ dictionary_compare_signed_value(
 */
 char
 dictionary_compare_char_array(
-	ion_key_t 		first_key,
+	ion_key_t		first_key,
 	ion_key_t		second_key,
 	ion_key_size_t	key_size
 );
@@ -230,13 +229,13 @@ dictionary_compare_char_array(
 */
 char
 dictionary_compare_null_terminated_string(
-	ion_key_t 		first_key,
+	ion_key_t		first_key,
 	ion_key_t		second_key,
 	ion_key_size_t	key_size
 );
 
 /**
-@brief		Opens a dictionary, given the desired config. 
+@brief		Opens a dictionary, given the desired config.
 @param		handler
 				A pointer to the dictionary handler object to be used.
 @param		dictionary
@@ -248,24 +247,24 @@ dictionary_compare_null_terminated_string(
 */
 err_t
 dictionary_open(
-    dictionary_handler_t 			*handler,
-    dictionary_t 					*dictionary,
-    ion_dictionary_config_info_t 	*config
+	dictionary_handler_t			*handler,
+	dictionary_t					*dictionary,
+	ion_dictionary_config_info_t	*config
 );
 
 /**
-@brief		Closes a dictionary. 
+@brief		Closes a dictionary.
 @param		dictionary
 				A pointer to the dictionary object to be closed.
 @returns	An error describing the result of open operation.
 */
 err_t
 dictionary_close(
-    dictionary_t 					*dictionary
+	dictionary_t *dictionary
 );
 
 /**
-@brief	 	Builds a predicate based on the type given.
+@brief		Builds a predicate based on the type given.
 @details	The caller is responsible for allocating the memory needed
 			for the predicate.
 @param		predicate
@@ -275,17 +274,17 @@ dictionary_close(
 @param		...
 				Extra variables necessary for initializing the predicate.
 				This depends on the type of predicate being initialized.
-				Equality: 		1st vparam is target key.
-				Range: 			1st vparam is lower bound, 2nd vparam is upper
+				Equality:	   1st vparam is target key.
+				Range:		  1st vparam is lower bound, 2nd vparam is upper
 								bound.
-				All_records: 	No vparams used.
-				Predicate: 		TODO to be implemented
+				All_records:	No vparams used.
+				Predicate:	  TODO to be implemented
 @returns	An error describing the result of open operation.
 */
 err_t
 dictionary_build_predicate(
-	predicate_t				*predicate,
-	predicate_type_t		type,
+	predicate_t			*predicate,
+	predicate_type_t	type,
 	...
 );
 
@@ -299,7 +298,7 @@ dictionary_build_predicate(
 */
 void
 dictionary_destroy_predicate_equality(
-		predicate_t **predicate
+	predicate_t **predicate
 );
 
 /**
@@ -312,7 +311,7 @@ dictionary_destroy_predicate_equality(
 */
 void
 dictionary_destroy_predicate_range(
-		predicate_t **predicate
+	predicate_t **predicate
 );
 
 /**
@@ -325,7 +324,7 @@ dictionary_destroy_predicate_range(
 */
 void
 dictionary_destroy_predicate_all_records(
-	predicate_t 	**predicate
+	predicate_t **predicate
 );
 
 /**
@@ -345,9 +344,9 @@ dictionary_destroy_predicate_all_records(
 */
 err_t
 dictionary_find(
-	dictionary_t 	*dictionary,
-	predicate_t 	*predicate,
-	dict_cursor_t 	**cursor
+	dictionary_t	*dictionary,
+	predicate_t		*predicate,
+	dict_cursor_t	**cursor
 );
 
 #if defined(__cplusplus)
