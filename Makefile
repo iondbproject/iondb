@@ -22,7 +22,7 @@
 MKDIR := mkdir -p
 RM    := rm -rf
 CP    := cp
-PY    := python3
+PY    := python
 
 SRC          := src
 BUILD_DIR    := build
