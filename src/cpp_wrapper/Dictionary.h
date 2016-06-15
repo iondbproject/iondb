@@ -68,48 +68,20 @@ insert(
 /**
 @brief		Retrieve a value given a key.
 
-@details	A pointer-to-pointer variable must be created to
-			pass into the method as an output parameter before
-			the method is called.
-
 @param		key
 				The key to retrieve the value for.
-@param		value
-				A pointer to the value byte array to copy data into.
-@return		An error message describing the result of the retrieval.
+@return		The value corresponding to the given key.
 */
-bool
-keyFound(
-	K key
-) {
-	ion_key_t		ion_key = (ion_key_t) &key;
-	unsigned char	ion_value[dict.instance->record.value_size];
-
-	err_t err				= dictionary_get(&dict, ion_key, ion_value);
-
-	if (err == err_ok) {
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
-template <typename V>boost::optional <V>
+template <typename V>V
 get(
 	K key
 ) {
 	ion_key_t		ion_key = (ion_key_t) &key;
 	unsigned char	ion_value[dict.instance->record.value_size];
 
-	err_t err				= dictionary_get(&dict, ion_key, ion_value);
+	this->last_status		= dictionary_get(&dict, ion_key, ion_value);
 
-	if (err == err_ok) {
-		return *((V *) ion_value);
-	}
-	else {
-		return boost::none;
-	}
+	return *((V *) ion_value);
 }
 
 /**
