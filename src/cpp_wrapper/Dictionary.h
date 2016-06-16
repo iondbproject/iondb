@@ -12,7 +12,6 @@
 
 #include "../dictionary/dictionary.h"
 #include "../dictionary/dictionary_types.h"
-#include "../dictionary/ion_master_table.h"
 #include "../kv_system.h"
 
 template <class K>class Dictionary {
@@ -22,6 +21,7 @@ dictionary_handler_t	handler;
 dictionary_t			dict;
 int						size_k;
 int						size_v;
+err_t					last_status;
 
 /* BEFORE USE OF A FILE BASED DICTIONARY IMPLEMENTATION (BPP_TREE, FLAT_FILE),
  * SD.begin(...) MUST BE CALLED. */
@@ -33,8 +33,7 @@ initializeDictionary(
 	int			value_size,
 	int			dictionary_size
 ) {
-	/** If dictionary size isn't used by the implementation, what does it default to for the dictionary_create method? */
-	err_t err = dictionary_create(&handler, &dict, 0, type_key, key_size, value_size, dictionary_size	/** What value should this default to? */
+	err_t err = dictionary_create(&handler, &dict, 0, type_key, key_size, value_size, dictionary_size
 				);
 
 	size_k	= key_size;
@@ -68,48 +67,20 @@ insert(
 /**
 @brief		Retrieve a value given a key.
 
-@details	A pointer-to-pointer variable must be created to
-			pass into the method as an output parameter before
-			the method is called.
-
 @param		key
 				The key to retrieve the value for.
-@param		value
-				A pointer to the value byte array to copy data into.
-@return		An error message describing the result of the retrieval.
+@return		The value corresponding to the given key.
 */
-bool
-keyFound(
-	K key
-) {
-	ion_key_t		ion_key = (ion_key_t) &key;
-	unsigned char	ion_value[dict.instance->record.value_size];
-
-	err_t err				= dictionary_get(&dict, ion_key, ion_value);
-
-	if (err == err_ok) {
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
-template <typename V>boost::optional <V>
+template <typename V>V
 get(
 	K key
 ) {
 	ion_key_t		ion_key = (ion_key_t) &key;
 	unsigned char	ion_value[dict.instance->record.value_size];
 
-	err_t err				= dictionary_get(&dict, ion_key, ion_value);
+	this->last_status		= dictionary_get(&dict, ion_key, ion_value);
 
-	if (err == err_ok) {
-		return *((V *) ion_value);
-	}
-	else {
-		return boost::none;
-	}
+	return *((V *) ion_value);
 }
 
 /**
@@ -288,71 +259,6 @@ getRecord(
 	free(ion_record.key);
 	free(ion_record.value);
 	cursor->destroy(&cursor);
-}
-
-err_t
-createMasterTable(
-) {
-	err_t err = ion_init_master_table();
-
-	return err;
-}
-
-/** Will user ever need to create a dictionary through the master table? */
-err_t
-masterTableCreateDictionary(
-) {}
-
-/** Is this to be used by user? */
-err_t
-masterTableLookup(
-	unsigned int					id,
-	ion_dictionary_config_info_t	*config
-) {
-	err_t err = ion_lookup_in_master_table(id, config);
-
-	return err;
-}
-
-err_t
-masterTableOpenDictionary(
-	unsigned int id
-) {
-	err_t err = ion_open_dictionary(&handler, &dict, id);
-
-	return err;
-}
-
-err_t
-masterTableCloseDictionary(
-) {
-	err_t err = ion_close_dictionary(&dict);
-
-	return err;
-}
-
-err_t
-deleteFromMasterTable(
-) {
-	err_t err = ion_delete_from_master_table(&dict);
-
-	return err;
-}
-
-err_t
-closeMasterTable(
-) {
-	err_t err = ion_close_master_table();
-
-	return err;
-}
-
-err_t
-deleteMasterTable(
-) {
-	err_t err = ion_delete_master_table();
-
-	return err;
 }
 };
 
