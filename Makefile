@@ -64,5 +64,5 @@ hooks: $(SCRIPTS_DIR)/setuphooks.py
 
 .PHONY: format
 format: $(SCRIPTS_DIR)/format.py
-	$(PY) $(SCRIPTS_DIR)/format.py
+	$(PY) $(SCRIPTS_DIR)/format.py src
 ################################################################################
