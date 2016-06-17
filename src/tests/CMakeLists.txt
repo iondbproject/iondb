@@ -23,3 +23,11 @@ else()
     # Required on Unix OS family to be able to be linked into shared libraries.
     set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
+
+# Use cmake -DCOVERAGE_TESTING=ON to include coverage testing information.
+option(COVERAGE_TESTING "Enable profiling and coverage report" OFF)
+if (CMAKE_COMPILER_IS_GNUCC AND COVERAGE_TESTING)
+    set(GCC_COVERAGE_COMPILE_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
+    set(CMAKE_C_OUTPUT_EXTENSION_REPLACE 1)
+endif()
