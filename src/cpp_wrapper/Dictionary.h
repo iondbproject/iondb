@@ -14,7 +14,7 @@
 #include "../dictionary/dictionary_types.h"
 #include "../kv_system.h"
 
-template <class K>class Dictionary {
+template <class K>class Dictionary:public MasterTable {
 public:
 
 dictionary_handler_t	handler;

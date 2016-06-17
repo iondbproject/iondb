@@ -104,7 +104,6 @@ int main() {
 	key_type_t				key_type;
 	dictionary_handler_t	bpp_tree_handler;
 	dictionary_t			dictionary;
-	status_t				status;
 
 	/* These sizes are given in units of bytes. */
 	key_type	= key_type_numeric_signed;
@@ -128,23 +127,21 @@ int main() {
 	MasterTable *test = new MasterTable();
 	printf("Master table created \n");
 
-//	/* Set-up the handler by registering it with the B+ Tree function pointers. */
-//	bpptree_init(&bpp_tree_handler);
-//
-//	/* This writes to the master table record, and initializes the dictionary. */
-//	printf("Create the dictionary using a BPP Tree\n");
-//
-//	if (ion_master_table_create_dictionary(&bpp_tree_handler, &dictionary, key_type, key_size, value_size, -1) != err_ok) {
-//		printf("Failed to create the dictionary\n");
-//		return 1;
-//	}
-//
-//	/*
-//		Insertions take a key and a value that have been properly ionized. "Ionization" is the process of converting
-//		a key or value from its normal state, into a "byte array". The layout of the data is still exactly the same,
-//		but ionization erases type information to allow IonDB to remain type-agnostic.
-//	*/
+	/* This writes to the master table record, and initializes the dictionary. */
+	printf("Create the dictionary using a BPP Tree\n");
+
+	if (test->createBppTreeDictionary(key_type, key_size, value_size) != err_ok) {
+		printf("Failed to create the dictionary\n");
+		return 1;
+	}
+
+	/*
+		Insertions take a key and a value that have been properly ionized. "Ionization" is the process of converting
+		a key or value from its normal state, into a "byte array". The layout of the data is still exactly the same,
+		but ionization erases type information to allow IonDB to remain type-agnostic.
+	*/
 //	printf("Inserting (%d|%s)...\n", key, value);
+//	test->
 //	status = dictionary_insert(&dictionary, IONIZE(key, int), value);
 //
 //	if (status != err_ok) {
@@ -256,22 +253,22 @@ int main() {
 //	cursor->destroy(&cursor);
 //	free(ion_record.key);
 //	free(ion_record.value);
-//
-//	/* Clean-up the dictionary. Must be done through the master table to erase the table record we kept. */
-//	printf("Deleting dictionary...\n");
-//
-//	if (ion_delete_from_master_table(&dictionary)) {
-//		printf("Failed to delete the dictionary\n");
-//		return 1;
-//	}
-//
-//	/* Close, and then remove the master table. This deletion will erase the master record from disk. */
-//	printf("Closing and deleting the master table...\n");
-//
-//	if ((ion_close_master_table() != err_ok) || (ion_delete_master_table() != err_ok)) {
-//		printf("Failed to close and delete the master table\n");
-//		return 1;
-//	}
+
+	/* Clean-up the dictionary. Must be done through the master table to erase the table record we kept. */
+	printf("Deleting dictionary...\n");
+
+	if (err_ok != test->deleteFromMasterTable()) {
+		printf("Failed to delete the dictionary\n");
+		return 1;
+	}
+
+	/* Close, and then remove the master table. This deletion will erase the master record from disk. */
+	printf("Closing and deleting the master table...\n");
+
+	if ((test->closeMasterTable() != err_ok) || (test->deleteMasterTable() != err_ok)) {
+		printf("Failed to close and delete the master table\n");
+		return 1;
+	}
 
 	printf("Done\n");
 	return 0;
