@@ -2,7 +2,7 @@
 /**
 @file		Dictionary.h
 @author		Dana Klamut
-@brief	  Interface describing how user interacts with general dictionaries
+@brief		Interface describing how user interacts with general dictionaries
 			using C++.
 */
 /******************************************************************************/
@@ -134,7 +134,6 @@ destroy(
 	return err;
 }
 
-/** Is this to be used by user? */
 /**
 @brief	  Opens a dictionary, given the desired config.
 
@@ -146,7 +145,6 @@ err_t
 open(
 	ion_dictionary_config_info_t config_info
 ) {
-	/** Is config info of type ion_dictionary_config_info_t passed directly from user? */
 	err_t err = dictionary_open(&handler, &dict, &config_info);
 
 	return err;
@@ -167,10 +165,10 @@ close(
 @brief	  Sets up cursor and predicate to perform a range query on a
 			dictionary.
 
-@param	  min_value
-				The minimum value to be included in the query.
-@param	  max_value
-				The maximum value to be included in the query.
+@param	  min_key
+				The minimum key to be included in the query.
+@param	  max_key
+				The maximum key to be included in the query.
 @returns	An initialized cursor for the particular query.
 */
 dict_cursor_t *

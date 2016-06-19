@@ -2,11 +2,11 @@
 /**
 @file		BppTree.h
 @author		Dana Klamut
-@brief	  The C++ implementation of a B+ tree dictionary.
+@brief		The C++ implementation of a B+ tree dictionary.
 */
 /******************************************************************************/
 
-#ifndef PROJECT_BPPTREE_H
+#if !defined(PROJECT_BPPTREE_H)
 #define PROJECT_BPPTREE_H
 
 #include "Dictionary.h"
@@ -24,7 +24,7 @@ public:
 				The type of keys to be stored in the dictionary.
 @param		key_size
 				The size of keys to be stored in the dictionary.
-@param	  value_size
+@param		value_size
 				The size of the values to be stored in the dictionary.
  */
 BppTree(

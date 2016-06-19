@@ -2,7 +2,7 @@
 /**
 @file		OpenAddressHash.h
 @author		Dana Klamut
-@brief	  The C++ implementation of an open address hash based dictionary.
+@brief		The C++ implementation of an open address hash based dictionary.
 */
 /******************************************************************************/
 
@@ -16,7 +16,7 @@
 class OpenAddressHash:public Dictionary {
 public:
 /**
-@brief		Registers a specific B+ tree dictionary instance.
+@brief		Registers a specific open address hash dictionary instance.
 
 @details	Registers functions for dictionary.
 

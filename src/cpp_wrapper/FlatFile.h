@@ -2,7 +2,7 @@
 /**
 @file		FlatFile.h
 @author		Dana Klamut
-@brief	  The C++ implementation of a flat file dictionary.
+@brief		The C++ implementation of a flat file dictionary.
 */
 /******************************************************************************/
 
@@ -26,6 +26,8 @@ public:
 				The size of keys to be stored in the dictionary.
 @param	  value_size
 				The size of the values to be stored in the dictionary.
+@param	  dictionary_size
+				The size desired for the dictionary.
  */
 FlatFile(
 	key_type_t	type_key,
