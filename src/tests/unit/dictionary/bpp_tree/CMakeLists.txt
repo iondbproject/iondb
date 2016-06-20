@@ -23,12 +23,11 @@ else()
     add_executable(${PROJECT_NAME}          run_bpp_tree.c ${SOURCE_FILES})
 
     target_link_libraries(${PROJECT_NAME}   planck_unit bpp_tree)
-endif()
 
-# Use cmake -DCOVERAGE_TESTING=ON to include coverage testing information.
-option(COVERAGE_TESTING "Enable profiling and coverage report" OFF)
-if (CMAKE_COMPILER_IS_GNUCC AND COVERAGE_TESTING)
-    set(GCC_COVERAGE_COMPILE_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
-    set(CMAKE_C_OUTPUT_EXTENSION_REPLACE 1)
+    # Use cmake -DCOVERAGE_TESTING=ON to include coverage testing information.
+    if (CMAKE_COMPILER_IS_GNUCC AND COVERAGE_TESTING)
+        set(GCC_COVERAGE_COMPILE_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
+        set(CMAKE_C_OUTPUT_EXTENSION_REPLACE 1)
+    endif()
 endif()

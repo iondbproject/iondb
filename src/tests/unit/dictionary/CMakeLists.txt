@@ -31,17 +31,11 @@ else()
     add_executable(${PROJECT_NAME}          ${SOURCE_FILES} run_dictionary.c)
 
     target_link_libraries(${PROJECT_NAME}   planck_unit skip_list)
-endif()
 
-# PlanckUnit option: cmake -DJENKINS_BUILD=ON <project_folder> to use XML format rather than the default.
-if(JENKINS_BUILD)
-    add_definitions(-DPLANCK_UNIT_OUTPUT_STYLE_XML)
-endif()
-
-# Use cmake -DCOVERAGE_TESTING=ON to include coverage testing information.
-option(COVERAGE_TESTING "Enable profiling and coverage report" OFF)
-if (CMAKE_COMPILER_IS_GNUCC AND COVERAGE_TESTING)
-    set(GCC_COVERAGE_COMPILE_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
-    set(CMAKE_C_OUTPUT_EXTENSION_REPLACE 1)
+    # Use cmake -DCOVERAGE_TESTING=ON to include coverage testing information.
+    if (CMAKE_COMPILER_IS_GNUCC AND COVERAGE_TESTING)
+        set(GCC_COVERAGE_COMPILE_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
+        set(CMAKE_C_OUTPUT_EXTENSION_REPLACE 1)
+    endif()
 endif()
