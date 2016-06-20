@@ -8,10 +8,10 @@
 
 #include <iostream>
 
-#include "../../dictionary/ion_master_table.h"
-#include "../MasterTable.h"
-
 using namespace std;
+
+#include "../Dictionary.h"
+#include "../BppTree.h"
 
 int main() {
 	/** The following is example test code for using Dictionary.h */
