@@ -33,6 +33,11 @@ else()
     target_link_libraries(${PROJECT_NAME}   planck_unit skip_list)
 endif()
 
+# PlanckUnit option: cmake -DJENKINS_BUILD=ON <project_folder> to use XML format rather than the default.
+if(JENKINS_BUILD)
+    add_definitions(-DPLANCK_UNIT_OUTPUT_STYLE_XML)
+endif()
+
 # Use cmake -DCOVERAGE_TESTING=ON to include coverage testing information.
 option(COVERAGE_TESTING "Enable profiling and coverage report" OFF)
 if (CMAKE_COMPILER_IS_GNUCC AND COVERAGE_TESTING)
