@@ -11,3 +11,5 @@
 *.sh text eol=lf
 *.ino text eol=lf
 
+# Exclusions
+*.svg text
