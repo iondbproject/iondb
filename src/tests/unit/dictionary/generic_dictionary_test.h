@@ -15,6 +15,14 @@ extern "C" {
 
 #define GTEST_DATA (ion_value_t) "Test data, please ignore! 123 123 abc abc"
 
+int
+get_count_index_by_key(
+	ion_key_t needle,
+	ion_key_t *haystack,
+	int length,
+	dictionary_t *dictionary
+);
+
 typedef struct generic_test {
 	dictionary_t dictionary;
 
@@ -54,12 +62,18 @@ void
 dictionary_test_insert_get(
 	generic_test_t		*test,
 	int					num_to_insert,
+	ion_key_t			*keys,
+	ion_result_count_t	*counts,
+	int					length,
 	planck_unit_test_t	*tc
 );
 
 void
 dictionary_test_insert_get_edge_cases(
 	generic_test_t		*test,
+	ion_key_t			*keys,
+	ion_result_count_t	*counts,
+	int					length,
 	planck_unit_test_t	*tc
 );
 
@@ -67,6 +81,7 @@ void
 dictionary_test_delete(
 	generic_test_t		*test,
 	ion_key_t			key_to_delete,
+	ion_result_count_t	count,
 	planck_unit_test_t	*tc
 );
 
@@ -75,6 +90,7 @@ dictionary_test_update(
 	generic_test_t		*test,
 	ion_key_t			key_to_update,
 	ion_value_t			update_with,
+	ion_result_count_t	count,
 	planck_unit_test_t	*tc
 );
 
