@@ -1,8 +1,8 @@
 /******************************************************************************/
 /**
-@file	   ion_master_table.h
-@author	 Eric Huang, Graeme Douglas, Scott Fazackerley, Wade Penson
-@brief	  Master table API.
+@file		ion_master_table.h
+@author		Eric Huang, Graeme Douglas, Scott Fazackerley, Wade Penson
+@brief		Master table API.
 @details	At compile time, the master table is either used, OR it is not
 			included at all. The directive, ION_USING_MASTER_TABLE controls
 			this.
