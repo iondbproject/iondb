@@ -56,11 +56,10 @@
 #define NEUTRALIZE(something, type) (*((type *) (something)))
 #define IONIZE_VAL(varname, size)	unsigned char varname[size]
 
-/**
-@brief		A status object that describes the result of a dictionary
-			operation.
-*/
-typedef char status_t;
+#define ION_STATUS_CREATE(error, count)	((ion_status_t){(error), (count)})
+#define ION_STATUS_INITIALIZE			((ion_status_t){err_status_uninitialized, 0})
+#define ION_STATUS_ERROR(error)			((ion_status_t){(error), 0})
+#define ION_STATUS_OK(count)			((ion_status_t){err_ok, (count)})
 
 #if !defined(ARDUINO)
 
@@ -93,6 +92,9 @@ typedef enum key_type {
 enum error {
 	/**> An error code describing the situation where everything is OK. */
 	err_ok,
+	/**> An error code describing the situation where the status has not
+		 been initialized yet. */
+	err_status_uninitialized,
 	/**> An error code describing the situation where an item is not found. */
 	err_item_not_found,
 	/**> An error code describing the situation where duplicate key is used
@@ -219,8 +221,8 @@ typedef int ion_result_count_t;
 			operation.
 */
 typedef struct {
-	err_t				err;	/**< the error code */
-	ion_result_count_t	count;	/**< the number of items affected */
+	err_t				error;	/**< The error code. */
+	ion_result_count_t	count;	/**< The number of items affected. */
 } ion_status_t;
 
 /**

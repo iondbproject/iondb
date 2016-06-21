@@ -55,7 +55,7 @@ extern "C" {
 				being used.
 @return		A status describing the result of dictionary creation.
 */
-status_t
+err_t
 dictionary_create(
 	dictionary_handler_t	*handler,
 	dictionary_t			*dictionary,
@@ -77,7 +77,7 @@ dictionary_create(
 				The value to store under @p key.
 @returns	A status describing the result of the insertion.
 */
-status_t
+ion_status_t
 dictionary_insert(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -95,7 +95,7 @@ dictionary_insert(
 				A pointer to the value byte array to copy data into.
 @return		A status describing the result of the retrieval.
 */
-status_t
+ion_status_t
 dictionary_get(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -110,7 +110,7 @@ dictionary_get(
 				The key to retrieve the value for.
 @return		A status describing the result of the deletion.
 */
-status_t
+ion_status_t
 dictionary_delete(
 	dictionary_t	*dictionary,
 	ion_key_t		key
@@ -126,7 +126,7 @@ dictionary_delete(
 @param		value
 				The value to update records with.
 */
-status_t
+ion_status_t
 dictionary_update(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -140,7 +140,7 @@ dictionary_update(
 				The dictionary instance to destroy.
 @return		The status of the total destruction of the dictionary.
 */
-status_t
+err_t
 dictionary_delete_dictionary(
 	dictionary_t *dictionary
 );

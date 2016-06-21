@@ -102,10 +102,6 @@ test_collection_handler_binding(
 }
 
 /**
-@brief	  Tests the use of an equality
- */
-
-/**
 @brief	  Tests the creation of a collection and verifies all properties
 			have been correctly initialized.
 

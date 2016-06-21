@@ -42,7 +42,7 @@ sldict_init(
 				The value to use.
 @return	 Status of insertion.
  */
-err_t
+ion_status_t
 sldict_insert(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -69,7 +69,7 @@ sldict_insert(
 				user.
 @return	 Status of query.
  */
-err_t
+ion_status_t
 sldict_query(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -120,7 +120,7 @@ sldict_create_dictionary(
 				The key to be deleted.
 @return	 Status of deletion.
  */
-err_t
+ion_status_t
 sldict_delete(
 	dictionary_t	*dictionary,
 	ion_key_t		key
@@ -152,7 +152,7 @@ sldict_delete_dictionary(
 				The new value to be used.
 @return Status of update.
  */
-err_t
+ion_status_t
 sldict_update(
 	dictionary_t	*dictionary,
 	ion_key_t		key,

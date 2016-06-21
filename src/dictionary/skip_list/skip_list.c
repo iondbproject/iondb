@@ -85,7 +85,7 @@ sl_destroy(
 	return err_ok;
 }
 
-err_t
+ion_status_t
 sl_insert(
 	skiplist_t	*skiplist,
 	ion_key_t	key,
@@ -98,14 +98,14 @@ sl_insert(
 	sl_node_t *newnode	= malloc(sizeof(sl_node_t));
 
 	if (NULL == newnode) {
-		return err_out_of_memory;
+		return ION_STATUS_ERROR(err_out_of_memory);
 	}
 
 	newnode->key = malloc(key_size);
 
 	if (NULL == newnode->key) {
 		free(newnode);
-		return err_out_of_memory;
+		return ION_STATUS_ERROR(err_out_of_memory);
 	}
 
 	newnode->value = malloc(value_size);
@@ -113,7 +113,7 @@ sl_insert(
 	if (NULL == newnode->value) {
 		free(newnode->key);
 		free(newnode);
-		return err_out_of_memory;
+		return ION_STATUS_ERROR(err_out_of_memory);
 	}
 
 	memcpy(newnode->key, key, key_size);
@@ -133,7 +133,7 @@ sl_insert(
 			free(newnode->value);
 			free(newnode->key);
 			free(newnode);
-			return err_out_of_memory;
+			return ION_STATUS_ERROR(err_out_of_memory);
 		}
 
 		/* We want duplicate to be the last node in the block of duplicate
@@ -156,7 +156,7 @@ sl_insert(
 			free(newnode->value);
 			free(newnode->key);
 			free(newnode);
-			return err_out_of_memory;
+			return ION_STATUS_ERROR(err_out_of_memory);
 		}
 
 		sl_node_t	*cursor = skiplist->head;
@@ -175,10 +175,10 @@ sl_insert(
 		}
 	}
 
-	return err_ok;
+	return ION_STATUS_OK(1);
 }
 
-err_t
+ion_status_t
 sl_query(
 	skiplist_t	*skiplist,
 	ion_key_t	key,
@@ -190,20 +190,23 @@ sl_query(
 	sl_node_t	*cursor		= sl_find_node(skiplist, key);
 
 	if ((NULL == cursor->key) || (skiplist->super.compare(cursor->key, key, key_size) != 0)) {
-		return err_item_not_found;
+		return ION_STATUS_ERROR(err_item_not_found);
 	}
 
 	memcpy(value, cursor->value, value_size);
 
-	return err_ok;
+	return ION_STATUS_OK(1);
 }
 
-err_t
+ion_status_t
 sl_update(
 	skiplist_t	*skiplist,
 	ion_key_t	key,
 	ion_value_t value
 ) {
+	ion_status_t	status;
+	status					= ION_STATUS_INITIALIZE;
+
 	/* TODO size_t */
 	int			key_size	= skiplist->super.record.key_size;
 	int			value_size	= skiplist->super.record.value_size;
@@ -213,7 +216,9 @@ sl_update(
 	if ((NULL == cursor->key) || (skiplist->super.compare(cursor->key, key, key_size) != 0)) {
 		/* Insert it. TODO Possibly return different error code */
 		sl_insert(skiplist, key, value);
-		return err_ok;
+		status.error		= err_ok;
+		status.count		= 1;
+		return status;
 	}
 
 	/* Otherwise, the key exists and now we have the node to update. */
@@ -223,12 +228,14 @@ sl_update(
 		/* Update the value, and then move on to the next node. */
 		memcpy(cursor->value, value, value_size);
 		cursor = cursor->next[0];
+		status.count++;
 	}
 
-	return err_ok;
+	status.error			= err_ok;
+	return status;
 }
 
-err_t
+ion_status_t
 sl_delete(
 	skiplist_t	*skiplist,
 	ion_key_t	key
@@ -236,7 +243,10 @@ sl_delete(
 	/* TODO size_t this */
 	int key_size		= skiplist->super.record.key_size;
 	/* Default return is no item */
-	err_t status		= err_item_not_found;
+	ion_status_t	status;
+	status				= ION_STATUS_INITIALIZE;
+	/* If we fall through, then we didn't find what we were looking for. */
+	status.error = err_item_not_found;
 
 	sl_node_t	*cursor = skiplist->head;
 	sl_level_t	h;
@@ -271,9 +281,10 @@ sl_delete(
 				free(tofree);
 
 				cursor = oldcursor;
+				status.count++;
 			}
 
-			status = err_ok;
+			status.error = err_ok;
 		}
 	}
 

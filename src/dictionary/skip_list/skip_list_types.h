@@ -23,7 +23,7 @@ typedef int sl_level_t;	/**< Height of a skip_list */
 
 /**
 @brief  Struct of a node in the skip_list.
- */
+*/
 typedef struct sl_node {
 	ion_key_t		key;		/**< Key of a skip_list node */
 	ion_value_t		value;		/**< Value of a skip_list node */
@@ -36,7 +36,7 @@ typedef struct sl_node {
 /**
 @brief  Struct of the Skiplist, holds metadata and the entry point
 		into the skip_list.
- */
+*/
 typedef struct skiplist {
 	/* TODO yuck */
 	dictionary_parent_t super;	/**< Parent structure holding dictionary level

@@ -164,7 +164,7 @@ typedef char cursor_status_t;
 			specific collection.
 */
 struct dictionary_handler {
-	err_t (*insert)(
+	ion_status_t (*insert)(
 		dictionary_t *,
 		ion_key_t,
 		ion_value_t
@@ -181,13 +181,13 @@ struct dictionary_handler {
 		dictionary_t *
 	);
 	/**< A pointer to the dictionaries creation function. */
-	err_t (*get)(
+	ion_status_t (*get)(
 		dictionary_t *,
 		ion_key_t,
 		ion_value_t
 	);
 	/**< A pointer to the dictionaries get function. */
-	err_t (*update)(
+	ion_status_t (*update)(
 		dictionary_t *,
 		ion_key_t,
 		ion_value_t
@@ -199,7 +199,7 @@ struct dictionary_handler {
 		dict_cursor_t **
 	);
 	/**< A pointer to the dictionaries find function */
-	err_t (*remove)(
+	ion_status_t (*remove)(
 		dictionary_t *,
 		ion_key_t
 	);

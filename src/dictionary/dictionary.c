@@ -60,7 +60,7 @@ dictionary_switch_compare(
 	return compare;
 }
 
-status_t
+err_t
 dictionary_create(
 	dictionary_handler_t	*handler,
 	dictionary_t			*dictionary,
@@ -84,7 +84,7 @@ dictionary_create(
 
 /* inserts a record into the dictionary */
 /* each dictionary will have a specific handler? */
-status_t
+ion_status_t
 dictionary_insert(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -93,7 +93,7 @@ dictionary_insert(
 	return dictionary->handler->insert(dictionary, key, value);
 }
 
-status_t
+ion_status_t
 dictionary_get(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -102,7 +102,7 @@ dictionary_get(
 	return dictionary->handler->get(dictionary, key, value);
 }
 
-status_t
+ion_status_t
 dictionary_update(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -111,14 +111,14 @@ dictionary_update(
 	return dictionary->handler->update(dictionary, key, value);
 }
 
-status_t
+err_t
 dictionary_delete_dictionary(
 	dictionary_t *dictionary
 ) {
 	return dictionary->handler->delete_dictionary(dictionary);
 }
 
-status_t
+ion_status_t
 dictionary_delete(
 	dictionary_t	*dictionary,
 	ion_key_t		key

@@ -21,7 +21,7 @@ sldict_init(
 	handler->find				= sldict_find;
 }
 
-err_t
+ion_status_t
 sldict_insert(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -30,7 +30,7 @@ sldict_insert(
 	return sl_insert((skiplist_t *) dictionary->instance, key, value);
 }
 
-err_t
+ion_status_t
 sldict_query(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -74,7 +74,7 @@ sldict_create_dictionary(
 	return result;
 }
 
-err_t
+ion_status_t
 sldict_delete(
 	dictionary_t	*dictionary,
 	ion_key_t		key
@@ -93,7 +93,7 @@ sldict_delete_dictionary(
 	return result;
 }
 
-err_t
+ion_status_t
 sldict_update(
 	dictionary_t	*dictionary,
 	ion_key_t		key,

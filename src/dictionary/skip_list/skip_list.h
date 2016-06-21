@@ -74,7 +74,7 @@ sl_destroy(
 				The value to be insert
 @return	 Status of insertion.
  */
-err_t
+ion_status_t
 sl_insert(
 	skiplist_t	*skiplist,
 	ion_key_t	key,
@@ -95,7 +95,7 @@ sl_insert(
 				The container in which to put the resultant data
 @return	 Status of query.
  */
-err_t
+ion_status_t
 sl_query(
 	skiplist_t	*skiplist,
 	ion_key_t	key,
@@ -118,7 +118,7 @@ sl_query(
 				The new value to be updated to
 @return	 Status of updating.
  */
-err_t
+ion_status_t
 sl_update(
 	skiplist_t	*skiplist,
 	ion_key_t	key,
@@ -139,7 +139,7 @@ sl_update(
 				The key to delete
 @return	 Status of deletion.
  */
-err_t
+ion_status_t
 sl_delete(
 	skiplist_t	*skiplist,
 	ion_key_t	key
