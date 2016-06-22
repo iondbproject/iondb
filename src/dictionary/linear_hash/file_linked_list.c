@@ -100,10 +100,12 @@ fll_create(
 	/** NOTE: On windows machines file !!MUST!! be opened with +b to allow for binary mode,
 									otherwise when 0x0A is encountered 0x0D will be included (\r\n)*/
 	/* create head node and update */
-	ll_file_node_t *head_node = malloc(sizeof(head_node->next) + key_size + value_size);
+	ll_file_node_t *head_node = malloc(sizeof(*head_node) + key_size + value_size);
+//	ll_file_node_t *head_node = malloc(sizeof(head_node->next) + key_size + value_size);
 
 	head_node->next						= END_OF_LIST;
-	linked_list_file->node_size			= sizeof(head_node->next) + key_size + value_size;
+	linked_list_file->node_size			= sizeof(*head_node) + key_size + value_size;
+//	linked_list_file->node_size			= sizeof(head_node->next) + key_size + value_size;
 	/* data is garbage so just leave it */
 	linked_list_file->current			= HEAD_NODE;
 	linked_list_file->next				= INVALID_NODE;
@@ -114,7 +116,8 @@ fll_create(
 	fll_write_node(linked_list_file, head_node);
 
 	/* compute node size */
-	linked_list_file->node_size = key_size + value_size + sizeof(head_node->next);
+	linked_list_file->node_size = sizeof(*head_node) + key_size + value_size;
+//	linked_list_file->node_size = key_size + value_size + sizeof(head_node->next);
 	/** clean up to handle general data with a pointer */
 
 	/* bind comparator */
