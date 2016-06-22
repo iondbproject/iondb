@@ -83,7 +83,7 @@ oah_destroy(
 	}
 }
 
-err_t
+ion_status_t
 oah_update(
 	hashmap_t	*hash_map,
 	ion_key_t	key,
@@ -94,13 +94,13 @@ oah_update(
 
 	hash_map->write_concern = wc_update;/* change write concern to allow update */
 
-	err_t result = oah_insert(hash_map, key, value);
+	ion_status_t status = oah_insert(hash_map, key, value);
 
 	hash_map->write_concern = current_write_concern;
-	return result;
+	return status;
 }
 
-err_t
+ion_status_t
 oah_insert(
 	hashmap_t	*hash_map,
 	ion_key_t	key,
@@ -124,15 +124,15 @@ oah_insert(
 			if (hash_map->super.compare(item->data, key, hash_map->super.record.key_size) == IS_EQUAL) {
 				if (hash_map->write_concern == wc_insert_unique) {
 					/* allow unique entries only */
-					return err_duplicate_key;
+					return ION_STATUS_ERROR(err_duplicate_key);
 				}
 				else if (hash_map->write_concern == wc_update) {
-					/* allows for values to be updated											// */
+					/* allows for values to be updated */
 					memcpy(item->data + hash_map->super.record.key_size, value, (hash_map->super.record.value_size));
-					return err_ok;
+					return ION_STATUS_OK(1);
 				}
 				else {
-					return err_write_concern;	/* there is a configuration issue with write concern */
+					return ION_STATUS_ERROR(err_write_concern);	/* there is a configuration issue with write concern */
 				}
 			}
 		}
@@ -141,7 +141,7 @@ oah_insert(
 			item->status = IN_USE;
 			memcpy(item->data, key, (hash_map->super.record.key_size));
 			memcpy(item->data + hash_map->super.record.key_size, value, (hash_map->super.record.value_size));
-			return err_ok;
+			return ION_STATUS_OK(1);
 		}
 
 		loc++;
@@ -161,7 +161,7 @@ oah_insert(
 	io_printf("Hash table full.  Insert not done");
 #endif
 
-	return err_max_capacity;
+	return ION_STATUS_ERROR(err_max_capacity);
 }
 
 err_t
@@ -215,7 +215,7 @@ oah_find_item_loc(
 	return err_item_not_found;	/* key have not been found */
 }
 
-err_t
+ion_status_t
 oah_delete(
 	hashmap_t	*hash_map,
 	ion_key_t	key
@@ -226,7 +226,7 @@ oah_delete(
 #if DEBUG
 		io_printf("Item not found when trying to oah_delete.\n");
 #endif
-		return err_item_not_found;
+		return ION_STATUS_ERROR(err_item_not_found);
 	}
 	else {
 		/* locate item */
@@ -237,11 +237,11 @@ oah_delete(
 #if DEBUG
 		io_printf("Item deleted at location %d\n", loc);
 #endif
-		return err_ok;
+		return ION_STATUS_OK(1);
 	}
 }
 
-err_t
+ion_status_t
 oah_query(
 	hashmap_t	*hash_map,
 	ion_key_t	key,
@@ -259,14 +259,13 @@ oah_query(
 
 		/* *value				   = (ion_value_t)malloc(sizeof(char) * (hash_map->super.record.value_size)); */
 		memcpy(value, (ion_value_t) (item->data + hash_map->super.record.key_size), hash_map->super.record.value_size);
-		return err_ok;
+		return ION_STATUS_OK(1);
 	}
 	else {
 #if DEBUG
 		io_printf("Item not found in hash table.\n");
 #endif
-		value = NULL;	/**set the number of bytes to 0 */
-		return err_item_not_found;
+		return ION_STATUS_ERROR(err_item_not_found);
 	}
 }
 
