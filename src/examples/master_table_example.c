@@ -12,7 +12,7 @@ main(
 	key_type_t				key_type;
 	dictionary_handler_t	bpp_tree_handler;
 	dictionary_t			dictionary;
-	status_t				status;
+	ion_status_t			status;
 
 	/* These sizes are given in units of bytes. */
 	key_type	= key_type_numeric_signed;
@@ -56,7 +56,7 @@ main(
 	printf("Inserting (%d|%s)...\n", key, value);
 	status = dictionary_insert(&dictionary, IONIZE(key, int), value);
 
-	if (status != err_ok) {
+	if (status.error != err_ok) {
 		printf("Inserting (%d|%s) failed\n", key, value);
 		return 1;
 	}
@@ -65,7 +65,7 @@ main(
 	printf("Deleting (%d)...\n", key);
 	status = dictionary_delete(&dictionary, IONIZE(key, int));
 
-	if (status != err_ok) {
+	if (status.error != err_ok) {
 		printf("Deleting (%d) failed\n", key);
 		return 1;
 	}
@@ -80,7 +80,7 @@ main(
 	printf("Updating (%d with %s)...\n", key, replace_value);
 	status = dictionary_update(&dictionary, IONIZE(key, int), replace_value);
 
-	if (status != err_ok) {
+	if (status.error != err_ok) {
 		printf("Updating (%d with %s) failed\n", key, replace_value);
 		return 1;
 	}
@@ -93,7 +93,7 @@ main(
 		printf("Inserting (%d|%s)...\n", key, value);
 		status = dictionary_insert(&dictionary, IONIZE(key, int), value);
 
-		if (status != err_ok) {
+		if (status.error != err_ok) {
 			printf("Inserting (%d|%s) failed\n", key, value);
 			return 1;
 		}
@@ -106,7 +106,7 @@ main(
 
 	status = dictionary_get(&dictionary, IONIZE(key, int), new_value);
 
-	if (status == err_ok) {
+	if (status.error == err_ok) {
 		printf("Got the value back of '%s' stored in %d.\n", value, key);
 	}
 	else {

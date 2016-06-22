@@ -18,7 +18,7 @@ ffdict_init(
 	handler->delete_dictionary	= ffdict_delete_dictionary;
 }
 
-err_t
+ion_status_t
 ffdict_insert(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -28,7 +28,7 @@ ffdict_insert(
 }
 
 /** @todo the value needs to be fixed */
-err_t
+ion_status_t
 ffdict_query(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -53,7 +53,7 @@ ffdict_create_dictionary(
 	dictionary->instance->compare	= compare;
 
 	/* this registers the dictionary the dictionary */
-	ff_initialize((ff_file_t *) (dictionary->instance), key_type, key_size, value_size);
+	err_t result = ff_initialize((ff_file_t *) (dictionary->instance), key_type, key_size, value_size);
 	/**@TODO The correct comparison operator needs to be bound at run time
 	 * based on the type of key defined
 	 */
@@ -61,18 +61,17 @@ ffdict_create_dictionary(
 	/* register the correct handler */
 	dictionary->handler = handler;	/* todo: need to check to make sure that the handler is registered */
 
-	return 0;
+	return result;
 }
 
-/** @todo correct return type */
-err_t
+ion_status_t
 ffdict_delete(
 	dictionary_t	*dictionary,
 	ion_key_t		key
 ) {
 	ion_status_t status = ff_delete((ff_file_t *) dictionary->instance, key);
 
-	return status.err;
+	return status;
 }
 
 err_t
@@ -86,7 +85,7 @@ ffdict_delete_dictionary(
 	return result;
 }
 
-err_t
+ion_status_t
 ffdict_update(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -193,8 +192,6 @@ ffdict_find(
 				(*cursor)->status = cs_cursor_initialized;
 				return err_ok;
 			}
-
-			break;
 		}
 
 		case predicate_predicate: {
@@ -202,8 +199,7 @@ ffdict_find(
 		}
 
 		default: {
-			return err_invalid_predicate;	/* * Invalid predicate supplied */
-			break;
+			return err_invalid_predicate;	/* Invalid predicate supplied */
 		}
 	}
 
@@ -249,13 +245,19 @@ ffdict_next(
 		/* reference item at given position */
 
 		/* set the position so that it is pointing to the start of the record */
-		fseek(file->file_ptr, ffdict_cursor->current + SIZEOF(STATUS), SEEK_SET);
+		if (0 != fseek(file->file_ptr, ffdict_cursor->current + SIZEOF(STATUS), SEEK_SET)) {
+			return err_file_read_error;
+		}
 
 		/* and read the key */
-		fread(record->key, file->super.record.key_size, 1, file->file_ptr);
+		if (0 == fread(record->key, file->super.record.key_size, 1, file->file_ptr)) {
+			return err_file_read_error;
+		}
 
 		/* and read the key */
-		fread(record->value, file->super.record.value_size, 1, file->file_ptr);
+		if (0 == fread(record->value, file->super.record.value_size, 1, file->file_ptr)) {
+			return err_file_read_error;
+		}
 
 		/* and update current cursor position */
 		return cursor->status;
@@ -322,6 +324,10 @@ ffdict_scan(
 	f_file_record_t *record;
 
 	ion_fpos_t cur_pos	= ftell(file->file_ptr);			/* this is where you are current */
+	if (-1 == cur_pos) {
+		return err_file_bad_seek;
+	}
+
 	/* advance to the next record and check */
 
 	int record_size		= SIZEOF(STATUS) + file->super.record.key_size + file->super.record.value_size;
@@ -331,15 +337,20 @@ ffdict_scan(
 
 	/* if there a move required, do it */
 	if (offset != 0) {
-		fseek(file->file_ptr, offset, SEEK_CUR);/* set the cursor to the correct position in file */
+		/* set the cursor to the correct position in file */
+		if (0 != fseek(file->file_ptr, offset, SEEK_CUR)) {
+			return err_file_bad_seek;
+		}
 	}
 
-	record = (f_file_record_t *) malloc(record_size);
+	if (NULL == (record = (f_file_record_t *) malloc(record_size))) {
+		return err_out_of_memory;
+	}
 
 	/* continue until end of file, which will error out on return from sd_fread */
 	/** @todo option to increase buffer size for performance increase on IO */
 	while (1 == fread(record, record_size, 1, file->file_ptr)) {
-		if (record->status != DELETED) {
+		if (DELETED != record->status) {
 			/**
 			 * Compares value == key
 			 */

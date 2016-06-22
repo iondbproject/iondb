@@ -22,7 +22,7 @@ oafdict_init(
 	handler->delete_dictionary	= oafdict_delete_dictionary;
 }
 
-err_t
+ion_status_t
 oafdict_insert(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -31,7 +31,7 @@ oafdict_insert(
 	return oafh_insert((file_hashmap_t *) dictionary->instance, key, value);
 }
 
-err_t
+ion_status_t
 oafdict_query(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -69,7 +69,7 @@ oafdict_create_dictionary(
 	return 0;
 }
 
-err_t
+ion_status_t
 oafdict_delete(
 	dictionary_t	*dictionary,
 	ion_key_t		key
@@ -88,7 +88,7 @@ oafdict_delete_dictionary(
 	return result;
 }
 
-err_t
+ion_status_t
 oafdict_update(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
