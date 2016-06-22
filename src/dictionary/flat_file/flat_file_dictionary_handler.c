@@ -18,7 +18,7 @@ ffdict_init(
 	handler->delete_dictionary	= ffdict_delete_dictionary;
 }
 
-err_t
+ion_status_t
 ffdict_insert(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -28,7 +28,7 @@ ffdict_insert(
 }
 
 /** @todo the value needs to be fixed */
-err_t
+ion_status_t
 ffdict_query(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -53,7 +53,7 @@ ffdict_create_dictionary(
 	dictionary->instance->compare	= compare;
 
 	/* this registers the dictionary the dictionary */
-	ff_initialize((ff_file_t *) (dictionary->instance), key_type, key_size, value_size);
+	err_t result = ff_initialize((ff_file_t *) (dictionary->instance), key_type, key_size, value_size);
 	/**@TODO The correct comparison operator needs to be bound at run time
 	 * based on the type of key defined
 	 */
@@ -61,18 +61,17 @@ ffdict_create_dictionary(
 	/* register the correct handler */
 	dictionary->handler = handler;	/* todo: need to check to make sure that the handler is registered */
 
-	return 0;
+	return result;
 }
 
-/** @todo correct return type */
-err_t
+ion_status_t
 ffdict_delete(
 	dictionary_t	*dictionary,
 	ion_key_t		key
 ) {
 	ion_status_t status = ff_delete((ff_file_t *) dictionary->instance, key);
 
-	return status.err;
+	return status;
 }
 
 err_t

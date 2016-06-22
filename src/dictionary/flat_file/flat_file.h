@@ -99,7 +99,7 @@ ff_destroy(
 				The value that is being inserted.
 @return	 The status of the insert.
 */
-err_t
+ion_status_t
 ff_insert(
 	ff_file_t	*file,
 	ion_key_t	key,
@@ -120,7 +120,7 @@ ff_insert(
 				The value that is being inserted.
 @return		The status of the update
 */
-err_t
+ion_status_t
 ff_update(
 	ff_file_t	*file,
 	ion_key_t	key,
@@ -183,32 +183,12 @@ ff_delete(
 @param		value
 				The value associated in the map.
 */
-err_t
+ion_status_t
 ff_query(
 	ff_file_t	*file,
 	ion_key_t	key,
 	ion_value_t value
 );
-
-/**
-@brief		Helper function to print out map.
-
-@details	Helper function that displays the contents of the map including
-			both key and value.
-
-@param		hash_map
-				The map into which the data is going to be inserted.
-@param		size
-				The number of buckets available in the map.
-@param		record
-				The structure of the record being inserted.
-*/
-/*void
-ff_print(
-		ff_file_t   *file,
-		int		 size,
-		record_t	*record
-);*/
 
 #if defined(__cplusplus)
 }

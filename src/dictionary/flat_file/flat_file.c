@@ -20,16 +20,16 @@ ff_initialize(
 
 	/* check to see if file exists and if it does, throw exception */
 
-	if ((file->file_ptr = fopen("file.bin", "rb")) != NULL) {
+	if (NULL != (file->file_ptr = fopen("file.bin", "rb"))) {
 		fclose(file->file_ptr);
-		return -1;	/** @todo correct error return code*/
+		return err_file_open_error;
 	}
 
 	/* assume the the file does not exists -> this will come from the upper layers */
 	file->file_ptr = fopen("file.bin", "w+b");
 
-	if (file->file_ptr == NULL) {
-		return -2;	/** @todo correct error return code */
+	if (NULL == file->file_ptr) {
+		return err_file_open_error;
 	}
 
 	/** @todo move to parent? */
@@ -39,10 +39,14 @@ ff_initialize(
 	file->super.key_type			= key_type;
 
 	/* need to write a file header out here */
-	fwrite(&(file->super), sizeof(file->super), 1, file->file_ptr);
+	if (0 == fwrite(&(file->super), sizeof(file->super), 1, file->file_ptr)) {
+		return err_file_write_error;
+	}
 
 	/* record the start of the data block */
-	file->start_of_data = ftell(file->file_ptr);
+	if (-1 == (file->start_of_data = ftell(file->file_ptr))) {
+		return err_file_bad_seek;
+	}
 
 #if DEBUG
 	io_printf("Record key size: %i\n", file->super.record.key_size);
@@ -50,8 +54,11 @@ ff_initialize(
 #endif
 
 	/* and flush contents to disk */
-	fflush(file->file_ptr);
-	return 0;
+	if (0 != fflush(file->file_ptr)) {
+		return err_file_write_error;
+	}
+
+	return err_ok;
 }
 
 err_t
@@ -62,18 +69,18 @@ ff_destroy(
 	file->super.record.key_size		= 0;
 	file->super.record.value_size	= 0;
 
-	fclose(file->file_ptr);
-
-	if (fremove("file.bin") == 0) {
-		/* check to ensure that you are not freeing something already free */
-		return err_ok;
+	if (0 != fclose(file->file_ptr)) {
+		return err_file_close_error;
 	}
-	else {
+
+	if (0 != fremove("file.bin")) {
 		return err_colllection_destruction_error;
 	}
+
+	return err_ok;
 }
 
-err_t
+ion_status_t
 ff_update(
 	ff_file_t	*file,
 	ion_key_t	key,
@@ -84,13 +91,13 @@ ff_update(
 
 	file->write_concern = wc_update;/* change write concern to allow update */
 
-	err_t result = ff_insert(file, key, value);
+	ion_status_t status = ff_insert(file, key, value);
 
 	file->write_concern = current_write_concern;
-	return result;
+	return status;
 }
 
-err_t
+ion_status_t
 ff_insert(
 	ff_file_t	*file,
 	ion_key_t	key,
@@ -106,11 +113,13 @@ ff_insert(
 #endif
 
 	if ((record = (f_file_record_t *) malloc(record_size)) == NULL) {
-		return err_out_of_memory;
+		return ION_STATUS_ERROR(err_out_of_memory);
 	}
 
 	/* set to start of data block */
-	fseek(file->file_ptr, file->start_of_data, SEEK_SET);
+	if (0 != fseek(file->file_ptr, file->start_of_data, SEEK_SET)) {
+		return ION_STATUS_ERROR(err_file_bad_seek);
+	}
 
 #if DEBUG
 	printf("resetting to start of data\n");
@@ -119,9 +128,11 @@ ff_insert(
 #endif
 
 	do {
-		fread(record, record_size, 1, file->file_ptr);
+		if (0 == fread(record, record_size, 1, file->file_ptr)) {
+			return ION_STATUS_ERROR(err_file_read_error);
+		}
 
-		if (feof(file->file_ptr) /*== EOF*//*|| (record->status == DELETED)*/) {
+		if (feof(file->file_ptr)) {
 			/* problem is here with base types as it is just an array of data.  Need better way */
 #if DEBUG
 			printf("inserting record\n");
@@ -131,57 +142,63 @@ ff_insert(
 			memcpy(record->data + file->super.record.key_size, value, (file->super.record.value_size));
 
 			if (1 == fwrite(record, record_size, 1, file->file_ptr)) {
-				fflush(file->file_ptr);
 				free(record);
-				return err_ok;
+
+				if (0 != fflush(file->file_ptr)) {
+					return ION_STATUS_ERROR(err_file_write_error);
+				}
+
+				return ION_STATUS_OK(1);
 			}
 			else {
-				fflush(file->file_ptr);
 				free(record);
-				return err_file_write_error;
+				return ION_STATUS_ERROR(err_file_write_error);
 			}
 		}
 
-		if (record->status == IN_USE) {
+		if (IN_USE == record->status) {
 			/* if a cell is in use, need to key to */
 #if DEBUG
 			printf("encountered location in use\n");
 #endif
 
 			/*if (memcmp(item->data, key, hash_map->record.key_size) == IS_EQUAL)*/
-			if (file->super.compare((ion_key_t) record->data, key, file->super.record.key_size) == IS_EQUAL) {
-				if (file->write_concern == wc_insert_unique) {
+			if (IS_EQUAL == file->super.compare((ion_key_t) record->data, key, file->super.record.key_size)) {
+				if (wc_insert_unique == file->write_concern) {
 					/* allow unique entries only */
 					free(record);
-					return err_duplicate_key;
+					return ION_STATUS_ERROR(err_duplicate_key);
 				}
 				else if (file->write_concern == wc_update) {
-					/* allows for values to be updated											// */
+					/* allows for values to be updated */
 					/* rewind pointer to value */
-					fseek(file->file_ptr, -file->super.record.value_size /*sizeof(record->status) + file->super.record.key_size*/, SEEK_CUR);
+					if (0 != fseek(file->file_ptr, -file->super.record.value_size, SEEK_CUR)) {
+						free(record);
+						return ION_STATUS_ERROR(err_file_bad_seek);
+					}
 
 					if (1 == fwrite(value, file->super.record.value_size, 1, file->file_ptr)) {
 						fflush(file->file_ptr);
 						free(record);
-						return err_ok;
+						return ION_STATUS_OK(1);
 					}
 					else {
 						free(record);
-						return err_file_write_error;
+						return ION_STATUS_ERROR(err_file_write_error);
 					}
 				}
 				else {
 					free(record);
-					return err_write_concern;	/* there is a configuration issue with write concern */
+					return ION_STATUS_ERROR(err_write_concern);	/* there is a configuration issue with write concern */
 				}
 			}
 		}
 
 		/* There is no other condition now */
-	} while (!feof(file->file_ptr) /* != EOF*/);/* loop until a deleted location or EOF */
+	} while (!feof(file->file_ptr));/* loop until a deleted location or EOF */
 
 	free(record);
-	return err_ok;	/* this needs to be corrected */
+	return ION_STATUS_OK(1);	/* this needs to be corrected */
 }
 
 err_t
@@ -192,17 +209,23 @@ ff_find_item_loc(
 ) {
 	if (*location == -1) {
 		/* then the position has not been initialized */
-		fseek(file->file_ptr, file->start_of_data, SEEK_SET);
+		if (0 != fseek(file->file_ptr, file->start_of_data, SEEK_SET)) {
+			return err_file_bad_seek;
+		}
 	}	/* otherwise continue on from the position */
 	else {
-		fseek(file->file_ptr, *location, SEEK_SET);
+		if (0 != fseek(file->file_ptr, *location, SEEK_SET)) {
+			return err_file_bad_seek;
+		}
 	}
 
 	int record_size = SIZEOF(STATUS) + file->super.record.key_size + file->super.record.value_size;
 
 	f_file_record_t *record;
 
-	record = (f_file_record_t *) malloc(record_size);
+	if ((record = (f_file_record_t *) malloc(record_size)) == NULL) {
+		return err_out_of_memory;
+	}
 
 	ion_fpos_t cur_pos;
 
@@ -236,9 +259,7 @@ ff_delete(
 ) {
 	ion_fpos_t		loc = UNINITIALISED;		/* position to delete */
 	ion_status_t	status;					/* return status */
-
-	status.err		= err_item_not_found;	/* init such that record will not be found */
-	status.count	= 0;					/* number of items deleted */
+	status = ION_STATUS_CREATE(err_item_not_found, 0); /* init such that record will not be found */
 
 	while (ff_find_item_loc(file, key, &loc) != err_item_not_found) {
 		f_file_record_t record;
@@ -254,13 +275,13 @@ ff_delete(
 	}
 
 	if (status.count > 0) {
-		status.err = err_ok;
+		status.error = err_ok;
 	}
 
 	return status;
 }
 
-err_t
+ion_status_t
 ff_query(
 	ff_file_t	*file,
 	ion_key_t	key,
@@ -276,13 +297,13 @@ ff_query(
 		fseek(file->file_ptr, loc + SIZEOF(STATUS) + file->super.record.key_size, SEEK_SET);
 		/* copy the value from file to memory */
 		fread(value, file->super.record.value_size, 1, file->file_ptr);
-		return err_ok;
+		return ION_STATUS_OK(1);
 	}
 	else {
 #if DEBUG
 		io_printf("Item not found in file.\n");
 #endif
 		value = NULL;	/**set the number of bytes to 0 */
-		return err_item_not_found;
+		return ION_STATUS_ERROR(err_item_not_found);
 	}
 }

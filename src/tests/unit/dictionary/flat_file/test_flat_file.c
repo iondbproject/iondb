@@ -99,14 +99,14 @@ test_flat_file_simple_insert(
 		char str[10];
 
 		sprintf(str, "%02i is key", i);
-		ff_insert(&flat_file, (ion_key_t) (&i), (unsigned char *) str);	/* this is will wrap */
+		ion_status_t status = ff_insert(&flat_file, (ion_key_t) (&i), (unsigned char *) str);	/* this is will wrap */
 	}
 
 	for (i = 0; i < STD_KV_SIZE; i++) {
 		/* set the position in the file */
 		fseek(flat_file.file_ptr, flat_file.start_of_data + (i * bucket_size), SEEK_SET);
 
-		status_t		status;			/* = ((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->status; */
+		ion_status_t		status;			/* = ((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->status; */
 		int				key;			/* = *(int *)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data ); */
 		unsigned char	value[10];		/* = (ion_value_t)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data + sizeof(int)); */
 
