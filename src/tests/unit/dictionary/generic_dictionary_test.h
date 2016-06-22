@@ -17,10 +17,10 @@ extern "C" {
 
 int
 get_count_index_by_key(
-	ion_key_t needle,
-	ion_key_t *haystack,
-	int length,
-	dictionary_t *dictionary
+	ion_key_t		needle,
+	ion_key_t		*haystack,
+	int				length,
+	dictionary_t	*dictionary
 );
 
 typedef struct generic_test {
