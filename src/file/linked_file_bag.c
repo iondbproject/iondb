@@ -196,7 +196,9 @@ lfb_update_all(
 			return error;
 		}
 
-		(*count)++;
+		if (NULL != count) {
+			(*count)++;
+		}
 
 		offset = next;
 	}

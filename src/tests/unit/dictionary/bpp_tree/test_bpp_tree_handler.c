@@ -6,8 +6,9 @@ run_bpptreehandler_generic_test_set_1(
 ) {
 	generic_test_t test;
 
-	ion_key_t			keys[]	= { IONIZE(5, int), IONIZE(-10, int), IONIZE(-5, int) };
-	int					length	= sizeof(keys) / sizeof(ion_key_t);
+	int					keyvals[]	= { 5, -10, -5 };
+	ion_key_t			keys[]		= { &keyvals[0], &keyvals[1], &keyvals[2] };
+	int					length		= sizeof(keys) / sizeof(ion_key_t);
 	ion_result_count_t	count;
 	ion_result_count_t	counts[length];
 	int					k;
@@ -30,11 +31,20 @@ run_bpptreehandler_generic_test_set_1(
 	int to_delete[] = { 7, -9, 32, 1000001 };
 
 	for (i = 0; i < sizeof(to_delete) / sizeof(int); i++) {
-		k		= get_count_index_by_key((&(to_delete[i])), keys, length, &(test.dictionary));
-		PLANCK_UNIT_ASSERT_INT_ARE_NOT_EQUAL(tc, -1, k);
-		PLANCK_UNIT_ASSERT_TRUE(tc, k > -1);
-		count	= counts[k];
+		k = get_count_index_by_key((&(to_delete[i])), keys, length, &(test.dictionary));
+
+		if (k != -1) {
+			count = counts[k];
+		}
+		else {
+			count = 0;
+		}
+
 		dictionary_test_delete(&test, (ion_key_t) (&(to_delete[i])), count, tc);
+
+		if (k != -1) {
+			counts[k] = 0;
+		}
 	}
 
 	int update_key;
@@ -44,25 +54,40 @@ run_bpptreehandler_generic_test_set_1(
 	update_value	= -12;
 
 	k				= get_count_index_by_key((&update_key), keys, length, &(test.dictionary));
-	PLANCK_UNIT_ASSERT_INT_ARE_NOT_EQUAL(tc, -1, k);
-	PLANCK_UNIT_ASSERT_TRUE(tc, k > -1);
-	count			= counts[k];
+
+	if (k != -1) {
+		count = counts[k];
+	}
+	else {
+		count = 0;
+	}
+
 	dictionary_test_update(&test, (ion_key_t) (&update_key), (ion_value_t) (&update_value), count, tc);
 
 	update_key		= 1;
 	update_value	= 12;
 	k				= get_count_index_by_key((&update_key), keys, length, &(test.dictionary));
-	PLANCK_UNIT_ASSERT_INT_ARE_NOT_EQUAL(tc, -1, k);
-	PLANCK_UNIT_ASSERT_TRUE(tc, k > -1);
-	count			= counts[k];
+
+	if (k != -1) {
+		count = counts[k];
+	}
+	else {
+		count = 0;
+	}
+
 	dictionary_test_update(&test, (ion_key_t) (&update_key), (ion_value_t) (&update_value), count, tc);
 
 	update_key		= 12;
 	update_value	= 1;
 	k				= get_count_index_by_key((&update_key), keys, length, &(test.dictionary));
-	PLANCK_UNIT_ASSERT_INT_ARE_NOT_EQUAL(tc, -1, k);
-	PLANCK_UNIT_ASSERT_TRUE(tc, k > -1);
-	count			= counts[k];
+
+	if (k != -1) {
+		count = counts[k];
+	}
+	else {
+		count = 0;
+	}
+
 	dictionary_test_update(&test, (ion_key_t) (&update_key), (ion_value_t) (&update_value), count, tc);
 
 	dictionary_insert(&test.dictionary, IONIZE(5, int), IONIZE(3, int));

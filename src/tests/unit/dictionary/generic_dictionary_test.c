@@ -114,7 +114,7 @@ dictionary_test_insert_get(
 		status	= dictionary_insert(&(test->dictionary), &keys[(i * test->key_size)], &vals[(i * test->value_size)]);
 		k		= get_count_index_by_key(&keys[(i * test->key_size)], count_keys, length, &(test->dictionary));
 
-		if ((-1 == k) && (err_ok == status.error) && (1 == status.count)) {
+		if ((-1 != k) && (err_ok == status.error) && (1 == status.count)) {
 			counts[k]++;
 		}
 
@@ -149,7 +149,7 @@ dictionary_test_insert_get_edge_cases(
 	status	= dictionary_insert(&(test->dictionary), key, GTEST_DATA);
 	k		= get_count_index_by_key(key, count_keys, length, &(test->dictionary));
 
-	if ((-1 == k) && (err_ok == status.error) && (1 == status.count)) {
+	if ((-1 != k) && (err_ok == status.error) && (1 == status.count)) {
 		counts[k]++;
 	}
 
