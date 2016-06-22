@@ -10,6 +10,7 @@ extern "C" {
 #endif
 
 #include "test_flat_file_dictionary_handler.h"
+#include "../../../../kv_system.h"
 
 #define TEST_FILE "file.bin"
 /**
@@ -90,6 +91,7 @@ test_flat_file_handler_create_destroy(
 
 	ffdict_init(&map_handler);	/* register handler for hashmap */
 
+
 	/* collection handler for test collection */
 	dictionary_t test_dictionary;
 
@@ -154,7 +156,9 @@ test_flat_file_handler_simple_insert(
 
 	sprintf((char *) test_value, "value : %i ", test_key);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == test_dictionary.handler->insert(&test_dictionary, (ion_key_t) &test_key, (ion_value_t) test_value));
+	ion_status_t status = test_dictionary.handler->insert(&test_dictionary, (ion_key_t) &test_key, (ion_value_t) test_value);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 	/* reset cursor on file and */
 	fseek(((ff_file_t *) test_dictionary.instance)->file_ptr, ((ff_file_t *) test_dictionary.instance)->start_of_data, SEEK_SET);
@@ -169,7 +173,7 @@ test_flat_file_handler_simple_insert(
 	/* read the record_info back and check */
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == fread(file_record, record_size, 1, ((ff_file_t *) test_dictionary.instance)->file_ptr));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, IN_USE == file_record->status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, IN_USE == file_record->status1);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == memcmp((char *) (file_record->data + test_dictionary.instance->record.key_size), test_value, test_dictionary.instance->record.value_size));
 
@@ -179,7 +183,9 @@ test_flat_file_handler_simple_insert(
 
 	sprintf((char *) test_value, "value : %i ", test_key);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == test_dictionary.handler->insert(&test_dictionary, (ion_key_t) &test_key, (ion_value_t) test_value));
+	status = test_dictionary.handler->insert(&test_dictionary, (ion_key_t) &test_key, (ion_value_t) test_value);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 	/* TODO Check why this flag is not being set */
 	/* PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false	!= feof((((ff_file_t *)test_dictionary.instance)->file_ptr))); */
@@ -194,7 +200,7 @@ test_flat_file_handler_simple_insert(
 		/* read the record_info back and check */
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == fread(file_record, record_size, 1, ((ff_file_t *) test_dictionary.instance)->file_ptr));
 		/* check status */
-		PLANCK_UNIT_ASSERT_TRUE(tc, IN_USE == file_record->status);
+		PLANCK_UNIT_ASSERT_TRUE(tc, IN_USE == file_record->status1);
 		/* check value */
 		PLANCK_UNIT_ASSERT_TRUE(tc, 0 == memcmp((char *) (file_record->data + test_dictionary.instance->record.key_size), test_value, test_dictionary.instance->record.value_size));
 		/* check key */
@@ -570,7 +576,7 @@ test_flat_file_dictionary_cursor_range(
 	record.value	= (ion_value_t) malloc(record_info.value_size);
 
 	int			result_count = 0;
-	status_t	cursor_status;
+	cursor_status_t	cursor_status;
 
 	while (cs_cursor_active == (cursor_status = cursor->next(cursor, &record))) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == cursor_status);

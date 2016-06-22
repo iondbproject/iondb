@@ -22,7 +22,7 @@ extern "C" {
 @brief		Struct used to maintain individual records in the hashmap.
 */
 typedef struct f_file_record {
-	char			status;			/**< the status of the record */
+	ion_record_status_t			status1;			/**< the status of the record */
 
 	unsigned char	data[];			/**< the data in the record */
 } f_file_record_t;
