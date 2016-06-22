@@ -143,7 +143,7 @@ oafh_get_location(
 				The value that is being inserted.
 @return	 The status of the insert.
 */
-err_t
+ion_status_t
 oafh_insert(
 	file_hashmap_t	*hash_map,
 	ion_key_t		key,
@@ -164,7 +164,7 @@ oafh_insert(
 				The value that is being inserted.
 @return		The status of the update
 */
-err_t
+ion_status_t
 oafh_update(
 	file_hashmap_t	*hash_map,
 	ion_key_t		key,
@@ -206,7 +206,7 @@ oafh_find_item_loc(
 @param		size
 				The number of buckets available in the map.
 */
-err_t
+ion_status_t
 oafh_delete(
 	file_hashmap_t	*hash_map,
 	ion_key_t		key
@@ -227,7 +227,7 @@ oafh_delete(
 @param		value
 				The value associated in the map.
 */
-err_t
+ion_status_t
 oafh_query(
 	file_hashmap_t	*hash_map,
 	ion_key_t		key,

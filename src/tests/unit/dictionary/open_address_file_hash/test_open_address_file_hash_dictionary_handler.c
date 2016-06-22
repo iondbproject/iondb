@@ -480,8 +480,8 @@ test_open_address_file_dictionary_cursor_range(
 	record.key		= (ion_key_t) malloc(record_info.key_size);
 	record.value	= (ion_value_t) malloc(record_info.value_size);
 
-	int			result_count = 0;
-	status_t	cursor_status;
+	int				result_count = 0;
+	cursor_status_t cursor_status;
 
 	while (cs_cursor_active == (cursor_status = cursor->next(cursor, &record))) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == cursor_status);
