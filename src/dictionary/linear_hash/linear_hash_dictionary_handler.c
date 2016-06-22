@@ -40,13 +40,13 @@ lhdict_close(
 	return err_not_implemented;
 }
 
-err_t
+ion_status_t
 lhdict_insert(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 ) {
-	err_t err = lh_insert((linear_hashmap_t *) dictionary->instance, key, value);
+	ion_status_t status = lh_insert((linear_hashmap_t *) dictionary->instance, key, value);
 
 	/** Check load factor and split if necessary*/
 
@@ -56,10 +56,10 @@ lhdict_insert(
 		}
 	}
 
-	return err;
+	return status;
 }
 
-err_t
+ion_status_t
 lhdict_query(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -104,7 +104,7 @@ lhdict_create_dictionary(
 	}
 }
 
-err_t
+ion_status_t
 lhdict_delete(
 	dictionary_t	*dictionary,
 	ion_key_t		key
@@ -123,7 +123,7 @@ lhdict_delete_dictionary(
 	return result;
 }
 
-err_t
+ion_status_t
 lhdict_update(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -131,7 +131,7 @@ lhdict_update(
 ) {
 	ion_status_t status = lh_update((linear_hashmap_t *) dictionary->instance, key, value);
 
-	return status.err;
+	return status;
 }
 
 /** @todo What do we do if the cursor is already active? */

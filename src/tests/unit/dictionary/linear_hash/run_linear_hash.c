@@ -11,6 +11,6 @@ main(
 	runalltests_file_linked_list();
 	runalltests_linear_hash();
 	runalltests_linear_hash_handler();
-	run_all_tests_linearHashDictionary();
+//	run_all_tests_linearHashDictionary();
 	return 0;
 }

@@ -225,7 +225,7 @@ lh_close(
 				The value that is being inserted.
 @return	 The status of the insert.
 */
-err_t
+ion_status_t
 lh_insert(
 	linear_hashmap_t	*hash_map,
 	ion_key_t			key,
@@ -271,26 +271,6 @@ lh_update_item_action(
 );
 
 /**
-@brief	  Locates item in map.
-
-@details	Based on a key, function locates the record in the map.
-
-@param		hash_map
-				The map into which the data is going to be inserted.
-@param		ion_key_t
-				The key for the record that is being searched for.
-@param		location
-				Pointer to the location variable
-@return		The status of the find
- */
-/*err_t
-lh_find_item_loc(
-		linear_hashmap_t	*hash_map,
-		ion_key_t			key,
-		int					*location
-);*/
-
-/**
 @brief		Deletes item from map.
 
 @details	Deletes item from map based on key.  If key does not exist
@@ -305,7 +285,7 @@ lh_find_item_loc(
 @param		size
 				The number of buckets available in the map.
 */
-err_t
+ion_status_t
 lh_delete(
 	linear_hashmap_t	*hash_map,
 	ion_key_t			key
@@ -324,7 +304,7 @@ lh_delete(
 @param		value
 				The value associated in the map.   Returns the first valid value on a direct match.
 */
-err_t
+ion_status_t
 lh_query(
 	linear_hashmap_t	*hash_map,
 	ion_key_t			key,

@@ -4,14 +4,15 @@ project(test_linear_hash)
 set(SOURCE_FILES
     test_linear_hash.h
     test_linear_hash.c
-    test_linear_hash_dictionary.h
-    test_linear_hash_dictionary.c
+#    test_linear_hash_dictionary.h
+#    test_linear_hash_dictionary.c
     test_linear_hash_dictionary_handler.h
     test_linear_hash_dictionary_handler.c
     test_file_linked_list.h
     test_file_linked_list.c
-    ../generic_dictionary_test.h
-    ../generic_dictionary_test.c)
+#    ../generic_dictionary_test.h
+#    ../generic_dictionary_test.c)
+	)
 
 if(USE_ARDUINO)
     set(${PROJECT_NAME}_BOARD       ${BOARD})

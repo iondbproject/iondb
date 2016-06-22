@@ -14,6 +14,7 @@
 /******************************************************************************/
 
 #include "linear_hash.h"
+#include "../../kv_system.h"
 
 #define TEST_FILE		"lh_main.bin"
 #define OVERFLOW_FILE	"lh_overflow.bin"
@@ -205,7 +206,6 @@ lh_destroy(
 	}
 }
 
-/** @TODO */
 ion_status_t
 lh_update(
 	linear_hashmap_t	*hash_map,
@@ -214,7 +214,7 @@ lh_update(
 ) {
 /** @TODO The write concern still needs to be addressed */
 
-	ion_status_t status;
+	ion_status_t status = ION_STATUS_INITIALIZE;
 
 	/** cache pp  */
 	hash_set_t hash_set;
@@ -222,7 +222,7 @@ lh_update(
 	err_t err = hash_map->compute_hash(hash_map, key, hash_map->super.record.key_size, hash_map->file_level, &hash_set);
 
 	if (err == err_uninitialized) {
-		status.err = err_uninitialized;
+		status.error = err_uninitialized;
 		return status;
 	}
 
@@ -307,16 +307,16 @@ lh_update(
 	lh_flush_cache(hash_map, cache, PRESERVE_CACHE_MEMORY);
 
 	if (status.count > 0) {
-		status.err = err_ok;
+		status.error = err_ok;
 	}
 	else {
-		status.err = err_item_not_found;
+		status.error = err_item_not_found;
 	}
 
 	return status;
 }
 
-err_t
+ion_status_t
 lh_insert(
 	linear_hashmap_t	*hash_map,
 	ion_key_t			key,
@@ -334,7 +334,7 @@ lh_insert(
 #endif
 
 	if (err == err_uninitialized) {
-		return err_uninitialized;
+		return ION_STATUS_ERROR(err_uninitialized);
 	}
 
 	/** compute the primary page to search */
@@ -348,13 +348,13 @@ lh_insert(
 	/** @FIXME - need cache block mgr */
 	ion_status_t status = lh_action_primary_page(hash_map, cache, bucket_number, key, lh_insert_item_action, value);
 
-	if (status.err == err_ok) {
+	if (status.error == err_ok) {
 #if DEBUG
 		io_printf("flushing!\n");
 #endif
 		lh_flush_cache(hash_map, cache, PRESERVE_CACHE_MEMORY);
 		hash_map->number_of_records++;	/** increase record count */
-		return status.err;
+		return status;
 	}
 
 	/** add to overflow page if need be if there is no room*/
@@ -376,7 +376,7 @@ lh_insert(
 	free(node);
 	hash_map->number_of_records++;	/** increase record count */
 
-	return err_ok;
+	return ION_STATUS_OK(1);
 }
 
 err_t
@@ -551,7 +551,7 @@ lh_split(
 	return err_ok;
 }
 
-err_t
+ion_status_t
 lh_delete(
 	linear_hashmap_t	*hash_map,
 	ion_key_t			key
@@ -566,7 +566,7 @@ lh_delete(
 #endif
 
 	if (err == err_uninitialized) {
-		return err;
+		return ION_STATUS_ERROR(err);
 	}
 
 	/** compute the primary page to search */
@@ -610,10 +610,12 @@ lh_delete(
 
 	if (num_deleted != 0) {
 		hash_map->number_of_records = hash_map->number_of_records - num_deleted;/** decrease count */
-		return err_ok;
+		status.count = num_deleted;
+		status.error = err_ok;
+		return status;
 	}
 	else {
-		return err_item_not_found;
+		return ION_STATUS_ERROR(err_item_not_found);
 	}
 }
 
@@ -847,7 +849,7 @@ lh_get_next(
 	return err_item_not_found;
 }
 
-err_t
+ion_status_t
 lh_query(
 	linear_hashmap_t	*hash_map,
 	ion_key_t			key,
@@ -866,7 +868,7 @@ lh_query(
 #endif
 
 	if (err == err_uninitialized) {
-		return err_uninitialized;
+		return ION_STATUS_ERROR(err);
 	}
 
 	/** compute the primary page to search */
@@ -880,8 +882,11 @@ lh_query(
 	ion_status_t status = lh_action_primary_page(hash_map, cache, bucket_number, key, lh_query_item_action, value);
 
 	/** and if the primary page has empty slot or has the value, return */
-	if (status.err != err_not_in_primary_page) {
-		return status.err;
+	if (status.error != err_not_in_primary_page) {
+		if (err_ok == status.error) {
+			status.count = 1;
+		}
+		return status;
 	}
 
 	/** and if it is not found in the bucket, check the overflow file */
@@ -891,16 +896,20 @@ lh_query(
 
 	if (fll_open(&linked_list_file, fll_compare, hash_map->super.key_type, hash_map->super.record.key_size, hash_map->super.record.value_size, bucket_number, hash_map->id) == err_item_not_found) {
 		/** in this case, cursor is null as value has not been found */
-		return err_item_not_found;
+		return ION_STATUS_ERROR(err_item_not_found);
 	}
 	else {
 		/* find the next available node that matches ? */
 		/** @TODO change possibly to satisfies predicate?*/
 		fll_reset(&linked_list_file);
 		/** this scans the list for the first instance of the item in the ll */
-		err = lh_get_next(hash_map, &linked_list_file, key, value);
+		status.error = lh_get_next(hash_map, &linked_list_file, key, value);
 		fll_close(&linked_list_file);	/** close the list and be done as you have reached the end without finding value */
-		return err;
+		if (err_ok == status.error) {
+			status.count = 1;
+		}
+
+		return status;
 	}
 }
 
@@ -1243,9 +1252,7 @@ lh_action_primary_page(
 	ion_value_t value
 ) {
 	/** set number of records touched to 0 */
-	ion_status_t status;
-
-	status.count = 0;
+	ion_status_t status = ION_STATUS_INITIALIZE;
 
 	/** @TODO initial condition needs to get changed to support active cursor */
 	int count = 0;
@@ -1267,7 +1274,7 @@ lh_action_primary_page(
 		/** scan through block performing action*/
 		action_status_t record_status = action(hash_map, key, item, value);
 
-		status.err = record_status.err;
+		status.error = record_status.err;
 
 		if (record_status.err == err_ok) {
 			/** a record has been touched */
