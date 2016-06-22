@@ -234,6 +234,13 @@ typedef struct {
 } ion_status_t;
 
 /**
+@brief		A type for record statuses used in some structures.
+@details	This is used in at least the open address hash tables and
+			the flat file dictionaries.
+*/
+typedef char ion_record_status_t;
+
+/**
 @brief		Struct used to maintain information about size of key and value.
 */
 typedef struct record_info {
