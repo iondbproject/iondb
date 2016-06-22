@@ -6,6 +6,7 @@
  */
 
 #include "flat_file.h"
+#include "../../kv_system.h"
 
 err_t
 ff_initialize(
@@ -231,12 +232,17 @@ ff_find_item_loc(
 
 	/* while we have not reached the end of the the datafile */
 	while (!feof(file->file_ptr) /* != EOF*/) {
-		cur_pos = ftell(file->file_ptr);/* get current position in file */
+		/* get current position in file */
+		if (-1 == (cur_pos = ftell(file->file_ptr))) {
+			return err_file_bad_seek;
+		}
 
 		/** @todo depending on how much memory available, could minimize reads through buffering*/
-		fread(record, record_size, 1, file->file_ptr);
+		if (0 == fread(record, record_size, 1, file->file_ptr)) {
+			return err_file_bad_seek;
+		}
 
-		if (record->status != DELETED) {
+		if (DELETED != record->status) {
 			/** @todo correct compare to use proper return type*/
 			int key_is_equal = file->super.compare((ion_key_t) record->data, key, file->super.record.key_size);
 
@@ -261,13 +267,21 @@ ff_delete(
 	ion_status_t	status;					/* return status */
 	status = ION_STATUS_CREATE(err_item_not_found, 0); /* init such that record will not be found */
 
-	while (ff_find_item_loc(file, key, &loc) != err_item_not_found) {
+	while (err_item_not_found != ff_find_item_loc(file, key, &loc)) {
 		f_file_record_t record;
 
 		record.status = DELETED;
 
-		fseek(file->file_ptr, loc, SEEK_SET);
-		fwrite(&record, sizeof(record.status), 1, file->file_ptr);
+		if (0 != fseek(file->file_ptr, loc, SEEK_SET)) {
+			status.error = err_file_bad_seek;
+			return status;
+		}
+
+		if (0 == fwrite(&record, sizeof(record.status), 1, file->file_ptr)) {
+			status.error = err_file_write_error;
+			return status;
+		}
+
 		status.count++;
 #if DEBUG
 		io_printf("Item deleted at location %d\n", loc);
@@ -289,14 +303,19 @@ ff_query(
 ) {
 	ion_fpos_t loc = -1;/* initialize */
 
-	if (ff_find_item_loc(file, key, &loc) == err_ok) {
+	if (err_ok == ff_find_item_loc(file, key, &loc)) {
 #if DEBUG
 		io_printf("Item found at location %d\n", loc);
 #endif
 		/* isolate value from record */
-		fseek(file->file_ptr, loc + SIZEOF(STATUS) + file->super.record.key_size, SEEK_SET);
+		if (0 != fseek(file->file_ptr, loc + SIZEOF(STATUS) + file->super.record.key_size, SEEK_SET)) {
+			return ION_STATUS_ERROR(err_file_bad_seek);
+		}
 		/* copy the value from file to memory */
-		fread(value, file->super.record.value_size, 1, file->file_ptr);
+		if (0 == fread(value, file->super.record.value_size, 1, file->file_ptr)) {
+			return ION_STATUS_ERROR(err_file_read_error);
+		}
+
 		return ION_STATUS_OK(1);
 	}
 	else {
