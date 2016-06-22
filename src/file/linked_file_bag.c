@@ -119,8 +119,9 @@ lfb_delete(
 
 err_t
 lfb_delete_all(
-	lfb_t			*bag,
-	file_offset_t	offset
+	lfb_t				*bag,
+	file_offset_t		offset,
+	ion_result_count_t	*count
 ) {
 	err_t			error;
 	file_offset_t	next;
@@ -136,6 +137,10 @@ lfb_delete_all(
 
 		if (err_ok != error) {
 			return error;
+		}
+
+		if (NULL != count) {
+			(*count)++;
 		}
 
 		offset = next;
@@ -169,10 +174,11 @@ lfb_update(
 
 err_t
 lfb_update_all(
-	lfb_t			*bag,
-	file_offset_t	offset,
-	unsigned int	num_bytes,
-	byte			*to_write
+	lfb_t				*bag,
+	file_offset_t		offset,
+	unsigned int		num_bytes,
+	byte				*to_write,
+	ion_result_count_t	*count
 ) {
 	err_t			error;
 	file_offset_t	next;
@@ -188,6 +194,10 @@ lfb_update_all(
 
 		if (err_ok != error) {
 			return error;
+		}
+
+		if (NULL != count) {
+			(*count)++;
 		}
 
 		offset = next;

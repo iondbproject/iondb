@@ -56,10 +56,18 @@
 #define NEUTRALIZE(something, type) (*((type *) (something)))
 #define IONIZE_VAL(varname, size)	unsigned char varname[size]
 
-#define ION_STATUS_CREATE(error, count)	((ion_status_t){(error), (count)})
-#define ION_STATUS_INITIALIZE			((ion_status_t){err_status_uninitialized, 0})
-#define ION_STATUS_ERROR(error)			((ion_status_t){(error), 0})
-#define ION_STATUS_OK(count)			((ion_status_t){err_ok, (count)})
+#define ION_STATUS_CREATE(error, count) \
+	((ion_status_t) { (error), (count) } \
+	)
+#define ION_STATUS_INITIALIZE \
+	((ion_status_t) { err_status_uninitialized, 0 } \
+	)
+#define ION_STATUS_ERROR(error) \
+	((ion_status_t) { (error), 0 } \
+	)
+#define ION_STATUS_OK(count) \
+	((ion_status_t) { err_ok, (count) } \
+	)
 
 #if !defined(ARDUINO)
 
@@ -224,6 +232,13 @@ typedef struct {
 	err_t				error;	/**< The error code. */
 	ion_result_count_t	count;	/**< The number of items affected. */
 } ion_status_t;
+
+/**
+@brief		A type for record statuses used in some structures.
+@details	This is used in at least the open address hash tables and
+			the flat file dictionaries.
+*/
+typedef char ion_record_status_t;
 
 /**
 @brief		Struct used to maintain information about size of key and value.

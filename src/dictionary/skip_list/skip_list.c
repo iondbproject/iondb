@@ -204,8 +204,9 @@ sl_update(
 	ion_key_t	key,
 	ion_value_t value
 ) {
-	ion_status_t	status;
-	status					= ION_STATUS_INITIALIZE;
+	ion_status_t status;
+
+	status = ION_STATUS_INITIALIZE;
 
 	/* TODO size_t */
 	int			key_size	= skiplist->super.record.key_size;
@@ -216,8 +217,8 @@ sl_update(
 	if ((NULL == cursor->key) || (skiplist->super.compare(cursor->key, key, key_size) != 0)) {
 		/* Insert it. TODO Possibly return different error code */
 		sl_insert(skiplist, key, value);
-		status.error		= err_ok;
-		status.count		= 1;
+		status.error	= err_ok;
+		status.count	= 1;
 		return status;
 	}
 
@@ -231,7 +232,7 @@ sl_update(
 		status.count++;
 	}
 
-	status.error			= err_ok;
+	status.error = err_ok;
 	return status;
 }
 
@@ -241,12 +242,13 @@ sl_delete(
 	ion_key_t	key
 ) {
 	/* TODO size_t this */
-	int key_size		= skiplist->super.record.key_size;
+	int key_size = skiplist->super.record.key_size;
 	/* Default return is no item */
-	ion_status_t	status;
-	status				= ION_STATUS_INITIALIZE;
+	ion_status_t status;
+
+	status			= ION_STATUS_INITIALIZE;
 	/* If we fall through, then we didn't find what we were looking for. */
-	status.error = err_item_not_found;
+	status.error	= err_item_not_found;
 
 	sl_node_t	*cursor = skiplist->head;
 	sl_level_t	h;
