@@ -265,7 +265,7 @@ test_flat_file_simple_delete(
 
 			value2 = (ion_value_t) malloc(file.super.record.value_size);
 
-			status = ff_query(&file, (ion_key_t) (&j), value2);
+			status = ff_query(&file, (ion_key_t) (&i), value2);
 			PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 			PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 

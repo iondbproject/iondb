@@ -350,7 +350,7 @@ ffdict_scan(
 	/* continue until end of file, which will error out on return from sd_fread */
 	/** @todo option to increase buffer size for performance increase on IO */
 	while (1 == fread(record, record_size, 1, file->file_ptr)) {
-		if (DELETED != record->status1) {
+		if (DELETED != record->status) {
 			/**
 			 * Compares value == key
 			 */

@@ -136,7 +136,7 @@ ff_insert(
 #if DEBUG
 			printf("inserting record\n");
 #endif
-			record->status1 = IN_USE;
+			record->status = IN_USE;
 			memcpy(record->data, key, (file->super.record.key_size));
 			memcpy(record->data + file->super.record.key_size, value, (file->super.record.value_size));
 
@@ -155,7 +155,7 @@ ff_insert(
 			}
 		}
 
-		if (IN_USE == record->status1) {
+		if (IN_USE == record->status) {
 			/* if a cell is in use, need to key to */
 #if DEBUG
 			printf("encountered location in use\n");
@@ -237,9 +237,18 @@ ff_find_item_loc(
 
 		/* @todo depending on how much memory available, could minimize reads through buffering*/
 		/* @todo FIXME: This read will fail when reading at end of file */
-		fread(record, record_size, 1, file->file_ptr);
+		if (0 == fread(record, record_size, 1, file->file_ptr)) {
+			free(record);
 
-		if (!feof(file->file_ptr) && DELETED != record->status1) {
+			if (feof(file->file_ptr)) {
+				return err_item_not_found;
+			}
+			else {
+				return err_file_read_error;
+			}
+		}
+
+		if (!feof(file->file_ptr) && DELETED != record->status) {
 			/** @todo correct compare to use proper return type*/
 			int key_is_equal = file->super.compare((ion_key_t) record->data, key, file->super.record.key_size);
 
@@ -267,14 +276,14 @@ ff_delete(
 	while (err_item_not_found != ff_find_item_loc(file, key, &loc)) {
 		f_file_record_t record;
 
-		record.status1 = DELETED;
+		record.status = DELETED;
 
 		if (0 != fseek(file->file_ptr, loc, SEEK_SET)) {
 			status.error = err_file_bad_seek;
 			return status;
 		}
 
-		if (0 == fwrite(&record, sizeof(record.status1), 1, file->file_ptr)) {
+		if (0 == fwrite(&record, sizeof(record.status), 1, file->file_ptr)) {
 			status.error = err_file_write_error;
 			return status;
 		}

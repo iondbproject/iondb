@@ -173,7 +173,7 @@ test_flat_file_handler_simple_insert(
 	/* read the record_info back and check */
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == fread(file_record, record_size, 1, ((ff_file_t *) test_dictionary.instance)->file_ptr));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, IN_USE == file_record->status1);
+	PLANCK_UNIT_ASSERT_TRUE(tc, IN_USE == file_record->status);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == memcmp((char *) (file_record->data + test_dictionary.instance->record.key_size), test_value, test_dictionary.instance->record.value_size));
 
@@ -200,7 +200,7 @@ test_flat_file_handler_simple_insert(
 		/* read the record_info back and check */
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == fread(file_record, record_size, 1, ((ff_file_t *) test_dictionary.instance)->file_ptr));
 		/* check status */
-		PLANCK_UNIT_ASSERT_TRUE(tc, IN_USE == file_record->status1);
+		PLANCK_UNIT_ASSERT_TRUE(tc, IN_USE == file_record->status);
 		/* check value */
 		PLANCK_UNIT_ASSERT_TRUE(tc, 0 == memcmp((char *) (file_record->data + test_dictionary.instance->record.key_size), test_value, test_dictionary.instance->record.value_size));
 		/* check key */
