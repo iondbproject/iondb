@@ -75,7 +75,7 @@ oadict_init(
 				The value to use.
 @return	 The status on the insertion of the record.
  */
-err_t
+ion_status_t
 oadict_insert(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -106,7 +106,7 @@ oadict_insert(
 				memory.
 @return	 The status of the query.
  */
-err_t
+ion_status_t
 oadict_query(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -157,7 +157,7 @@ oadict_create_dictionary(
 				The key that is to be deleted.
 @return	 The status of the deletion
  */
-err_t
+ion_status_t
 oadict_delete(
 	dictionary_t	*dictionary,
 	ion_key_t		key
@@ -189,7 +189,7 @@ oadict_delete_dictionary(
 				The value that is to be updated.
 @return	 The status of the update.
  */
-err_t
+ion_status_t
 oadict_update(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
