@@ -149,12 +149,16 @@ lfb_delete(
 				we wish to delete from.
 @param		offset
 				The offset of the first linked record to delete from.
+@param		count
+				A pointer to write count data to. If it is @c NULL,
+				then no data will be written.
 @returns	An error code describing the result of the call.
 */
 err_t
 lfb_delete_all(
-	lfb_t			*bag,
-	file_offset_t	offset
+	lfb_t				*bag,
+	file_offset_t		offset,
+	ion_result_count_t	*count
 );
 
 /**
@@ -203,14 +207,18 @@ lfb_update(
 				The number of bytes to write to each record.
 @param		to_write
 				The data to actually write to each record.
+@param		count
+				A pointer to write count data to. If it is @c NULL,
+				then no data will be written.
 @returns	An error code describing the result of the call.
 */
 err_t
 lfb_update_all(
-	lfb_t			*bag,
-	file_offset_t	offset,
-	unsigned int	num_bytes,
-	byte			*to_write
+	lfb_t				*bag,
+	file_offset_t		offset,
+	unsigned int		num_bytes,
+	byte				*to_write,
+	ion_result_count_t	*count
 );
 
 #if defined(__cplusplus)

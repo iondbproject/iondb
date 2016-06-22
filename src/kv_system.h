@@ -56,10 +56,18 @@
 #define NEUTRALIZE(something, type) (*((type *) (something)))
 #define IONIZE_VAL(varname, size)	unsigned char varname[size]
 
-#define ION_STATUS_CREATE(error, count)	((ion_status_t){(error), (count)})
-#define ION_STATUS_INITIALIZE			((ion_status_t){err_status_uninitialized, 0})
-#define ION_STATUS_ERROR(error)			((ion_status_t){(error), 0})
-#define ION_STATUS_OK(count)			((ion_status_t){err_ok, (count)})
+#define ION_STATUS_CREATE(error, count) \
+	((ion_status_t) { (error), (count) } \
+	)
+#define ION_STATUS_INITIALIZE \
+	((ion_status_t) { err_status_uninitialized, 0 } \
+	)
+#define ION_STATUS_ERROR(error) \
+	((ion_status_t) { (error), 0 } \
+	)
+#define ION_STATUS_OK(count) \
+	((ion_status_t) { err_ok, (count) } \
+	)
 
 #if !defined(ARDUINO)
 

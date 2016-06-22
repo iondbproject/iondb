@@ -1,4 +1,23 @@
 #include "generic_dictionary_test.h"
+#include "../../../kv_system.h"
+
+int
+get_count_index_by_key(
+	ion_key_t		needle,
+	ion_key_t		*haystack,
+	int				length,
+	dictionary_t	*dictionary
+) {
+	int i = 0;
+
+	for (; i < length; i++) {
+		if (0 == dictionary->instance->compare(needle, haystack[i], dictionary->instance->record.key_size)) {
+			return i;
+		}
+	}
+
+	return -1;
+}
 
 void
 init_generic_dictionary_test(
@@ -47,6 +66,9 @@ void
 dictionary_test_insert_get(
 	generic_test_t		*test,
 	int					num_to_insert,
+	ion_key_t			*count_keys,
+	ion_result_count_t	*counts,
+	int					length,
 	planck_unit_test_t	*tc
 ) {
 	if ((0 > num_to_insert) || (num_to_insert * test->key_size > INT_MAX - 1000) || (num_to_insert * test->value_size > INT_MAX - 1000)) {
@@ -58,10 +80,11 @@ dictionary_test_insert_get(
 
 	unsigned char	test_buf[test->value_size];
 	ion_value_t		test_val = test_buf;
-	err_t			err;
+	ion_status_t	status;
 
 	int i;
 	int j;
+	int k;
 
 	for (i = 0; i < num_to_insert; i++) {
 		for (j = 0; j < test->key_size; j++) {
@@ -88,14 +111,22 @@ dictionary_test_insert_get(
 
 		memcpy(&vals[(i * test->value_size)], &i, j);
 
-		err = dictionary_insert(&(test->dictionary), &keys[(i * test->key_size)], &vals[(i * test->value_size)]);
-		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+		status	= dictionary_insert(&(test->dictionary), &keys[(i * test->key_size)], &vals[(i * test->value_size)]);
+		k		= get_count_index_by_key(&keys[(i * test->key_size)], count_keys, length, &(test->dictionary));
+
+		if ((-1 != k) && (err_ok == status.error) && (1 == status.count)) {
+			counts[k]++;
+		}
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 	for (i = 0; i < num_to_insert; i++) {
-		err = dictionary_get(&(test->dictionary), &keys[(i * test->key_size)], test_val);
+		status = dictionary_get(&(test->dictionary), &keys[(i * test->key_size)], test_val);
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 		j = memcmp(&(vals[i * test->value_size]), test_val, test->value_size);
 
@@ -106,19 +137,31 @@ dictionary_test_insert_get(
 void
 dictionary_test_insert_get_edge_cases(
 	generic_test_t		*test,
+	ion_key_t			*count_keys,
+	ion_result_count_t	*counts,
+	int					length,
 	planck_unit_test_t	*tc
 ) {
-	err_t err;
+	ion_status_t	status;
+	int				k;
+	ion_key_t		key = IONIZE(-10, int);
 
-	err = dictionary_insert(&(test->dictionary), IONIZE(-10, int), GTEST_DATA);
+	status	= dictionary_insert(&(test->dictionary), key, GTEST_DATA);
+	k		= get_count_index_by_key(key, count_keys, length, &(test->dictionary));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+	if ((-1 != k) && (err_ok == status.error) && (1 == status.count)) {
+		counts[k]++;
+	}
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 	unsigned char test_buf[test->value_size];
 
-	err = dictionary_get(&test->dictionary, IONIZE(-10, int), test_buf);
+	status = dictionary_get(&test->dictionary, IONIZE(-10, int), test_buf);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == test->dictionary.instance->compare(GTEST_DATA, test_buf, test->key_size));
 }
 
@@ -126,20 +169,23 @@ void
 dictionary_test_delete(
 	generic_test_t		*test,
 	ion_key_t			key_to_delete,
+	ion_result_count_t	count,
 	planck_unit_test_t	*tc
 ) {
-	err_t err;
+	ion_status_t status;
 
 	unsigned char	test_buf[test->value_size];
 	ion_value_t		test_val = test_buf;
 
-	err = dictionary_delete(&(test->dictionary), key_to_delete);
+	status = dictionary_delete(&(test->dictionary), key_to_delete);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, count == status.count);
 
-	err = dictionary_get(&(test->dictionary), key_to_delete, test_val);
+	status = dictionary_get(&(test->dictionary), key_to_delete, test_val);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == err);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
 }
 
 void
@@ -147,20 +193,23 @@ dictionary_test_update(
 	generic_test_t		*test,
 	ion_key_t			key_to_update,
 	ion_value_t			update_with,
+	ion_result_count_t	count,
 	planck_unit_test_t	*tc
 ) {
-	err_t err;
+	ion_status_t status;
 
 	unsigned char	test_buf[test->value_size];
 	ion_value_t		test_val = test_buf;
 
-	err = dictionary_update(&(test->dictionary), key_to_update, update_with);
+	status = dictionary_update(&(test->dictionary), key_to_update, update_with);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, count == status.count);
 
-	err = dictionary_get(&(test->dictionary), key_to_update, test_val);
+	status = dictionary_get(&(test->dictionary), key_to_update, test_val);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, count == status.count);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == memcmp(update_with, test_val, test->value_size));
 }
@@ -287,12 +336,14 @@ dictionary_test_open_close(
 	planck_unit_test_t	*tc
 ) {
 	err_t				error;
+	ion_status_t		status;
 	ion_dictionary_id_t gdict_id = test->dictionary.instance->id;
 
 	/* Insert test record so we can check data integrity after we close/open */
-	error = dictionary_insert(&(test->dictionary), IONIZE(66650, int), GTEST_DATA);
+	status = dictionary_insert(&(test->dictionary), IONIZE(66650, int), GTEST_DATA);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 	error = dictionary_close(&test->dictionary);
 
@@ -315,9 +366,10 @@ dictionary_test_open_close(
 
 	/* Check the test record */
 	IONIZE_VAL(test_val, test->value_size);
-	error = dictionary_get(&dictionary_temp, IONIZE(66650, int), test_val);
+	status = dictionary_get(&dictionary_temp, IONIZE(66650, int), test_val);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 	int j = memcmp(GTEST_DATA, test_val, test->value_size);
 
