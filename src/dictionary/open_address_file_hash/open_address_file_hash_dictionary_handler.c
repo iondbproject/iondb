@@ -51,6 +51,7 @@ oafdict_create_dictionary(
 	dictionary_handler_t		*handler,
 	dictionary_t				*dictionary
 ) {
+	UNUSED(id);
 	/* this is the instance of the hashmap */
 	dictionary->instance			= (dictionary_parent_t *) malloc(sizeof(file_hashmap_t));
 

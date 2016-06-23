@@ -48,12 +48,15 @@ ffdict_create_dictionary(
 	dictionary_handler_t		*handler,
 	dictionary_t				*dictionary
 ) {
+	UNUSED(id);
+	UNUSED(dictionary_size);
 	dictionary->instance			= (dictionary_parent_t *) malloc(sizeof(ff_file_t));
 
 	dictionary->instance->compare	= compare;
 
 	/* this registers the dictionary the dictionary */
 	err_t result = ff_initialize((ff_file_t *) (dictionary->instance), key_type, key_size, value_size);
+
 	/**@TODO The correct comparison operator needs to be bound at run time
 	 * based on the type of key defined
 	 */
@@ -323,17 +326,18 @@ ffdict_scan(
 
 	f_file_record_t *record;
 
-	ion_fpos_t cur_pos	= ftell(file->file_ptr);			/* this is where you are current */
+	ion_fpos_t cur_pos = ftell(file->file_ptr);	/* this is where you are current */
+
 	if (-1 == cur_pos) {
 		return err_file_bad_seek;
 	}
 
 	/* advance to the next record and check */
 
-	int record_size		= SIZEOF(STATUS) + file->super.record.key_size + file->super.record.value_size;
+	int record_size = SIZEOF(STATUS) + file->super.record.key_size + file->super.record.value_size;
 
 	/* advance to the next record */
-	long offset			= (cursor->current + record_size) - cur_pos;	/* compute offset */
+	long offset		= (cursor->current + record_size) - cur_pos;		/* compute offset */
 
 	/* if there a move required, do it */
 	if (offset != 0) {

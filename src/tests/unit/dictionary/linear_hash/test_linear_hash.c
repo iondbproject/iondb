@@ -192,7 +192,6 @@ test_file_linear_hash_insert(
 	io_printf("inserting a new value\n");
 #endif
 
-
 	lh_insert(&hashmap, (ion_key_t) &key, (ion_value_t) value);
 	key = 14;
 	lh_insert(&hashmap, (ion_key_t) &key, (ion_value_t) value);
@@ -242,6 +241,7 @@ test_file_linear_hash_insert_negative(
 	int idx = 0;
 
 	ion_status_t status;
+
 	for (; idx < 4; idx++) {
 		sprintf(value, "value:%i", key[idx]);
 		status = lh_insert(&hashmap, (ion_key_t) &key[idx], (ion_value_t) value);
@@ -416,7 +416,7 @@ test_file_linear_hash_split_2(
 	/** and check ll */
 	ll_file_t ll_file;
 
-	fll_open(&ll_file, NULL, hashmap.super.key_type, hashmap.super.record.key_size, hashmap.super.record.value_size, 0, hashmap.id);/* valgrind, data loss --FIXME */
+	fll_open(&ll_file, NULL, hashmap.super.record.key_size, hashmap.super.record.value_size, 0, hashmap.id);/* valgrind, data loss --FIXME */
 	fll_reset(&ll_file);
 
 	ll_file_node_t ll_node;
@@ -538,7 +538,7 @@ test_file_linear_hash_split_3(
 	/** and check ll */
 	ll_file_t ll_file;
 
-	fll_open(&ll_file, NULL, hashmap.super.key_type, hashmap.super.record.key_size, hashmap.super.record.value_size, 0, hashmap.id);
+	fll_open(&ll_file, NULL, hashmap.super.record.key_size, hashmap.super.record.value_size, 0, hashmap.id);
 	fll_reset(&ll_file);
 
 	ll_file_node_t ll_node;
@@ -783,7 +783,9 @@ test_file_linear_hash_query(
 #if DEBUG
 		io_printf("starting search for key: %i", key[idx]);
 #endif
+
 		ion_status_t status = lh_query(&hashmap, (ion_key_t) &key[idx], query_value);
+
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		/* TODO Verify the count here */
 		sprintf(value, "value:%i", key[idx]);
@@ -858,7 +860,9 @@ test_file_linear_hash_query_2(
 #if DEBUG
 		io_printf("starting search for key: %i", key[idx]);
 #endif
+
 		ion_status_t status = lh_query(&hashmap, (ion_key_t) &key[idx], query_value);
+
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		/* TODO Verify count? */
 		sprintf(value, "value:%i", key[idx]);
@@ -891,7 +895,9 @@ test_file_linear_hash_query_2(
 #if DEBUG
 		io_printf("starting search for key: %i", key[idx]);
 #endif
+
 		ion_status_t status = lh_query(&hashmap, (ion_key_t) &key[idx], query_value);
+
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		/* TODO Verify count? */
 		sprintf(value, "value:%i", key[idx]);
@@ -966,7 +972,9 @@ test_file_linear_hash_delete(
 #if DEBUG
 		io_printf("starting search for key: %i", key[idx]);
 #endif
+
 		ion_status_t status = lh_query(&hashmap, (ion_key_t) &key[idx], query_value);
+
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		sprintf(value, "value:%i", key[idx]);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 0 == strcmp(value, (char *) query_value));
@@ -993,7 +1001,9 @@ test_file_linear_hash_delete(
 #if DEBUG
 		io_printf("starting search for key: %i", key[idx]);
 #endif
+
 		ion_status_t status = lh_query(&hashmap, (ion_key_t) &key[idx], query_value);
+
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		sprintf(value, "value:%i", key[idx]);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 0 == strcmp(value, (char *) query_value));
@@ -1003,6 +1013,7 @@ test_file_linear_hash_delete(
 	int key_to_delete	= 5;
 
 	ion_status_t status = lh_delete(&hashmap, (ion_key_t) &key_to_delete);
+
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	status = lh_delete(&hashmap, (ion_key_t) &key_to_delete);
@@ -1031,10 +1042,10 @@ test_file_linear_hash_delete(
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		sprintf(value, "value:%i", del_key[idx]);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 0 == strcmp(value, (char *) query_value));
-		status  =lh_delete(&hashmap, (ion_key_t) &del_key[idx]);
+		status	= lh_delete(&hashmap, (ion_key_t) &del_key[idx]);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
-		status = lh_delete(&hashmap, (ion_key_t) &del_key[idx]);
+		status	= lh_delete(&hashmap, (ion_key_t) &del_key[idx]);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
 	}
@@ -1193,19 +1204,19 @@ test_file_linear_hash_update(
 
 	query_value = (ion_value_t) malloc(record.value_size);
 
-	status = lh_query(&hashmap, (ion_key_t) &key, query_value);
+	status		= lh_query(&hashmap, (ion_key_t) &key, query_value);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == memcmp(query_value, new_value, hashmap.super.record.value_size));
 
 	free(query_value);
 
-	key = 1;
+	key		= 1;
 
-	status = lh_insert(&hashmap, (ion_key_t) &key, (ion_value_t) value);
+	status	= lh_insert(&hashmap, (ion_key_t) &key, (ion_value_t) value);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 
-	status = lh_insert(&hashmap, (ion_key_t) &key, (ion_value_t) value);
+	status	= lh_insert(&hashmap, (ion_key_t) &key, (ion_value_t) value);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 
 	char *next_value = "abcde";
@@ -1215,15 +1226,16 @@ test_file_linear_hash_update(
 	PLANCK_UNIT_ASSERT_TRUE(tc, 3 == status.count);
 
 	/** Delete records in pp to ensure that updates will happen in overflow */
-	key = 1;
-	status = lh_delete(&hashmap, (ion_key_t) &key);
+	key		= 1;
+	status	= lh_delete(&hashmap, (ion_key_t) &key);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
-//	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
+/*	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count); */
 
-	key = 5;
-	status = lh_delete(&hashmap, (ion_key_t) &key);
+	key		= 5;
+	status	= lh_delete(&hashmap, (ion_key_t) &key);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
-//	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
+
+/*	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count); */
 
 	char *next_value2 = "fghij";
 
@@ -1235,15 +1247,15 @@ test_file_linear_hash_update(
 	status	= lh_update(&hashmap, (ion_key_t) &key, (ion_value_t) next_value2);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
-	status = lh_insert(&hashmap, (ion_key_t) &key, (ion_value_t) value);
+	status	= lh_insert(&hashmap, (ion_key_t) &key, (ion_value_t) value);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
-	PLANCK_UNIT_ASSERT_TRUE(tc, 1== status.count);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 	/** Insert key and it should go into overflow page */
 	key		= 9;
-	status = lh_insert(&hashmap, (ion_key_t) &key, (ion_value_t) value);
+	status	= lh_insert(&hashmap, (ion_key_t) &key, (ion_value_t) value);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
-	PLANCK_UNIT_ASSERT_TRUE(tc, 1== status.count);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 	key		= 5;
 	status	= lh_update(&hashmap, (ion_key_t) &key, (ion_value_t) next_value2);

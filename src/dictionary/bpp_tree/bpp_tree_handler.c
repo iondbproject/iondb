@@ -123,8 +123,9 @@ bpptree_create_dictionary(
 	dictionary_handler_t		*handler,
 	dictionary_t				*dictionary
 ) {
+	UNUSED(dictionary_size);
+
 	bpptree_t	*bpptree;
-	bErrType	bErr;
 	bOpenType	info;
 
 	bpptree = malloc(sizeof(bpptree_t));
@@ -153,7 +154,7 @@ bpptree_create_dictionary(
 	info.sectorSize = 256;
 	info.comp		= compare;
 
-	if (bErrOk != (bErr = bOpen(info, &(bpptree->tree)))) {
+	if (bErrOk != bOpen(info, &(bpptree->tree))) {
 		return err_dictionary_initialization_failed;
 	}
 

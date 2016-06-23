@@ -66,7 +66,7 @@ typedef struct {
 	char		*iName;			/* name of index file */
 	int			keySize;		/* length, in bytes, of key */
 	bpp_bool_t	dupKeys;				/* true if duplicate keys allowed */
-	int			sectorSize;		/* size of sector on disk */
+	size_t		sectorSize;		/* size of sector on disk */
 	bCompType	comp;			/* pointer to compare function */
 } bOpenType;
 

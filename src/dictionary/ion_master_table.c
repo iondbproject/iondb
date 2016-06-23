@@ -36,7 +36,7 @@ ion_master_table_get_next_id(
 	fseek(ion_master_table_file, 0, SEEK_SET);
 
 	/* Flush master row. This writes the next ID to be used, so add 1. */
-	ion_dictionary_config_info_t master_config = { ion_master_table_next_id + 1, 0, 0, 0, 0 };
+	ion_dictionary_config_info_t master_config = { .id = ion_master_table_next_id + 1 };
 
 	fwrite(&master_config, sizeof(master_config), 1, ion_master_table_file);
 	fseek(ion_master_table_file, oldpos, SEEK_SET);
@@ -65,7 +65,7 @@ ion_init_master_table(
 
 		/* Clean fresh file was opened. */
 		/* Write master row. */
-		ion_dictionary_config_info_t master_config = { ion_master_table_next_id, 0, 0, 0, 0, 0 };
+		ion_dictionary_config_info_t master_config = { .id = ion_master_table_next_id };
 
 		if (1 != fwrite(&master_config, sizeof(master_config), 1, ion_master_table_file)) {
 			return err_file_write_error;
@@ -149,7 +149,7 @@ ion_add_to_master_table(
 	fseek(ion_master_table_file, 0, SEEK_END);
 
 	ion_dictionary_config_info_t config = {
-		dictionary->instance->id, 0, dictionary->instance->key_type, dictionary->instance->record.key_size, dictionary->instance->record.value_size, dictionary_size
+		.id = dictionary->instance->id, .use_type = 0, .type = dictionary->instance->key_type, .key_size = dictionary->instance->record.key_size, .value_size = dictionary->instance->record.value_size, .dictionary_size = dictionary_size
 	};
 
 	fwrite(&config, sizeof(config), 1, ion_master_table_file);
@@ -219,7 +219,7 @@ ion_delete_from_master_table(
 ) {
 	fseek(ion_master_table_file, dictionary->instance->id * sizeof(ion_dictionary_config_info_t), SEEK_SET);
 
-	ion_dictionary_config_info_t blank = { 0, 0, 0, 0, 0, 0 };
+	ion_dictionary_config_info_t blank = { 0 };
 
 	fwrite(&blank, sizeof(blank), 1, ion_master_table_file);
 

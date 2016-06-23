@@ -28,9 +28,10 @@ run_bpptreehandler_generic_test_set_1(
 
 	dictionary_test_insert_get_edge_cases(&test, keys, counts, length, tc);
 
-	int to_delete[] = { 7, -9, 32, 1000001 };
+	int to_delete[]		= { 7, -9, 32, 1000001 };
+	int to_delete_len	= (int) (sizeof(to_delete) / sizeof(int));
 
-	for (i = 0; i < sizeof(to_delete) / sizeof(int); i++) {
+	for (i = 0; i < to_delete_len; i++) {
 		k = get_count_index_by_key((&(to_delete[i])), keys, length, &(test.dictionary));
 
 		if (k != -1) {

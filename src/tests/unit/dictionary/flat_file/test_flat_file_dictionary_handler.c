@@ -91,7 +91,6 @@ test_flat_file_handler_create_destroy(
 
 	ffdict_init(&map_handler);	/* register handler for hashmap */
 
-
 	/* collection handler for test collection */
 	dictionary_t test_dictionary;
 
@@ -105,13 +104,13 @@ test_flat_file_handler_create_destroy(
 	/* check to see if the file has been created and read the data back */
 	frewind(((ff_file_t *) test_dictionary.instance)->file_ptr);
 
-	ff_file_t file;
+/*	ff_file_t file; */
 
-//	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == fread(&(file.super), sizeof(file.super), 1, ((ff_file_t *) test_dictionary.instance)->file_ptr));
-//	PLANCK_UNIT_ASSERT_TRUE(tc, record.key_size == file.super.record.key_size);
-//	PLANCK_UNIT_ASSERT_TRUE(tc, record.value_size == file.super.record.value_size);
-//	PLANCK_UNIT_ASSERT_TRUE(tc, key_type_numeric_signed == file.super.key_type);
-//	PLANCK_UNIT_ASSERT_TRUE(tc, dictionary_compare_signed_value == file.super.compare);
+/*	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == fread(&(file.super), sizeof(file.super), 1, ((ff_file_t *) test_dictionary.instance)->file_ptr)); */
+/*	PLANCK_UNIT_ASSERT_TRUE(tc, record.key_size == file.super.record.key_size); */
+/*	PLANCK_UNIT_ASSERT_TRUE(tc, record.value_size == file.super.record.value_size); */
+/*	PLANCK_UNIT_ASSERT_TRUE(tc, key_type_numeric_signed == file.super.key_type); */
+/*	PLANCK_UNIT_ASSERT_TRUE(tc, dictionary_compare_signed_value == file.super.compare); */
 /** @FIXME - Test fails
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0						!= feof(((ff_file_t *)test_dictionary.instance)->file_ptr));
 */
@@ -157,6 +156,7 @@ test_flat_file_handler_simple_insert(
 	sprintf((char *) test_value, "value : %i ", test_key);
 
 	ion_status_t status = test_dictionary.handler->insert(&test_dictionary, (ion_key_t) &test_key, (ion_value_t) test_value);
+
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -575,8 +575,8 @@ test_flat_file_dictionary_cursor_range(
 	record.key		= (ion_key_t) malloc(record_info.key_size);
 	record.value	= (ion_value_t) malloc(record_info.value_size);
 
-	int			result_count = 0;
-	cursor_status_t	cursor_status;
+	int				result_count = 0;
+	cursor_status_t cursor_status;
 
 	while (cs_cursor_active == (cursor_status = cursor->next(cursor, &record))) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == cursor_status);

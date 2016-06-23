@@ -60,10 +60,10 @@ lh_initialize(
 
 	fe_filename_t filename;
 
-	filename.instance_id	= id;					/** This is the parent id */
-	filename.parent.type	= linear_hash;
+	filename.instance_id		= id;				/** This is the parent id */
+	filename.type.parent.type	= linear_hash;
 	fe_encode_parent_id(&filename);
-	hashmap->file			= fopen(filename.parent.parent_filename, "w+b");		/* main hash file */
+	hashmap->file				= fopen(filename.type.parent.parent_filename, "w+b");	/* main hash file */
 	filename.destroy(&filename);
 
 	/* initital the hash map with a min number of buckets */
@@ -147,17 +147,17 @@ lh_destroy(
 	for (bucket_idx = 0; bucket_idx < (hash_map->initial_map_size * (1 << hash_map->file_level) + hash_map->bucket_pointer); bucket_idx++) {
 		fe_filename_t filename;
 
-		filename.instance_id	= hash_map->id;
-		filename.child.child_id = bucket_idx;
+		filename.instance_id			= hash_map->id;
+		filename.type.child.child_id	= bucket_idx;
 		fe_encode_child_id(&filename);
 
 		FILE *bucket_file;
 
-		if ((bucket_file = fopen(filename.child.child_filename, "rb")) != NULL) {
+		if ((bucket_file = fopen(filename.type.child.child_filename, "rb")) != NULL) {
 			if (fclose(bucket_file) == 0) {
 				bucket_file = NULL;
 
-				if (fremove(filename.child.child_filename) != 0) {
+				if (fremove(filename.type.child.child_filename) != 0) {
 					error = err_colllection_destruction_error;
 				}
 			}
@@ -175,11 +175,11 @@ lh_destroy(
 
 		fe_filename_t filename;
 
-		filename.instance_id	= hash_map->id;
-		filename.parent.type	= linear_hash;
+		filename.instance_id		= hash_map->id;
+		filename.type.parent.type	= linear_hash;
 		fe_encode_parent_id(&filename);
 
-		if (fremove(filename.parent.parent_filename) != 0) {
+		if (fremove(filename.type.parent.parent_filename) != 0) {
 			error = err_colllection_destruction_error;
 		}
 
@@ -244,7 +244,7 @@ lh_update(
 	ll_file_t *overflow = (ll_file_t *) malloc(sizeof(ll_file_t));
 
 	/** check the overflow file */
-	if (fll_open(overflow, fll_compare, hash_map->super.key_type, hash_map->super.record.key_size, hash_map->super.record.value_size, bucket_number, hash_map->id) != err_item_not_found) {
+	if (fll_open(overflow, fll_compare, hash_map->super.record.key_size, hash_map->super.record.value_size, bucket_number, hash_map->id) != err_item_not_found) {
 		/** this scans the list for the first instance of the item in the ll */
 		ll_file_node_t *ll_node = (ll_file_node_t *) malloc(overflow->node_size);
 
@@ -285,7 +285,7 @@ lh_update(
 
 			if (overflow->file == NULL) {
 				/** File is not open as it did not exist, so open */
-				fll_create(overflow, fll_compare, hash_map->super.key_type, hash_map->super.record.key_size, hash_map->super.record.value_size, bucket_number, hash_map->id);
+				fll_create(overflow, fll_compare, hash_map->super.record.key_size, hash_map->super.record.value_size, bucket_number, hash_map->id);
 			}
 
 			/** and create new node to insert into overflow page */
@@ -364,8 +364,8 @@ lh_insert(
 
 	ll_file_t linked_list_file;
 
-	if (fll_open(&linked_list_file, fll_compare, hash_map->super.key_type, hash_map->super.record.key_size, hash_map->super.record.value_size, bucket_number, hash_map->id) == err_item_not_found) {
-		fll_create(&linked_list_file, fll_compare, hash_map->super.key_type, hash_map->super.record.key_size, hash_map->super.record.value_size, bucket_number, hash_map->id);
+	if (fll_open(&linked_list_file, fll_compare, hash_map->super.record.key_size, hash_map->super.record.value_size, bucket_number, hash_map->id) == err_item_not_found) {
+		fll_create(&linked_list_file, fll_compare, hash_map->super.record.key_size, hash_map->super.record.value_size, bucket_number, hash_map->id);
 	}
 
 	ll_file_node_t *node;	/** Must be destroyed when done */
@@ -455,12 +455,12 @@ lh_split(
 	/** open the file to split */
 	ll_file_t split_ll;
 
-	if (fll_open(&split_ll, NULL, hash_map->super.key_type, hash_map->super.record.key_size, hash_map->super.record.value_size, hash_map->bucket_pointer, hash_map->id) != err_item_not_found) {
+	if (fll_open(&split_ll, NULL, hash_map->super.record.key_size, hash_map->super.record.value_size, hash_map->bucket_pointer, hash_map->id) != err_item_not_found) {
 		/** split file */
 		ll_file_t new_ll;	/** new ll for bucket */
 
 		fll_create(&new_ll, fll_compare,/* NULL, */
-			hash_map->super.key_type, hash_map->super.record.key_size, hash_map->super.record.value_size, hash_set.upper_hash, hash_map->id);
+			hash_map->super.record.key_size, hash_map->super.record.value_size, hash_set.upper_hash, hash_map->id);
 
 		ll_file_node_t *ll_node = (ll_file_node_t *) malloc(split_ll.node_size);
 
@@ -593,7 +593,7 @@ lh_delete(
 
 	ll_file_t linked_list_file;
 
-	if (fll_open(&linked_list_file, fll_compare, hash_map->super.key_type, hash_map->super.record.key_size, hash_map->super.record.value_size, bucket_number, hash_map->id) != err_item_not_found) {
+	if (fll_open(&linked_list_file, fll_compare, hash_map->super.record.key_size, hash_map->super.record.value_size, bucket_number, hash_map->id) != err_item_not_found) {
 		ion_value_t value = (ion_value_t) malloc(hash_map->super.record.value_size);
 
 		fll_reset(&linked_list_file);
@@ -610,8 +610,8 @@ lh_delete(
 
 	if (num_deleted != 0) {
 		hash_map->number_of_records = hash_map->number_of_records - num_deleted;/** decrease count */
-		status.count = num_deleted;
-		status.error = err_ok;
+		status.count				= num_deleted;
+		status.error				= err_ok;
 		return status;
 	}
 	else {
@@ -660,7 +660,7 @@ lh_find(
 
 				((lhdict_cursor_t *) cursor)->overflow = (ll_file_t *) malloc(sizeof(ll_file_t));
 
-				if (fll_open(((lhdict_cursor_t *) cursor)->overflow, fll_compare, hash_map->super.key_type, hash_map->super.record.key_size, hash_map->super.record.value_size, ((lhdict_cursor_t *) cursor)->first_bucket, hash_map->id) == err_item_not_found) {
+				if (fll_open(((lhdict_cursor_t *) cursor)->overflow, fll_compare, hash_map->super.record.key_size, hash_map->super.record.value_size, ((lhdict_cursor_t *) cursor)->first_bucket, hash_map->id) == err_item_not_found) {
 					/** in this case, cursor is null as value has not been found */
 					cursor->status							= cs_end_of_results;
 					free(((lhdict_cursor_t *) cursor)->overflow);
@@ -734,7 +734,7 @@ lh_find(
 						/** @TODO error handling for memory*/
 						((lhdict_cursor_t *) cursor)->overflow = (ll_file_t *) malloc(sizeof(ll_file_t));
 
-						if (fll_open(((lhdict_cursor_t *) cursor)->overflow, fll_compare, hash_map->super.key_type, hash_map->super.record.key_size, hash_map->super.record.value_size, ((lhdict_cursor_t *) cursor)->current_bucket, hash_map->id) == err_item_not_found) {
+						if (fll_open(((lhdict_cursor_t *) cursor)->overflow, fll_compare, hash_map->super.record.key_size, hash_map->super.record.value_size, ((lhdict_cursor_t *) cursor)->current_bucket, hash_map->id) == err_item_not_found) {
 							free(((lhdict_cursor_t *) cursor)->overflow);
 							((lhdict_cursor_t *) cursor)->overflow = NULL;
 							/** Free up the ll file pointer and move onto the next pp as the next bucket could
@@ -886,6 +886,7 @@ lh_query(
 		if (err_ok == status.error) {
 			status.count = 1;
 		}
+
 		return status;
 	}
 
@@ -894,7 +895,7 @@ lh_query(
 
 	ll_file_t linked_list_file;
 
-	if (fll_open(&linked_list_file, fll_compare, hash_map->super.key_type, hash_map->super.record.key_size, hash_map->super.record.value_size, bucket_number, hash_map->id) == err_item_not_found) {
+	if (fll_open(&linked_list_file, fll_compare, hash_map->super.record.key_size, hash_map->super.record.value_size, bucket_number, hash_map->id) == err_item_not_found) {
 		/** in this case, cursor is null as value has not been found */
 		return ION_STATUS_ERROR(err_item_not_found);
 	}
@@ -905,6 +906,7 @@ lh_query(
 		/** this scans the list for the first instance of the item in the ll */
 		status.error = lh_get_next(hash_map, &linked_list_file, key, value);
 		fll_close(&linked_list_file);	/** close the list and be done as you have reached the end without finding value */
+
 		if (err_ok == status.error) {
 			status.count = 1;
 		}
@@ -921,6 +923,8 @@ lh_compute_hash(
 	int					file_level,
 	hash_set_t			*hash_set
 ) {
+	UNUSED(size_of_key);
+
 	/** @TODO address hash function for strings or variable lengths */
 	/* convert to a hashable value */
 	if (hash_set == NULL) {
@@ -1027,6 +1031,8 @@ lh_delete_item_action(
 	l_hash_bucket_t		*item,
 	ion_value_t			value
 ) {
+	UNUSED(value);
+
 	action_status_t status;
 
 	/** Default continue unless value is deleted */
@@ -1158,6 +1164,8 @@ lh_write_cache_raw(
 	l_hash_bucket_t		*item,
 	int					length
 ) {
+	UNUSED(hash_map);
+
 	/** @TODO Does a check need to be in place to ensure that a user is writing to a valid location in a cache ?*/
 	if (cache->status == cache_invalid) {
 		return err_uninitialized;	/** the cache is invalid */
@@ -1251,11 +1259,13 @@ lh_action_primary_page(
 	action_status_t (*action)(linear_hashmap_t *, ion_key_t, l_hash_bucket_t *, ion_value_t),
 	ion_value_t value
 ) {
+	UNUSED(bucket);
+
 	/** set number of records touched to 0 */
 	ion_status_t status = ION_STATUS_INITIALIZE;
 
 	/** @TODO initial condition needs to get changed to support active cursor */
-	int count = 0;
+	int count			= 0;
 
 	l_hash_bucket_t *item;
 

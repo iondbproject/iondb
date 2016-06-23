@@ -97,7 +97,7 @@ dictionary_test_insert_get(
 
 		j = test->key_size;
 
-		if (j > sizeof(int)) {
+		if ((unsigned) j > sizeof(int)) {
 			j = sizeof(int);
 		}
 

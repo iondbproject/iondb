@@ -97,7 +97,6 @@ err_t
 fll_create(
 	ll_file_t *linked_list_file,
 	int (*compare)(ll_file_t *, ll_file_node_t *, ll_file_node_t *),
-	key_type_t key_type,
 	ion_key_size_t key_size,
 	ion_value_size_t value_size,
 	int bucket,
@@ -108,7 +107,6 @@ fll_create(
  * Reopens an existing file
  * @param linked_list_file
  * @param compare
- * @param key_type
  * @param key_size
  * @param value_size
  * @param bucket
@@ -118,7 +116,6 @@ err_t
 fll_open(
 	ll_file_t *linked_list_file,
 	int (*compare)(ll_file_t *, ll_file_node_t *, ll_file_node_t *),
-	key_type_t key_type,
 	ion_key_size_t key_size,
 	ion_value_size_t value_size,
 	int bucket,
