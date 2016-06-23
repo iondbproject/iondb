@@ -38,9 +38,27 @@ ff_initialize(
 	file->super.record.key_size		= key_size;
 	file->super.record.value_size	= value_size;
 	file->super.key_type			= key_type;
+	file->super.id					= 0;
 
 	/* need to write a file header out here */
-	if (0 == fwrite(&(file->super), sizeof(file->super), 1, file->file_ptr)) {
+	if (0 == fwrite(&(file->super.key_type), sizeof(file->super.key_type), 1, file->file_ptr)) {
+		return err_file_write_error;
+	}
+
+	if (0 == fwrite(&(file->super.record.key_size), sizeof(file->super.record.key_size), 1, file->file_ptr)) {
+		return err_file_write_error;
+	}
+
+	if (0 == fwrite(&(file->super.record.value_size), sizeof(file->super.record.value_size), 1, file->file_ptr)) {
+		return err_file_write_error;
+	}
+
+	if (0 == fwrite(&(file->super.compare), sizeof(file->super.compare), 1, file->file_ptr)) {
+		return err_file_write_error;
+	}
+
+	/* and flush contents to disk */
+	if (0 != fflush(file->file_ptr)) {
 		return err_file_write_error;
 	}
 
@@ -53,11 +71,6 @@ ff_initialize(
 	io_printf("Record key size: %i\n", file->super.record.key_size);
 	io_printf("Record value size: %i\n", file->super.record.value_size);
 #endif
-
-	/* and flush contents to disk */
-	if (0 != fflush(file->file_ptr)) {
-		return err_file_write_error;
-	}
 
 	return err_ok;
 }

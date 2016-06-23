@@ -53,8 +53,8 @@ initialize_flat_file(
 	record_info_t	*record,
 	ff_file_t		*flat_file
 ) {
-	ff_initialize(flat_file, /*dictionary_compare_signed_value,*/ flat_file->super.key_type, record->key_size, record->value_size);
 	flat_file->super.compare = dictionary_compare_signed_value;
+	ff_initialize(flat_file, /*dictionary_compare_signed_value,*/ flat_file->super.key_type, record->key_size, record->value_size);
 }
 
 void
