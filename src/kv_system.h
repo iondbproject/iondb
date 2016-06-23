@@ -179,12 +179,12 @@ typedef char err_t;
 /**
 @brief		A dictionary key.
 */
-typedef unsigned char *ion_key_t;
+typedef void *ion_key_t;
 
 /**
 @brief		A dictionary value.
 */
-typedef unsigned char *ion_value_t;
+typedef void *ion_value_t;
 
 /**
 @brief		The size (length) of a dictionary key in bytes.
