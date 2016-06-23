@@ -142,8 +142,8 @@ dictionary_compare_unsigned_value(
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 
 	for (idx = key_size - 1; idx >= 0; idx--) {
-		char	firstbyte	= *((char *) first_key + idx);
-		char	secondbyte	= *((char *) second_key + idx);
+		char	firstbyte	= *((byte *) first_key + idx);
+		char	secondbyte	= *((byte *) second_key + idx);
 
 		if ((return_value = (firstbyte > secondbyte) - (firstbyte < secondbyte)) != ZERO) {
 			return return_value;
@@ -184,8 +184,8 @@ dictionary_compare_signed_value(
 	printf("key 1: %i key 2: %i \n", *(char *) (first_key + idx), *(char *) (second_key + idx));
 #endif
 
-	char	firstbyte	= *((char *) first_key + idx);
-	char	secondbyte	= *((char *) second_key + idx);
+	char	firstbyte	= *((byte *) first_key + idx);
+	char	secondbyte	= *((byte *) second_key + idx);
 
 	if ((return_value = ((firstbyte > secondbyte) - (firstbyte < secondbyte))) != ZERO) {
 		return return_value;
@@ -193,8 +193,8 @@ dictionary_compare_signed_value(
 
 	/* and then the rest as unsigned */
 	for (idx = key_size - 2; idx >= 0; idx--) {
-		firstbyte	= *((char *) first_key + idx);
-		secondbyte	= *((char *) second_key + idx);
+		firstbyte	= *((byte *) first_key + idx);
+		secondbyte	= *((byte *) second_key + idx);
 
 		if ((return_value = ((firstbyte > secondbyte) - (firstbyte < secondbyte))) != ZERO) {
 			return return_value;
