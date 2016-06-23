@@ -45,6 +45,11 @@ else()
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 endif()
 
+# Use cmake -DJENKINS_BUILD=ON <project_folder> to use XML format rather than the default.
+if(JENKINS_BUILD)
+    add_definitions(-DPLANCK_UNIT_OUTPUT_STYLE_XML)
+endif()
+
 # Add all of the CMakeLists.txt for the sub projects.
 add_subdirectory(src/tests)
 add_subdirectory(src/tests/unit/dictionary)
