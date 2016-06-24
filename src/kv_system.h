@@ -54,7 +54,7 @@
 
 #define IONIZE(something, type)		(ion_key_t) &(type) { (something) }
 #define NEUTRALIZE(something, type) (*((type *) (something)))
-#define IONIZE_VAL(varname, size)	unsigned char varname[size]
+#define IONIZE_VAL(varname, size)	byte varname[size]
 
 #define ION_STATUS_CREATE(error, count) \
 	((ion_status_t) { (error), (count) } \

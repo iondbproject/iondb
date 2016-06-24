@@ -235,7 +235,7 @@ test_open_address_hashmap_simple_insert(
 
 		for (i = 0; i < map.map_size; i++) {
 			/* build up the value */
-			unsigned char str[10];
+			byte str[10];
 
 			sprintf((char *) str, "%02i is key", i);
 
@@ -254,7 +254,7 @@ test_open_address_hashmap_simple_insert(
 			ion_value_t			value	= (ion_value_t) (((hash_bucket_t *) (map.entry + ((((i + offset) % map.map_size) * bucket_size) % (map.map_size * bucket_size))))->data + record.key_size);
 
 			/* build up expected value */
-			unsigned char str[10];
+			byte str[10];
 
 			sprintf((char *) str, "%02i is key", (i + offset) % map.map_size);
 			PLANCK_UNIT_ASSERT_TRUE(tc, status == IN_USE);
@@ -346,7 +346,7 @@ test_open_address_hashmap_simple_delete(
 
 	for (i = 0; i < map.map_size; i++) {
 		/* build up the value */
-		unsigned char str[10];
+		byte str[10];
 
 		sprintf((char *) str, "%02i is key", i);
 		/* this is will wrap the map*/
