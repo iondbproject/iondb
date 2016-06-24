@@ -53,7 +53,9 @@
 #if !defined(ARDUINO)
 
 /**
-@brief		A byte type.
+@brief		A byte type. Do not use this type directly.
+@details	This type is only provided for compatibility with the Arduino. If you want a
+			byte type, use @ref ion_byte_t instead.
 */
 typedef unsigned char byte;
 
@@ -178,6 +180,12 @@ enum error {
 			returned.
 */
 typedef char err_t;
+
+/**
+@brief		A byte type.
+@details	This is an unsigned, integral value capable of holding the range of a byte.
+*/
+typedef unsigned char ion_byte_t;
 
 /**
 @brief		A dictionary key.
