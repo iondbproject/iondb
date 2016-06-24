@@ -24,7 +24,7 @@ extern "C" {
 typedef struct f_file_record {
 	ion_record_status_t status;	/**< the status of the record */
 
-	byte				data[];	/**< the data in the record */
+	ion_byte_t			data[];		/**< the data in the record */
 } f_file_record_t;
 
 #if defined(__cplusplus)

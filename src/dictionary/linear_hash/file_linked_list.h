@@ -51,8 +51,8 @@ typedef struct ll_file ll_file_t;
 @brief		Struct used to maintain individual records in the hashmap.
 */
 typedef struct ll_file_node {
-	int		next;						/**< next node in list*/
-	byte	data[];				/**< the data in the bucket */
+	int			next;					/**< next node in list*/
+	ion_byte_t	data[];				/**< the data in the bucket */
 } ll_file_node_t;
 
 /**

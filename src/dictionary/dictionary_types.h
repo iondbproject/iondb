@@ -43,7 +43,7 @@ typedef unsigned int ion_dictionary_id_t;
 			dictionaries in the key-value store that might be special.
 			See @ref ion_find_by_use_master_table.
 */
-typedef byte ion_dict_use_t;
+typedef ion_byte_t ion_dict_use_t;
 
 /**
 @brief		Struct containing details for opening a dictionary previously

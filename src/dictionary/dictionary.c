@@ -148,8 +148,8 @@ dictionary_compare_unsigned_value(
 	for (idx = 0; idx < key_size; idx++) {
 #endif
 
-		byte	firstbyte	= *((byte *) first_key + idx);
-		byte	secondbyte	= *((byte *) second_key + idx);
+		ion_byte_t	firstbyte	= *((ion_byte_t *) first_key + idx);
+		ion_byte_t	secondbyte	= *((ion_byte_t *) second_key + idx);
 
 		if ((return_value = (firstbyte > secondbyte) - (firstbyte < secondbyte)) != ZERO) {
 			return return_value;
@@ -180,8 +180,8 @@ dictionary_compare_signed_value(
 	idx = 0;
 #endif
 
-	byte	firstbyte	= *((byte *) first_key + idx);
-	byte	secondbyte	= *((byte *) second_key + idx);
+	ion_byte_t	firstbyte	= *((ion_byte_t *) first_key + idx);
+	ion_byte_t	secondbyte	= *((ion_byte_t *) second_key + idx);
 
 	/* Do bit comparison on the sign bit to do positive/negative comparison. Lets us exit early in many cases */
 	if ((return_value = (secondbyte >> 7) - (firstbyte >> 7)) != ZERO) {
@@ -197,8 +197,8 @@ dictionary_compare_signed_value(
 	/** @todo This is a potential issue and needs to be tested on SAMD3 */
 	for (; idx < key_size; idx++) {
 #endif
-		firstbyte	= *((byte *) first_key + idx);
-		secondbyte	= *((byte *) second_key + idx);
+		firstbyte	= *((ion_byte_t *) first_key + idx);
+		secondbyte	= *((ion_byte_t *) second_key + idx);
 
 		if ((return_value = (firstbyte > secondbyte) - (firstbyte < secondbyte)) != ZERO) {
 			return return_value;

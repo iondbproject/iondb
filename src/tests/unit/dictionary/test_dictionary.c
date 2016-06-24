@@ -49,17 +49,17 @@ test_dictionary_compare_numerics(
 
 	/* case for unsigned signed char */
 	{
-		byte	*key_one;
-		byte	*key_two;
+		ion_byte_t	*key_one;
+		ion_byte_t	*key_two;
 
-		key_one = &(byte) {
+		key_one = &(ion_byte_t) {
 			UCHAR_MAX
 		};
-		key_two = &(byte) {
+		key_two = &(ion_byte_t) {
 			0
 		};
 
-		char result = dictionary_compare_unsigned_value(key_one, key_two, sizeof(byte));
+		char result = dictionary_compare_unsigned_value(key_one, key_two, sizeof(ion_byte_t));
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO < result);
 	}

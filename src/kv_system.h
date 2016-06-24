@@ -18,8 +18,7 @@
 			either express or implied. See the License for the specific
 			language governing permissions and limitations under the
 			License.
-@todo		Resolve issue between status_t and err_t. Status_t is a struct that
-			should have and err_t and number of item affected.
+@todo		Resolve issue between status_t and err_t. Status_t is a struct that should have and err_t and number of item affected.
 */
 /******************************************************************************/
 #if !defined(KV_SYSTEM_H_)
@@ -64,7 +63,7 @@ typedef unsigned char byte;
 
 #define IONIZE(something, type)		(ion_key_t) &(type) { (something) }
 #define NEUTRALIZE(something, type) (*((type *) (something)))
-#define IONIZE_VAL(varname, size)	byte varname[size]
+#define IONIZE_VAL(varname, size)	ion_byte_t varname[size]
 
 #define UNUSED(x)					(void) ((x))
 

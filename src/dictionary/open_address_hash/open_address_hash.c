@@ -289,7 +289,7 @@ oah_print(
 				int j;
 
 				for (j = 0; j < (record->key_size + record->value_size); j++) {
-					io_printf("%X ", *(byte *) (((hash_bucket_t *) ((hash_map->entry + (record->key_size + record->value_size + SIZEOF(STATUS)) * i)))->data + j));
+					io_printf("%X ", *(ion_byte_t *) (((hash_bucket_t *) ((hash_map->entry + (record->key_size + record->value_size + SIZEOF(STATUS)) * i)))->data + j));
 				}
 			}
 

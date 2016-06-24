@@ -101,7 +101,7 @@ test_flat_file_simple_insert(
 
 		sprintf(str, "%02i is key", i);
 
-		ion_status_t status = ff_insert(&flat_file, (ion_key_t) (&i), (byte *) str);/* this is will wrap */
+		ion_status_t status = ff_insert(&flat_file, (ion_key_t) (&i), (ion_byte_t *) str);	/* this is will wrap */
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
@@ -113,7 +113,7 @@ test_flat_file_simple_insert(
 
 		ion_record_status_t record_status;	/* = ((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->status; */
 		int					key;		/* = *(int *)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data ); */
-		byte				value[10];	/* = (ion_value_t)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data + sizeof(int)); */
+		ion_byte_t			value[10];		/* = (ion_value_t)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data + sizeof(int)); */
 
 		fread(&record_status, SIZEOF(STATUS), 1, flat_file.file_ptr);
 		fread(&key, flat_file.super.record.key_size, 1, flat_file.file_ptr);

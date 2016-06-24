@@ -51,8 +51,8 @@ main(
 			}
 
 			case 'I': {
-				int		key;
-				byte	value[10];
+				int			key;
+				ion_byte_t	value[10];
 
 				scanf("%i %s", &key, value);
 #if DEBUG
@@ -74,8 +74,8 @@ main(
 			}
 
 			case 'U': {
-				int		key;
-				byte	value[10];
+				int			key;
+				ion_byte_t	value[10];
 
 				scanf("%i %s", &key, value);
 #if DEBUG
@@ -86,8 +86,8 @@ main(
 			}
 
 			case 'Q': {
-				int		key;
-				byte	value[10];
+				int			key;
+				ion_byte_t	value[10];
 
 				scanf("%i", &key);
 #if DEBUG

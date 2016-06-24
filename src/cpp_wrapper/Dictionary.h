@@ -83,7 +83,7 @@ keyFound(
 	K key
 ) {
 	ion_key_t	ion_key = (ion_key_t) &key;
-	byte		ion_value[dict.instance->record.value_size];
+	ion_byte_t	ion_value[dict.instance->record.value_size];
 
 	err_t err			= dictionary_get(&dict, ion_key, ion_value);
 
@@ -100,7 +100,7 @@ get(
 	K key
 ) {
 	ion_key_t	ion_key = (ion_key_t) &key;
-	byte		ion_value[dict.instance->record.value_size];
+	ion_byte_t	ion_value[dict.instance->record.value_size];
 
 	err_t err			= dictionary_get(&dict, ion_key, ion_value);
 
