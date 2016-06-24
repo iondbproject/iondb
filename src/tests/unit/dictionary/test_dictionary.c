@@ -59,7 +59,9 @@ test_dictionary_compare_numerics(
 			0
 		};
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO < dictionary_compare_unsigned_value(key_one, key_two, sizeof(byte)));
+		char result = dictionary_compare_unsigned_value(key_one, key_two, sizeof(byte));
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO < result);
 	}
 
 	{

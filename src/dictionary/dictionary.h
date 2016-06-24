@@ -148,7 +148,7 @@ dictionary_delete_dictionary(
 /**
 @brief		Compares two unsigned integer numeric keys
 @details	Compares two ion_key_t assuming that they are of arbitrary
-			length and integer, unsigned and numeric (ie not a char[]).  The
+			length and integer, unsigned and numeric (ie not a char[]). The
 			following values will be returned:
 
 				@p first_key > @p second_key return 1
@@ -156,7 +156,11 @@ dictionary_delete_dictionary(
 				@p first_key < @p second_key return -1
 
 			This works for all integer numeric types for unsigned values
-			as long as both keys are of the same type.
+			as long as both keys are of the same type. You'll notice a weird
+			math expression being expressed when computing the return value.
+			This value is written in this a weird way to give us the desired
+			{-1, 0, 1} range of return values. Draw out a table and the reasoning
+			will become immediately obvious.
 @param	  first_key
 				The pointer to the first key in the comparison.
 @param	  second_key
