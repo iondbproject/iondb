@@ -103,9 +103,7 @@ fe_encode_child_id(
 	int idx							= 0;
 
 	for (; idx < 8; idx++) {
-		file->type.child.child_filename[idx]	= encode[(((byte) child_id) & 0x0F)];			/** extract value */
-		child_id								= (child_id >> NUMBER_OF_BITS);	/** shift down */
-		file->type.child.child_filename[idx]	= encode[(((unsigned char) child_id) & 0x0F)];	/** extract value */
+		file->type.child.child_filename[idx]	= encode[(((byte) child_id) & 0x0F)];	/** extract value */
 		child_id								= (child_id >> NUMBER_OF_BITS);	/** shift down */
 	}
 

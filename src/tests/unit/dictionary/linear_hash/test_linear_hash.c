@@ -139,22 +139,22 @@ test_file_linear_hash_hash_test(
 
 	key			= 10;
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == lh_compute_hash(&hashmap, (ion_key_t) &key, size_of_key, file_level, hash_set));
-	PLANCK_UNIT_ASSERT_TRUE(tc, key % ((1 << (file_level + 1)) * hashmap.initial_map_size) == hash_set->upper_hash);
-	PLANCK_UNIT_ASSERT_TRUE(tc, key % ((1 << file_level) * hashmap.initial_map_size) == hash_set->lower_hash);	/** Value should be invalid as file level is 0*/
+	PLANCK_UNIT_ASSERT_TRUE(tc, (hash_t) (key % ((1 << (file_level + 1)) * hashmap.initial_map_size)) == hash_set->upper_hash);
+	PLANCK_UNIT_ASSERT_TRUE(tc, (hash_t) (key % ((1 << file_level) * hashmap.initial_map_size)) == hash_set->lower_hash);	/** Value should be invalid as file level is 0*/
 
 	file_level = 1;	/** increase file level which should produce 2 hashes */
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == lh_compute_hash(&hashmap, (ion_key_t) &key, size_of_key, file_level, hash_set));
-	PLANCK_UNIT_ASSERT_TRUE(tc, key % ((1 << file_level) * hashmap.initial_map_size) == hash_set->lower_hash);
-	PLANCK_UNIT_ASSERT_TRUE(tc, key % ((1 << (file_level + 1)) * hashmap.initial_map_size) == hash_set->upper_hash);
+	PLANCK_UNIT_ASSERT_TRUE(tc, (hash_t) (key % ((1 << file_level) * hashmap.initial_map_size)) == hash_set->lower_hash);
+	PLANCK_UNIT_ASSERT_TRUE(tc, (hash_t) (key % ((1 << (file_level + 1)) * hashmap.initial_map_size)) == hash_set->upper_hash);
 
 	/* check correctness for both key and file level */
 
 	for (file_level = 0; file_level < 10 /** 10 levels */; file_level++) {
 		for (key = 0; key < (1 << 16); key++) {
 			PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == lh_compute_hash(&hashmap, (ion_key_t) &key, size_of_key, file_level, hash_set));
-			PLANCK_UNIT_ASSERT_TRUE(tc, key % ((1 << file_level) * hashmap.initial_map_size) == hash_set->lower_hash);
-			PLANCK_UNIT_ASSERT_TRUE(tc, key % ((1 << (file_level + 1)) * hashmap.initial_map_size) == hash_set->upper_hash);
+			PLANCK_UNIT_ASSERT_TRUE(tc, (hash_t) (key % ((1 << file_level) * hashmap.initial_map_size)) == hash_set->lower_hash);
+			PLANCK_UNIT_ASSERT_TRUE(tc, (hash_t) (key % ((1 << (file_level + 1)) * hashmap.initial_map_size)) == hash_set->upper_hash);
 		}
 	}
 
@@ -171,6 +171,8 @@ void
 test_file_linear_hash_insert(
 	planck_unit_test_t *tc
 ) {
+	UNUSED(tc);	/* FIXME There are no assertions being done in this test! */
+
 	linear_hashmap_t	hashmap;
 	int					structure_ID = 5;
 

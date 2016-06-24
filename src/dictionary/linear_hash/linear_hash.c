@@ -807,7 +807,7 @@ lh_compute_bucket_number(
 ) {
 	int bucket_number = -1;
 
-	if (hash_set->lower_hash >= hash_map->bucket_pointer) {
+	if (hash_set->lower_hash >= (hash_t) hash_map->bucket_pointer) {
 		/** if the lower hash is below pointer, then use upper hash */
 		bucket_number = hash_set->lower_hash;
 	}
