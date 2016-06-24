@@ -150,8 +150,8 @@ test_skiplist_single_insert(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	int				key = 6;
-	unsigned char	value[10];
+	int		key = 6;
+	byte	value[10];
 
 	strcpy((char *) value, "single.");
 
@@ -187,7 +187,7 @@ test_skiplist_insert_multiple(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	unsigned char strs[5][6] = {
+	byte strs[5][6] = {
 		"one", "two", "three", "four", "five"
 	};
 
@@ -247,7 +247,7 @@ test_skiplist_randomized_insert(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	unsigned char str[10];
+	byte str[10];
 
 	strcpy((char *) str, "random");
 
@@ -301,7 +301,7 @@ test_skiplist_get_node_single(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	unsigned char str[10];
+	byte str[10];
 
 	strcpy((char *) str, "find this");
 
@@ -344,7 +344,7 @@ test_skiplist_get_node_single_high(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	unsigned char str[10];
+	byte str[10];
 
 	strcpy((char *) str, "find this");
 
@@ -391,7 +391,7 @@ test_skiplist_get_node_single_low(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	unsigned char str[10];
+	byte str[10];
 
 	strcpy((char *) str, "find this");
 
@@ -435,7 +435,7 @@ test_skiplist_get_node_single_many(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	unsigned char str[10];
+	byte str[10];
 
 	strcpy((char *) str, "find this");
 
@@ -446,7 +446,7 @@ test_skiplist_get_node_single_many(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
-	unsigned char junk[10];
+	byte junk[10];
 
 	strcpy((char *) junk, "big junk");
 
@@ -499,9 +499,9 @@ test_skiplist_get_node_several(
 	srand(0xDEADBEEF);
 #endif
 
-	int				targets[50];
-	unsigned char	buffer[10];
-	int				i;
+	int		targets[50];
+	byte	buffer[10];
+	int		i;
 
 	for (i = 0; i < 50; i++) {
 		int key = rand() % 1000;
@@ -549,10 +549,10 @@ test_skiplist_query_nonexist_empty(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	int				key			= 3;
-	unsigned char	value[10]	= "NULL";
+	int		key			= 3;
+	byte	value[10]	= "NULL";
 
-	ion_status_t status			= sl_query(&skiplist, (ion_key_t) &key, value);
+	ion_status_t status = sl_query(&skiplist, (ion_key_t) &key, value);
 
 #if DEBUG
 	print_skiplist(&skip_list);
@@ -584,8 +584,8 @@ test_skiplist_query_nonexist_populated_single(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	int				test_key = 23;
-	unsigned char	test_value[10];
+	int		test_key = 23;
+	byte	test_value[10];
 
 	strcpy((char *) test_value, "I am test");
 
@@ -598,8 +598,8 @@ test_skiplist_query_nonexist_populated_single(
 	print_skiplist(&skip_list);
 #endif
 
-	int				key			= 10;
-	unsigned char	value[10]	= "NULL";
+	int		key			= 10;
+	byte	value[10]	= "NULL";
 
 	status = sl_query(&skiplist, (ion_key_t) &key, value);
 
@@ -629,8 +629,8 @@ test_skiplist_query_nonexist_populated_several(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	int				test_key = 46;
-	unsigned char	test_value[10];
+	int		test_key = 46;
+	byte	test_value[10];
 
 	int i;
 
@@ -648,10 +648,10 @@ test_skiplist_query_nonexist_populated_several(
 	print_skiplist(&skip_list);
 #endif
 
-	int				key			= 10;
-	unsigned char	value[10]	= "NULL";
+	int		key			= 10;
+	byte	value[10]	= "NULL";
 
-	ion_status_t status			= sl_query(&skiplist, (ion_key_t) &key, value);
+	ion_status_t status = sl_query(&skiplist, (ion_key_t) &key, value);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
@@ -679,8 +679,8 @@ test_skiplist_query_exist_single(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	int				test_key = 11;
-	unsigned char	test_value[10];
+	int		test_key = 11;
+	byte	test_value[10];
 
 	strcpy((char *) test_value, "Find me!");
 
@@ -693,8 +693,8 @@ test_skiplist_query_exist_single(
 	print_skiplist(&skip_list);
 #endif
 
-	int				key = 11;
-	unsigned char	value[10];
+	int		key = 11;
+	byte	value[10];
 
 	status = sl_query(&skiplist, (ion_key_t) &key, value);
 
@@ -724,7 +724,7 @@ test_skiplist_query_exist_populated_single(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	unsigned char test_value[10];
+	byte test_value[10];
 
 	int i;
 
@@ -741,8 +741,8 @@ test_skiplist_query_exist_populated_single(
 	print_skiplist(&skip_list);
 #endif
 
-	int				key = 24;
-	unsigned char	value[10];
+	int		key			= 24;
+	byte	value[10];
 
 	ion_status_t status = sl_query(&skiplist, (ion_key_t) &key, value);
 
@@ -772,7 +772,7 @@ test_skiplist_query_exist_populated_several(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	unsigned char test_value[10];
+	byte test_value[10];
 
 	int i;
 
@@ -789,8 +789,8 @@ test_skiplist_query_exist_populated_several(
 	print_skiplist(&skip_list);
 #endif
 
-	char			find_value[10];
-	unsigned char	value[10];
+	char	find_value[10];
+	byte	value[10];
 
 	for (i = 0; i < 100; i++) {
 		sprintf(find_value, "Find %d", i);
@@ -855,8 +855,8 @@ test_skiplist_delete_nonexist_single(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	int				key = 16;
-	unsigned char	value[10];
+	int		key = 16;
+	byte	value[10];
 
 	strcpy((char *) value, "Delete me");
 
@@ -898,8 +898,8 @@ test_skiplist_delete_nonexist_several(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	int				key = 16;
-	unsigned char	value[10];
+	int		key = 16;
+	byte	value[10];
 
 	strcpy((char *) value, "Delete me");
 
@@ -946,8 +946,8 @@ test_skiplist_delete_single(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	int				key = 97;
-	unsigned char	value[10];
+	int		key = 97;
+	byte	value[10];
 
 	strcpy((char *) value, "Special K");
 
@@ -994,7 +994,7 @@ test_skiplist_delete_single_several(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	unsigned char value[10];
+	byte value[10];
 
 	strcpy((char *) value, "Poof me!");
 
@@ -1066,7 +1066,7 @@ test_skiplist_delete_single_several_noncont(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	unsigned char value[10];
+	byte value[10];
 
 	strcpy((char *) value, "Bop me!");
 
@@ -1136,7 +1136,7 @@ test_skiplist_delete_several_all(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	unsigned char value[10];
+	byte value[10];
 
 	strcpy((char *) value, "Wipe");
 
@@ -1830,7 +1830,7 @@ test_skiplist_different_size(
 	PLANCK_UNIT_ASSERT_TRUE(tc, *(long long *) cursor->key == 64);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) cursor->value, "pop");
 
-	unsigned char	value[10];
+	byte			value[10];
 	ion_status_t	status;
 
 	status = sl_query(&skiplist, (ion_key_t) &(long long) { 64 }, value);

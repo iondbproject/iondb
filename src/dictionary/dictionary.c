@@ -133,32 +133,30 @@ dictionary_compare_unsigned_value(
 	ion_key_size_t	key_size
 ) {
 	int		idx;
-	char	return_value;
+	char	return_value = 0x73;/* Magic default return value to be easy to spot */
 
 	/**
-	 * In this case, the endiannes of the process does matter as the code does
+	 * In this case, the endianness of the process does matter as the code does
 	 * a direct comparison of bytes in memory starting for MSB.
 	 */
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 
 	for (idx = key_size - 1; idx >= 0; idx--) {
-		if ((return_value = ((*(first_key + idx) > *(second_key + idx)) - (*(first_key + idx) < *(second_key + idx)))) != ZERO) {
-			return return_value;
-		}
-	}
-
-	return return_value;
 #else
 
 	/** @TODO This is a potential issue and needs to be tested on SAMD3 */
 	for (idx = 0; idx < key_size; idx++) {
-		if ((return_value = ((*(first_key + idx) > *(second_key + idx)) - (*(first_key + idx) < *(second_key + idx)))) != ZERO) {
+#endif
+
+		byte	firstbyte	= *((byte *) first_key + idx);
+		byte	secondbyte	= *((byte *) second_key + idx);
+
+		if ((return_value = (firstbyte > secondbyte) - (firstbyte < secondbyte)) != ZERO) {
 			return return_value;
 		}
 	}
 
 	return return_value;
-#endif
 }
 
 char
@@ -168,42 +166,46 @@ dictionary_compare_signed_value(
 	ion_key_size_t	key_size
 ) {
 	int		idx;
-	char	return_value;
+	char	return_value = 0x73;/* Magic default return value to be easy to spot TODO refactor out into macro */
 
 	/*
-	 * In this case, the endiannes of the process does matter as the code does
+	 * In this case, the endianness of the process does matter as the code does
 	 * a direct comparison of bytes in memory starting for MSB.
 	 */
+
+/* Start at the MSB */
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-	/* check the MSByte as signed */
-	idx = key_size - 1;	/* Start at the MSB */
-#if DEBUG
-	printf("key 1: %i key 2: %i \n", *(char *) (first_key + idx), *(char *) (second_key + idx));
+	idx = key_size - 1;
+#else
+	idx = 0;
 #endif
 
-	if ((return_value = ((*(char *) (first_key + idx) > *(char *) (second_key + idx)) - (*(char *) (first_key + idx) < *(char *) (second_key + idx)))) != ZERO) {
+	byte	firstbyte	= *((byte *) first_key + idx);
+	byte	secondbyte	= *((byte *) second_key + idx);
+
+	/* Do bit comparison on the sign bit to do positive/negative comparison. Lets us exit early in many cases */
+	if ((return_value = (secondbyte >> 7) - (firstbyte >> 7)) != ZERO) {
 		return return_value;
 	}
 
-	/* and then the rest as unsigned */
-	for (idx = key_size - 2; idx >= 0; idx--) {
-		if ((return_value = ((*(first_key + idx) > *(second_key + idx)) - (*(first_key + idx) < *(second_key + idx)))) != ZERO) {
-			return return_value;
-		}
-	}
+/* In this case, we are of the same sign. Do byte-for-byte comparison. */
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 
-	return return_value;
+	for (; idx >= 0; idx--) {
 #else
 
 	/** @todo This is a potential issue and needs to be tested on SAMD3 */
-	for (idx = 0; idx < key_size; idx++) {
-		if ((return_value = ((*(first_key + idx) > *(second_key + idx)) - (*(first_key + idx) < *(second_key + idx)))) != ZERO) {
+	for (; idx < key_size; idx++) {
+#endif
+		firstbyte	= *((byte *) first_key + idx);
+		secondbyte	= *((byte *) second_key + idx);
+
+		if ((return_value = (firstbyte > secondbyte) - (firstbyte < secondbyte)) != ZERO) {
 			return return_value;
 		}
 	}
 
 	return return_value;
-#endif
 }
 
 char

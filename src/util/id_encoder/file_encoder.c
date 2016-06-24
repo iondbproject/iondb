@@ -60,14 +60,14 @@ fe_encode_parent_id(
 	}
 
 	for (; idx < 8; idx++) {
-		file->type.parent.parent_filename[idx]	= encode[(((unsigned char) id) & 0x0F)];	/** extract value */
+		file->type.parent.parent_filename[idx]	= encode[(((byte) id) & 0x0F)];	/** extract value */
 		id										= (id >> NUMBER_OF_BITS);	/** shift down */
 	}
 
 	file->type.parent.parent_filename[idx++] = '.';
 
 	for (; idx < 12; idx++) {
-		file->type.parent.parent_filename[idx]	= parent_type[(((unsigned char) file_type) & 0x0F)];/** extract value */
+		file->type.parent.parent_filename[idx]	= parent_type[(((byte) file_type) & 0x0F)];	/** extract value */
 		file_type								= (file_type >> NUMBER_OF_BITS);/** shift down */
 	}
 
@@ -103,6 +103,8 @@ fe_encode_child_id(
 	int idx							= 0;
 
 	for (; idx < 8; idx++) {
+		file->type.child.child_filename[idx]	= encode[(((byte) child_id) & 0x0F)];			/** extract value */
+		child_id								= (child_id >> NUMBER_OF_BITS);	/** shift down */
 		file->type.child.child_filename[idx]	= encode[(((unsigned char) child_id) & 0x0F)];	/** extract value */
 		child_id								= (child_id >> NUMBER_OF_BITS);	/** shift down */
 	}
@@ -110,7 +112,7 @@ fe_encode_child_id(
 	file->type.child.child_filename[idx++] = '.';
 
 	for (; idx < 12; idx++) {
-		file->type.child.child_filename[idx]	= encode[(((unsigned char) id) & 0x0F)];/** extract value */
+		file->type.child.child_filename[idx]	= encode[(((byte) id) & 0x0F)];	/** extract value */
 		id										= (id >> NUMBER_OF_BITS);	/** shift down */
 	}
 
@@ -151,7 +153,7 @@ fe_encode_config_id(
 	file->type.config.config_filename[idx++] = '.';
 
 	for (; idx < 12; idx++) {
-		file->type.config.config_filename[idx]	= encode[(((unsigned char) id) & 0x0F)];/** extract value */
+		file->type.config.config_filename[idx]	= encode[(((byte) id) & 0x0F)];	/** extract value */
 		id										= (id >> NUMBER_OF_BITS);	/** shift down */
 	}
 

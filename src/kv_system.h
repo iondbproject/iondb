@@ -62,7 +62,7 @@ typedef unsigned char byte;
 
 #define IONIZE(something, type)		(ion_key_t) &(type) { (something) }
 #define NEUTRALIZE(something, type) (*((type *) (something)))
-#define IONIZE_VAL(varname, size)	unsigned char varname[size]
+#define IONIZE_VAL(varname, size)	byte varname[size]
 
 #define UNUSED(x)					(void) ((x))
 
@@ -182,12 +182,12 @@ typedef char err_t;
 /**
 @brief		A dictionary key.
 */
-typedef unsigned char *ion_key_t;
+typedef void *ion_key_t;
 
 /**
 @brief		A dictionary value.
 */
-typedef unsigned char *ion_value_t;
+typedef void *ion_value_t;
 
 /**
 @brief		The size (length) of a dictionary key in bytes.
