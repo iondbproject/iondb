@@ -13,7 +13,7 @@
 #include "../kv_system.h"
 #include "../dictionary/skip_list/skip_list_handler.h"
 
-class SkipList:public Dictionary {
+template <class K>class SkipList:public Dictionary<K> {
 public:
 /**
 @brief		Registers a specific skip list dictionary instance.
@@ -35,9 +35,9 @@ SkipList(
 	int			value_size,
 	int			dictionary_size
 ) {
-	sldict_init(&handler);
+	sldict_init(&this->handler);
 
-	initializeDictionary(type_key, key_size, value_size, dictionary_size);
+	this->initializeDictionary(type_key, key_size, value_size, dictionary_size);
 }
 };
 

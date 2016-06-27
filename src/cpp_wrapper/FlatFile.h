@@ -13,7 +13,7 @@
 #include "../kv_system.h"
 #include "../dictionary/flat_file/flat_file_dictionary_handler.h"
 
-class FlatFile:public Dictionary {
+template <class K>class FlatFile:public Dictionary<K> {
 public:
 /**
 @brief		Registers a specific flat file dictionary instance.
@@ -35,9 +35,9 @@ FlatFile(
 	int			value_size,
 	int			dictionary_size
 ) {
-	ffdict_init(&handler);
+	ffdict_init(&this->handler);
 
-	initializeDictionary(type_key, key_size, value_size, dictionary_size);
+	this->initializeDictionary(type_key, key_size, value_size, dictionary_size);
 }
 };
 

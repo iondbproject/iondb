@@ -13,7 +13,7 @@
 #include "../kv_system.h"
 #include "../dictionary/linear_hash/linear_hash_dictionary_handler.h"
 
-class LinearHash:public Dictionary {
+template <class K>class LinearHash:public Dictionary<K> {
 public:
 
 /**
@@ -36,9 +36,9 @@ LinearHash(
 	int			value_size,
 	int			dictionary_size
 ) {
-	lhdict_init(&handler);
+	lhdict_init(&this->handler);
 
-	initializeDictionary(type_key, key_size, value_size, dictionary_size);
+	this->initializeDictionary(type_key, key_size, value_size, dictionary_size);
 }
 };
 
