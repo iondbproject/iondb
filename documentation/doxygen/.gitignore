@@ -1,0 +1,16 @@
+# Ignore everything
+*
+
+# But not these files...
+!.gitignore
+!./custom_doxygen.css
+!./doxy_bootstrap.js
+!./footer.html
+!./header.html
+!./iondb_logo_final.svg
+!./iondb_template
+!./layout.xml
+!./misc.js
+
+# ...even if they are in subdirectories
+!*/

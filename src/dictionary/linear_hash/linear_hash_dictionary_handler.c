@@ -30,6 +30,9 @@ lhdict_open(
 	dictionary_t					*dict,
 	ion_dictionary_config_info_t	*config
 ) {
+	UNUSED(handler);
+	UNUSED(dict);
+	UNUSED(config);
 	return err_not_implemented;
 }
 
@@ -37,16 +40,17 @@ err_t
 lhdict_close(
 	dictionary_t *dict
 ) {
+	UNUSED(dict);
 	return err_not_implemented;
 }
 
-err_t
+ion_status_t
 lhdict_insert(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 ) {
-	err_t err = lh_insert((linear_hashmap_t *) dictionary->instance, key, value);
+	ion_status_t status = lh_insert((linear_hashmap_t *) dictionary->instance, key, value);
 
 	/** Check load factor and split if necessary*/
 
@@ -56,10 +60,10 @@ lhdict_insert(
 		}
 	}
 
-	return err;
+	return status;
 }
 
-err_t
+ion_status_t
 lhdict_query(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -104,7 +108,7 @@ lhdict_create_dictionary(
 	}
 }
 
-err_t
+ion_status_t
 lhdict_delete(
 	dictionary_t	*dictionary,
 	ion_key_t		key
@@ -123,7 +127,7 @@ lhdict_delete_dictionary(
 	return result;
 }
 
-err_t
+ion_status_t
 lhdict_update(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -131,7 +135,7 @@ lhdict_update(
 ) {
 	ion_status_t status = lh_update((linear_hashmap_t *) dictionary->instance, key, value);
 
-	return status.err;
+	return status;
 }
 
 /** @todo What do we do if the cursor is already active? */
@@ -315,7 +319,7 @@ lhdict_next(
 						/** no open overflow file */
 						((lhdict_cursor_t *) cursor)->overflow = (ll_file_t *) malloc(sizeof(ll_file_t));
 
-						if (fll_open(((lhdict_cursor_t *) cursor)->overflow, fll_compare, hash_map->super.key_type, hash_map->super.record.key_size, hash_map->super.record.value_size, ((lhdict_cursor_t *) cursor)->current_bucket, hash_map->id) == err_item_not_found) {
+						if (fll_open(((lhdict_cursor_t *) cursor)->overflow, fll_compare, hash_map->super.record.key_size, hash_map->super.record.value_size, ((lhdict_cursor_t *) cursor)->current_bucket, hash_map->id) == err_item_not_found) {
 							/** in this case, cursor is null as value has not been found */
 							if (cursor->predicate->type == predicate_equality) {
 								cursor->status							= cs_end_of_results;
@@ -343,7 +347,7 @@ lhdict_next(
 				/** as the overflow file pntr is not null, the process */
 				ll_file_node_t *item = (ll_file_node_t *) malloc(((lhdict_cursor_t *) cursor)->overflow->node_size);
 
-				if ((cursor->status == cs_cursor_active)) {
+				if (cs_cursor_active == cursor->status) {
 					while (fll_next(((lhdict_cursor_t *) cursor)->overflow, item) != err_item_not_found) {
 						/** now we are at the end of the list, but what to do if we need to go onto next bucket ?*/
 						troolean_t value = ((lhdict_cursor_t *) cursor)->evaluate_predicate(cursor, item->data);

@@ -102,12 +102,12 @@ struct filename {
 	void				(*destroy)(
 		fe_filename_t *
 	);
-	/**< Bound destory function. */
+	/**< Bound destroy function. */
 	union {
 		fe_parent_t parent;	/**< Parent file specifics. */
 		fe_child_t	child;					/**< Child file specifics. */
 		fe_config_t config;	/**< Config file specifics. */
-	};
+	} type;
 };
 
 /**

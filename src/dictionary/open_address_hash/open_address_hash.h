@@ -41,8 +41,8 @@ typedef struct hashmap hashmap_t;
 @brief		Struct used to maintain individual records in the hashmap.
 */
 typedef struct hash_bucket {
-	char			status;			/**< the status of the bucket */
-	unsigned char	data[];			/**< the data in the bucket */
+	char		status;				/**< the status of the bucket */
+	ion_byte_t	data[];			/**< the data in the bucket */
 } hash_bucket_t;
 
 /**
@@ -144,7 +144,7 @@ oah_get_location(
 				The value that is being inserted.
 @return	 The status of the insert.
 */
-err_t
+ion_status_t
 oah_insert(
 	hashmap_t	*hash_map,
 	ion_key_t	key,
@@ -165,7 +165,7 @@ oah_insert(
 				The value that is being inserted.
 @return		The status of the update
 */
-err_t
+ion_status_t
 oah_update(
 	hashmap_t	*hash_map,
 	ion_key_t	key,
@@ -207,7 +207,7 @@ oah_find_item_loc(
 @param		size
 				The number of buckets available in the map.
 */
-err_t
+ion_status_t
 oah_delete(
 	hashmap_t	*hash_map,
 	ion_key_t	key
@@ -228,7 +228,7 @@ oah_delete(
 @param		value
 				The value associated in the map.
 */
-err_t
+ion_status_t
 oah_query(
 	hashmap_t	*hash_map,
 	ion_key_t	key,

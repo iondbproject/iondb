@@ -41,9 +41,15 @@ if(USE_ARDUINO)
     print_programmer_list()
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -ansi")
-    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -Wall -Wextra -pedantic -std=c99 -g")
-
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -g")
+    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -Wall -Wextra -pedantic -std=c99 -Wno-missing-field-initializers")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -g")
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+endif()
+
+# Use cmake -DJENKINS_BUILD=ON <project_folder> to use XML format rather than the default.
+if(JENKINS_BUILD)
+    add_definitions(-DPLANCK_UNIT_OUTPUT_STYLE_XML)
 endif()
 
 # Add all of the CMakeLists.txt for the sub projects.
@@ -73,3 +79,6 @@ add_subdirectory(src/tests/unit/dictionary/skip_list)
 
 add_subdirectory(src/cpp_wrapper)
 add_subdirectory(src/cpp_wrapper/tests)
+
+#add_subdirectory(src/cpp_wrapper)
+#add_subdirectory(src/cpp_wrapper/tests)

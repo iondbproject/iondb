@@ -23,3 +23,8 @@ else()
     # Required on Unix OS family to be able to be linked into shared libraries.
     set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
+
+# PlanckUnit option: cmake -DJENKINS_BUILD=ON <project_folder> to use XML format rather than the default.
+if(JENKINS_BUILD)
+    add_definitions(-DPLANCK_UNIT_OUTPUT_STYLE_XML)
+endif()

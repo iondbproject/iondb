@@ -21,7 +21,7 @@ oadict_init(
 	handler->delete_dictionary	= oadict_delete_dictionary;
 }
 
-err_t
+ion_status_t
 oadict_insert(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -30,7 +30,7 @@ oadict_insert(
 	return oah_insert((hashmap_t *) dictionary->instance, key, value);
 }
 
-err_t
+ion_status_t
 oadict_query(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -50,6 +50,7 @@ oadict_create_dictionary(
 	dictionary_handler_t		*handler,
 	dictionary_t				*dictionary
 ) {
+	UNUSED(id);
 	/* this is the instance of the hashmap */
 	dictionary->instance			= (dictionary_parent_t *) malloc(sizeof(hashmap_t));
 
@@ -68,7 +69,7 @@ oadict_create_dictionary(
 	return 0;
 }
 
-err_t
+ion_status_t
 oadict_delete(
 	dictionary_t	*dictionary,
 	ion_key_t		key
@@ -87,7 +88,7 @@ oadict_delete_dictionary(
 	return result;
 }
 
-err_t
+ion_status_t
 oadict_update(
 	dictionary_t	*dictionary,
 	ion_key_t		key,

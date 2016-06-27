@@ -102,10 +102,6 @@ test_collection_handler_binding(
 }
 
 /**
-@brief	  Tests the use of an equality
- */
-
-/**
 @brief	  Tests the creation of a collection and verifies all properties
 			have been correctly initialized.
 
@@ -355,6 +351,7 @@ runalltests_skiplist_handler(
 	/* CuSuiteDetails(suite, output); */
 	/* printf("----\nSkiplist Handler Tests:\n%s\n", output->buffer); */
 
+	planck_unit_destroy_suite(suite);
 	/* CuSuiteDelete(suite); */
 	/* CuStringDelete(output); */
 }

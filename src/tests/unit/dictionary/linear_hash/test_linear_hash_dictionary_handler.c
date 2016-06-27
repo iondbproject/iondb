@@ -10,6 +10,7 @@ extern "C" {
 #endif
 
 #include "test_linear_hash_dictionary_handler.h"
+#include "../../../../kv_system.h"
 
 /**
 @brief		A helper function to build a test collection
@@ -151,11 +152,15 @@ test_linear_hash_handler_simple_insert_and_query(
 
 	sprintf((char *) test_value, "value : %i", test_key);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == test_dictionary.handler->insert(&test_dictionary, (ion_key_t) &test_key, (ion_value_t) test_value));
+	ion_status_t status = test_dictionary.handler->insert(&test_dictionary, (ion_key_t) &test_key, (ion_value_t) test_value);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 	ion_value_t read_value = (ion_value_t) malloc(test_dictionary.instance->record.value_size);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == test_dictionary.handler->get(&test_dictionary, (ion_key_t) &test_key, (ion_value_t) read_value));
+	status  =test_dictionary.handler->get(&test_dictionary, (ion_key_t) &test_key, (ion_value_t) read_value);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == memcmp(test_value, (char *) read_value, record.value_size));
 
@@ -313,7 +318,9 @@ test_linear_hash_handler_update_2(
 	int		key		= 1;
 	char	*value	= "value : 1 ";
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == test_dictionary.handler->insert(&test_dictionary, (ion_key_t) &(int) { key }, (ion_value_t) value));
+	ion_status_t status = test_dictionary.handler->insert(&test_dictionary, (ion_key_t) &(int) { key }, (ion_value_t) value);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 	/* test that the query runs on collection okay */
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
@@ -333,7 +340,9 @@ test_linear_hash_handler_update_2(
 
 	char *newValue = "new value";
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == test_dictionary.handler->update(&test_dictionary, (ion_key_t) &(int) { key }, (ion_value_t) newValue));
+	status = test_dictionary.handler->update(&test_dictionary, (ion_key_t) &(int) { key }, (ion_value_t) newValue);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 2 == status.count);
 
 	/* test that the query runs on collection okay */
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
@@ -351,12 +360,18 @@ test_linear_hash_handler_update_2(
 	cursor->destroy(&cursor);
 
 	/** Insert more record so that they should be spanning both pp and overflow */
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == test_dictionary.handler->insert(&test_dictionary, (ion_key_t) &(int) { key }, (ion_value_t) value));
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == test_dictionary.handler->insert(&test_dictionary, (ion_key_t) &(int) { key }, (ion_value_t) value));
+	status = test_dictionary.handler->insert(&test_dictionary, (ion_key_t) &(int) { key }, (ion_value_t) value);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
+	status = test_dictionary.handler->insert(&test_dictionary, (ion_key_t) &(int) { key }, (ion_value_t) value);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 	char *newValue2 = "ZOZOZO";
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == test_dictionary.handler->update(&test_dictionary, (ion_key_t) &(int) { key }, (ion_value_t) newValue2));
+	status = test_dictionary.handler->update(&test_dictionary, (ion_key_t) &(int) { key }, (ion_value_t) newValue2);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 4 == status.count);
 
 	/* test that the query runs on collection okay */
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == test_dictionary.handler->find(&test_dictionary, &predicate, &cursor));
@@ -1036,7 +1051,7 @@ test_linear_hash_dictionary_cursor_range(
 	record.value	= (ion_value_t) malloc(record_info.value_size);
 
 	int			result_count = 0;
-	status_t	cursor_status;
+	cursor_status_t	cursor_status;
 
 	while (cs_cursor_active == (cursor_status = cursor->next(cursor, &record))) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == cursor_status);
@@ -1125,7 +1140,7 @@ test_linear_hash_dictionary_cursor_range_2(
 	record.value	= (ion_value_t) malloc(record_info.value_size);
 
 	int			result_count		= 0;
-	status_t	cursor_status;
+	cursor_status_t	cursor_status;
 	int			expected_results[]	= { 1, 5, 2, 3, 4 };
 
 	while (cs_cursor_active == (cursor_status = cursor->next(cursor, &record))) {
@@ -1220,7 +1235,7 @@ test_linear_hash_dictionary_cursor_range_3(
 	record.value	= (ion_value_t) malloc(record_info.value_size);
 
 	int			result_count		= 0;
-	status_t	cursor_status;
+	cursor_status_t	cursor_status;
 	int			expected_results[]	= { 1, 3, 5, 2, 4 };
 
 	while (cs_cursor_active == (cursor_status = cursor->next(cursor, &record))) {
@@ -1317,7 +1332,7 @@ test_linear_hash_dictionary_cursor_range_4(
 	record.value	= (ion_value_t) malloc(record_info.value_size);
 
 	int			result_count		= 0;
-	status_t	cursor_status;
+	cursor_status_t	cursor_status;
 	int			expected_results[]	= { 4, 5 };
 
 	while (cs_cursor_active == (cursor_status = cursor->next(cursor, &record))) {
@@ -1415,7 +1430,7 @@ test_linear_hash_dictionary_cursor_range_5(
 	record.value	= (ion_value_t) malloc(record_info.value_size);
 
 	int			result_count		= 0;
-	status_t	cursor_status;
+	cursor_status_t	cursor_status;
 	int			expected_results[]	= { 4, 5 };
 
 	while (cs_cursor_active == (cursor_status = cursor->next(cursor, &record))) {
@@ -1497,6 +1512,7 @@ runalltests_linear_hash_handler(
 	/* CuSuiteDetails(suite, output); */
 	/* printf("%s\n", output->buffer); */
 
+	planck_unit_destroy_suite(suite);
 	/* CuSuiteDelete(suite); */
 	/* CuStringDelete(output); */
 }

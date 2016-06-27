@@ -150,17 +150,19 @@ test_skiplist_single_insert(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	int				key = 6;
-	unsigned char	value[10];
+	int			key = 6;
+	ion_byte_t	value[10];
 
 	strcpy((char *) value, "single.");
 
-	sl_insert(&skiplist, (ion_key_t) &key, value);
+	ion_status_t status = sl_insert(&skiplist, (ion_key_t) &key, value);
 
 #if DEBUG
 	print_skiplist(&skip_list);
 #endif
 
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	PLANCK_UNIT_ASSERT_TRUE(tc, *((int *) skiplist.head->next[0]->key) == 6);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) skiplist.head->next[0]->value, "single.");
 
@@ -185,14 +187,17 @@ test_skiplist_insert_multiple(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	unsigned char strs[5][6] = {
+	ion_byte_t strs[5][6] = {
 		"one", "two", "three", "four", "five"
 	};
 
 	int i;
 
 	for (i = 1; i <= 5; i++) {
-		sl_insert(&skiplist, (ion_key_t) &i, strs[i - 1]);
+		ion_status_t status = sl_insert(&skiplist, (ion_key_t) &i, strs[i - 1]);
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 #if DEBUG
@@ -242,16 +247,19 @@ test_skiplist_randomized_insert(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	unsigned char str[10];
+	ion_byte_t str[10];
 
 	strcpy((char *) str, "random");
 
 	int i;
 
 	for (i = 0; i < 100; i++) {
-		int key = rand() % 101;
+		int key				= rand() % 101;
 
-		sl_insert(&skiplist, (ion_key_t) &key, str);
+		ion_status_t status = sl_insert(&skiplist, (ion_key_t) &key, str);
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 #if DEBUG
@@ -293,13 +301,16 @@ test_skiplist_get_node_single(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	unsigned char str[10];
+	ion_byte_t str[10];
 
 	strcpy((char *) str, "find this");
 
-	int key = 3;
+	int key				= 3;
 
-	sl_insert(&skiplist, (ion_key_t) &key, str);
+	ion_status_t status = sl_insert(&skiplist, (ion_key_t) &key, str);
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 	int			search	= 3;
 	sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &search);
@@ -333,13 +344,16 @@ test_skiplist_get_node_single_high(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	unsigned char str[10];
+	ion_byte_t str[10];
 
 	strcpy((char *) str, "find this");
 
-	int key = 3;
+	int key				= 3;
 
-	sl_insert(&skiplist, (ion_key_t) &key, str);
+	ion_status_t status = sl_insert(&skiplist, (ion_key_t) &key, str);
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 #if DEBUG
 	print_skiplist(&skip_list);
@@ -377,13 +391,16 @@ test_skiplist_get_node_single_low(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	unsigned char str[10];
+	ion_byte_t str[10];
 
 	strcpy((char *) str, "find this");
 
-	int key = 3;
+	int key				= 3;
 
-	sl_insert(&skiplist, (ion_key_t) &key, str);
+	ion_status_t status = sl_insert(&skiplist, (ion_key_t) &key, str);
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 #if DEBUG
 	print_skiplist(&skip_list);
@@ -418,15 +435,18 @@ test_skiplist_get_node_single_many(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	unsigned char str[10];
+	ion_byte_t str[10];
 
 	strcpy((char *) str, "find this");
 
-	int key = 25;
+	int key				= 25;
 
-	sl_insert(&skiplist, (ion_key_t) &key, str);
+	ion_status_t status = sl_insert(&skiplist, (ion_key_t) &key, str);
 
-	unsigned char junk[10];
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
+
+	ion_byte_t junk[10];
 
 	strcpy((char *) junk, "big junk");
 
@@ -438,7 +458,9 @@ test_skiplist_get_node_single_many(
 			continue;
 		}
 
-		sl_insert(&skiplist, (ion_key_t) &i, junk);
+		status = sl_insert(&skiplist, (ion_key_t) &i, junk);
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 #if DEBUG
@@ -477,16 +499,20 @@ test_skiplist_get_node_several(
 	srand(0xDEADBEEF);
 #endif
 
-	int				targets[50];
-	unsigned char	buffer[10];
-	int				i;
+	int			targets[50];
+	ion_byte_t	buffer[10];
+	int			i;
 
 	for (i = 0; i < 50; i++) {
 		int key = rand() % 1000;
 
 		targets[i] = key;
 		sprintf((char *) buffer, "TEST %d", key);
-		sl_insert(&skiplist, (ion_key_t) &key, buffer);
+
+		ion_status_t status = sl_insert(&skiplist, (ion_key_t) &key, buffer);
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 #if DEBUG
@@ -523,16 +549,17 @@ test_skiplist_query_nonexist_empty(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	int				key			= 3;
-	unsigned char	value[10]	= "NULL";
+	int			key			= 3;
+	ion_byte_t	value[10]	= "NULL";
 
-	err_t status				= sl_query(&skiplist, (ion_key_t) &key, value);
+	ion_status_t status		= sl_query(&skiplist, (ion_key_t) &key, value);
 
 #if DEBUG
 	print_skiplist(&skip_list);
 #endif
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_item_not_found);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) value, "NULL");
 
 	sl_destroy(&skiplist);
@@ -557,23 +584,27 @@ test_skiplist_query_nonexist_populated_single(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	int				test_key = 23;
-	unsigned char	test_value[10];
+	int			test_key = 23;
+	ion_byte_t	test_value[10];
 
 	strcpy((char *) test_value, "I am test");
 
-	sl_insert(&skiplist, (ion_key_t) &test_key, test_value);
+	ion_status_t status = sl_insert(&skiplist, (ion_key_t) &test_key, test_value);
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 #if DEBUG
 	print_skiplist(&skip_list);
 #endif
 
-	int				key			= 10;
-	unsigned char	value[10]	= "NULL";
+	int			key			= 10;
+	ion_byte_t	value[10]	= "NULL";
 
-	err_t status				= sl_query(&skiplist, (ion_key_t) &key, value);
+	status = sl_query(&skiplist, (ion_key_t) &key, value);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_item_not_found);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) value, "NULL");
 
 	sl_destroy(&skiplist);
@@ -598,14 +629,18 @@ test_skiplist_query_nonexist_populated_several(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	int				test_key = 46;
-	unsigned char	test_value[10];
+	int			test_key = 46;
+	ion_byte_t	test_value[10];
 
 	int i;
 
 	for (i = 0; i < 32; i++) {
 		sprintf((char *) test_value, "I am: %d", test_key);
-		sl_insert(&skiplist, (ion_key_t) &test_key, test_value);
+
+		ion_status_t status = sl_insert(&skiplist, (ion_key_t) &test_key, test_value);
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 		test_key--;
 	}
 
@@ -613,12 +648,13 @@ test_skiplist_query_nonexist_populated_several(
 	print_skiplist(&skip_list);
 #endif
 
-	int				key			= 10;
-	unsigned char	value[10]	= "NULL";
+	int			key			= 10;
+	ion_byte_t	value[10]	= "NULL";
 
-	err_t status				= sl_query(&skiplist, (ion_key_t) &key, value);
+	ion_status_t status		= sl_query(&skiplist, (ion_key_t) &key, value);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_item_not_found);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) value, "NULL");
 
 	sl_destroy(&skiplist);
@@ -643,23 +679,27 @@ test_skiplist_query_exist_single(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	int				test_key = 11;
-	unsigned char	test_value[10];
+	int			test_key = 11;
+	ion_byte_t	test_value[10];
 
 	strcpy((char *) test_value, "Find me!");
 
-	sl_insert(&skiplist, (ion_key_t) &test_key, test_value);
+	ion_status_t status = sl_insert(&skiplist, (ion_key_t) &test_key, test_value);
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 #if DEBUG
 	print_skiplist(&skip_list);
 #endif
 
-	int				key = 11;
-	unsigned char	value[10];
+	int			key = 11;
+	ion_byte_t	value[10];
 
-	err_t status		= sl_query(&skiplist, (ion_key_t) &key, value);
+	status = sl_query(&skiplist, (ion_key_t) &key, value);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) value, "Find me!");
 
 	sl_destroy(&skiplist);
@@ -684,25 +724,30 @@ test_skiplist_query_exist_populated_single(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	unsigned char test_value[10];
+	ion_byte_t test_value[10];
 
 	int i;
 
 	for (i = 0; i < 100; i += 2) {
 		sprintf((char *) test_value, "Find %d", i);
-		sl_insert(&skiplist, (ion_key_t) &i, test_value);
+
+		ion_status_t status = sl_insert(&skiplist, (ion_key_t) &i, test_value);
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 #if DEBUG
 	print_skiplist(&skip_list);
 #endif
 
-	int				key = 24;
-	unsigned char	value[10];
+	int			key		= 24;
+	ion_byte_t	value[10];
 
-	err_t status		= sl_query(&skiplist, (ion_key_t) &key, value);
+	ion_status_t status = sl_query(&skiplist, (ion_key_t) &key, value);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) value, "Find 24");
 
 	sl_destroy(&skiplist);
@@ -727,28 +772,33 @@ test_skiplist_query_exist_populated_several(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	unsigned char test_value[10];
+	ion_byte_t test_value[10];
 
 	int i;
 
 	for (i = 0; i < 100; i++) {
 		sprintf((char *) test_value, "Find %d", i);
-		sl_insert(&skiplist, (ion_key_t) &i, test_value);
+
+		ion_status_t status = sl_insert(&skiplist, (ion_key_t) &i, test_value);
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 #if DEBUG
 	print_skiplist(&skip_list);
 #endif
 
-	char			find_value[10];
-	unsigned char	value[10];
+	char		find_value[10];
+	ion_byte_t	value[10];
 
 	for (i = 0; i < 100; i++) {
 		sprintf(find_value, "Find %d", i);
 
-		err_t status = sl_query(&skiplist, (ion_key_t) &i, value);
+		ion_status_t status = sl_query(&skiplist, (ion_key_t) &i, value);
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) value, find_value);
 	}
 
@@ -773,14 +823,15 @@ test_skiplist_delete_empty(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	int		key		= 3;
-	err_t	status	= sl_delete(&skiplist, (ion_key_t) &key);
+	int				key		= 3;
+	ion_status_t	status	= sl_delete(&skiplist, (ion_key_t) &key);
 
 #if DEBUG
 	print_skiplist(&skip_list);
 #endif
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_item_not_found);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
 
 	sl_destroy(&skiplist);
 }
@@ -804,20 +855,26 @@ test_skiplist_delete_nonexist_single(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	int				key = 16;
-	unsigned char	value[10];
+	int			key = 16;
+	ion_byte_t	value[10];
 
 	strcpy((char *) value, "Delete me");
-	sl_insert(&skiplist, (ion_key_t) &key, value);
 
-	int		fake_key	= 33;
-	err_t	status		= sl_delete(&skiplist, (ion_key_t) &fake_key);
+	ion_status_t status = sl_insert(&skiplist, (ion_key_t) &key, value);
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
+
+	int fake_key = 33;
+
+	status = sl_delete(&skiplist, (ion_key_t) &fake_key);
 
 #if DEBUG
 	print_skiplist(&skip_list);
 #endif
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_item_not_found);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
 
 	sl_destroy(&skiplist);
 }
@@ -841,26 +898,31 @@ test_skiplist_delete_nonexist_several(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	int				key = 16;
-	unsigned char	value[10];
+	int			key = 16;
+	ion_byte_t	value[10];
 
 	strcpy((char *) value, "Delete me");
 
 	int i;
 
 	for (i = 0; i < 10; i++) {
-		sl_insert(&skiplist, (ion_key_t) &key, value);
+		ion_status_t status = sl_insert(&skiplist, (ion_key_t) &key, value);
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
+
 		key += 3;
 	}
 
-	int		fake_key	= 20;
-	err_t	status		= sl_delete(&skiplist, (ion_key_t) &fake_key);
+	int				fake_key	= 20;
+	ion_status_t	status		= sl_delete(&skiplist, (ion_key_t) &fake_key);
 
 #if DEBUG
 	print_skiplist(&skip_list);
 #endif
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_item_not_found);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
 
 	sl_destroy(&skiplist);
 }
@@ -884,26 +946,30 @@ test_skiplist_delete_single(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	int				key = 97;
-	unsigned char	value[10];
+	int			key = 97;
+	ion_byte_t	value[10];
 
 	strcpy((char *) value, "Special K");
 
-	sl_insert(&skiplist, (ion_key_t) &key, value);
+	ion_status_t status = sl_insert(&skiplist, (ion_key_t) &key, value);
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 #if DEBUG
 	printf("%s\n", "** BEFORE **");
 	print_skiplist(&skip_list);
 #endif
 
-	err_t status = sl_delete(&skiplist, (ion_key_t) &key);
+	status = sl_delete(&skiplist, (ion_key_t) &key);
 
 #if DEBUG
 	printf("%s\n", "** AFTER **");
 	print_skiplist(&skip_list);
 #endif
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist.head->next[0] == NULL);
 
 	sl_destroy(&skiplist);
@@ -928,14 +994,17 @@ test_skiplist_delete_single_several(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	unsigned char value[10];
+	ion_byte_t value[10];
 
 	strcpy((char *) value, "Poof me!");
 
 	int i;
 
 	for (i = 101; i < 120; i++) {
-		sl_insert(&skiplist, (ion_key_t) &i, value);
+		ion_status_t status = sl_insert(&skiplist, (ion_key_t) &i, value);
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 #if DEBUG
@@ -959,15 +1028,16 @@ test_skiplist_delete_single_several(
 
 	/* After this block, "theone" is undefined, freed memory and should not
 	 * be accessed. */
-	int		key		= 112;
-	err_t	status	= sl_delete(&skiplist, (ion_key_t) &key);
+	int				key		= 112;
+	ion_status_t	status	= sl_delete(&skiplist, (ion_key_t) &key);
 
 #if DEBUG
 	printf("%s\n", "** AFTER **");
 	print_skiplist(&skip_list);
 #endif
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 	for (i = 0; i < (theone_h >= onebefore_h ? onebefore_h : theone_h); i++) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, onebefore->next[i] == oldnextarr[i]);
@@ -996,14 +1066,17 @@ test_skiplist_delete_single_several_noncont(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	unsigned char value[10];
+	ion_byte_t value[10];
 
 	strcpy((char *) value, "Bop me!");
 
 	int i;
 
 	for (i = 230; i < 300; i += 5) {
-		sl_insert(&skiplist, (ion_key_t) &i, value);
+		ion_status_t status = sl_insert(&skiplist, (ion_key_t) &i, value);
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 #if DEBUG
@@ -1027,15 +1100,16 @@ test_skiplist_delete_single_several_noncont(
 
 	/* After this block, "theone" is undefined, freed memory and should not
 	 * be accessed. */
-	int		key		= 240;
-	err_t	status	= sl_delete(&skiplist, (ion_key_t) &key);
+	int				key		= 240;
+	ion_status_t	status	= sl_delete(&skiplist, (ion_key_t) &key);
 
 #if DEBUG
 	printf("%s\n", "** AFTER **");
 	print_skiplist(&skip_list);
 #endif
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 	for (i = 0; i < (theone_h >= onebefore_h ? onebefore_h : theone_h); i++) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, onebefore->next[i] == oldnextarr[i]);
@@ -1062,14 +1136,17 @@ test_skiplist_delete_several_all(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	unsigned char value[10];
+	ion_byte_t value[10];
 
 	strcpy((char *) value, "Wipe");
 
 	int i;
 
 	for (i = 9; i < 99; i += 3) {
-		sl_insert(&skiplist, (ion_key_t) &i, value);
+		ion_status_t status = sl_insert(&skiplist, (ion_key_t) &i, value);
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 #if DEBUG
@@ -1078,9 +1155,10 @@ test_skiplist_delete_several_all(
 #endif
 
 	for (i = 9; i < 99; i += 3) {
-		err_t status = sl_delete(&skiplist, (ion_key_t) &i);
+		ion_status_t status = sl_delete(&skiplist, (ion_key_t) &i);
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 #if DEBUG
@@ -1115,13 +1193,14 @@ test_skiplist_update_single_nonexist(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	err_t status = sl_update(&skiplist, IONIZE(72, int), (ion_value_t) (char *) { "test val" });
+	ion_status_t status = sl_update(&skiplist, IONIZE(72, int), (ion_value_t) (char *) { "test val" });
 
 #if DEBUG
 	print_skiplist(&skip_list);
 #endif
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	PLANCK_UNIT_ASSERT_TRUE(tc, *(int *) skiplist.head->next[0]->key == 72);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) skiplist.head->next[0]->value, "test val");
 
@@ -1146,21 +1225,25 @@ test_skiplist_update_single_nonexist_nonempty(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	sl_insert(&skiplist, IONIZE(99, int), (ion_value_t) (char *) { "not val" });
+	ion_status_t status = sl_insert(&skiplist, IONIZE(99, int), (ion_value_t) (char *) { "not val" });
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 #if DEBUG
 	printf("%s\n", "** BEFORE **");
 	print_skiplist(&skip_list);
 #endif
 
-	err_t status = sl_update(&skiplist, IONIZE(13, int), (ion_value_t) (char *) { "test val" });
+	status = sl_update(&skiplist, IONIZE(13, int), (ion_value_t) (char *) { "test val" });
 
 #if DEBUG
 	printf("%s\n", "** AFTER **");
 	print_skiplist(&skip_list);
 #endif
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	PLANCK_UNIT_ASSERT_TRUE(tc, *(int *) skiplist.head->next[0]->key == 13);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) skiplist.head->next[0]->value, "test val");
 
@@ -1188,7 +1271,10 @@ test_skiplist_update_many_nonexist_nonempty(
 	int i;
 
 	for (i = 30; i < 40; i += 2) {
-		sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char *) { "not it!" });
+		ion_status_t status = sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char *) { "not it!" });
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 #if DEBUG
@@ -1196,7 +1282,7 @@ test_skiplist_update_many_nonexist_nonempty(
 	print_skiplist(&skip_list);
 #endif
 
-	err_t status = sl_update(&skiplist, IONIZE(45, int), (ion_value_t) (char *) { "test val" });
+	ion_status_t status = sl_update(&skiplist, IONIZE(45, int), (ion_value_t) (char *) { "test val" });
 
 #if DEBUG
 	printf("%s\n", "** AFTER **");
@@ -1205,7 +1291,8 @@ test_skiplist_update_many_nonexist_nonempty(
 
 	sl_node_t *cursor = sl_find_node(&skiplist, IONIZE(38, int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	PLANCK_UNIT_ASSERT_TRUE(tc, *(int *) cursor->next[0]->key == 45);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) cursor->next[0]->value, "test val");
 
@@ -1231,21 +1318,25 @@ test_skiplist_update_single_exist(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	sl_insert(&skiplist, IONIZE(45, int), (ion_value_t) (char *) { "old val" });
+	ion_status_t status = sl_insert(&skiplist, IONIZE(45, int), (ion_value_t) (char *) { "old val" });
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 #if DEBUG
 	printf("%s\n", "** BEFORE **");
 	print_skiplist(&skip_list);
 #endif
 
-	err_t status = sl_update(&skiplist, IONIZE(45, int), (ion_value_t) (char *) { "new val" });
+	status = sl_update(&skiplist, IONIZE(45, int), (ion_value_t) (char *) { "new val" });
 
 #if DEBUG
 	printf("%s\n", "** AFTER **");
 	print_skiplist(&skip_list);
 #endif
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	PLANCK_UNIT_ASSERT_TRUE(tc, *(int *) skiplist.head->next[0]->key == 45);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) skiplist.head->next[0]->value, "new val");
 
@@ -1274,7 +1365,10 @@ test_skiplist_update_single_many_exist(
 	int i;
 
 	for (i = 20; i < 46; i += 2) {
-		sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char *) { "MATH" });
+		ion_status_t status = sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char *) { "MATH" });
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 #if DEBUG
@@ -1282,7 +1376,7 @@ test_skiplist_update_single_many_exist(
 	print_skiplist(&skip_list);
 #endif
 
-	err_t status = sl_update(&skiplist, IONIZE(30, int), (ion_value_t) (char *) { "COSC" });
+	ion_status_t status = sl_update(&skiplist, IONIZE(30, int), (ion_value_t) (char *) { "COSC" });
 
 #if DEBUG
 	printf("%s\n", "** AFTER **");
@@ -1291,7 +1385,8 @@ test_skiplist_update_single_many_exist(
 
 	sl_node_t *cursor = sl_find_node(&skiplist, IONIZE(30, int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	PLANCK_UNIT_ASSERT_TRUE(tc, *(int *) cursor->key == 30);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) cursor->value, "COSC");
 
@@ -1320,7 +1415,10 @@ test_skiplist_update_several_many_exist(
 	int i;
 
 	for (i = 60; i < 99; i += 3) {
-		sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char *) { "TEST" });
+		ion_status_t status = sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char *) { "TEST" });
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 #if DEBUG
@@ -1329,11 +1427,12 @@ test_skiplist_update_several_many_exist(
 #endif
 
 	for (i = 60; i < 99; i += 3) {
-		err_t status		= sl_update(&skiplist, (ion_key_t) &i, (ion_value_t) (char *) { "VALUE" });
+		ion_status_t status = sl_update(&skiplist, (ion_key_t) &i, (ion_value_t) (char *) { "VALUE" });
 
 		sl_node_t *cursor	= sl_find_node(&skiplist, (ion_key_t) &i);
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 		PLANCK_UNIT_ASSERT_TRUE(tc, *(int *) cursor->key == i);
 		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) cursor->value, "VALUE");
 	}
@@ -1367,7 +1466,10 @@ test_skiplist_update_several_same_key(
 	int i;
 
 	for (i = 0; i < 100; i++) {
-		sl_insert(&skiplist, IONIZE(64, int), (ion_value_t) (char *) { "samez U" });
+		ion_status_t status = sl_insert(&skiplist, IONIZE(64, int), (ion_value_t) (char *) { "samez U" });
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 #if DEBUG
@@ -1375,14 +1477,15 @@ test_skiplist_update_several_same_key(
 	print_skiplist(&skip_list);
 #endif
 
-	err_t status = sl_update(&skiplist, IONIZE(64, int), (ion_value_t) (char *) { "new same" });
+	ion_status_t status = sl_update(&skiplist, IONIZE(64, int), (ion_value_t) (char *) { "new same" });
 
 #if DEBUG
 	printf("%s\n", "** UPDATE **");
 	print_skiplist(&skip_list);
 #endif
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 100 == status.count);
 
 	sl_node_t *cursor = skiplist.head;
 
@@ -1430,14 +1533,15 @@ test_skiplist_update_several_same_key_in_mix(
 	print_skiplist(&skip_list);
 #endif
 
-	err_t status = sl_update(&skiplist, IONIZE(55, int), (ion_value_t) (char *) { "new same" });
+	ion_status_t status = sl_update(&skiplist, IONIZE(55, int), (ion_value_t) (char *) { "new same" });
 
 #if DEBUG
 	printf("%s\n", "** UPDATE **");
 	print_skiplist(&skip_list);
 #endif
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 100 == status.count);
 
 	sl_node_t *find = sl_find_node(&skiplist, IONIZE(55, int));
 
@@ -1467,29 +1571,35 @@ test_skiplist_delete_then_insert_single(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-	sl_insert(&skiplist, IONIZE(66, int), (ion_value_t) (char *) { "toaster" });
+	ion_status_t status = sl_insert(&skiplist, IONIZE(66, int), (ion_value_t) (char *) { "toaster" });
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 #if DEBUG
 	printf("%s\n", "** INSERT **");
 	print_skiplist(&skip_list);
 #endif
 
-	err_t status = sl_delete(&skiplist, IONIZE(66, int));
+	status = sl_delete(&skiplist, IONIZE(66, int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 #if DEBUG
 	printf("%s\n", "** DELETE **");
 	print_skiplist(&skip_list);
 #endif
 
-	sl_insert(&skiplist, IONIZE(365, int), (ion_value_t) (char *) { "potato" });
+	status = sl_insert(&skiplist, IONIZE(365, int), (ion_value_t) (char *) { "potato" });
 
 #if DEBUG
 	printf("%s\n", "** REINSERT **");
 	print_skiplist(&skip_list);
 #endif
 
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist.head->next[0] != NULL);
 	PLANCK_UNIT_ASSERT_TRUE(tc, *(int *) skiplist.head->next[0]->key == 365);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) skiplist.head->next[0]->value, "potato");
@@ -1519,7 +1629,10 @@ test_skiplist_delete_then_insert_several(
 	int i;
 
 	for (i = 0; i < 50; i++) {
-		sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char *) { "cake" });
+		ion_status_t status = sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char *) { "cake" });
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 #if DEBUG
@@ -1528,9 +1641,10 @@ test_skiplist_delete_then_insert_several(
 #endif
 
 	for (i = 0; i < 50; i++) {
-		err_t status = sl_delete(&skiplist, (ion_key_t) &i);
+		ion_status_t status = sl_delete(&skiplist, (ion_key_t) &i);
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 #if DEBUG
@@ -1539,7 +1653,10 @@ test_skiplist_delete_then_insert_several(
 #endif
 
 	for (i = 50; i < 100; i++) {
-		sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char *) { "pie" });
+		ion_status_t status = sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char *) { "pie" });
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 #if DEBUG
@@ -1578,7 +1695,10 @@ test_skiplist_delete_several_same_key(
 	int i;
 
 	for (i = 0; i < 100; i++) {
-		sl_insert(&skiplist, IONIZE(64, int), (ion_value_t) (char *) { "samez" });
+		ion_status_t status = sl_insert(&skiplist, IONIZE(64, int), (ion_value_t) (char *) { "samez" });
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 #if DEBUG
@@ -1586,14 +1706,15 @@ test_skiplist_delete_several_same_key(
 	print_skiplist(&skip_list);
 #endif
 
-	err_t status = sl_delete(&skiplist, IONIZE(64, int));
+	ion_status_t status = sl_delete(&skiplist, IONIZE(64, int));
 
 #if DEBUG
 	printf("%s\n", "** DELETE **");
 	print_skiplist(&skip_list);
 #endif
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 100 == status.count);
 
 	int h;
 
@@ -1640,14 +1761,15 @@ test_skiplist_delete_several_same_key_in_mix(
 	print_skiplist(&skip_list);
 #endif
 
-	err_t status = sl_delete(&skiplist, IONIZE(55, int));
+	ion_status_t status = sl_delete(&skiplist, IONIZE(55, int));
 
 #if DEBUG
 	printf("%s\n", "** DELETE **");
 	print_skiplist(&skip_list);
 #endif
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 100 == status.count);
 
 	sl_node_t *find = sl_find_node(&skiplist, IONIZE(55, int));
 
@@ -1708,29 +1830,35 @@ test_skiplist_different_size(
 	PLANCK_UNIT_ASSERT_TRUE(tc, *(long long *) cursor->key == 64);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) cursor->value, "pop");
 
-	unsigned char	value[10];
-	err_t			status;
+	ion_byte_t		value[10];
+	ion_status_t	status;
 
 	status = sl_query(&skiplist, (ion_key_t) &(long long) { 64 }, value);
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) value, "pop");
 
 	status = sl_query(&skiplist, (ion_key_t) &(long long) { 32 }, value);
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) value, "bep");
 
 	status = sl_query(&skiplist, (ion_key_t) &(long long) { 16 }, value);
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) value, "tot");
 
-	status	= sl_delete(&skiplist, (ion_key_t) &(long long) { 64 });
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	status = sl_delete(&skiplist, (ion_key_t) &(long long) { 64 });
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
-	status	= sl_delete(&skiplist, (ion_key_t) &(long long) { 32 });
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	status = sl_delete(&skiplist, (ion_key_t) &(long long) { 32 });
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
-	status	= sl_delete(&skiplist, (ion_key_t) &(long long) { 16 });
-	PLANCK_UNIT_ASSERT_TRUE(tc, status == err_ok);
+	status = sl_delete(&skiplist, (ion_key_t) &(long long) { 16 });
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 #if DEBUG
 	printf("%s\n", "** DELETE **");
@@ -1761,7 +1889,10 @@ test_skiplist_big_keys(
 	int i;
 
 	for (i = 900; i < 999; i++) {
-		sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char *) { "BIG!" });
+		ion_status_t status = sl_insert(&skiplist, (ion_key_t) &i, (ion_value_t) (char *) { "BIG!" });
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 	for (i = 900; i < 999; i++) {
@@ -1777,7 +1908,10 @@ test_skiplist_big_keys(
 #endif
 
 	for (i = 900; i < 999; i++) {
-		sl_delete(&skiplist, (ion_key_t) &i);
+		ion_status_t status = sl_delete(&skiplist, (ion_key_t) &i);
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 #if DEBUG
@@ -1797,7 +1931,7 @@ test_skiplist_big_keys(
 /**
 @brief	  Creates the suite to test using CuTest.
 @return	 Pointer to a CuTest suite.
- */
+*/
 planck_unit_suite_t *
 skiplist_getsuite(
 ) {
@@ -1873,6 +2007,7 @@ runalltests_skiplist(
 	/* CuSuiteDetails(suite, output); */
 	/* printf("----\nSkiplist Tests:\n%s\n", output->buffer); */
 
+	planck_unit_destroy_suite(suite);
 	/* CuSuiteDelete(suite); */
 	/* CuStringDelete(output); */
 }

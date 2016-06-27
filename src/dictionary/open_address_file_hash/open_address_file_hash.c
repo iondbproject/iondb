@@ -97,7 +97,7 @@ oafh_destroy(
 	}
 }
 
-err_t
+ion_status_t
 oafh_update(
 	file_hashmap_t	*hash_map,
 	ion_key_t		key,
@@ -108,13 +108,13 @@ oafh_update(
 
 	hash_map->write_concern = wc_update;/* change write concern to allow update */
 
-	err_t result = oafh_insert(hash_map, key, value);
+	ion_status_t result = oafh_insert(hash_map, key, value);
 
 	hash_map->write_concern = current_write_concern;
 	return result;
 }
 
-err_t
+ion_status_t
 oafh_insert(
 	file_hashmap_t	*hash_map,
 	ion_key_t		key,
@@ -149,7 +149,7 @@ oafh_insert(
 				if (hash_map->write_concern == wc_insert_unique) {
 					/* allow unique entries only */
 					free(item);
-					return err_duplicate_key;
+					return ION_STATUS_ERROR(err_duplicate_key);
 				}
 				else if (hash_map->write_concern == wc_update) {
 					/* allows for values to be updated											// */
@@ -161,11 +161,11 @@ oafh_insert(
 #endif
 					fwrite(value, hash_map->super.record.value_size, 1, hash_map->file);
 					free(item);
-					return err_ok;
+					return ION_STATUS_OK(1);
 				}
 				else {
 					free(item);
-					return err_write_concern;	/* there is a configuration issue with write concern */
+					return ION_STATUS_ERROR(err_write_concern);	/* there is a configuration issue with write concern */
 				}
 			}
 		}
@@ -182,7 +182,7 @@ oafh_insert(
 			fwrite(item, record_size, 1, hash_map->file);
 			free(item);
 
-			return err_ok;
+			return ION_STATUS_OK(1);
 		}
 
 		loc++;
@@ -204,7 +204,7 @@ oafh_insert(
 	io_printf("Hash table full.  Insert not done");
 #endif
 	free(item);
-	return err_max_capacity;
+	return ION_STATUS_ERROR(err_max_capacity);
 }
 
 err_t
@@ -267,7 +267,7 @@ oafh_find_item_loc(
 	return err_item_not_found;	/* key have not been found */
 }
 
-err_t
+ion_status_t
 oafh_delete(
 	file_hashmap_t	*hash_map,
 	ion_key_t		key
@@ -278,7 +278,7 @@ oafh_delete(
 #if DEBUG
 		io_printf("Item not found when trying to oah_delete.\n");
 #endif
-		return err_item_not_found;
+		return ION_STATUS_ERROR(err_item_not_found);
 	}
 	else {
 		/* locate item */
@@ -302,11 +302,11 @@ oafh_delete(
 #if DEBUG
 		io_printf("Item deleted at location %d\n", loc);
 #endif
-		return err_ok;
+		return ION_STATUS_OK(1);
 	}
 }
 
-err_t
+ion_status_t
 oafh_query(
 	file_hashmap_t	*hash_map,
 	ion_key_t		key,
@@ -328,14 +328,14 @@ oafh_query(
 #endif
 		fread(value, hash_map->super.record.value_size, 1, hash_map->file);
 
-		return err_ok;
+		return ION_STATUS_OK(1);
 	}
 	else {
 #if DEBUG
 		io_printf("Item not found in hash table.\n");
 #endif
 		value = NULL;	/**set the number of bytes to 0 */
-		return err_item_not_found;
+		return ION_STATUS_ERROR(err_item_not_found);
 	}
 }
 
@@ -345,6 +345,8 @@ oafh_compute_simple_hash(
 	ion_key_t		key,
 	int				size_of_key
 ) {
+	UNUSED(size_of_key);
+
 	/* convert to a hashable value */
 	hash_t hash = ((hash_t) (*(int *) key)) % hashmap->map_size;
 

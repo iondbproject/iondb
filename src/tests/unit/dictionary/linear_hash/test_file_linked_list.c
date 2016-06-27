@@ -21,7 +21,7 @@ create_test_linked_list(
 
 	record.key_size		= 4;
 	record.value_size	= 10;
-	fll_create(linked_list_file, fll_compare, key_type_numeric_signed, record.key_size, record.value_size, 0, id);
+	fll_create(linked_list_file, fll_compare, record.key_size, record.value_size, 0, id);
 }
 
 /**
@@ -56,12 +56,12 @@ test_file_linked_list_initialize(
 
 	fe_filename_t filename;
 
-	filename.instance_id	= id;					/** This is the parent id */
-	filename.child.child_id = 0;
+	filename.instance_id			= id;			/** This is the parent id */
+	filename.type.child.child_id	= 0;
 	fe_encode_child_id(&filename);
 
 	/* valid correct map settings */
-	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == strcmp(linked_list_file.file_name, filename.child.child_filename));
+	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == strcmp(linked_list_file.file_name, filename.type.child.child_filename));
 	/** clean up filename */
 	filename.destroy(&filename);
 
@@ -111,7 +111,7 @@ test_file_linked_list_node_creation(
 
 	fll_create_node(&linked_list_file, &record, (ion_key_t) &key, (ion_value_t) value, &node);
 
-	ll_file_node_t *ll_node = (ll_file_node_t *) node;
+	ll_file_node_t *ll_node = node;
 
 	/* validate node that is created */
 	PLANCK_UNIT_ASSERT_TRUE(tc, END_OF_LIST == ll_node->next);
@@ -124,7 +124,7 @@ test_file_linked_list_node_creation(
 
 	fll_create_node(&linked_list_file, &record, (ion_key_t) &key, (ion_value_t) value, &node2);
 
-	ll_file_node_t *ll_node2 = (ll_file_node_t *) node2;
+	ll_file_node_t *ll_node2 = node2;
 
 	/* validate node that is created */
 	PLANCK_UNIT_ASSERT_TRUE(tc, END_OF_LIST == ll_node2->next);
@@ -170,7 +170,7 @@ test_file_linked_list_insert(
 
 	fll_create_node(&linked_list_file, &record, (ion_key_t) &key, (ion_value_t) value, &node);
 
-	ll_file_node_t *ll_node = (ll_file_node_t *) node;
+	ll_file_node_t *ll_node = node;
 
 	/* validate node that is created */
 	PLANCK_UNIT_ASSERT_TRUE(tc, END_OF_LIST == ll_node->next);
@@ -408,7 +408,7 @@ test_file_linked_list_delete(
 	for (idx = 0; idx < 5; idx++) {
 		fll_create_node(&linked_list_file, &record, (ion_key_t) &key_array[idx], (ion_value_t) value, &node);
 
-		ll_file_node_t *ll_node = (ll_file_node_t *) node;
+		ll_file_node_t *ll_node = node;
 
 		fll_insert(&linked_list_file, ll_node);
 		free(node);
@@ -479,7 +479,7 @@ test_file_linked_list_delete(
 	fll_delete(&linked_list_file, (ion_key_t) &delete_key);
 	fll_reset(&linked_list_file);
 
-	int key_array_ans_5[] = {};
+	int key_array_ans_5[] = { 0 };	/* Everything has been deleted, we expect nothing now */
 
 	idx = 0;
 
@@ -730,8 +730,8 @@ test_file_linked_list_reopen(
 	fclose(linked_list_file.file);
 	free(linked_list_file.file_name);	/** and free the name too as this is reallocated when the file is opened */
 
-	if (fll_open(&linked_list_file, fll_compare, key_type_numeric_signed, record.key_size, record.value_size, 0, id) == err_item_not_found) {
-		fll_create(&linked_list_file, fll_compare, key_type_numeric_signed, record.key_size, record.value_size, 0, id);
+	if (fll_open(&linked_list_file, fll_compare, record.key_size, record.value_size, 0, id) == err_item_not_found) {
+		fll_create(&linked_list_file, fll_compare, record.key_size, record.value_size, 0, id);
 	}
 
 	ll_file_node_t *read_node;
@@ -774,4 +774,6 @@ runalltests_file_linked_list(
 	planck_unit_suite_t *suite = file_linked_list_getsuite();
 
 	planck_unit_run_suite(suite);
+
+	planck_unit_destroy_suite(suite);
 }

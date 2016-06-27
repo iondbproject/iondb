@@ -12,7 +12,7 @@ main(
 	key_type_t				key_type;
 	dictionary_handler_t	bpp_tree_handler;
 	dictionary_t			dictionary;
-	status_t				status;
+	ion_status_t			status;
 
 	/* These sizes are given in units of bytes. */
 	key_type	= key_type_numeric_signed;
@@ -20,8 +20,8 @@ main(
 	value_size	= 14;
 
 	/* Here, we make the assumption that the value is going to be a null-terminated string. */
-	int				key = 1;
-	unsigned char	value[value_size];
+	int			key = 1;
+	ion_byte_t	value[value_size];
 
 	sprintf((char *) value, "Hello World 0");
 
@@ -56,7 +56,7 @@ main(
 	printf("Inserting (%d|%s)...\n", key, value);
 	status = dictionary_insert(&dictionary, IONIZE(key, int), value);
 
-	if (status != err_ok) {
+	if (status.error != err_ok) {
 		printf("Inserting (%d|%s) failed\n", key, value);
 		return 1;
 	}
@@ -65,7 +65,7 @@ main(
 	printf("Deleting (%d)...\n", key);
 	status = dictionary_delete(&dictionary, IONIZE(key, int));
 
-	if (status != err_ok) {
+	if (status.error != err_ok) {
 		printf("Deleting (%d) failed\n", key);
 		return 1;
 	}
@@ -74,13 +74,13 @@ main(
 		Updates take a new value, and replaces all values stored at the given key, similar to how delete works.
 		If the key doesn't currently exist, it will be inserted instead of being updated.
 	*/
-	unsigned char replace_value[value_size];
+	ion_byte_t replace_value[value_size];
 
 	sprintf((char *) replace_value, "Hello new!");
 	printf("Updating (%d with %s)...\n", key, replace_value);
 	status = dictionary_update(&dictionary, IONIZE(key, int), replace_value);
 
-	if (status != err_ok) {
+	if (status.error != err_ok) {
 		printf("Updating (%d with %s) failed\n", key, replace_value);
 		return 1;
 	}
@@ -93,7 +93,7 @@ main(
 		printf("Inserting (%d|%s)...\n", key, value);
 		status = dictionary_insert(&dictionary, IONIZE(key, int), value);
 
-		if (status != err_ok) {
+		if (status.error != err_ok) {
 			printf("Inserting (%d|%s) failed\n", key, value);
 			return 1;
 		}
@@ -102,11 +102,11 @@ main(
 	/* A get operation requires the user to allocate space to store the returned value. Only retrieves one record. */
 	printf("Querying (%d)...\n", key);
 
-	unsigned char new_value[value_size];
+	ion_byte_t new_value[value_size];
 
 	status = dictionary_get(&dictionary, IONIZE(key, int), new_value);
 
-	if (status == err_ok) {
+	if (status.error == err_ok) {
 		printf("Got the value back of '%s' stored in %d.\n", value, key);
 	}
 	else {

@@ -4,14 +4,15 @@ project(test_linear_hash)
 set(SOURCE_FILES
     test_linear_hash.h
     test_linear_hash.c
-    test_linear_hash_dictionary.h
-    test_linear_hash_dictionary.c
+#    test_linear_hash_dictionary.h
+#    test_linear_hash_dictionary.c
     test_linear_hash_dictionary_handler.h
     test_linear_hash_dictionary_handler.c
     test_file_linked_list.h
     test_file_linked_list.c
-    ../generic_dictionary_test.h
-    ../generic_dictionary_test.c)
+#    ../generic_dictionary_test.h
+#    ../generic_dictionary_test.c)
+	)
 
 if(USE_ARDUINO)
     set(${PROJECT_NAME}_BOARD       ${BOARD})
@@ -29,4 +30,11 @@ else()
     add_executable(${PROJECT_NAME}          ${SOURCE_FILES} run_linear_hash.c)
 
     target_link_libraries(${PROJECT_NAME}   planck_unit linear_hash m)
+
+    # Use cmake -DCOVERAGE_TESTING=ON to include coverage testing information.
+    if (CMAKE_COMPILER_IS_GNUCC AND COVERAGE_TESTING)
+        set(GCC_COVERAGE_COMPILE_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
+        set(CMAKE_C_OUTPUT_EXTENSION_REPLACE 1)
+    endif()
 endif()

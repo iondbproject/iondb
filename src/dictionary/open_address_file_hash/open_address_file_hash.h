@@ -40,8 +40,8 @@ typedef struct file_hashmap file_hashmap_t;
 @brief		Struct used to maintain individual records in the hashmap.
 */
 typedef struct hash_bucket {
-	char			status;			/**< the status of the bucket */
-	unsigned char	data[];			/**< the data in the bucket */
+	char		status;				/**< the status of the bucket */
+	ion_byte_t	data[];			/**< the data in the bucket */
 } hash_bucket_t;
 
 /**
@@ -143,7 +143,7 @@ oafh_get_location(
 				The value that is being inserted.
 @return	 The status of the insert.
 */
-err_t
+ion_status_t
 oafh_insert(
 	file_hashmap_t	*hash_map,
 	ion_key_t		key,
@@ -164,7 +164,7 @@ oafh_insert(
 				The value that is being inserted.
 @return		The status of the update
 */
-err_t
+ion_status_t
 oafh_update(
 	file_hashmap_t	*hash_map,
 	ion_key_t		key,
@@ -206,7 +206,7 @@ oafh_find_item_loc(
 @param		size
 				The number of buckets available in the map.
 */
-err_t
+ion_status_t
 oafh_delete(
 	file_hashmap_t	*hash_map,
 	ion_key_t		key
@@ -227,7 +227,7 @@ oafh_delete(
 @param		value
 				The value associated in the map.
 */
-err_t
+ion_status_t
 oafh_query(
 	file_hashmap_t	*hash_map,
 	ion_key_t		key,

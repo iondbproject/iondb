@@ -55,7 +55,7 @@ extern "C" {
 				being used.
 @return		A status describing the result of dictionary creation.
 */
-status_t
+err_t
 dictionary_create(
 	dictionary_handler_t	*handler,
 	dictionary_t			*dictionary,
@@ -77,7 +77,7 @@ dictionary_create(
 				The value to store under @p key.
 @returns	A status describing the result of the insertion.
 */
-status_t
+ion_status_t
 dictionary_insert(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -95,7 +95,7 @@ dictionary_insert(
 				A pointer to the value byte array to copy data into.
 @return		A status describing the result of the retrieval.
 */
-status_t
+ion_status_t
 dictionary_get(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -110,7 +110,7 @@ dictionary_get(
 				The key to retrieve the value for.
 @return		A status describing the result of the deletion.
 */
-status_t
+ion_status_t
 dictionary_delete(
 	dictionary_t	*dictionary,
 	ion_key_t		key
@@ -126,7 +126,7 @@ dictionary_delete(
 @param		value
 				The value to update records with.
 */
-status_t
+ion_status_t
 dictionary_update(
 	dictionary_t	*dictionary,
 	ion_key_t		key,
@@ -140,7 +140,7 @@ dictionary_update(
 				The dictionary instance to destroy.
 @return		The status of the total destruction of the dictionary.
 */
-status_t
+err_t
 dictionary_delete_dictionary(
 	dictionary_t *dictionary
 );
@@ -148,7 +148,7 @@ dictionary_delete_dictionary(
 /**
 @brief		Compares two unsigned integer numeric keys
 @details	Compares two ion_key_t assuming that they are of arbitrary
-			length and integer, unsigned and numeric (ie not a char[]).  The
+			length and integer, unsigned and numeric (ie not a char[]). The
 			following values will be returned:
 
 				@p first_key > @p second_key return 1
@@ -156,7 +156,11 @@ dictionary_delete_dictionary(
 				@p first_key < @p second_key return -1
 
 			This works for all integer numeric types for unsigned values
-			as long as both keys are of the same type.
+			as long as both keys are of the same type. You'll notice a weird
+			math expression being expressed when computing the return value.
+			This value is written in this a weird way to give us the desired
+			{-1, 0, 1} range of return values. Draw out a table and the reasoning
+			will become immediately obvious.
 @param	  first_key
 				The pointer to the first key in the comparison.
 @param	  second_key

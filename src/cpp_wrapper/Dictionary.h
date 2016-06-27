@@ -63,19 +63,12 @@ insert(
 	return err;
 }
 
-/**
-@brief		Retrieve a value given a key.
-
-@param		key
-				The key to retrieve the value for.
-@return		The value corresponding to the given key.
-*/
 template <typename V>V
 get(
 	K key
 ) {
-	ion_key_t		ion_key = (ion_key_t) &key;
-	unsigned char	ion_value[dict.instance->record.value_size];
+	ion_key_t	ion_key = (ion_key_t) &key;
+	ion_byte_t	ion_value[dict.instance->record.value_size];
 
 	this->last_status = dictionary_get(&dict, ion_key, ion_value);
 

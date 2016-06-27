@@ -27,14 +27,14 @@ test_query(
 
 	data = (ion_value_t) malloc(record->value_size);
 
-	err_t error = dictionary_get(&*test_dictionary, (ion_key_t) &key, (ion_value_t) data);
+	ion_status_t status = dictionary_get(&*test_dictionary, (ion_key_t) &key, (ion_value_t) data);
 
-	if (error == err_ok) {
+	if (status.error == err_ok) {
 		int		idx;
 		int		key = *((int *) data);
 		char	*value;
 
-		value = (char *) (data + record->key_size);
+		value = (char *) data + record->key_size;
 		io_printf("Key: %i\n", key);
 
 		for (idx = 0; idx < record->value_size; idx++) {
@@ -45,7 +45,7 @@ test_query(
 		free(data);
 	}
 	else {
-		io_printf("error %i\n", error);
+		io_printf("error %i\n", status.error);
 	}
 }
 
