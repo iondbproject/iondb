@@ -58,8 +58,8 @@ initialize_file_hash_map(
 	record_info_t	*record,
 	file_hashmap_t	*map
 ) {
-	oafh_initialize(map, oafh_compute_simple_hash, /*dictionary_compare_signed_value,*/ map->super.key_type, record->key_size, record->value_size, size);
 	map->super.compare = dictionary_compare_signed_value;
+	oafh_initialize(map, oafh_compute_simple_hash, /*dictionary_compare_signed_value,*/ map->super.key_type, record->key_size, record->value_size, size);
 }
 
 void
@@ -105,8 +105,7 @@ test_open_address_file_hashmap_initialize(
 	PLANCK_UNIT_ASSERT_TRUE(tc, map.compute_hash == &oafh_compute_simple_hash);
 	PLANCK_UNIT_ASSERT_TRUE(tc, map.write_concern == wc_insert_unique);
 
-	fclose(map.file);
-	fremove(TEST_FILE);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oafh_destroy(&map));
 }
 
 /**
@@ -127,6 +126,8 @@ test_open_address_file_hashmap_compute_simple_hash(
 	for (i = 0; i < MAX_HASH_TEST; i++) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, (i % map.map_size) == oafh_compute_simple_hash(&map, (ion_key_t) ((int *) &i), sizeof(i)));
 	}
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oafh_destroy(&map));
 }
 
 /**
@@ -230,8 +231,7 @@ test_open_address_file_hashmap_find_item_location(
 	}
 
 	free(item);
-	fclose(map.file);
-	fremove(TEST_FILE);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oafh_destroy(&map));
 }
 
 /**
@@ -297,8 +297,7 @@ test_open_address_file_hashmap_simple_insert(
 		}
 	}
 
-	fclose(map.file);
-	fremove(TEST_FILE);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oafh_destroy(&map));
 }
 
 /**
@@ -347,8 +346,7 @@ test_open_address_file_hashmap_simple_insert_and_query(
 		}
 	}
 
-	fclose(map.file);
-	fremove(TEST_FILE);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oafh_destroy(&map));
 }
 
 /**
@@ -419,9 +417,7 @@ test_open_address_file_hashmap_simple_delete(
 	}
 
 	free(value);
-
-	fclose(map.file);
-	fremove(TEST_FILE);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oafh_destroy(&map));
 }
 
 /**
@@ -470,8 +466,7 @@ test_open_address_file_hashmap_duplicate_insert_1(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
 	}
 
-	fclose(map.file);
-	fremove(TEST_FILE);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oafh_destroy(&map));
 }
 
 /**
@@ -566,8 +561,7 @@ test_open_address_file_hashmap_duplicate_insert_2(
 		}
 	}
 
-	fclose(map.file);
-	fremove(TEST_FILE);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oafh_destroy(&map));
 }
 
 /**
@@ -658,8 +652,7 @@ test_open_address_file_hashmap_update_1(
 		}
 	}
 
-	fclose(map.file);
-	fremove(TEST_FILE);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oafh_destroy(&map));
 }
 
 /**
@@ -748,8 +741,7 @@ test_open_address_file_hashmap_update_2(
 		}	/* must free value after query */
 	}
 
-	fclose(map.file);
-	fremove(TEST_FILE);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oafh_destroy(&map));
 }
 
 /**
@@ -795,8 +787,8 @@ test_open_address_file_hashmap_delete_1(
 	status = oafh_delete(&map, (ion_key_t) (&i));
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
-	fclose(map.file);
-	fremove(TEST_FILE);
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oafh_destroy(&map));
 }
 
 /**
@@ -911,8 +903,7 @@ test_open_address_file_hashmap_delete_2(
 		}
 	}
 
-	fclose(map.file);
-	fremove(TEST_FILE);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oafh_destroy(&map));
 }
 
 /**
@@ -984,10 +975,7 @@ test_open_address_file_hashmap_capacity(
 	}
 
 	free(value);
-
-	fclose(map.file);
-
-	fremove(TEST_FILE);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oafh_destroy(&map));
 }
 
 planck_unit_suite_t *

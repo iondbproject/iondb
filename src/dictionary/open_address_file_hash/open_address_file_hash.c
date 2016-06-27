@@ -41,7 +41,7 @@ oafh_initialize(
 
 	int record_size = SIZEOF(STATUS) + hashmap->super.record.key_size + hashmap->super.record.value_size;
 
-	file_record			= (hash_bucket_t *) malloc(record_size);
+	file_record			= (hash_bucket_t *) calloc(record_size, 1);
 	file_record->status = EMPTY;
 
 	/* write out the records to disk to prep */
@@ -52,18 +52,21 @@ oafh_initialize(
 	int i, writes = 0;
 
 	for (i = 0; i < hashmap->map_size; i++) {
-		writes += fwrite(file_record, record_size, 1, hashmap->file);
+		writes += fwrite(&file_record->status, SIZEOF(STATUS), 1, hashmap->file);
+		writes += fwrite(file_record->data, record_size - SIZEOF(STATUS), 1, hashmap->file);
 	}
 
 	fflush(hashmap->file);
 
-	if (writes != hashmap->map_size) {
+	if (writes / 2 != hashmap->map_size) {
 		fclose(hashmap->file);
 		return err_file_write_error;
 	}
 
 	hashmap->compute_hash = (*hashing_function);/* Allows for binding of different hash functions
 																depending on requirements */
+
+	free(file_record);
 
 	return err_ok;
 }
@@ -232,7 +235,8 @@ oafh_find_item_loc(
 
 	/* needs to traverse file again */
 	while (count != hash_map->map_size) {
-		fread(item, record_size, 1, hash_map->file);
+		fread(&item->status, SIZEOF(STATUS), 1, hash_map->file);
+		fread(item->data, record_size - SIZEOF(STATUS), 1, hash_map->file);
 
 		if (item->status == EMPTY) {
 			free(item);
@@ -291,13 +295,16 @@ oafh_delete(
 		/* set file position */
 		fseek(hash_map->file, loc * record_size, SEEK_SET);
 
-		fread(item, record_size, 1, hash_map->file);
+		fread(&item->status, SIZEOF(STATUS), 1, hash_map->file);
+		fread(item->data, record_size - SIZEOF(STATUS), 1, hash_map->file);
 
 		item->status = DELETED;	/* delete item */
 
 		/* backup */
 		fseek(hash_map->file, -record_size, SEEK_CUR);
-		fwrite(item, record_size, 1, hash_map->file);
+		fwrite(&item->status, SIZEOF(STATUS), 1, hash_map->file);
+		fwrite(item->data, record_size - SIZEOF(STATUS), 1, hash_map->file);
+
 		free(item);
 #if DEBUG
 		io_printf("Item deleted at location %d\n", loc);
@@ -346,7 +353,7 @@ oafh_compute_simple_hash(
 	int				size_of_key
 ) {
 	/* convert to a hashable value */
-	hash_t hash = ((hash_t) (*(int *) key)) % hashmap->map_size;
+	hash_t hash = (hash_t) ((*(int *) key) + hashmap->map_size) % hashmap->map_size;
 
 	return hash;
 }
