@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		LinearHash.h
+@file
 @author		Dana Klamut
 @brief	  The C++ implementation of a linear hash based dictionary.
 */

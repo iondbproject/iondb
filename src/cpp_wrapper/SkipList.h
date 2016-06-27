@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		SkipList.h
+@file
 @author		Dana Klamut
 @brief	  The C++ implementation of a skip list dictionary.
 */

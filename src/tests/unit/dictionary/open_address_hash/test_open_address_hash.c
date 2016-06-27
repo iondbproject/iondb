@@ -1,5 +1,5 @@
 /**
-@file		test_open_address.c
+@file
 @author		Scott Ronald Fazackerley
 
 @details	Tests base operations for open address hash map

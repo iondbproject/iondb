@@ -1,6 +1,11 @@
+/******************************************************************************/
 /**
- * @file flat_file_dictionary.h
- */
+@file
+@author		Scott Ronald Fazackerley
+@brief		Headers and types for the flat file dictionary implementation.
+*/
+/******************************************************************************/
+
 #if !defined(FLAT_FILE_DICTIONARY_H_)
 #define FLAT_FILE_DICTIONARY_H_
 

@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		open_address_file.h
+@file
 @author		Scott Ronald Fazackerley
 @brief		A hash table using linear probing. Designed for in memory use.
 */

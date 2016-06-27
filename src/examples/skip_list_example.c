@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		skip_list.c
+@file
 @author		Kris Wallperington
 @brief		Functional test for Skiplist KV implementation
 */

@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		skip_list_handler.h
+@file
 @author		Kris Wallperington
 @brief		Handler liaison between dictionary API and skip_list implementation
 */

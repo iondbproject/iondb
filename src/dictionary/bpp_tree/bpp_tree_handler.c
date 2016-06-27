@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file	   bpp_tree_handler.c
+@file
 @author		Graeme Douglas
 @brief		The handler for a disk-backed B+ Tree.
  */

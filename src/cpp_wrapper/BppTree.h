@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		BppTree.h
+@file
 @author		Dana Klamut
 @brief	  The C++ implementation of a B+ tree dictionary.
 */

@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		bpp_tree_handler.h
+@file
 @author		Graeme Douglas
 @brief		The handler for a B+ tree.
 */
@@ -101,18 +101,21 @@ bpptree_query(
 @details	Creates as instance of a dictionary given a @p key_size and
 			@p value_size, in bytes. The @p dictionary_size parameter is
 			not used for this implementation, as there is no size bound.
-
-@param	  key_size
+@param		id
+				ID of a dictionary that's given to us.
+@param		key_type
+				The key category given to us.
+@param		key_size
 				The size of the key in bytes.
-@param	  value_size
+@param		value_size
 				The size of the value in bytes.
-@param	  dictionary_size
+@param		dictionary_size
 				The size of the hashmap in discrete units
 @param		compare
 				Function pointer for the comparison function for the collection.
-@param	  handler
+@param		handler
 				 THe handler for the specific dictionary being created.
-@param	  dictionary
+@param		dictionary
 				 The pointer declared by the caller that will reference
 				 the instance of the dictionary created.
 @return		The status of the creation of the dictionary.

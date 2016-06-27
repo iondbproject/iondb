@@ -550,11 +550,11 @@ lh_action_primary_page(
 	ion_value_t value
 );
 
-/*@FIXME - Make sure that value is malloc'd before call? */
+/*FIXME - Make sure that value is malloc'd before call? */
 /**
  * @brief - this searches for the value but does not get it but only records
  * the location.
- * @FIXME - not really happy with this.
+ * FIXME - not really happy with this.
  * @param hash_map
  * @param cache_number
  * @param cursor

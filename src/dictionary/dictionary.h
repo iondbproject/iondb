@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		dictionary.h
+@file
 @author		Graeme Douglas, Scott Fazackerley
 @brief		Interface defining how general dictionaries behave.
 @copyright	Copyright 2016

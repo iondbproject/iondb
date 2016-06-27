@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		test_skip_list_handler.c
+@file
 @author		Kris Wallperington
 @brief		Unit tests for skip_list handler interface.
 */

@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		sltests.h
+@file
 @author		Kris Wallperington
 @brief		Contains test defines and constants unique to skip_list tests.
 */

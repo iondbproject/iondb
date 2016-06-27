@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		FlatFile.h
+@file
 @author		Dana Klamut
 @brief	  The C++ implementation of a flat file dictionary.
 */

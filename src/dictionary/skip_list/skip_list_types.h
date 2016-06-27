@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		skip_list_types.c
+@file
 @author		Kris Wallperington
 @brief		Contains all types local to the skip_list data structure
 */

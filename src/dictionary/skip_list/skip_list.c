@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		skip_list_store.c
+@file
 @author		Kris Wallperington
 @brief		Implementation of a Skiplist data store
 */

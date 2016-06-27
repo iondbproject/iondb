@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		test_skip_list_store.c
+@file
 @author		Kris Wallperington
 @brief		Unit tests for Skiplist data store
 */

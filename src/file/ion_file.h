@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		ion_file.h
+@file
 @author		Graeme Douglas
 @brief		A file API for the ionDB.
 @todo		Include support for other file systems (Arduino, Contiki).

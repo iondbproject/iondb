@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		linear_hash.c
+@file
 @author		Scott Ronald Fazackerley
 @brief		Linear Hash
 @details	The linear hash map allows non-colliding entries into a disk based hash table
@@ -345,7 +345,7 @@ lh_insert(
 	/*Bring the primary page into cache */
 	lh_cache_pp(hash_map, 0, bucket_number, &cache);
 
-	/*@FIXME - need cache block mgr */
+	/*FIXME - need cache block mgr */
 	ion_status_t status = lh_action_primary_page(hash_map, cache, bucket_number, key, lh_insert_item_action, value);
 
 	if (status.error == err_ok) {
@@ -410,7 +410,7 @@ lh_split(
 	l_hash_bucket_t *item;
 
 	while (count != RECORDS_PER_BUCKET) {
-		/*@FIXME */
+		/*FIXME */
 		/*advance through page */
 		lh_read_cache(hash_map, lower_cache, count, (void *) &item);
 
@@ -422,7 +422,7 @@ lh_split(
 
 			if (hash_set.lower_hash != hash_set.upper_hash) {
 				/* * move this record to the new bucket */
-				/*@FIXME */
+				/*FIXME */
 				lh_write_cache_raw(hash_map, upper_cache, (upper_cache->cached_bucket + upper_bucket_idx * hash_map->record_size), item, hash_map->record_size);
 				upper_bucket_idx++;	/* * advance counter to next record */
 				lh_write_record_status_in_cache(hash_map, item, DELETED);
@@ -437,7 +437,7 @@ lh_split(
 		int tmp_idx = upper_bucket_idx;
 
 		while (tmp_idx < RECORDS_PER_BUCKET) {
-			/*@FIXME */
+			/*FIXME */
 			lh_read_cache(hash_map, upper_cache, tmp_idx, (void *) &item);
 			lh_write_record_status_in_cache(hash_map, item, EMPTY);
 			tmp_idx++;
@@ -489,7 +489,7 @@ lh_split(
 						/*advance through page looking for a space */
 						if (item->status != IN_USE) {
 							/*if location is not being used, use it */
-							/* item->status = IN_USE;		/ ** @FIXME consider using function to change status but as item is being written out * / */
+							/* item->status = IN_USE;		/ ** FIXME consider using function to change status but as item is being written out * / */
 							lh_write_record_status_in_cache(hash_map, item, IN_USE);
 							lh_write_cache_raw(hash_map, lower_cache, item->data, (void *) ll_node->data, hash_map->record_size - 1);
 							/*copy in record which should change the state of the cache but does not include status coming from LL */
@@ -875,7 +875,7 @@ lh_query(
 	int bucket_number = lh_compute_bucket_number(hash_map, &hash_set);
 
 	/*and search it */
-	/*@FIXME need cache block mgr */
+	/*FIXME need cache block mgr */
 
 	lh_cache_pp(hash_map, 0, bucket_number, &cache);
 
@@ -1234,7 +1234,7 @@ lh_flush_cache(
 			fseek(hash_map->file, 0, SEEK_END);	/*and add new bucket */
 		}
 
-		/*@FIXME better calculation that direct seek?*/
+		/*FIXME better calculation that direct seek?*/
 		/*backup and write back */
 		fwrite(cache->cached_bucket, bucket_size, 1, hash_map->file);
 	}

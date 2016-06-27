@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		open_address_file.c
+@file
 @author		Scott Ronald Fazackerley
 @brief		Open Address Hash Map
 @details	The open address hash map allows non-colliding entries into a hash table

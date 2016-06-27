@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
- @file	  open_address_file_dictionary_handler.c
+ @file
  @author		Scott Ronald Fazackerley
  @brief		The handler for a hash table using linear probing.
  */

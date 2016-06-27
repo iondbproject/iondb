@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		OpenAddressFileHash.h
+@file
 @author		Dana Klamut
 @brief	  The C++ implementation of an open address file hash based
 			dictionary.

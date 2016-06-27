@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		flat_file_dictionary_handler.h
+@file
 @author		Scott Ronald Fazackerley
 @brief		The handler for a flat file to store data.
 */
@@ -203,7 +203,7 @@ ffdict_delete_dictionary(
 /**
 @brief		Updates the value for a given key.
 
-@details	Updates the value for a given @pkey.  If the key does not currently
+@details	Updates the value for a given @p key.  If the key does not currently
 			exist in the hashmap, it will be created and the value sorted.
 
 @param	  dictionary
@@ -342,11 +342,11 @@ ffdict_destroy_cursor(
 );
 
 /**
-@brief		Tests the supplied @pkey against the predicate registered in the
+@brief		Tests the supplied @p key against the predicate registered in the
 			cursor.
 
 @param	  cursor
-				The cursor and predicate being used to test @pkey against.
+				The cursor and predicate being used to test @p key against.
 @param	  key
 				The key to test.
 @return		The result is the key passes or fails the predicate test.

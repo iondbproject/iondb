@@ -1,5 +1,5 @@
 /**
-@file	   test_flat_file_dictionary_handler.c
+@file
 
 @author		Scott Ronald Fazackerley
 
@@ -885,7 +885,7 @@ test_linear_hash_dictionary_predicate_range_signed(
 
 	cursor									= (dict_cursor_t *) malloc(sizeof(lhdict_cursor_t));
 
-	/*@FIXME */
+	/*FIXME */
 	cursor->destroy							= lhdict_destroy_cursor;
 
 	((lhdict_cursor_t *) cursor)->overflow	= NULL;
@@ -958,7 +958,7 @@ test_linear_hash_dictionary_predicate_range_unsigned(
 	dict_cursor_t *cursor;	/* create a new cursor pointer */
 
 	cursor									= (dict_cursor_t *) malloc(sizeof(lhdict_cursor_t));
-	/*@FIXME */
+	/*FIXME */
 	cursor->destroy							= lhdict_destroy_cursor;
 
 	((lhdict_cursor_t *) cursor)->overflow	= NULL;

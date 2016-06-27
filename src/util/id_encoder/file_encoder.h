@@ -89,7 +89,7 @@ typedef struct config {
 /**
 @brief		Filename type, containing all information relevent to opening
 			the file.
-@details	For more information, see @ref struct filename.
+@details	For more information, see @ref filename.
 */
 typedef struct filename fe_filename_t;
 
