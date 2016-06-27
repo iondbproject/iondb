@@ -14,7 +14,7 @@
 #include "../dictionary/dictionary_types.h"
 #include "../kv_system.h"
 
-template <class K>class Dictionary{
+template <class K>class Dictionary {
 public:
 
 dictionary_handler_t	handler;
@@ -33,8 +33,7 @@ initializeDictionary(
 	int			value_size,
 	int			dictionary_size
 ) {
-	err_t err = dictionary_create(&handler, &dict, 0, type_key, key_size, value_size, dictionary_size
-				);
+	err_t err = dictionary_create(&handler, &dict, 0, type_key, key_size, value_size, dictionary_size);
 
 	size_k	= key_size;
 	size_v	= value_size;
@@ -78,7 +77,7 @@ get(
 	ion_key_t		ion_key = (ion_key_t) &key;
 	unsigned char	ion_value[dict.instance->record.value_size];
 
-	this->last_status		= dictionary_get(&dict, ion_key, ion_value);
+	this->last_status = dictionary_get(&dict, ion_key, ion_value);
 
 	return *((V *) ion_value);
 }
