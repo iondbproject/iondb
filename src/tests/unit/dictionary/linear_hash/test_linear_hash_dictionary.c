@@ -6,7 +6,7 @@ run_linearHashDictionary_generic_test_set_1(
 ) {
 	generic_test_t test;
 
-	init_generic_dictionary_test(&test, lhdict_init, key_type_numeric_signed, sizeof(int), sizeof(int), 256	/** initial size for lh */
+	init_generic_dictionary_test(&test, lhdict_init, key_type_numeric_signed, sizeof(int), sizeof(int), 256	/*initial size for lh */
 	);
 
 	dictionary_test_init(&test, tc);
@@ -15,7 +15,7 @@ run_linearHashDictionary_generic_test_set_1(
 
 	dictionary_test_insert_get_edge_cases(&test, tc);
 
-	/**What are return codes */
+	/*hat are return codes */
 	/*int to_delete[] = {7, -9, 32, 1000001};
 	int i;
 

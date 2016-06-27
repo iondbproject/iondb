@@ -137,7 +137,7 @@ main(
 
 	cout << "Key: " << key33 << " Value: " << rec33.value << endl;
 
-	/** Master table method calls need more thought */
+	/*Master table method calls need more thought */
 	/* printf("Creating the master table...\n"); */
 	/* btree->createMasterTable(); */
 

@@ -33,7 +33,7 @@ ff_initialize(
 		return err_file_open_error;
 	}
 
-	/** @todo move to parent? */
+	/*@todo move to parent? */
 	file->write_concern				= wc_insert_unique;			/* By default allow unique inserts only */
 	file->super.record.key_size		= key_size;
 	file->super.record.value_size	= value_size;
@@ -117,7 +117,7 @@ ff_insert(
 	ion_key_t	key,
 	ion_value_t value
 ) {
-/** @todo requires massive cleanup for function exit */
+/*@todo requires massive cleanup for function exit */
 	f_file_record_t *record;
 
 	int record_size = file->super.record.key_size + file->super.record.value_size + SIZEOF(STATUS);
@@ -210,7 +210,7 @@ ff_insert(
 	} while (!feof(file->file_ptr));/* loop until a deleted location or EOF */
 
 	free(record);
-	return ION_STATUS_OK(1);	/* this needs to be corrected */
+	return ION_STATUS_OK(1);/* this needs to be corrected */
 }
 
 err_t
@@ -261,8 +261,8 @@ ff_find_item_loc(
 			}
 		}
 
-		if (!feof(file->file_ptr) && DELETED != record->status) {
-			/** @todo correct compare to use proper return type*/
+		if (!feof(file->file_ptr) && (DELETED != record->status)) {
+			/*@todo correct compare to use proper return type*/
 			int key_is_equal = file->super.compare((ion_key_t) record->data, key, file->super.record.key_size);
 
 			if (IS_EQUAL == key_is_equal) {
@@ -284,7 +284,8 @@ ff_delete(
 ) {
 	ion_fpos_t		loc = UNINITIALISED;		/* position to delete */
 	ion_status_t	status;					/* return status */
-	status = ION_STATUS_CREATE(err_item_not_found, 0); /* init such that record will not be found */
+
+	status = ION_STATUS_CREATE(err_item_not_found, 0);	/* init such that record will not be found */
 
 	while (err_item_not_found != ff_find_item_loc(file, key, &loc)) {
 		f_file_record_t record;
@@ -326,10 +327,12 @@ ff_query(
 #if DEBUG
 		io_printf("Item found at location %d\n", loc);
 #endif
+
 		/* isolate value from record */
 		if (0 != fseek(file->file_ptr, loc + SIZEOF(STATUS) + file->super.record.key_size, SEEK_SET)) {
 			return ION_STATUS_ERROR(err_file_bad_seek);
 		}
+
 		/* copy the value from file to memory */
 		if (0 == fread(value, file->super.record.value_size, 1, file->file_ptr)) {
 			return ION_STATUS_ERROR(err_file_read_error);

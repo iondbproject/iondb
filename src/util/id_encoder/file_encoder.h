@@ -27,13 +27,13 @@
 #include "./../../kv_system.h"
 #include "../../dictionary/dictionary_types.h"
 
-/** Parent ID can be no more that 3 nibbles. */
+/* Parent ID can be no more that 3 nibbles. */
 #define MAX_PARENT_NIBBLES	3
-/** 4 bits per nibble. */
+/* 4 bits per nibble. */
 #define NUMBER_OF_BITS		4
-/** 8.3 + null ( 8 + 1 + 3 + 1 )=13. */
+/* 8.3 + null ( 8 + 1 + 3 + 1 )=13. */
 #define FILENAME_SIZE		13
-/** 3 digits for type code. */
+/* 3 digits for type code. */
 #define SIZE_OF_TYPE_CODE	3
 
 /**

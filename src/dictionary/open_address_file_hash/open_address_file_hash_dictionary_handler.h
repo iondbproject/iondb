@@ -19,7 +19,7 @@ extern "C" {
 #include "open_address_file_hash.h"
 #include "open_address_file_hash_dictionary.h"
 
-/**redefines file operations for arduino */
+/*edefines file operations for arduino */
 #include "./../../file/SD_stdio_c_iface.h"
 
 /**
@@ -315,7 +315,7 @@ oafdict_next(
 @return		If the keys are equal.
  */
 boolean_t
-/**@TODO Fix name of function */
+/*TODO Fix name of function */
 oafdict_is_equal(
 	dictionary_t	*dict,
 	ion_key_t		key1,

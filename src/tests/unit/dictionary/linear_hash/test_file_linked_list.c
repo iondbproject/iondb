@@ -56,13 +56,13 @@ test_file_linked_list_initialize(
 
 	fe_filename_t filename;
 
-	filename.instance_id			= id;			/** This is the parent id */
+	filename.instance_id			= id;			/*This is the parent id */
 	filename.type.child.child_id	= 0;
 	fe_encode_child_id(&filename);
 
 	/* valid correct map settings */
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == strcmp(linked_list_file.file_name, filename.type.child.child_filename));
-	/** clean up filename */
+	/*clean up filename */
 	filename.destroy(&filename);
 
 	/* check that the first node is actually the head */
@@ -71,7 +71,7 @@ test_file_linked_list_initialize(
 	/* when reading raw, allocate entire node */
 	node						= (char *) malloc(sizeof(char) * (linked_list_file.node_size));
 
-	/** Reset the position to the start of the list, otherwise you will get the node after this.
+	/*Reset the position to the start of the list, otherwise you will get the node after this.
 	 * This is a special case for testing */
 	linked_list_file.current	= HEAD_NODE;
 	fll_get(&linked_list_file, (ll_file_node_t *) node);
@@ -204,13 +204,13 @@ test_file_linked_list_insert(
 	fll_insert(&linked_list_file, ll_node);
 	free(node);
 
-	/** Read file directly to ensure that it is working*/
+	/*Read file directly to ensure that it is working*/
 	frewind(linked_list_file.file);
 
 	ll_file_node_t *read_node;
 
-	read_node = (ll_file_node_t *) malloc(linked_list_file.node_size);	/** Allocate space for node */
-	/** Each record is 18 bytes.  First Record is head node and does not contain a key */
+	read_node = (ll_file_node_t *) malloc(linked_list_file.node_size);	/*Allocate space for node */
+	/*Each record is 18 bytes.  First Record is head node and does not contain a key */
 
 	/* this is the head node */
 	fread(read_node, linked_list_file.node_size, 1, linked_list_file.file);
@@ -290,7 +290,7 @@ test_file_linked_list_next(
 		free(node);
 	}
 
-	/**Reset iterator */
+	/*eset iterator */
 	fll_reset(&linked_list_file);
 
 	int key_array_ans[] = { 8, 10, 11, 13, 50 };
@@ -418,7 +418,7 @@ test_file_linked_list_delete(
 
 	fll_delete(&linked_list_file, (ion_key_t) &delete_key);
 
-	fll_reset(&linked_list_file);	/** reset iterator /*/
+	fll_reset(&linked_list_file);	/*reset iterator /*/
 
 	int key_array_ans[] = { 10, 11, 13, 50 };
 
@@ -530,7 +530,7 @@ test_file_linked_list_remove(
 		free(node);
 	}
 
-	fll_reset(&linked_list_file);	/** reset iterator /*/
+	fll_reset(&linked_list_file);	/*reset iterator /*/
 
 	int key_array_ans[] = { 8, 10, 11, 13, 50 };
 
@@ -544,7 +544,7 @@ test_file_linked_list_remove(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == fll_next(&linked_list_file, node));
 	free(node);
 
-	fll_reset(&linked_list_file);	/** reset iterator */
+	fll_reset(&linked_list_file);	/*reset iterator */
 	idx		= 0;
 	node	= (ll_file_node_t *) malloc(linked_list_file.node_size);
 
@@ -599,7 +599,7 @@ test_file_linked_list_remove2(
 
 	node = (ll_file_node_t *) malloc(linked_list_file.node_size);
 
-	fll_reset(&linked_list_file);	/** reset iterator */
+	fll_reset(&linked_list_file);	/*reset iterator */
 
 	int key_array_ans[] = { 8, 10, 11, 13, 50 };
 
@@ -610,7 +610,7 @@ test_file_linked_list_remove2(
 	PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++] == *(int *) node->data);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == fll_remove(&linked_list_file));
 
-	fll_reset(&linked_list_file);	/** reset iterator and check list*/
+	fll_reset(&linked_list_file);	/*reset iterator and check list*/
 
 	while (fll_next(&linked_list_file, node) != err_item_not_found) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++] == *(int *) node->data);
@@ -618,13 +618,13 @@ test_file_linked_list_remove2(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == fll_next(&linked_list_file, node));
 
-	fll_reset(&linked_list_file);	/** reset iterator and check list*/
+	fll_reset(&linked_list_file);	/*reset iterator and check list*/
 	idx = 1;
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == fll_next(&linked_list_file, node));
 	PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++] == *(int *) node->data);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == fll_remove(&linked_list_file));
 
-	fll_reset(&linked_list_file);	/** reset iterator and check list*/
+	fll_reset(&linked_list_file);	/*reset iterator and check list*/
 
 	while (fll_next(&linked_list_file, node) != err_item_not_found) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++] == *(int *) node->data);
@@ -632,13 +632,13 @@ test_file_linked_list_remove2(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == fll_next(&linked_list_file, node));
 
-	fll_reset(&linked_list_file);	/** reset iterator and check list*/
+	fll_reset(&linked_list_file);	/*reset iterator and check list*/
 	idx = 2;
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == fll_next(&linked_list_file, node));
 	PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++] == *(int *) node->data);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == fll_remove(&linked_list_file));
 
-	fll_reset(&linked_list_file);	/** reset iterator and check list*/
+	fll_reset(&linked_list_file);	/*reset iterator and check list*/
 
 	while (fll_next(&linked_list_file, node) != err_item_not_found) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++] == *(int *) node->data);
@@ -646,13 +646,13 @@ test_file_linked_list_remove2(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == fll_next(&linked_list_file, node));
 
-	fll_reset(&linked_list_file);	/** reset iterator and check list*/
+	fll_reset(&linked_list_file);	/*reset iterator and check list*/
 	idx = 3;
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == fll_next(&linked_list_file, node));
 	PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++] == *(int *) node->data);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == fll_remove(&linked_list_file));
 
-	fll_reset(&linked_list_file);	/** reset iterator and check list*/
+	fll_reset(&linked_list_file);	/*reset iterator and check list*/
 
 	while (fll_next(&linked_list_file, node) != err_item_not_found) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++] == *(int *) node->data);
@@ -660,13 +660,13 @@ test_file_linked_list_remove2(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == fll_next(&linked_list_file, node));
 
-	fll_reset(&linked_list_file);	/** reset iterator and check list*/
+	fll_reset(&linked_list_file);	/*reset iterator and check list*/
 	idx = 4;
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == fll_next(&linked_list_file, node));
 	PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++] == *(int *) node->data);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == fll_remove(&linked_list_file));
 
-	fll_reset(&linked_list_file);	/** reset iterator and check list*/
+	fll_reset(&linked_list_file);	/*reset iterator and check list*/
 
 	while (fll_next(&linked_list_file, node) != err_item_not_found) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, key_array_ans[idx++] == *(int *) node->data);
@@ -674,7 +674,7 @@ test_file_linked_list_remove2(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == fll_next(&linked_list_file, node));
 
-	fll_reset(&linked_list_file);	/** reset iterator and check list*/
+	fll_reset(&linked_list_file);	/*reset iterator and check list*/
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == fll_next(&linked_list_file, node));
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_illegal_state == fll_remove(&linked_list_file));
 
@@ -728,7 +728,7 @@ test_file_linked_list_reopen(
 	free(node);
 
 	fclose(linked_list_file.file);
-	free(linked_list_file.file_name);	/** and free the name too as this is reallocated when the file is opened */
+	free(linked_list_file.file_name);	/*and free the name too as this is reallocated when the file is opened */
 
 	if (fll_open(&linked_list_file, fll_compare, record.key_size, record.value_size, 0, id) == err_item_not_found) {
 		fll_create(&linked_list_file, fll_compare, record.key_size, record.value_size, 0, id);

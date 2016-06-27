@@ -144,7 +144,7 @@ dictionary_compare_unsigned_value(
 	for (idx = key_size - 1; idx >= 0; idx--) {
 #else
 
-	/** @TODO This is a potential issue and needs to be tested on SAMD3 */
+	/*@TODO This is a potential issue and needs to be tested on SAMD3 */
 	for (idx = 0; idx < key_size; idx++) {
 #endif
 
@@ -194,7 +194,7 @@ dictionary_compare_signed_value(
 	for (; idx >= 0; idx--) {
 #else
 
-	/** @todo This is a potential issue and needs to be tested on SAMD3 */
+	/*@todo This is a potential issue and needs to be tested on SAMD3 */
 	for (; idx < key_size; idx++) {
 #endif
 		firstbyte	= *((ion_byte_t *) first_key + idx);

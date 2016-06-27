@@ -52,7 +52,7 @@ lhdict_insert(
 ) {
 	ion_status_t status = lh_insert((linear_hashmap_t *) dictionary->instance, key, value);
 
-	/** Check load factor and split if necessary*/
+	/*Check load factor and split if necessary*/
 
 	if (((linear_hashmap_t *) dictionary->instance)->use_split) {
 		if (SPLIT_THRESHOLD < lh_compute_load_factor((linear_hashmap_t *) dictionary->instance)) {
@@ -92,7 +92,7 @@ lhdict_create_dictionary(
 	/* this registers the dictionary the dictionary */
 	err_t err = lh_initialize((linear_hashmap_t *) dictionary->instance, lh_compute_hash, key_type, key_size, value_size, dictionary_size, id);
 
-	/**@TODO The correct comparison operator needs to be bound at run time
+	/*TODO The correct comparison operator needs to be bound at run time
 	 * based on the type of key defined
 	 */
 
@@ -102,7 +102,7 @@ lhdict_create_dictionary(
 		return err_ok;
 	}
 	else {
-		/** free instance as dictionary cannot be created */
+		/*free instance as dictionary cannot be created */
 		free(dictionary->instance);
 		return err;
 	}
@@ -138,7 +138,7 @@ lhdict_update(
 	return status;
 }
 
-/** @todo What do we do if the cursor is already active? */
+/*@todo What do we do if the cursor is already active? */
 err_t
 lhdict_find(
 	dictionary_t	*dictionary,
@@ -183,14 +183,14 @@ lhdict_find(
 			/* copy across the key value as the predicate may be destroyed */
 			memcpy((*cursor)->predicate->statement.equality.equality_value, predicate->statement.equality.equality_value, ((((linear_hashmap_t *) dictionary->instance)->super.record.key_size)));
 
-			/** @TODO find item needs to be fixed  - But how??*/
+			/*@TODO find item needs to be fixed  - But how??*/
 			if (lh_find((linear_hashmap_t *) dictionary->instance, *cursor) == err_item_not_found) {
 				(*cursor)->status = cs_end_of_results;
 				return err_ok;
 			}
 			else {
 				(*cursor)->status = cs_cursor_initialized;
-				/** @TODO  is there something that needs to be done here ?*/
+				/*@TODO  is there something that needs to be done here ?*/
 				return err_ok;
 			}
 
@@ -250,7 +250,7 @@ lhdict_next(
 	dict_cursor_t	*cursor,
 	ion_record_t	*record
 ) {
-	/** @TODO if the collection changes, then the status of the cursor needs to change */
+	/*@TODO if the collection changes, then the status of the cursor needs to change */
 	/* check the status of the cursor and if it is not valid or at the end, just exit */
 	if (cursor->status == cs_cursor_uninitialized) {
 		return cursor->status;
@@ -265,62 +265,62 @@ lhdict_next(
 
 		lh_page_cache_t *cache		= NULL;
 
-		/** If the cursor is not active, then you can just pull the value
+		/*If the cursor is not active, then you can just pull the value
 		 * otherwise you need to keep traversing to see if the value is valid
 		 */
 
 		int current_size = hash_map->initial_map_size * (1 << hash_map->file_level) + hash_map->bucket_pointer;
 
-		/** Could have to search multiple pages */
+		/*Could have to search multiple pages */
 		do {
 			if (((lhdict_cursor_t *) cursor)->overflow == NULL) {
-				/**Still searching in pp*/
-				/** The primary page needs to be processed */
+				/*till searching in pp*/
+				/*The primary page needs to be processed */
 				cursor->status = cs_cursor_active;
 
-				/** Cache pp and search for next value*/
+				/*Cache pp and search for next value*/
 				lh_cache_pp((linear_hashmap_t *) cursor->dictionary->instance, 0, ((lhdict_cursor_t *) cursor)->current_bucket, &cache);
 
-				/** search for next value record */
+				/*search for next value record */
 				err_t err = lh_search_primary_page((linear_hashmap_t *) cursor->dictionary->instance, cache, (lhdict_cursor_t *) cursor);
 
 				if (err == err_item_not_found) {
-					/** if the item is not found, invalidate the cursor */
+					/*if the item is not found, invalidate the cursor */
 
 					if (cursor->predicate->type == predicate_equality) {
-						/** in the event of a strict equality and there is an empty slot, search in done */
+						/*in the event of a strict equality and there is an empty slot, search in done */
 						cursor->status = cs_end_of_results;
 						return cursor->status;
 					}
 
-					/** else you will need to keep on searching */
-					/** and in fact there should not be an overflow page associated with a primary page that
+					/*else you will need to keep on searching */
+					/*and in fact there should not be an overflow page associated with a primary page that
 					 *  has an empty slot */
 				}
 				else if (err == err_ok) {
-					/** the value has been found */
+					/*the value has been found */
 					l_hash_bucket_t *item = NULL;
 
 					lh_read_cache(hash_map, cache, (((lhdict_cursor_t *) cursor)->record_pntr), (void *) &item);
 
 					memcpy(record->key, item->data, hash_map->super.record.key_size);
 					memcpy(record->value, item->data + hash_map->super.record.key_size, hash_map->super.record.value_size);
-					/**and update current cursor position to point to the next position*/
-					((lhdict_cursor_t *) cursor)->record_pntr++;/** what happens if we exceed page */
+					/*nd update current cursor position to point to the next position*/
+					((lhdict_cursor_t *) cursor)->record_pntr++;/*what happens if we exceed page */
 					return cursor->status;
 				}
 				else {
-					/** the value is not in the pp -> move onto overflow pages */
+					/*the value is not in the pp -> move onto overflow pages */
 #if DEBUG
 					io_printf("scanning overflow\n");
 #endif
 
 					if (((lhdict_cursor_t *) cursor)->overflow == NULL) {
-						/** no open overflow file */
+						/*no open overflow file */
 						((lhdict_cursor_t *) cursor)->overflow = (ll_file_t *) malloc(sizeof(ll_file_t));
 
 						if (fll_open(((lhdict_cursor_t *) cursor)->overflow, fll_compare, hash_map->super.record.key_size, hash_map->super.record.value_size, ((lhdict_cursor_t *) cursor)->current_bucket, hash_map->id) == err_item_not_found) {
-							/** in this case, cursor is null as value has not been found */
+							/*in this case, cursor is null as value has not been found */
 							if (cursor->predicate->type == predicate_equality) {
 								cursor->status							= cs_end_of_results;
 								free(((lhdict_cursor_t *) cursor)->overflow);
@@ -328,32 +328,32 @@ lhdict_next(
 								return cursor->status;
 							}
 							else {
-								/**need to process next page */
+								/*eed to process next page */
 								free(((lhdict_cursor_t *) cursor)->overflow);
 								((lhdict_cursor_t *) cursor)->overflow = NULL;
-								/**reset and advance? */
+								/*eset and advance? */
 							}
 						}
 						else {
-							/** reset ll cursor and start searching file */
+							/*reset ll cursor and start searching file */
 							fll_reset(((lhdict_cursor_t *) cursor)->overflow);
 						}
 					}
 				}
 			}
 
-			/** only process if overflow is active */
+			/*only process if overflow is active */
 			if (((lhdict_cursor_t *) cursor)->overflow != NULL) {
-				/** as the overflow file pntr is not null, the process */
+				/*as the overflow file pntr is not null, the process */
 				ll_file_node_t *item = (ll_file_node_t *) malloc(((lhdict_cursor_t *) cursor)->overflow->node_size);
 
 				if (cs_cursor_active == cursor->status) {
 					while (fll_next(((lhdict_cursor_t *) cursor)->overflow, item) != err_item_not_found) {
-						/** now we are at the end of the list, but what to do if we need to go onto next bucket ?*/
+						/*now we are at the end of the list, but what to do if we need to go onto next bucket ?*/
 						troolean_t value = ((lhdict_cursor_t *) cursor)->evaluate_predicate(cursor, item->data);
 
 						if (IS_EQUAL == value) {
-							/** a match has been found */
+							/*a match has been found */
 							memcpy(record->key, item->data, hash_map->super.record.key_size);
 							memcpy(record->value, item->data + hash_map->super.record.key_size, hash_map->super.record.value_size);
 							/* and update current cursor position */
@@ -361,12 +361,12 @@ lhdict_next(
 							return cursor->status;
 						}
 						else if (IS_GREATER == value) {
-							/** as list is ordered just leave */
+							/*as list is ordered just leave */
 							break;
 						}
 					}
 
-					/** if you have reached the end of the ll with a equality, leave */
+					/*if you have reached the end of the ll with a equality, leave */
 					if (cursor->predicate == predicate_equality) {
 						cursor->status = cs_end_of_results;
 						free(item);
@@ -374,7 +374,7 @@ lhdict_next(
 					}
 				}
 				else {
-					/** that value is already sitting at the cursor */
+					/*that value is already sitting at the cursor */
 					cursor->status = cs_cursor_active;
 					fll_get(((lhdict_cursor_t *) cursor)->overflow, item);
 					memcpy(record->key, item->data, hash_map->super.record.key_size);
@@ -383,14 +383,14 @@ lhdict_next(
 					return cursor->status;
 				}
 
-				/** and if you get this far, close the file*/
+				/*and if you get this far, close the file*/
 				free(item);
 				fll_close(((lhdict_cursor_t *) cursor)->overflow);
 				free(((lhdict_cursor_t *) cursor)->overflow);
 				((lhdict_cursor_t *) cursor)->overflow = NULL;
 			}
 
-			/** If you have reached this point, you have exhausted the pp and overflow page for a linear hash
+			/*If you have reached this point, you have exhausted the pp and overflow page for a linear hash
 			 *  so move onto the next bucket */
 #if DEBUG
 			io_printf("Incrementing bucket pointer\n");
@@ -401,11 +401,11 @@ lhdict_next(
 #if DEBUG
 			DUMP(((lhdict_cursor_t *) cursor)->current_bucket, "%i");
 #endif
-			/** Reset to the top of the next primary page */
+			/*Reset to the top of the next primary page */
 			((lhdict_cursor_t *) cursor)->record_pntr = 0;
 		} while (((lhdict_cursor_t *) cursor)->current_bucket != ((lhdict_cursor_t *) cursor)->first_bucket);
 
-		/** and if you make it this far, you have traversed the entire resultset*/
+		/*and if you make it this far, you have traversed the entire resultset*/
 		cursor->status = cs_end_of_results;
 		return cursor->status;
 	}
@@ -420,14 +420,14 @@ lhdict_destroy_cursor(
 ) {
 	(*cursor)->predicate->destroy(&(*cursor)->predicate);
 
-	/** free overflow file info */
+	/*free overflow file info */
 	if (((lhdict_cursor_t *) *cursor)->overflow != NULL) {
 		fll_close(((lhdict_cursor_t *) *cursor)->overflow);
 		free(((lhdict_cursor_t *) *cursor)->overflow);
 		((lhdict_cursor_t *) *cursor)->overflow = NULL;
 	}
 
-	/** and free cursor pointer */
+	/*and free cursor pointer */
 	free(*cursor);
 	*cursor = NULL;
 }
@@ -453,7 +453,7 @@ lhdict_test_predicate(
 	switch (cursor->predicate->type) {
 		case predicate_equality:/* equality scan check */
 		{
-			/** if key < predicate -> -1
+			/*if key < predicate -> -1
 			 * if key == predicate -> 0
 			 * if key > predicate 0 -> 1
 			 */
@@ -462,7 +462,7 @@ lhdict_test_predicate(
 
 		case predicate_range:	/* range check */
 		{
-			/**@FIXME Correct so that range works to short circuit early */
+			/*FIXME Correct so that range works to short circuit early */
 #if DEBUG
 			io_printf("Evaluating range\n");
 			DUMP(*(int *) cursor->predicate->statement.range.upper_bound, "%i");

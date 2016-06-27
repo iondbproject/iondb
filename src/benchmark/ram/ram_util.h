@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		ramutil.h
+@file
 @author		Kris Wallperington
 @brief		Utility function to check how many bytes of available RAM remains.
 */

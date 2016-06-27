@@ -70,7 +70,7 @@ bpptree_insert(
 
 @details	Queries a dictionary instance for the given @p key and returns
 			the associated @p value.  If the @p write_concern is set to
-			wc_insert_unique then if the @key exists already, an error will
+			wc_insert_unique then if the @p key exists already, an error will
 			be generated as duplicate keys are prevented.  If the
 			@p write_concern is set to wc_update, the updates are allowed.
 			In this case, if the @p key exists in the hashmap, the @p value
@@ -99,8 +99,8 @@ bpptree_query(
 @brief		Creates an instance of a dictionary.
 
 @details	Creates as instance of a dictionary given a @p key_size and
-			@p value_size, in bytes as well as the @p dictionary size
-			which is the number of buckets available in the hashmap.
+			@p value_size, in bytes. The @p dictionary_size parameter is
+			not used for this implementation, as there is no size bound.
 
 @param	  key_size
 				The size of the key in bytes.
@@ -160,7 +160,7 @@ bpptree_delete_dictionary(
 /**
 @brief		Updates the value for a given key.
 
-@details	Updates the value for a given @pkey.  If the key does not currently
+@details	Updates the value for a given @p key.  If the key does not currently
 			exist in the hashmap, it will be created and the value sorted.
 
 @param	  dictionary
@@ -206,8 +206,12 @@ bpptree_find(
 @brief		Next function to query and retrieve the next
 			<K,V> that stratifies the predicate of the cursor.
 
-@param	  cursor
+@param		cursor
 				The cursor to iterate over the results.
+@param		record
+				The structure used to hold the returned key value
+				pair. This must be properly initialized and allocated
+				by the user.
 @return		The status of the cursor.
  */
 cursor_status_t
@@ -234,11 +238,11 @@ bpptree_destroy_cursor(
 );
 
 /**
-@brief		Tests the supplied @pkey against the predicate registered in the
+@brief		Tests the supplied @p key against the predicate registered in the
 			cursor.
 
 @param	  cursor
-				The cursor and predicate being used to test @pkey against.
+				The cursor and predicate being used to test @p key against.
 @param	  key
 				The key to test.
 @return		The result is the key passes or fails the predicate test.

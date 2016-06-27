@@ -242,7 +242,7 @@ oafh_find_item_loc(
 			/* calculate if there is a match */
 
 			if (item->status != DELETED) {
-				/** @todo correct compare to use proper return type*/
+				/*@todo correct compare to use proper return type*/
 				int key_is_equal = hash_map->super.compare(item->data, key, hash_map->super.record.key_size);
 
 				if (IS_EQUAL == key_is_equal) {
@@ -334,7 +334,7 @@ oafh_query(
 #if DEBUG
 		io_printf("Item not found in hash table.\n");
 #endif
-		value = NULL;	/**set the number of bytes to 0 */
+		value = NULL;	/*et the number of bytes to 0 */
 		return ION_STATUS_ERROR(err_item_not_found);
 	}
 }

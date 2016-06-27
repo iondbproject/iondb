@@ -45,7 +45,7 @@ extern "C" {
 
 #define MAX_FILE_LENGTH			20
 
-/** @TODO The location of hash_t needs to be resolved */
+/*@TODO The location of hash_t needs to be resolved */
 /**
 @brief		The position in the hashmap.
  */
@@ -136,7 +136,7 @@ struct linear_hashmap {
 	int				bucket_pointer;
 	/**< pointer for current bucket being spilt */
 	int				id;				/**< id for files in system */
-									/** @todo this could be moved to parent */
+									/*@todo this could be moved to parent */
 	int				record_size;	/**< the size of the record in the pp */
 	int				number_of_records;
 	/**< the number of records in the linear_hash */
@@ -511,7 +511,7 @@ lh_write_record_status_in_cache(
 err_t
 lh_write_cache_raw(
 	linear_hashmap_t	*hash_map,
-	/**int					cache_number,*/
+	/*nt					cache_number,*/
 	lh_page_cache_t		*cache,
 	void				*to,
 	l_hash_bucket_t		*from,
@@ -550,7 +550,7 @@ lh_action_primary_page(
 	ion_value_t value
 );
 
-/** @FIXME - Make sure that value is malloc'd before call? */
+/*@FIXME - Make sure that value is malloc'd before call? */
 /**
  * @brief - this searches for the value but does not get it but only records
  * the location.

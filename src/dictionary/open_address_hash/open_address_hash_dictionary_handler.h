@@ -292,7 +292,7 @@ oadict_next(
 @return	 If the keys are equal.
  */
 boolean_t
-/**@TODO Fix name of function */
+/*TODO Fix name of function */
 is_equal(
 	dictionary_t	*dict,
 	ion_key_t		key1,

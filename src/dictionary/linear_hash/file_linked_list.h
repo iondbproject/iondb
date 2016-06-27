@@ -59,7 +59,7 @@ typedef struct ll_file_node {
 @brief		Struct used to maintain an instance of an in memory hashmap.
 */
 struct ll_file {
-	/** @todo find a better way to represent position */
+	/*@todo find a better way to represent position */
 	int					previous;			/**< position of previous node */
 	int					current;			/**< current position (node) in file */
 	int					next;				/**< next node position in file */

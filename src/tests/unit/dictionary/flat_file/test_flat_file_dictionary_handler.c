@@ -111,7 +111,7 @@ test_flat_file_handler_create_destroy(
 /*	PLANCK_UNIT_ASSERT_TRUE(tc, record.value_size == file.super.record.value_size); */
 /*	PLANCK_UNIT_ASSERT_TRUE(tc, key_type_numeric_signed == file.super.key_type); */
 /*	PLANCK_UNIT_ASSERT_TRUE(tc, dictionary_compare_signed_value == file.super.compare); */
-/** @FIXME - Test fails
+/*  FIXME - Test fails
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0						!= feof(((ff_file_t *)test_dictionary.instance)->file_ptr));
 */
 	/* delete the dictionary */
@@ -620,7 +620,7 @@ flat_file_handler_getsuite(
 	planck_unit_add_to_suite(suite, test_flat_file_handler_function_registration);
 	planck_unit_add_to_suite(suite, test_flat_file_handler_create_destroy);
 	planck_unit_add_to_suite(suite, test_flat_file_handler_simple_insert);
-	/** @tdodo need simple query */
+	/* todo need simple query */
 	planck_unit_add_to_suite(suite, test_flat_file_dictionary_predicate_equality);
 	planck_unit_add_to_suite(suite, test_flat_file_dictionary_predicate_range_signed);
 	planck_unit_add_to_suite(suite, test_flat_file_dictionary_predicate_range_unsigned);

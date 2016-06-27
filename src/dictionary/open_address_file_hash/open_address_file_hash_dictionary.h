@@ -13,7 +13,7 @@ extern "C" {
 
 #include "../dictionary_types.h"
 
-/**redefines file operations for arduino */
+/*edefines file operations for arduino */
 #include "./../../file/SD_stdio_c_iface.h"
 
 /**
@@ -25,7 +25,7 @@ typedef struct oafdict_cursor {
 	dict_cursor_t	super;			/**< Cursor supertype this type inherits from */
 	hash_t			first;			/**<First visited spot*/
 	hash_t			current;		/**<Currently visited spot*/
-	char			status;			/**@todo what is this for again as there are two status */
+	char			status;			/*todo what is this for again as there are two status */
 } oafdict_cursor_t;
 
 #if defined(__cplusplus)

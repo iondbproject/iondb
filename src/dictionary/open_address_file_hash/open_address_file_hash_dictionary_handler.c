@@ -60,7 +60,7 @@ oafdict_create_dictionary(
 	/* this registers the dictionary the dictionary */
 	oafh_initialize((file_hashmap_t *) dictionary->instance, oafh_compute_simple_hash, key_type, key_size, value_size, dictionary_size);/* just pick an arbitary size for testing atm */
 
-	/**@TODO The correct comparison operator needs to be bound at run time
+	/*TODO The correct comparison operator needs to be bound at run time
 	 * based on the type of key defined
 	 */
 
@@ -98,7 +98,7 @@ oafdict_update(
 	return oafh_update((file_hashmap_t *) dictionary->instance, key, value);
 }
 
-/** @todo What do we do if the cursor is already active? */
+/*@todo What do we do if the cursor is already active? */
 err_t
 oafdict_find(
 	dictionary_t	*dictionary,
@@ -251,7 +251,7 @@ oafdict_next(
 				/* todo - need to read and updat file position */
 				/* Then this is the end and there are no more results */
 				cursor->status = cs_end_of_results;
-				/** @todo need to do something with cursor? - done? */
+				/*@todo need to do something with cursor? - done? */
 				return cursor->status;
 			}
 		}
@@ -266,7 +266,7 @@ oafdict_next(
 		fseek(hash_map->file, (SIZEOF(STATUS) + data_length) * oafdict_cursor->current	/* position is based on indexes (not abs file pos) */
 			+ SIZEOF(STATUS), SEEK_SET);
 
-/** @todo this needs to be addressed in terms of return type
+/*@todo this needs to be addressed in terms of return type
  */
 		fread(record->key, hash_map->super.record.key_size, 1, hash_map->file);
 		fread(record->value, hash_map->super.record.value_size, 1, hash_map->file);

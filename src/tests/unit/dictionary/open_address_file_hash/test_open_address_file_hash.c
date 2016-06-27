@@ -168,7 +168,7 @@ test_open_address_file_hashmap_find_item_location(
 
 	initialize_file_hash_map_std_conditions(&map);
 
-	/** Manually populate records */
+	/*Manually populate records */
 	record_info_t record = map.super.record;
 
 	char *item;
@@ -458,7 +458,7 @@ test_open_address_file_hashmap_duplicate_insert_1(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-	/** and attempt to insert values with same key, which should fail and should
+	/*and attempt to insert values with same key, which should fail and should
 	return err_duplicate_key*/
 	for (i = 0; i < (map.map_size / 2); i++) {
 		/* build up the value */
@@ -533,7 +533,7 @@ test_open_address_file_hashmap_duplicate_insert_2(
 		}
 	}
 
-	/** and attempt to insert new values with same key*/
+	/*and attempt to insert new values with same key*/
 	for (i = 0; i < (map.map_size); i++) {
 		/* build up the value */
 		char str[10];
@@ -626,7 +626,7 @@ test_open_address_file_hashmap_update_1(
 		}
 	}
 
-	/** and update the values for the known keys */
+	/*and update the values for the known keys */
 	for (i = 0; i < (map.map_size); i++) {
 		/* build up the value */
 		char str[10];
@@ -717,7 +717,7 @@ test_open_address_file_hashmap_update_2(
 		}
 	}
 
-	/** and update the values for the known keys */
+	/*and update the values for the known keys */
 	for (i = 0; i < (map.map_size); i++) {
 		/* build up the value */
 		char str[10];
@@ -853,7 +853,7 @@ test_open_address_file_hashmap_delete_2(
 		}
 	}
 
-	/** and update the values for the known keys */
+	/*and update the values for the known keys */
 	for (i = (map.map_size - 1); i >= 0; i--) {
 #if DEBUG
 		printf("Deleting key: %i \n", i);

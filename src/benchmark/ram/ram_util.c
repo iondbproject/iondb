@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		ramutil.c
+@file
 @author		Kris Wallperington
 @brief		Source file for ram check utility function.
 */

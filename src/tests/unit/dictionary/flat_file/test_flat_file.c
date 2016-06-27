@@ -327,7 +327,7 @@ test_flat_file_duplicate_insert_1(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-	/** and attempt to insert values with same key, which should fail and should
+	/* and attempt to insert values with same key, which should fail and should
 	return err_duplicate_key*/
 	for (i = 0; i < (STD_KV_SIZE / 2); i++) {
 		/* build up the value */
@@ -406,7 +406,7 @@ test_flat_file_duplicate_insert_2(
 		}
 	}
 
-	/** and attempt to insert new values with same key*/
+	/* and attempt to insert new values with same key*/
 	for (i = 0; i < (STD_KV_SIZE); i++) {
 		/* build up the value */
 		char str[10];
@@ -601,7 +601,7 @@ test_flat_file_update_2(
 		}
 	}
 
-	/** and update the values for the known keys */
+	/* and update the values for the known keys */
 	for (i = 0; i < (STD_KV_SIZE); i++) {
 		/* build up the value */
 		char str[10];
@@ -746,7 +746,7 @@ test_flat_file_delete_2(
 		}
 	}
 
-	/** and update the values for the known keys */
+	/* and update the values for the known keys */
 	for (i = (STD_KV_SIZE - 1); i >= 0; i--) {
 #if DEBUG
 		printf("Deleting key: %i \n", i);

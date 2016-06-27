@@ -68,13 +68,13 @@ typedef struct {
 @brief		A dictionary instance variable.
 @details	Does not describe the function pointers of a dictionary
 			implementation.
-@see		@ref struct dictionary
+@see		dictionary
 */
 typedef struct dictionary dictionary_t;
 
 /**
 @brief		Struct defining all dictionary handling methods.
-@see		@ref struct dictionary_handler
+@see		dictionary_handler
 */
 typedef struct dictionary_handler dictionary_handler_t;
 
@@ -89,25 +89,25 @@ typedef char (*ion_dictionary_compare_t)(
 
 /**
 @brief		The dictionary cursor type.
-@see		@ref struct dictionary_cursor
+@see		dictionary_cursor
 */
 typedef struct dictionary_cursor dict_cursor_t;
 
 /**
 @brief		The dictionary predicate type.
-@see		@ref struct predicate
+@see		predicate
 */
 typedef struct predicate predicate_t;
 
 /**
 @brief		The dictionary predicate statement type.
-@see		@ref struct predicate_statement
+@see		predicate_statement
 */
 typedef union predicate_statement predicate_statement_t;
 
 /**
 @brief		The dictionary parent type.
-@see		@ref struct dictionary_parent
+@see		dictionary_parent
 */
 typedef struct dictionary_parent dictionary_parent_t;
 

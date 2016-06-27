@@ -33,8 +33,8 @@ initializeDictionary(
 	int			value_size,
 	int			dictionary_size
 ) {
-	/** If dictionary size isn't used by the implementation, what does it default to for the dictionary_create method? */
-	err_t err = dictionary_create(&handler, &dict, 0, type_key, key_size, value_size, dictionary_size	/** What value should this default to? */
+	/*If dictionary size isn't used by the implementation, what does it default to for the dictionary_create method? */
+	err_t err = dictionary_create(&handler, &dict, 0, type_key, key_size, value_size, dictionary_size	/*What value should this default to? */
 				);
 
 	size_k	= key_size;
@@ -163,7 +163,7 @@ destroy(
 	return err;
 }
 
-/** Is this to be used by user? */
+/*Is this to be used by user? */
 /**
 @brief	  Opens a dictionary, given the desired config.
 
@@ -175,7 +175,7 @@ err_t
 open(
 	ion_dictionary_config_info_t config_info
 ) {
-	/** Is config info of type ion_dictionary_config_info_t passed directly from user? */
+	/*Is config info of type ion_dictionary_config_info_t passed directly from user? */
 	err_t err = dictionary_open(&handler, &dict, &config_info);
 
 	return err;
@@ -298,12 +298,12 @@ createMasterTable(
 	return err;
 }
 
-/** Will user ever need to create a dictionary through the master table? */
+/*Will user ever need to create a dictionary through the master table? */
 err_t
 masterTableCreateDictionary(
 ) {}
 
-/** Is this to be used by user? */
+/*Is this to be used by user? */
 err_t
 masterTableLookup(
 	unsigned int					id,

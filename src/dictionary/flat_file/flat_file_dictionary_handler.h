@@ -19,7 +19,7 @@ extern "C" {
 #include "flat_file.h"
 #include "flat_file_dictionary.h"
 
-/**redefines file operations for arduino */
+/* redefines file operations for arduino */
 #include "./../../file/SD_stdio_c_iface.h"
 
 typedef int record_idx_t;
@@ -166,7 +166,7 @@ ffdict_create_dictionary(
 	key_type_t					key_type,
 	ion_key_size_t				key_size,
 	ion_value_size_t			value_size,
-	int							dictionary_size,	/** @todo this needs to be fixed or defined */
+	int							dictionary_size,	/* @todo this needs to be fixed or defined */
 	ion_dictionary_compare_t	compare,
 	dictionary_handler_t		*handler,
 	dictionary_t				*dictionary
@@ -317,7 +317,7 @@ ffdict_next(
 @return		If the keys are equal.
  */
 boolean_t
-/**@TODO Fix name of function */
+/*TODO Fix name of function */
 ff_is_equal(
 	dictionary_t	*dict,
 	ion_key_t		key1,
