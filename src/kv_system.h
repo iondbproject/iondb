@@ -18,8 +18,7 @@
 			either express or implied. See the License for the specific
 			language governing permissions and limitations under the
 			License.
-@todo		Resolve issue between status_t and err_t. Status_t is a struct that
-			should have and err_t and number of item affected.
+@todo		Resolve issue between status_t and err_t. Status_t is a struct that should have and err_t and number of item affected.
 */
 /******************************************************************************/
 #if !defined(KV_SYSTEM_H_)
@@ -39,22 +38,34 @@
 #define IS_LESS					-1
 #define ZERO					0
 
-/* Only if we're on desktop do we want to flush. Otherwise we only do a printf. */
+/* ==================== ARDUINO CONDITIONAL COMPILATION ================================ */
 #if !defined(ARDUINO)
+/* Only if we're on desktop do we want to flush. Otherwise we only do a printf. */
 #define DUMP(varname, format)	printf("Variable %s = " format "\n", # varname, varname);fflush(stdout)
+#define PANIC(stuff)			printf("\t\t%s\n", stuff);fflush(stdout)
 #else
 #define DUMP(varname, format)	printf("Variable %s = " format "\n", # varname, varname)
+#define PANIC(stuff)			printf("\t\t%s\n", stuff)
 #endif /* Clause ARDUINO */
 
+/* ==================== PC CONDITIONAL COMPILATION ===================================== */
 #if !defined(ARDUINO)
-#define PANIC(stuff)				printf("\t\t%s\n", stuff);fflush(stdout)
-#else
-#define PANIC(stuff)				printf("\t\t%s\n", stuff)
-#endif /* Clause ARDUINO */
+
+/**
+@brief		A byte type. Do not use this type directly.
+@details	This type is only provided for compatibility with the Arduino. If you want a
+			byte type, use @ref ion_byte_t instead.
+*/
+typedef unsigned char byte;
+
+#endif
+/* ===================================================================================== */
 
 #define IONIZE(something, type)		(ion_key_t) &(type) { (something) }
 #define NEUTRALIZE(something, type) (*((type *) (something)))
-#define IONIZE_VAL(varname, size)	unsigned char varname[size]
+#define IONIZE_VAL(varname, size)	ion_byte_t varname[size]
+
+#define UNUSED(x)					(void) ((x))
 
 #define ION_STATUS_CREATE(error, count) \
 	((ion_status_t) { (error), (count) } \
@@ -69,27 +80,20 @@
 	((ion_status_t) { err_ok, (count) } \
 	)
 
-#if !defined(ARDUINO)
-
-/**
-@brief		A byte type.
-*/
-typedef unsigned char byte;
-
-#endif
-
 /**
 @brief		This is the available key types for ION_DB.  All types will be
 			based on system defines.
 */
 typedef enum key_type {
-	key_type_numeric_signed,/**< Key is a signed numeric value. */
-	key_type_numeric_unsigned,	/**< Key is an unsigned numeric value.*/
-	key_type_char_array,/**< Key is char array. */
-	key_type_null_terminated_string,/**< Key is a null-terminated string.
-											 Note that this needs padding out
-											 to avoid reading memory one does
-											 not own. */
+	/**> Key is a signed numeric value. */
+	key_type_numeric_signed,
+	/**> Key is an unsigned numeric value.*/
+	key_type_numeric_unsigned,
+	/**> Key is char array. */
+	key_type_char_array,
+	/**> Key is a null-terminated string.
+		 Note that this needs padding out to avoid reading memory one does not own. */
+	key_type_null_terminated_string,
 } key_type_t;
 
 /**
@@ -177,14 +181,20 @@ enum error {
 typedef char err_t;
 
 /**
+@brief		A byte type.
+@details	This is an unsigned, integral value capable of holding the range of a byte.
+*/
+typedef unsigned char ion_byte_t;
+
+/**
 @brief		A dictionary key.
 */
-typedef unsigned char *ion_key_t;
+typedef void *ion_key_t;
 
 /**
 @brief		A dictionary value.
 */
-typedef unsigned char *ion_value_t;
+typedef void *ion_value_t;
 
 /**
 @brief		The size (length) of a dictionary key in bytes.

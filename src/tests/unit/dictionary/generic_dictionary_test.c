@@ -75,10 +75,10 @@ dictionary_test_insert_get(
 		num_to_insert = 10;
 	}
 
-	byte	keys[num_to_insert * test->key_size];
-	byte	vals[num_to_insert * test->value_size];
+	ion_byte_t	keys[num_to_insert * test->key_size];
+	ion_byte_t	vals[num_to_insert * test->value_size];
 
-	unsigned char	test_buf[test->value_size];
+	ion_byte_t		test_buf[test->value_size];
 	ion_value_t		test_val = test_buf;
 	ion_status_t	status;
 
@@ -97,7 +97,7 @@ dictionary_test_insert_get(
 
 		j = test->key_size;
 
-		if (j > sizeof(int)) {
+		if ((unsigned) j > sizeof(int)) {
 			j = sizeof(int);
 		}
 
@@ -156,7 +156,7 @@ dictionary_test_insert_get_edge_cases(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
-	unsigned char test_buf[test->value_size];
+	ion_byte_t test_buf[test->value_size];
 
 	status = dictionary_get(&test->dictionary, IONIZE(-10, int), test_buf);
 
@@ -174,8 +174,8 @@ dictionary_test_delete(
 ) {
 	ion_status_t status;
 
-	unsigned char	test_buf[test->value_size];
-	ion_value_t		test_val = test_buf;
+	ion_byte_t	test_buf[test->value_size];
+	ion_value_t test_val = test_buf;
 
 	status = dictionary_delete(&(test->dictionary), key_to_delete);
 
@@ -198,8 +198,8 @@ dictionary_test_update(
 ) {
 	ion_status_t status;
 
-	unsigned char	test_buf[test->value_size];
-	ion_value_t		test_val = test_buf;
+	ion_byte_t	test_buf[test->value_size];
+	ion_value_t test_val = test_buf;
 
 	status = dictionary_update(&(test->dictionary), key_to_update, update_with);
 

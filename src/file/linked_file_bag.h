@@ -67,7 +67,7 @@ typedef struct linkedfilebag {
 err_t
 lfb_put(
 	lfb_t			*bag,
-	byte			*to_write,
+	ion_byte_t		*to_write,
 	unsigned int	num_bytes,
 	file_offset_t	next,
 	file_offset_t	*wrote_at
@@ -100,7 +100,7 @@ lfb_get(
 	lfb_t			*bag,
 	file_offset_t	offset,
 	unsigned int	num_bytes,
-	byte			*write_to,
+	ion_byte_t		*write_to,
 	file_offset_t	*next
 );
 
@@ -189,7 +189,7 @@ lfb_update(
 	lfb_t			*bag,
 	file_offset_t	offset,
 	unsigned int	num_bytes,
-	byte			*to_write,
+	ion_byte_t		*to_write,
 	file_offset_t	*next
 );
 
@@ -217,7 +217,7 @@ lfb_update_all(
 	lfb_t				*bag,
 	file_offset_t		offset,
 	unsigned int		num_bytes,
-	byte				*to_write,
+	ion_byte_t			*to_write,
 	ion_result_count_t	*count
 );
 

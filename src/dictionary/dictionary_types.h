@@ -43,7 +43,7 @@ typedef unsigned int ion_dictionary_id_t;
 			dictionaries in the key-value store that might be special.
 			See @ref ion_find_by_use_master_table.
 */
-typedef unsigned char ion_dict_use_t;
+typedef ion_byte_t ion_dict_use_t;
 
 /**
 @brief		Struct containing details for opening a dictionary previously
@@ -284,14 +284,18 @@ typedef struct range_statement {
 @brief		Predicate type for cursors that iterate over all records in set.
 @details	This is to be used by the user to setup a predicate for evaluation.
 */
-typedef struct ion_all_records_statement {} ion_all_records_statement_t;
+typedef struct ion_all_records_statement {
+	/**> For now, all_records has no required information. */
+	char unused;
+} ion_all_records_statement_t;
 
 /**
 @brief		Predicate type for predicate (conditional) queries.
 @details	This is to be used by the user to setup a predicate for evaluation.
 */
 typedef struct other_predicate_statement {
-	/** @TODO this needs to be resolved */
+	/**> For now, other_predicate has no required information. */
+	char unused;
 } other_predicate_statement_t;
 
 /**
@@ -305,6 +309,8 @@ union predicate_statement {
 	range_statement_t			range;
 	/**> A general predicate statement. */
 	other_predicate_statement_t other_predicate;
+	/**> An all records predicate statement. */
+	ion_all_records_statement_t all_records;
 };
 
 /**

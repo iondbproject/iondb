@@ -41,8 +41,8 @@ typedef struct hashmap hashmap_t;
 @brief		Struct used to maintain individual records in the hashmap.
 */
 typedef struct hash_bucket {
-	char			status;			/**< the status of the bucket */
-	unsigned char	data[];			/**< the data in the bucket */
+	char		status;				/**< the status of the bucket */
+	ion_byte_t	data[];			/**< the data in the bucket */
 } hash_bucket_t;
 
 /**

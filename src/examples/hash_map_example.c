@@ -34,7 +34,7 @@ test_query(
 		int		key = *((int *) data);
 		char	*value;
 
-		value = (char *) (data + record->key_size);
+		value = (char *) data + record->key_size;
 		io_printf("Key: %i\n", key);
 
 		for (idx = 0; idx < record->value_size; idx++) {

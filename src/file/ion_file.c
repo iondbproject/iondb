@@ -118,7 +118,7 @@ err_t
 ion_fwrite(
 	file_handle_t	file,
 	unsigned int	num_bytes,
-	byte			*to_write
+	ion_byte_t		*to_write
 ) {
 #if defined(ARDUINO)
 
@@ -138,7 +138,7 @@ ion_fwrite_at(
 	file_handle_t	file,
 	file_offset_t	offset,
 	unsigned int	num_bytes,
-	byte			*to_write
+	ion_byte_t		*to_write
 ) {
 	err_t error;
 
@@ -156,7 +156,7 @@ err_t
 ion_fappend(
 	file_handle_t	file,
 	unsigned int	num_bytes,
-	byte			*to_write
+	ion_byte_t		*to_write
 ) {
 	err_t error;
 
@@ -174,7 +174,7 @@ err_t
 ion_fread(
 	file_handle_t	file,
 	unsigned int	num_bytes,
-	byte			*write_to
+	ion_byte_t		*write_to
 ) {
 #if defined(ARDUINO)
 
@@ -198,7 +198,7 @@ ion_fread_at(
 	file_handle_t	file,
 	file_offset_t	offset,
 	unsigned int	num_bytes,
-	byte			*write_to
+	ion_byte_t		*write_to
 ) {
 	err_t error;
 

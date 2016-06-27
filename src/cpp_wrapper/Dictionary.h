@@ -82,10 +82,10 @@ bool
 keyFound(
 	K key
 ) {
-	ion_key_t		ion_key = (ion_key_t) &key;
-	unsigned char	ion_value[dict.instance->record.value_size];
+	ion_key_t	ion_key = (ion_key_t) &key;
+	ion_byte_t	ion_value[dict.instance->record.value_size];
 
-	err_t err				= dictionary_get(&dict, ion_key, ion_value);
+	err_t err			= dictionary_get(&dict, ion_key, ion_value);
 
 	if (err == err_ok) {
 		return true;
@@ -99,10 +99,10 @@ template <typename V>boost::optional <V>
 get(
 	K key
 ) {
-	ion_key_t		ion_key = (ion_key_t) &key;
-	unsigned char	ion_value[dict.instance->record.value_size];
+	ion_key_t	ion_key = (ion_key_t) &key;
+	ion_byte_t	ion_value[dict.instance->record.value_size];
 
-	err_t err				= dictionary_get(&dict, ion_key, ion_value);
+	err_t err			= dictionary_get(&dict, ion_key, ion_value);
 
 	if (err == err_ok) {
 		return *((V *) ion_value);

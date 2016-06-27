@@ -20,8 +20,8 @@ main(
 	value_size	= 14;
 
 	/* Here, we make the assumption that the value is going to be a null-terminated string. */
-	int				key = 1;
-	unsigned char	value[value_size];
+	int			key = 1;
+	ion_byte_t	value[value_size];
 
 	sprintf((char *) value, "Hello World 0");
 
@@ -74,7 +74,7 @@ main(
 		Updates take a new value, and replaces all values stored at the given key, similar to how delete works.
 		If the key doesn't currently exist, it will be inserted instead of being updated.
 	*/
-	unsigned char replace_value[value_size];
+	ion_byte_t replace_value[value_size];
 
 	sprintf((char *) replace_value, "Hello new!");
 	printf("Updating (%d with %s)...\n", key, replace_value);
@@ -102,7 +102,7 @@ main(
 	/* A get operation requires the user to allocate space to store the returned value. Only retrieves one record. */
 	printf("Querying (%d)...\n", key);
 
-	unsigned char new_value[value_size];
+	ion_byte_t new_value[value_size];
 
 	status = dictionary_get(&dictionary, IONIZE(key, int), new_value);
 

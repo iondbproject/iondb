@@ -61,7 +61,7 @@ bpptree_insert(
 		offset = FILE_NULL;
 	}
 
-	err = lfb_put(&(bpptree->values), (byte *) value, bpptree->super.record.value_size, offset, &offset);
+	err = lfb_put(&(bpptree->values), (ion_byte_t *) value, bpptree->super.record.value_size, offset, &offset);
 
 	if (err_ok == err) {
 		if (bErrKeyNotFound == bErr) {
@@ -103,7 +103,7 @@ bpptree_query(
 		return ION_STATUS_ERROR(err_item_not_found);
 	}
 
-	err = lfb_get(&(bpptree->values), offset, bpptree->super.record.value_size, (byte *) value, &next);
+	err = lfb_get(&(bpptree->values), offset, bpptree->super.record.value_size, (ion_byte_t *) value, &next);
 
 	if (err_ok == err) {
 		return ION_STATUS_OK(1);
@@ -123,8 +123,9 @@ bpptree_create_dictionary(
 	dictionary_handler_t		*handler,
 	dictionary_t				*dictionary
 ) {
+	UNUSED(dictionary_size);
+
 	bpptree_t	*bpptree;
-	bErrType	bErr;
 	bOpenType	info;
 
 	bpptree = malloc(sizeof(bpptree_t));
@@ -153,7 +154,7 @@ bpptree_create_dictionary(
 	info.sectorSize = 256;
 	info.comp		= compare;
 
-	if (bErrOk != (bErr = bOpen(info, &(bpptree->tree)))) {
+	if (bErrOk != bOpen(info, &(bpptree->tree))) {
 		return err_dictionary_initialization_failed;
 	}
 
@@ -231,7 +232,7 @@ bpptree_update(
 	bErr	= bFindKey(bpptree->tree, key, &offset);
 
 	if (bErrKeyNotFound != bErr) {
-		lfb_update_all(&(bpptree->values), offset, bpptree->super.record.value_size, (byte *) value, &count);
+		lfb_update_all(&(bpptree->values), offset, bpptree->super.record.value_size, (ion_byte_t *) value, &count);
 	}
 	else {
 		return bpptree_insert(dictionary, key, value);

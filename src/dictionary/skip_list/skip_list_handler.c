@@ -50,6 +50,8 @@ sldict_create_dictionary(
 	dictionary_handler_t		*handler,
 	dictionary_t				*dictionary
 ) {
+	UNUSED(id);
+
 	int pnum, pden;
 
 	dictionary->instance = malloc(sizeof(skiplist_t));

@@ -27,7 +27,6 @@ err_t
 fll_open(
 	ll_file_t *linked_list_file,
 	int (*compare)(ll_file_t *, ll_file_node_t *, ll_file_node_t *),
-	key_type_t key_type,
 	ion_key_size_t key_size,
 	ion_value_size_t value_size,
 	int bucket,
@@ -35,8 +34,8 @@ fll_open(
 ) {
 	fe_filename_t filename;
 
-	filename.instance_id	= id;					/** This is the parent id */
-	filename.child.child_id = bucket;
+	filename.instance_id			= id;			/** This is the parent id */
+	filename.type.child.child_id	= bucket;
 	fe_encode_child_id(&filename);
 	/* allocation space for file name */
 	/* io_printf("%i",FILENAME_SIZE); */
@@ -44,7 +43,7 @@ fll_open(
 	/* if(linked_list_file->file_name == NULL) {io_printf("NULL\n");} */
 	/* free(linked_list_file->file_name); */
 	linked_list_file->file_name = malloc(FILENAME_SIZE);/* malloc(strlen(filename.child.child_filename)+1 * sizeof(char));//(char*)malloc(FILENAME_SIZE); */
-	strcpy(linked_list_file->file_name, filename.child.child_filename);
+	strcpy(linked_list_file->file_name, filename.type.child.child_filename);
 	filename.destroy(&filename);
 
 	/* attempt to open the file */
@@ -74,7 +73,6 @@ err_t
 fll_create(
 	ll_file_t *linked_list_file,
 	int (*compare)(ll_file_t *, ll_file_node_t *, ll_file_node_t *),
-	key_type_t key_type,
 	ion_key_size_t key_size,
 	ion_value_size_t value_size,
 	int bucket,
@@ -87,12 +85,12 @@ fll_create(
 
 	fe_filename_t filename;
 
-	filename.instance_id		= id;				/** This is the parent id */
-	filename.child.child_id		= bucket;
+	filename.instance_id			= id;			/** This is the parent id */
+	filename.type.child.child_id	= bucket;
 	fe_encode_child_id(&filename);
 	/* allocation space for file name */
-	linked_list_file->file_name = (char *) malloc(FILENAME_SIZE);
-	strcpy(linked_list_file->file_name, filename.child.child_filename);	/* VALGRIND HATES THIS --Heath */
+	linked_list_file->file_name		= (char *) malloc(FILENAME_SIZE);
+	strcpy(linked_list_file->file_name, filename.type.child.child_filename);/* VALGRIND HATES THIS --Heath */
 	filename.destroy(&filename);
 
 	linked_list_file->file = fopen(linked_list_file->file_name, "w+b");
@@ -101,11 +99,12 @@ fll_create(
 									otherwise when 0x0A is encountered 0x0D will be included (\r\n)*/
 	/* create head node and update */
 	ll_file_node_t *head_node = malloc(sizeof(*head_node) + key_size + value_size);
-//	ll_file_node_t *head_node = malloc(sizeof(head_node->next) + key_size + value_size);
+
+/*	ll_file_node_t *head_node = malloc(sizeof(head_node->next) + key_size + value_size); */
 
 	head_node->next						= END_OF_LIST;
 	linked_list_file->node_size			= sizeof(*head_node) + key_size + value_size;
-//	linked_list_file->node_size			= sizeof(head_node->next) + key_size + value_size;
+/*	linked_list_file->node_size			= sizeof(head_node->next) + key_size + value_size; */
 	/* data is garbage so just leave it */
 	linked_list_file->current			= HEAD_NODE;
 	linked_list_file->next				= INVALID_NODE;
@@ -117,7 +116,7 @@ fll_create(
 
 	/* compute node size */
 	linked_list_file->node_size = sizeof(*head_node) + key_size + value_size;
-//	linked_list_file->node_size = key_size + value_size + sizeof(head_node->next);
+/*	linked_list_file->node_size = key_size + value_size + sizeof(head_node->next); */
 	/** clean up to handle general data with a pointer */
 
 	/* bind comparator */
@@ -368,6 +367,7 @@ fll_compare(
 	ll_file_node_t	*base_node,
 	ll_file_node_t	*compare_node
 ) {
+	UNUSED(linked_list_file);
 #if DEBUG
 	DUMP(*(int *) (compare_node->data), "%i");
 	DUMP(*(int *) (base_node->data), "%i");

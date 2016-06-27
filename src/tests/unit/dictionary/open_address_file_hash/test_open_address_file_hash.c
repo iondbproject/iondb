@@ -267,7 +267,7 @@ test_open_address_file_hashmap_simple_insert(
 			char str[10];
 
 			sprintf(str, "%02i is key", i);
-			status = oafh_insert(&map, (ion_key_t) (&i), (unsigned char *) str);/* this is will wrap */
+			status = oafh_insert(&map, (ion_key_t) (&i), (ion_byte_t *) str);	/* this is will wrap */
 
 			if ((0 == offset) || (wc_duplicate == map.write_concern)) {
 				PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
@@ -281,7 +281,7 @@ test_open_address_file_hashmap_simple_insert(
 
 			ion_record_status_t record_status;	/* = ((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->status; */
 			int					key;	/* = *(int *)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data ); */
-			unsigned char		value[10];	/* = (ion_value_t)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data + sizeof(int)); */
+			ion_byte_t			value[10];		/* = (ion_value_t)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data + sizeof(int)); */
 
 			fread(&record_status, SIZEOF(STATUS), 1, map.file);
 			fread(&key, map.super.record.key_size, 1, map.file);
