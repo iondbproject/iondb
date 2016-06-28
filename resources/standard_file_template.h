@@ -25,7 +25,7 @@
 #define CHANGE_ME_H
 
 #if defined(__cplusplus)
-extern “ C ” {
+extern "C" {
 #endif
 
 /* Actual header file contents go in here. */
