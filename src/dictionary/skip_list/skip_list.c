@@ -213,7 +213,7 @@ sl_update(
 	int			value_size	= skiplist->super.record.value_size;
 	sl_node_t	*cursor		= sl_find_node(skiplist, key);
 
-	/* If the key doesn't exist in the skip_list... */
+	/* If the key doesn't exist in the skiplist... */
 	if ((NULL == cursor->key) || (skiplist->super.compare(cursor->key, key, key_size) != 0)) {
 		/* Insert it. TODO Possibly return different error code */
 		sl_insert(skiplist, key, value);

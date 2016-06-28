@@ -113,7 +113,7 @@ ffdict_insert(
 
 @details	Queries a dictionary instance for the given @p key and returns
 			the associated @p value.  If the @p write_concern is set to
-			wc_insert_unique then if the @key exists already, an error will
+			wc_insert_unique then if the @p key exists already, an error will
 			be generated as duplicate keys are prevented.  If the
 			@p write_concern is set to wc_update, the updates are allowed.
 			In this case, if the @p key exists in the hashmap, the @p value
@@ -145,6 +145,8 @@ ffdict_query(
 			@p value_size, in bytes as well as the @p dictionary size
 			which is the number of buckets available in the hashmap.
 
+@param		id
+@param		key_type
 @param	  key_size
 				The size of the key in bytes.
 @param	  value_size
@@ -257,7 +259,7 @@ ffdict_find(
 			equal to @p second_key.
 
 			If the key type is @p key_type_char_array then
-			@TODO fix this commemt!
+			@todo fix this commemt!
 			The function memcmp compares the size bytes of memory beginning at
 			a1 against the size bytes of memory beginning at a2. The value
 			returned has the same sign as the difference between the first
@@ -296,6 +298,7 @@ oadict_next(
 
 @param	  cursor
 				The cursor to iterate over the results.
+@param		record
 @return		The status of the cursor.
  */
 cursor_status_t

@@ -2,7 +2,7 @@
 /**
 @file
 @author		Kris Wallperington
-@brief		Unit tests for skip_list handler interface.
+@brief		Unit tests for skiplist handler interface.
 */
 /******************************************************************************/
 
@@ -140,7 +140,7 @@ test_collection_creation(
 }
 
 /**
-@brief	  Tests an equality cursor on the std conditions skip_list. Assertion
+@brief	  Tests an equality cursor on the std conditions skiplist. Assertion
 			is that the cursor will return err_ok.
 
 @param	  tc
@@ -174,7 +174,7 @@ test_slhandler_cursor_equality(
 }
 
 /**
-@brief	  Tests an equality cursor on the std conditions skip_list. The
+@brief	  Tests an equality cursor on the std conditions skiplist. The
 			assertion is that the values returned will satisfy the predicate.
 
 @param	  tc
@@ -228,7 +228,7 @@ test_slhandler_cursor_equality_with_results(
 }
 
 /**
-@brief	  Tests a range cursor on the std conditions skip_list. Assertion
+@brief	  Tests a range cursor on the std conditions skiplist. Assertion
 			is that the cursor will return err_ok.
 
 @param	  tc
@@ -262,7 +262,7 @@ test_slhandler_cursor_range(
 }
 
 /**
-@brief	  Tests a range cursor on the std conditions skip_list. The
+@brief	  Tests a range cursor on the std conditions skiplist. The
 			assertion is that the values returned will satisfy the predicate.
 
 @param	  tc
@@ -342,7 +342,7 @@ skiplist_handler_getsuite(
 }
 
 /**
-@brief	  Runs all skip_list related tests and outputs the result.
+@brief	  Runs all skiplist related tests and outputs the result.
  */
 void
 runalltests_skiplist_handler(

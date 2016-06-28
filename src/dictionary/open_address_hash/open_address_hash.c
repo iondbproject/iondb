@@ -307,7 +307,7 @@ oah_compute_simple_hash(
 	UNUSED(size_of_key);
 
 	/* convert to a hashable value */
-	/*@TODO int will cause an issues depending on sizeof int */
+	/*@todo int will cause an issues depending on sizeof int */
 	hash_t hash = (hash_t) ((*(int *) key) + hashmap->map_size) % hashmap->map_size;
 
 	return hash;

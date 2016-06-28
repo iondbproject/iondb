@@ -2,7 +2,7 @@
 /**
 @file
 @author		Kris Wallperington
-@brief		Contains test defines and constants unique to skip_list tests.
+@brief		Contains test defines and constants unique to skiplist tests.
 */
 /******************************************************************************/
 #if !defined(SLTESTS_H_)

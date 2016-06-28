@@ -20,7 +20,7 @@ fll_reset(
 	fll_get(linked_list_file, ll_probe);/*Read in the head node and determine what to do*/
 	linked_list_file->next				= ll_probe->next;					/*Point to the first node in the list */
 	free(ll_probe);
-	return err_ok;	/*@TODO cleanup return codes */
+	return err_ok;	/*@todo cleanup return codes */
 }
 
 err_t
@@ -166,7 +166,7 @@ fll_insert(
 	ll_probe = (ll_file_node_t *) malloc(linked_list_file->node_size);
 
 	/*est iterator to the start of the list */
-	/*@TODO add check to improve performance as list may already be active for multiple inserts*/
+	/*@todo add check to improve performance as list may already be active for multiple inserts*/
 	fll_reset(linked_list_file);
 
 	fll_get(linked_list_file, ll_probe);/*Read in the head node and determine what to do*/
@@ -248,9 +248,9 @@ fll_delete(
 	ll_file_t	*linked_list_file,
 	ion_key_t	key
 ) {
-	/*@TODO need state to prevent erronious deletes */
-	/*@TODO duplicate code with remove? */
-	/*@TODO This can be optimized so that the iterator does not need to be reset ?*/
+	/*@todo need state to prevent erronious deletes */
+	/*@todo duplicate code with remove? */
+	/*@todo This can be optimized so that the iterator does not need to be reset ?*/
 	fll_reset(linked_list_file);
 
 	ll_file_node_t *ll_node = (ll_file_node_t *) malloc(linked_list_file->node_size);
@@ -274,7 +274,7 @@ fll_delete(
 	return 0;	/*@fix return codes*/
 }
 
-/*@TODO Clean up memory management */
+/*@todo Clean up memory management */
 err_t
 fll_find(
 	ll_file_t		*linked_list_file,

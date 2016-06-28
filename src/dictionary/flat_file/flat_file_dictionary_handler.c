@@ -57,7 +57,7 @@ ffdict_create_dictionary(
 	/* this registers the dictionary the dictionary */
 	err_t result = ff_initialize((ff_file_t *) (dictionary->instance), key_type, key_size, value_size);
 
-	/*@TODO The correct comparison operator needs to be bound at run time
+	/*@todo The correct comparison operator needs to be bound at run time
 	 * based on the type of key defined
 	 */
 
@@ -361,7 +361,7 @@ ffdict_scan(
 			boolean_t key_satisfies_predicate = ffdict_test_predicate(&(cursor->super), (ion_key_t) record->data);	/* assumes that the key is first */
 
 			if (key_satisfies_predicate == boolean_true) {
-				/*@TODO revisit to cache result? */
+				/*@todo revisit to cache result? */
 				/* back up current cursor to point at the record */
 				cursor->current = ftell(file->file_ptr) - record_size;
 				free(record);

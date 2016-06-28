@@ -191,7 +191,7 @@ lh_destroy(
 		hash_map->super.record.key_size		= 0;
 		hash_map->super.record.value_size	= 0;
 
-		/*@TODO should cache blocks be flushed ?*/
+		/*@todo should cache blocks be flushed ?*/
 		for (cache_idx = 0; cache_idx < CACHE_SIZE; cache_idx++) {
 			if (hash_map->cache[cache_idx].status != cache_invalid) {
 				/*free any cache blocks that are left */
@@ -212,7 +212,7 @@ lh_update(
 	ion_key_t			key,
 	ion_value_t			value
 ) {
-/*@TODO The write concern still needs to be addressed */
+/*@todo The write concern still needs to be addressed */
 
 	ion_status_t status = ION_STATUS_INITIALIZE;
 
@@ -293,7 +293,7 @@ lh_update(
 
 			fll_create_node(overflow, &(hash_map->super.record), key, value, &update_node);
 
-			/*@TODO this needs to be improved on update as the iterator is already in the correct spot */
+			/*@todo this needs to be improved on update as the iterator is already in the correct spot */
 			fll_insert(overflow, update_node);
 
 			status.count++;
@@ -656,7 +656,7 @@ lh_find(
 			}
 			else {
 				/*Search the overflow page  */
-				/*@TODO error handling for memory */
+				/*@todo error handling for memory */
 
 				((lhdict_cursor_t *) cursor)->overflow = (ll_file_t *) malloc(sizeof(ll_file_t));
 
@@ -669,7 +669,7 @@ lh_find(
 				}
 				else {
 					/* find the next available node that matches ? */
-					/*@TODO change possibly to satisfies predicate?*/
+					/*@todo change possibly to satisfies predicate?*/
 					fll_reset(((lhdict_cursor_t *) cursor)->overflow);
 
 					/*this scans the list for the first instance of the item in the ll */
@@ -685,14 +685,14 @@ lh_find(
 						}
 						else if (IS_EQUAL == value) {
 							/*and if it satisfies the predicate, the value has been found
-							 * @TODO this value could be cached for better performance */
+							 * @todo this value could be cached for better performance */
 							cursor->status = cs_cursor_initialized;
 							free(ll_node);
 							return err_ok;
 						}
 					}
 
-					/*@TODO should the overflow file be closed here ?*/
+					/*@todo should the overflow file be closed here ?*/
 					cursor->status = cs_end_of_results;
 					free(ll_node);
 					return err_item_not_found;
@@ -731,7 +731,7 @@ lh_find(
 					}
 					else {
 						/*and search it as the value must be in the page or the overflow page*/
-						/*@TODO error handling for memory*/
+						/*@todo error handling for memory*/
 						((lhdict_cursor_t *) cursor)->overflow = (ll_file_t *) malloc(sizeof(ll_file_t));
 
 						if (fll_open(((lhdict_cursor_t *) cursor)->overflow, fll_compare, hash_map->super.record.key_size, hash_map->super.record.value_size, ((lhdict_cursor_t *) cursor)->current_bucket, hash_map->id) == err_item_not_found) {
@@ -742,7 +742,7 @@ lh_find(
 						}
 						else {
 							/*ind the next available node that matches */
-							/*@TODO change possibly to satisfies predicate?*/
+							/*@todo change possibly to satisfies predicate?*/
 							fll_reset(((lhdict_cursor_t *) cursor)->overflow);
 
 							/*this scans the list for the first instance of the item in the ll*/
@@ -764,7 +764,7 @@ lh_find(
 								}
 								else if (IS_EQUAL == value) {
 									/*and if it satisfies the predicate, the value has been found
-									 * @TODO this value could be cached for better performance */
+									 * @todo this value could be cached for better performance */
 									cursor->status = cs_cursor_initialized;
 									free(ll_node);
 									return err_ok;	/*Exit with cursor initialized */
@@ -797,7 +797,7 @@ lh_find(
 		}
 	}
 
-	return err_ok;	/*@TODO what happens here when it reaches the end? */
+	return err_ok;	/*@todo what happens here when it reaches the end? */
 }
 
 int
@@ -901,7 +901,7 @@ lh_query(
 	}
 	else {
 		/* find the next available node that matches ? */
-		/*@TODO change possibly to satisfies predicate?*/
+		/*@todo change possibly to satisfies predicate?*/
 		fll_reset(&linked_list_file);
 		/*this scans the list for the first instance of the item in the ll */
 		status.error = lh_get_next(hash_map, &linked_list_file, key, value);
@@ -925,7 +925,7 @@ lh_compute_hash(
 ) {
 	UNUSED(size_of_key);
 
-	/*@TODO address hash function for strings or variable lengths */
+	/*@todo address hash function for strings or variable lengths */
 	/* convert to a hashable value */
 	if (hash_set == NULL) {
 		return err_uninitialized;
@@ -1100,7 +1100,7 @@ lh_cache_pp(
 
 	(*cache)->status = cache_active;/*cache is now live*/
 
-	return err_ok;	/*@TODO consider error codes on this */
+	return err_ok;	/*@todo consider error codes on this */
 }
 
 err_t
@@ -1114,7 +1114,7 @@ lh_read_cache(
 		return err_uninitialized;	/*trying to read invalid cache */
 	}
 
-	/*@TODO - Consider the return time trade off between function call and computation vs code reuse.
+	/*@todo - Consider the return time trade off between function call and computation vs code reuse.
 	 * If speed is a concern, could be done as inline */
 	*item = (l_hash_bucket_t *) (cache->cached_bucket + (idx * hash_map->record_size));
 	return err_ok;
@@ -1166,7 +1166,7 @@ lh_write_cache_raw(
 ) {
 	UNUSED(hash_map);
 
-	/*@TODO Does a check need to be in place to ensure that a user is writing to a valid location in a cache ?*/
+	/*@todo Does a check need to be in place to ensure that a user is writing to a valid location in a cache ?*/
 	if (cache->status == cache_invalid) {
 		return err_uninitialized;	/*the cache is invalid */
 	}
@@ -1184,7 +1184,7 @@ lh_write_cache_record(
 	ion_key_t			key,
 	ion_value_t			value
 ) {
-	/*@TODO speed considerations for computation of page vs direct computation ?*/
+	/*@todo speed considerations for computation of page vs direct computation ?*/
 	/*Determine which cache the item belongs to */
 	int page_number = calculate_cache_location(hash_map, item);
 
@@ -1264,7 +1264,7 @@ lh_action_primary_page(
 	/*set number of records touched to 0 */
 	ion_status_t status = ION_STATUS_INITIALIZE;
 
-	/*@TODO initial condition needs to get changed to support active cursor */
+	/*@todo initial condition needs to get changed to support active cursor */
 	int count			= 0;
 
 	l_hash_bucket_t *item;
@@ -1299,7 +1299,7 @@ lh_action_primary_page(
 		count++;
 	}
 
-	/*@TODO check err code on return! */
+	/*@todo check err code on return! */
 	return status;
 }
 

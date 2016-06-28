@@ -179,7 +179,7 @@ oah_update(
 
 @param		hash_map
 				The map into which the data is going to be inserted.
-@param		ion_key_t
+@param		key
 				The key for the record that is being searched for.
 @param		location
 				Pointer to the location variable
@@ -200,12 +200,8 @@ oah_find_item_loc(
 
 @param		hash_map
 				The map into which the data is going to be inserted.
-@param		record
-				The structure of the record being inserted.
 @param		key
 				The key for the record that is being searched for.
-@param		size
-				The number of buckets available in the map.
 */
 ion_status_t
 oah_delete(

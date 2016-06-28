@@ -74,9 +74,8 @@ insert(
 
 @param		key
 				The key to retrieve the value for.
-@param		value
-				A pointer to the value byte array to copy data into.
 @return		An error message describing the result of the retrieval.
+@todo is this function used? May be an unnecessary performance hit
 */
 bool
 keyFound(
@@ -196,10 +195,10 @@ close(
 @brief	  Sets up cursor and predicate to perform a range query on a
 			dictionary.
 
-@param	  min_value
-				The minimum value to be included in the query.
-@param	  max_value
-				The maximum value to be included in the query.
+@param	  min_key
+				The minimum key to be included in the query.
+@param	  max_key
+				The maximum key to be included in the query.
 @returns	An initialized cursor for the particular query.
 */
 dict_cursor_t *

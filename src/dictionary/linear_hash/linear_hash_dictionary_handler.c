@@ -183,14 +183,14 @@ lhdict_find(
 			/* copy across the key value as the predicate may be destroyed */
 			memcpy((*cursor)->predicate->statement.equality.equality_value, predicate->statement.equality.equality_value, ((((linear_hashmap_t *) dictionary->instance)->super.record.key_size)));
 
-			/*@TODO find item needs to be fixed  - But how??*/
+			/*@todo find item needs to be fixed  - But how??*/
 			if (lh_find((linear_hashmap_t *) dictionary->instance, *cursor) == err_item_not_found) {
 				(*cursor)->status = cs_end_of_results;
 				return err_ok;
 			}
 			else {
 				(*cursor)->status = cs_cursor_initialized;
-				/*@TODO  is there something that needs to be done here ?*/
+				/*@todo  is there something that needs to be done here ?*/
 				return err_ok;
 			}
 
@@ -250,7 +250,7 @@ lhdict_next(
 	dict_cursor_t	*cursor,
 	ion_record_t	*record
 ) {
-	/*@TODO if the collection changes, then the status of the cursor needs to change */
+	/*@todo if the collection changes, then the status of the cursor needs to change */
 	/* check the status of the cursor and if it is not valid or at the end, just exit */
 	if (cursor->status == cs_cursor_uninitialized) {
 		return cursor->status;

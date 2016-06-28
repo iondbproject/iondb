@@ -109,6 +109,7 @@ fll_create(
  * @param key_size
  * @param value_size
  * @param bucket
+ * @param id
  * @return
  */
 err_t
