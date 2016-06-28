@@ -222,6 +222,8 @@ test_slhandler_cursor_equality_with_results(
 	cursor->destroy(&cursor);
 	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == cursor);
 
+	free(record.key);
+	free(record.value);
 	dictionary_delete_dictionary(&dict);
 }
 
@@ -310,6 +312,8 @@ test_slhandler_cursor_range_with_results(
 	cursor->destroy(&cursor);
 	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == cursor);
 
+	free(record.key);
+	free(record.value);
 	dictionary_delete_dictionary(&dict);
 }
 

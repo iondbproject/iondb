@@ -111,6 +111,8 @@ test_skiplist_initialize(
 	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist.maxheight == maxheight);
 	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist.pnum == pnum);
 	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist.pden == pden);
+
+	sl_destroy(&skiplist);
 }
 
 /**
