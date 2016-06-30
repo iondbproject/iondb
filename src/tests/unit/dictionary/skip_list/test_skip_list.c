@@ -61,7 +61,7 @@ initialize_skiplist_std_conditions(
 
 	key_type	= key_type_numeric_signed;
 	compare		= dictionary_compare_signed_value;
-	key_size	= 4;
+	key_size	= sizeof(int);
 	value_size	= 10;
 	pnum		= 1;
 	pden		= 4;
@@ -1801,7 +1801,7 @@ test_skiplist_different_size(
 
 	key_type	= key_type_numeric_unsigned;
 	compare		= dictionary_compare_unsigned_value;
-	key_size	= 8;
+	key_size	= sizeof(long long);
 	value_size	= 4;
 	pnum		= 1;
 	pden		= 1;
