@@ -8,7 +8,7 @@ setup(
 {
     Serial.begin(BAUD_RATE);
     runalltests_skiplist();
-//    runalltests_skiplist_handler();
+    runalltests_skiplist_handler();
 }
 
 void

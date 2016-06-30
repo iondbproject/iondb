@@ -68,8 +68,8 @@ create_test_collection_std_conditions(
 	dictionary_t			*dictionary,
 	dictionary_handler_t	*handler
 ) {
-	/* This means keysize 4 and valuesize 10 */
-	record_info_t	record			= { 4, 10 };
+	/* This means keysize 4 (on a desktop platform) and valuesize 10 */
+	record_info_t	record			= { sizeof(int), 10 };
 	key_type_t		key_type		= key_type_numeric_signed;
 	int				size			= 7;
 	int				num_elements	= 100;
@@ -116,7 +116,7 @@ test_collection_creation(
 
 	dictionary_t			dict;
 	dictionary_handler_t	handler;
-	record_info_t			record			= { 4, 10 };
+	record_info_t			record			= { sizeof(int), 10 };
 	key_type_t				key_type		= key_type_numeric_signed;
 	int						size			= 50;
 	int						num_elements	= 25;
@@ -127,7 +127,7 @@ test_collection_creation(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->key_type == key_type_numeric_signed);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare == dictionary_compare_signed_value);
-	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->record.key_size == 4);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->record.key_size == sizeof(int));
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->record.value_size == 10);
 	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist != NULL);
 	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist->head != NULL);
