@@ -85,7 +85,7 @@ test_open_address_file_hashmap_handler_create_destroy(
 	record_info_t	record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record.key_size		= 4;
+	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 	size				= 10;
 
@@ -116,7 +116,7 @@ test_open_address_file_dictionary_cursor_equality(
 	record_info_t	record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record.key_size		= 4;
+	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 	size				= 10;
 
@@ -156,7 +156,7 @@ test_open_address_file_dictionary_handler_query_with_results(
 	record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record_info.key_size	= 4;
+	record_info.key_size	= sizeof(int);
 	record_info.value_size	= 10;
 	size					= 10;
 
@@ -220,7 +220,7 @@ test_open_address_file_dictionary_handler_query_no_results(
 	record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record_info.key_size	= 4;
+	record_info.key_size	= sizeof(int);
 	record_info.value_size	= 10;
 	size					= 10;
 
@@ -272,7 +272,7 @@ test_open_address_file_dictionary_predicate_equality(
 	record_info_t	record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record.key_size		= 4;
+	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 	size				= 10;
 
@@ -329,7 +329,7 @@ test_open_address_file_dictionary_predicate_range_signed(
 	record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record_info.key_size	= 4;
+	record_info.key_size	= sizeof(int);
 	record_info.value_size	= 10;
 	size					= 10;
 
@@ -395,7 +395,7 @@ test_open_address_file_dictionary_predicate_range_unsigned(
 	record_info_t	record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record.key_size		= 4;
+	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 	size				= 10;
 
@@ -457,7 +457,7 @@ test_open_address_file_dictionary_cursor_range(
 	record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record_info.key_size	= 4;
+	record_info.key_size	= sizeof(int);
 	record_info.value_size	= 10;
 	size					= 10;
 

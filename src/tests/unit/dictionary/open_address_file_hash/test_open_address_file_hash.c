@@ -68,7 +68,7 @@ initialize_file_hash_map_std_conditions(
 ) {
 	record_info_t record;
 
-	record.key_size		= 4;
+	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 	map->super.key_type = key_type_numeric_signed;
 	initialize_file_hash_map(STD_MAP_SIZE, &record, map);
@@ -88,7 +88,7 @@ test_open_address_file_hashmap_initialize(
 	int				size;
 	record_info_t	record;
 
-	record.key_size		= 4;
+	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 	size				= 10;
 

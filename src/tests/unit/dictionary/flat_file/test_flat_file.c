@@ -63,7 +63,7 @@ initialize_flat_file_std_conditions(
 ) {
 	record_info_t *record = (record_info_t *) malloc(sizeof(record_info_t));
 
-	record->key_size			= 4;
+	record->key_size			= sizeof(int);
 	record->value_size			= 10;
 	flat_file->super.key_type	= key_type_numeric_signed;
 	initialize_flat_file(record, flat_file);
@@ -196,7 +196,7 @@ test_flat_file_initialize(
 	/* this is required for initializing the hash map and should come from the dictionary */
 	record_info_t record;
 
-	record.key_size		= 4;
+	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 
 	ff_file_t flat_file;
