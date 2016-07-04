@@ -92,7 +92,7 @@ sd_fgetpos(
 	return 0;
 }
 
-/** @todo update to handle other modes */
+/* todo update to handle other modes */
 SD_FILE *
 sd_fopen(
 	char	*filename,
@@ -167,7 +167,7 @@ sd_fopen(
 		operation = FILE_WRITE;
 	}
 	else {
-		return 0;	/** incorrect args */
+		return 0;	/*incorrect args */
 	}
 
 #if DEBUG

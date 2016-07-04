@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		open_address_file.h
+@file
 @author		Scott Ronald Fazackerley
 @brief		A hash table using linear probing. Designed for in memory use.
 */
@@ -23,7 +23,7 @@ extern "C" {
 #include "./../../kv_system.h"
 #include "./../../kv_io.h"
 
-/**redefines file operations for arduino */
+/*edefines file operations for arduino */
 #include "./../../file/SD_stdio_c_iface.h"
 
 #define EMPTY	-1
@@ -178,7 +178,7 @@ oafh_update(
 
 @param		hash_map
 				The map into which the data is going to be inserted.
-@param		ion_key_t
+@param		key
 				The key for the record that is being searched for.
 @param		location
 				Pointer to the location variable
@@ -199,12 +199,8 @@ oafh_find_item_loc(
 
 @param		hash_map
 				The map into which the data is going to be inserted.
-@param		record
-				The structure of the record being inserted.
 @param		key
 				The key for the record that is being searched for.
-@param		size
-				The number of buckets available in the map.
 */
 ion_status_t
 oafh_delete(

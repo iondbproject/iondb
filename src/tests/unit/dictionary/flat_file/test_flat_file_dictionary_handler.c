@@ -1,5 +1,5 @@
 /**
-@file	   test_flat_file_dictionary_handler.c
+@file
 
 @author		Scott Ronald Fazackerley
 
@@ -84,7 +84,7 @@ test_flat_file_handler_create_destroy(
 	record_info_t record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record.key_size		= 4;
+	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 
 	dictionary_handler_t map_handler;	/* create handler for hashmap */
@@ -111,7 +111,7 @@ test_flat_file_handler_create_destroy(
 /*	PLANCK_UNIT_ASSERT_TRUE(tc, record.value_size == file.super.record.value_size); */
 /*	PLANCK_UNIT_ASSERT_TRUE(tc, key_type_numeric_signed == file.super.key_type); */
 /*	PLANCK_UNIT_ASSERT_TRUE(tc, dictionary_compare_signed_value == file.super.compare); */
-/** @FIXME - Test fails
+/*  FIXME - Test fails
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0						!= feof(((ff_file_t *)test_dictionary.instance)->file_ptr));
 */
 	/* delete the dictionary */
@@ -137,7 +137,7 @@ test_flat_file_handler_simple_insert(
 	record_info_t record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record.key_size		= 4;
+	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 
 	int		test_key = 1;
@@ -221,7 +221,7 @@ test_flat_file_dictionary_cursor_equality(
 	record_info_t	record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record.key_size		= 4;
+	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 	size				= 10;
 
@@ -260,7 +260,7 @@ test_flat_file_dictionary_handler_query_with_results(
 	record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record_info.key_size	= 4;
+	record_info.key_size	= sizeof(int);
 	record_info.value_size	= 10;
 	size					= 10;
 
@@ -322,7 +322,7 @@ test_flat_file_dictionary_handler_query_no_results(
 	record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record_info.key_size	= 4;
+	record_info.key_size	= sizeof(int);
 	record_info.value_size	= 10;
 	size					= 10;
 
@@ -372,7 +372,7 @@ test_flat_file_dictionary_predicate_equality(
 	record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record_info.key_size	= 4;
+	record_info.key_size	= sizeof(int);
 	record_info.value_size	= 10;
 	size					= 10;
 
@@ -426,7 +426,7 @@ test_flat_file_dictionary_predicate_range_signed(
 	record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record_info.key_size	= 4;
+	record_info.key_size	= sizeof(int);
 	record_info.value_size	= 10;
 	size					= 10;
 
@@ -489,7 +489,7 @@ test_flat_file_dictionary_predicate_range_unsigned(
 	record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record_info.key_size	= 4;
+	record_info.key_size	= sizeof(int);
 	record_info.value_size	= 10;
 	size					= 10;
 
@@ -548,7 +548,7 @@ test_flat_file_dictionary_cursor_range(
 	record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record_info.key_size	= 4;
+	record_info.key_size	= sizeof(int);
 	record_info.value_size	= 10;
 	size					= 10;
 
@@ -620,7 +620,7 @@ flat_file_handler_getsuite(
 	planck_unit_add_to_suite(suite, test_flat_file_handler_function_registration);
 	planck_unit_add_to_suite(suite, test_flat_file_handler_create_destroy);
 	planck_unit_add_to_suite(suite, test_flat_file_handler_simple_insert);
-	/** @tdodo need simple query */
+	/* todo need simple query */
 	planck_unit_add_to_suite(suite, test_flat_file_dictionary_predicate_equality);
 	planck_unit_add_to_suite(suite, test_flat_file_dictionary_predicate_range_signed);
 	planck_unit_add_to_suite(suite, test_flat_file_dictionary_predicate_range_unsigned);

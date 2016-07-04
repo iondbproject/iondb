@@ -22,7 +22,7 @@ extern "C" {
 #include "./../../kv_system.h"
 #include "./../../kv_io.h"
 
-/**redefines file operations for arduino */
+/* redefines file operations for arduino */
 #include "./../../file/SD_stdio_c_iface.h"
 
 typedef long int ion_fpos_t;/**< Flatfile file position type */
@@ -46,12 +46,9 @@ typedef struct ff_file {
 
 @param		file
 				Pointer to the file instance to initialize.
-@param		compare
-				Function pointer to the correct comparison function for the
-				collection.
 @param		key_type
 				The type of key that is being stored in the collection.
-@param	  key_size
+@param		key_size
 				The size of the key in bytes.
 @param		value_size
 				The size of the value in bytes.
@@ -82,7 +79,7 @@ ff_destroy(
 /**
 @brief		Insert record into file
 
-@todo update comment
+@todo update comment - THIS COMMENT REFERS TO A HASH STRUCTURE WHICH IS COMPLETELY INCORRECT!
 @details	Attempts to insert data of a given structure as dictated by record
 			into the provided hashmap.  The record is used to determine the
 			structure of the data <K,V> so that the key can be extracted.  The
@@ -91,8 +88,8 @@ ff_destroy(
 			the record can not be successfully inserted the error code will
 			reflect failure.  Will only allow for insertion of unique records.
 
-@param	  hash_map
-				The map into which the data is going to be inserted.
+@param	  file
+				The flatfile into which the data is going to be inserted.
 @param		key
 				The key that is being used to locate the position of the data.
 @param		value
@@ -109,11 +106,13 @@ ff_insert(
 /**
 @brief		Updates a value in the map.
 
+FIXME THIS DOCUMENTATION IS ALL WRONG!
+
 @details	Updates a value in the map.  If the value does not exist, it will
 			insert the value.
 
-@param		hash_map
-				The map into which the data is going to be inserted.
+@param		file
+				The flatfile into which the data is going to be inserted.
 @param		key
 				The key that is being used to locate the position of the data.
 @param		value
@@ -132,9 +131,9 @@ ff_update(
 
 @details	Based on a key, function locates the record in the map.
 
-@param		hash_map
+@param		file
 				The map into which the data is going to be inserted.
-@param		ion_key_t
+@param		key
 				The key for the record that is being searched for.
 @param		location
 				Pointer to the location variable
@@ -153,14 +152,10 @@ ff_find_item_loc(
 @details	Deletes item from map based on key.  If key does not exist
 			error is returned
 
-@param		hash_map
-				The map into which the data is going to be inserted.
-@param		record
-				The structure of the record being inserted.
+@param		file
+				The flatfile into which the data is going to be inserted.
 @param		key
 				The key for the record that is being searched for.
-@param		size
-				The number of buckets available in the map.
 */
 ion_status_t
 ff_delete(
@@ -176,8 +171,8 @@ ff_delete(
 			This presents a significant issue as both the key and value could
 			be modified, causing issues with map.
 
-@param		hash_map
-				The map into which the data is going to be inserted.
+@param		file
+				The flatfile into which the data is going to be inserted.
 @param		key
 				The key for the record that is being searched for.
 @param		value

@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		CppWrapperTest.cpp
+@file
 @author		Dana Klamut
 @brief		Test class exemplifying uses for Dictionary.h.
 */
@@ -135,7 +135,7 @@ main(
 	btree->destroy();
 	delete btree;
 
-	/** The following is example test code using int keys and string values */
+	/* The following is example test code using int keys and string values */
 
 /*	Dictionary<string> *btree = new BppTree<string>(key_type_char_array, 10, sizeof(int)); */
 /*  */

@@ -195,7 +195,7 @@ test_dictionary_master_table(
 	dictionary_t			dictionary;
 
 	sldict_init(&handler);
-	err = ion_master_table_create_dictionary(&handler, &dictionary, key_type_numeric_signed, 4, 10, 20);
+	err = ion_master_table_create_dictionary(&handler, &dictionary, key_type_numeric_signed, sizeof(int), 10, 20);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 2 == ion_master_table_next_id);
@@ -225,7 +225,7 @@ test_dictionary_master_table(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == config.id);
 	PLANCK_UNIT_ASSERT_TRUE(tc, key_type_numeric_signed == config.type);
-	PLANCK_UNIT_ASSERT_TRUE(tc, 4 == config.key_size);
+	PLANCK_UNIT_ASSERT_TRUE(tc, sizeof(int) == config.key_size);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 10 == config.value_size);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 20 == config.dictionary_size);
 
@@ -236,7 +236,7 @@ test_dictionary_master_table(
 	dictionary_t			dictionary2;
 
 	sldict_init(&handler2);
-	err = ion_master_table_create_dictionary(&handler2, &dictionary2, key_type_numeric_signed, 2, 7, 14);
+	err = ion_master_table_create_dictionary(&handler2, &dictionary2, key_type_numeric_signed, sizeof(short), 7, 14);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 3 == ion_master_table_next_id);
@@ -248,7 +248,7 @@ test_dictionary_master_table(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 2 == config.id);
 	PLANCK_UNIT_ASSERT_TRUE(tc, key_type_numeric_signed == config.type);
-	PLANCK_UNIT_ASSERT_TRUE(tc, 2 == config.key_size);
+	PLANCK_UNIT_ASSERT_TRUE(tc, sizeof(short) == config.key_size);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 7 == config.value_size);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 14 == config.dictionary_size);
 	/*******************/

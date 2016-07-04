@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
- @file	  open_address_dictionary_handler.c
+ @file
  @author		Scott Ronald Fazackerley
  @brief		The handler for a hash table using linear probing.
  */
@@ -59,7 +59,7 @@ oadict_create_dictionary(
 	/* this registers the dictionary the dictionary */
 	oah_initialize((hashmap_t *) dictionary->instance, oah_compute_simple_hash, key_type, key_size, value_size, dictionary_size);	/* just pick an arbitary size for testing atm */
 
-	/**@TODO The correct comparison operator needs to be bound at run time
+	/*TODO The correct comparison operator needs to be bound at run time
 	 * based on the type of key defined
 	 */
 
@@ -97,7 +97,7 @@ oadict_update(
 	return oah_update((hashmap_t *) dictionary->instance, key, value);
 }
 
-/** @todo What do we do if the cursor is already active? */
+/*@todo What do we do if the cursor is already active? */
 err_t
 oadict_find(
 	dictionary_t	*dictionary,
@@ -249,7 +249,7 @@ oadict_next(
 			if (cs_end_of_results == oadict_scan(oadict_cursor)) {
 				/* Then this is the end and there are no more results */
 				cursor->status = cs_end_of_results;
-				/** @todo need to do something with cursor? - done? */
+				/*@todo need to do something with cursor? - done? */
 				return cursor->status;
 			}
 		}
@@ -261,7 +261,7 @@ oadict_next(
 		/* the results are now ready //reference item at given position */
 		hash_bucket_t *item = (((hash_bucket_t *) ((hash_map->entry + (data_length + SIZEOF(STATUS)) * oadict_cursor->current /*idx*/))));
 
-		/** @todo A discussion needs to be had regarding ion_record_t and its format in memory etc */
+		/*@todo A discussion needs to be had regarding ion_record_t and its format in memory etc */
 		/* and copy key and value in */
 
 		memcpy(record->key, (ion_key_t) (item->data), hash_map->super.record.key_size);

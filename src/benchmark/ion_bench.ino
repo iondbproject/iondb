@@ -22,7 +22,7 @@
 
 static int _keyswap;
 
-/** CONFIG PARAMS **/
+/* CONFIG PARAMS */
 
 /**< Handler of dict to test. */
 //void              (*handler_fptr)(dictionary_handler_t*)  = sldict_init;

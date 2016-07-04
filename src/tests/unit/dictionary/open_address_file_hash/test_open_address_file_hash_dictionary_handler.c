@@ -1,5 +1,5 @@
 /**
-@file	   test_open_address_file_dictionary_handler.c
+@file
 
 @author		Scott Ronald Fazackerley
 
@@ -41,7 +41,7 @@ createFileTestCollection(
 	str = (ion_value_t) malloc(record->value_size);
 
 	for (i = 0; i < size; i++) {
-		sprintf((char *) str, "value : %i ", i);
+		sprintf((char *) str, "value : %i", i);
 		test_dictionary->handler->insert(test_dictionary, (ion_key_t) &i, str);
 	}
 
@@ -85,7 +85,7 @@ test_open_address_file_hashmap_handler_create_destroy(
 	record_info_t	record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record.key_size		= 4;
+	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 	size				= 10;
 
@@ -116,7 +116,7 @@ test_open_address_file_dictionary_cursor_equality(
 	record_info_t	record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record.key_size		= 4;
+	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 	size				= 10;
 
@@ -156,7 +156,7 @@ test_open_address_file_dictionary_handler_query_with_results(
 	record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record_info.key_size	= 4;
+	record_info.key_size	= sizeof(int);
 	record_info.value_size	= 10;
 	size					= 10;
 
@@ -190,7 +190,7 @@ test_open_address_file_dictionary_handler_query_with_results(
 	ion_value_t str;
 
 	str = (ion_value_t) malloc(record_info.value_size);
-	sprintf((char *) str, "value : %i ", *(int *) predicate.statement.equality.equality_value);
+	sprintf((char *) str, "value : %i", *(int *) predicate.statement.equality.equality_value);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL == memcmp(record.value, str, record_info.value_size));
 
@@ -220,7 +220,7 @@ test_open_address_file_dictionary_handler_query_no_results(
 	record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record_info.key_size	= 4;
+	record_info.key_size	= sizeof(int);
 	record_info.value_size	= 10;
 	size					= 10;
 
@@ -272,7 +272,7 @@ test_open_address_file_dictionary_predicate_equality(
 	record_info_t	record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record.key_size		= 4;
+	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 	size				= 10;
 
@@ -309,6 +309,7 @@ test_open_address_file_dictionary_predicate_equality(
 	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == oafdict_test_predicate(cursor, key_under_test));
 
 	free(key_under_test);
+	free(cursor);
 
 	/* destroy cursor for cleanup TODO TODO memory leak cannot free here!! */
 	/* cursor->destroy(&cursor); */
@@ -328,7 +329,7 @@ test_open_address_file_dictionary_predicate_range_signed(
 	record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record_info.key_size	= 4;
+	record_info.key_size	= sizeof(int);
 	record_info.value_size	= 10;
 	size					= 10;
 
@@ -374,6 +375,8 @@ test_open_address_file_dictionary_predicate_range_signed(
 
 	free(key_under_test);
 
+	free(cursor);
+
 	/* destroy cursor for cleanup TODO TODO memory leak CANNOT free here!! */
 	/* cursor->destroy(&cursor); */
 	/* and destroy the collection */
@@ -392,7 +395,7 @@ test_open_address_file_dictionary_predicate_range_unsigned(
 	record_info_t	record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record.key_size		= 4;
+	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 	size				= 10;
 
@@ -438,6 +441,8 @@ test_open_address_file_dictionary_predicate_range_unsigned(
 
 	free(key_under_test);
 
+	free(cursor);
+
 	/* destroy cursor for cleanup TODO TODO Memory leak here CANNOT free!!! */
 	/* cursor->destroy(&cursor); */
 	/* and destroy the collection */
@@ -452,7 +457,7 @@ test_open_address_file_dictionary_cursor_range(
 	record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record_info.key_size	= 4;
+	record_info.key_size	= sizeof(int);
 	record_info.value_size	= 10;
 	size					= 10;
 
@@ -490,7 +495,7 @@ test_open_address_file_dictionary_cursor_range(
 		ion_value_t str;
 
 		str = (ion_value_t) malloc(record_info.value_size);
-		sprintf((char *) str, "value : %i ", (*(int *) predicate.statement.range.lower_bound) + result_count);
+		sprintf((char *) str, "value : %i", (*(int *) predicate.statement.range.lower_bound) + result_count);
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL == memcmp(record.value, str, record_info.value_size));
 		result_count++;

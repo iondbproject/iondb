@@ -864,7 +864,7 @@ bOpen(
 		}
 	}
 
-	/** TODO make this cleaner **/
+	/*TODO make this cleaner **/
 #if defined(ARDUINO)
 	else if (NULL != (h->fp = ion_fopen(info.iName)).file) {
 #else
@@ -896,7 +896,7 @@ bClose(
 	}
 
 	/* flush idx */
-/** TODO: Cleanup **/
+/*TODO: Cleanup **/
 #if defined(ARDUINO)
 
 	if (h->fp.file) {

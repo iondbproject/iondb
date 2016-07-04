@@ -1,8 +1,8 @@
 /******************************************************************************/
 /**
 @file
-@author		Scott Fazackerley
-@brief		Redirects printf statement for Arduino.
+@author		AUTHOR NAME HERE.
+@brief		BRIEF HERE.
 @copyright	Copyright 2016
 				The University of British Columbia,
 				IonDB Project Contributors (see @ref AUTHORS.md)
@@ -20,18 +20,18 @@
 			License.
 */
 /******************************************************************************/
-#if !defined(PRINTF_REDIRECT_H_)
-#define PRINTF_REDIRECT_H_
+
+#if !defined(CHANGE_ME_H)
+#define CHANGE_ME_H
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-/* Preprocessor replacement for printf. */
-#define printf(format, ...) { char buf[512];snprintf(buf, 512, format, ## __VA_ARGS__);serial_print(buf);}
+/* Actual header file contents go in here. */
 
 #if defined(__cplusplus)
 }
 #endif
 
-#endif /* PRINTF_REDIRECT_H_ */
+#endif

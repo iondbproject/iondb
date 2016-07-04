@@ -1,8 +1,8 @@
 /******************************************************************************/
 /**
-@file		test_skip_list_handler.c
+@file
 @author		Kris Wallperington
-@brief		Unit tests for skip_list handler interface.
+@brief		Unit tests for skiplist handler interface.
 */
 /******************************************************************************/
 
@@ -68,8 +68,8 @@ create_test_collection_std_conditions(
 	dictionary_t			*dictionary,
 	dictionary_handler_t	*handler
 ) {
-	/* This means keysize 4 and valuesize 10 */
-	record_info_t	record			= { 4, 10 };
+	/* This means keysize 4 (on a desktop platform) and valuesize 10 */
+	record_info_t	record			= { sizeof(int), 10 };
 	key_type_t		key_type		= key_type_numeric_signed;
 	int				size			= 7;
 	int				num_elements	= 100;
@@ -116,7 +116,7 @@ test_collection_creation(
 
 	dictionary_t			dict;
 	dictionary_handler_t	handler;
-	record_info_t			record			= { 4, 10 };
+	record_info_t			record			= { sizeof(int), 10 };
 	key_type_t				key_type		= key_type_numeric_signed;
 	int						size			= 50;
 	int						num_elements	= 25;
@@ -127,7 +127,7 @@ test_collection_creation(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->key_type == key_type_numeric_signed);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare == dictionary_compare_signed_value);
-	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->record.key_size == 4);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->record.key_size == sizeof(int));
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->record.value_size == 10);
 	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist != NULL);
 	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist->head != NULL);
@@ -140,7 +140,7 @@ test_collection_creation(
 }
 
 /**
-@brief	  Tests an equality cursor on the std conditions skip_list. Assertion
+@brief	  Tests an equality cursor on the std conditions skiplist. Assertion
 			is that the cursor will return err_ok.
 
 @param	  tc
@@ -174,7 +174,7 @@ test_slhandler_cursor_equality(
 }
 
 /**
-@brief	  Tests an equality cursor on the std conditions skip_list. The
+@brief	  Tests an equality cursor on the std conditions skiplist. The
 			assertion is that the values returned will satisfy the predicate.
 
 @param	  tc
@@ -222,11 +222,13 @@ test_slhandler_cursor_equality_with_results(
 	cursor->destroy(&cursor);
 	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == cursor);
 
+	free(record.key);
+	free(record.value);
 	dictionary_delete_dictionary(&dict);
 }
 
 /**
-@brief	  Tests a range cursor on the std conditions skip_list. Assertion
+@brief	  Tests a range cursor on the std conditions skiplist. Assertion
 			is that the cursor will return err_ok.
 
 @param	  tc
@@ -260,7 +262,7 @@ test_slhandler_cursor_range(
 }
 
 /**
-@brief	  Tests a range cursor on the std conditions skip_list. The
+@brief	  Tests a range cursor on the std conditions skiplist. The
 			assertion is that the values returned will satisfy the predicate.
 
 @param	  tc
@@ -310,6 +312,8 @@ test_slhandler_cursor_range_with_results(
 	cursor->destroy(&cursor);
 	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == cursor);
 
+	free(record.key);
+	free(record.value);
 	dictionary_delete_dictionary(&dict);
 }
 
@@ -338,7 +342,7 @@ skiplist_handler_getsuite(
 }
 
 /**
-@brief	  Runs all skip_list related tests and outputs the result.
+@brief	  Runs all skiplist related tests and outputs the result.
  */
 void
 runalltests_skiplist_handler(

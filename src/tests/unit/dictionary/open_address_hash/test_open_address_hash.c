@@ -1,5 +1,5 @@
 /**
-@file		test_open_address.c
+@file
 @author		Scott Ronald Fazackerley
 
 @details	Tests base operations for open address hash map
@@ -43,8 +43,8 @@ initialize_hash_map(
 	record_info_t	*record,
 	hashmap_t		*map
 ) {
-	oah_initialize(map, oah_compute_simple_hash, /*dictionary_compare_signed_value,*/ map->super.key_type, record->key_size, record->value_size, size);
 	map->super.compare = dictionary_compare_signed_value;
+	oah_initialize(map, oah_compute_simple_hash, /*dictionary_compare_signed_value,*/ map->super.key_type, record->key_size, record->value_size, size);
 }
 
 void
@@ -53,7 +53,7 @@ initialize_hash_map_std_conditions(
 ) {
 	record_info_t record;
 
-	record.key_size		= 4;
+	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 	map->super.key_type = key_type_numeric_signed;
 	initialize_hash_map(STD_MAP_SIZE, &record, map);
@@ -73,7 +73,7 @@ test_open_address_hashmap_initialize(
 	int				size;
 	record_info_t	record;
 
-	record.key_size		= 4;
+	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 	size				= 10;
 
@@ -89,6 +89,8 @@ test_open_address_hashmap_initialize(
 	PLANCK_UNIT_ASSERT_TRUE(tc, map.map_size == size);
 	PLANCK_UNIT_ASSERT_TRUE(tc, map.compute_hash == &oah_compute_simple_hash);
 	PLANCK_UNIT_ASSERT_TRUE(tc, map.write_concern == wc_insert_unique);
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oah_destroy(&map));
 }
 
 /**
@@ -109,6 +111,8 @@ test_open_address_hashmap_compute_simple_hash(
 	for (i = 0; i < MAX_HASH_TEST; i++) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, (i % map.map_size) == oah_compute_simple_hash(&map, (ion_key_t) ((int *) &i), sizeof(i)));
 	}
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oah_destroy(&map));
 }
 
 /**
@@ -150,7 +154,7 @@ test_open_address_hashmap_find_item_location(
 
 	initialize_hash_map_std_conditions(&map);
 
-	/** Manually populate records */
+	/*Manually populate records */
 	record_info_t record = map.super.record;
 
 	char *item;
@@ -195,6 +199,9 @@ test_open_address_hashmap_find_item_location(
 			PLANCK_UNIT_ASSERT_TRUE(tc, (i + offset) % map.map_size == location);
 		}
 	}
+
+	free(item);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oah_destroy(&map));
 }
 
 /**
@@ -214,7 +221,7 @@ test_open_address_hashmap_simple_insert(
 
 	initialize_hash_map_std_conditions(&map);
 
-	/** Manually populate records */
+	/*Manually populate records */
 	record_info_t record = map.super.record;
 
 	/* manually populate array */
@@ -264,6 +271,8 @@ test_open_address_hashmap_simple_insert(
 			PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) str, (char *) value);
 		}
 	}
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oah_destroy(&map));
 }
 
 /**
@@ -316,6 +325,8 @@ test_open_address_hashmap_simple_insert_and_query(
 	if (value != NULL) {
 		free(value);
 	}
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oah_destroy(&map));
 }
 
 /**
@@ -402,6 +413,8 @@ test_open_address_hashmap_simple_delete(
 	if (value != NULL) {
 		free(value);
 	}
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oah_destroy(&map));
 }
 
 /**
@@ -438,7 +451,7 @@ test_open_address_hashmap_duplicate_insert_1(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-	/** and attempt to insert values with same key, which should fail and should
+	/*and attempt to insert values with same key, which should fail and should
 	return err_duplicate_key*/
 	for (i = 0; i < (map.map_size / 2); i++) {
 		/* build up the value */
@@ -449,6 +462,8 @@ test_open_address_hashmap_duplicate_insert_1(
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_duplicate_key == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
 	}
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oah_destroy(&map));
 }
 
 /**
@@ -509,7 +524,7 @@ test_open_address_hashmap_duplicate_insert_2(
 		}
 	}
 
-	/** and attempt to insert values with same key, which should fail and should
+	/*and attempt to insert values with same key, which should fail and should
 	return err_duplicate_key*/
 	for (i = 0; i < (map.map_size); i++) {
 		/* build up the value */
@@ -541,6 +556,8 @@ test_open_address_hashmap_duplicate_insert_2(
 			free(value);
 		}
 	}
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oah_destroy(&map));
 }
 
 /**
@@ -597,7 +614,7 @@ test_open_address_hashmap_update_1(
 		}
 	}
 
-	/** and update the values for the known keys */
+	/*and update the values for the known keys */
 	for (i = 0; i < (map.map_size); i++) {
 		/* build up the value */
 		char str[10];
@@ -628,6 +645,8 @@ test_open_address_hashmap_update_1(
 			free(value);
 		}
 	}
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oah_destroy(&map));
 }
 
 /**
@@ -685,7 +704,7 @@ test_open_address_hashmap_update_2(
 		}
 	}
 
-	/** and update the values for the known keys */
+	/*and update the values for the known keys */
 	for (i = 0; i < (map.map_size); i++) {
 		/* build up the value */
 		char str[10];
@@ -715,6 +734,8 @@ test_open_address_hashmap_update_2(
 			free(value);
 		}	/* must free value after query */
 	}
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oah_destroy(&map));
 }
 
 /**
@@ -760,6 +781,8 @@ test_open_address_hashmap_delete_1(
 	status = oah_delete(&map, (ion_key_t) (&i));
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oah_destroy(&map));
 }
 
 /**
@@ -816,7 +839,7 @@ test_open_address_hashmap_delete_2(
 		}
 	}
 
-	/** and update the values for the known keys */
+	/*and update the values for the known keys */
 	for (i = (map.map_size - 1); i >= 0; i--) {
 #if DEBUG
 		printf("Deleting key: %i \n", i);
@@ -873,6 +896,8 @@ test_open_address_hashmap_delete_2(
 			free(value);
 		}
 	}
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oah_destroy(&map));
 }
 
 /**
@@ -931,7 +956,6 @@ test_open_address_hashmap_capacity(
 
 	/* and check to make sure that the contents has not changed */
 	/* check status of <K,V> */
-	value = (ion_value_t) malloc(10);
 
 	for (i = 0; i < map.map_size; i++) {
 		status = oah_query(&map, (ion_key_t) &i, value);
@@ -946,6 +970,7 @@ test_open_address_hashmap_capacity(
 	}
 
 	free(value);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oah_destroy(&map));
 }
 
 planck_unit_suite_t *

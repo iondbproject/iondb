@@ -190,8 +190,8 @@ oah_find_item_loc(
 			/* calculate if there is a match */
 
 			if (item->status != DELETED) {
-				/** @todo correct compare to use proper returen type*/
-				/** @todo An error exisits with the comparitor from the dictionary and will need to be
+				/*@todo correct compare to use proper returen type*/
+				/*@todo An error exisits with the comparitor from the dictionary and will need to be
 				 * revisitied onced fixed */
 
 				int key_is_equal = hash_map->super.compare(item->data, key, hash_map->super.record.key_size);
@@ -307,8 +307,8 @@ oah_compute_simple_hash(
 	UNUSED(size_of_key);
 
 	/* convert to a hashable value */
-	/** @TODO int will cause an issues depending on sizeof int */
-	hash_t hash = ((hash_t) (*(int *) key)) % hashmap->map_size;
+	/*@todo int will cause an issues depending on sizeof int */
+	hash_t hash = (hash_t) ((*(int *) key) + hashmap->map_size) % hashmap->map_size;
 
 	return hash;
 }

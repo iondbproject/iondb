@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		linear_hash_types.c
+@file
 @author		Scott Ronald Fazackerley
 @brief		Linear Hash
 @details	Typedefs for linear hash

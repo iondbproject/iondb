@@ -45,7 +45,7 @@ extern "C" {
 
 #define MAX_FILE_LENGTH			20
 
-/** @TODO The location of hash_t needs to be resolved */
+/*@todo The location of hash_t needs to be resolved */
 /**
 @brief		The position in the hashmap.
  */
@@ -136,7 +136,7 @@ struct linear_hashmap {
 	int				bucket_pointer;
 	/**< pointer for current bucket being spilt */
 	int				id;				/**< id for files in system */
-									/** @todo this could be moved to parent */
+									/*@todo this could be moved to parent */
 	int				record_size;	/**< the size of the record in the pp */
 	int				number_of_records;
 	/**< the number of records in the linear_hash */
@@ -154,10 +154,11 @@ struct file_ll {
 };
 
 /**
-@brief		This function initializes a linearu in memory hash map.
+@brief		This function initializes a linear in memory hash map.
 
 @param		hashmap
 				Pointer to the hashmap instance to initialize.
+@param		compute_hash
 @param		key_type
 				The type of key that is being stored in the collection.
 @param	  key_size
@@ -167,6 +168,7 @@ struct file_ll {
 @param		size
 				The size of the hashmap in item
 				(@p key_size + @p value_size + @c 1)
+@param		id
 @return		The status describing the result of the initialization.
  */
 err_t
@@ -278,12 +280,8 @@ lh_update_item_action(
 
 @param		hash_map
 				The map into which the data is going to be inserted.
-@param		record
-				The structure of the record being inserted.
 @param		key
 				The key for the record that is being searched for.
-@param		size
-				The number of buckets available in the map.
 */
 ion_status_t
 lh_delete(
@@ -320,10 +318,7 @@ lh_query(
 
 @param		hash_map
 				The map into which the data is going to be inserted.
-@param		key
-				The key for the record that is being searched for.
-@param		value
-				The value associated in the map.
+@param		cursor
 */
 err_t
 lh_find(
@@ -438,10 +433,12 @@ lh_split_item_action(
 /**
  * Brings a primary page into the cache
  * @param hash_map
+ * @param cache_number
  * @param bucket_number
+ * @param cache
  * @return
  *
- * @TODO Add age detection to cache buckets to determine if a bucket has been written or not.
+ * @todo Add age detection to cache buckets to determine if a bucket has been written or not.
  * If the primary page has not been written since it have been last flushed, then just drop it
  * and go onto the next page
  */
@@ -461,8 +458,7 @@ lh_cache_pp(
  *
  * @param   hash_map
  *			  The hashmap the cache is associated with
- * @param   cache_number
- *			  The cache number to operate on
+ * @param   cache
  * @param   idx
  *			  The position of the data in the cache, specifically the record number in the pp
  * @param   item
@@ -479,7 +475,7 @@ lh_read_cache(
 
 /**
  * @brief	Changes the status of a record in the cache
- * @param cache
+ * @param hash_map
  * @param item
  * @param status
  * @return
@@ -498,8 +494,7 @@ lh_write_record_status_in_cache(
  *
  * @param   hash_map
  *			  The hashmap the cache is associated with
- * @param   cache_number
- *			  The cache number to operate on
+ * @param   cache
  * @param   to
  *			  The destination of where the data will be written
  * @param	from
@@ -511,7 +506,7 @@ lh_write_record_status_in_cache(
 err_t
 lh_write_cache_raw(
 	linear_hashmap_t	*hash_map,
-	/**int					cache_number,*/
+	/*nt					cache_number,*/
 	lh_page_cache_t		*cache,
 	void				*to,
 	l_hash_bucket_t		*from,
@@ -550,13 +545,13 @@ lh_action_primary_page(
 	ion_value_t value
 );
 
-/** @FIXME - Make sure that value is malloc'd before call? */
+/*FIXME - Make sure that value is malloc'd before call? */
 /**
  * @brief - this searches for the value but does not get it but only records
  * the location.
- * @FIXME - not really happy with this.
+ * FIXME - not really happy with this.
  * @param hash_map
- * @param cache_number
+ * @param cache
  * @param cursor
  * @return
  */

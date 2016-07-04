@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		skip_list_store.h
+@file
 @author		Kris Wallperington
 @brief		Implementation of a Skiplist data store
 */
@@ -16,18 +16,18 @@ extern "C" {
 /* #include <time.h> / * For random seed * / */
 
 /**
-@brief	  Initializes an in-memory skip_list.
+@brief	  Initializes an in-memory skiplist.
 
-@param	  skip_list
-				Pointer to a skip_list instance to initialize
+@param	  skiplist
+				Pointer to a skiplist instance to initialize
 @param	  key_type
-				Type of key used in this instance of a skip_list.
+				Type of key used in this instance of a skiplist.
 @param	  key_size
 				Size of key in bytes.
 @param	  value_size
 				Size of value in bytes.
 @param	  maxheight
-				Maximum number of levels the skip_list will have.
+				Maximum number of levels the skiplist will have.
 @param	  pnum
 				The numerator portion of the p value.
 @param	  pden
@@ -46,12 +46,12 @@ sl_initialize(
 );
 
 /**
-@brief	  Destroys the skip_list in memory.
+@brief	  Destroys the skiplist in memory.
 
-@details	Destroys the skip_list in memory and frees the underlying structures.
+@details	Destroys the skiplist in memory and frees the underlying structures.
 
-@param	  skip_list
-				The skip_list to be destroyed
+@param	  skiplist
+				The skiplist to be destroyed
 @return	 Status of destruction.
  */
 err_t
@@ -60,14 +60,14 @@ sl_destroy(
 );
 
 /**
-@brief	  Inserts a @p key @p value pair into the skip_list.
+@brief	  Inserts a @p key @p value pair into the skiplist.
 
-@details	Inserts a @p key @p value pair into the skip_list. The key and value
+@details	Inserts a @p key @p value pair into the skiplist. The key and value
 			are copied byte-for-byte as passed by the user. Duplicate inserts
 			are implicitly supported.
 
-@param	  skip_list
-				The skip_list in which to insert
+@param	  skiplist
+				The skiplist in which to insert
 @param	  key
 				The key to be insert
 @param	  value
@@ -87,8 +87,8 @@ sl_insert(
 @details	Requests the @p value stored at the given @p key. The resultant
 			value is then copied into the pointer provided by the user.
 
-@param	  skip_list
-				The skip_list in which to query
+@param	  skiplist
+				The skiplist in which to query
 @param	  key
 				The key to be found
 @param	  value
@@ -107,11 +107,11 @@ sl_query(
 
 @details	Updates the value stored at @p key with the new @p value. The given
 			value is copied byte-for-byte into the malloc'd memory already
-			stored at the key. If the @p key does not exist within the skip_list,
-			the key/value pair is inserted into the skip_list instead.
+			stored at the key. If the @p key does not exist within the skiplist,
+			the key/value pair is inserted into the skiplist instead.
 
-@param	  skip_list
-				The skip_list in which to update
+@param	  skiplist
+				The skiplist in which to update
 @param	  key
 				The key to find and update
 @param	  value
@@ -130,11 +130,11 @@ sl_update(
 
 @details	Attempts to delete all key/value pairs stored at the given @p key.
 			Returns "err_item_not_found" if the requested @p key is not in
-			the skip_list, and "err_ok" if the deletion was successful. Any
+			the skiplist, and "err_ok" if the deletion was successful. Any
 			memory previously used for the deleted key/value pair(s) is freed.
 
-@param	  skip_list
-				The skip_list in which to delete from
+@param	  skiplist
+				The skiplist in which to delete from
 @param	  key
 				The key to delete
 @return	 Status of deletion.
@@ -162,11 +162,11 @@ sl_find_node(
 
 /**
 @brief	  Generates a psuedo-random height, bounded within [0, maxheight). The
-			generator is seeded using the current epoch time when the skip_list
+			generator is seeded using the current epoch time when the skiplist
 			is initialized.
 
-@param	  skip_list
-				The skip_list to read level generation parameters from
+@param	  skiplist
+				The skiplist to read level generation parameters from
 @return	 A height.
  */
 sl_level_t
@@ -175,11 +175,11 @@ sl_gen_level(
 );
 
 /**
-@brief	  Iterates through each level of a skip_list and prints out the content
+@brief	  Iterates through each level of a skiplist and prints out the content
 			of each node in a meaningful way. Intended for debug use only.
 
-@param	  skip_list
-				The skip_list to print
+@param	  skiplist
+				The skiplist to print
  */
 void
 print_skiplist(

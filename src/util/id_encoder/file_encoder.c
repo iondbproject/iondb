@@ -60,15 +60,15 @@ fe_encode_parent_id(
 	}
 
 	for (; idx < 8; idx++) {
-		file->type.parent.parent_filename[idx]	= encode[(((ion_byte_t) id) & 0x0F)];	/** extract value */
-		id										= (id >> NUMBER_OF_BITS);	/** shift down */
+		file->type.parent.parent_filename[idx]	= encode[(((ion_byte_t) id) & 0x0F)];	/* extract value */
+		id										= (id >> NUMBER_OF_BITS);	/* shift down */
 	}
 
 	file->type.parent.parent_filename[idx++] = '.';
 
 	for (; idx < 12; idx++) {
-		file->type.parent.parent_filename[idx]	= parent_type[(((ion_byte_t) file_type) & 0x0F)];	/** extract value */
-		file_type								= (file_type >> NUMBER_OF_BITS);/** shift down */
+		file->type.parent.parent_filename[idx]	= parent_type[(((ion_byte_t) file_type) & 0x0F)];	/* extract value */
+		file_type								= (file_type >> NUMBER_OF_BITS);/* shift down */
 	}
 
 	file->type.parent.parent_filename[idx] = 0;
@@ -103,15 +103,15 @@ fe_encode_child_id(
 	int idx							= 0;
 
 	for (; idx < 8; idx++) {
-		file->type.child.child_filename[idx]	= encode[(((ion_byte_t) child_id) & 0x0F)];	/** extract value */
-		child_id								= (child_id >> NUMBER_OF_BITS);	/** shift down */
+		file->type.child.child_filename[idx]	= encode[(((ion_byte_t) child_id) & 0x0F)];	/* extract value */
+		child_id								= (child_id >> NUMBER_OF_BITS);	/* shift down */
 	}
 
 	file->type.child.child_filename[idx++] = '.';
 
 	for (; idx < 12; idx++) {
-		file->type.child.child_filename[idx]	= encode[(((ion_byte_t) id) & 0x0F)];	/** extract value */
-		id										= (id >> NUMBER_OF_BITS);	/** shift down */
+		file->type.child.child_filename[idx]	= encode[(((ion_byte_t) id) & 0x0F)];	/* extract value */
+		id										= (id >> NUMBER_OF_BITS);	/* shift down */
 	}
 
 	file->type.child.child_filename[idx] = 0;
@@ -130,7 +130,7 @@ fe_encode_config_id(
 		return err_illegal_state;
 	}
 
-	/** parent file name is 00000000.AAA
+	/* parent file name is 00000000.AAA
 	 *							   ^^^-----encoded file type
 	 *						   ^^^---------encoded parent id
 	*/
@@ -151,8 +151,8 @@ fe_encode_config_id(
 	file->type.config.config_filename[idx++] = '.';
 
 	for (; idx < 12; idx++) {
-		file->type.config.config_filename[idx]	= encode[(((ion_byte_t) id) & 0x0F)];	/** extract value */
-		id										= (id >> NUMBER_OF_BITS);	/** shift down */
+		file->type.config.config_filename[idx]	= encode[(((ion_byte_t) id) & 0x0F)];	/* extract value */
+		id										= (id >> NUMBER_OF_BITS);	/* shift down */
 	}
 
 	file->type.config.config_filename[idx] = 0;

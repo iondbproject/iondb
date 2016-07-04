@@ -1,5 +1,5 @@
 /**
-@file		test_flat_file.c
+@file
 @author		Scott Ronald Fazackerley
 
 @details	Tests base operations for open address hash map
@@ -63,7 +63,7 @@ initialize_flat_file_std_conditions(
 ) {
 	record_info_t *record = (record_info_t *) malloc(sizeof(record_info_t));
 
-	record->key_size			= 4;
+	record->key_size			= sizeof(int);
 	record->value_size			= 10;
 	flat_file->super.key_type	= key_type_numeric_signed;
 	initialize_flat_file(record, flat_file);
@@ -193,10 +193,13 @@ void
 test_flat_file_initialize(
 	planck_unit_test_t *tc
 ) {
+	/* FIXME FIXME HACK TODO This is just a temporary fix to stop old files from crashing the tests */
+	fremove(TEST_FILE);
+
 	/* this is required for initializing the hash map and should come from the dictionary */
 	record_info_t record;
 
-	record.key_size		= 4;
+	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 
 	ff_file_t flat_file;
@@ -327,7 +330,7 @@ test_flat_file_duplicate_insert_1(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-	/** and attempt to insert values with same key, which should fail and should
+	/* and attempt to insert values with same key, which should fail and should
 	return err_duplicate_key*/
 	for (i = 0; i < (STD_KV_SIZE / 2); i++) {
 		/* build up the value */
@@ -406,7 +409,7 @@ test_flat_file_duplicate_insert_2(
 		}
 	}
 
-	/** and attempt to insert new values with same key*/
+	/* and attempt to insert new values with same key*/
 	for (i = 0; i < (STD_KV_SIZE); i++) {
 		/* build up the value */
 		char str[10];
@@ -601,7 +604,7 @@ test_flat_file_update_2(
 		}
 	}
 
-	/** and update the values for the known keys */
+	/* and update the values for the known keys */
 	for (i = 0; i < (STD_KV_SIZE); i++) {
 		/* build up the value */
 		char str[10];
@@ -746,7 +749,7 @@ test_flat_file_delete_2(
 		}
 	}
 
-	/** and update the values for the known keys */
+	/* and update the values for the known keys */
 	for (i = (STD_KV_SIZE - 1); i >= 0; i--) {
 #if DEBUG
 		printf("Deleting key: %i \n", i);

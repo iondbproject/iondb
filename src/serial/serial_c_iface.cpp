@@ -29,12 +29,12 @@ serial_printf_c(
 	const char *format,
 	...
 ) {
-	/* Resulting string limited to 128 characters. */
-	char	buf[128];
+	/* Resulting string limited to 512 characters. */
+	char	buf[512];
 	va_list args;
 
 	va_start(args, format);
-	vsnprintf(buf, 128, format, args);
+	vsnprintf(buf, 512, format, args);
 	va_end(args);
 	return serial_print(buf);
 }

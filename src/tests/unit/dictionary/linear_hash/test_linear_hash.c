@@ -57,7 +57,7 @@ test_file_linear_size_test(
 		err = lh_initialize(&hashmap, lh_compute_hash, hashmap.super.key_type, record.key_size, record.value_size, test_size, structure_ID);
 
 		if ((test_size < 2) || ((1 << (int) floor(log2(test_size))) != test_size)) {
-			/** check to ensure that the size is a 2^n value as required*/
+			/*check to ensure that the size is a 2^n value as required*/
 			PLANCK_UNIT_ASSERT_TRUE(tc, err == err_invalid_initial_size);
 		}
 		else {
@@ -129,7 +129,7 @@ test_file_linear_hash_hash_test(
 	DUMP(hash_set, "%p");
 #endif
 
-	/** file level should be know */
+	/*file level should be know */
 	err_t status = lh_compute_hash(&hashmap, (ion_key_t) &key, size_of_key, file_level, hash_set);
 
 	/* check without malloc */
@@ -140,9 +140,9 @@ test_file_linear_hash_hash_test(
 	key			= 10;
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == lh_compute_hash(&hashmap, (ion_key_t) &key, size_of_key, file_level, hash_set));
 	PLANCK_UNIT_ASSERT_TRUE(tc, (hash_t) (key % ((1 << (file_level + 1)) * hashmap.initial_map_size)) == hash_set->upper_hash);
-	PLANCK_UNIT_ASSERT_TRUE(tc, (hash_t) (key % ((1 << file_level) * hashmap.initial_map_size)) == hash_set->lower_hash);	/** Value should be invalid as file level is 0*/
+	PLANCK_UNIT_ASSERT_TRUE(tc, (hash_t) (key % ((1 << file_level) * hashmap.initial_map_size)) == hash_set->lower_hash);	/*Value should be invalid as file level is 0*/
 
-	file_level = 1;	/** increase file level which should produce 2 hashes */
+	file_level = 1;	/*increase file level which should produce 2 hashes */
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == lh_compute_hash(&hashmap, (ion_key_t) &key, size_of_key, file_level, hash_set));
 	PLANCK_UNIT_ASSERT_TRUE(tc, (hash_t) (key % ((1 << file_level) * hashmap.initial_map_size)) == hash_set->lower_hash);
@@ -150,7 +150,7 @@ test_file_linear_hash_hash_test(
 
 	/* check correctness for both key and file level */
 
-	for (file_level = 0; file_level < 10 /** 10 levels */; file_level++) {
+	for (file_level = 0; file_level < 10 /*10 levels */; file_level++) {
 		for (key = 0; key < (1 << 16); key++) {
 			PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == lh_compute_hash(&hashmap, (ion_key_t) &key, size_of_key, file_level, hash_set));
 			PLANCK_UNIT_ASSERT_TRUE(tc, (hash_t) (key % ((1 << file_level) * hashmap.initial_map_size)) == hash_set->lower_hash);
@@ -202,9 +202,9 @@ test_file_linear_hash_insert(
 	key = 22;
 	lh_insert(&hashmap, (ion_key_t) &key, (ion_value_t) value);
 
-	lh_close(&hashmap);	/** closes the structure */
+	lh_close(&hashmap);	/*closes the structure */
 
-	delete_linear_hash(&hashmap);	/** closes and deletes? */
+	delete_linear_hash(&hashmap);	/*closes and deletes? */
 }
 
 /**
@@ -267,9 +267,9 @@ test_file_linear_hash_insert_negative(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 0 == strcmp(value, (char *) query_value));
 	}
 
-	lh_close(&hashmap);	/** closes the structure */
+	lh_close(&hashmap);	/*closes the structure */
 
-	delete_linear_hash(&hashmap);	/** closes and deletes? */
+	delete_linear_hash(&hashmap);	/*closes and deletes? */
 }
 
 /**
@@ -308,7 +308,7 @@ test_file_linear_hash_split_1(
 	key = 4;
 	lh_insert(&hashmap, (ion_key_t) &key, (ion_value_t) value);
 
-	/** and check correctness of file */
+	/*and check correctness of file */
 	frewind(hashmap.file);
 
 	int				idx;
@@ -397,7 +397,7 @@ test_file_linear_hash_split_2(
 	key = 12;
 	lh_insert(&hashmap, (ion_key_t) &key, (ion_value_t) value);
 
-	/** and check correctness of file */
+	/*and check correctness of file */
 	frewind(hashmap.file);
 
 	int				idx					= 0;
@@ -415,7 +415,7 @@ test_file_linear_hash_split_2(
 		}
 	}
 
-	/** and check ll */
+	/*and check ll */
 	ll_file_t ll_file;
 
 	fll_open(&ll_file, NULL, hashmap.super.record.key_size, hashmap.super.record.value_size, 0, hashmap.id);/* valgrind, data loss --FIXME */
@@ -519,7 +519,7 @@ test_file_linear_hash_split_3(
 	key = 20;
 	lh_insert(&hashmap, (ion_key_t) &key, (ion_value_t) value);
 
-	/** and check correctness of file */
+	/*and check correctness of file */
 	frewind(hashmap.file);
 
 	int				idx;
@@ -537,7 +537,7 @@ test_file_linear_hash_split_3(
 		}
 	}
 
-	/** and check ll */
+	/*and check ll */
 	ll_file_t ll_file;
 
 	fll_open(&ll_file, NULL, hashmap.super.record.key_size, hashmap.super.record.value_size, 0, hashmap.id);
@@ -632,7 +632,7 @@ test_file_linear_hash_split_4(
 		lh_insert(&hashmap, (ion_key_t) &key[idx], (ion_value_t) value);
 	}
 
-	/** and check correctness of file */
+	/*and check correctness of file */
 	frewind(hashmap.file);
 
 	int				record_size			= SIZEOF(STATUS) + record.key_size + record.value_size;
@@ -731,7 +731,7 @@ test_file_linear_hash_query(
 		lh_insert(&hashmap, (ion_key_t) &key[idx], (ion_value_t) value);
 	}
 
-	/** and check correctness of file */
+	/*and check correctness of file */
 	frewind(hashmap.file);
 
 	int				record_size			= SIZEOF(STATUS) + record.key_size + record.value_size;
@@ -778,7 +778,7 @@ test_file_linear_hash_query(
 		}
 	}
 
-	/** query file to ensure that values are found */
+	/*query file to ensure that values are found */
 	ion_value_t query_value = (ion_value_t) malloc(record.value_size);
 
 	for (idx = 0; idx < 8; idx++) {
@@ -838,7 +838,7 @@ test_file_linear_hash_query_2(
 		lh_insert(&hashmap, (ion_key_t) &key[idx], (ion_value_t) value);
 	}
 
-	/** and check correctness of file */
+	/*and check correctness of file */
 	frewind(hashmap.file);
 
 	int				record_size			= SIZEOF(STATUS) + record.key_size + record.value_size;
@@ -855,7 +855,7 @@ test_file_linear_hash_query_2(
 		}
 	}
 
-	/** query file to ensure that values are found before split as they should be in overflow files */
+	/*query file to ensure that values are found before split as they should be in overflow files */
 	ion_value_t query_value = (ion_value_t) malloc(record.value_size);
 
 	for (idx = 0; idx < 12; idx++) {
@@ -891,7 +891,7 @@ test_file_linear_hash_query_2(
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == hashmap.bucket_pointer);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == hashmap.file_level);
 
-	/** query file to ensure that values are found */
+	/*query file to ensure that values are found */
 
 	for (idx = 0; idx < 12; idx++) {
 #if DEBUG
@@ -950,7 +950,7 @@ test_file_linear_hash_delete(
 		lh_insert(&hashmap, (ion_key_t) &key[idx], (ion_value_t) value);
 	}
 
-	/** and check correctness of file */
+	/*and check correctness of file */
 	frewind(hashmap.file);
 
 	int				record_size			= SIZEOF(STATUS) + record.key_size + record.value_size;
@@ -967,7 +967,7 @@ test_file_linear_hash_delete(
 		}
 	}
 
-	/** query file to ensure that values are found before split as they should be in overflow files */
+	/*query file to ensure that values are found before split as they should be in overflow files */
 	ion_value_t query_value = (ion_value_t) malloc(record.value_size);
 
 	for (idx = 0; idx < 12; idx++) {
@@ -997,7 +997,7 @@ test_file_linear_hash_delete(
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == hashmap.bucket_pointer);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == hashmap.file_level);
 
-	/** query file to ensure that values are found */
+	/*query file to ensure that values are found */
 
 	for (idx = 0; idx < 12; idx++) {
 #if DEBUG
@@ -1070,7 +1070,7 @@ test_linear_hash_load_factor(
 	linear_hashmap_t	hashmap;
 	int					structure_ID = 5;
 
-	int				size;							/** number of pages */
+	int				size;							/*number of pages */
 	record_info_t	record;
 
 	record.key_size			= 4;
@@ -1082,7 +1082,7 @@ test_linear_hash_load_factor(
 
 	lh_initialize(&hashmap, lh_compute_hash, hashmap.super.key_type, record.key_size, record.value_size, size, structure_ID);
 
-	/** and don't forget to bind the compare as this is usually done at dict level */
+	/*and don't forget to bind the compare as this is usually done at dict level */
 	hashmap.super.compare = dictionary_compare_signed_value;
 
 	/*empty so load should be 0 */
@@ -1115,9 +1115,9 @@ test_linear_hash_load_factor(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == hashmap.number_of_records);
 
-	key++;	/** start back at 1 */
+	key++;	/*start back at 1 */
 
-	/** test with overflow without split */
+	/*test with overflow without split */
 	for (; key < 19; key++) {
 		lh_insert(&hashmap, (ion_key_t) &key, (ion_value_t) value);
 
@@ -1128,22 +1128,22 @@ test_linear_hash_load_factor(
 
 	key--;
 
-	/** Test load factor under split */
+	/*Test load factor under split */
 
 	int split_cnt = 0;
 
 	for (; split_cnt < key; split_cnt++) {
 		lh_split(&hashmap);	/* HEATH BREAKPOINT --FIXME */
-		size++;	/** number of pages is increased */
+		size++;	/*number of pages is increased */
 
 		int actual_load = 100 * (key) / (RECORDS_PER_BUCKET * size);
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, actual_load == lh_compute_load_factor(&hashmap));
 	}
 
-	lh_close(&hashmap);	/** closes the structure */
+	lh_close(&hashmap);	/*closes the structure */
 
-	delete_linear_hash(&hashmap);	/** closes and deletes? */
+	delete_linear_hash(&hashmap);	/*closes and deletes? */
 }
 
 /**
@@ -1227,7 +1227,7 @@ test_file_linear_hash_update(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, 3 == status.count);
 
-	/** Delete records in pp to ensure that updates will happen in overflow */
+	/*Delete records in pp to ensure that updates will happen in overflow */
 	key		= 1;
 	status	= lh_delete(&hashmap, (ion_key_t) &key);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
@@ -1253,7 +1253,7 @@ test_file_linear_hash_update(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
-	/** Insert key and it should go into overflow page */
+	/*Insert key and it should go into overflow page */
 	key		= 9;
 	status	= lh_insert(&hashmap, (ion_key_t) &key, (ion_value_t) value);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
@@ -1267,9 +1267,9 @@ test_file_linear_hash_update(
 	status	= lh_update(&hashmap, (ion_key_t) &key, (ion_value_t) next_value2);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
-	lh_close(&hashmap);	/** closes the structure */
+	lh_close(&hashmap);	/*closes the structure */
 
-	delete_linear_hash(&hashmap);	/** closes and deletes? */
+	delete_linear_hash(&hashmap);	/*closes and deletes? */
 }
 
 planck_unit_suite_t *

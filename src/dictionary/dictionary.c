@@ -22,7 +22,6 @@
 /******************************************************************************/
 
 #include "dictionary.h"
-#include <string.h>
 
 ion_dictionary_compare_t
 dictionary_switch_compare(
@@ -135,7 +134,7 @@ dictionary_compare_unsigned_value(
 	int		idx;
 	char	return_value = 0x73;/* Magic default return value to be easy to spot */
 
-	/**
+	/*
 	 * In this case, the endianness of the process does matter as the code does
 	 * a direct comparison of bytes in memory starting for MSB.
 	 */
@@ -144,7 +143,7 @@ dictionary_compare_unsigned_value(
 	for (idx = key_size - 1; idx >= 0; idx--) {
 #else
 
-	/** @TODO This is a potential issue and needs to be tested on SAMD3 */
+	/*@todo This is a potential issue and needs to be tested on SAMD3 */
 	for (idx = 0; idx < key_size; idx++) {
 #endif
 
@@ -194,7 +193,7 @@ dictionary_compare_signed_value(
 	for (; idx >= 0; idx--) {
 #else
 
-	/** @todo This is a potential issue and needs to be tested on SAMD3 */
+	/*@todo This is a potential issue and needs to be tested on SAMD3 */
 	for (; idx < key_size; idx++) {
 #endif
 		firstbyte	= *((ion_byte_t *) first_key + idx);

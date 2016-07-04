@@ -1,5 +1,5 @@
 /**
-@file	   test_flat_file_dictionary_handler.c
+@file
 
 @author		Scott Ronald Fazackerley
 
@@ -111,7 +111,7 @@ test_linear_hash_handler_create_destroy(
 	PLANCK_UNIT_ASSERT_TRUE(tc, (((linear_hashmap_t *) test_dictionary.instance)->super.record.value_size) == record.value_size);
 	PLANCK_UNIT_ASSERT_TRUE(tc, (((linear_hashmap_t *) test_dictionary.instance)->write_concern) == wc_duplicate);
 
-	/** and clean up dictionary when done */
+	/*and clean up dictionary when done */
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
 }
 
@@ -153,12 +153,13 @@ test_linear_hash_handler_simple_insert_and_query(
 	sprintf((char *) test_value, "value : %i", test_key);
 
 	ion_status_t status = test_dictionary.handler->insert(&test_dictionary, (ion_key_t) &test_key, (ion_value_t) test_value);
+
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 	ion_value_t read_value = (ion_value_t) malloc(test_dictionary.instance->record.value_size);
 
-	status  =test_dictionary.handler->get(&test_dictionary, (ion_key_t) &test_key, (ion_value_t) read_value);
+	status = test_dictionary.handler->get(&test_dictionary, (ion_key_t) &test_key, (ion_value_t) read_value);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -182,7 +183,7 @@ void
 test_linear_hash_handler_update_1(
 	planck_unit_test_t *tc
 ) {
-	/** create collection with single entry and update wih no overflow pages */
+	/*create collection with single entry and update wih no overflow pages */
 
 	record_info_t record_info;
 
@@ -209,7 +210,7 @@ test_linear_hash_handler_update_1(
 
 	/* need to prepare predicate correctly */
 	predicate.statement.equality.equality_value = (ion_key_t) malloc(sizeof(int));
-	/** @Todo This needs to be improved */
+	/*@Todo This needs to be improved */
 	memcpy(predicate.statement.equality.equality_value, (ion_key_t) &(int) { 1 }, sizeof(int));
 
 	/* test that the query runs on collection okay */
@@ -259,7 +260,7 @@ void
 test_linear_hash_handler_update_2(
 	planck_unit_test_t *tc
 ) {
-	/** create collection with single entry and update wih no overflow pages */
+	/*create collection with single entry and update wih no overflow pages */
 
 	record_info_t record_info;
 
@@ -286,7 +287,7 @@ test_linear_hash_handler_update_2(
 
 	/* need to prepare predicate correctly */
 	predicate.statement.equality.equality_value = (ion_key_t) malloc(sizeof(int));
-	/** @Todo This needs to be improved */
+	/*@Todo This needs to be improved */
 	memcpy(predicate.statement.equality.equality_value, (ion_key_t) &(int) { 1 }, sizeof(int));
 
 	/* test that the query runs on collection okay */
@@ -315,10 +316,11 @@ test_linear_hash_handler_update_2(
 
 	cursor->destroy(&cursor);
 
-	int		key		= 1;
-	char	*value	= "value : 1 ";
+	int		key			= 1;
+	char	*value		= "value : 1 ";
 
 	ion_status_t status = test_dictionary.handler->insert(&test_dictionary, (ion_key_t) &(int) { key }, (ion_value_t) value);
+
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -359,11 +361,11 @@ test_linear_hash_handler_update_2(
 
 	cursor->destroy(&cursor);
 
-	/** Insert more record so that they should be spanning both pp and overflow */
-	status = test_dictionary.handler->insert(&test_dictionary, (ion_key_t) &(int) { key }, (ion_value_t) value);
+	/*Insert more record so that they should be spanning both pp and overflow */
+	status	= test_dictionary.handler->insert(&test_dictionary, (ion_key_t) &(int) { key }, (ion_value_t) value);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
-	status = test_dictionary.handler->insert(&test_dictionary, (ion_key_t) &(int) { key }, (ion_value_t) value);
+	status	= test_dictionary.handler->insert(&test_dictionary, (ion_key_t) &(int) { key }, (ion_value_t) value);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -414,7 +416,7 @@ test_linear_hash_dictionary_cursor_equality(
 	dictionary_handler_t	file_handler;			/* create handler for hashmap */
 	dictionary_t			test_dictionary;		/* collection handler for test collection */
 
-	/** Assuming that it is being created correctly */
+	/*Assuming that it is being created correctly */
 	create_linear_hash_test_collection(&file_handler, &record, size, &test_dictionary, key_type_numeric_signed, size);
 
 	dict_cursor_t *cursor;	/* create a new cursor pointer */
@@ -428,7 +430,7 @@ test_linear_hash_dictionary_cursor_equality(
 	/* need to prepare predicate correctly */
 	predicate->statement.equality.equality_value	= (ion_key_t) malloc(sizeof(int));
 
-	/** @Todo This needs to be improved */
+	/*@Todo This needs to be improved */
 	memcpy(predicate->statement.equality.equality_value, (ion_key_t) &(int) { 1 }, sizeof(int));
 
 	/* test that the query runs on collection okay */
@@ -643,7 +645,7 @@ test_linear_hash_dictionary_cursor_range_signed_4(
 	predicate.statement.range.upper_bound	= (ion_key_t) malloc(sizeof(int));
 	predicate.statement.range.lower_bound	= (ion_key_t) malloc(sizeof(int));
 
-	/** ensures that value is in overflow page */
+	/*ensures that value is in overflow page */
 	memcpy(predicate.statement.range.upper_bound, (ion_key_t) &(int) { 5 }, sizeof(int));
 	memcpy(predicate.statement.range.lower_bound, (ion_key_t) &(int) { 10 }, sizeof(int));
 
@@ -696,7 +698,7 @@ test_linear_hash_dictionary_handler_query_with_results(
 
 	/* need to prepare predicate correctly */
 	predicate.statement.equality.equality_value = (ion_key_t) malloc(sizeof(int));
-	/** @Todo This needs to be improved */
+	/*@Todo This needs to be improved */
 	memcpy(predicate.statement.equality.equality_value, (ion_key_t) &(int) { 1 }, sizeof(int));
 
 	/* test that the query runs on collection okay */
@@ -766,7 +768,7 @@ test_linear_hash_dictionary_handler_query_no_results(
 
 	/* need to prepare predicate correctly */
 	predicate.statement.equality.equality_value = (ion_key_t) malloc(sizeof(int));
-	/** @Todo This needs to be improved */
+	/*@Todo This needs to be improved */
 	memcpy(predicate.statement.equality.equality_value, (ion_key_t) &(int) { -1 }, sizeof(int));
 
 	/* test that the query runs on collection okay */
@@ -816,14 +818,14 @@ test_linear_hash_dictionary_predicate_equality(
 
 	dict_cursor_t *cursor;	/* create a new cursor pointer */
 
-	cursor			= (dict_cursor_t *) ((lhdict_cursor_t *) malloc(sizeof(lhdict_cursor_t)));	/** Make sure to malloc correct size */
+	cursor			= (dict_cursor_t *) ((lhdict_cursor_t *) malloc(sizeof(lhdict_cursor_t)));	/*Make sure to malloc correct size */
 
-	/** @FIMXE */
+	/*@FIMXE */
 	cursor->destroy = lhdict_destroy_cursor;
 
 	/* create a new predicate statement */
 
-	/** IMPORTANT - This must be put on the heap as the destroy method will attempt to free */
+	/*IMPORTANT - This must be put on the heap as the destroy method will attempt to free */
 	cursor->predicate										= (predicate_t *) malloc(sizeof(predicate_t));
 	cursor->predicate->type									= predicate_equality;
 	cursor->predicate->destroy								= &dictionary_destroy_predicate_equality;
@@ -883,7 +885,7 @@ test_linear_hash_dictionary_predicate_range_signed(
 
 	cursor									= (dict_cursor_t *) malloc(sizeof(lhdict_cursor_t));
 
-	/** @FIXME */
+	/*FIXME */
 	cursor->destroy							= lhdict_destroy_cursor;
 
 	((lhdict_cursor_t *) cursor)->overflow	= NULL;
@@ -956,7 +958,7 @@ test_linear_hash_dictionary_predicate_range_unsigned(
 	dict_cursor_t *cursor;	/* create a new cursor pointer */
 
 	cursor									= (dict_cursor_t *) malloc(sizeof(lhdict_cursor_t));
-	/** @FIXME */
+	/*FIXME */
 	cursor->destroy							= lhdict_destroy_cursor;
 
 	((lhdict_cursor_t *) cursor)->overflow	= NULL;
@@ -1050,8 +1052,8 @@ test_linear_hash_dictionary_cursor_range(
 	record.key		= (ion_key_t) malloc(record_info.key_size);
 	record.value	= (ion_value_t) malloc(record_info.value_size);
 
-	int			result_count = 0;
-	cursor_status_t	cursor_status;
+	int				result_count = 0;
+	cursor_status_t cursor_status;
 
 	while (cs_cursor_active == (cursor_status = cursor->next(cursor, &record))) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == cursor_status);
@@ -1059,7 +1061,7 @@ test_linear_hash_dictionary_cursor_range(
 		/* check that value is correct that has been returned */
 		ion_value_t str;
 
-		str = (ion_value_t) malloc(record_info.value_size + 1);	/** make sure to include null */
+		str = (ion_value_t) malloc(record_info.value_size + 1);	/*make sure to include null */
 		sprintf((char *) str, "value : %i ", (*(int *) predicate.statement.range.upper_bound) + result_count);
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL == memcmp(record.value, str, record_info.value_size));
@@ -1139,9 +1141,9 @@ test_linear_hash_dictionary_cursor_range_2(
 	record.key		= (ion_key_t) malloc(record_info.key_size);
 	record.value	= (ion_value_t) malloc(record_info.value_size);
 
-	int			result_count		= 0;
-	cursor_status_t	cursor_status;
-	int			expected_results[]	= { 1, 5, 2, 3, 4 };
+	int				result_count		= 0;
+	cursor_status_t cursor_status;
+	int				expected_results[]	= { 1, 5, 2, 3, 4 };
 
 	while (cs_cursor_active == (cursor_status = cursor->next(cursor, &record))) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == cursor_status);
@@ -1234,9 +1236,9 @@ test_linear_hash_dictionary_cursor_range_3(
 	record.key		= (ion_key_t) malloc(record_info.key_size);
 	record.value	= (ion_value_t) malloc(record_info.value_size);
 
-	int			result_count		= 0;
-	cursor_status_t	cursor_status;
-	int			expected_results[]	= { 1, 3, 5, 2, 4 };
+	int				result_count		= 0;
+	cursor_status_t cursor_status;
+	int				expected_results[]	= { 1, 3, 5, 2, 4 };
 
 	while (cs_cursor_active == (cursor_status = cursor->next(cursor, &record))) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == cursor_status);
@@ -1331,9 +1333,9 @@ test_linear_hash_dictionary_cursor_range_4(
 	record.key		= (ion_key_t) malloc(record_info.key_size);
 	record.value	= (ion_value_t) malloc(record_info.value_size);
 
-	int			result_count		= 0;
-	cursor_status_t	cursor_status;
-	int			expected_results[]	= { 4, 5 };
+	int				result_count		= 0;
+	cursor_status_t cursor_status;
+	int				expected_results[]	= { 4, 5 };
 
 	while (cs_cursor_active == (cursor_status = cursor->next(cursor, &record))) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == cursor_status);
@@ -1429,9 +1431,9 @@ test_linear_hash_dictionary_cursor_range_5(
 	record.key		= (ion_key_t) malloc(record_info.key_size);
 	record.value	= (ion_value_t) malloc(record_info.value_size);
 
-	int			result_count		= 0;
-	cursor_status_t	cursor_status;
-	int			expected_results[]	= { 4, 5 };
+	int				result_count		= 0;
+	cursor_status_t cursor_status;
+	int				expected_results[]	= { 4, 5 };
 
 	while (cs_cursor_active == (cursor_status = cursor->next(cursor, &record))) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == cursor_status);
@@ -1479,7 +1481,7 @@ linear_hash_handler_getsuite(
 	planck_unit_add_to_suite(suite, test_linear_hash_handler_function_registration);
 	planck_unit_add_to_suite(suite, test_linear_hash_handler_create_destroy);
 	planck_unit_add_to_suite(suite, test_linear_hash_handler_simple_insert_and_query);
-	/** @tdodo need simple query*/
+	/*@tdodo need simple query*/
 	planck_unit_add_to_suite(suite, test_linear_hash_handler_update_1);
 	planck_unit_add_to_suite(suite, test_linear_hash_handler_update_2);
 

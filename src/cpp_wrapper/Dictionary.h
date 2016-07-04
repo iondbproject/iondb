@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		Dictionary.h
+@file
 @author		Dana Klamut
 @brief		Interface describing how user interacts with general dictionaries
 			using C++.

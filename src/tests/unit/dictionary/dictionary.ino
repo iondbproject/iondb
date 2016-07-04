@@ -1,5 +1,6 @@
-#include <SPI.h>
 #include <Arduino.h>
+#include <SPI.h>
+#include <SD.h>
 #include "test_dictionary.h"
 
 void

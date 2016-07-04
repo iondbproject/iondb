@@ -59,7 +59,7 @@ typedef struct ll_file_node {
 @brief		Struct used to maintain an instance of an in memory hashmap.
 */
 struct ll_file {
-	/** @todo find a better way to represent position */
+	/*@todo find a better way to represent position */
 	int					previous;			/**< position of previous node */
 	int					current;			/**< current position (node) in file */
 	int					next;				/**< next node position in file */
@@ -80,17 +80,16 @@ struct ll_file {
 /**
 @brief		This function initializes a linearu in memory hash map.
 
-@param		hashmap
-				Pointer to the hashmap instance to initialize.
-@param		key_type
-				The type of key that is being stored in the collection.
+@param		linked_list_file
+@param		compare
 @param	  key_size
 				The size of the key in bytes.
 @param		value_size
 				The size of the value in bytes.
-@param		size
-				The size of the hashmap in item
-				(@p key_size + @p value_size + @c 1)
+@param		bucket
+				@todo what's this?
+@param		id
+				@todo what's this?
 @return		The status describing the result of the initialization.
  */
 err_t
@@ -110,6 +109,7 @@ fll_create(
  * @param key_size
  * @param value_size
  * @param bucket
+ * @param id
  * @return
  */
 err_t
@@ -166,7 +166,7 @@ fll_insert(
 /**
  * Delete a node from the list, based on something
  * @param linked_list_file
- * @param ion_key_t
+ * @param key
  *		  The key to delete from the list
  * @return
  */
@@ -180,7 +180,7 @@ fll_delete(
  * Finds a node
  * @param linked_list_file
  * @param key
- * @param node
+ * @param ll_node
  * @return
  */
 err_t
@@ -193,7 +193,7 @@ fll_find(
 /**
  * Returns the node at the current position
  * @param linked_list_file
- * @param node
+ * @param ll_node
  * @return
  */
 err_t

@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		test_skip_list_store.c
+@file
 @author		Kris Wallperington
 @brief		Unit tests for Skiplist data store
 */
@@ -9,17 +9,17 @@
 #include "test_skip_list.h"
 
 /**
-@brief	  Helper function that creates a skip_list based on the given
+@brief	  Helper function that creates a skiplist based on the given
 			parameters.
 
-@param	  skip_list
+@param	  skiplist
 				Skiplist to initialize
 @param	  key_type
 				Type of key used
 @param	  compare
-				Function pointer to a comparison method used by the skip_list
+				Function pointer to a comparison method used by the skiplist
 @param	  maxheight
-				Maximum height of the skip_list
+				Maximum height of the skiplist
 @param	  key_size
 				Size of key in bytes allowed
 @param	  value_size
@@ -45,10 +45,10 @@ initialize_skiplist(
 }
 
 /**
-@brief	  Secondary helper function that creates a skip_list using the
-			standard conditions variable. Simplifies the creation of a skip_list.
+@brief	  Secondary helper function that creates a skiplist using the
+			standard conditions variable. Simplifies the creation of a skiplist.
 
-@param	  skip_list
+@param	  skiplist
 				Skiplist to initialize
  */
 void
@@ -61,7 +61,7 @@ initialize_skiplist_std_conditions(
 
 	key_type	= key_type_numeric_signed;
 	compare		= dictionary_compare_signed_value;
-	key_size	= 4;
+	key_size	= sizeof(int);
 	value_size	= 10;
 	pnum		= 1;
 	pden		= 4;
@@ -71,7 +71,7 @@ initialize_skiplist_std_conditions(
 }
 
 /**
-@brief	  Tests creation of the skip_list.
+@brief	  Tests creation of the skiplist.
 
 @param	  tc
 				CuTest dependency
@@ -111,6 +111,8 @@ test_skiplist_initialize(
 	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist.maxheight == maxheight);
 	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist.pnum == pnum);
 	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist.pden == pden);
+
+	sl_destroy(&skiplist);
 }
 
 /**
@@ -135,7 +137,7 @@ test_skiplist_free_all(
 }
 
 /**
-@brief	  Tests a single insert into the skip_list.
+@brief	  Tests a single insert into the skiplist.
 
 @param	  tc
 				CuTest dependency
@@ -170,7 +172,7 @@ test_skiplist_single_insert(
 }
 
 /**
-@brief	  Tests several insertions into the skip_list. The skip_list structure
+@brief	  Tests several insertions into the skiplist. The skiplist structure
 			is accessed directly in order to verify the insertion has properly
 			occurred.
 
@@ -281,12 +283,12 @@ test_skiplist_randomized_insert(
 }
 
 /**
-@brief	  Tests node search on a single node in a skip_list with only one node.
+@brief	  Tests node search on a single node in a skiplist with only one node.
 
-@details	Tests node search on a single node in a skip_list with only one node.
+@details	Tests node search on a single node in a skiplist with only one node.
 			The key searched for is exact. The test compares the given node key
 			and value information with the information inserted into the
-			skip_list. The test passes if they are the same.
+			skiplist. The test passes if they are the same.
 
 @param	  tc
 				CuTest dependency
@@ -323,12 +325,12 @@ test_skiplist_get_node_single(
 }
 
 /**
-@brief	  Tests node search on a single node in a skip_list with only one node.
+@brief	  Tests node search on a single node in a skiplist with only one node.
 
-@details	Tests node search on a single node in a skip_list with only one node.
+@details	Tests node search on a single node in a skiplist with only one node.
 			The key searched for is higher than the inserted key. The test
 			compares the given node key and value information with the
-			information inserted into the skip_list. The test passes if they are
+			information inserted into the skiplist. The test passes if they are
 			the same.
 
 @param	  tc
@@ -369,12 +371,12 @@ test_skiplist_get_node_single_high(
 }
 
 /**
-@brief	  Tests node search on a single node in a skip_list with only one node.
+@brief	  Tests node search on a single node in a skiplist with only one node.
 
-@details	Tests node search on a single node in a skip_list with only one node.
+@details	Tests node search on a single node in a skiplist with only one node.
 			The key searched for is lower than the inserted key. The test
 			compares the given node key and value information with the
-			information inserted into the skip_list. The test passes if the node
+			information inserted into the skiplist. The test passes if the node
 			returned is the same as the head node. (Since there's only one node,
 			the only node that can be smaller than the one insert is the head
 			node.)
@@ -415,12 +417,12 @@ test_skiplist_get_node_single_low(
 }
 
 /**
-@brief	  Tests node search on a single node in a skip_list with several nodes.
+@brief	  Tests node search on a single node in a skiplist with several nodes.
 
-@details	Tests node search on a single node in a skip_list with several nodes.
+@details	Tests node search on a single node in a skiplist with several nodes.
 			The key searched for is exact. The test compares the given node key
 			and value information with the information inserted into the
-			skip_list. The test passes if they are the same.
+			skiplist. The test passes if they are the same.
 
 @param	  tc
 				CuTest dependency
@@ -478,7 +480,7 @@ test_skiplist_get_node_single_many(
 
 /**
 @brief	  Randomly generates 50 random key value pairs and inserts them into
-			the skip_list. The nodes are then recalled and the key/value pairs
+			the skiplist. The nodes are then recalled and the key/value pairs
 			are compared to the original inserted ones for accuracy.
 
 @param	  tc
@@ -532,7 +534,7 @@ test_skiplist_get_node_several(
 }
 
 /**
-@brief	  Tests querying on an empty skip_list. assertion is that the status
+@brief	  Tests querying on an empty skiplist. assertion is that the status
 			should return as "err_item_not_found", and that the value pointer
 			should not be allocated and will be set to null.
 
@@ -566,8 +568,8 @@ test_skiplist_query_nonexist_empty(
 }
 
 /**
-@brief	  Tests querying on a skip_list with one element, but for a key that
-			doesn't exist within the skip_list. assertion is that the status
+@brief	  Tests querying on a skiplist with one element, but for a key that
+			doesn't exist within the skiplist. assertion is that the status
 			should return as "err_item_not_found", and that the value pointer
 			be initialized to null.
 
@@ -611,8 +613,8 @@ test_skiplist_query_nonexist_populated_single(
 }
 
 /**
-@brief	  Tests querying on a skip_list with several elements, but for a key
-			that doesn't exist within the skip_list. assertion is that the
+@brief	  Tests querying on a skiplist with several elements, but for a key
+			that doesn't exist within the skiplist. assertion is that the
 			status should return as "err_item_not_found", and that the value
 			pointer be initialized to null.
 
@@ -661,8 +663,8 @@ test_skiplist_query_nonexist_populated_several(
 }
 
 /**
-@brief	  Tests querying on a skip_list with a single element, for a key that
-			does exist within the skip_list. assertion is that the status should
+@brief	  Tests querying on a skiplist with a single element, for a key that
+			does exist within the skiplist. assertion is that the status should
 			return as "err_ok", and that the value be initialized to the same
 			value as stored at the specified key.
 
@@ -706,8 +708,8 @@ test_skiplist_query_exist_single(
 }
 
 /**
-@brief	  Tests querying on a skip_list with several elements, for a key that
-			exists within the skip_list. assertion is that the status should
+@brief	  Tests querying on a skiplist with several elements, for a key that
+			exists within the skiplist. assertion is that the status should
 			return as "err_ok", and that the value be initialized to the same
 			value stored at the specified key.
 
@@ -754,8 +756,8 @@ test_skiplist_query_exist_populated_single(
 }
 
 /**
-@brief	  Tests querying on a skip_list with several elements, for a key that
-			exists within the skip_list. assertion is that the status should
+@brief	  Tests querying on a skiplist with several elements, for a key that
+			exists within the skiplist. assertion is that the status should
 			return as "err_ok", and that the value be initialized to the same
 			value stored at the specified key.
 
@@ -806,7 +808,7 @@ test_skiplist_query_exist_populated_several(
 }
 
 /**
-@brief	  Tests a deletion from a skip_list that's empty. The assertion is
+@brief	  Tests a deletion from a skiplist that's empty. The assertion is
 			that the deletion will fail, and return "err_item_not_found". No
 			modifications should be made to the structure.
 
@@ -837,8 +839,8 @@ test_skiplist_delete_empty(
 }
 
 /**
-@brief	  Tests a deletion from a skip_list that has one element, and the
-			deleted element is not the one within the skip_list. The assertion
+@brief	  Tests a deletion from a skiplist that has one element, and the
+			deleted element is not the one within the skiplist. The assertion
 			is that the returned status is "err_item_not_found", and that no
 			modification is to be made to the data structure.
 
@@ -880,8 +882,8 @@ test_skiplist_delete_nonexist_single(
 }
 
 /**
-@brief	  Tests a deletion from a skip_list that has many elements, and the
-			deleted element is not the one within the skip_list. The assertion
+@brief	  Tests a deletion from a skiplist that has many elements, and the
+			deleted element is not the one within the skiplist. The assertion
 			is that the returned status is "err_item_not_found", and that no
 			modification is to be made to the data structure.
 
@@ -928,10 +930,10 @@ test_skiplist_delete_nonexist_several(
 }
 
 /**
-@brief	  Tests deletion in a single element skip_list, where the deleted
-			element is the one that exists within the skip_list. The assertion
+@brief	  Tests deletion in a single element skiplist, where the deleted
+			element is the one that exists within the skiplist. The assertion
 			is that the status returned will be "err_ok", and the key/value pair
-			deleted is no longer within the skip_list.
+			deleted is no longer within the skiplist.
 
 @param	  tc
 				CuTest dependency
@@ -976,10 +978,10 @@ test_skiplist_delete_single(
 }
 
 /**
-@brief	  Tests deleting a single node in a skip_list of several nodes, where
-			the element to delete exists in the skip_list. The assertion is that
+@brief	  Tests deleting a single node in a skiplist of several nodes, where
+			the element to delete exists in the skiplist. The assertion is that
 			the status returned will be "err_ok", and the key/value pair deleted
-			is no longer within the skip_list.
+			is no longer within the skiplist.
 
 @param	  tc
 				CuTest dependency
@@ -1047,11 +1049,11 @@ test_skiplist_delete_single_several(
 }
 
 /**
-@brief	  Tests deleting a single node in a skip_list of several nodes, where
-			the element to delete exists in the skip_list. This skip_list is non-
+@brief	  Tests deleting a single node in a skiplist of several nodes, where
+			the element to delete exists in the skiplist. This skiplist is non-
 			contiguous in its elements. The assertion is that the status
 			returned will be "err_ok", and the key/value pair deleted is no
-			longer within the skip_list.
+			longer within the skiplist.
 
 @param	  tc
 				CuTest dependency
@@ -1119,9 +1121,9 @@ test_skiplist_delete_single_several_noncont(
 }
 
 /**
-@brief	  Tests the deletion of all elements from a skip_list that has several.
+@brief	  Tests the deletion of all elements from a skiplist that has several.
 			The assertion is that every deletion will return an "err_ok" status,
-			and that at the end of the operations the skip_list must be empty.
+			and that at the end of the operations the skiplist must be empty.
 
 @param	  tc
 				CuTest dependency
@@ -1177,7 +1179,7 @@ test_skiplist_delete_several_all(
 }
 
 /**
-@brief	  Tests the updating of a node in an empty skip_list. The assertion is
+@brief	  Tests the updating of a node in an empty skiplist. The assertion is
 			that the update will instead insert the node.
 
 @param	  tc
@@ -1208,7 +1210,7 @@ test_skiplist_update_single_nonexist(
 }
 
 /**
-@brief	  Tests the updating of a node in a skip_list with one element, but
+@brief	  Tests the updating of a node in a skiplist with one element, but
 			not with the same key that is being inserted. The assertion is
 			that the update will instead insert the node.
 
@@ -1251,7 +1253,7 @@ test_skiplist_update_single_nonexist_nonempty(
 }
 
 /**
-@brief	  Tests the updating of a node in a skip_list with many elements, but
+@brief	  Tests the updating of a node in a skiplist with many elements, but
 			not with the same key that is being inserted. The assertion is
 			that the update will instead insert the node.
 
@@ -1300,7 +1302,7 @@ test_skiplist_update_many_nonexist_nonempty(
 }
 
 /**
-@brief	  Tests the updating of a node in a skip_list with one element, where
+@brief	  Tests the updating of a node in a skiplist with one element, where
 			the one element is the node we attempt to update. The assertion is
 			that the update will return the status of "err_ok", and the changes
 			will be reflected within the node.
@@ -1344,8 +1346,8 @@ test_skiplist_update_single_exist(
 }
 
 /**
-@brief	  Tests the updating of a node in a skip_list with many elements, where
-			the one to be updated exists in the skip_list. The assertion is
+@brief	  Tests the updating of a node in a skiplist with many elements, where
+			the one to be updated exists in the skiplist. The assertion is
 			that the update will return the status of "err_ok", and the changes
 			will be reflected within the targeted node.
 
@@ -1394,7 +1396,7 @@ test_skiplist_update_single_many_exist(
 }
 
 /**
-@brief	  Tests the updating of nodes in a skip_list with many elements, where
+@brief	  Tests the updating of nodes in a skiplist with many elements, where
 			all the nodes are to be updated. The assertion is that the update
 			will return the status of "err_ok", and the changes will be
 			reflected within all nodes.
@@ -1446,9 +1448,9 @@ test_skiplist_update_several_many_exist(
 }
 
 /**
-@brief	  Tests an update in a skip_list containing several elements, all of
+@brief	  Tests an update in a skiplist containing several elements, all of
 			the same key. The assertion is that all elements should be updated,
-			with none of the original values remaining in the skip_list.
+			with none of the original values remaining in the skiplist.
 
 @param	  tc
 				CuTest dependency
@@ -1498,7 +1500,7 @@ test_skiplist_update_several_same_key(
 }
 
 /**
-@brief	  Tests an update in a skip_list containing several elements, some of
+@brief	  Tests an update in a skiplist containing several elements, some of
 			which with the same key. The assertion is that all elements of that
 			specific key be updated, with none of the original values remaining.
 
@@ -1554,8 +1556,8 @@ test_skiplist_update_several_same_key_in_mix(
 }
 
 /**
-@brief	  Tests a deletion of a skip_list with one element, and then tests a
-			reinsertion of a different key/value pair into the same skip_list.
+@brief	  Tests a deletion of a skiplist with one element, and then tests a
+			reinsertion of a different key/value pair into the same skiplist.
 			The assertion is that the insertion should work OK with no errors.
 
 @param	  tc
@@ -1608,9 +1610,9 @@ test_skiplist_delete_then_insert_single(
 }
 
 /**
-@brief	  Tests a deletion of a skip_list with several elements, and then tests
+@brief	  Tests a deletion of a skiplist with several elements, and then tests
 			a reinsertion of several different key/value pairs into the same
-			skip_list. The assertion is that the insertion should work OK with
+			skiplist. The assertion is that the insertion should work OK with
 			no errors.
 
 @param	  tc
@@ -1675,9 +1677,9 @@ test_skiplist_delete_then_insert_several(
 }
 
 /**
-@brief	  Tests a deletion in a skip_list containing several elements, all of
+@brief	  Tests a deletion in a skiplist containing several elements, all of
 			the same key. The assertion is that all elements should be deleted,
-			with nothing remaining in the skip_list.
+			with nothing remaining in the skiplist.
 
 @param	  tc
 				CuTest dependency
@@ -1726,7 +1728,7 @@ test_skiplist_delete_several_same_key(
 }
 
 /**
-@brief	  Tests a deletion in a skip_list containing several elements, some of
+@brief	  Tests a deletion in a skiplist containing several elements, some of
 			which with the same key. The assertion is that all elements of the
 			specific key be deleted, with only the other elements remaining.
 
@@ -1779,7 +1781,7 @@ test_skiplist_delete_several_same_key_in_mix(
 }
 
 /**
-@brief	  Tests a skip_list with different initialization parameters than
+@brief	  Tests a skiplist with different initialization parameters than
 			usual. Each basic operation of insert, query, and delete are tested
 			on the non-standard structure.
 
@@ -1799,7 +1801,7 @@ test_skiplist_different_size(
 
 	key_type	= key_type_numeric_unsigned;
 	compare		= dictionary_compare_unsigned_value;
-	key_size	= 8;
+	key_size	= sizeof(long long);
 	value_size	= 4;
 	pnum		= 1;
 	pden		= 1;
@@ -1869,7 +1871,7 @@ test_skiplist_different_size(
 }
 
 /**
-@brief	  Tests a skip_list under standard conditions with large keys. This
+@brief	  Tests a skiplist under standard conditions with large keys. This
 			is intended to test the comparison function, which used to break
 			when keys were greater than 256.
 
@@ -1994,7 +1996,7 @@ skiplist_getsuite(
 }
 
 /**
-@brief	  Runs all skip_list related tests and outputs the result.
+@brief	  Runs all skiplist related tests and outputs the result.
  */
 void
 runalltests_skiplist(

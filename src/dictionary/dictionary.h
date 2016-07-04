@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		dictionary.h
+@file
 @author		Graeme Douglas, Scott Fazackerley
 @brief		Interface defining how general dictionaries behave.
 @copyright	Copyright 2016
@@ -69,7 +69,7 @@ dictionary_create(
 /**
 @brief		Insert a value into a dictionary.
 
-@param		collection
+@param		dictionary
 				The dictionary that the value is to be inserted to
 @param		key
 				The key that identifies @p value.
@@ -134,7 +134,7 @@ dictionary_update(
 );
 
 /**
-@brief	  Destroys dictionay
+@brief	  Destroys dictionary
 
 @param	  dictionary
 				The dictionary instance to destroy.

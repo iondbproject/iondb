@@ -27,7 +27,7 @@ ffdict_insert(
 	return ff_insert((ff_file_t *) dictionary->instance, key, value);
 }
 
-/** @todo the value needs to be fixed */
+/* @todo the value needs to be fixed */
 ion_status_t
 ffdict_query(
 	dictionary_t	*dictionary,
@@ -57,7 +57,7 @@ ffdict_create_dictionary(
 	/* this registers the dictionary the dictionary */
 	err_t result = ff_initialize((ff_file_t *) (dictionary->instance), key_type, key_size, value_size);
 
-	/**@TODO The correct comparison operator needs to be bound at run time
+	/*@todo The correct comparison operator needs to be bound at run time
 	 * based on the type of key defined
 	 */
 
@@ -97,7 +97,7 @@ ffdict_update(
 	return ff_update((ff_file_t *) dictionary->instance, key, value);
 }
 
-/** @todo What do we do if the cursor is already active? */
+/* @todo What do we do if the cursor is already active? */
 err_t
 ffdict_find(
 	dictionary_t	*dictionary,
@@ -235,7 +235,7 @@ ffdict_next(
 			if (cs_end_of_results == ffdict_scan(ffdict_cursor)) {
 				/* Then this is the end and there are no more results */
 				cursor->status = cs_end_of_results;
-				/** @todo need to do something with cursor? - done? */
+				/*@todo need to do something with cursor? - done? */
 				return cursor->status;
 			}
 		}
@@ -352,7 +352,7 @@ ffdict_scan(
 	}
 
 	/* continue until end of file, which will error out on return from sd_fread */
-	/** @todo option to increase buffer size for performance increase on IO */
+	/*@todo option to increase buffer size for performance increase on IO */
 	while (1 == fread(record, record_size, 1, file->file_ptr)) {
 		if (DELETED != record->status) {
 			/**
@@ -361,7 +361,7 @@ ffdict_scan(
 			boolean_t key_satisfies_predicate = ffdict_test_predicate(&(cursor->super), (ion_key_t) record->data);	/* assumes that the key is first */
 
 			if (key_satisfies_predicate == boolean_true) {
-				/** @TODO revisit to cache result? */
+				/*@todo revisit to cache result? */
 				/* back up current cursor to point at the record */
 				cursor->current = ftell(file->file_ptr) - record_size;
 				free(record);

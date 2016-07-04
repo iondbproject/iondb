@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		skip_list.c
+@file
 @author		Kris Wallperington
 @brief		Functional test for Skiplist KV implementation
 */
@@ -44,7 +44,7 @@ main(
 		switch (in) {
 			case 'P': {
 #if DEBUG
-				io_printf("%s\n", "Printing skip_list");
+				io_printf("%s\n", "Printing skiplist");
 #endif
 				print_skiplist((skiplist_t *) test_dict.instance);
 				break;

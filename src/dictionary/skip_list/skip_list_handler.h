@@ -1,8 +1,8 @@
 /******************************************************************************/
 /**
-@file		skip_list_handler.h
+@file
 @author		Kris Wallperington
-@brief		Handler liaison between dictionary API and skip_list implementation
+@brief		Handler liaison between dictionary API and skiplist implementation
 */
 /******************************************************************************/
 #if !defined(SKIP_LIST_HANDLER_H_)
@@ -16,10 +16,10 @@ extern "C" {
 #include "skip_list.h"
 
 /**
-@brief	  Registers a skip_list handler to a dictionary instance.
+@brief	  Registers a skiplist handler to a dictionary instance.
 
-@details	Binds each unique skip_list function to the generic dictionary
-			interface. Only needs to be called once when the skip_list is
+@details	Binds each unique skiplist function to the generic dictionary
+			interface. Only needs to be called once when the skiplist is
 			initialized.
 
 @param	  handler
@@ -81,14 +81,18 @@ sldict_query(
 
 @details	Creates an instance of a dictionary given a @p key_size and
 			@p value_size, in bytes as well as the @p dictionary_size, which
-			is the maximum number of levels in the skip_list. By nature of the
+			is the maximum number of levels in the skiplist. By nature of the
 			structure, the maximum number of elements is bounded only by memory
 			use.
 
+@param		id
+@param		key_type
 @param	  key_size
 				Size of the key in bytes.
 @param	  value_size
 				Size of the value in bytes.
+@param		dictionary_size
+@param		compare
 @param	  handler
 				Handler to be bound to the dictionary instance being created.
 				Assumption is that the handler has been initialized prior.
@@ -188,8 +192,8 @@ sldict_find(
 
 @param	  cursor
 				The cursor used to iterate over results.
-@param	  value
-				A value pointer that is allocated by the caller in which the
+@param	  record
+				A record pointer that is allocated by the caller in which the
 				cursor will fill with the next key/value result. The assumption
 				is that the caller will also free this memory.
 @return	 Status of cursor.

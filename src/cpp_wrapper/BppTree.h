@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		BppTree.h
+@file
 @author		Dana Klamut
 @brief		The C++ implementation of a B+ tree dictionary.
 */
@@ -20,7 +20,7 @@ public:
 
 @details	Registers functions for dictionary.
 
-@param		key_t
+@param		type_key
 				The type of keys to be stored in the dictionary.
 @param		key_size
 				The size of keys to be stored in the dictionary.

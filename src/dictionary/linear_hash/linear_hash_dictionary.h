@@ -20,7 +20,7 @@ extern "C" {
  */
 typedef char troolean_t;
 
-/**@ todo update this so it works with lh */
+/* todo update this so it works with lh */
 typedef struct lhdict_cursor {
 	dict_cursor_t	super;			/**< Cursor supertype this type inherits from */
 	int				first_bucket;
@@ -29,7 +29,7 @@ typedef struct lhdict_cursor {
 	/**<current bucket being scanned */
 	int				record_pntr;
 	/**<next record to be emitted */
-	char			status;			/**@todo what is this for again as there are two status */
+	char			status;			/*todo what is this for again as there are two status */
 
 	troolean_t (*evaluate_predicate)(
 		dict_cursor_t *,

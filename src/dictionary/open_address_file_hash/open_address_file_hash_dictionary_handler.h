@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		open_address_file_dictionary_handler.h
+@file
 @author		Scott Ronald Fazackerley
 @brief		The handler for a hash table using linear probing.
 */
@@ -19,7 +19,7 @@ extern "C" {
 #include "open_address_file_hash.h"
 #include "open_address_file_hash_dictionary.h"
 
-/**redefines file operations for arduino */
+/*edefines file operations for arduino */
 #include "./../../file/SD_stdio_c_iface.h"
 
 /**
@@ -111,7 +111,7 @@ oafdict_insert(
 
 @details	Queries a dictionary instance for the given @p key and returns
 			the associated @p value.  If the @p write_concern is set to
-			wc_insert_unique then if the @key exists already, an error will
+			wc_insert_unique then if the @p key exists already, an error will
 			be generated as duplicate keys are prevented.  If the
 			@p write_concern is set to wc_update, the updates are allowed.
 			In this case, if the @p key exists in the hashmap, the @p value
@@ -143,6 +143,8 @@ oafdict_query(
 			@p value_size, in bytes as well as the @p dictionary size
 			which is the number of buckets available in the hashmap.
 
+@param		id
+@param		key_type
 @param	  key_size
 				The size of the key in bytes.
 @param	  value_size
@@ -201,7 +203,7 @@ oafdict_delete_dictionary(
 /**
 @brief		Updates the value for a given key.
 
-@details	Updates the value for a given @pkey.  If the key does not currently
+@details	Updates the value for a given @p key.  If the key does not currently
 			exist in the hashmap, it will be created and the value sorted.
 
 @param	  dictionary
@@ -255,7 +257,7 @@ oafdict_find(
 			equal to @p second_key.
 
 			If the key type is @p key_type_char_array then
-			@TODO fix this commemt!
+			@todo fix this commemt!
 			The function memcmp compares the size bytes of memory beginning at
 			a1 against the size bytes of memory beginning at a2. The value
 			returned has the same sign as the difference between the first
@@ -294,12 +296,13 @@ oadict_next(
 
 @param	  cursor
 				The cursor to iterate over the results.
+@param		record
 @return		The status of the cursor.
  */
 cursor_status_t
 oafdict_next(
 	dict_cursor_t	*cursor,
-	ion_record_t	*value
+	ion_record_t	*record
 );
 
 /**
@@ -315,7 +318,7 @@ oafdict_next(
 @return		If the keys are equal.
  */
 boolean_t
-/**@TODO Fix name of function */
+/*TODO Fix name of function */
 oafdict_is_equal(
 	dictionary_t	*dict,
 	ion_key_t		key1,
@@ -340,11 +343,11 @@ oafdict_destroy_cursor(
 );
 
 /**
-@brief		Tests the supplied @pkey against the predicate registered in the
+@brief		Tests the supplied @p key against the predicate registered in the
 			cursor.
 
 @param	  cursor
-				The cursor and predicate being used to test @pkey against.
+				The cursor and predicate being used to test @p key against.
 @param	  key
 				The key to test.
 @return		The result is the key passes or fails the predicate test.
