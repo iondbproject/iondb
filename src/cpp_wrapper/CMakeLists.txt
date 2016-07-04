@@ -8,7 +8,6 @@ target_link_libraries(
 		INTERFACE
 		bpp_tree
 		flat_file
-		linear_hash
 		open_address_file_hash
 		open_address_hash
 		skip_list)
