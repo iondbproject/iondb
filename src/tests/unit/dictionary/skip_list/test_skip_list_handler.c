@@ -2,7 +2,7 @@
 /**
 @file
 @author		Kris Wallperington
-@brief		Unit tests for skiplist handler interface.
+@brief		Unit cpp_wrapper for skiplist handler interface.
 */
 /******************************************************************************/
 
@@ -326,15 +326,15 @@ skiplist_handler_getsuite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	/* Creation tests */
+	/* Creation cpp_wrapper */
 	planck_unit_add_to_suite(suite, test_collection_handler_binding);
 	planck_unit_add_to_suite(suite, test_collection_creation);
 
-	/* Cursor Equality tests */
+	/* Cursor Equality cpp_wrapper */
 	planck_unit_add_to_suite(suite, test_slhandler_cursor_equality);
 	planck_unit_add_to_suite(suite, test_slhandler_cursor_equality_with_results);
 
-	/* Cursor Range tests */
+	/* Cursor Range cpp_wrapper */
 	planck_unit_add_to_suite(suite, test_slhandler_cursor_range);
 	planck_unit_add_to_suite(suite, test_slhandler_cursor_range_with_results);
 
@@ -342,7 +342,7 @@ skiplist_handler_getsuite(
 }
 
 /**
-@brief	  Runs all skiplist related tests and outputs the result.
+@brief	  Runs all skiplist related cpp_wrapper and outputs the result.
  */
 void
 runalltests_skiplist_handler(

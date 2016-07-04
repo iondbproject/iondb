@@ -50,7 +50,7 @@ initializeDictionary(
 				The value to store under @p key.
 @returns	An error message describing the result of the insertion.
 */
-template <typename V>err_t
+template <typename V>ion_status_t
 insert(
 	K	key,
 	V	value
@@ -58,9 +58,9 @@ insert(
 	ion_key_t	ion_key		= (ion_key_t) &key;
 	ion_value_t ion_value	= (ion_value_t) &value;
 
-	err_t err				= dictionary_insert(&dict, ion_key, ion_value);
+	ion_status_t status		= dictionary_insert(&dict, ion_key, ion_value);
 
-	return err;
+	return status;
 }
 
 template <typename V>V

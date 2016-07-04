@@ -193,7 +193,7 @@ void
 test_flat_file_initialize(
 	planck_unit_test_t *tc
 ) {
-	/* FIXME FIXME HACK TODO This is just a temporary fix to stop old files from crashing the tests */
+	/* FIXME FIXME HACK TODO This is just a temporary fix to stop old files from crashing the cpp_wrapper */
 	fremove(TEST_FILE);
 
 	/* this is required for initializing the hash map and should come from the dictionary */

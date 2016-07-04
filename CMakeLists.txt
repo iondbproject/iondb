@@ -78,7 +78,7 @@ add_subdirectory(src/tests/unit/dictionary/open_address_hash)
 add_subdirectory(src/tests/unit/dictionary/skip_list)
 
 add_subdirectory(src/cpp_wrapper)
-add_subdirectory(src/cpp_wrapper/tests)
+add_subdirectory(src/tests/integration/cpp_wrapper)
 
 #add_subdirectory(src/cpp_wrapper)
-#add_subdirectory(src/cpp_wrapper/tests)
+#add_subdirectory(src/cpp_wrapper/cpp_wrapper)

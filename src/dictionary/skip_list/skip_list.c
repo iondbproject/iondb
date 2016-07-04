@@ -120,7 +120,7 @@ sl_insert(
 	memcpy(newnode->value, value, value_size);
 
 	/* First we check if there's already a duplicate node. If there is, we're
-	 * going to do a modified insert instead. TODO write unit tests to check this
+	 * going to do a modified insert instead. TODO write unit cpp_wrapper to check this
 	 */
 	sl_node_t *duplicate = sl_find_node(skiplist, key);
 
