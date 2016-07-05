@@ -1,5 +1,10 @@
 ![IonDB](http://stickerpants.com/uploads/IonDB_logo_final.svg)
 =========
+
+**Development**: [![Build Status](http://162.243.92.39/buildStatus/icon?job=iondb-pc-full)](http://162.243.92.39/job/iondb-pc-full/)
+**Latest**: [![Build Status](http://162.243.92.39/buildStatus/icon?job=iondb-pc-rapid)](http://162.243.92.39/job/iondb-pc-rapid/)
+**Embedded Device**: [![Build Status](http://162.243.92.39/buildStatus/icon?job=iondb-device)](http://162.243.92.39/job/iondb-device/)
+
 You might also be interested in our sister project, [LittleD - A relational database using 1kB of RAM or less](https://github.com/graemedouglas/LittleD).
 
 > **Note:** IonDB is entering a period of rapid development and restructuring for the next few months. See the [Collaboration](#collaboration) section for more information.
