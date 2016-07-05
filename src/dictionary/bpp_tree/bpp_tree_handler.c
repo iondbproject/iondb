@@ -227,6 +227,7 @@ bpptree_update(
 	file_offset_t		offset;
 	ion_result_count_t	count;
 
+	count	= 0;
 	bpptree = (bpptree_t *) dictionary->instance;
 
 	bErr	= bFindKey(bpptree->tree, key, &offset);
