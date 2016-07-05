@@ -1,0 +1,18 @@
+;Unit tests
+CuTest(\.c|\.h)
+run_\w+\.c
+test_\w+\.c
+generic_dictionary_test(\.c|\.h)
+sltests\.h
+
+;Demo executables
+lfsr_example\.c
+hashmap\.c
+skiplist\.c
+
+;All ino files - copy in what you need via term
+\w+\.ino
+
+;Misc files or directories
+publish\.txt
+ion_deployment

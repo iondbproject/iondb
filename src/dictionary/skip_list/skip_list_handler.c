@@ -190,10 +190,11 @@ sldict_find(
 
 			memcpy((*cursor)->predicate->statement.range.upper_bound, predicate->statement.range.upper_bound, key_size);
 
-			sl_node_t *loc = sl_find_node((skiplist_t *) dictionary->instance, (*cursor)->predicate->statement.range.lower_bound);
+			/* Try to find the node containing the upper bound. */
+			sl_node_t *loc = sl_find_node((skiplist_t *) dictionary->instance, (*cursor)->predicate->statement.range.upper_bound);
 
 			if ((NULL == loc->key) || (dictionary->instance->compare(loc->key, (*cursor)->predicate->statement.range.lower_bound, key_size) < 0)) {
-				/* This means the returned node is smaller than the lower bound */
+				/* This means the returned node is smaller than the lower bound, which means that there are no valid records to return */
 				(*cursor)->status = cs_end_of_results;
 				return err_ok;
 			}

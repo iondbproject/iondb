@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(test_cpp_wrapper)
+project(integration_cpp_wrapper)
 
 add_executable(${PROJECT_NAME} CppWrapperTest.cpp)
 

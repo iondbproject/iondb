@@ -1,11 +1,9 @@
 ![IonDB](http://stickerpants.com/uploads/IonDB_logo_final.svg)
 =========
 
-<!-- @code -->
 **Development**: [![Build Status](http://162.243.92.39/buildStatus/icon?job=iondb-pc-full)](http://162.243.92.39/job/iondb-pc-full/)
 **Latest**: [![Build Status](http://162.243.92.39/buildStatus/icon?job=iondb-pc-rapid)](http://162.243.92.39/job/iondb-pc-rapid/)
 **Embedded Device**: [![Build Status](http://162.243.92.39/buildStatus/icon?job=iondb-device)](http://162.243.92.39/job/iondb-device/)
-<!-- @endcode -->
 
 You might also be interested in our sister project, [LittleD - A relational database using 1kB of RAM or less](https://github.com/graemedouglas/LittleD).
 
@@ -39,12 +37,10 @@ Pull requests are currently **not** recommended due to significant changes arriv
 Before editing any code, make sure you have `uncrustify` installed, version
 0.63 or newer, and run
 
-<!-- @code -->
 ```bash
 make setup
 make hooks
 ```
-<!-- @endcode -->
 
 in the repository root to setup necessary submodules and pre-commit hooks for formatting.
 
@@ -54,16 +50,13 @@ If you move the directory of your repository to a different path, make sure you 
 
 These inclusions are necessary for any IonDB usage:
 
-<!-- @code -->
 ```c
 #include <SD.h> //If using file based implementations
 #include "dictionary.h"
 ```
-<!-- @endcode -->
 
 Then include some (or all) necessary implementation handlers:
 
-<!-- @code -->
 ```c
 #include "slhandler.h"
 #include "oadictionaryhandler.h"
@@ -71,11 +64,9 @@ Then include some (or all) necessary implementation handlers:
 #include "ffdictionaryhandler.h"
 #include "bpptreehandler.h"
 ```
-<!-- @endcode -->
 
 In the setup() function, initialize a dictionary (Shown here, a skiplist):
 
-<!-- @code -->
 ```c
 void setup() {
     //Declare the dictionary and handler structs
@@ -89,7 +80,6 @@ void setup() {
     dictionary_create(&handler, &dictionary, key_type_numeric_signed, sizeof(int), 60, 10);
 }
 ```
-<!-- @endcode -->
 
 #### Implementation handler methods:
 
@@ -117,7 +107,6 @@ Keys and values are **specific type agnostic**, there are only three categories 
 
 Note that keys and values are of a fixed size, which is set on a per-dictionary basis. Think carefully about the domain of the data being stored and pick appropriate sizes.
 
-<!-- @code -->
 ```c
 /* Key creation */
 
@@ -140,7 +129,6 @@ int my_key = NEUTRALIZE(key, int);
 //Retrieve unsigned long long from a key
 unsigned long long my_key = NEUTRALIZE(key, unsigned long long);
 ```
-<!-- @endcode -->
 
 #### Ionization functions
 | Function | Type |
@@ -158,39 +146,32 @@ unsigned long long my_key = NEUTRALIZE(key, unsigned long long);
 
 An SD shield, and a FAT formatted SD card is required to work with IonDB. The Arduino ethernet shield is recommended. The following initialization is required when working with file bsaed implementations:
 
-<!-- @code -->
 ```c
 //Use pin 10 if using an Uno, pin 53 if Mega
 pinMode(10, OUTPUT);
 //Change depending on what SD shield is used
 SD.begin(4);
 ```
-<!-- @endcode -->
 
 ## Usage
 
 ### Insert
 
-<!-- @code -->
 ```c
 ion_key_t key = IONIZE(some_key, int);
 ion_value_t value = some_value;
 dictionary_insert(&dictionary, key, value);
 ```
-<!-- @endcode -->
 
 ### Delete
 
-<!-- @code -->
 ```c
 ion_key_t key = IONIZE(some_key, int);
 dictionary_delete(&dictionary, key);
 ```
-<!-- @endcode -->
 
 ### Query
 
-<!-- @code -->
 ```c
 ion_key_t key = IONIZE(some_key, int);
 ion_value_t my_value = malloc(value_size); // Create buffer to hold returned value
@@ -199,7 +180,6 @@ dictionary_get(&dictionary, key, my_value);
 //...
 free(my_value);
 ```
-<!-- @endcode -->
 
 ### Cursors
 A functional implementation exists for equality cursors (Multiple value query on same key) and range cursors (Query key-value pairs across a bound of keys), however a dictionary level interface for cursor access has yet to be finalized. Implementation level access is demonstrated in the Benchmark source.
@@ -207,7 +187,6 @@ A functional implementation exists for equality cursors (Multiple value query on
 ## Full Example
 Written in Arduino compliant wiring.
 
-<!-- @code -->
 ```c
 #include <SD.h>
 #include "dictionary.h"
@@ -237,4 +216,3 @@ void setup() {
 
 void loop() {}
 ```
-<!-- @endcode -->

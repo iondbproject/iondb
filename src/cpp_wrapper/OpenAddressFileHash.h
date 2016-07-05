@@ -2,7 +2,7 @@
 /**
 @file
 @author		Dana Klamut
-@brief	  The C++ implementation of an open address file hash based
+@brief		The C++ implementation of an open address file hash based
 			dictionary.
 */
 /******************************************************************************/
@@ -14,11 +14,11 @@
 #include "../kv_system.h"
 #include "../dictionary/open_address_file_hash/open_address_file_hash_dictionary_handler.h"
 
-class OpenAddressFileHash:public Dictionary {
+template <typename K, typename V>class OpenAddressFileHash:public Dictionary<K,V> {
 public:
 
 /**
-@brief		Registers a specific B+ tree dictionary instance.
+@brief		Registers a specific open address file hash dictionary instance.
 
 @details	Registers functions for dictionary.
 
@@ -37,9 +37,9 @@ OpenAddressFileHash(
 	int			value_size,
 	int			dictionary_size
 ) {
-	oafdict_init(&handler);
+	oafdict_init(&this->handler);
 
-	initializeDictionary(type_key, key_size, value_size, dictionary_size);
+	this->initializeDictionary(type_key, key_size, value_size, dictionary_size);
 }
 };
 
