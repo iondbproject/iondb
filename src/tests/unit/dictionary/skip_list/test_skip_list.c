@@ -2,7 +2,7 @@
 /**
 @file
 @author		Kris Wallperington
-@brief		Unit tests for Skiplist data store
+@brief		Unit test for Skiplist data store
 */
 /******************************************************************************/
 
@@ -1556,7 +1556,7 @@ test_skiplist_update_several_same_key_in_mix(
 }
 
 /**
-@brief	  Tests a deletion of a skiplist with one element, and then tests a
+@brief	  Tests a deletion of a skiplist with one element, and then test a
 			reinsertion of a different key/value pair into the same skiplist.
 			The assertion is that the insertion should work OK with no errors.
 
@@ -1610,7 +1610,7 @@ test_skiplist_delete_then_insert_single(
 }
 
 /**
-@brief	  Tests a deletion of a skiplist with several elements, and then tests
+@brief	  Tests a deletion of a skiplist with several elements, and then test
 			a reinsertion of several different key/value pairs into the same
 			skiplist. The assertion is that the insertion should work OK with
 			no errors.
@@ -1996,7 +1996,7 @@ skiplist_getsuite(
 }
 
 /**
-@brief	  Runs all skiplist related tests and outputs the result.
+@brief	  Runs all skiplist related test and outputs the result.
  */
 void
 runalltests_skiplist(

@@ -2,7 +2,7 @@
 /**
 @file
 @author		Dana Klamut
-@brief	  The C++ implementation of a flat file dictionary.
+@brief		The C++ implementation of a flat file dictionary.
 */
 /******************************************************************************/
 
@@ -13,7 +13,7 @@
 #include "../kv_system.h"
 #include "../dictionary/flat_file/flat_file_dictionary_handler.h"
 
-class FlatFile:public Dictionary {
+template <typename K,typename V>class FlatFile:public Dictionary<K, V> {
 public:
 /**
 @brief		Registers a specific flat file dictionary instance.
@@ -26,17 +26,15 @@ public:
 				The size of keys to be stored in the dictionary.
 @param	  value_size
 				The size of the values to be stored in the dictionary.
-@param		dictionary_size
  */
 FlatFile(
 	key_type_t	type_key,
 	int			key_size,
-	int			value_size,
-	int			dictionary_size
+	int			value_size
 ) {
-	ffdict_init(&handler);
+	ffdict_init(&this->handler);
 
-	initializeDictionary(type_key, key_size, value_size, dictionary_size);
+	this->initializeDictionary(type_key, key_size, value_size, 0);
 }
 };
 

@@ -2,7 +2,7 @@
 /**
 @file
 @author		Dana Klamut
-@brief	  The C++ implementation of a skip list dictionary.
+@brief		The C++ implementation of a skip list dictionary.
 */
 /******************************************************************************/
 
@@ -13,10 +13,10 @@
 #include "../kv_system.h"
 #include "../dictionary/skip_list/skip_list_handler.h"
 
-class SkipList:public Dictionary {
+template <typename K, typename V>class SkipList:public Dictionary<K, V> {
 public:
 /**
-@brief		Registers a specific B+ tree dictionary instance.
+@brief		Registers a specific skip list dictionary instance.
 
 @details	Registers functions for dictionary.
 
@@ -35,9 +35,9 @@ SkipList(
 	int			value_size,
 	int			dictionary_size
 ) {
-	sldict_init(&handler);
+	sldict_init(&this->handler);
 
-	initializeDictionary(type_key, key_size, value_size, dictionary_size);
+	this->initializeDictionary(type_key, key_size, value_size, dictionary_size);
 }
 };
 

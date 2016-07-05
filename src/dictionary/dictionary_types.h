@@ -132,8 +132,8 @@ enum cursor_status {
 											 the cursor has reached the end of
 											 the results. */
 	cs_cursor_initialized,	/**< A cursor status stating that the
-											 cursor has been intialized but has
-											 data thats hasn't yet been
+											 cursor has been initialized but has
+											 data that hasn't yet been
 											 accessed.
 											 Cursor is valid but data has need
 											 been accessed. */

@@ -24,6 +24,10 @@
 #if !defined(KV_IO_H_)
 #define KV_IO_H_
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,8 +36,8 @@
 
 /* Only on PC */
 #if !defined(ARDUINO)
-#define fremove(x)	remove(x)
-#define frewind(x)	rewind(x)
+#define fremove(x)    remove(x)
+#define frewind(x)    rewind(x)
 #endif
 
 /**
@@ -46,9 +50,13 @@
 			Otherwise, a negative number is returned.
 */
 int
-io_printf(
-	const char *format,
-	...
+		io_printf(
+		const char *format,
+		...
 );
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* KV_IO_H_ */
