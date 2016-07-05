@@ -26,28 +26,170 @@
 FILE				*ion_master_table_file		= NULL;
 ion_dictionary_id_t ion_master_table_next_id	= 1;
 
-/* Returns the next dictionary ID, then increments. */
-ion_dictionary_id_t
-ion_master_table_get_next_id(
-	void
-) {
-	int oldpos = ftell(ion_master_table_file);
+#define ION_MASTER_TABLE_CALCULATE_POS	-1
+#define ION_MASTER_TABLE_WRITE_FROM_END -2
+#define ION_MASTER_TABLE_RECORD_SIZE(cp) (sizeof((cp)->id) + sizeof((cp)->use_type) + sizeof((cp)->type) + sizeof((cp)->key_size) + sizeof((cp)->value_size) + sizeof((cp)->dictionary_size))
 
-	fseek(ion_master_table_file, 0, SEEK_SET);
+/**
+@brief		Write a record to the master table.
+@details	Automatically, this call will reposition the file position
+			back to where it was once the call is complete.
+@param[in]	config
+				A pointer to a previously allocated config object to write from.
+@param[in]	where
+				An integral value representing where to write to in the file.
+				This file offset is byte-aligned, not record aligned, in general.
+
+				Two special flags can be passed in here:
+					- @c ION_MASTER_TABLE_CALCULATE_POS
+						Calculate the position based on the passed-in config id.
+					- @c ION_MASTER_TABLE_WRITE_FROM_END
+						Write the record at the end of the file.
+@returns	An error code describing the result of the call.
+*/
+err_t
+ion_master_table_write(
+	ion_dictionary_config_info_t	*config,
+	long							where
+) {
+	long old_pos = ftell(ion_master_table_file);
+
+	if (ION_MASTER_TABLE_CALCULATE_POS == where) {
+		where = (int) (config->id * ION_MASTER_TABLE_RECORD_SIZE(config));
+	}
+
+	if (ION_MASTER_TABLE_CALCULATE_POS > where) {
+		if (0 != fseek(ion_master_table_file, 0, SEEK_END)) {
+			return err_file_bad_seek;
+		}
+	}
+	else if (0 != fseek(ion_master_table_file, where, SEEK_SET)) {
+		return err_file_bad_seek;
+	}
+
+	if (1 != fwrite(&(config->id), sizeof(config->id), 1, ion_master_table_file)) {
+		return err_file_write_error;
+	}
+
+	if (1 != fwrite(&(config->use_type), sizeof(config->use_type), 1, ion_master_table_file)) {
+		return err_file_write_error;
+	}
+
+	if (1 != fwrite(&(config->type), sizeof(config->type), 1, ion_master_table_file)) {
+		return err_file_write_error;
+	}
+
+	if (1 != fwrite(&(config->key_size), sizeof(config->key_size), 1, ion_master_table_file)) {
+		return err_file_write_error;
+	}
+
+	if (1 != fwrite(&(config->value_size), sizeof(config->value_size), 1, ion_master_table_file)) {
+		return err_file_write_error;
+	}
+
+	if (1 != fwrite(&(config->dictionary_size), sizeof(config->dictionary_size), 1, ion_master_table_file)) {
+		return err_file_write_error;
+	}
+
+	if (0 != fseek(ion_master_table_file, old_pos, SEEK_SET)) {
+		return err_file_bad_seek;
+	}
+
+	return err_ok;
+}
+
+/**
+@brief		Read a record to the master table.
+@details	Automatically, this call will reposition the file position
+			back to where it was once the call is complete.
+@param[out]	config
+				A pointer to a previously allocated config object to write to.
+@param[in]	where
+				An integral value representing where to read from in the file.
+				This file offset is byte-aligned, not record aligned, in general.
+
+				One special flag can be passed in here:
+					- @c ION_MASTER_TABLE_CALCULATE_POS
+						Calculate the position based on the passed-in config id.
+@returns	An error code describing the result of the call.
+*/
+err_t
+ion_master_table_read(
+	ion_dictionary_config_info_t	*config,
+	long							where
+) {
+	long old_pos = ftell(ion_master_table_file);
+
+	if (ION_MASTER_TABLE_CALCULATE_POS == where) {
+		where = (int) (config->id * ION_MASTER_TABLE_RECORD_SIZE(config));
+	}
+
+	if (0 != fseek(ion_master_table_file, where, SEEK_SET)) {
+		return err_file_bad_seek;
+	}
+
+	if (1 != fread(&(config->id), sizeof(config->id), 1, ion_master_table_file)) {
+		return err_file_write_error;
+	}
+
+	if (1 != fread(&(config->use_type), sizeof(config->use_type), 1, ion_master_table_file)) {
+		return err_file_write_error;
+	}
+
+	if (1 != fread(&(config->type), sizeof(config->type), 1, ion_master_table_file)) {
+		return err_file_write_error;
+	}
+
+	if (1 != fread(&(config->key_size), sizeof(config->key_size), 1, ion_master_table_file)) {
+		return err_file_write_error;
+	}
+
+	if (1 != fread(&(config->value_size), sizeof(config->value_size), 1, ion_master_table_file)) {
+		return err_file_write_error;
+	}
+
+	if (1 != fread(&(config->dictionary_size), sizeof(config->dictionary_size), 1, ion_master_table_file)) {
+		return err_file_write_error;
+	}
+
+	if (0 != fseek(ion_master_table_file, old_pos, SEEK_SET)) {
+		return err_file_bad_seek;
+	}
+
+	if (0 == config->id) {
+		return err_item_not_found;
+	}
+
+	return err_ok;
+}
+
+/* Returns the next dictionary ID, then increments. */
+err_t
+ion_master_table_get_next_id(
+	ion_dictionary_id_t *id
+) {
+	err_t error									= err_ok;
 
 	/* Flush master row. This writes the next ID to be used, so add 1. */
-	ion_dictionary_config_info_t master_config = { .id = ion_master_table_next_id + 1 };
+	ion_dictionary_config_info_t master_config	= { .id = ion_master_table_next_id + 1 };
 
-	fwrite(&master_config, sizeof(master_config), 1, ion_master_table_file);
-	fseek(ion_master_table_file, oldpos, SEEK_SET);
+	error = ion_master_table_write(&master_config, 0);
 
-	return ion_master_table_next_id++;
+	if (err_ok != error) {
+		return error;
+	}
+
+	*id = ion_master_table_next_id++;
+
+	return err_ok;
 }
 
 err_t
 ion_init_master_table(
 	void
 ) {
+	err_t error = err_ok;
+
 	/* If it's already open, then we don't do anything. */
 	if (NULL != ion_master_table_file) {
 		return err_ok;
@@ -67,21 +209,17 @@ ion_init_master_table(
 		/* Write master row. */
 		ion_dictionary_config_info_t master_config = { .id = ion_master_table_next_id };
 
-		if (1 != fwrite(&master_config, sizeof(master_config), 1, ion_master_table_file)) {
-			return err_file_write_error;
+		if (err_ok != (error = ion_master_table_write(&master_config, 0))) {
+			return error;
 		}
 	}
 	else {
 		/* Here we read an existing file. */
-		/* Make sure that the file is pointing at first slot in table. */
-		if (0 != fseek(ion_master_table_file, 0, SEEK_SET)) {
-			return err_file_bad_seek;
-		}
 
 		/* Find existing ID count. */
 		ion_dictionary_config_info_t master_config;
 
-		if (1 != fread(&master_config, sizeof(master_config), 1, ion_master_table_file)) {
+		if (ion_master_table_read(&master_config, 0)) {
 			return err_file_read_error;
 		}
 
@@ -128,9 +266,16 @@ ion_master_table_create_dictionary(
 	int						value_size,
 	int						dictionary_size
 ) {
-	err_t err;
+	err_t				err;
+	ion_dictionary_id_t id;
 
-	err = dictionary_create(handler, dictionary, ion_master_table_get_next_id(), key_type, key_size, value_size, dictionary_size);
+	err = ion_master_table_get_next_id(&id);
+
+	if (err_ok != err) {
+		return err;
+	}
+
+	err = dictionary_create(handler, dictionary, id, key_type, key_size, value_size, dictionary_size);
 
 	if (err_ok != err) {
 		return err;
@@ -146,15 +291,11 @@ ion_add_to_master_table(
 	dictionary_t	*dictionary,
 	int				dictionary_size
 ) {
-	fseek(ion_master_table_file, 0, SEEK_END);
-
 	ion_dictionary_config_info_t config = {
 		.id = dictionary->instance->id, .use_type = 0, .type = dictionary->instance->key_type, .key_size = dictionary->instance->record.key_size, .value_size = dictionary->instance->record.value_size, .dictionary_size = dictionary_size
 	};
 
-	fwrite(&config, sizeof(config), 1, ion_master_table_file);
-
-	return err_ok;
+	return ion_master_table_write(&config, ION_MASTER_TABLE_WRITE_FROM_END);
 }
 
 err_t
@@ -162,11 +303,13 @@ ion_lookup_in_master_table(
 	ion_dictionary_id_t				id,
 	ion_dictionary_config_info_t	*config
 ) {
-	fseek(ion_master_table_file, id * sizeof(ion_dictionary_config_info_t), SEEK_SET);
-	fread(config, sizeof(*config), 1, ion_master_table_file);
+	err_t error = err_ok;
 
-	if (0 == config->id) {
-		return err_item_not_found;
+	config->id	= id;
+	error		= ion_master_table_read(config, ION_MASTER_TABLE_CALCULATE_POS);
+
+	if (err_ok != error) {
+		return error;
 	}
 
 	return err_ok;
@@ -217,11 +360,10 @@ err_t
 ion_delete_from_master_table(
 	dictionary_t *dictionary
 ) {
-	fseek(ion_master_table_file, dictionary->instance->id * sizeof(ion_dictionary_config_info_t), SEEK_SET);
+	ion_dictionary_config_info_t	blank	= { 0 };
+	long							where	= (dictionary->instance->id * ION_MASTER_TABLE_RECORD_SIZE(&blank));
 
-	ion_dictionary_config_info_t blank = { 0 };
-
-	fwrite(&blank, sizeof(blank), 1, ion_master_table_file);
+	ion_master_table_write(&blank, where);
 
 	return err_ok;
 }
