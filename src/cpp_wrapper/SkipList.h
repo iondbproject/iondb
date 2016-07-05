@@ -13,7 +13,7 @@
 #include "../kv_system.h"
 #include "../dictionary/skip_list/skip_list_handler.h"
 
-template <class K>class SkipList:public Dictionary<K> {
+template <typename K, typename V>class SkipList:public Dictionary<K, V> {
 public:
 /**
 @brief		Registers a specific skip list dictionary instance.

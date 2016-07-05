@@ -14,17 +14,20 @@
 #include "../dictionary/dictionary_types.h"
 #include "../kv_system.h"
 
-template <class K>class Dictionary {
+#include "Cursor.h"
+
+template <typename K, typename V>class Dictionary {
 public:
 
 dictionary_handler_t	handler;
 dictionary_t			dict;
 int						size_k;
 int						size_v;
-err_t					last_status;
+ion_status_t			last_status;
 
-/* BEFORE USE OF A FILE BASED DICTIONARY IMPLEMENTATION (BPP_TREE, FLAT_FILE),
- * SD.begin(...) MUST BE CALLED. */
+~Dictionary() {
+	this->destroy();
+}
 
 err_t
 initializeDictionary(
@@ -50,7 +53,7 @@ initializeDictionary(
 				The value to store under @p key.
 @returns	An error message describing the result of the insertion.
 */
-template <typename V>ion_status_t
+ion_status_t
 insert(
 	K	key,
 	V	value
@@ -59,11 +62,12 @@ insert(
 	ion_value_t ion_value	= (ion_value_t) &value;
 
 	ion_status_t status		= dictionary_insert(&dict, ion_key, ion_value);
+	this->last_status = status;
 
 	return status;
 }
 
-template <typename V>V
+V
 get(
 	K key
 ) {
@@ -82,14 +86,15 @@ get(
 				The key to be deleted.
 @return		An error message describing the result of the deletion.
 */
-err_t
+ion_status_t
 deleteRecord(
 	K key
 ) {
 	ion_key_t	ion_key = (ion_key_t) &key;
-	err_t		err		= dictionary_delete(&dict, ion_key);
+	ion_status_t	status		= dictionary_delete(&dict, ion_key);
+	this->last_status = status;
 
-	return err;
+	return status;
 }
 
 /**
@@ -101,16 +106,17 @@ deleteRecord(
 				The value to update records with.
 @return	 An error message describing the result of the update.
 */
-template <typename V>err_t
+ion_status_t
 update(
 	K	key,
 	V	value
 ) {
 	ion_key_t	ion_key		= (ion_key_t) &key;
 	ion_value_t ion_value	= (ion_value_t) &value;
-	err_t		err			= dictionary_update(&dict, ion_key, ion_value);
+	ion_status_t	status			= dictionary_update(&dict, ion_key, ion_value);
+	this->last_status = status;
 
-	return err;
+	return status;
 }
 
 /**
@@ -163,22 +169,17 @@ close(
 				The maximum key to be included in the query.
 @returns	An initialized cursor for the particular query.
 */
-dict_cursor_t *
+Cursor<K,V>*
 range(
 	K	min_key,
 	K	max_key
 ) {
 	predicate_t		predicate;
-	dict_cursor_t	*cursor;
-
 	ion_key_t	ion_min_key = (ion_key_t) &min_key;
 	ion_key_t	ion_max_key = (ion_key_t) &max_key;
 
 	dictionary_build_predicate(&predicate, predicate_range, ion_min_key, ion_max_key);
-
-	dictionary_find(&dict, &predicate, &cursor);
-
-	return cursor;
+	return new Cursor<K, V>(&dict, &predicate);
 }
 
 /**
@@ -189,20 +190,15 @@ range(
 				The key used to determine equality.
 @returns	An initialized cursor for the particular query.
 */
-dict_cursor_t *
+Cursor<K,V>*
 equality(
-	K key
+		K	key
 ) {
 	predicate_t		predicate;
-	dict_cursor_t	*cursor = NULL;
-
-	ion_key_t ion_key		= (ion_key_t) &key;
+	ion_key_t	ion_key = (ion_key_t) &key;
 
 	dictionary_build_predicate(&predicate, predicate_equality, ion_key);
-
-	dictionary_find(&dict, &predicate, &cursor);
-
-	return cursor;
+	return new Cursor<K, V>(&dict, &predicate);
 }
 
 /**
@@ -211,45 +207,15 @@ equality(
 
 @returns	An initialized cursor for the particular query.
 */
-dict_cursor_t *
+Cursor<K,V>*
 allRecords(
 ) {
 	predicate_t		predicate;
-	dict_cursor_t	*cursor;
 
 	dictionary_build_predicate(&predicate, predicate_all_records);
-
-	dictionary_find(&dict, &predicate, &cursor);
-
-	return cursor;
+	return new Cursor<K, V>(&dict, &predicate);
 }
 
-/**
-@brief	  Performs query given initialized cursor.
-
-@param	  cursor
-				The initialized cursor for the particular query.
-@returns	The current record which satisfies the particular query.
-*/
-ion_record_t
-getRecord(
-	dict_cursor_t *cursor
-) {
-	ion_record_t ion_record;
-
-	ion_record.key		= (ion_key_t) malloc((size_t) size_k);
-	ion_record.value	= (ion_value_t) malloc((size_t) size_v);
-
-	cursor_status_t cursor_status;
-
-	if ((((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active) || (cursor_status == cs_cursor_initialized)) && (cursor_status != cs_end_of_results)) {
-		return ion_record;
-	}
-
-	free(ion_record.key);
-	free(ion_record.value);
-	cursor->destroy(&cursor);
-}
 };
 
 #endif /* PROJECT_CPP_DICTIONARY_H */

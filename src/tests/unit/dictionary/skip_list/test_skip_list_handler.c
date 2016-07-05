@@ -318,6 +318,66 @@ test_slhandler_cursor_range_with_results(
 }
 
 /**
+@brief		Tests a range cursor on the std conditions skiplist. The edge
+			case we're testing is when the lower bound is smaller than all existing
+			data, but there is actually valid data within the range.
+@details	An example of this is if you have [3,3,4,4] inserted as keys, and then you
+			ask for the range query with lower = 2 and upper 3. We should get [3,3] back
+			as the result of the query.
+
+@param	  tc
+				CuTest dependency
+*/
+void
+test_slhandler_cursor_range_lower_missing(
+		planck_unit_test_t *tc
+) {
+	PRINT_HEADER();
+
+	dictionary_t			dict;
+	dictionary_handler_t	handler;
+
+	create_test_collection_std_conditions(&dict, &handler);
+
+	dict_cursor_t	*cursor;
+	predicate_t		predicate;
+
+	dictionary_build_predicate(&predicate, predicate_range, IONIZE(-50, int), IONIZE(50, int));
+
+	err_t status = dictionary_find(&dict, &predicate, &cursor);
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized == cursor->status);
+
+	ion_record_t record;
+
+	record.key		= malloc(dict.instance->record.key_size);
+	record.value	= malloc(dict.instance->record.value_size);
+
+	cursor_status_t c_status = cursor->next(cursor, &record);
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(-50, int), dict.instance->record.key_size) >= 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(50, int), dict.instance->record.key_size) <= 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+
+	while (cursor->next(cursor, &record) != cs_end_of_results) {
+		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(-50, int), dict.instance->record.key_size) >= 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(50, int), dict.instance->record.key_size) <= 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+	}
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results == cursor->status);
+
+	cursor->destroy(&cursor);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == cursor);
+
+	free(record.key);
+	free(record.value);
+	dictionary_delete_dictionary(&dict);
+}
+
+/**
 @brief	  Creates the suite to test using CuTest.
 @return	 Pointer to a CuTest suite.
  */
@@ -337,6 +397,7 @@ skiplist_handler_getsuite(
 	/* Cursor Range cpp_wrapper */
 	planck_unit_add_to_suite(suite, test_slhandler_cursor_range);
 	planck_unit_add_to_suite(suite, test_slhandler_cursor_range_with_results);
+	planck_unit_add_to_suite(suite, test_slhandler_cursor_range_lower_missing);
 
 	return suite;
 }
