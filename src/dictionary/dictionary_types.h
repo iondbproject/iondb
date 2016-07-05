@@ -230,6 +230,9 @@ enum ion_dictionary_status {
 	ion_dictionary_status_ok,
 	/**> A status describing the situation when a dictionary has been closed. */
 	ion_dictionary_status_closed,
+	/**> A status describing the situation when a dictionary operation modifying
+		 the dictionary has failed. */
+	ion_dictionary_status_error,
 };
 
 /**

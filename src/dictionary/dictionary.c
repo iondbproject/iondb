@@ -75,7 +75,11 @@ dictionary_create(
 	err = handler->create_dictionary(id, key_type, key_size, value_size, dictionary_size, compare, handler, dictionary);
 
 	if (err_ok == err) {
-		dictionary->instance->id = id;
+		dictionary->instance->id	= id;
+		dictionary->status			= ion_dictionary_status_ok;
+	}
+	else {
+		dictionary->status = ion_dictionary_status_error;
 	}
 
 	return err;
@@ -231,9 +235,18 @@ dictionary_open(
 	dictionary_t					*dictionary,
 	ion_dictionary_config_info_t	*config
 ) {
-	ion_dictionary_compare_t compare = dictionary_switch_compare(config->type);
+	ion_dictionary_compare_t compare	= dictionary_switch_compare(config->type);
 
-	return handler->open_dictionary(handler, dictionary, config, compare);
+	err_t error							= handler->open_dictionary(handler, dictionary, config, compare);
+
+	if (err_ok == error) {
+		dictionary->status = ion_dictionary_status_ok;
+	}
+	else {
+		dictionary->status = ion_dictionary_status_error;
+	}
+
+	return error;
 }
 
 err_t
