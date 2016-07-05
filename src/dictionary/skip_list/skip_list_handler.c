@@ -19,6 +19,7 @@ sldict_init(
 	handler->delete_dictionary	= sldict_delete_dictionary;
 	handler->update				= sldict_update;
 	handler->find				= sldict_find;
+	handler->close_dictionary	= sldict_delete_dictionary;
 }
 
 ion_status_t
