@@ -360,12 +360,17 @@ err_t
 ion_delete_from_master_table(
 	dictionary_t *dictionary
 ) {
+	err_t							error;
 	ion_dictionary_config_info_t	blank	= { 0 };
 	long							where	= (dictionary->instance->id * ION_MASTER_TABLE_RECORD_SIZE(&blank));
 
-	ion_master_table_write(&blank, where);
+	error = ion_close_dictionary(dictionary);
 
-	return err_ok;
+	if (err_ok != error) {
+		return error;
+	}
+
+	return ion_master_table_write(&blank, where);
 }
 
 err_t

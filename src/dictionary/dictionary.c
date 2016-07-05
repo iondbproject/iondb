@@ -240,7 +240,17 @@ err_t
 dictionary_close(
 	dictionary_t *dictionary
 ) {
-	return dictionary->handler->close_dictionary(dictionary);
+	if (ion_dictionary_status_closed == dictionary->status) {
+		return err_ok;
+	}
+
+	err_t error = dictionary->handler->close_dictionary(dictionary);
+
+	if (err_ok == error) {
+		dictionary->status = ion_dictionary_status_closed;
+	}
+
+	return error;
 }
 
 err_t
