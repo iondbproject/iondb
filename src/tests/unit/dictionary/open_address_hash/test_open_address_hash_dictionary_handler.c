@@ -516,15 +516,15 @@ open_address_hashmap_handler_getsuite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	planck_unit_add_to_suite(suite, test_open_address_hashmap_handler_function_registration);
-	planck_unit_add_to_suite(suite, test_open_address_hashmap_handler_create_destroy);
-	planck_unit_add_to_suite(suite, test_open_address_dictionary_predicate_equality);
-	planck_unit_add_to_suite(suite, test_open_address_dictionary_predicate_range_signed);
-	planck_unit_add_to_suite(suite, test_open_address_dictionary_predicate_range_unsigned);
-	planck_unit_add_to_suite(suite, test_open_address_dictionary_cursor_equality);
-	planck_unit_add_to_suite(suite, test_open_address_dictionary_handler_query_with_results);
-	planck_unit_add_to_suite(suite, test_open_address_dictionary_handler_query_no_results);
-	planck_unit_add_to_suite(suite, test_open_address_dictionary_cursor_range);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_open_address_hashmap_handler_function_registration);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_open_address_hashmap_handler_create_destroy);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_open_address_dictionary_predicate_equality);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_open_address_dictionary_predicate_range_signed);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_open_address_dictionary_predicate_range_unsigned);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_open_address_dictionary_cursor_equality);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_open_address_dictionary_handler_query_with_results);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_open_address_dictionary_handler_query_no_results);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_open_address_dictionary_cursor_range);
 
 	return suite;
 }

@@ -387,17 +387,17 @@ skiplist_handler_getsuite(
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
 	/* Creation test */
-	planck_unit_add_to_suite(suite, test_collection_handler_binding);
-	planck_unit_add_to_suite(suite, test_collection_creation);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_collection_handler_binding);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_collection_creation);
 
 	/* Cursor Equality test */
-	planck_unit_add_to_suite(suite, test_slhandler_cursor_equality);
-	planck_unit_add_to_suite(suite, test_slhandler_cursor_equality_with_results);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_slhandler_cursor_equality);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_slhandler_cursor_equality_with_results);
 
 	/* Cursor Range test */
-	planck_unit_add_to_suite(suite, test_slhandler_cursor_range);
-	planck_unit_add_to_suite(suite, test_slhandler_cursor_range_with_results);
-	planck_unit_add_to_suite(suite, test_slhandler_cursor_range_lower_missing);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_slhandler_cursor_range);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_slhandler_cursor_range_with_results);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_slhandler_cursor_range_lower_missing);
 
 	return suite;
 }
