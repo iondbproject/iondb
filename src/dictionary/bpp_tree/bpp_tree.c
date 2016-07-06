@@ -142,27 +142,27 @@ flush(
 	}
 
 	for (i = 0; i < len; i++) {
-		if (1 != fwrite(&buf->p[i].leaf, sizeof(buf->p->leaf), 1, h->fp)) {
+		if (1 != fwrite(&buf[i].p->leaf, sizeof(buf->p->leaf), 1, h->fp)) {
 			return error(bErrIO);
 		}
 
-		if (1 != fwrite(&buf->p[i].ct, sizeof(buf->p->ct), 1, h->fp)) {
+		if (1 != fwrite(&buf[i].p->ct, sizeof(buf->p->ct), 1, h->fp)) {
 			return error(bErrIO);
 		}
 
-		if (1 != fwrite(&buf->p[i].prev, sizeof(buf->p->prev), 1, h->fp)) {
+		if (1 != fwrite(&buf[i].p->prev, sizeof(buf->p->prev), 1, h->fp)) {
 			return error(bErrIO);
 		}
 
-		if (1 != fwrite(&buf->p[i].next, sizeof(buf->p->next), 1, h->fp)) {
+		if (1 != fwrite(&buf[i].p->next, sizeof(buf->p->next), 1, h->fp)) {
 			return error(bErrIO);
 		}
 
-		if (1 != fwrite(&buf->p[i].childLT, sizeof(buf->p->childLT), 1, h->fp)) {
+		if (1 != fwrite(&buf[i].p->childLT, sizeof(buf->p->childLT), 1, h->fp)) {
 			return error(bErrIO);
 		}
 
-		if (1 != fwrite(&buf->p[i].fkey, sizeof(buf->p->fkey), 1, h->fp)) {
+		if (1 != fwrite(&buf[i].p->fkey, sizeof(buf->p->fkey), 1, h->fp)) {
 			return error(bErrIO);
 		}
 	}
@@ -294,27 +294,27 @@ readDisk(
 		}
 
 		for (i = 0; i < len; i++) {
-			if (1 != fread(&buf->p[i].leaf, sizeof(buf->p->leaf), 1, h->fp)) {
+			if (1 != fread(&buf[i].p->leaf, sizeof(buf->p->leaf), 1, h->fp)) {
 				return error(bErrIO);
 			}
 
-			if (1 != fread(&buf->p[i].ct, sizeof(buf->p->ct), 1, h->fp)) {
+			if (1 != fread(&buf[i].p->ct, sizeof(buf->p->ct), 1, h->fp)) {
 				return error(bErrIO);
 			}
 
-			if (1 != fread(&buf->p[i].prev, sizeof(buf->p->prev), 1, h->fp)) {
+			if (1 != fread(&buf[i].p->prev, sizeof(buf->p->prev), 1, h->fp)) {
 				return error(bErrIO);
 			}
 
-			if (1 != fread(&buf->p[i].next, sizeof(buf->p->next), 1, h->fp)) {
+			if (1 != fread(&buf[i].p->next, sizeof(buf->p->next), 1, h->fp)) {
 				return error(bErrIO);
 			}
 
-			if (1 != fread(&buf->p[i].childLT, sizeof(buf->p->childLT), 1, h->fp)) {
+			if (1 != fread(&buf[i].p->childLT, sizeof(buf->p->childLT), 1, h->fp)) {
 				return error(bErrIO);
 			}
 
-			if (1 != fread(&buf->p[i].fkey, sizeof(buf->p->fkey), 1, h->fp)) {
+			if (1 != fread(&buf[i].p->fkey, sizeof(buf->p->fkey), 1, h->fp)) {
 				return error(bErrIO);
 			}
 		}
