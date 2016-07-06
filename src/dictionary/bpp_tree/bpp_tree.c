@@ -56,13 +56,13 @@
 typedef char keyType;	/* keys entries are treated as char arrays */
 
 typedef struct {
-	unsigned int	leaf : 1;	/* first bit = 1 if leaf */
-	unsigned int	ct : 15;	/* count of keys present */
-	bAdrType		prev;		/* prev node in sequence (leaf) */
-	bAdrType		next;		/* next node in sequence (leaf) */
-	bAdrType		childLT;	/* child LT first key */
+	char		leaf;			/* first bit = 1 if leaf */
+	uint16_t	ct;				/* count of keys present */
+	bAdrType	prev;			/* prev node in sequence (leaf) */
+	bAdrType	next;			/* next node in sequence (leaf) */
+	bAdrType	childLT;		/* child LT first key */
 	/* ct occurrences of [key,rec,childGE] */
-	keyType			fkey;		/* first occurrence */
+	keyType		fkey;			/* first occurrence */
 } nodeType;
 
 typedef struct bufTypeTag {
@@ -128,17 +128,43 @@ flush(
 	bufType		*buf
 ) {
 	hNode	*h = handle;
-	int		len;		/* number of bytes to write */
+	int		i, len;		/* number of bytes to write */
 
 	/* flush buffer to disk */
-	len = h->sectorSize;
+	len = 1;
 
 	if (buf->adr == 0) {
-		len *= 3;	/* root */
+		len = 3;/* root */
 	}
 
-	if (err_ok != ion_fwrite_at(h->fp, buf->adr, len, (ion_byte_t *) buf->p)) {
+	if (0 != fseek(h->fp, buf->adr, SEEK_SET)) {
 		return error(bErrIO);
+	}
+
+	for (i = 0; i < len; i++) {
+		if (1 != fwrite(&buf->p[i].leaf, sizeof(buf->p->leaf), 1, h->fp)) {
+			return error(bErrIO);
+		}
+
+		if (1 != fwrite(&buf->p[i].ct, sizeof(buf->p->ct), 1, h->fp)) {
+			return error(bErrIO);
+		}
+
+		if (1 != fwrite(&buf->p[i].prev, sizeof(buf->p->prev), 1, h->fp)) {
+			return error(bErrIO);
+		}
+
+		if (1 != fwrite(&buf->p[i].next, sizeof(buf->p->next), 1, h->fp)) {
+			return error(bErrIO);
+		}
+
+		if (1 != fwrite(&buf->p[i].childLT, sizeof(buf->p->childLT), 1, h->fp)) {
+			return error(bErrIO);
+		}
+
+		if (1 != fwrite(&buf->p[i].fkey, sizeof(buf->p->fkey), 1, h->fp)) {
+			return error(bErrIO);
+		}
 	}
 
 	buf->modified = boolean_false;
@@ -248,7 +274,7 @@ readDisk(
 ) {
 	hNode *h = handle;
 	/* read data into buf */
-	int			len;
+	int			i, len;
 	bufType		*buf;			/* buffer */
 	bErrType	rc;				/* return code */
 
@@ -257,14 +283,40 @@ readDisk(
 	}
 
 	if (!buf->valid) {
-		len = h->sectorSize;
+		len = 1;
 
 		if (adr == 0) {
-			len *= 3;	/* root */
+			len = 3;/* root */
 		}
 
-		if (err_ok != ion_fread_at(h->fp, adr, len, (ion_byte_t *) buf->p)) {
+		if (0 != fseek(h->fp, buf->adr, SEEK_SET)) {
 			return error(bErrIO);
+		}
+
+		for (i = 0; i < len; i++) {
+			if (1 != fread(&buf->p[i].leaf, sizeof(buf->p->leaf), 1, h->fp)) {
+				return error(bErrIO);
+			}
+
+			if (1 != fread(&buf->p[i].ct, sizeof(buf->p->ct), 1, h->fp)) {
+				return error(bErrIO);
+			}
+
+			if (1 != fread(&buf->p[i].prev, sizeof(buf->p->prev), 1, h->fp)) {
+				return error(bErrIO);
+			}
+
+			if (1 != fread(&buf->p[i].next, sizeof(buf->p->next), 1, h->fp)) {
+				return error(bErrIO);
+			}
+
+			if (1 != fread(&buf->p[i].childLT, sizeof(buf->p->childLT), 1, h->fp)) {
+				return error(bErrIO);
+			}
+
+			if (1 != fread(&buf->p[i].fkey, sizeof(buf->p->fkey), 1, h->fp)) {
+				return error(bErrIO);
+			}
 		}
 
 		buf->modified	= boolean_false;
