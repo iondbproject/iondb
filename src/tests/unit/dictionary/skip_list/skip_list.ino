@@ -4,16 +4,12 @@
 
 void
 setup(
-)
-{
-    Serial.begin(BAUD_RATE);
-    runalltests_skiplist();
-    runalltests_skiplist_handler();
+) {
+	Serial.begin(BAUD_RATE);
+	runalltests_skiplist();
+	runalltests_skiplist_handler();
 }
 
 void
 loop(
-)
-{
-
-}
+) {}

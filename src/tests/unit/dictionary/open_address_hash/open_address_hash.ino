@@ -4,16 +4,12 @@
 
 void
 setup(
-)
-{
-    Serial.begin(BAUD_RATE);
-    runalltests_open_address_hash();
-    runalltests_open_address_hash_handler();
+) {
+	Serial.begin(BAUD_RATE);
+	runalltests_open_address_hash();
+	runalltests_open_address_hash_handler();
 }
 
 void
 loop(
-)
-{
-
-}
+) {}
