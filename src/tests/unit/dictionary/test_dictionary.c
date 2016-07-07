@@ -266,6 +266,10 @@ test_dictionary_master_table(
 	/***********************************/
 
 	/* Test close */
+
+	err = ion_close_dictionary(&dictionary2);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+
 	err = ion_close_master_table();
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
