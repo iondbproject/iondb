@@ -820,16 +820,16 @@ flat_file_getsuite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	planck_unit_add_to_suite(suite, test_flat_file_initialize);
-	planck_unit_add_to_suite(suite, test_flat_file_simple_insert);
-	planck_unit_add_to_suite(suite, test_flat_file_simple_insert_and_query);
-	planck_unit_add_to_suite(suite, test_flat_file_simple_delete);
-	planck_unit_add_to_suite(suite, test_flat_file_duplicate_insert_1);
-	planck_unit_add_to_suite(suite, test_flat_file_duplicate_insert_2);
-	planck_unit_add_to_suite(suite, test_flat_file_update_1);
-	planck_unit_add_to_suite(suite, test_flat_file_update_2);
-	planck_unit_add_to_suite(suite, test_flat_file_delete_1);
-	planck_unit_add_to_suite(suite, test_flat_file_delete_2);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_initialize);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_simple_insert);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_simple_insert_and_query);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_simple_delete);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_duplicate_insert_1);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_duplicate_insert_2);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_update_1);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_update_2);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_delete_1);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_delete_2);
 
 	return suite;
 }

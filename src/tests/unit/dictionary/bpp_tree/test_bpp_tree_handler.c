@@ -120,7 +120,7 @@ bpptreehandler_get_suite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	planck_unit_add_to_suite(suite, run_bpptreehandler_generic_test_set_1);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, run_bpptreehandler_generic_test_set_1);
 
 	return suite;
 }

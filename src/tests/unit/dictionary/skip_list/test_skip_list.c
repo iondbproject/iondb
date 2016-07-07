@@ -1940,57 +1940,57 @@ skiplist_getsuite(
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
 	/* Initialization Tests */
-	planck_unit_add_to_suite(suite, test_skiplist_initialize);
-	planck_unit_add_to_suite(suite, test_skiplist_free_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_initialize);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_free_all);
 
 	/* Insertion Tests */
-	planck_unit_add_to_suite(suite, test_skiplist_single_insert);
-	planck_unit_add_to_suite(suite, test_skiplist_insert_multiple);
-	planck_unit_add_to_suite(suite, test_skiplist_randomized_insert);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_single_insert);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_insert_multiple);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_randomized_insert);
 
 	/* Get Node Tests */
-	planck_unit_add_to_suite(suite, test_skiplist_get_node_single);
-	planck_unit_add_to_suite(suite, test_skiplist_get_node_single_high);
-	planck_unit_add_to_suite(suite, test_skiplist_get_node_single_low);
-	planck_unit_add_to_suite(suite, test_skiplist_get_node_single_many);
-	planck_unit_add_to_suite(suite, test_skiplist_get_node_several);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_get_node_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_get_node_single_high);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_get_node_single_low);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_get_node_single_many);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_get_node_several);
 
 	/* Query Tests */
-	planck_unit_add_to_suite(suite, test_skiplist_query_nonexist_empty);
-	planck_unit_add_to_suite(suite, test_skiplist_query_nonexist_populated_single);
-	planck_unit_add_to_suite(suite, test_skiplist_query_nonexist_populated_several);
-	planck_unit_add_to_suite(suite, test_skiplist_query_exist_single);
-	planck_unit_add_to_suite(suite, test_skiplist_query_exist_populated_single);
-	planck_unit_add_to_suite(suite, test_skiplist_query_exist_populated_several);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_query_nonexist_empty);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_query_nonexist_populated_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_query_nonexist_populated_several);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_query_exist_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_query_exist_populated_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_query_exist_populated_several);
 
 	/* Delete Tests */
-	planck_unit_add_to_suite(suite, test_skiplist_delete_empty);
-	planck_unit_add_to_suite(suite, test_skiplist_delete_nonexist_single);
-	planck_unit_add_to_suite(suite, test_skiplist_delete_nonexist_several);
-	planck_unit_add_to_suite(suite, test_skiplist_delete_single);
-	planck_unit_add_to_suite(suite, test_skiplist_delete_single_several);
-	planck_unit_add_to_suite(suite, test_skiplist_delete_single_several_noncont);
-	planck_unit_add_to_suite(suite, test_skiplist_delete_several_all);
-	planck_unit_add_to_suite(suite, test_skiplist_delete_several_same_key);
-	planck_unit_add_to_suite(suite, test_skiplist_delete_several_same_key_in_mix);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_empty);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_nonexist_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_nonexist_several);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_single_several);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_single_several_noncont);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_several_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_several_same_key);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_several_same_key_in_mix);
 
 	/* Update Tests */
-	planck_unit_add_to_suite(suite, test_skiplist_update_single_nonexist);
-	planck_unit_add_to_suite(suite, test_skiplist_update_single_nonexist_nonempty);
-	planck_unit_add_to_suite(suite, test_skiplist_update_many_nonexist_nonempty);
-	planck_unit_add_to_suite(suite, test_skiplist_update_single_exist);
-	planck_unit_add_to_suite(suite, test_skiplist_update_single_many_exist);
-	planck_unit_add_to_suite(suite, test_skiplist_update_several_many_exist);
-	planck_unit_add_to_suite(suite, test_skiplist_update_several_same_key);
-	planck_unit_add_to_suite(suite, test_skiplist_update_several_same_key_in_mix);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_update_single_nonexist);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_update_single_nonexist_nonempty);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_update_many_nonexist_nonempty);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_update_single_exist);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_update_single_many_exist);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_update_several_many_exist);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_update_several_same_key);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_update_several_same_key_in_mix);
 
 	/* Hybrid Tests */
-	planck_unit_add_to_suite(suite, test_skiplist_delete_then_insert_single);
-	planck_unit_add_to_suite(suite, test_skiplist_delete_then_insert_several);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_then_insert_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_then_insert_several);
 
 	/* Variation Tests */
-	planck_unit_add_to_suite(suite, test_skiplist_different_size);
-	planck_unit_add_to_suite(suite, test_skiplist_big_keys);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_different_size);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_big_keys);
 
 	return suite;
 }
