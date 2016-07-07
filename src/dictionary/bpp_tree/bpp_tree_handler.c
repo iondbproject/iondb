@@ -200,6 +200,12 @@ bpptree_delete_dictionary(
 
 	char	addr_filename[20];
 	char	value_filename[20];
+	int		i;
+
+	for (i = 0; i < 20; i++) {
+		addr_filename[i]	= '\0';
+		value_filename[i]	= '\0';
+	}
 
 	bpptree_get_addr_filename(dictionary->instance->id, addr_filename);
 	bpptree_get_value_filename(dictionary->instance->id, value_filename);

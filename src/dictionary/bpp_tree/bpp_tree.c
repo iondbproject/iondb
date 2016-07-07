@@ -131,6 +131,18 @@ flush(
 	int		i, len;		/* number of bytes to write */
 
 	/* flush buffer to disk */
+	len = h->sectorSize;
+
+	if (buf->adr == 0) {
+		len *= 3;	/* root */
+	}
+
+	if (err_ok != ion_fwrite_at(h->fp, buf->adr, len, (ion_byte_t *) buf->p)) {
+		return error(bErrIO);
+	}
+
+#if 0
+	/* flush buffer to disk */
 	len = 1;
 
 	if (buf->adr == 0) {
@@ -166,6 +178,8 @@ flush(
 			return error(bErrIO);
 		}
 	}
+
+#endif
 
 	buf->modified = boolean_false;
 	nDiskWrites++;
@@ -283,6 +297,21 @@ readDisk(
 	}
 
 	if (!buf->valid) {
+		len = h->sectorSize;
+
+		if (adr == 0) {
+			len *= 3;	/* root */
+		}
+
+		if (err_ok != ion_fread_at(h->fp, adr, len, (ion_byte_t *) buf->p)) {
+			return error(bErrIO);
+		}
+
+		buf->modified	= boolean_false;
+		buf->valid		= boolean_true;
+		nDiskReads++;
+
+#if 0
 		len = 1;
 
 		if (adr == 0) {
@@ -318,6 +347,8 @@ readDisk(
 				return error(bErrIO);
 			}
 		}
+
+#endif
 
 		buf->modified	= boolean_false;
 		buf->valid		= boolean_true;
@@ -833,6 +864,10 @@ bOpen(
 		return error(bErrMemory);
 	}
 
+	for (i = 0; ((unsigned int) i) < sizeof(hNode); i++) {
+		((char *) h)[i] = 0;
+	}
+
 	memset(h, 0, sizeof(hNode));
 	h->keySize		= info.keySize;
 	h->dupKeys		= info.dupKeys;
@@ -856,6 +891,10 @@ bOpen(
 		return error(bErrMemory);
 	}
 
+	for (i = 0; ((unsigned int) i) < bufCt * sizeof(bufType); i++) {
+		((char *) h->malloc1)[i] = 0;
+	}
+
 	buf = h->malloc1;
 
 	/*
@@ -868,6 +907,10 @@ bOpen(
 	 */
 	if ((h->malloc2 = malloc((bufCt + 6) * h->sectorSize + 2 * h->ks)) == NULL) {
 		return error(bErrMemory);
+	}
+
+	for (i = 0; i < (bufCt + 6) * h->sectorSize + 2 * h->ks; i++) {
+		((char *) h->malloc2)[i] = 0;
 	}
 
 	p				= h->malloc2;

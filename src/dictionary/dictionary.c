@@ -72,11 +72,12 @@ dictionary_create(
 	err_t						err;
 	ion_dictionary_compare_t	compare = dictionary_switch_compare(key_type);
 
-	err = handler->create_dictionary(id, key_type, key_size, value_size, dictionary_size, compare, handler, dictionary);
+	err							= handler->create_dictionary(id, key_type, key_size, value_size, dictionary_size, compare, handler, dictionary);
+
+	dictionary->instance->id	= id;
 
 	if (err_ok == err) {
-		dictionary->instance->id	= id;
-		dictionary->status			= ion_dictionary_status_ok;
+		dictionary->status = ion_dictionary_status_ok;
 	}
 	else {
 		dictionary->status = ion_dictionary_status_error;
