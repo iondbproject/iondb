@@ -22,6 +22,7 @@
 /******************************************************************************/
 
 #include "dictionary.h"
+#include "dictionary_types.h"
 
 ion_dictionary_compare_t
 dictionary_switch_compare(
@@ -239,6 +240,8 @@ dictionary_open(
 	ion_dictionary_compare_t compare	= dictionary_switch_compare(config->type);
 
 	err_t error							= handler->open_dictionary(handler, dictionary, config, compare);
+
+	dictionary->instance->id = config->id;
 
 	if (err_ok == error) {
 		dictionary->status = ion_dictionary_status_ok;
