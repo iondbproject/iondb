@@ -128,7 +128,7 @@ flush(
 	bufType		*buf
 ) {
 	hNode	*h = handle;
-	int		i, len;		/* number of bytes to write */
+	int		len;		/* number of bytes to write */
 
 	/* flush buffer to disk */
 	len = h->sectorSize;
@@ -288,7 +288,7 @@ readDisk(
 ) {
 	hNode *h = handle;
 	/* read data into buf */
-	int			i, len;
+	int			len;
 	bufType		*buf;			/* buffer */
 	bErrType	rc;				/* return code */
 
