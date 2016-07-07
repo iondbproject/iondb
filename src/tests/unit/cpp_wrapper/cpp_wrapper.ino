@@ -5,17 +5,13 @@
 
 void
 setup(
-)
-{
-    SPI.begin();
-    SD.begin(SD_CS_PIN);
-    Serial.begin(BAUD_RATE);
-    runalltests_cpp_wrapper();
+) {
+	SPI.begin();
+	SD.begin(SD_CS_PIN);
+	Serial.begin(BAUD_RATE);
+	runalltests_cpp_wrapper();
 }
 
 void
 loop(
-)
-{
-
-}
+) {}

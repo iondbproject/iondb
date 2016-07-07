@@ -36,8 +36,8 @@ extern "C" {
 
 /* Only on PC */
 #if !defined(ARDUINO)
-#define fremove(x)    remove(x)
-#define frewind(x)    rewind(x)
+#define fremove(x)	remove(x)
+#define frewind(x)	rewind(x)
 #endif
 
 /**
@@ -50,9 +50,9 @@ extern "C" {
 			Otherwise, a negative number is returned.
 */
 int
-		io_printf(
-		const char *format,
-		...
+io_printf(
+	const char *format,
+	...
 );
 
 #if defined(__cplusplus)
