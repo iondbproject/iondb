@@ -25,42 +25,55 @@
 #if !defined(CURSOR_H)
 #define CURSOR_H
 
-template <typename K, typename V>
-class Cursor {
+template <typename K, typename V>class Cursor {
 public:
-	Cursor(dictionary_t *dictionary, predicate_t *predicate) {
-		dictionary_find(dictionary, predicate, &cursor);
-		record.key = (ion_key_t) malloc(dictionary->instance->record.key_size);
-		record.value = (ion_value_t) malloc(dictionary->instance->record.value_size);
-	}
+Cursor(
+	dictionary_t	*dictionary,
+	predicate_t		*predicate
+) {
+	dictionary_find(dictionary, predicate, &cursor);
+	record.key		= (ion_key_t) malloc(dictionary->instance->record.key_size);
+	record.value	= (ion_value_t) malloc(dictionary->instance->record.value_size);
+}
 
-	~Cursor() {
-		cursor->destroy(&cursor);
-		free(record.key);
-		free(record.value);
-	}
+~Cursor(
+) {
+	cursor->destroy(&cursor);
+	free(record.key);
+	free(record.value);
+}
 
-	bool hasNext() {
-		return cursor->status == cs_cursor_initialized || cursor->status == cs_cursor_active;
-	}
+bool
+hasNext(
+) {
+	return cursor->status == cs_cursor_initialized || cursor->status == cs_cursor_active;
+}
 
-	bool next() {
-		cursor_status_t status = cursor->next(cursor, &record);
-		return status == cs_cursor_initialized || status == cs_cursor_active;
-	}
+bool
+next(
+) {
+	cursor_status_t status = cursor->next(cursor, &record);
 
-	K getKey() {
-		return *((K*) record.key);
-	}
+	return status == cs_cursor_initialized || status == cs_cursor_active;
+}
 
-	V getValue() {
-		return *((V*) record.value);
-	}
+K
+getKey(
+) {
+	return *((K *) record.key);
+}
+
+V
+getValue(
+) {
+	return *((V *) record.value);
+}
 
 private:
-	dictionary_t	*dictionary;
-	dict_cursor_t	*cursor;
-	ion_record_t	record;
+
+dictionary_t	*dictionary;
+dict_cursor_t	*cursor;
+ion_record_t	record;
 };
 
 #endif

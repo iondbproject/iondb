@@ -25,7 +25,8 @@ int						size_k;
 int						size_v;
 ion_status_t			last_status;
 
-~Dictionary() {
+~Dictionary(
+) {
 	this->destroy();
 }
 
@@ -62,6 +63,7 @@ insert(
 	ion_value_t ion_value	= (ion_value_t) &value;
 
 	ion_status_t status		= dictionary_insert(&dict, ion_key, ion_value);
+
 	this->last_status = status;
 
 	return status;
@@ -90,8 +92,9 @@ ion_status_t
 deleteRecord(
 	K key
 ) {
-	ion_key_t	ion_key = (ion_key_t) &key;
-	ion_status_t	status		= dictionary_delete(&dict, ion_key);
+	ion_key_t		ion_key = (ion_key_t) &key;
+	ion_status_t	status	= dictionary_delete(&dict, ion_key);
+
 	this->last_status = status;
 
 	return status;
@@ -111,9 +114,10 @@ update(
 	K	key,
 	V	value
 ) {
-	ion_key_t	ion_key		= (ion_key_t) &key;
-	ion_value_t ion_value	= (ion_value_t) &value;
-	ion_status_t	status			= dictionary_update(&dict, ion_key, ion_value);
+	ion_key_t		ion_key		= (ion_key_t) &key;
+	ion_value_t		ion_value	= (ion_value_t) &value;
+	ion_status_t	status		= dictionary_update(&dict, ion_key, ion_value);
+
 	this->last_status = status;
 
 	return status;
@@ -169,12 +173,12 @@ close(
 				The maximum key to be included in the query.
 @returns	An initialized cursor for the particular query.
 */
-Cursor<K,V>*
+Cursor<K, V> *
 range(
 	K	min_key,
 	K	max_key
 ) {
-	predicate_t		predicate;
+	predicate_t predicate;
 	ion_key_t	ion_min_key = (ion_key_t) &min_key;
 	ion_key_t	ion_max_key = (ion_key_t) &max_key;
 
@@ -190,11 +194,11 @@ range(
 				The key used to determine equality.
 @returns	An initialized cursor for the particular query.
 */
-Cursor<K,V>*
+Cursor<K, V> *
 equality(
-		K	key
+	K key
 ) {
-	predicate_t		predicate;
+	predicate_t predicate;
 	ion_key_t	ion_key = (ion_key_t) &key;
 
 	dictionary_build_predicate(&predicate, predicate_equality, ion_key);
@@ -207,15 +211,14 @@ equality(
 
 @returns	An initialized cursor for the particular query.
 */
-Cursor<K,V>*
+Cursor<K, V> *
 allRecords(
 ) {
-	predicate_t		predicate;
+	predicate_t predicate;
 
 	dictionary_build_predicate(&predicate, predicate_all_records);
 	return new Cursor<K, V>(&dict, &predicate);
 }
-
 };
 
 #endif /* PROJECT_CPP_DICTIONARY_H */
