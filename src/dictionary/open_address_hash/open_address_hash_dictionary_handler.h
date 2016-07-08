@@ -22,12 +22,12 @@ extern "C" {
 /**
 @brief Struct used to for instance of a given dictionary.
  */
-typedef struct oaf_dictionary {
+typedef struct oa_dictionary {
 	/* what needs to go in here? */
 	char		*dictionary_name;	/**<The name of the dictionary*/
 	hashmap_t	*hashmap;			/**<The map that the operations
 										will operate upon*/
-} oaf_dictionary_t;
+} oa_dictionary_t;
 
 /**
 @brief	  Dictionary cursor for equality queries.
