@@ -5,7 +5,7 @@
 @brief		This file contains commonly used types and some helpful macros.
 @copyright	Copyright 2016
 				The University of British Columbia,
-				IonDB Project Contributors (see @ref AUTHORS.md)
+				IonDB Project Contributors (see AUTHORS.md)
 @par
 			Licensed under the Apache License, Version 2.0 (the "License");
 			you may not use this file except in compliance with the License.
@@ -34,19 +34,19 @@ extern "C" {
 
 #include "kv_io.h"
 
-#define ION_USING_MASTER_TABLE    1
-#define USING_ECLIPSE            0
-#define DEBUG                    0
-#define IS_EQUAL                0
-#define IS_GREATER                1
-#define IS_LESS                    -1
-#define ZERO                    0
+#define ION_USING_MASTER_TABLE	1
+#define USING_ECLIPSE			0
+#define DEBUG					0
+#define IS_EQUAL				0
+#define IS_GREATER				1
+#define IS_LESS					-1
+#define ZERO					0
 
 /* ==================== ARDUINO CONDITIONAL COMPILATION ================================ */
 #if !defined(ARDUINO)
 /* Only if we're on desktop do we want to flush. Otherwise we only do a printf. */
-#define DUMP(varname, format)    printf("Variable %s = " format "\n", # varname, varname);fflush(stdout)
-#define PANIC(stuff)            printf("\t\t%s\n", stuff);fflush(stdout)
+#define DUMP(varname, format)	printf("Variable %s = " format "\n", # varname, varname);fflush(stdout)
+#define PANIC(stuff)			printf("\t\t%s\n", stuff);fflush(stdout)
 #else
 #define DUMP(varname, format)	printf("Variable %s = " format "\n", # varname, varname)
 #define PANIC(stuff)			printf("\t\t%s\n", stuff)
@@ -65,24 +65,24 @@ typedef unsigned char byte;
 #endif
 /* ===================================================================================== */
 
-#define IONIZE(something, type)        (ion_key_t) &(type) { (something) }
+#define IONIZE(something, type)		(ion_key_t) &(type) { (something) }
 #define NEUTRALIZE(something, type) (*((type *) (something)))
-#define IONIZE_VAL(varname, size)    ion_byte_t varname[size]
+#define IONIZE_VAL(varname, size)	ion_byte_t varname[size]
 
-#define UNUSED(x)                    (void) ((x))
+#define UNUSED(x)					(void) ((x))
 
 #define ION_STATUS_CREATE(error, count) \
-    ((ion_status_t) { (error), (count) } \
-    )
+	((ion_status_t) { (error), (count) } \
+	)
 #define ION_STATUS_INITIALIZE \
-    ((ion_status_t) { err_status_uninitialized, 0 } \
-    )
+	((ion_status_t) { err_status_uninitialized, 0 } \
+	)
 #define ION_STATUS_ERROR(error) \
-    ((ion_status_t) { (error), 0 } \
-    )
+	((ion_status_t) { (error), 0 } \
+	)
 #define ION_STATUS_OK(count) \
-    ((ion_status_t) { err_ok, (count) } \
-    )
+	((ion_status_t) { err_ok, (count) } \
+	)
 
 /**
 @brief		This is the available key types for ION_DB.  All types will be
@@ -90,14 +90,14 @@ typedef unsigned char byte;
 */
 typedef enum key_type {
 	/**> Key is a signed numeric value. */
-			key_type_numeric_signed,
+	key_type_numeric_signed,
 	/**> Key is an unsigned numeric value.*/
-			key_type_numeric_unsigned,
+	key_type_numeric_unsigned,
 	/**> Key is char array. */
-			key_type_char_array,
+	key_type_char_array,
 	/**> Key is a null-terminated string.
 		 Note that this needs padding out to avoid reading memory one does not own. */
-			key_type_null_terminated_string,
+	key_type_null_terminated_string,
 } key_type_t;
 
 /**
@@ -107,74 +107,74 @@ typedef enum key_type {
 */
 enum error {
 	/**> An error code describing the situation where everything is OK. */
-			err_ok,
+	err_ok,
 	/**> An error code describing the situation where the status has not
 		 been initialized yet. */
-			err_status_uninitialized,
+	err_status_uninitialized,
 	/**> An error code describing the situation where an item is not found. */
-			err_item_not_found,
+	err_item_not_found,
 	/**> An error code describing the situation where duplicate key is used
 		 inappropariately. */
-			err_duplicate_key,
+	err_duplicate_key,
 	/**> An error code describing the situation where a structure is asked
 		 to grow beyond it's capacity. */
-			err_max_capacity,
+	err_max_capacity,
 	/**> An error code describing the situation where a configuration setting
 		 for a write concern is problematic. */
-			err_write_concern,
+	err_write_concern,
 	/**> An error code describing the situation where an error occured in
 		 destroying a dictionary. */
-			err_colllection_destruction_error,
+	err_colllection_destruction_error,
 	/**> An error code describing the situation where a predicate is invalid. */
-			err_invalid_predicate,
+	err_invalid_predicate,
 	/**> An error code describing the situation where a memory allocation
 		 could not occur due to the system being out of allocatable memory. */
-			err_out_of_memory,
+	err_out_of_memory,
 	/**> An error code describing the situation where a write operation
 		 has failed. */
-			err_file_write_error,
+	err_file_write_error,
 	/**> An error code describing the situation where a read operation
 		 has failed. */
-			err_file_read_error,
+	err_file_read_error,
 	/**> An error code describing the situation where an open operation
 		 has failed. */
-			err_file_open_error,
+	err_file_open_error,
 	/**> An error code describing the situation where an close operation
 		 has failed. */
-			err_file_close_error,
+	err_file_close_error,
 	/**> An error code describing the situation where an delete operation
 		 has failed. */
-			err_file_delete_error,
+	err_file_delete_error,
 	/**> An error code describing the situation where a dictionary has failed
 		 has failed to initialize. */
-			err_dictionary_initialization_failed,
+	err_dictionary_initialization_failed,
 	/**> An error code describing the situation where an insert operation could
 		 not be completed. */
-			err_unable_to_insert,
+	err_unable_to_insert,
 	/**> An error code describing the situation where a write operation could
 		 not be made to completion. */
-			err_file_incomplete_write,
+	err_file_incomplete_write,
 	/**> An error code describing the situation where a read operation could
 		 not be made to completion. */
-			err_file_incomplete_read,
+	err_file_incomplete_read,
 	/**> An error code describing the situation where a seek operation could
 		 not be made to completion. */
-			err_file_bad_seek,
+	err_file_bad_seek,
 	/**> An error code describing the situation where a requested item could
 		 not be found in the primary page. */
-			err_not_in_primary_page,
+	err_not_in_primary_page,
 	/**> An error code describing the situation where a requested operation
 		 is not implemented. */
-			err_not_implemented,
+	err_not_implemented,
 	/**> An error code describing the situation where a system object has
 		 been encountered in an illegal state. */
-			err_illegal_state,
+	err_illegal_state,
 	/**> An error code describing the situation where specified size is
 		 illegal, invalid, or otherwise unreasonable. */
-			err_invalid_initial_size,
+	err_invalid_initial_size,
 	/**> An error code describing the situation a system object was not
 		 properly initialized. */
-			err_uninitialized
+	err_uninitialized
 };
 
 /**
@@ -228,9 +228,9 @@ typedef char boolean_t;
 */
 typedef enum {
 	/**> Truthy boolean value. */
-			boolean_false = 0,
+	boolean_false	= 0,
 	/**> Falsy boolean value. */
-			boolean_true = 1,
+	boolean_true	= 1,
 } boolean_e;
 
 /**
@@ -243,9 +243,9 @@ typedef int ion_result_count_t;
 			operation.
 */
 typedef struct {
-	err_t error;
+	err_t				error;
 	/**< The error code. */
-	ion_result_count_t count;    /**< The number of items affected. */
+	ion_result_count_t	count;	/**< The number of items affected. */
 } ion_status_t;
 
 /**
@@ -259,18 +259,18 @@ typedef char ion_record_status_t;
 @brief		Struct used to maintain information about size of key and value.
 */
 typedef struct record_info {
-	ion_key_size_t key_size;
+	ion_key_size_t		key_size;
 	/**< the size of the key in bytes */
-	ion_value_size_t value_size;        /**< the size of the value in bytes */
+	ion_value_size_t	value_size;		/**< the size of the value in bytes */
 } record_info_t;
 
 /**
 @brief		Struct used to maintain key and value.
 */
 typedef struct ion_record {
-	ion_key_t key;
+	ion_key_t	key;
 	/**< pointer to a key */
-	ion_value_t value;    /**< a pointer to value */
+	ion_value_t value;	/**< a pointer to value */
 } ion_record_t;
 
 #if defined(__cplusplus)

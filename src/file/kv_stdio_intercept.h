@@ -16,7 +16,7 @@
 			regular use.
 @copyright	Copyright 2016
 				The University of British Columbia,
-				IonDB Project Contributors (see @ref AUTHORS.md)
+				IonDB Project Contributors (see AUTHORS.md)
 @par
 			Licensed under the Apache License, Version 2.0 (the "License");
 			you may not use this file except in compliance with the License.

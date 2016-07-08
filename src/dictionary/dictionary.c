@@ -5,7 +5,7 @@
 @see		For more information, refer to @ref dictionary.h.
 @copyright	Copyright 2016
 				The University of British Columbia,
-				IonDB Project Contributors (see @ref AUTHORS.md)
+				IonDB Project Contributors (see AUTHORS.md)
 @par
 			Licensed under the Apache License, Version 2.0 (the "License");
 			you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 /******************************************************************************/
 
 #include "dictionary.h"
+#include "dictionary_types.h"
 
 ion_dictionary_compare_t
 dictionary_switch_compare(
@@ -72,10 +73,15 @@ dictionary_create(
 	err_t						err;
 	ion_dictionary_compare_t	compare = dictionary_switch_compare(key_type);
 
-	err = handler->create_dictionary(id, key_type, key_size, value_size, dictionary_size, compare, handler, dictionary);
+	err							= handler->create_dictionary(id, key_type, key_size, value_size, dictionary_size, compare, handler, dictionary);
+
+	dictionary->instance->id	= id;
 
 	if (err_ok == err) {
-		dictionary->instance->id = id;
+		dictionary->status = ion_dictionary_status_ok;
+	}
+	else {
+		dictionary->status = ion_dictionary_status_error;
 	}
 
 	return err;
@@ -231,16 +237,37 @@ dictionary_open(
 	dictionary_t					*dictionary,
 	ion_dictionary_config_info_t	*config
 ) {
-	ion_dictionary_compare_t compare = dictionary_switch_compare(config->type);
+	ion_dictionary_compare_t compare	= dictionary_switch_compare(config->type);
 
-	return handler->open_dictionary(handler, dictionary, config, compare);
+	err_t error							= handler->open_dictionary(handler, dictionary, config, compare);
+
+	dictionary->instance->id = config->id;
+
+	if (err_ok == error) {
+		dictionary->status = ion_dictionary_status_ok;
+	}
+	else {
+		dictionary->status = ion_dictionary_status_error;
+	}
+
+	return error;
 }
 
 err_t
 dictionary_close(
 	dictionary_t *dictionary
 ) {
-	return dictionary->handler->close_dictionary(dictionary);
+	if (ion_dictionary_status_closed == dictionary->status) {
+		return err_ok;
+	}
+
+	err_t error = dictionary->handler->close_dictionary(dictionary);
+
+	if (err_ok == error) {
+		dictionary->status = ion_dictionary_status_closed;
+	}
+
+	return error;
 }
 
 err_t

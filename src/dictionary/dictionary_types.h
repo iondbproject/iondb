@@ -6,7 +6,7 @@
 @details	This file exists mostly to avoid circular dependencies.
 @copyright	Copyright 2016
 				The University of British Columbia,
-				IonDB Project Contributors (see @ref AUTHORS.md)
+				IonDB Project Contributors (see AUTHORS.md)
 @par
 			Licensed under the Apache License, Version 2.0 (the "License");
 			you may not use this file except in compliance with the License.
@@ -222,10 +222,32 @@ struct dictionary_handler {
 };
 
 /**
+@brief		The status codes describing various states a dictionary can be
+			in.
+*/
+enum ion_dictionary_status {
+	/**> A status describing the situation when a dictionary is ready to be used. */
+	ion_dictionary_status_ok,
+	/**> A status describing the situation when a dictionary has been closed. */
+	ion_dictionary_status_closed,
+	/**> A status describing the situation when a dictionary operation modifying
+		 the dictionary has failed. */
+	ion_dictionary_status_error,
+};
+
+/**
+@brief		A short status describing the current status of a
+			dictionary.
+*/
+typedef char ion_dictionary_status_t;
+
+/**
 @brief		A dictionary contains information regarding an instance of the
 			storage element and the associated handler.
 */
 struct dictionary {
+	ion_dictionary_status_t status;	/**< A status describing the state
+											 of the dictionary. */
 	dictionary_parent_t		*instance;	/**< Specific instance of a
 											 collection (but we don't
 											 know type). */

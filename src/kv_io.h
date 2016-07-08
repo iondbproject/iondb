@@ -5,7 +5,7 @@
 @brief		Key-Value Input/Output functionality.
 @copyright	Copyright 2016
 				The University of British Columbia,
-				IonDB Project Contributors (see @ref AUTHORS.md)
+				IonDB Project Contributors (see AUTHORS.md)
 @par
 			Licensed under the Apache License, Version 2.0 (the "License");
 			you may not use this file except in compliance with the License.
@@ -36,8 +36,8 @@ extern "C" {
 
 /* Only on PC */
 #if !defined(ARDUINO)
-#define fremove(x)    remove(x)
-#define frewind(x)    rewind(x)
+#define fremove(x)	remove(x)
+#define frewind(x)	rewind(x)
 #endif
 
 /**
@@ -50,9 +50,9 @@ extern "C" {
 			Otherwise, a negative number is returned.
 */
 int
-		io_printf(
-		const char *format,
-		...
+io_printf(
+	const char *format,
+	...
 );
 
 #if defined(__cplusplus)
