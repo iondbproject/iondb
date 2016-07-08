@@ -134,7 +134,6 @@ test_cpp_wrapper_insert_delete(
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
 
 		dict->deleteRecord(i);
-
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
 
@@ -159,20 +158,24 @@ test_cpp_wrapper_insert_delete_edge_cases(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
 
 	dict->deleteRecord(-10);
-	ret_val = dict->get(-10);
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok != dict->last_status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
+
+	dict->get(-10);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == dict->last_status.error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, dict->last_status.count);
-	PLANCK_UNIT_ASSERT_INT_ARE_NOT_EQUAL(tc, 3, ret_val);
 
 	dict->insert(1000, 99);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
 
 	dict->deleteRecord(1000);
-	ret_val = dict->get(1000);
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok != dict->last_status.error);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
+
+	dict->get(1000);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == dict->last_status.error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, dict->last_status.count);
-	PLANCK_UNIT_ASSERT_INT_ARE_NOT_EQUAL(tc, 99, ret_val);
 }
 
 /**
@@ -320,7 +323,9 @@ test_cpp_wrapper_equality(
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
 	}
 
-	Cursor<int, int> *eq_cursor = dict->equality(eq_key);
+	Cursor<int, int> *eq_cursor;
+	eq_cursor = dict->equality(eq_key);
+
 	PLANCK_UNIT_ASSERT_TRUE(tc, true == eq_cursor->hasNext());
 	eq_cursor->next();
 
