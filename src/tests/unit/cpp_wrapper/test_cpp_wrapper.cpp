@@ -151,8 +151,6 @@ test_cpp_wrapper_insert_delete_edge_cases(
 	planck_unit_test_t *tc,
 	Dictionary<int, int> *dict
 ) {
-	int ret_val;
-
 	dict->insert(-10, 3);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
@@ -323,10 +321,9 @@ test_cpp_wrapper_equality(
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
 	}
 
-	Cursor<int, int> *eq_cursor;
-	eq_cursor = dict->equality(eq_key);
+	Cursor<int, int> *eq_cursor = dict->equality(eq_key);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, true == eq_cursor->hasNext());
+	PLANCK_UNIT_ASSERT_TRUE(tc, eq_cursor->hasNext());
 	eq_cursor->next();
 
 	while (eq_cursor->hasNext()) {
@@ -337,7 +334,7 @@ test_cpp_wrapper_equality(
 		record_value++;
 	}
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, false == eq_cursor->hasNext());
+	PLANCK_UNIT_ASSERT_TRUE(tc, !eq_cursor->hasNext());
 
 	/* Check that same number of records are found as were inserted with desired key. */
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, eq_key, record_value);
