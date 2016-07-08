@@ -413,6 +413,14 @@ enum write_concern {
 */
 typedef char write_concern_t;
 
+/**
+@brief		Struct used to maintain individual records in the hashmap.
+*/
+typedef struct hash_bucket {
+	char		status;				/**< the status of the bucket */
+	ion_byte_t	data[];			/**< the data in the bucket */
+} hash_bucket_t;
+
 #if defined(__cplusplus)
 }
 #endif

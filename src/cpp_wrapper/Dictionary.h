@@ -23,6 +23,7 @@ dictionary_handler_t	handler;
 dictionary_t			dict;
 int						size_k;
 int						size_v;
+int						dict_size;
 ion_status_t			last_status;
 
 ~Dictionary(
@@ -39,8 +40,9 @@ initializeDictionary(
 ) {
 	err_t err = dictionary_create(&handler, &dict, 0, type_key, key_size, value_size, dictionary_size);
 
-	size_k	= key_size;
-	size_v	= value_size;
+	size_k		= key_size;
+	size_v		= value_size;
+	dict_size	= dictionary_size;
 
 	return err;
 }

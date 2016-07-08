@@ -37,14 +37,6 @@ extern "C" {
 typedef struct file_hashmap file_hashmap_t;
 
 /**
-@brief		Struct used to maintain individual records in the hashmap.
-*/
-typedef struct hash_bucket {
-	char		status;				/**< the status of the bucket */
-	ion_byte_t	data[];			/**< the data in the bucket */
-} hash_bucket_t;
-
-/**
 @brief		Struct used to maintain an instance of an in memory hashmap.
 */
 struct file_hashmap {
