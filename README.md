@@ -1,13 +1,10 @@
 ![IonDB](https://cdn.rawgit.com/iondbproject/iondb/development/documentation/doxygen/iondb_logo_final.svg)
 =========
 
-**Development**: [![Build Status](http://162.243.92.39/buildStatus/icon?job=iondb-pc-full)](http://162.243.92.39/job/iondb-pc-full/)
-**Latest**: [![Build Status](http://162.243.92.39/buildStatus/icon?job=iondb-pc-rapid)](http://162.243.92.39/job/iondb-pc-rapid/)
-**Embedded Device**: [![Build Status](http://162.243.92.39/buildStatus/icon?job=iondb-device)](http://162.243.92.39/job/iondb-device/)
+**Development:** [![Build Status](http://162.243.92.39/buildStatus/icon?job=iondb-pc-full)](http://162.243.92.39/job/iondb-pc-full/)
+**Embedded Device:** [![Build Status](http://162.243.92.39/buildStatus/icon?job=iondb-device)](http://162.243.92.39/job/iondb-device/)
 
 You might also be interested in our sister project, [LittleD - A relational database using 1kB of RAM or less](https://github.com/graemedouglas/LittleD).
-
-> **Note:** IonDB is entering a period of rapid development and restructuring for the next few months. See the [Collaboration](#collaboration) section for more information.
 
 # "What is this?"
 
@@ -28,7 +25,7 @@ IonDB is licensed under the Apache License. For more information, please refer t
 
 ## Collaboration
 
-Pull requests are currently **not** recommended due to significant changes arriving in the near future. 
+Pull requests are very much welcome. Be aware that IonDB has a strict continuous integration process that must fully pass before changes will be integrated.
 
 ***
 

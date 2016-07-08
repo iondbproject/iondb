@@ -1,13 +1,13 @@
 Graeme Douglas
 
-Eric Huang
-
-Wade Penson
-
 Scott Fazackerley
+
+Eric Huang
 
 Dana Klamut
 
-Eli Wardle
-
 Ramon Lawrence
+
+Wade Penson
+
+Eliana Wardle
