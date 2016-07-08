@@ -123,8 +123,8 @@ cpp_wrapper_getsuite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	planck_unit_add_to_suite(suite, test_cpp_wrapper_create_and_destroy);
-	planck_unit_add_to_suite(suite, test_cpp_wrapper_insert_on_all_implementations);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_create_and_destroy);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_insert_on_all_implementations);
 
 	return suite;
 }

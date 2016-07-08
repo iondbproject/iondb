@@ -1,17 +1,17 @@
 #include <Arduino.h>
+#include <SPI.h>
+#include <SD.h>
 #include "test_cpp_wrapper.h"
 
 void
 setup(
-)
-{
-    Serial.begin(BAUD_RATE);
-    runalltests_cpp_wrapper();
+) {
+	SPI.begin();
+	SD.begin(SD_CS_PIN);
+	Serial.begin(BAUD_RATE);
+	runalltests_cpp_wrapper();
 }
 
 void
 loop(
-)
-{
-
-}
+) {}

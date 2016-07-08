@@ -266,6 +266,10 @@ test_dictionary_master_table(
 	/***********************************/
 
 	/* Test close */
+
+	err = ion_close_dictionary(&dictionary2);
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+
 	err = ion_close_master_table();
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
@@ -278,8 +282,8 @@ dictionary_getsuite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	planck_unit_add_to_suite(suite, test_dictionary_compare_numerics);
-	planck_unit_add_to_suite(suite, test_dictionary_master_table);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_dictionary_compare_numerics);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_dictionary_master_table);
 
 	return suite;
 }

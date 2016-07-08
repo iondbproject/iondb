@@ -56,13 +56,13 @@
 typedef char keyType;	/* keys entries are treated as char arrays */
 
 typedef struct {
-	unsigned int	leaf : 1;	/* first bit = 1 if leaf */
-	unsigned int	ct : 15;	/* count of keys present */
-	bAdrType		prev;		/* prev node in sequence (leaf) */
-	bAdrType		next;		/* next node in sequence (leaf) */
-	bAdrType		childLT;	/* child LT first key */
+	char		leaf;			/* first bit = 1 if leaf */
+	uint16_t	ct;				/* count of keys present */
+	bAdrType	prev;			/* prev node in sequence (leaf) */
+	bAdrType	next;			/* next node in sequence (leaf) */
+	bAdrType	childLT;		/* child LT first key */
 	/* ct occurrences of [key,rec,childGE] */
-	keyType			fkey;		/* first occurrence */
+	keyType		fkey;			/* first occurrence */
 } nodeType;
 
 typedef struct bufTypeTag {
@@ -140,6 +140,46 @@ flush(
 	if (err_ok != ion_fwrite_at(h->fp, buf->adr, len, (ion_byte_t *) buf->p)) {
 		return error(bErrIO);
 	}
+
+#if 0
+	/* flush buffer to disk */
+	len = 1;
+
+	if (buf->adr == 0) {
+		len = 3;/* root */
+	}
+
+	if (0 != fseek(h->fp, buf->adr, SEEK_SET)) {
+		return error(bErrIO);
+	}
+
+	for (i = 0; i < len; i++) {
+		if (1 != fwrite(&buf[i].p->leaf, sizeof(buf->p->leaf), 1, h->fp)) {
+			return error(bErrIO);
+		}
+
+		if (1 != fwrite(&buf[i].p->ct, sizeof(buf->p->ct), 1, h->fp)) {
+			return error(bErrIO);
+		}
+
+		if (1 != fwrite(&buf[i].p->prev, sizeof(buf->p->prev), 1, h->fp)) {
+			return error(bErrIO);
+		}
+
+		if (1 != fwrite(&buf[i].p->next, sizeof(buf->p->next), 1, h->fp)) {
+			return error(bErrIO);
+		}
+
+		if (1 != fwrite(&buf[i].p->childLT, sizeof(buf->p->childLT), 1, h->fp)) {
+			return error(bErrIO);
+		}
+
+		if (1 != fwrite(&buf[i].p->fkey, sizeof(buf->p->fkey), 1, h->fp)) {
+			return error(bErrIO);
+		}
+	}
+
+#endif
 
 	buf->modified = boolean_false;
 	nDiskWrites++;
@@ -266,6 +306,49 @@ readDisk(
 		if (err_ok != ion_fread_at(h->fp, adr, len, (ion_byte_t *) buf->p)) {
 			return error(bErrIO);
 		}
+
+		buf->modified	= boolean_false;
+		buf->valid		= boolean_true;
+		nDiskReads++;
+
+#if 0
+		len = 1;
+
+		if (adr == 0) {
+			len = 3;/* root */
+		}
+
+		if (0 != fseek(h->fp, buf->adr, SEEK_SET)) {
+			return error(bErrIO);
+		}
+
+		for (i = 0; i < len; i++) {
+			if (1 != fread(&buf[i].p->leaf, sizeof(buf->p->leaf), 1, h->fp)) {
+				return error(bErrIO);
+			}
+
+			if (1 != fread(&buf[i].p->ct, sizeof(buf->p->ct), 1, h->fp)) {
+				return error(bErrIO);
+			}
+
+			if (1 != fread(&buf[i].p->prev, sizeof(buf->p->prev), 1, h->fp)) {
+				return error(bErrIO);
+			}
+
+			if (1 != fread(&buf[i].p->next, sizeof(buf->p->next), 1, h->fp)) {
+				return error(bErrIO);
+			}
+
+			if (1 != fread(&buf[i].p->childLT, sizeof(buf->p->childLT), 1, h->fp)) {
+				return error(bErrIO);
+			}
+
+			if (1 != fread(&buf[i].p->fkey, sizeof(buf->p->fkey), 1, h->fp)) {
+				return error(bErrIO);
+			}
+		}
+
+#endif
 
 		buf->modified	= boolean_false;
 		buf->valid		= boolean_true;
@@ -781,6 +864,10 @@ bOpen(
 		return error(bErrMemory);
 	}
 
+	for (i = 0; ((unsigned int) i) < sizeof(hNode); i++) {
+		((char *) h)[i] = 0;
+	}
+
 	memset(h, 0, sizeof(hNode));
 	h->keySize		= info.keySize;
 	h->dupKeys		= info.dupKeys;
@@ -804,6 +891,10 @@ bOpen(
 		return error(bErrMemory);
 	}
 
+	for (i = 0; ((unsigned int) i) < bufCt * sizeof(bufType); i++) {
+		((char *) h->malloc1)[i] = 0;
+	}
+
 	buf = h->malloc1;
 
 	/*
@@ -816,6 +907,10 @@ bOpen(
 	 */
 	if ((h->malloc2 = malloc((bufCt + 6) * h->sectorSize + 2 * h->ks)) == NULL) {
 		return error(bErrMemory);
+	}
+
+	for (i = 0; i < (bufCt + 6) * h->sectorSize + 2 * h->ks; i++) {
+		((char *) h->malloc2)[i] = 0;
 	}
 
 	p				= h->malloc2;
