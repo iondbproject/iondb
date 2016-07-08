@@ -1,4 +1,4 @@
-![IonDB](documentation/doxygen/iondb_logo_final.svg)
+![IonDB](https://raw.githubusercontent.com/iondbproject/iondb/development/documentation/doxygen/iondb_logo_final.svg)
 =========
 
 **Development**: [![Build Status](http://162.243.92.39/buildStatus/icon?job=iondb-pc-full)](http://162.243.92.39/job/iondb-pc-full/)
