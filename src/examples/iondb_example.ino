@@ -7,7 +7,7 @@ setup(
 
 	/* Instantiate your dictionary */
 	Dictionary < int, int > *dict = new
-									SkipList(
+									SkipList<int, int>(
 		key_type_numeric_signed,
 		sizeof(int),
 		sizeof(int),
