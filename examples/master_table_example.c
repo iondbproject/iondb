@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include "../key_value/kv_system.h"
-#include "./../dictionary/dictionary.h"
-#include "../dictionary/bpp_tree/bpp_tree_handler.h"
-#include "../dictionary/ion_master_table.h"
+#include "../src/key_value/kv_system.h"
+#include "../src/dictionary/dictionary.h"
+#include "../src/dictionary/bpp_tree/bpp_tree_handler.h"
+#include "../src/dictionary/ion_master_table.h"
 
 int
 main(
