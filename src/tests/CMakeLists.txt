@@ -6,7 +6,7 @@ set(SOURCE_FILES
     planckunit/src/planck_unit.c
     planckunit/src/ion_time/ion_time.c
     planckunit/src/ion_time/ion_time.h
-        )
+    )
 
 if(USE_ARDUINO)
     set(${PROJECT_NAME}_BOARD       ${BOARD})
