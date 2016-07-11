@@ -1,0 +1,15 @@
+# Text files are auto
+* text=auto
+
+# Explicit patterns
+*.txt text eol=lf
+*.c text eol=lf
+*.cpp text eol=lf
+*.h text eol=lf
+*.hpp text eol=lf
+*.md text eol=lf
+*.sh text eol=lf
+*.ino text eol=lf
+
+# Exclusions
+*.svg text

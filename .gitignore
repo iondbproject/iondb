@@ -1,6 +1,9 @@
 bin/
 lib/
 docs/
+build/
+target/
+work/
 .build/
 .settings
 *.d
@@ -9,6 +12,7 @@ docs/
 *~
 changetracker.txt
 out.txt
+__pycache__/
 
 # IDE
 .cproject
@@ -19,6 +23,7 @@ out.txt
 .idea/
 iondb.sublime-project
 iondb.sublime-workspace
+*.iml
 
 # OS generated files
 */.DS_Store

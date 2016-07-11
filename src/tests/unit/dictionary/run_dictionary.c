@@ -1,10 +1,8 @@
-
-void
-runalltests_dictionary();
+#include "test_dictionary.h"
 
 int
-main()
-{
+main(
+) {
 	runalltests_dictionary();
 	return 0;
 }
