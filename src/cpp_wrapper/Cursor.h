@@ -25,7 +25,8 @@
 #if !defined(CURSOR_H)
 #define CURSOR_H
 
-template <typename K, typename V>class Cursor {
+template<typename K, typename V>
+class Cursor {
 public:
 Cursor(
 	dictionary_t	*dictionary,

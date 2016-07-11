@@ -16,7 +16,8 @@
 
 #include "Cursor.h"
 
-template <typename K, typename V>class Dictionary {
+template<typename K, typename V>
+class Dictionary {
 public:
 
 dictionary_handler_t	handler;
