@@ -329,7 +329,7 @@ int
 sd_remove(
 	char *filename
 ) {
-	return SD.remove(filename);
+	return SD.remove(filename) ? 0 : 1;
 }
 
 void
