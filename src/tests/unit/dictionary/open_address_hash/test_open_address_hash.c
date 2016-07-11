@@ -6,7 +6,7 @@
  */
 
 #include "test_open_address_hash.h"
-#include "../../../../kv_system.h"
+#include "../../../../key_value/kv_system.h"
 
 #define MAX_HASH_TEST	100
 #define STD_MAP_SIZE	10

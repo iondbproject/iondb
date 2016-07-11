@@ -12,8 +12,8 @@ extern "C" {
 #endif
 
 #include "./../serial/serial_c_iface.h"
-#include "./../kv_system.h"
-#include "./../kv_io.h"
+#include "../key_value/kv_system.h"
+#include "../key_value/kv_io.h"
 #include "ram/ram_util.h"
 
 static unsigned volatile int	ram_counter;

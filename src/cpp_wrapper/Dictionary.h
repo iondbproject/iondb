@@ -12,7 +12,7 @@
 
 #include "../dictionary/dictionary.h"
 #include "../dictionary/dictionary_types.h"
-#include "../kv_system.h"
+#include "../key_value/kv_system.h"
 
 #include "Cursor.h"
 

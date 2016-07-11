@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 #include "test_flat_file_dictionary_handler.h"
-#include "../../../../kv_system.h"
+#include "../../../../key_value/kv_system.h"
 
 #define TEST_FILE "file.bin"
 /**

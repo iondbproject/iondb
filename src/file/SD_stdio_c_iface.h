@@ -27,7 +27,7 @@
 #if !defined(SD_STDIO_C_IFACE_H_)
 #define SD_STDIO_C_IFACE_H_
 
-#include "./../kv_system.h"
+#include "../key_value/kv_system.h"
 
 #if defined(ARDUINO)
 

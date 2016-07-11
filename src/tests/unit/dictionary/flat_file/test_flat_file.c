@@ -6,7 +6,7 @@
  */
 
 #include "test_flat_file.h"
-#include "../../../../kv_system.h"
+#include "../../../../key_value/kv_system.h"
 
 #define STD_KV_SIZE 10
 #define TEST_FILE	"file.bin"

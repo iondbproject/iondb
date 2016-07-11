@@ -15,7 +15,7 @@
 #include "../../../cpp_wrapper/OpenAddressHash.h"
 #include "../../../cpp_wrapper/SkipList.h"
 #include "test_cpp_wrapper.h"
-#include "../../../kv_system.h"
+#include "../../../key_value/kv_system.h"
 
 /**
 @brief	Tests the creation of a B+ Tree (arbitrarily chosen) dictionary and asserts

@@ -10,7 +10,7 @@
 #define PROJECT_OPENADDRESSHASH_H
 
 #include "Dictionary.h"
-#include "../kv_system.h"
+#include "../key_value/kv_system.h"
 #include "../dictionary/open_address_hash/open_address_hash_dictionary_handler.h"
 
 template<typename K, typename V>
