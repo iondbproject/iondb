@@ -29,7 +29,7 @@ IonDB's Homepage: [link](https://iondb.org)
 
 User focused information pages can be found on our [wiki](https://github.com/iondbproject/iondb/wiki).
 
-For extensive information on IonDB, refer to our [documentation pages](https://iondb.org/doxygen/files.html) for an API level reference.
+For extensive information on IonDB, refer to our [documentation pages](https://iondb.org/) for an API level reference.
 
 # License
 
