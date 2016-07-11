@@ -15,7 +15,7 @@ extern "C" {
 
 #include "../dictionary_types.h"
 #include "./../dictionary.h"
-#include "./../../kv_system.h"
+#include "../../key_value/kv_system.h"
 #include "flat_file.h"
 #include "flat_file_dictionary.h"
 

@@ -10,10 +10,11 @@
 #define PROJECT_BPPTREE_H
 
 #include "Dictionary.h"
-#include "../kv_system.h"
+#include "../key_value/kv_system.h"
 #include "../dictionary/bpp_tree/bpp_tree_handler.h"
 
-template <typename K, typename V>class BppTree:public Dictionary<K, V> {
+template<typename K, typename V>
+class BppTree:public Dictionary<K, V> {
 public:
 /**
 @brief		Registers a specific B+ tree dictionary instance.

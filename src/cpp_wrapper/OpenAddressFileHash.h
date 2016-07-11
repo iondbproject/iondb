@@ -11,10 +11,11 @@
 #define PROJECT_OPENADDRESSFILEHASH_H
 
 #include "Dictionary.h"
-#include "../kv_system.h"
+#include "../key_value/kv_system.h"
 #include "../dictionary/open_address_file_hash/open_address_file_hash_dictionary_handler.h"
 
-template <typename K, typename V>class OpenAddressFileHash:public Dictionary<K, V> {
+template<typename K, typename V>
+class OpenAddressFileHash:public Dictionary<K, V> {
 public:
 
 /**

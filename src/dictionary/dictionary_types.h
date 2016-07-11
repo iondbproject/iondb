@@ -29,7 +29,7 @@
 extern "C" {
 #endif
 
-#include "./../kv_system.h"
+#include "../key_value/kv_system.h"
 
 /**
 @brief	  A type used to identify dictionaries, specifically in the master

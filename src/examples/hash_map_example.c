@@ -9,11 +9,11 @@
  */
 
 #include <stdlib.h>
-#include "./../kv_system.h"
+#include "../key_value/kv_system.h"
 #include "./../dictionary/dictionary.h"
 #include "../dictionary/open_address_hash/open_address_hash_dictionary_handler.h"
 
-#include "./../kv_io.h"
+#include "../key_value/kv_io.h"
 
 void
 test_query(

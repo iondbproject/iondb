@@ -29,7 +29,7 @@ extern "C" {
 #endif
 
 #include <stdarg.h>
-#include "./../kv_system.h"
+#include "../key_value/kv_system.h"
 #include "dictionary_types.h"
 
 /**

@@ -8,10 +8,10 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "./../kv_system.h"
+#include "../key_value/kv_system.h"
 #include "./../dictionary/dictionary.h"
 #include "../dictionary/skip_list/skip_list_handler.h"
-#include "./../kv_io.h"
+#include "../key_value/kv_io.h"
 
 int
 main(

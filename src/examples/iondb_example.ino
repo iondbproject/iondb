@@ -6,13 +6,7 @@ setup(
 	Serial.begin(9600);
 
 	/* Instantiate your dictionary */
-	Dictionary < int, int > *dict = new
-									SkipList(
-		key_type_numeric_signed,
-		sizeof(int),
-		sizeof(int),
-		7
-									);
+	Dictionary < int, int > *dict = new SkipList < int, int > (key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 
 	/* Insert a record with key 3 and value 10 */
 	dict->insert(3, 10);
@@ -20,9 +14,9 @@ setup(
 	/* Retrieve a value by providing a key */
 	int my_value = dict->get(3);
 
-	/* Check the status on every operation to ensure good data integrity */
+	/* You should check the status on every operation to ensure good data integrity */
 	if (err_ok != dict->last_status.error) {
-		Serial.println("Oh no! Something went wrong with my get");
+		Serial.println("Oh no! Something went wrong with my get operation");
 	}
 
 	/* Update the value stored at a key */
@@ -39,6 +33,7 @@ setup(
 	while (my_cursor.next()) {
 		int key		= my_cursor.getKey();
 		int value	= my_cursor.getValue();
+		/* Do something with the key and value here */
 	}
 
 	/* Remember to clean up the cursor after you're done */
@@ -50,6 +45,7 @@ setup(
 	while (my_cursor.next()) {
 		int key		= my_cursor.getKey();
 		int value	= my_cursor.getValue();
+		/* Do something with the key and value here */
 	}
 
 	delete my_cursor;
@@ -60,6 +56,7 @@ setup(
 	while (my_cursor.next()) {
 		int key		= my_cursor.getKey();
 		int value	= my_cursor.getValue();
+		/* Do something with the key and value here */
 	}
 
 	delete my_cursor;

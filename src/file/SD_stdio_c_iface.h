@@ -27,7 +27,7 @@
 #if !defined(SD_STDIO_C_IFACE_H_)
 #define SD_STDIO_C_IFACE_H_
 
-#include "./../kv_system.h"
+#include "../key_value/kv_system.h"
 
 #if defined(ARDUINO)
 
@@ -131,7 +131,7 @@ sd_fopen(
 @param		stream
 				A pointer to C file struct type associated with an SD
 				file object.
-@returns	The number of elements of size @p size that have been read.
+@returns	The number of items that have been read.
 */
 size_t
 sd_fread(
@@ -215,8 +215,7 @@ sd_ftell(
 @param		stream
 				A pointer to a C file struct type associated with an SD
 				file object.
-@returns	The number of bytes written. On successes, this should be
-			@p size * @p nmemb.
+@returns	The number of items successfully written.
 */
 size_t
 sd_fwrite(
@@ -229,11 +228,10 @@ sd_fwrite(
 /**
 @brief		Remove a file from the Arduino SD file system.
 @details	Wrapper around Arduino SD file remove method.
-@param		filepath
+@param		filename
 				A pointer to the string data containing the path to the file
 				that is to be deleted.
-@returns	@c 1 if the file was removed successfully, @c 0 otherwise.
-@todo		This mismatches the standard.
+@returns	@c 0 if the file was removed successfully, @c 1 otherwise.
 */
 int
 sd_remove(
