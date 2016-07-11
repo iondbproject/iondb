@@ -30,9 +30,9 @@ setup(
 	/* If you store records with the same key, you can retrieve them using an equality query: */
 	Cursor < int, int > *my_cursor = dict->equality(3);
 
-	while (my_cursor.next()) {
-		int key		= my_cursor.getKey();
-		int value	= my_cursor.getValue();
+	while (my_cursor->next()) {
+		int key   = my_cursor->getKey();
+		int value = my_cursor->getValue();
 		/* Do something with the key and value here */
 	}
 
@@ -42,9 +42,9 @@ setup(
 	/* We can do a simple query for a range, too */
 	my_cursor = dict->range(1, 100);
 
-	while (my_cursor.next()) {
-		int key		= my_cursor.getKey();
-		int value	= my_cursor.getValue();
+	while (my_cursor->next()) {
+		int key   = my_cursor->getKey();
+		int value = my_cursor->getValue();
 		/* Do something with the key and value here */
 	}
 
@@ -53,9 +53,9 @@ setup(
 	/* Or, we can ask for everything in the dictionary: */
 	my_cursor = dict->allRecords();
 
-	while (my_cursor.next()) {
-		int key		= my_cursor.getKey();
-		int value	= my_cursor.getValue();
+	while (my_cursor->next()) {
+		int key   = my_cursor->getKey();
+		int value = my_cursor->getValue();
 		/* Do something with the key and value here */
 	}
 
