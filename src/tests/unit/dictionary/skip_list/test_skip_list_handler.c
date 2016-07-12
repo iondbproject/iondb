@@ -404,7 +404,9 @@ test_slhandler_cursor_range_exact_results(
 	int extra_keys[]	= { 503, 504, 504, 504, 509, 542 };
 	int num_extra		= sizeof(extra_keys) / sizeof(int);
 
-	for (int i = 0; i < num_extra; i++) {
+	int i;
+
+	for (i = 0; i < num_extra; i++) {
 		ion_status_t status = dictionary_insert(&dict, &extra_keys[i], "test");
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
