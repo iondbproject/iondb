@@ -383,9 +383,10 @@ oafdict_scan(
 				free(item);
 				return cs_valid_data;
 			}
-		}
 
-		loc++;
+			/* If valid bucket is not found, advance current position. */
+			loc++;
+		}
 
 		if (loc >= hash_map->map_size) {
 			/* Perform wrapping */
