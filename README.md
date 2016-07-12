@@ -1,8 +1,8 @@
 ![IonDB](https://cdn.rawgit.com/iondbproject/iondb/development/documentation/doxygen/iondb_logo_final.svg)
 =========
 
-**Development:** [![Build Status](http://ci.iondb.org/buildStatus/icon?job=iondb-pc-full)](http://162.243.92.39/job/iondb-pc-full/)
-**Embedded Device:** [![Build Status](http://ci.iondb.org/buildStatus/icon?job=iondb-device)](http://162.243.92.39/job/iondb-device/)
+**Development:** [![Build Status](http://ci.iondb.org/buildStatus/icon?job=iondb-pc-full)](http://ci.iondb.org/job/iondb-pc-full/)
+**Embedded Device:** [![Build Status](http://ci.iondb.org/buildStatus/icon?job=iondb-device)](http://ci.iondb.org/job/iondb-device/)
 
 You might also be interested in our sister project, [LittleD - A relational database using 1kB of RAM or less](https://github.com/graemedouglas/LittleD).
 
@@ -21,15 +21,15 @@ IonDB has a paper that was published at IEEE (CCECE) 2015, which can be found [h
 
 # Code Examples
 
-Check out [this example file](src/examples/iondb_example.ino) for code examples on how to use IonDB.
+Check out [this example file](examples/iondb_example.ino) for code examples on how to use IonDB.
 
 # Further Reading
 
-IonDB's Homepage: [link](https://iondb.org)
+IonDB's Homepage: [link](http://iondb.org)
 
 User focused information pages can be found on our [wiki](https://github.com/iondbproject/iondb/wiki).
 
-For extensive information on IonDB, refer to our [documentation pages](https://iondb.org/) for an API level reference.
+For extensive information on IonDB, refer to our [documentation pages](http://iondb.org/) for an API level reference.
 
 # License
 
