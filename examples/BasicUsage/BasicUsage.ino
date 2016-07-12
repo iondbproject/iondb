@@ -64,9 +64,7 @@ setup(
 	}
 
 	delete my_cursor;
-
-	Serial.println("toaster");
-
+	
 	/* Always clean up your dictionaries when you're done with them! */
 	delete dict;
 }
