@@ -25,11 +25,11 @@ Check out [this example file](examples/iondb_example.ino) for code examples on h
 
 # Further Reading
 
-IonDB's Homepage: [link](https://iondb.org)
+IonDB's Homepage: [link](http://iondb.org)
 
 User focused information pages can be found on our [wiki](https://github.com/iondbproject/iondb/wiki).
 
-For extensive information on IonDB, refer to our [documentation pages](https://iondb.org/) for an API level reference.
+For extensive information on IonDB, refer to our [documentation pages](http://iondb.org/) for an API level reference.
 
 # License
 
