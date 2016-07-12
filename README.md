@@ -21,7 +21,7 @@ IonDB has a paper that was published at IEEE (CCECE) 2015, which can be found [h
 
 # Code Examples
 
-Check out [this example file](src/examples/iondb_example.ino) for code examples on how to use IonDB.
+Check out [this example file](examples/iondb_example.ino) for code examples on how to use IonDB.
 
 # Further Reading
 
