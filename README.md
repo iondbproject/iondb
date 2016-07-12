@@ -1,4 +1,4 @@
-![IonDB](https://cdn.rawgit.com/iondbproject/iondb/development/documentation/doxygen/iondb_logo_final.svg)
+![IonDB](https://cdn.rawgit.com/iondbproject/iondb/master/documentation/doxygen/iondb_logo_final.svg)
 =========
 
 **Development:** [![Build Status](http://ci.iondb.org/buildStatus/icon?job=iondb-pc-full)](http://ci.iondb.org/job/iondb-pc-full/)
@@ -21,7 +21,7 @@ IonDB has a paper that was published at IEEE (CCECE) 2015, which can be found [h
 
 # Code Examples
 
-Check out [this example file](examples/iondb_example.ino) for code examples on how to use IonDB.
+Check out [this example file](examples/BasicUsage/BasicUsage.ino) for code examples on how to use IonDB.
 
 # Further Reading
 
