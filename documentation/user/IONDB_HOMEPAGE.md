@@ -15,7 +15,7 @@ For more information, view IonDB's Github page or IonDB has a paper that was pub
 
 ## License
 
-IonDB is licensed under the Apache License. For more information, please refer to [the license file.](https://github.com/iondbproject/iondb/blob/development/LICENSE.md/)
+IonDB is licensed under the Apache License. For more information, please refer to [the license file.](https://github.com/iondbproject/iondb/blob/master/LICENSE.md/)
 
 ## Authors
 
