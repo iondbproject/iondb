@@ -375,7 +375,7 @@ ion_delete_from_master_table(
 
 err_t
 ion_open_dictionary(
-	dictionary_handler_t	*handler,		/* This is already initialized. */
+	dictionary_handler_t	*handler,	/* This is already initialized. */
 	dictionary_t			*dictionary,	/* Passed in empty, to be set. */
 	ion_dictionary_id_t		id
 ) {

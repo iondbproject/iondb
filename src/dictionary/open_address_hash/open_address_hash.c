@@ -254,7 +254,7 @@ oah_query(
 		io_printf("Item found at location %d\n", loc);
 #endif
 
-		int				data_length 	= hash_map->super.record.key_size + hash_map->super.record.value_size;
+		int				data_length = hash_map->super.record.key_size + hash_map->super.record.value_size;
 		hash_bucket_t	*item		= (((hash_bucket_t *) ((hash_map->entry + (data_length + SIZEOF(STATUS)) * loc))));
 
 		/* *value				   = (ion_value_t)malloc(sizeof(char) * (hash_map->super.record.value_size)); */

@@ -12,11 +12,12 @@
 
 #include "../dictionary/dictionary.h"
 #include "../dictionary/dictionary_types.h"
-#include "../kv_system.h"
+#include "../key_value/kv_system.h"
 
 #include "Cursor.h"
 
-template <typename K, typename V>class Dictionary {
+template<typename K, typename V>
+class Dictionary {
 public:
 
 dictionary_handler_t	handler;

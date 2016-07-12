@@ -19,8 +19,8 @@ extern "C" {
 #include "./../dictionary.h"
 #include "file_handler.h"
 
-#include "./../../kv_system.h"
-#include "./../../kv_io.h"
+#include "../../key_value/kv_system.h"
+#include "../../key_value/kv_io.h"
 
 /* redefines file operations for arduino */
 #include "./../../file/SD_stdio_c_iface.h"

@@ -1,5 +1,5 @@
 #include "generic_dictionary_test.h"
-#include "../../../kv_system.h"
+#include "../../../key_value/kv_system.h"
 
 int
 get_count_index_by_key(
@@ -340,7 +340,7 @@ dictionary_test_open_close(
 	ion_dictionary_id_t gdict_id = test->dictionary.instance->id;
 
 	/* Insert test record so we can check data integrity after we close/open */
-	status = dictionary_insert(&(test->dictionary), IONIZE(66650, int), GTEST_DATA);
+	status = dictionary_insert(&(test->dictionary), IONIZE(2379, int), GTEST_DATA);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
@@ -366,7 +366,7 @@ dictionary_test_open_close(
 
 	/* Check the test record */
 	IONIZE_VAL(test_val, test->value_size);
-	status = dictionary_get(&dictionary_temp, IONIZE(66650, int), test_val);
+	status = dictionary_get(&dictionary_temp, IONIZE(2379, int), test_val);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);

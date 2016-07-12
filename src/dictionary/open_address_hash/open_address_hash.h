@@ -24,8 +24,8 @@ extern "C" {
 #include "./../../serial/serial_c_iface.h"
 #endif
 
-#include "./../../kv_system.h"
-#include "./../../kv_io.h"
+#include "../../key_value/kv_system.h"
+#include "../../key_value/kv_io.h"
 
 #define EMPTY	-1
 #define DELETED -2

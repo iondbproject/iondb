@@ -1,11 +1,8 @@
-## Doxygen start of file template.
-
-```c
 /******************************************************************************/
 /**
-@file		
-@author		Scott Fazackerley, Eric Huang, Graeme Douglas
-@brief		This file contains commonly used types and some helpful macros.
+@file
+@author		Kris Wallperington
+@brief		Entry point for IonDB.
 @copyright	Copyright 2016
 				The University of British Columbia,
 				IonDB Project Contributors (see AUTHORS.md)
@@ -21,8 +18,21 @@
 			either express or implied. See the License for the specific
 			language governing permissions and limitations under the
 			License.
-@todo		Resolve issue between status_t and err_t. Status_t is a struct that
-			should have and err_t and number of item affected.
 */
 /******************************************************************************/
-```
+
+#if !defined(IONDB_H)
+#define IONDB_H
+
+#include "key_value/kv_system.h"
+#include "key_value/kv_io.h"
+#include "cpp_wrapper/Dictionary.h"
+#include "cpp_wrapper/FlatFile.h"
+#include "cpp_wrapper/OpenAddressFileHash.h"
+#include "cpp_wrapper/OpenAddressHash.h"
+#include "cpp_wrapper/BppTree.h"
+#include "cpp_wrapper/SkipList.h"
+
+#include "serial/serial_c_iface.h"
+
+#endif

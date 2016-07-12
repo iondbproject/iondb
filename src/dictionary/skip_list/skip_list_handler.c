@@ -200,6 +200,25 @@ sldict_find(
 				return err_ok;
 			}
 			else {
+				loc = sl_find_node((skiplist_t *) dictionary->instance, (*cursor)->predicate->statement.range.lower_bound);
+
+				if (NULL == loc->key) {
+					/* If this happens, then we hit the head node. Just move to the first valid data item (if exists) */
+					loc = loc->next[0];
+				}
+
+				/* Increment the location until we hit valid data. It is impossible to fall through here, since we just confirmed previously */
+				/* that there does indeed exist valid data (See above check). */
+				while (NULL != loc && (dictionary->instance->compare(loc->key, (*cursor)->predicate->statement.range.lower_bound, key_size) < 0)) {
+					loc = loc->next[0];
+				}
+
+				/* We sanity check this anyways just in case. */
+				if (NULL == loc) {
+					(*cursor)->status = cs_end_of_results;
+					return err_ok;
+				}
+
 				(*cursor)->status = cs_cursor_initialized;
 
 				sldict_cursor_t *sl_cursor = (sldict_cursor_t *) (*cursor);
