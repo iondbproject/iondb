@@ -39,7 +39,7 @@ create_test_collection(
 	/* Populate dictionary */
 	int		half_elements = num_elements / 2;
 	char	*value = "DATA";
-	int		i, j;
+	int		i, j, num_duplicates = 0;
 
 	/* First insert one of each element, up to half... */
 	for (i = 0; i < half_elements; i++) {
@@ -48,9 +48,12 @@ create_test_collection(
 
 	/* Continue inserting, this time with an increasing amount of duplicates */
 	for (; i < num_elements; i++) {
-		for (j = half_elements; j < i; j++) {
+		for (j = 0; j < num_duplicates; j++) {
 			dictionary_insert(dictionary, (ion_key_t) &i, (ion_value_t) value);
 		}
+
+		/* Each time we increment the key, add one more duplicate */
+		num_duplicates++;
 	}
 }
 
@@ -72,7 +75,7 @@ create_test_collection_std_conditions(
 	record_info_t	record			= { sizeof(int), 10 };
 	key_type_t		key_type		= key_type_numeric_signed;
 	int				size			= 7;
-	int				num_elements	= 100;
+	int				num_elements	= 50;
 
 	create_test_collection(dictionary, handler, &record, key_type, size, num_elements);
 }
@@ -194,7 +197,7 @@ test_slhandler_cursor_equality_with_results(
 	dict_cursor_t	*cursor;
 	predicate_t		predicate;
 
-	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(56, int));
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(26, int));
 
 	err_t status = dictionary_find(&dict, &predicate, &cursor);
 
@@ -209,12 +212,13 @@ test_slhandler_cursor_equality_with_results(
 	cursor_status_t c_status = cursor->next(cursor, &record);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
-	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(56, int), dict.instance->record.key_size) == 0);
-	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(26, int), dict.instance->record.key_size) == 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 
-	while (cursor->next(cursor, &record) != cs_end_of_results) {
-		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(56, int), dict.instance->record.key_size) == 0);
-		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+	while (c_status != cs_end_of_results) {
+		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(26, int), dict.instance->record.key_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+		c_status = cursor->next(cursor, &record);
 	}
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results == cursor->status);
@@ -299,12 +303,13 @@ test_slhandler_cursor_range_with_results(
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(5, int), dict.instance->record.key_size) >= 0);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(78, int), dict.instance->record.key_size) <= 0);
-	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 
-	while (cursor->next(cursor, &record) != cs_end_of_results) {
+	while (c_status != cs_end_of_results) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(5, int), dict.instance->record.key_size) >= 0);
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(78, int), dict.instance->record.key_size) <= 0);
-		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+		c_status = cursor->next(cursor, &record);
 	}
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results == cursor->status);
@@ -359,15 +364,88 @@ test_slhandler_cursor_range_lower_missing(
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(-50, int), dict.instance->record.key_size) >= 0);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(50, int), dict.instance->record.key_size) <= 0);
-	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 
-	while (cursor->next(cursor, &record) != cs_end_of_results) {
+	while (c_status != cs_end_of_results) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(-50, int), dict.instance->record.key_size) >= 0);
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(50, int), dict.instance->record.key_size) <= 0);
-		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+		c_status = cursor->next(cursor, &record);
 	}
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results == cursor->status);
+
+	cursor->destroy(&cursor);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == cursor);
+
+	free(record.key);
+	free(record.value);
+	dictionary_delete_dictionary(&dict);
+}
+
+/**
+@brief		Tests a range cursor on the std conditions skiplist. We use an exact data set,
+			and then assert that we saw everything that was expected to be seen. This is the final
+			line of defense against a broken range query.
+@param	  tc
+				CuTest dependency
+*/
+void
+test_slhandler_cursor_range_exact_results(
+	planck_unit_test_t *tc
+) {
+	PRINT_HEADER();
+
+	dictionary_t			dict;
+	dictionary_handler_t	handler;
+
+	create_test_collection_std_conditions(&dict, &handler);
+
+	int extra_keys[]	= { 503, 504, 504, 504, 509, 542 };
+	int num_extra		= sizeof(extra_keys) / sizeof(int);
+
+	int i;
+
+	for (i = 0; i < num_extra; i++) {
+		ion_status_t status = dictionary_insert(&dict, &extra_keys[i], "test");
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
+	}
+
+	dict_cursor_t	*cursor;
+	predicate_t		predicate;
+
+	dictionary_build_predicate(&predicate, predicate_range, IONIZE(500, int), IONIZE(600, int));
+
+	err_t status = dictionary_find(&dict, &predicate, &cursor);
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized == cursor->status);
+
+	ion_record_t record;
+
+	record.key		= malloc(dict.instance->record.key_size);
+	record.value	= malloc(dict.instance->record.value_size);
+
+	cursor_status_t c_status = cursor->next(cursor, &record);
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
+
+	int key_idx = 0;
+
+	while (c_status != cs_end_of_results) {
+		int expected_key = extra_keys[key_idx];
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, &expected_key, dict.instance->record.key_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "test" }, dict.instance->record.value_size) == 0);
+		c_status = cursor->next(cursor, &record);
+		key_idx++;
+	}
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results == cursor->status);
+	/* This means we have seen all that we expected to see */
+	PLANCK_UNIT_ASSERT_TRUE(tc, key_idx == num_extra);
 
 	cursor->destroy(&cursor);
 	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == cursor);
@@ -398,6 +476,7 @@ skiplist_handler_getsuite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_slhandler_cursor_range);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_slhandler_cursor_range_with_results);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_slhandler_cursor_range_lower_missing);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_slhandler_cursor_range_exact_results);
 
 	return suite;
 }
