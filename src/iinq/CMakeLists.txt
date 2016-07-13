@@ -2,8 +2,10 @@ cmake_minimum_required(VERSION 3.5)
 project(iinq)
 
 set(SOURCE_FILES
-        iinq.h
-        iinq.c)
+    ../dictionary/ion_master_table.h
+    ../dictionary/ion_master_table.c
+    iinq.h
+    iinq.c)
 
 if(USE_ARDUINO)
     set(${PROJECT_NAME}_BOARD       ${BOARD})

@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 project(test_iinq)
 
 set(SOURCE_FILES
-        test_iinq.h
-        test_iinq.c)
+    test_iinq.h
+    test_iinq.c)
 
 if(USE_ARDUINO)
     set(${PROJECT_NAME}_BOARD       ${BOARD})
