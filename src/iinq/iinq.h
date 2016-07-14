@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+#include <alloca.h>
 #include "../dictionary/dictionary_types.h"
 #include "../dictionary/ion_master_table.h"
 
@@ -163,7 +164,7 @@ do { \
 			continue; \
 		} \
 		select \
-		(p)->execute(&result, p.state); \
+		(p)->execute(&result, (p)->state); \
 	} \
 	while (NULL != last) { \
 		ion_close_dictionary(&last->reference->dictionary); \
