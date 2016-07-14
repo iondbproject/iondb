@@ -302,6 +302,7 @@ test_cpp_wrapper_update_on_all_implementations(
 
 /**
 @brief	Tests an insertion and then attempts to perform an equality cursor query.
+		Results are expected in increasing order.
 */
 void
 test_cpp_wrapper_equality_increasing(
@@ -331,7 +332,7 @@ test_cpp_wrapper_equality_increasing(
 
 	while (status) {
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, eq_key, eq_cursor->getKey());
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, eq_cursor->getValue(), expected_value * 2);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_value * 2, eq_cursor->getValue());
 		status = eq_cursor->next();
 		expected_value--;
 		records_found++;
@@ -346,6 +347,54 @@ test_cpp_wrapper_equality_increasing(
 
 /**
 @brief	Tests an insertion and then attempts to perform an equality cursor query.
+		Results are expected in decreasing order.
+*/
+void
+test_cpp_wrapper_equality_decreasing(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict,
+	int eq_key
+) {
+	int records_expected	= eq_key;
+	int records_found		= 0;
+
+	/* This value starts at one as that is what our value insertion counter starts at. */
+	int expected_value		= 1;
+
+	for (int i = 1; i <= eq_key; i++) {
+		dict->insert(eq_key, i * 2);
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
+
+		dict->insert(i - 1, (i - 1) * 2);
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
+	}
+
+	Cursor<int, int> *eq_cursor = dict->equality(eq_key);
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, eq_cursor->hasNext());
+
+	cursor_status_t status = eq_cursor->next();
+
+	while (status) {
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, eq_key, eq_cursor->getKey());
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_value * 2, eq_cursor->getValue());
+		status = eq_cursor->next();
+		expected_value++;
+		records_found++;
+	}
+
+	PLANCK_UNIT_ASSERT_FALSE(tc, eq_cursor->hasNext());
+
+	/* Check that same number of records are found as were inserted with desired key. */
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, records_expected, records_found);
+	delete eq_cursor;
+}
+
+/**
+@brief	Tests an insertion and then attempts to perform an equality cursor query
+		on implementations that do not allow duplicate key insertions.
 */
 void
 test_cpp_wrapper_equality_no_duplicates(
@@ -394,13 +443,13 @@ test_cpp_wrapper_equality_on_all_implementations(
 	test_cpp_wrapper_equality_increasing(tc, dict, 10);
 	delete dict;
 
-/*	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7); */
-/*	test_cpp_wrapper_equality_increasing(tc, dict, 4); */
-/*	delete dict; */
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 10);
+	test_cpp_wrapper_equality_decreasing(tc, dict, 4);
+	delete dict;
 
-/*	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
-/*	test_cpp_wrapper_equality_increasing(tc, dict, 7); */
-/*	delete dict; */
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_equality_no_duplicates(tc, dict, 4);
+	delete dict;
 
 	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 20);
 	test_cpp_wrapper_equality_no_duplicates(tc, dict, 3);
@@ -415,7 +464,7 @@ test_cpp_wrapper_equality_on_all_implementations(
 @brief	Tests an insertion and then attempts to perform an equality cursor query.
 */
 void
-test_cpp_wrapper_range_increasing(
+test_cpp_wrapper_range(
 	planck_unit_test_t *tc,
 	Dictionary<int, int> *dict,
 	int min_key,
@@ -452,49 +501,6 @@ test_cpp_wrapper_range_increasing(
 }
 
 /**
-@brief	Tests an insertion and then attempts to perform an equality cursor query.
-*/
-void
-test_cpp_wrapper_range_decreasing(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict,
-	int min_key,
-	int max_key
-) {
-	/* records_expected is calculated the following way because it is min_key and max_key inclusive. */
-	int records_expected	= max_key - min_key + 1;
-	int records_found		= 0;
-
-	PLANCK_UNIT_ASSERT_TRUE(tc, min_key < max_key);
-
-	for (int i = 0; i < max_key + 5; i++) {
-		dict->insert(i, i);
-		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
-	}
-
-	Cursor<int, int> *range_cursor	= dict->range(min_key, max_key);
-	PLANCK_UNIT_ASSERT_TRUE(tc, range_cursor->hasNext());
-
-	cursor_status_t status			= range_cursor->next();
-
-	while (status) {
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, max_key, range_cursor->getKey());
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, range_cursor->getValue(), max_key);
-		;
-		status = range_cursor->next();
-		max_key--;
-		records_found++;
-	}
-
-	/* As the value of min_key started at 1, we must decrement by 1 to read an accurate count of records. */
-
-	PLANCK_UNIT_ASSERT_FALSE(tc, range_cursor->hasNext());
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, records_expected, records_found);
-	delete range_cursor;
-}
-
-/**
 @brief	Aggregate test to test range cursor query on all implementations.
 */
 void
@@ -504,24 +510,23 @@ test_cpp_wrapper_range_on_all_implementations(
 	Dictionary<int, int> *dict;
 
 	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
-	test_cpp_wrapper_range_increasing(tc, dict, 5, 10);
+	test_cpp_wrapper_range(tc, dict, 5, 10);
 	delete dict;
 
-	/* Only returns the first record - find error. */
-/*	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7); */
-/*	test_cpp_wrapper_range_decreasing(tc, dict, 1, 3); */
-/*	delete dict; */
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 10);
+	test_cpp_wrapper_range(tc, dict, 1, 3);
+	delete dict;
 
 	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
-	test_cpp_wrapper_range_increasing(tc, dict, 4, 18);
+	test_cpp_wrapper_range(tc, dict, 4, 18);
 	delete dict;
 
 	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
-	test_cpp_wrapper_range_increasing(tc, dict, 30, 36);
+	test_cpp_wrapper_range(tc, dict, 30, 36);
 	delete dict;
 
 	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 15);
-	test_cpp_wrapper_range_increasing(tc, dict, 5, 7);
+	test_cpp_wrapper_range(tc, dict, 5, 7);
 	delete dict;
 }
 
@@ -542,8 +547,12 @@ test_cpp_wrapper_all_records(
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
 	}
 
-	Cursor<int, int> *all_rec_cursor = dict->allRecords();
-	PLANCK_UNIT_ASSERT_TRUE(tc, true == all_rec_cursor->hasNext());
+	Cursor<int, int> *all_rec_cursor	= dict->allRecords();
+
+	int curr_key						= all_rec_cursor->getKey();
+	int curr_value						= all_rec_cursor->getValue();
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, all_rec_cursor->hasNext());
 	all_rec_cursor->next();
 
 	while (all_rec_cursor->hasNext()) {
@@ -574,19 +583,19 @@ test_cpp_wrapper_all_records_on_all_implementations(
 	test_cpp_wrapper_all_records(tc, dict, 10);
 	delete dict;
 
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_all_records(tc, dict, 4);
+	delete dict;
+
 	/* The following dictionary implementations do not yet have working all record query abilities. */
 
-/*	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7); */
-/*	test_cpp_wrapper_all_records(tc, dict, 20); */
-/*	delete dict; */
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_all_records(tc, dict, 13);
+	delete dict;
 
-/*	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
-/*	test_cpp_wrapper_all_records(tc, dict, 13); */
-/*	delete dict; */
-
-/*	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50); */
-/*	test_cpp_wrapper_all_records(tc, dict, 30); */
-/*	delete dict; */
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 10);
+	test_cpp_wrapper_all_records(tc, dict, 5);
+	delete dict;
 
 /*	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50); */
 /*	test_cpp_wrapper_all_records(tc, dict, 8); */
@@ -682,10 +691,7 @@ cpp_wrapper_getsuite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_insert_on_all_implementations);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_delete_on_all_implementations);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_update_on_all_implementations);
-
-	/* Memory leak exists and has yet to be addressed. */
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_equality_on_all_implementations);
-
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_range_on_all_implementations);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_all_records_on_all_implementations);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_open_close_on_all_implementations);

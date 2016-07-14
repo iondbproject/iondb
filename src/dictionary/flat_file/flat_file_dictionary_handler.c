@@ -197,6 +197,21 @@ ffdict_find(
 			}
 		}
 
+		case predicate_all_records: {
+			ffdict_cursor_t *ffdict_cursor = (ffdict_cursor_t *) (*cursor);
+
+			if (NULL == ((ff_file_t *) dictionary->instance)->start_of_data) {
+				(*cursor)->status = cs_cursor_uninitialized;
+			}
+			else {
+				ffdict_cursor->current	= ((ff_file_t *) dictionary->instance)->start_of_data;
+				(*cursor)->status		= cs_cursor_initialized;
+			}
+
+			return err_ok;
+			break;
+		}
+
 		case predicate_predicate: {
 			break;
 		}
@@ -311,6 +326,10 @@ ffdict_test_predicate(
 			}
 
 			break;
+		}
+
+		case predicate_all_records: {
+			return boolean_true;
 		}
 	}
 
