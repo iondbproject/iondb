@@ -547,10 +547,7 @@ test_cpp_wrapper_all_records(
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
 	}
 
-	Cursor<int, int> *all_rec_cursor	= dict->allRecords();
-
-	int curr_key						= all_rec_cursor->getKey();
-	int curr_value						= all_rec_cursor->getValue();
+	Cursor<int, int> *all_rec_cursor = dict->allRecords();
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, all_rec_cursor->hasNext());
 	all_rec_cursor->next();
@@ -587,8 +584,6 @@ test_cpp_wrapper_all_records_on_all_implementations(
 	test_cpp_wrapper_all_records(tc, dict, 4);
 	delete dict;
 
-	/* The following dictionary implementations do not yet have working all record query abilities. */
-
 	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_all_records(tc, dict, 13);
 	delete dict;
@@ -597,9 +592,9 @@ test_cpp_wrapper_all_records_on_all_implementations(
 	test_cpp_wrapper_all_records(tc, dict, 5);
 	delete dict;
 
-/*	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50); */
-/*	test_cpp_wrapper_all_records(tc, dict, 8); */
-/*	delete dict; */
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_all_records(tc, dict, 8);
+	delete dict;
 }
 
 /**

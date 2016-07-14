@@ -206,6 +206,22 @@ oafdict_find(
 			break;
 		}
 
+		case predicate_all_records: {
+			oafdict_cursor_t	*oafdict_cursor = (oafdict_cursor_t *) (*cursor);
+			file_hashmap_t		*hash_map		= ((file_hashmap_t *) (*cursor)->dictionary->instance);
+			int					data_length		= hash_map->super.record.key_size + hash_map->super.record.value_size;
+
+			fseek(hash_map->file, (SIZEOF(STATUS) + data_length) * oafdict_cursor->current	/* position is based on indexes (not abs file pos) */
+				+ SIZEOF(STATUS), SEEK_SET);
+
+			(*cursor)->status		= cs_cursor_initialized;
+			oafdict_cursor->first	= 0;
+			oafdict_cursor->current = 0;
+
+			return err_ok;
+			break;
+		}
+
 		case predicate_predicate: {
 			break;
 		}
@@ -336,6 +352,11 @@ oafdict_test_predicate(
 				key_satisfies_predicate = boolean_true;
 			}
 
+			break;
+		}
+
+		case predicate_all_records: {
+			key_satisfies_predicate = boolean_true;
 			break;
 		}
 	}

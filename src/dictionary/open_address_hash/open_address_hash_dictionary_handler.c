@@ -210,14 +210,11 @@ oadict_find(
 			hashmap_t		*hash_map		= ((hashmap_t *) dictionary->instance);
 			int				data_length		= hash_map->super.record.key_size + hash_map->super.record.value_size;
 
-			hash_bucket_t *item				= (((hash_bucket_t *) ((hash_map->entry + (data_length + SIZEOF(STATUS)) * oadict_cursor->current /*idx*/))));
+			hash_bucket_t *item				= (((hash_bucket_t *) (hash_map->entry + (data_length + SIZEOF(STATUS)))));
 
-			if (NULL == item) {
-				(*cursor)->status = cs_cursor_uninitialized;
-			}
-			else {
-				(*cursor)->status = cs_cursor_initialized;
-			}
+			(*cursor)->status		= cs_cursor_initialized;
+			oadict_cursor->first	= 0;
+			oadict_cursor->current	= 0;
 
 			return err_ok;
 			break;
