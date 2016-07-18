@@ -551,7 +551,7 @@ bpptree_close_dictionary(
 	dictionary->instance	= NULL;
 
 	if (bErrOk != bErr) {
-		return err_colllection_destruction_error;
+		return err_dictionary_destruction_error;
 	}
 
 	return err_ok;

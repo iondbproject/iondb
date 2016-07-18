@@ -47,7 +47,7 @@ typedef struct ff_file {
 @param		file
 				Pointer to the file instance to initialize.
 @param		key_type
-				The type of key that is being stored in the collection.
+				The type of key that is being stored in the dictionary instance.
 @param		key_size
 				The size of the key in bytes.
 @param		value_size

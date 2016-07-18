@@ -224,7 +224,7 @@ oafdict_next(
 	dict_cursor_t	*cursor,
 	ion_record_t	*record
 ) {
-	/* @todo if the collection changes, then the status of the cursor needs to change */
+	/* @todo if the dictionary instance changes, then the status of the cursor needs to change */
 	oafdict_cursor_t *oafdict_cursor = (oafdict_cursor_t *) cursor;
 
 	/* check the status of the cursor and if it is not valid or at the end, just exit */
