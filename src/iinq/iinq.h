@@ -37,6 +37,7 @@ typedef struct iinq_source iinq_source_t;
 typedef struct iinq_cleanup {
 	iinq_source_t		*reference;
 	struct iinq_cleanup *next;
+	struct iinq_cleanup *last;
 
 } iinq_cleanup_t;
 
@@ -131,9 +132,10 @@ while (NULL != copyer) { \
 }
 #endif
 
-#define FROM_SINGLE(source) \
+#define _FROM_SOURCE_SINGLE(source) \
 	iinq_source_t source; \
 	source.cleanup.next			= NULL; \
+	source.cleanup.last			= last; \
 	source.cleanup.reference	= &source; \
 	if (NULL == first) { \
 		first					= &source.cleanup; \
@@ -154,23 +156,70 @@ while (NULL != copyer) { \
 	dictionary_build_predicate(&(source.predicate), predicate_all_records); \
 	dictionary_find(&source.dictionary, &source.predicate, &source.cursor);
 
-#define FROM_CHECK_CURSOR_SINGLE(source) \
+#define _FROM_CHECK_CURSOR_SINGLE(source) \
 	(cs_cursor_active == (source.cursor_status = source.cursor->next(source.cursor, &source.ion_record)) || cs_cursor_initialized == source.cursor_status)
 
-#define FROM_CHECK_CURSOR(sources) \
-	FROM_CHECK_CURSOR_SINGLE(sources)
+#define _FROM_ADVANCE_CURSORS \
+		if (NULL == ref_cursor) { \
+			ref_cursor	= last; \
+		} \
+		if (NULL == ref_cursor) { \
+			break; \
+		} \
+		last_cursor		= ref_cursor; \
+		/* Keep going backwards through sources until we find one we can advance. If we re-initialize any cursors, reset ref_cursor to last. */ \
+		while (NULL != ref_cursor && !(cs_cursor_active == (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(ref_cursor->reference->cursor, &ref_cursor->reference->ion_record)) || cs_cursor_initialized == ref_cursor->reference->cursor_status)) { \
+			ref_cursor->reference->cursor->destroy(&ref_cursor->reference->cursor); \
+			dictionary_find(&ref_cursor->reference->dictionary, &ref_cursor->reference->predicate, &ref_cursor->reference->cursor); \
+			ref_cursor	= ref_cursor->last; \
+		} \
+		if (NULL == ref_cursor) { \
+			break; \
+		} \
+		else if (last_cursor != ref_cursor) { \
+			ref_cursor	= last; \
+		}
 
-#define FROM(sources) \
+/* Here we define a number of FROM macros to facilitate up to 8 sources. */
+#define _FROM_SOURCE_1(_1) _FROM_SOURCE_SINGLE(_1)
+#define _FROM_SOURCE_2(_1, _2) _FROM_SOURCE_1(_1) _FROM_SOURCE_1(_2)
+#define _FROM_SOURCE_3(_1, _2, _3) _FROM_SOURCE_2(_1, _2) _FROM_SOURCE_1(_3)
+#define _FROM_SOURCE_4(_1, _2, _3, _4) _FROM_SOURCE_3(_1, _2, _3) _FROM_SOURCE_1(_4)
+#define _FROM_SOURCE_5(_1, _2, _3, _4, _5) _FROM_SOURCE_4(_1, _2, _3, _4) _FROM_SOURCE_1(_5)
+#define _FROM_SOURCE_6(_1, _2, _3, _4, _5, _6) _FROM_SOURCE_5(_1, _2, _3, _4, _5) _FROM_SOURCE_1(_6)
+#define _FROM_SOURCE_7(_1, _2, _3, _4, _5, _6, _7) _FROM_SOURCE_6(_1, _2, _3, _4, _5, _6) _FROM_SOURCE_1(_7)
+#define _FROM_SOURCE_8(_1, _2, _3, _4, _5, _6, _7, _8) _FROM_SOURCE_7(_1, _2, _3, _4, _5, _6, _7) _FROM_SOURCE_1(_8)
+/*
+ * The last parameter, the variable arguments, is a black whole to swallow unused macro names.
+ */
+#define _FROM_SOURCE_GET_OVERRIDE(_1, _2, _3, _4, _5, _6, _7, _8, MACRO, ...) MACRO
+/*
+ * So this one is pretty ugly.
+ *
+ * We "slide" the correct macro based on the number of arguments. At the end, we add a comma so that we don't get a
+ * compiler warning when only passing in only ONE argument into the variable argument list.
+*/
+#define _FROM_SOURCES(...) _FROM_SOURCE_GET_OVERRIDE(__VA_ARGS__, _FROM_SOURCE_8, _FROM_SOURCE_7, _FROM_SOURCE_6, _FROM_SOURCE_5, _FROM_SOURCE_4, _FROM_SOURCE_3, _FROM_SOURCE_2, _FROM_SOURCE_1, THEBLACKWHOLE)(__VA_ARGS__)
+
+#define _FROM_CHECK_CURSOR(sources) \
+	_FROM_CHECK_CURSOR_SINGLE(sources)
+
+#define FROM(...) \
 	iinq_cleanup_t	*first; \
 	iinq_cleanup_t	*last; \
-	first	= NULL; \
-	last	= NULL; \
-	FROM_SINGLE(sources) \
+	iinq_cleanup_t	*ref_cursor; \
+	iinq_cleanup_t	*last_cursor; \
+	first		= NULL; \
+	last		= NULL; \
+	ref_cursor	= NULL; \
+	last_cursor	= NULL; \
+	_FROM_SOURCES(__VA_ARGS__) \
 	result.data	= alloca(result.num_bytes); \
 	while (1) { \
-		if (!FROM_CHECK_CURSOR(sources)) { \
-			break; \
-		}
+		_FROM_ADVANCE_CURSORS
+		/*if (!_FROM_CHECK_CURSOR(__VA_ARGS__)) {*/ \
+		/*	break; */ \
+		/*}*/
 
 #define WHERE(condition) (condition)
 
