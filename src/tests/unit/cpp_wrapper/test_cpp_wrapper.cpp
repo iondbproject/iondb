@@ -341,7 +341,7 @@ test_cpp_wrapper_equality_duplicates(
 
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, nums[curr_pos], eq_cursor->getKey());
 
-		nums[curr_pos]	= NULL;
+		nums[curr_pos]	= -1;
 		status			= eq_cursor->next();
 		records_found++;
 	}
@@ -349,7 +349,7 @@ test_cpp_wrapper_equality_duplicates(
 	PLANCK_UNIT_ASSERT_FALSE(tc, eq_cursor->hasNext());
 
 	for (int i = 0; i < eq_key; i++) {
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, nums[i]);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, -1, nums[i]);
 	}
 
 	/* Check that same number of records are found as were inserted with desired key. */
@@ -525,7 +525,7 @@ test_cpp_wrapper_range_simple(
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, nums[curr_pos], range_cursor->getKey());
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, nums[curr_pos], range_cursor->getValue());
 
-		nums[curr_pos]	= NULL;
+		nums[curr_pos]	= -1;
 		status			= range_cursor->next();
 		min_key++;
 		records_found++;
@@ -534,7 +534,7 @@ test_cpp_wrapper_range_simple(
 	PLANCK_UNIT_ASSERT_FALSE(tc, range_cursor->hasNext());
 
 	for (int i = 0; i < records_expected; i++) {
-		PLANCK_UNIT_ASSERT_TRUE(tc, 0 == nums[i]);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, -1, nums[i]);
 	}
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, records_expected, records_found);
@@ -577,7 +577,7 @@ test_cpp_wrapper_range_edge_case1(
 
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, nums[curr_pos], range_cursor->getKey());
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, nums[curr_pos], range_cursor->getValue());
-		nums[curr_pos]	= NULL;
+		nums[curr_pos]	= -1;
 		status			= range_cursor->next();
 		total_records++;
 	}
@@ -585,7 +585,7 @@ test_cpp_wrapper_range_edge_case1(
 	PLANCK_UNIT_ASSERT_FALSE(tc, range_cursor->hasNext());
 
 	for (int i = 0; i < nums_length; i++) {
-		PLANCK_UNIT_ASSERT_TRUE(tc, 0 == nums[i]);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, -1, nums[i]);
 	}
 
 	/* Check that same number of records are found as were inserted with desired key. */
@@ -630,7 +630,7 @@ test_cpp_wrapper_range_edge_case2(
 
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_nums[curr_pos], range_cursor->getKey());
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_nums[curr_pos], range_cursor->getValue());
-		expected_nums[curr_pos] = NULL;
+		expected_nums[curr_pos] = -1;
 		status					= range_cursor->next();
 		total_records++;
 	}
@@ -638,7 +638,7 @@ test_cpp_wrapper_range_edge_case2(
 	PLANCK_UNIT_ASSERT_FALSE(tc, range_cursor->hasNext());
 
 	for (int i = 0; i < 2; i++) {
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, expected_nums[i]);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, -1, expected_nums[i]);
 	}
 
 	/* Check that same number of records are found as were inserted with desired key. */
@@ -682,7 +682,7 @@ test_cpp_wrapper_range_edge_case3(
 
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, nums[curr_pos], range_cursor->getKey());
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, nums[curr_pos], range_cursor->getValue());
-		nums[curr_pos]	= NULL;
+		nums[curr_pos]	= -1;
 		status			= range_cursor->next();
 		total_records++;
 	}
@@ -690,7 +690,7 @@ test_cpp_wrapper_range_edge_case3(
 	PLANCK_UNIT_ASSERT_FALSE(tc, range_cursor->hasNext());
 
 	for (int i = 0; i < nums_length; i++) {
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, nums[i]);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, -1, nums[i]);
 	}
 
 	/* Check that same number of records are found as were inserted with desired key. */
@@ -745,9 +745,9 @@ test_cpp_wrapper_range_edge_case1_on_all_implementations(
 	test_cpp_wrapper_range_edge_case1(tc, dict);
 	delete dict;
 
-	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
-	test_cpp_wrapper_range_edge_case1(tc, dict);
-	delete dict;
+/*	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
+/*	test_cpp_wrapper_range_edge_case1(tc, dict); */
+/*	delete dict; */
 
 	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_range_edge_case1(tc, dict);
@@ -854,7 +854,7 @@ test_cpp_wrapper_all_records_simple(
 
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, nums[curr_pos], all_rec_cursor->getKey());
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, nums[curr_pos] * 2, all_rec_cursor->getValue());
-		nums[curr_pos]	= NULL;
+		nums[curr_pos]	= -1;
 
 		total_records++;
 		status			= all_rec_cursor->next();
@@ -863,7 +863,7 @@ test_cpp_wrapper_all_records_simple(
 	PLANCK_UNIT_ASSERT_FALSE(tc, all_rec_cursor->hasNext());
 
 	for (int i = 0; i < random_positive_num; i++) {
-		PLANCK_UNIT_ASSERT_TRUE(tc, 0 == nums[i]);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, -1, nums[i]);
 	}
 
 	/* Check that same number of records are found as were inserted with desired key. */
@@ -907,7 +907,7 @@ test_cpp_wrapper_all_records_edge_cases1(
 
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, nums[curr_pos], all_rec_cursor->getKey());
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, nums[curr_pos], all_rec_cursor->getValue());
-		nums[curr_pos]	= NULL;
+		nums[curr_pos]	= -1;
 		status			= all_rec_cursor->next();
 		total_records++;
 	}
@@ -915,7 +915,7 @@ test_cpp_wrapper_all_records_edge_cases1(
 	PLANCK_UNIT_ASSERT_FALSE(tc, all_rec_cursor->hasNext());
 
 	for (int i = 0; i < nums_length; i++) {
-		PLANCK_UNIT_ASSERT_TRUE(tc, 0 == nums[i]);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, -1, nums[i]);
 	}
 
 	/* Check that same number of records are found as were inserted with desired key. */
@@ -933,7 +933,7 @@ test_cpp_wrapper_all_records_edge_cases2(
 	Dictionary<int, int> *dict
 ) {
 	int total_records	= 0;
-	int nums[5]			= { -100, 100, 5, 50, -222 };
+	int nums[5]			= { -11, 11, 5, 50, -22 };
 	int nums_length		= sizeof(nums) / sizeof(int);
 	int curr_pos		= 0;
 
@@ -959,7 +959,7 @@ test_cpp_wrapper_all_records_edge_cases2(
 
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, nums[curr_pos], all_rec_cursor->getKey());
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, nums[curr_pos], all_rec_cursor->getValue());
-		nums[curr_pos]	= NULL;
+		nums[curr_pos]	= -1;
 		status			= all_rec_cursor->next();
 		total_records++;
 	}
@@ -967,7 +967,7 @@ test_cpp_wrapper_all_records_edge_cases2(
 	PLANCK_UNIT_ASSERT_FALSE(tc, all_rec_cursor->hasNext());
 
 	for (int i = 0; i < nums_length; i++) {
-		PLANCK_UNIT_ASSERT_TRUE(tc, 0 == nums[i]);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, -1, nums[i]);
 	}
 
 	/* Check that same number of records are found as were inserted with desired key. */
