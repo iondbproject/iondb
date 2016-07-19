@@ -236,7 +236,7 @@ sldict_find(
 			sldict_cursor_t *sl_cursor = (sldict_cursor_t *) (*cursor);
 
 			if (NULL == skip_list->head->next[0]) {
-				(*cursor)->status = cs_cursor_uninitialized;
+				(*cursor)->status = cs_end_of_results;
 			}
 			else {
 				sl_cursor->current	= skip_list->head->next[0];

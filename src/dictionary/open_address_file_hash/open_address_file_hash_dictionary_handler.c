@@ -181,24 +181,9 @@ oafdict_find(
 
 			/* copy across the key value as the predicate may be destroyed */
 			memcpy((*cursor)->predicate->statement.range.upper_bound, predicate->statement.range.upper_bound, (((file_hashmap_t *) dictionary->instance)->super.record.key_size));
-
-			oafdict_cursor_t	*oafdict_cursor = (oafdict_cursor_t *) (*cursor);
-			file_hashmap_t		*hash_map		= ((file_hashmap_t *) dictionary->instance);
-
-			(*cursor)->status		= cs_cursor_initialized;
-			oafdict_cursor->first	= (hash_map->map_size) - 1;
-			oafdict_cursor->current = -1;
-
-			err_t err = oafdict_scan(oafdict_cursor);
-
-			if (cs_valid_data != err) {
-				(*cursor)->status = cs_cursor_uninitialized;
-			}
-
-			return err_ok;
-			break;
 		}
 
+		/* Range query will intentionally continue to all record code to get rid of duplicate statements. */
 		case predicate_all_records: {
 			oafdict_cursor_t	*oafdict_cursor = (oafdict_cursor_t *) (*cursor);
 			file_hashmap_t		*hash_map		= ((file_hashmap_t *) dictionary->instance);
@@ -210,7 +195,7 @@ oafdict_find(
 			err_t err = oafdict_scan(oafdict_cursor);
 
 			if (cs_valid_data != err) {
-				(*cursor)->status = cs_cursor_uninitialized;
+				(*cursor)->status = cs_end_of_results;
 			}
 
 			return err_ok;
