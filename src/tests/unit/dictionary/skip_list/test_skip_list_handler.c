@@ -25,10 +25,10 @@
  */
 void
 create_test_dictionary(
-	dictionary_t			*dictionary,
-	dictionary_handler_t	*handler,
-	record_info_t			*record,
-	key_type_t				key_type,
+	ion_dictionary_t			*dictionary,
+	ion_dictionary_handler_t	*handler,
+	ion_record_info_t			*record,
+	ion_key_type_t				key_type,
 	int						size,
 	int						num_elements
 ) {
@@ -68,12 +68,12 @@ create_test_dictionary(
  */
 void
 create_test_dictionary_std_conditions(
-	dictionary_t			*dictionary,
-	dictionary_handler_t	*handler
+	ion_dictionary_t			*dictionary,
+	ion_dictionary_handler_t	*handler
 ) {
 	/* This means keysize 4 (on a desktop platform) and valuesize 10 */
-	record_info_t	record			= { sizeof(int), 10 };
-	key_type_t		key_type		= key_type_numeric_signed;
+	ion_record_info_t	record			= { sizeof(int), 10 };
+	ion_key_type_t		key_type		= key_type_numeric_signed;
 	int				size			= 7;
 	int				num_elements	= 50;
 
@@ -93,7 +93,7 @@ test_dictionary_handler_binding(
 ) {
 	PRINT_HEADER();
 
-	dictionary_handler_t handler;
+	ion_dictionary_handler_t handler;
 
 	sldict_init(&handler);
 
@@ -117,16 +117,16 @@ test_dictionary_creation(
 ) {
 	PRINT_HEADER();
 
-	dictionary_t			dict;
-	dictionary_handler_t	handler;
-	record_info_t			record			= { sizeof(int), 10 };
-	key_type_t				key_type		= key_type_numeric_signed;
+	ion_dictionary_t			dict;
+	ion_dictionary_handler_t	handler;
+	ion_record_info_t			record			= { sizeof(int), 10 };
+	ion_key_type_t				key_type		= key_type_numeric_signed;
 	int						size			= 50;
 	int						num_elements	= 25;
 
 	create_test_dictionary(&dict, &handler, &record, key_type, size, num_elements);
 
-	skiplist_t *skiplist = (skiplist_t *) dict.instance;
+	ion_skiplist_t *skiplist = (ion_skiplist_t *) dict.instance;
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->key_type == key_type_numeric_signed);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare == dictionary_compare_signed_value);
@@ -155,17 +155,17 @@ test_slhandler_cursor_equality(
 ) {
 	PRINT_HEADER();
 
-	dictionary_t			dict;
-	dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+	ion_dictionary_handler_t	handler;
 
 	create_test_dictionary_std_conditions(&dict, &handler);
 
-	dict_cursor_t	*cursor;
-	predicate_t		predicate;
+	ion_dict_cursor_t	*cursor;
+	ion_predicate_t		predicate;
 
 	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(33, int));
 
-	err_t status = dictionary_find(&dict, &predicate, &cursor);
+	ion_err_t status = dictionary_find(&dict, &predicate, &cursor);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status);
 
@@ -189,17 +189,17 @@ test_slhandler_cursor_equality_with_results(
 ) {
 	PRINT_HEADER();
 
-	dictionary_t			dict;
-	dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+	ion_dictionary_handler_t	handler;
 
 	create_test_dictionary_std_conditions(&dict, &handler);
 
-	dict_cursor_t	*cursor;
-	predicate_t		predicate;
+	ion_dict_cursor_t	*cursor;
+	ion_predicate_t		predicate;
 
 	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(26, int));
 
-	err_t status = dictionary_find(&dict, &predicate, &cursor);
+	ion_err_t status = dictionary_find(&dict, &predicate, &cursor);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status);
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized == cursor->status);
@@ -209,7 +209,7 @@ test_slhandler_cursor_equality_with_results(
 	record.key		= malloc(dict.instance->record.key_size);
 	record.value	= malloc(dict.instance->record.value_size);
 
-	cursor_status_t c_status = cursor->next(cursor, &record);
+	ion_cursor_status_t c_status = cursor->next(cursor, &record);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(26, int), dict.instance->record.key_size) == 0);
@@ -244,17 +244,17 @@ test_slhandler_cursor_range(
 ) {
 	PRINT_HEADER();
 
-	dictionary_t			dict;
-	dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+	ion_dictionary_handler_t	handler;
 
 	create_test_dictionary_std_conditions(&dict, &handler);
 
-	dict_cursor_t	*cursor;
-	predicate_t		predicate;
+	ion_dict_cursor_t	*cursor;
+	ion_predicate_t		predicate;
 
 	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(15, int), IONIZE(60, int));
 
-	err_t status = dictionary_find(&dict, &predicate, &cursor);
+	ion_err_t status = dictionary_find(&dict, &predicate, &cursor);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status);
 
@@ -278,17 +278,17 @@ test_slhandler_cursor_range_with_results(
 ) {
 	PRINT_HEADER();
 
-	dictionary_t			dict;
-	dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+	ion_dictionary_handler_t	handler;
 
 	create_test_dictionary_std_conditions(&dict, &handler);
 
-	dict_cursor_t	*cursor;
-	predicate_t		predicate;
+	ion_dict_cursor_t	*cursor;
+	ion_predicate_t		predicate;
 
 	dictionary_build_predicate(&predicate, predicate_range, IONIZE(5, int), IONIZE(78, int));
 
-	err_t status = dictionary_find(&dict, &predicate, &cursor);
+	ion_err_t status = dictionary_find(&dict, &predicate, &cursor);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status);
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized == cursor->status);
@@ -298,7 +298,7 @@ test_slhandler_cursor_range_with_results(
 	record.key		= malloc(dict.instance->record.key_size);
 	record.value	= malloc(dict.instance->record.value_size);
 
-	cursor_status_t c_status = cursor->next(cursor, &record);
+	ion_cursor_status_t c_status = cursor->next(cursor, &record);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(5, int), dict.instance->record.key_size) >= 0);
@@ -339,17 +339,17 @@ test_slhandler_cursor_range_lower_missing(
 ) {
 	PRINT_HEADER();
 
-	dictionary_t			dict;
-	dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+	ion_dictionary_handler_t	handler;
 
 	create_test_dictionary_std_conditions(&dict, &handler);
 
-	dict_cursor_t	*cursor;
-	predicate_t		predicate;
+	ion_dict_cursor_t	*cursor;
+	ion_predicate_t		predicate;
 
 	dictionary_build_predicate(&predicate, predicate_range, IONIZE(-50, int), IONIZE(50, int));
 
-	err_t status = dictionary_find(&dict, &predicate, &cursor);
+	ion_err_t status = dictionary_find(&dict, &predicate, &cursor);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status);
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized == cursor->status);
@@ -359,7 +359,7 @@ test_slhandler_cursor_range_lower_missing(
 	record.key		= malloc(dict.instance->record.key_size);
 	record.value	= malloc(dict.instance->record.value_size);
 
-	cursor_status_t c_status = cursor->next(cursor, &record);
+	ion_cursor_status_t c_status = cursor->next(cursor, &record);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(-50, int), dict.instance->record.key_size) >= 0);
@@ -396,8 +396,8 @@ test_slhandler_cursor_range_exact_results(
 ) {
 	PRINT_HEADER();
 
-	dictionary_t			dict;
-	dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+	ion_dictionary_handler_t	handler;
 
 	create_test_dictionary_std_conditions(&dict, &handler);
 
@@ -413,12 +413,12 @@ test_slhandler_cursor_range_exact_results(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-	dict_cursor_t	*cursor;
-	predicate_t		predicate;
+	ion_dict_cursor_t	*cursor;
+	ion_predicate_t		predicate;
 
 	dictionary_build_predicate(&predicate, predicate_range, IONIZE(500, int), IONIZE(600, int));
 
-	err_t status = dictionary_find(&dict, &predicate, &cursor);
+	ion_err_t status = dictionary_find(&dict, &predicate, &cursor);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status);
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized == cursor->status);
@@ -428,7 +428,7 @@ test_slhandler_cursor_range_exact_results(
 	record.key		= malloc(dict.instance->record.key_size);
 	record.value	= malloc(dict.instance->record.value_size);
 
-	cursor_status_t c_status = cursor->next(cursor, &record);
+	ion_cursor_status_t c_status = cursor->next(cursor, &record);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
 

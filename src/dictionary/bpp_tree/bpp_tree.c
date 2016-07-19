@@ -32,16 +32,16 @@
 /* macros for addressing fields */
 
 /* primitives */
-#define bAdr(p)		*(bAdrType *) (p)
-#define eAdr(p)		*(eAdrType *) (p)
+#define bAdr(p)		*(ion_bpp_address_t *) (p)
+#define eAdr(p)		*(ion_bpp_external_address_t *) (p)
 
 /* based on k = &[key,rec,childGE] */
-#define childLT(k)	bAdr((char *) k - sizeof(bAdrType))
+#define childLT(k)	bAdr((char *) k - sizeof(ion_bpp_address_t))
 #define key(k)		(k)
 #define rec(k)		eAdr((char *) (k) + h->keySize)
-#define childGE(k)	bAdr((char *) (k) + h->keySize + sizeof(eAdrType))
+#define childGE(k)	bAdr((char *) (k) + h->keySize + sizeof(ion_bpp_external_address_t))
 
-/* based on b = &bufType */
+/* based on b = &ion_bpp_buffer_t */
 #define leaf(b)		b->p->leaf
 #define ct(b)		b->p->ct
 #define next(b)		b->p->next
@@ -53,7 +53,7 @@
 /* shortcuts */
 #define ks(ct)		((ct) * h->ks)
 
-typedef char keyType;	/* keys entries are treated as char arrays */
+typedef char ion_bpp_key_t;	/* keys entries are treated as char arrays */
 
 typedef struct {
 #if 0
@@ -62,48 +62,48 @@ typedef struct {
 #endif
 	unsigned int leaf:1;
 	unsigned int ct:15;
-	bAdrType	prev;			/* prev node in sequence (leaf) */
-	bAdrType	next;			/* next node in sequence (leaf) */
-	bAdrType	childLT;		/* child LT first key */
+	ion_bpp_address_t	prev;			/* prev node in sequence (leaf) */
+	ion_bpp_address_t	next;			/* next node in sequence (leaf) */
+	ion_bpp_address_t	childLT;		/* child LT first key */
 	/* ct occurrences of [key,rec,childGE] */
-	keyType		fkey;			/* first occurrence */
-} nodeType;
+	ion_bpp_key_t		fkey;			/* first occurrence */
+} ion_bpp_node_t;
 
-typedef struct bufTypeTag {
+typedef struct ion_bpp_buffer_tag {
 	/* location of node */
-	struct bufTypeTag	*next;	/* next */
-	struct bufTypeTag	*prev;	/* previous */
-	bAdrType			adr;	/* on disk */
-	nodeType			*p;		/* in memory */
-	bpp_bool_t			valid;			/* true if buffer contents valid */
-	bpp_bool_t			modified;		/* true if buffer modified */
-} bufType;
+	struct ion_bpp_buffer_tag	*next;	/* next */
+	struct ion_bpp_buffer_tag	*prev;	/* previous */
+	ion_bpp_address_t			adr;	/* on disk */
+	ion_bpp_node_t			*p;		/* in memory */
+	ion_bpp_bool_t			valid;			/* true if buffer contents valid */
+	ion_bpp_bool_t			modified;		/* true if buffer modified */
+} ion_bpp_buffer_t;
 
 /* one node for each open handle */
-typedef struct hNodeTag {
-	file_handle_t	fp;			/* idx file */
+typedef struct ion_bpp_h_node_tag {
+	ion_file_handle_t	fp;			/* idx file */
 	int				keySize;	/* key length */
-	bpp_bool_t		dupKeys;	/* true if duplicate keys */
+	ion_bpp_bool_t		dupKeys;	/* true if duplicate keys */
 	int				sectorSize;	/* block size for idx records */
-	bCompType		comp;		/* pointer to compare routine */
-	bufType			root;		/* root of b-tree, room for 3 sets */
-	bufType			bufList;	/* head of buf list */
+	ion_bpp_comparison_t		comp;		/* pointer to compare routine */
+	ion_bpp_buffer_t			root;		/* root of b-tree, room for 3 sets */
+	ion_bpp_buffer_t			bufList;	/* head of buf list */
 	void			*malloc1;	/* malloc'd resources */
 	void			*malloc2;	/* malloc'd resources */
-	bufType			gbuf;		/* gather buffer, room for 3 sets */
-	bufType			*curBuf;	/* current location */
-	keyType			*curKey;	/* current key in current node */
+	ion_bpp_buffer_t			gbuf;		/* gather buffer, room for 3 sets */
+	ion_bpp_buffer_t			*curBuf;	/* current location */
+	ion_bpp_key_t			*curKey;	/* current key in current node */
 	unsigned int	maxCt;		/* minimum # keys in node */
 	int				ks;			/* sizeof key entry */
-	bAdrType		nextFreeAdr;/* next free b-tree record address */
-} hNode;
+	ion_bpp_address_t		nextFreeAdr;/* next free b-tree record address */
+} ion_bpp_h_node_t;
 
 #define error(rc) lineError(__LINE__, rc)
 
-static bErrType
+static ion_bpp_err_t
 lineError(
 	int			lineno,
-	bErrType	rc
+	ion_bpp_err_t	rc
 ) {
 	if ((rc == bErrIO) || (rc == bErrMemory)) {
 		if (!bErrLineNo) {
@@ -114,24 +114,24 @@ lineError(
 	return rc;
 }
 
-static bAdrType
+static ion_bpp_address_t
 allocAdr(
-	bHandleType handle
+	ion_bpp_handle_t handle
 ) {
-	hNode		*h = handle;
-	bAdrType	adr;
+	ion_bpp_h_node_t		*h = handle;
+	ion_bpp_address_t	adr;
 
 	adr				= h->nextFreeAdr;
 	h->nextFreeAdr	+= h->sectorSize;
 	return adr;
 }
 
-static bErrType
+static ion_bpp_err_t
 flush(
-	bHandleType handle,
-	bufType		*buf
+	ion_bpp_handle_t handle,
+	ion_bpp_buffer_t		*buf
 ) {
-	hNode	*h = handle;
+	ion_bpp_h_node_t	*h = handle;
 	int		len;		/* number of bytes to write */
 
 	/* flush buffer to disk */
@@ -190,13 +190,13 @@ flush(
 	return bErrOk;
 }
 
-static bErrType
+static ion_bpp_err_t
 flushAll(
-	bHandleType handle
+	ion_bpp_handle_t handle
 ) {
-	hNode		*h = handle;
-	bErrType	rc;				/* return code */
-	bufType		*buf;			/* buffer */
+	ion_bpp_h_node_t		*h = handle;
+	ion_bpp_err_t	rc;				/* return code */
+	ion_bpp_buffer_t		*buf;			/* buffer */
 
 	if (h->root.modified) {
 		if ((rc = flush(handle, &h->root)) != 0) {
@@ -219,16 +219,16 @@ flushAll(
 	return bErrOk;
 }
 
-static bErrType
+static ion_bpp_err_t
 assignBuf(
-	bHandleType handle,
-	bAdrType	adr,
-	bufType		**b
+	ion_bpp_handle_t handle,
+	ion_bpp_address_t	adr,
+	ion_bpp_buffer_t		**b
 ) {
-	hNode *h = handle;
+	ion_bpp_h_node_t *h = handle;
 	/* assign buf to adr */
-	bufType		*buf;			/* buffer */
-	bErrType	rc;				/* return code */
+	ion_bpp_buffer_t		*buf;			/* buffer */
+	ion_bpp_err_t	rc;				/* return code */
 
 	if (adr == 0) {
 		*b = &h->root;
@@ -274,9 +274,9 @@ assignBuf(
 	return bErrOk;
 }
 
-static bErrType
+static ion_bpp_err_t
 writeDisk(
-	bufType *buf
+	ion_bpp_buffer_t *buf
 ) {
 	/* write buf to disk */
 	buf->valid		= boolean_true;
@@ -284,17 +284,17 @@ writeDisk(
 	return bErrOk;
 }
 
-static bErrType
+static ion_bpp_err_t
 readDisk(
-	bHandleType handle,
-	bAdrType	adr,
-	bufType		**b
+	ion_bpp_handle_t handle,
+	ion_bpp_address_t	adr,
+	ion_bpp_buffer_t		**b
 ) {
-	hNode *h = handle;
+	ion_bpp_h_node_t *h = handle;
 	/* read data into buf */
 	int			len;
-	bufType		*buf;			/* buffer */
-	bErrType	rc;				/* return code */
+	ion_bpp_buffer_t		*buf;			/* buffer */
+	ion_bpp_err_t	rc;				/* return code */
 
 	if ((rc = assignBuf(handle, adr, &buf)) != 0) {
 		return rc;
@@ -363,16 +363,16 @@ readDisk(
 	return bErrOk;
 }
 
-typedef enum { MODE_FIRST, MODE_MATCH, MODE_FGEQ, MODE_LLEQ } modeEnum;
+typedef enum { MODE_FIRST, MODE_MATCH, MODE_FGEQ, MODE_LLEQ } ion_bpp_mode_e;
 
 static int
 search(
-	bHandleType handle,
-	bufType		*buf,
+	ion_bpp_handle_t handle,
+	ion_bpp_buffer_t		*buf,
 	void		*key,
-	eAdrType	rec,
-	keyType		**mkey,
-	modeEnum	mode
+	ion_bpp_external_address_t	rec,
+	ion_bpp_key_t		**mkey,
+	ion_bpp_mode_e	mode
 ) {
 	/*
 	 * input:
@@ -380,18 +380,18 @@ search(
 	 *   key					key to find
 	 *   rec					record address (dupkey only)
 	 * output:
-	 *   k					  pointer to keyType info
+	 *   k					  pointer to ion_bpp_key_t info
 	 * returns:
 	 *   CC_EQ				  key = mkey
 	 *   CC_LT				  key < mkey
 	 *   CC_GT				  key > mkey
 	 */
-	hNode		*h = handle;
+	ion_bpp_h_node_t		*h = handle;
 	int			cc;				/* condition code */
 	int			m;				/* midpoint of search */
 	int			lb;				/* lower-bound of binary search */
 	int			ub;				/* upper-bound of binary search */
-	bpp_bool_t	foundDup;				/* true if found a duplicate key */
+	ion_bpp_bool_t	foundDup;				/* true if found a duplicate key */
 
 	/* scan current node for key using binary search */
 	foundDup	= boolean_false;
@@ -489,13 +489,13 @@ search(
 	return cc;
 }
 
-static bErrType
+static ion_bpp_err_t
 scatterRoot(
-	bHandleType handle
+	ion_bpp_handle_t handle
 ) {
-	hNode	*h = handle;
-	bufType *gbuf;
-	bufType *root;
+	ion_bpp_h_node_t	*h = handle;
+	ion_bpp_buffer_t *gbuf;
+	ion_bpp_buffer_t *root;
 
 	/* scatter gbuf to root */
 
@@ -508,18 +508,18 @@ scatterRoot(
 	return bErrOk;
 }
 
-static bErrType
+static ion_bpp_err_t
 scatter(
-	bHandleType handle,
-	bufType		*pbuf,
-	keyType		*pkey,
+	ion_bpp_handle_t handle,
+	ion_bpp_buffer_t		*pbuf,
+	ion_bpp_key_t		*pkey,
 	int			is,
-	bufType		**tmp
+	ion_bpp_buffer_t		**tmp
 ) {
-	hNode		*h = handle;
-	bufType		*gbuf;			/* gather buf */
-	keyType		*gkey;			/* gather buf key */
-	bErrType	rc;				/* return code */
+	ion_bpp_h_node_t		*h = handle;
+	ion_bpp_buffer_t		*gbuf;			/* gather buf */
+	ion_bpp_key_t		*gkey;			/* gather buf key */
+	ion_bpp_err_t	rc;				/* return code */
 	int			iu;				/* number of tmp's used */
 	int			k0Min;			/* min #keys that can be mapped to tmp[0] */
 	int			knMin;			/* min #keys that can be mapped to tmp[1..3] */
@@ -638,7 +638,7 @@ scatter(
 	if (iu != is) {
 		/* link last node to next */
 		if (leaf(gbuf) && next(tmp[iu - 1])) {
-			bufType *buf;
+			ion_bpp_buffer_t *buf;
 
 			if ((rc = readDisk(handle, next(tmp[iu - 1]), &buf)) != 0) {
 				return rc;
@@ -735,13 +735,13 @@ scatter(
 	return bErrOk;
 }
 
-static bErrType
+static ion_bpp_err_t
 gatherRoot(
-	bHandleType handle
+	ion_bpp_handle_t handle
 ) {
-	hNode	*h = handle;
-	bufType *gbuf;
-	bufType *root;
+	ion_bpp_h_node_t	*h = handle;
+	ion_bpp_buffer_t *gbuf;
+	ion_bpp_buffer_t *root;
 
 	/* gather root to gbuf */
 	root		= &h->root;
@@ -752,17 +752,17 @@ gatherRoot(
 	return bErrOk;
 }
 
-static bErrType
+static ion_bpp_err_t
 gather(
-	bHandleType handle,
-	bufType		*pbuf,
-	keyType		**pkey,
-	bufType		**tmp
+	ion_bpp_handle_t handle,
+	ion_bpp_buffer_t		*pbuf,
+	ion_bpp_key_t		**pkey,
+	ion_bpp_buffer_t		**tmp
 ) {
-	hNode		*h = handle;
-	bErrType	rc;				/* return code */
-	bufType		*gbuf;
-	keyType		*gkey;
+	ion_bpp_h_node_t		*h = handle;
+	ion_bpp_err_t	rc;				/* return code */
+	ion_bpp_buffer_t		*gbuf;
+	ion_bpp_key_t		*gkey;
 
 	/*
 	 * input:
@@ -835,51 +835,51 @@ gather(
 	return bErrOk;
 }
 
-bErrType
+ion_bpp_err_t
 bOpen(
-	bOpenType	info,
-	bHandleType *handle
+	ion_bpp_open_t	info,
+	ion_bpp_handle_t *handle
 ) {
-	hNode		*h;
-	bErrType	rc;				/* return code */
+	ion_bpp_h_node_t		*h;
+	ion_bpp_err_t	rc;				/* return code */
 	int			bufCt;			/* number of tmp buffers */
-	bufType		*buf;			/* buffer */
+	ion_bpp_buffer_t		*buf;			/* buffer */
 	int			maxCt;			/* maximum number of keys in a node */
-	bufType		*root;
+	ion_bpp_buffer_t		*root;
 	int			i;
-	nodeType	*p;
+	ion_bpp_node_t	*p;
 
-	if ((info.sectorSize < sizeof(hNode)) || (info.sectorSize % 4)) {
+	if ((info.sectorSize < sizeof(ion_bpp_h_node_t)) || (info.sectorSize % 4)) {
 		return bErrSectorSize;
 	}
 
 	/* determine sizes and offsets */
 	/* leaf/n, prev, next, [childLT,key,rec]... childGE */
 	/* ensure that there are at least 3 children/parent for gather/scatter */
-	maxCt	= info.sectorSize - (sizeof(nodeType) - sizeof(keyType));
-	maxCt	/= sizeof(bAdrType) + info.keySize + sizeof(eAdrType);
+	maxCt	= info.sectorSize - (sizeof(ion_bpp_node_t) - sizeof(ion_bpp_key_t));
+	maxCt	/= sizeof(ion_bpp_address_t) + info.keySize + sizeof(ion_bpp_external_address_t);
 
 	if (maxCt < 6) {
 		return bErrSectorSize;
 	}
 
-	/* copy parms to hNode */
-	if ((h = malloc(sizeof(hNode))) == NULL) {
+	/* copy parms to ion_bpp_h_node_t */
+	if ((h = malloc(sizeof(ion_bpp_h_node_t))) == NULL) {
 		return error(bErrMemory);
 	}
 
-	for (i = 0; ((unsigned int) i) < sizeof(hNode); i++) {
+	for (i = 0; ((unsigned int) i) < sizeof(ion_bpp_h_node_t); i++) {
 		((char *) h)[i] = 0;
 	}
 
-	memset(h, 0, sizeof(hNode));
+	memset(h, 0, sizeof(ion_bpp_h_node_t));
 	h->keySize		= info.keySize;
 	h->dupKeys		= info.dupKeys;
 	h->sectorSize	= info.sectorSize;
 	h->comp			= info.comp;
 
 	/* childLT, key, rec */
-	h->ks			= sizeof(bAdrType) + h->keySize + sizeof(eAdrType);
+	h->ks			= sizeof(ion_bpp_address_t) + h->keySize + sizeof(ion_bpp_external_address_t);
 	h->maxCt		= maxCt;
 
 	/* Allocate buflist.
@@ -891,11 +891,11 @@ bOpen(
 	 */
 	bufCt			= 7;
 
-	if ((h->malloc1 = malloc(bufCt * sizeof(bufType))) == NULL) {
+	if ((h->malloc1 = malloc(bufCt * sizeof(ion_bpp_buffer_t))) == NULL) {
 		return error(bErrMemory);
 	}
 
-	for (i = 0; ((unsigned int) i) < bufCt * sizeof(bufType); i++) {
+	for (i = 0; ((unsigned int) i) < bufCt * sizeof(ion_bpp_buffer_t); i++) {
 		((char *) h->malloc1)[i] = 0;
 	}
 
@@ -929,7 +929,7 @@ bOpen(
 		buf->modified	= boolean_false;
 		buf->valid		= boolean_false;
 		buf->p			= p;
-		p				= (nodeType *) ((char *) p + h->sectorSize);
+		p				= (ion_bpp_node_t *) ((char *) p + h->sectorSize);
 		buf++;
 	}
 
@@ -939,7 +939,7 @@ bOpen(
 	/* initialize root */
 	root					= &h->root;
 	root->p					= p;
-	p						= (nodeType *) ((char *) p + 3 * h->sectorSize);
+	p						= (ion_bpp_node_t *) ((char *) p + 3 * h->sectorSize);
 	h->gbuf.p				= p;/* done last to include extra 2 keys */
 
 	h->curBuf				= NULL;
@@ -986,11 +986,11 @@ bOpen(
 	return bErrOk;
 }
 
-bErrType
+ion_bpp_err_t
 bClose(
-	bHandleType handle
+	ion_bpp_handle_t handle
 ) {
-	hNode *h = handle;
+	ion_bpp_h_node_t *h = handle;
 
 	if (h == NULL) {
 		return bErrOk;
@@ -1021,17 +1021,17 @@ bClose(
 	return bErrOk;
 }
 
-bErrType
+ion_bpp_err_t
 bFindKey(
-	bHandleType handle,
+	ion_bpp_handle_t handle,
 	void		*key,
-	eAdrType	*rec
+	ion_bpp_external_address_t	*rec
 ) {
-	keyType		*mkey;			/* matched key */
-	bufType		*buf;			/* buffer */
-	bErrType	rc;				/* return code */
+	ion_bpp_key_t		*mkey;			/* matched key */
+	ion_bpp_buffer_t		*buf;			/* buffer */
+	ion_bpp_err_t	rc;				/* return code */
 
-	hNode *h = handle;
+	ion_bpp_h_node_t *h = handle;
 
 	buf = &h->root;
 
@@ -1063,19 +1063,19 @@ bFindKey(
 	}
 }
 
-bErrType
+ion_bpp_err_t
 bFindFirstGreaterOrEqual(
-	bHandleType handle,
+	ion_bpp_handle_t handle,
 	void		*key,
 	void		*mkey,
-	eAdrType	*rec
+	ion_bpp_external_address_t	*rec
 ) {
-	keyType		*lgeqkey;			/* matched key */
-	bufType		*buf;			/* buffer */
-	bErrType	rc;				/* return code */
+	ion_bpp_key_t		*lgeqkey;			/* matched key */
+	ion_bpp_buffer_t		*buf;			/* buffer */
+	ion_bpp_err_t	rc;				/* return code */
 	int			cc;
 
-	hNode *h = handle;
+	ion_bpp_h_node_t *h = handle;
 
 	buf = &h->root;
 
@@ -1114,26 +1114,26 @@ bFindFirstGreaterOrEqual(
 	}
 }
 
-bErrType
+ion_bpp_err_t
 bInsertKey(
-	bHandleType handle,
+	ion_bpp_handle_t handle,
 	void		*key,
-	eAdrType	rec
+	ion_bpp_external_address_t	rec
 ) {
 	int				rc;			/* return code */
-	keyType			*mkey;		/* match key */
+	ion_bpp_key_t			*mkey;		/* match key */
 	int				len;		/* length to shift */
 	int				cc;			/* condition code */
-	bufType			*buf, *root;
-	bufType			*tmp[4];
+	ion_bpp_buffer_t			*buf, *root;
+	ion_bpp_buffer_t			*tmp[4];
 	unsigned int	keyOff;
-	bpp_bool_t		lastGEvalid;		/* true if GE branch taken */
-	bpp_bool_t		lastLTvalid;		/* true if LT branch taken after GE branch */
-	bAdrType		lastGE;		/* last childGE traversed */
+	ion_bpp_bool_t		lastGEvalid;		/* true if GE branch taken */
+	ion_bpp_bool_t		lastLTvalid;		/* true if LT branch taken after GE branch */
+	ion_bpp_address_t		lastGE;		/* last childGE traversed */
 	unsigned int	lastGEkey;	/* last childGE key traversed */
 	int				height;		/* height of tree */
 
-	hNode *h = handle;
+	ion_bpp_h_node_t *h = handle;
 
 	root		= &h->root;
 	lastGEvalid = boolean_false;
@@ -1207,8 +1207,8 @@ bInsertKey(
 
 			/* if new key is first key, then fixup lastGE key */
 			if (!keyOff && lastLTvalid) {
-				bufType *tbuf;
-				keyType *tkey;
+				ion_bpp_buffer_t *tbuf;
+				ion_bpp_key_t *tkey;
 
 				if ((rc = readDisk(handle, lastGE, &tbuf)) != 0) {
 					return rc;
@@ -1229,7 +1229,7 @@ bInsertKey(
 		}
 		else {
 			/* internal node, descend to child */
-			bufType *cbuf;	/* child buf */
+			ion_bpp_buffer_t *cbuf;	/* child buf */
 
 			height++;
 
@@ -1292,20 +1292,20 @@ bInsertKey(
 	return bErrOk;
 }
 
-bErrType
+ion_bpp_err_t
 bUpdateKey(
-	bHandleType handle,
+	ion_bpp_handle_t handle,
 	void		*key,
-	eAdrType	rec
+	ion_bpp_external_address_t	rec
 ) {
 	int		rc;					/* return code */
-	keyType *mkey;	/* match key */
+	ion_bpp_key_t *mkey;	/* match key */
 	int		cc;					/* condition code */
-	bufType *buf, *root;
-	bufType *tmp[4];
+	ion_bpp_buffer_t *buf, *root;
+	ion_bpp_buffer_t *tmp[4];
 	int		height;				/* height of tree */
 
-	hNode *h = handle;
+	ion_bpp_h_node_t *h = handle;
 
 	root = &h->root;
 
@@ -1353,7 +1353,7 @@ bUpdateKey(
 		}
 		else {
 			/* internal node, descend to child */
-			bufType *cbuf;	/* child buf */
+			ion_bpp_buffer_t *cbuf;	/* child buf */
 
 			height++;
 
@@ -1400,27 +1400,27 @@ bUpdateKey(
 	return bErrOk;
 }
 
-bErrType
+ion_bpp_err_t
 bDeleteKey(
-	bHandleType handle,
+	ion_bpp_handle_t handle,
 	void		*key,
-	eAdrType	*rec
+	ion_bpp_external_address_t	*rec
 ) {
 	int				rc;			/* return code */
-	keyType			*mkey;		/* match key */
+	ion_bpp_key_t			*mkey;		/* match key */
 	int				len;		/* length to shift */
 	int				cc;			/* condition code */
-	bufType			*buf;		/* buffer */
-	bufType			*tmp[4];
+	ion_bpp_buffer_t			*buf;		/* buffer */
+	ion_bpp_buffer_t			*tmp[4];
 	unsigned int	keyOff;
-	bpp_bool_t		lastGEvalid;		/* true if GE branch taken */
-	bpp_bool_t		lastLTvalid;		/* true if LT branch taken after GE branch */
-	bAdrType		lastGE;		/* last childGE traversed */
+	ion_bpp_bool_t		lastGEvalid;		/* true if GE branch taken */
+	ion_bpp_bool_t		lastLTvalid;		/* true if LT branch taken after GE branch */
+	ion_bpp_address_t		lastGE;		/* last childGE traversed */
 	unsigned int	lastGEkey;	/* last childGE key traversed */
-	bufType			*root;
-	bufType			*gbuf;
+	ion_bpp_buffer_t			*root;
+	ion_bpp_buffer_t			*gbuf;
 
-	hNode *h = handle;
+	ion_bpp_h_node_t *h = handle;
 
 	root		= &h->root;
 	gbuf		= &h->gbuf;
@@ -1455,8 +1455,8 @@ bDeleteKey(
 
 			/* if deleted key is first key, then fixup lastGE key */
 			if (!keyOff && lastLTvalid) {
-				bufType *tbuf;
-				keyType *tkey;
+				ion_bpp_buffer_t *tbuf;
+				ion_bpp_key_t *tkey;
 
 				if ((rc = readDisk(handle, lastGE, &tbuf)) != 0) {
 					return rc;
@@ -1476,7 +1476,7 @@ bDeleteKey(
 		}
 		else {
 			/* internal node, descend to child */
-			bufType *cbuf;	/* child buf */
+			ion_bpp_buffer_t *cbuf;	/* child buf */
 
 			/* read child */
 			if ((cc = search(handle, buf, key, *rec, &mkey, MODE_MATCH)) < 0) {
@@ -1545,16 +1545,16 @@ bDeleteKey(
 	return bErrOk;
 }
 
-bErrType
+ion_bpp_err_t
 bFindFirstKey(
-	bHandleType handle,
+	ion_bpp_handle_t handle,
 	void		*key,
-	eAdrType	*rec
+	ion_bpp_external_address_t	*rec
 ) {
-	bErrType	rc;				/* return code */
-	bufType		*buf;			/* buffer */
+	ion_bpp_err_t	rc;				/* return code */
+	ion_bpp_buffer_t		*buf;			/* buffer */
 
-	hNode *h = handle;
+	ion_bpp_h_node_t *h = handle;
 
 	buf = &h->root;
 
@@ -1575,16 +1575,16 @@ bFindFirstKey(
 	return bErrOk;
 }
 
-bErrType
+ion_bpp_err_t
 bFindLastKey(
-	bHandleType handle,
+	ion_bpp_handle_t handle,
 	void		*key,
-	eAdrType	*rec
+	ion_bpp_external_address_t	*rec
 ) {
-	bErrType	rc;				/* return code */
-	bufType		*buf;			/* buffer */
+	ion_bpp_err_t	rc;				/* return code */
+	ion_bpp_buffer_t		*buf;			/* buffer */
 
-	hNode *h = handle;
+	ion_bpp_h_node_t *h = handle;
 
 	buf = &h->root;
 
@@ -1605,17 +1605,17 @@ bFindLastKey(
 	return bErrOk;
 }
 
-bErrType
+ion_bpp_err_t
 bFindNextKey(
-	bHandleType handle,
+	ion_bpp_handle_t handle,
 	void		*key,
-	eAdrType	*rec
+	ion_bpp_external_address_t	*rec
 ) {
-	bErrType	rc;				/* return code */
-	keyType		*nkey;			/* next key */
-	bufType		*buf;			/* buffer */
+	ion_bpp_err_t	rc;				/* return code */
+	ion_bpp_key_t		*nkey;			/* next key */
+	ion_bpp_buffer_t		*buf;			/* buffer */
 
-	hNode *h = handle;
+	ion_bpp_h_node_t *h = handle;
 
 	if ((buf = h->curBuf) == NULL) {
 		return bErrKeyNotFound;
@@ -1648,18 +1648,18 @@ bFindNextKey(
 	return bErrOk;
 }
 
-bErrType
+ion_bpp_err_t
 bFindPrevKey(
-	bHandleType handle,
+	ion_bpp_handle_t handle,
 	void		*key,
-	eAdrType	*rec
+	ion_bpp_external_address_t	*rec
 ) {
-	bErrType	rc;				/* return code */
-	keyType		*pkey;			/* previous key */
-	keyType		*fkey;			/* first key */
-	bufType		*buf;			/* buffer */
+	ion_bpp_err_t	rc;				/* return code */
+	ion_bpp_key_t		*pkey;			/* previous key */
+	ion_bpp_key_t		*fkey;			/* first key */
+	ion_bpp_buffer_t		*buf;			/* buffer */
 
-	hNode *h = handle;
+	ion_bpp_h_node_t *h = handle;
 
 	if ((buf = h->curBuf) == NULL) {
 		return bErrKeyNotFound;

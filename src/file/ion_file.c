@@ -1,23 +1,23 @@
 #include "ion_file.h"
 
-boolean_t
+ion_boolean_t
 ion_fexists(
 	char *name
 ) {
 #if defined(ARDUINO)
-	return (boolean_t) SD_File_Exists(name);
+	return (ion_boolean_t) SD_File_Exists(name);
 #else
 	return -1 != access(name, F_OK);
 #endif
 }
 
-file_handle_t
+ion_file_handle_t
 ion_fopen(
 	char *name
 ) {
 #if defined(ARDUINO)
 
-	file_handle_t toret;
+	ion_file_handle_t toret;
 
 	toret.file = fopen(name, "r+");
 
@@ -28,7 +28,7 @@ ion_fopen(
 	return toret;
 #else
 
-	file_handle_t file;
+	ion_file_handle_t file;
 
 	file = fopen(name, "r+b");
 
@@ -40,9 +40,9 @@ ion_fopen(
 #endif
 }
 
-err_t
+ion_err_t
 ion_fclose(
-	file_handle_t file
+	ion_file_handle_t file
 ) {
 #if defined(ARDUINO)
 	fclose(file.file);
@@ -53,7 +53,7 @@ ion_fclose(
 #endif
 }
 
-err_t
+ion_err_t
 ion_fremove(
 	char *name
 ) {
@@ -69,10 +69,10 @@ ion_fremove(
 	}
 }
 
-err_t
+ion_err_t
 ion_fseek(
-	file_handle_t	file,
-	file_offset_t	seek_to,
+	ion_file_handle_t	file,
+	ion_file_offset_t	seek_to,
 	int				origin
 ) {
 #if defined(ARDUINO)
@@ -88,9 +88,9 @@ ion_fseek(
 #endif
 }
 
-file_offset_t
+ion_file_offset_t
 ion_ftell(
-	file_handle_t file
+	ion_file_handle_t file
 ) {
 #if defined(ARDUINO)
 	return ftell(file.file);
@@ -99,12 +99,12 @@ ion_ftell(
 #endif
 }
 
-file_offset_t
+ion_file_offset_t
 ion_fend(
-	file_handle_t file
+	ion_file_handle_t file
 ) {
-	file_offset_t	previous;
-	file_offset_t	to_return;
+	ion_file_offset_t	previous;
+	ion_file_offset_t	to_return;
 
 	previous	= ion_ftell(file);
 	ion_fseek(file, 0, ION_FILE_END);
@@ -114,9 +114,9 @@ ion_fend(
 	return to_return;
 }
 
-err_t
+ion_err_t
 ion_fwrite(
-	file_handle_t	file,
+	ion_file_handle_t	file,
 	unsigned int	num_bytes,
 	ion_byte_t		*to_write
 ) {
@@ -133,14 +133,14 @@ ion_fwrite(
 #endif
 }
 
-err_t
+ion_err_t
 ion_fwrite_at(
-	file_handle_t	file,
-	file_offset_t	offset,
+	ion_file_handle_t	file,
+	ion_file_offset_t	offset,
 	unsigned int	num_bytes,
 	ion_byte_t		*to_write
 ) {
-	err_t error;
+	ion_err_t error;
 
 	error = ion_fseek(file, offset, ION_FILE_START);
 
@@ -152,13 +152,13 @@ ion_fwrite_at(
 	return error;
 }
 
-err_t
+ion_err_t
 ion_fappend(
-	file_handle_t	file,
+	ion_file_handle_t	file,
 	unsigned int	num_bytes,
 	ion_byte_t		*to_write
 ) {
-	err_t error;
+	ion_err_t error;
 
 	error = ion_fseek(file, 0, ION_FILE_END);
 
@@ -170,9 +170,9 @@ ion_fappend(
 	return error;
 }
 
-err_t
+ion_err_t
 ion_fread(
-	file_handle_t	file,
+	ion_file_handle_t	file,
 	unsigned int	num_bytes,
 	ion_byte_t		*write_to
 ) {
@@ -193,14 +193,14 @@ ion_fread(
 #endif
 }
 
-err_t
+ion_err_t
 ion_fread_at(
-	file_handle_t	file,
-	file_offset_t	offset,
+	ion_file_handle_t	file,
+	ion_file_offset_t	offset,
 	unsigned int	num_bytes,
 	ion_byte_t		*write_to
 ) {
-	err_t error;
+	ion_err_t error;
 
 	error = ion_fseek(file, offset, ION_FILE_START);
 

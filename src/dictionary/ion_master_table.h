@@ -81,7 +81,7 @@ extern FILE *ion_master_table_file;
 @brief	  Opens the master table.
 @details	Can be safely called multiple times without closing.
 */
-err_t
+ion_err_t
 ion_init_master_table(
 	void
 );
@@ -89,7 +89,7 @@ ion_init_master_table(
 /**
 @brief		Closes the master table.
 */
-err_t
+ion_err_t
 ion_close_master_table(
 	void
 );
@@ -97,7 +97,7 @@ ion_close_master_table(
 /**
 @brief		Deletes the master table.
 */
-err_t
+ion_err_t
 ion_delete_master_table(
 	void
 );
@@ -123,11 +123,11 @@ ion_delete_master_table(
 				parameter.
 @returns	An error code describing the result of the operation.
 */
-err_t
+ion_err_t
 ion_master_table_create_dictionary(
-	dictionary_handler_t	*handler,
-	dictionary_t			*dictionary,
-	key_type_t				key_type,
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dictionary,
+	ion_key_type_t				key_type,
 	int						key_size,
 	int						value_size,
 	int						dictionary_size
@@ -143,9 +143,9 @@ ion_master_table_create_dictionary(
 				to this function by @ref ion_master_table_create_dictionary,
 				since not all implementations track the dictionary size.
 */
-err_t
+ion_err_t
 ion_add_to_master_table(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	int				dictionary_size
 );
 
@@ -158,7 +158,7 @@ ion_add_to_master_table(
 				A pointer to an already allocated configuration object
 				that will be read into from the master table.
 */
-err_t
+ion_err_t
 ion_lookup_in_master_table(
 	ion_dictionary_id_t				id,
 	ion_dictionary_config_info_t	*config
@@ -181,7 +181,7 @@ ion_lookup_in_master_table(
 			is found, otherwise an error code properly describing
 			the situation and outcome.
 */
-err_t
+ion_err_t
 ion_find_by_use_master_table(
 	ion_dictionary_config_info_t	*config,
 	ion_dict_use_t					use_type,
@@ -195,9 +195,9 @@ ion_find_by_use_master_table(
 				own identifier info for the master table).
 @returns	An error code describing the result of the operation.
 */
-err_t
+ion_err_t
 ion_delete_from_master_table(
-	dictionary_t *dictionary
+	ion_dictionary_t *dictionary
 );
 
 /**
@@ -213,10 +213,10 @@ ion_delete_from_master_table(
 				master table.
 @returns	An error code describing the result of the operation.
 */
-err_t
+ion_err_t
 ion_open_dictionary(
-	dictionary_handler_t	*handler,
-	dictionary_t			*dictionary,
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dictionary,
 	ion_dictionary_id_t		id
 );
 
@@ -225,9 +225,9 @@ ion_open_dictionary(
 @param		dictionary
 				A pointer to the dictionary object to close.
 */
-err_t
+ion_err_t
 ion_close_dictionary(
-	dictionary_t *dictionary
+	ion_dictionary_t *dictionary
 );
 
 #if defined(__cplusplus)

@@ -29,7 +29,7 @@
 #include "behaviour_dictionary.h"
 
 /* This is a private struct we use to track metadata about the dictionary. */
-bhdct_context_t bhdct_context = { NULL };
+ion_bhdct_context_t bhdct_context = { NULL };
 
 /**
 @brief	This function binds the context properly. The context dictates what type of dictionary
@@ -37,7 +37,7 @@ bhdct_context_t bhdct_context = { NULL };
 */
 void
 bhdct_set_context(
-	void (*init_fcn)(dictionary_handler_t *)
+	void (*init_fcn)(ion_dictionary_handler_t *)
 ) {
 	bhdct_context.init_fcn = init_fcn;
 }
@@ -48,14 +48,14 @@ bhdct_set_context(
 void
 bhdct_dictionary_initialization(
 	planck_unit_test_t		*tc,
-	dictionary_handler_t	*handler,
-	dictionary_t			*dict,
-	key_type_t				key_type,
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dict,
+	ion_key_type_t				key_type,
 	int						key_size,
 	int						value_size,
 	int						dictionary_size
 ) {
-	err_t err = ion_master_table_create_dictionary(handler, dict, key_type, key_size, value_size, dictionary_size);
+	ion_err_t err = ion_master_table_create_dictionary(handler, dict, key_type, key_size, value_size, dictionary_size);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 
@@ -71,7 +71,7 @@ void
 bhdct_master_table_init(
 	planck_unit_test_t *tc
 ) {
-	err_t err = ion_init_master_table();
+	ion_err_t err = ion_init_master_table();
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 }
@@ -82,9 +82,9 @@ bhdct_master_table_init(
 void
 bhdct_delete_from_master_table(
 	planck_unit_test_t	*tc,
-	dictionary_t		*dict
+	ion_dictionary_t		*dict
 ) {
-	err_t err = ion_delete_from_master_table(dict);
+	ion_err_t err = ion_delete_from_master_table(dict);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 }
@@ -95,9 +95,9 @@ bhdct_delete_from_master_table(
 void
 bhdct_delete_dictionary(
 	planck_unit_test_t	*tc,
-	dictionary_t		*dict
+	ion_dictionary_t		*dict
 ) {
-	err_t err = dictionary_delete_dictionary(dict);
+	ion_err_t err = dictionary_delete_dictionary(dict);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == dict->instance);
@@ -110,7 +110,7 @@ void
 bhdct_close_master_table(
 	planck_unit_test_t *tc
 ) {
-	err_t err = ion_close_master_table();
+	ion_err_t err = ion_close_master_table();
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 }
@@ -122,7 +122,7 @@ void
 bhdct_delete_master_table(
 	planck_unit_test_t *tc
 ) {
-	err_t err = ion_delete_master_table();
+	ion_err_t err = ion_delete_master_table();
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 }
@@ -133,8 +133,8 @@ bhdct_delete_master_table(
 void
 bhdct_setup(
 	planck_unit_test_t		*tc,
-	dictionary_handler_t	*handler,
-	dictionary_t			*dict
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dict
 ) {
 	bhdct_master_table_init(tc);
 	bhdct_context.init_fcn(handler);
@@ -147,7 +147,7 @@ bhdct_setup(
 void
 bhdct_takedown(
 	planck_unit_test_t	*tc,
-	dictionary_t		*dict
+	ion_dictionary_t		*dict
 ) {
 /*	bhdct_delete_from_master_table(tc, dict); FIXME change when master table is fixed */
 	bhdct_delete_dictionary(tc, dict);
@@ -162,10 +162,10 @@ bhdct_takedown(
 void
 bhdct_insert(
 	planck_unit_test_t	*tc,
-	dictionary_t		*dict,
+	ion_dictionary_t		*dict,
 	ion_key_t			key,
 	ion_value_t			value,
-	boolean_t			check_result
+	ion_boolean_t			check_result
 ) {
 	ion_status_t status = dictionary_insert(dict, key, value);
 
@@ -191,8 +191,8 @@ void
 test_bhdct_setup(
 	planck_unit_test_t *tc
 ) {
-	dictionary_handler_t	handler;
-	dictionary_t			dict;
+	ion_dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
 
 	bhdct_setup(tc, &handler, &dict);
 
@@ -206,8 +206,8 @@ void
 test_bhdct_single_insert(
 	planck_unit_test_t *tc
 ) {
-	dictionary_handler_t	handler;
-	dictionary_t			dict;
+	ion_dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
 
 	bhdct_setup(tc, &handler, &dict);
 

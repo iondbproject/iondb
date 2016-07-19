@@ -31,8 +31,8 @@
  */
 void
 initialize_skiplist(
-	skiplist_t					*skiplist,
-	key_type_t					key_type,
+	ion_skiplist_t					*skiplist,
+	ion_key_type_t					key_type,
 	ion_dictionary_compare_t	compare,
 	int							maxheight,
 	int							key_size,
@@ -53,10 +53,10 @@ initialize_skiplist(
  */
 void
 initialize_skiplist_std_conditions(
-	skiplist_t *skiplist
+	ion_skiplist_t *skiplist
 ) {
 	int							key_size, value_size, pden, pnum, maxheight;
-	key_type_t					key_type;
+	ion_key_type_t					key_type;
 	ion_dictionary_compare_t	compare;
 
 	key_type	= key_type_numeric_signed;
@@ -83,9 +83,9 @@ test_skiplist_initialize(
 	PRINT_HEADER();
 
 	int							key_size, value_size, pden, pnum, maxheight;
-	key_type_t					key_type;
+	ion_key_type_t					key_type;
 	ion_dictionary_compare_t	compare;
-	skiplist_t					skiplist;
+	ion_skiplist_t					skiplist;
 
 	key_type	= key_type_numeric_signed;
 	compare		= dictionary_compare_signed_value;
@@ -127,7 +127,7 @@ test_skiplist_free_all(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -148,7 +148,7 @@ test_skiplist_single_insert(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -185,7 +185,7 @@ test_skiplist_insert_multiple(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -206,7 +206,7 @@ test_skiplist_insert_multiple(
 	print_skiplist(&skip_list);
 #endif
 
-	sl_node_t *cursor;
+	ion_sl_node_t *cursor;
 
 	cursor = skiplist.head->next[0];
 	PLANCK_UNIT_ASSERT_TRUE(tc, *((int *) cursor->key) == 1);
@@ -245,7 +245,7 @@ test_skiplist_randomized_insert(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -268,7 +268,7 @@ test_skiplist_randomized_insert(
 	print_skiplist(&skip_list);
 #endif
 
-	sl_node_t *cursor = skiplist.head;
+	ion_sl_node_t *cursor = skiplist.head;
 
 	while (cursor->next[0]->next[0] != NULL) {
 		int now		= *((int *) cursor->next[0]->key);
@@ -298,7 +298,7 @@ test_skiplist_get_node_single(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -314,7 +314,7 @@ test_skiplist_get_node_single(
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 	int			search	= 3;
-	sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &search);
+	ion_sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &search);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, node != NULL);
 	PLANCK_UNIT_ASSERT_TRUE(tc, *((int *) node->key) == key);
@@ -340,7 +340,7 @@ test_skiplist_get_node_single_high(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -360,7 +360,7 @@ test_skiplist_get_node_single_high(
 #endif
 
 	int			search	= 10;
-	sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &search);
+	ion_sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &search);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, *((int *) node->key) == key);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) str, (char *) node->value);
@@ -386,7 +386,7 @@ test_skiplist_get_node_single_low(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -406,7 +406,7 @@ test_skiplist_get_node_single_low(
 #endif
 
 	int			search	= 2;
-	sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &search);
+	ion_sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &search);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, node == skiplist.head);
 
@@ -430,7 +430,7 @@ test_skiplist_get_node_single_many(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -467,7 +467,7 @@ test_skiplist_get_node_single_many(
 #endif
 
 	int			search	= 25;
-	sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &search);
+	ion_sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &search);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, *((int *) node->key) == key);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) str, (char *) node->value);
@@ -489,7 +489,7 @@ test_skiplist_get_node_several(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -520,7 +520,7 @@ test_skiplist_get_node_several(
 
 	for (i = 0; i < 50; i++) {
 		int			key		= targets[i];
-		sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &key);
+		ion_sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &key);
 
 		sprintf((char *) buffer, "TEST %d", key);
 		PLANCK_UNIT_ASSERT_TRUE(tc, *((int *) node->key) == key);
@@ -544,7 +544,7 @@ test_skiplist_query_nonexist_empty(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -579,7 +579,7 @@ test_skiplist_query_nonexist_populated_single(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -624,7 +624,7 @@ test_skiplist_query_nonexist_populated_several(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -674,7 +674,7 @@ test_skiplist_query_exist_single(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -719,7 +719,7 @@ test_skiplist_query_exist_populated_single(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -767,7 +767,7 @@ test_skiplist_query_exist_populated_several(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -818,7 +818,7 @@ test_skiplist_delete_empty(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -850,7 +850,7 @@ test_skiplist_delete_nonexist_single(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -893,7 +893,7 @@ test_skiplist_delete_nonexist_several(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -941,7 +941,7 @@ test_skiplist_delete_single(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -989,7 +989,7 @@ test_skiplist_delete_single_several(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1011,15 +1011,15 @@ test_skiplist_delete_single_several(
 	print_skiplist(&skip_list);
 #endif
 
-	sl_node_t	*onebefore	= sl_find_node(&skiplist, IONIZE(111, int));
-	sl_node_t	*theone		= sl_find_node(&skiplist, IONIZE(112, int));
-	sl_level_t	theone_h	= theone->height + 1;
-	sl_level_t	onebefore_h = onebefore->height + 1;
+	ion_sl_node_t	*onebefore	= sl_find_node(&skiplist, IONIZE(111, int));
+	ion_sl_node_t	*theone		= sl_find_node(&skiplist, IONIZE(112, int));
+	ion_sl_level_t	theone_h	= theone->height + 1;
+	ion_sl_level_t	onebefore_h = onebefore->height + 1;
 
 	/* This copies all the pointers that the target linked to before for assert
 	 * testing.
 	 */
-	sl_node_t *oldnextarr[theone_h];
+	ion_sl_node_t *oldnextarr[theone_h];
 
 	for (i = 0; i < theone_h; i++) {
 		oldnextarr[i] = theone->next[i];
@@ -1061,7 +1061,7 @@ test_skiplist_delete_single_several_noncont(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1083,15 +1083,15 @@ test_skiplist_delete_single_several_noncont(
 	print_skiplist(&skip_list);
 #endif
 
-	sl_node_t	*onebefore	= sl_find_node(&skiplist, IONIZE(235, int));
-	sl_node_t	*theone		= sl_find_node(&skiplist, IONIZE(240, int));
-	sl_level_t	theone_h	= theone->height + 1;
-	sl_level_t	onebefore_h = onebefore->height + 1;
+	ion_sl_node_t	*onebefore	= sl_find_node(&skiplist, IONIZE(235, int));
+	ion_sl_node_t	*theone		= sl_find_node(&skiplist, IONIZE(240, int));
+	ion_sl_level_t	theone_h	= theone->height + 1;
+	ion_sl_level_t	onebefore_h = onebefore->height + 1;
 
 	/* This copies all the pointers that the target linked to before for assert
 	 * testing.
 	 */
-	sl_node_t *oldnextarr[theone_h];
+	ion_sl_node_t *oldnextarr[theone_h];
 
 	for (i = 0; i < theone_h; i++) {
 		oldnextarr[i] = theone->next[i];
@@ -1131,7 +1131,7 @@ test_skiplist_delete_several_all(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1165,8 +1165,8 @@ test_skiplist_delete_several_all(
 	print_skiplist(&skip_list);
 #endif
 
-	sl_node_t	*cursor = skiplist.head;
-	sl_level_t	h;
+	ion_sl_node_t	*cursor = skiplist.head;
+	ion_sl_level_t	h;
 
 	for (h = cursor->height; h >= 0; h--) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, cursor->next[h] == NULL);
@@ -1188,7 +1188,7 @@ test_skiplist_update_single_nonexist(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1220,7 +1220,7 @@ test_skiplist_update_single_nonexist_nonempty(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1263,7 +1263,7 @@ test_skiplist_update_many_nonexist_nonempty(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1288,7 +1288,7 @@ test_skiplist_update_many_nonexist_nonempty(
 	print_skiplist(&skip_list);
 #endif
 
-	sl_node_t *cursor = sl_find_node(&skiplist, IONIZE(38, int));
+	ion_sl_node_t *cursor = sl_find_node(&skiplist, IONIZE(38, int));
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
@@ -1313,7 +1313,7 @@ test_skiplist_update_single_exist(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1357,7 +1357,7 @@ test_skiplist_update_single_many_exist(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1382,7 +1382,7 @@ test_skiplist_update_single_many_exist(
 	print_skiplist(&skip_list);
 #endif
 
-	sl_node_t *cursor = sl_find_node(&skiplist, IONIZE(30, int));
+	ion_sl_node_t *cursor = sl_find_node(&skiplist, IONIZE(30, int));
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
@@ -1407,7 +1407,7 @@ test_skiplist_update_several_many_exist(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1428,7 +1428,7 @@ test_skiplist_update_several_many_exist(
 	for (i = 60; i < 99; i += 3) {
 		ion_status_t status = sl_update(&skiplist, (ion_key_t) &i, (ion_value_t) (char *) { "VALUE" });
 
-		sl_node_t *cursor	= sl_find_node(&skiplist, (ion_key_t) &i);
+		ion_sl_node_t *cursor	= sl_find_node(&skiplist, (ion_key_t) &i);
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
@@ -1458,7 +1458,7 @@ test_skiplist_update_several_same_key(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1486,7 +1486,7 @@ test_skiplist_update_several_same_key(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 100 == status.count);
 
-	sl_node_t *cursor = skiplist.head;
+	ion_sl_node_t *cursor = skiplist.head;
 
 	for (i = 0; i < 100; i++) {
 		cursor = cursor->next[0];
@@ -1510,7 +1510,7 @@ test_skiplist_update_several_same_key_in_mix(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1542,7 +1542,7 @@ test_skiplist_update_several_same_key_in_mix(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 100 == status.count);
 
-	sl_node_t *find = sl_find_node(&skiplist, IONIZE(55, int));
+	ion_sl_node_t *find = sl_find_node(&skiplist, IONIZE(55, int));
 
 	for (i = 0; i < 100; i++) {
 		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) find->value, (char *) { "new same" });
@@ -1566,7 +1566,7 @@ test_skiplist_delete_then_insert_single(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1621,7 +1621,7 @@ test_skiplist_delete_then_insert_several(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1663,7 +1663,7 @@ test_skiplist_delete_then_insert_several(
 	print_skiplist(&skip_list);
 #endif
 
-	sl_node_t *cursor = skiplist.head;
+	ion_sl_node_t *cursor = skiplist.head;
 
 	for (i = 50; i < 100; i++) {
 		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) cursor->next[0]->value, "pie");
@@ -1687,7 +1687,7 @@ test_skiplist_delete_several_same_key(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1738,7 +1738,7 @@ test_skiplist_delete_several_same_key_in_mix(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1770,7 +1770,7 @@ test_skiplist_delete_several_same_key_in_mix(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 100 == status.count);
 
-	sl_node_t *find = sl_find_node(&skiplist, IONIZE(55, int));
+	ion_sl_node_t *find = sl_find_node(&skiplist, IONIZE(55, int));
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist.super.compare(find->key, IONIZE(55, int), skiplist.super.record.key_size) != 0);
 
@@ -1791,9 +1791,9 @@ test_skiplist_different_size(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t					skiplist;
+	ion_skiplist_t					skiplist;
 	int							key_size, value_size, pden, pnum, maxheight;
-	key_type_t					key_type;
+	ion_key_type_t					key_type;
 	ion_dictionary_compare_t	compare;
 
 	key_type	= key_type_numeric_unsigned;
@@ -1815,7 +1815,7 @@ test_skiplist_different_size(
 	print_skiplist(&skip_list);
 #endif
 
-	sl_node_t *cursor;
+	ion_sl_node_t *cursor;
 
 	cursor = skiplist.head->next[0];
 	PLANCK_UNIT_ASSERT_TRUE(tc, *(long long *) cursor->key == 16);
@@ -1881,7 +1881,7 @@ test_skiplist_big_keys(
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1895,7 +1895,7 @@ test_skiplist_big_keys(
 	}
 
 	for (i = 900; i < 999; i++) {
-		sl_node_t *cursor = sl_find_node(&skiplist, (ion_key_t) &i);
+		ion_sl_node_t *cursor = sl_find_node(&skiplist, (ion_key_t) &i);
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, *(int *) cursor->key == i);
 		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) cursor->value, "BIG!");

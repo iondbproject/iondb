@@ -35,19 +35,19 @@ extern "C" {
 /**
 @brief		Prototype declaration for hashmap
  */
-typedef struct hashmap hashmap_t;
+typedef struct hashmap ion_hashmap_t;
 
 /**
 @brief		Struct used to maintain an instance of an in memory hashmap.
 */
 struct hashmap {
-	dictionary_parent_t super;
+	ion_dictionary_parent_t super;
 	int					map_size;		/**< The size of the map in item capacity */
-	write_concern_t		write_concern;	/**< The current @p write_concern level
+	ion_write_concern_t		write_concern;	/**< The current @p write_concern level
 											 of the hashmap*/
 
 	int					(*compute_hash)(
-		hashmap_t *,
+		ion_hashmap_t *,
 		ion_key_t,
 		int
 	);
@@ -75,11 +75,11 @@ struct hashmap {
 				(@p key_size + @p value_size + @c 1)
 @return		The status describing the result of the initialization.
  */
-err_t
+ion_err_t
 oah_initialize(
-	hashmap_t *hashmap,
-	hash_t (*hashing_function)(hashmap_t *, ion_key_t, int),
-	key_type_t key_type,
+	ion_hashmap_t *hashmap,
+	ion_hash_t (*hashing_function)(ion_hashmap_t *, ion_key_t, int),
+	ion_key_type_t key_type,
 	ion_key_size_t key_size,
 	ion_value_size_t value_size,
 	int size
@@ -94,9 +94,9 @@ oah_initialize(
 				The map into which the data is going to be inserted
 @return		The status describing the result of the destruction
 */
-err_t
+ion_err_t
 oah_destroy(
-	hashmap_t *hash_map
+	ion_hashmap_t *hash_map
 );
 
 /**
@@ -113,7 +113,7 @@ oah_destroy(
 */
 int
 oah_get_location(
-	hash_t	num,
+	ion_hash_t	num,
 	int		size
 );
 
@@ -138,7 +138,7 @@ oah_get_location(
 */
 ion_status_t
 oah_insert(
-	hashmap_t	*hash_map,
+	ion_hashmap_t	*hash_map,
 	ion_key_t	key,
 	ion_value_t value
 );
@@ -159,7 +159,7 @@ oah_insert(
 */
 ion_status_t
 oah_update(
-	hashmap_t	*hash_map,
+	ion_hashmap_t	*hash_map,
 	ion_key_t	key,
 	ion_value_t value
 );
@@ -177,9 +177,9 @@ oah_update(
 				Pointer to the location variable
 @return		The status of the find
  */
-err_t
+ion_err_t
 oah_find_item_loc(
-	hashmap_t	*hash_map,
+	ion_hashmap_t	*hash_map,
 	ion_key_t	key,
 	int			*location
 );
@@ -197,7 +197,7 @@ oah_find_item_loc(
 */
 ion_status_t
 oah_delete(
-	hashmap_t	*hash_map,
+	ion_hashmap_t	*hash_map,
 	ion_key_t	key
 );
 
@@ -218,7 +218,7 @@ oah_delete(
 */
 ion_status_t
 oah_query(
-	hashmap_t	*hash_map,
+	ion_hashmap_t	*hash_map,
 	ion_key_t	key,
 	ion_value_t value
 );
@@ -238,9 +238,9 @@ oah_query(
 */
 void
 oah_print(
-	hashmap_t		*hash_map,
+	ion_hashmap_t		*hash_map,
 	int				size,
-	record_info_t	*record
+	ion_record_info_t	*record
 );
 
 /**
@@ -254,9 +254,9 @@ oah_print(
 				The size of the key in bytes.
 @return		The hashed value for the key.
 */
-hash_t
+ion_hash_t
 oah_compute_simple_hash(
-	hashmap_t	*hashmap,
+	ion_hashmap_t	*hashmap,
 	ion_key_t	key,
 	int			size_of_key
 );

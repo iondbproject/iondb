@@ -22,7 +22,7 @@ extern "C" {
 /* redefines file operations for arduino */
 #include "./../../file/SD_stdio_c_iface.h"
 
-typedef int record_idx_t;
+typedef int ion_record_idx_t;
 
 /**
 @brief Struct used to for instance of a given dictionary.
@@ -30,9 +30,9 @@ typedef int record_idx_t;
 typedef struct ff_dictionary {
 	/* what needs to go in here? */
 	char		*dictionary_name;	/**<The name of the dictionary*/
-	ff_file_t	*file;			/**<The map that the operations
+	ion_ff_file_t	*file;			/**<The map that the operations
 										will operate upon*/
-} ff_dictionary_t;
+} ion_ff_dictionary_t;
 
 /**
  @brief Cursor for dictionary specific implementations
@@ -40,18 +40,18 @@ typedef struct ff_dictionary {
  */
 /*typedef struct ffdict_cursor
 {
-	record_idx_t		first;		*<First visited spot
-	record_idx_t		current;	*<Currently visited spot
+	ion_record_idx_t		first;		*<First visited spot
+	ion_record_idx_t		current;	*<Currently visited spot
 	char				status;		*@todo what is this for again as there are two status
-} ffdict_cursor_t;*/
+} ion_ffdict_cursor_t;*/
 
 /*
 typedef struct equality_cursor
 {
-	dict_cursor_t   super;
+	ion_dict_cursor_t   super;
 		*< Cursor supertype this type inherits from.
 
-}equality_cursor_t;
+}ion_equality_cursor_t;
 */
 
 /**
@@ -62,17 +62,17 @@ typedef struct equality_cursor
 			dictionary.
 */
 typedef struct ffdict_equality_cursor {
-	dict_cursor_t	super;					/**<Super type this cursor inherits from*/
-	ffdict_cursor_t cursor_info;/**<Super type to dict implementation*/
+	ion_dict_cursor_t	super;					/**<Super type this cursor inherits from*/
+	ion_ffdict_cursor_t cursor_info;/**<Super type to dict implementation*/
 	ion_key_t		value;
 
-	boolean_t (*equal)(
-		dictionary_t *,
+	ion_boolean_t (*equal)(
+		ion_dictionary_t *,
 		ion_key_t,
 		ion_key_t
 	);
 	/**< A pointer to an equality function. */
-} ffdict_equality_cursor_t;
+} ion_ffdict_equality_cursor_t;
 
 /**
 @brief		Registers a specific handler for a  dictionary instance.
@@ -86,7 +86,7 @@ typedef struct ffdict_equality_cursor {
  */
 void
 ffdict_init(
-	dictionary_handler_t *handler
+	ion_dictionary_handler_t *handler
 );
 
 /**
@@ -102,7 +102,7 @@ ffdict_init(
  */
 ion_status_t
 ffdict_insert(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 );
@@ -133,7 +133,7 @@ ffdict_insert(
  */
 ion_status_t
 ffdict_query(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 );
@@ -162,16 +162,16 @@ ffdict_query(
 				 the instance of the dictionary created.
 @return		The status of the creation of the dictionary.
  */
-err_t
+ion_err_t
 ffdict_create_dictionary(
 	ion_dictionary_id_t			id,
-	key_type_t					key_type,
+	ion_key_type_t					key_type,
 	ion_key_size_t				key_size,
 	ion_value_size_t			value_size,
 	int							dictionary_size,	/* @todo this needs to be fixed or defined */
 	ion_dictionary_compare_t	compare,
-	dictionary_handler_t		*handler,
-	dictionary_t				*dictionary
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary
 );
 
 /**
@@ -186,7 +186,7 @@ ffdict_create_dictionary(
  */
 ion_status_t
 ffdict_delete(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key
 );
 
@@ -197,9 +197,9 @@ ffdict_delete(
 				The instance of the dictionary to delete.
 @return		The status of the dictionary deletion.
  */
-err_t
+ion_err_t
 ffdict_delete_dictionary(
-	dictionary_t *dictionary
+	ion_dictionary_t *dictionary
 );
 
 /**
@@ -218,7 +218,7 @@ ffdict_delete_dictionary(
  */
 ion_status_t
 ffdict_update(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 );
@@ -240,11 +240,11 @@ ffdict_update(
 				is responsible for populating.
 @return		The status of the operation.
  */
-err_t
+ion_err_t
 ffdict_find(
-	dictionary_t	*dictionary,
-	predicate_t		*predicate,
-	dict_cursor_t	**cursor
+	ion_dictionary_t	*dictionary,
+	ion_predicate_t		*predicate,
+	ion_dict_cursor_t	**cursor
 );
 
 /**
@@ -286,9 +286,9 @@ ffdict_compare(
 				The cursor to iterate over the results.
 @return		The status of the cursor.
  */
-/*err_t
+/*ion_err_t
 oadict_next(
-	dict_cursor_t   *cursor,
+	ion_dict_cursor_t   *cursor,
 	ion_value_t		*value
 );*/
 
@@ -301,9 +301,9 @@ oadict_next(
 @param		record
 @return		The status of the cursor.
  */
-cursor_status_t
+ion_cursor_status_t
 ffdict_next(
-	dict_cursor_t	*cursor,
+	ion_dict_cursor_t	*cursor,
 	ion_record_t	*record
 );
 
@@ -319,10 +319,10 @@ ffdict_next(
 					 The second key for comparison.
 @return		If the keys are equal.
  */
-boolean_t
+ion_boolean_t
 /*TODO Fix name of function */
 ff_is_equal(
-	dictionary_t	*dict,
+	ion_dictionary_t	*dict,
 	ion_key_t		key1,
 	ion_key_t		key2
 );
@@ -341,7 +341,7 @@ ff_is_equal(
  */
 void
 ffdict_destroy_cursor(
-	dict_cursor_t **cursor
+	ion_dict_cursor_t **cursor
 );
 
 /**
@@ -354,9 +354,9 @@ ffdict_destroy_cursor(
 				The key to test.
 @return		The result is the key passes or fails the predicate test.
  */
-boolean_t
+ion_boolean_t
 ffdict_test_predicate(
-	dict_cursor_t	*cursor,
+	ion_dict_cursor_t	*cursor,
 	ion_key_t		key
 );
 
@@ -373,9 +373,9 @@ ffdict_test_predicate(
 
 @return			The status of the scan.
  */
-err_t
+ion_err_t
 ffdict_scan(
-	ffdict_cursor_t *cursor	/* don't need to pass in the cursor */
+	ion_ffdict_cursor_t *cursor	/* don't need to pass in the cursor */
 );
 
 #if defined(__cplusplus)

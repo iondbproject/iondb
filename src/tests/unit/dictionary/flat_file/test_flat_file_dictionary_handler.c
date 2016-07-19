@@ -23,11 +23,11 @@ extern "C" {
 */
 void
 createFlatFileTestDictionary(
-	dictionary_handler_t	*map_handler,
-	const record_info_t		*record,
+	ion_dictionary_handler_t	*map_handler,
+	const ion_record_info_t		*record,
 	int						size,
-	dictionary_t			*test_dictionary,
-	key_type_t				key_type
+	ion_dictionary_t			*test_dictionary,
+	ion_key_type_t				key_type
 ) {
 	ffdict_init(map_handler);	/* register handler for hashmap */
 	/* register the appropriate handler for a given dictionary */
@@ -53,13 +53,13 @@ createFlatFileTestDictionary(
 			for open address dictionary structure.
 
 @param	  tc
-				plank_unit_test_t
+				ion_plank_unit_test_t
  */
 void
 test_flat_file_handler_function_registration(
 	planck_unit_test_t *tc
 ) {
-	dictionary_handler_t map_handler;	/* create handler for hashmap */
+	ion_dictionary_handler_t map_handler;	/* create handler for hashmap */
 
 	ffdict_init(&map_handler);	/* register handler for hashmap */
 
@@ -75,44 +75,44 @@ test_flat_file_handler_function_registration(
 @brief	  Tests for creatation and deletion of open address hash.
 
 @param	  tc
-				plank_unit_test_t
+				ion_plank_unit_test_t
  */
 void
 test_flat_file_handler_create_destroy(
 	planck_unit_test_t *tc
 ) {
-	record_info_t record;
+	ion_record_info_t record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
 	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 
-	dictionary_handler_t map_handler;	/* create handler for hashmap */
+	ion_dictionary_handler_t map_handler;	/* create handler for hashmap */
 
 	ffdict_init(&map_handler);	/* register handler for hashmap */
 
 	/* dictionary handler for test instance */
-	dictionary_t test_dictionary;
+	ion_dictionary_t test_dictionary;
 
 	/* register the appropriate handler for a given dictionary */
 	dictionary_create(&map_handler, &test_dictionary, 1, key_type_numeric_signed, record.key_size, record.value_size, 0);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, (((ff_file_t *) test_dictionary.instance)->super.record.key_size) == record.key_size);
-	PLANCK_UNIT_ASSERT_TRUE(tc, (((ff_file_t *) test_dictionary.instance)->super.record.value_size) == record.value_size);
-	PLANCK_UNIT_ASSERT_TRUE(tc, (((ff_file_t *) test_dictionary.instance)->write_concern) == wc_insert_unique);
+	PLANCK_UNIT_ASSERT_TRUE(tc, (((ion_ff_file_t *) test_dictionary.instance)->super.record.key_size) == record.key_size);
+	PLANCK_UNIT_ASSERT_TRUE(tc, (((ion_ff_file_t *) test_dictionary.instance)->super.record.value_size) == record.value_size);
+	PLANCK_UNIT_ASSERT_TRUE(tc, (((ion_ff_file_t *) test_dictionary.instance)->write_concern) == wc_insert_unique);
 
 	/* check to see if the file has been created and read the data back */
-	frewind(((ff_file_t *) test_dictionary.instance)->file_ptr);
+	frewind(((ion_ff_file_t *) test_dictionary.instance)->file_ptr);
 
-/*	ff_file_t file; */
+/*	ion_ff_file_t file; */
 
-/*	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == fread(&(file.super), sizeof(file.super), 1, ((ff_file_t *) test_dictionary.instance)->file_ptr)); */
+/*	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == fread(&(file.super), sizeof(file.super), 1, ((ion_ff_file_t *) test_dictionary.instance)->file_ptr)); */
 /*	PLANCK_UNIT_ASSERT_TRUE(tc, record.key_size == file.super.record.key_size); */
 /*	PLANCK_UNIT_ASSERT_TRUE(tc, record.value_size == file.super.record.value_size); */
 /*	PLANCK_UNIT_ASSERT_TRUE(tc, key_type_numeric_signed == file.super.key_type); */
 /*	PLANCK_UNIT_ASSERT_TRUE(tc, dictionary_compare_signed_value == file.super.compare); */
 /*  FIXME - Test fails
-	PLANCK_UNIT_ASSERT_TRUE(tc, 0						!= feof(((ff_file_t *)test_dictionary.instance)->file_ptr));
+	PLANCK_UNIT_ASSERT_TRUE(tc, 0						!= feof(((ion_ff_file_t *)test_dictionary.instance)->file_ptr));
 */
 	/* delete the dictionary */
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == test_dictionary.handler->delete_dictionary(&test_dictionary));
@@ -128,13 +128,13 @@ test_flat_file_handler_create_destroy(
 @details	Tests a simple insert into dictionary and simple query with the
 			write_concern set to insert only
 @param	  tc
-				plank_unit_test_t
+				ion_plank_unit_test_t
  */
 void
 test_flat_file_handler_simple_insert(
 	planck_unit_test_t *tc
 ) {
-	record_info_t record;
+	ion_record_info_t record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
 	record.key_size		= sizeof(int);
@@ -143,12 +143,12 @@ test_flat_file_handler_simple_insert(
 	int		test_key = 1;
 	char	test_value[record.value_size * 2];
 
-	dictionary_handler_t dict_handler;	/* create handler for hashmap */
+	ion_dictionary_handler_t dict_handler;	/* create handler for hashmap */
 
 	ffdict_init(&dict_handler);	/* register handler for hashmap */
 
 	/* dictionary handler for test instance */
-	dictionary_t test_dictionary;
+	ion_dictionary_t test_dictionary;
 
 	/* register the appropriate handler for a given dictionary */
 	dictionary_create(&dict_handler, &test_dictionary, 1, key_type_numeric_signed, record.key_size, record.value_size, 0);
@@ -161,17 +161,17 @@ test_flat_file_handler_simple_insert(
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 	/* reset cursor on file and */
-	fseek(((ff_file_t *) test_dictionary.instance)->file_ptr, ((ff_file_t *) test_dictionary.instance)->start_of_data, SEEK_SET);
+	fseek(((ion_ff_file_t *) test_dictionary.instance)->file_ptr, ((ion_ff_file_t *) test_dictionary.instance)->start_of_data, SEEK_SET);
 
-	/* ff_file_record_t file_record; */
-	f_file_record_t *file_record;	/* this needs to be dynamically allocated */
+	/* ion_ff_file_record_t file_record; */
+	ion_f_file_record_t *file_record;	/* this needs to be dynamically allocated */
 
 	int record_size = SIZEOF(STATUS) + test_dictionary.instance->record.key_size + test_dictionary.instance->record.value_size;
 
-	file_record = (f_file_record_t *) malloc(sizeof(char) * record_size);
+	file_record = (ion_f_file_record_t *) malloc(sizeof(char) * record_size);
 
 	/* read the record_info back and check */
-	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == fread(file_record, record_size, 1, ((ff_file_t *) test_dictionary.instance)->file_ptr));
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == fread(file_record, record_size, 1, ((ion_ff_file_t *) test_dictionary.instance)->file_ptr));
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, IN_USE == file_record->status);
 
@@ -188,17 +188,17 @@ test_flat_file_handler_simple_insert(
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 	/* TODO Check why this flag is not being set */
-	/* PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false	!= feof((((ff_file_t *)test_dictionary.instance)->file_ptr))); */
+	/* PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false	!= feof((((ion_ff_file_t *)test_dictionary.instance)->file_ptr))); */
 
 	/* reset cursor on file and */
-	fseek(((ff_file_t *) test_dictionary.instance)->file_ptr, ((ff_file_t *) test_dictionary.instance)->start_of_data, SEEK_SET);
+	fseek(((ion_ff_file_t *) test_dictionary.instance)->file_ptr, ((ion_ff_file_t *) test_dictionary.instance)->start_of_data, SEEK_SET);
 
 	int i;
 
 	for (i = 1; i < 3; i++) {
 		sprintf((char *) test_value, "value : %i ", i);
 		/* read the record_info back and check */
-		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == fread(file_record, record_size, 1, ((ff_file_t *) test_dictionary.instance)->file_ptr));
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == fread(file_record, record_size, 1, ((ion_ff_file_t *) test_dictionary.instance)->file_ptr));
 		/* check status */
 		PLANCK_UNIT_ASSERT_TRUE(tc, IN_USE == file_record->status);
 		/* check value */
@@ -218,22 +218,22 @@ test_flat_file_dictionary_cursor_equality(
 	planck_unit_test_t *tc
 ) {
 	int				size;
-	record_info_t	record;
+	ion_record_info_t	record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
 	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 	size				= 10;
 
-	dictionary_handler_t	file_handler;			/* create handler for hashmap */
-	dictionary_t			test_dictionary;		/* dictionary handler for test instance */
+	ion_dictionary_handler_t	file_handler;			/* create handler for hashmap */
+	ion_dictionary_t			test_dictionary;		/* dictionary handler for test instance */
 
 	createFlatFileTestDictionary(&file_handler, &record, size, &test_dictionary, key_type_numeric_signed);
 
-	dict_cursor_t *cursor;	/* create a new cursor pointer */
+	ion_dict_cursor_t *cursor;	/* create a new cursor pointer */
 
 	/* create a new predicate statement */
-	predicate_t predicate;
+	ion_predicate_t predicate;
 
 	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(1, int));
 	/* test that the query runs on dictionary instance okay */
@@ -257,22 +257,22 @@ test_flat_file_dictionary_handler_query_with_results(
 	planck_unit_test_t *tc
 ) {
 	int				size;
-	record_info_t	record_info;
+	ion_record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
 	record_info.key_size	= sizeof(int);
 	record_info.value_size	= 10;
 	size					= 10;
 
-	dictionary_handler_t	map_handler;			/* create handler for hashmap */
-	dictionary_t			test_dictionary;		/* dictionary handler for test instance */
+	ion_dictionary_handler_t	map_handler;			/* create handler for hashmap */
+	ion_dictionary_t			test_dictionary;		/* dictionary handler for test instance */
 
 	createFlatFileTestDictionary(&map_handler, &record_info, size, &test_dictionary, key_type_numeric_signed);
 
-	dict_cursor_t *cursor;	/* create a new cursor pointer */
+	ion_dict_cursor_t *cursor;	/* create a new cursor pointer */
 
 	/* create a new predicate statement */
-	predicate_t predicate;
+	ion_predicate_t predicate;
 
 	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(1, int));
 
@@ -319,22 +319,22 @@ test_flat_file_dictionary_handler_query_no_results(
 	planck_unit_test_t *tc
 ) {
 	int				size;
-	record_info_t	record_info;
+	ion_record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
 	record_info.key_size	= sizeof(int);
 	record_info.value_size	= 10;
 	size					= 10;
 
-	dictionary_handler_t	map_handler;			/* create handler for hashmap */
-	dictionary_t			test_dictionary;		/* dictionary handler for test instance */
+	ion_dictionary_handler_t	map_handler;			/* create handler for hashmap */
+	ion_dictionary_t			test_dictionary;		/* dictionary handler for test instance */
 
 	createFlatFileTestDictionary(&map_handler, &record_info, size, &test_dictionary, key_type_numeric_signed);
 
-	dict_cursor_t *cursor;	/* create a new cursor pointer */
+	ion_dict_cursor_t *cursor;	/* create a new cursor pointer */
 
 	/* create a new predicate statement */
-	predicate_t predicate;
+	ion_predicate_t predicate;
 
 	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(-1, int));
 
@@ -369,25 +369,25 @@ test_flat_file_dictionary_predicate_equality(
 	key_under_test = (ion_key_t) malloc(sizeof(int));
 
 	int				size;
-	record_info_t	record_info;
+	ion_record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
 	record_info.key_size	= sizeof(int);
 	record_info.value_size	= 10;
 	size					= 10;
 
-	dictionary_handler_t	map_handler;			/* create handler for hashmap */
-	dictionary_t			test_dictionary;		/* dictionary handler for test instance */
+	ion_dictionary_handler_t	map_handler;			/* create handler for hashmap */
+	ion_dictionary_t			test_dictionary;		/* dictionary handler for test instance */
 
 	createFlatFileTestDictionary(&map_handler, &record_info, size, &test_dictionary, key_type_numeric_signed);
 
-	dict_cursor_t *cursor;	/* create a new cursor pointer */
+	ion_dict_cursor_t *cursor;	/* create a new cursor pointer */
 
-	cursor			= (dict_cursor_t *) malloc(sizeof(dict_cursor_t));
+	cursor			= (ion_dict_cursor_t *) malloc(sizeof(ion_dict_cursor_t));
 	cursor->destroy = ffdict_destroy_cursor;
 
 	/* create a new predicate statement */
-	predicate_t predicate;
+	ion_predicate_t predicate;
 
 	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(1, int));
 
@@ -423,25 +423,25 @@ test_flat_file_dictionary_predicate_range_signed(
 	key_under_test = (ion_key_t) malloc(sizeof(int));
 
 	int				size;
-	record_info_t	record_info;
+	ion_record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
 	record_info.key_size	= sizeof(int);
 	record_info.value_size	= 10;
 	size					= 10;
 
-	dictionary_handler_t	map_handler;			/* create handler for hashmap */
-	dictionary_t			test_dictionary;		/* dictionary handler for test instance */
+	ion_dictionary_handler_t	map_handler;			/* create handler for hashmap */
+	ion_dictionary_t			test_dictionary;		/* dictionary handler for test instance */
 
 	createFlatFileTestDictionary(&map_handler, &record_info, size, &test_dictionary, key_type_numeric_signed);
 
-	dict_cursor_t *cursor;	/* create a new cursor pointer */
+	ion_dict_cursor_t *cursor;	/* create a new cursor pointer */
 
-	cursor			= (dict_cursor_t *) malloc(sizeof(dict_cursor_t));
+	cursor			= (ion_dict_cursor_t *) malloc(sizeof(ion_dict_cursor_t));
 	cursor->destroy = ffdict_destroy_cursor;
 
 	/* create a new predicate statement */
-	predicate_t predicate;
+	ion_predicate_t predicate;
 
 	dictionary_build_predicate(&predicate, predicate_range, IONIZE(-1, int), IONIZE(1, int));
 
@@ -486,25 +486,25 @@ test_flat_file_dictionary_predicate_range_unsigned(
 	key_under_test = (ion_key_t) malloc(sizeof(unsigned int));
 
 	int				size;
-	record_info_t	record_info;
+	ion_record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
 	record_info.key_size	= sizeof(int);
 	record_info.value_size	= 10;
 	size					= 10;
 
-	dictionary_handler_t	map_handler;					/* create handler for hashmap */
-	dictionary_t			test_dictionary;				/* dictionary handler for test instance */
+	ion_dictionary_handler_t	map_handler;					/* create handler for hashmap */
+	ion_dictionary_t			test_dictionary;				/* dictionary handler for test instance */
 
 	createFlatFileTestDictionary(&map_handler, &record_info, size, &test_dictionary, key_type_numeric_unsigned);
 
-	dict_cursor_t *cursor;	/* create a new cursor pointer */
+	ion_dict_cursor_t *cursor;	/* create a new cursor pointer */
 
-	cursor			= (dict_cursor_t *) malloc(sizeof(dict_cursor_t));
+	cursor			= (ion_dict_cursor_t *) malloc(sizeof(ion_dict_cursor_t));
 	cursor->destroy = ffdict_destroy_cursor;
 
 	/* create a new predicate statement */
-	predicate_t predicate;
+	ion_predicate_t predicate;
 
 	dictionary_build_predicate(&predicate, predicate_range, IONIZE(0, int), IONIZE(2, int));
 
@@ -545,22 +545,22 @@ test_flat_file_dictionary_cursor_range(
 	planck_unit_test_t *tc
 ) {
 	int				size;
-	record_info_t	record_info;
+	ion_record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
 	record_info.key_size	= sizeof(int);
 	record_info.value_size	= 10;
 	size					= 10;
 
-	dictionary_handler_t	map_handler;			/* create handler for hashmap */
-	dictionary_t			test_dictionary;		/* dictionary handler for test instance */
+	ion_dictionary_handler_t	map_handler;			/* create handler for hashmap */
+	ion_dictionary_t			test_dictionary;		/* dictionary handler for test instance */
 
 	createFlatFileTestDictionary(&map_handler, &record_info, size, &test_dictionary, key_type_numeric_signed);
 
-	dict_cursor_t *cursor;	/* create a new cursor pointer */
+	ion_dict_cursor_t *cursor;	/* create a new cursor pointer */
 
 	/* create a new predicate statement */
-	predicate_t predicate;
+	ion_predicate_t predicate;
 
 	dictionary_build_predicate(&predicate, predicate_range, IONIZE(1, int), IONIZE(5, int));
 	/* test that the query runs on dictionary instance okay */
@@ -576,7 +576,7 @@ test_flat_file_dictionary_cursor_range(
 	record.value	= (ion_value_t) malloc(record_info.value_size);
 
 	int				result_count = 0;
-	cursor_status_t cursor_status;
+	ion_cursor_status_t cursor_status;
 
 	while (cs_cursor_active == (cursor_status = cursor->next(cursor, &record))) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == cursor_status);

@@ -29,8 +29,8 @@ template<typename K, typename V>
 class Cursor {
 public:
 Cursor(
-	dictionary_t	*dictionary,
-	predicate_t		*predicate
+	ion_dictionary_t	*dictionary,
+	ion_predicate_t		*predicate
 ) {
 	dictionary_find(dictionary, predicate, &cursor);
 	record.key		= (ion_key_t) malloc(dictionary->instance->record.key_size);
@@ -53,7 +53,7 @@ hasNext(
 bool
 next(
 ) {
-	cursor_status_t status = cursor->next(cursor, &record);
+	ion_cursor_status_t status = cursor->next(cursor, &record);
 
 	return status == cs_cursor_initialized || status == cs_cursor_active;
 }
@@ -72,8 +72,8 @@ getValue(
 
 private:
 
-dictionary_t	*dictionary;
-dict_cursor_t	*cursor;
+ion_dictionary_t	*dictionary;
+ion_dict_cursor_t	*cursor;
 ion_record_t	record;
 };
 
