@@ -108,8 +108,6 @@ iinq_delete(#schema_name ".inq", key)
 #define DROP(schema_name)\
 iinq_drop(#schema_name ".inq")
 
-//iinq_insert_into(#schema_name ".inq", key, value)
-
 #define SELECT_ALL \
 iinq_result_size_t result_loc	= 0; \
 iinq_cleanup_t *copyer			= first; \
@@ -120,17 +118,6 @@ while (NULL != copyer) { \
 	result_loc += copyer->reference->dictionary.instance->record.value_size; \
 	copyer						= copyer->next; \
 }
-#if 0
-iinq_result_size_t result_loc	= result.num_bytes; \
-iinq_cleanup_t *copyer			= last; \
-while (NULL != copyer) { \
-	memcpy(result.data+(result_loc - copyer->reference->dictionary.instance->record.value_size), copyer->reference->value, copyer->reference->dictionary.instance->record.value_size); \
-	result_loc -= copyer->reference->dictionary.instance->record.value_size; \
-	memcpy(result.data+(result_loc - copyer->reference->dictionary.instance->record.key_size), copyer->reference->key, copyer->reference->dictionary.instance->record.key_size); \
-	result_loc -= copyer->reference->dictionary.instance->record.key_size; \
-	copyer						= copyer->last; \
-}
-#endif
 
 #define _FROM_SOURCE_SINGLE(source) \
 	iinq_source_t source; \
@@ -146,14 +133,20 @@ while (NULL != copyer) { \
 	last						= &source.cleanup; \
 	source.cleanup.next			= NULL; \
 	source.dictionary.handler	= &source.handler; \
-	iinq_open_source(#source ".inq", &(source.dictionary), &(source.handler)); \
+	error						= iinq_open_source(#source ".inq", &(source.dictionary), &(source.handler)); \
+	if (err_ok != error) { \
+		break; \
+	} \
 	source.key					= alloca(source.dictionary.instance->record.key_size); \
 	source.value				= alloca(source.dictionary.instance->record.value_size); \
 	source.ion_record.key		= source.key; \
 	source.ion_record.value		= source.value; \
 	result.num_bytes			+= source.dictionary.instance->record.key_size; \
 	result.num_bytes			+= source.dictionary.instance->record.value_size; \
-	dictionary_build_predicate(&(source.predicate), predicate_all_records); \
+	error						= dictionary_build_predicate(&(source.predicate), predicate_all_records); \
+	if (err_ok != error) { \
+		break; \
+	} \
 	dictionary_find(&source.dictionary, &source.predicate, &source.cursor);
 
 #define _FROM_CHECK_CURSOR_SINGLE(source) \
@@ -161,16 +154,16 @@ while (NULL != copyer) { \
 
 #define _FROM_ADVANCE_CURSORS \
 		if (NULL == ref_cursor) { \
-			ref_cursor	= last; \
-		} \
-		if (NULL == ref_cursor) { \
 			break; \
 		} \
 		last_cursor		= ref_cursor; \
 		/* Keep going backwards through sources until we find one we can advance. If we re-initialize any cursors, reset ref_cursor to last. */ \
-		while (NULL != ref_cursor && !(cs_cursor_active == (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(ref_cursor->reference->cursor, &ref_cursor->reference->ion_record)) || cs_cursor_initialized == ref_cursor->reference->cursor_status)) { \
+		while (NULL != ref_cursor && (cs_cursor_active != (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(ref_cursor->reference->cursor, &ref_cursor->reference->ion_record)) && cs_cursor_initialized != ref_cursor->reference->cursor_status)) { \
 			ref_cursor->reference->cursor->destroy(&ref_cursor->reference->cursor); \
 			dictionary_find(&ref_cursor->reference->dictionary, &ref_cursor->reference->predicate, &ref_cursor->reference->cursor); \
+			if ((cs_cursor_active != (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(ref_cursor->reference->cursor, &ref_cursor->reference->ion_record)) && cs_cursor_initialized != ref_cursor->reference->cursor_status)) { \
+				goto IINQ_QUERY_CLEANUP; \
+			} \
 			ref_cursor	= ref_cursor->last; \
 		} \
 		if (NULL == ref_cursor) { \
@@ -215,6 +208,15 @@ while (NULL != copyer) { \
 	last_cursor	= NULL; \
 	_FROM_SOURCES(__VA_ARGS__) \
 	result.data	= alloca(result.num_bytes); \
+	ref_cursor	= first; \
+	/* Initialize all cursors except the last one. */ \
+	while (ref_cursor != last) { \
+		if (NULL == ref_cursor || (cs_cursor_active != (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(ref_cursor->reference->cursor, &ref_cursor->reference->ion_record)) && cs_cursor_initialized != ref_cursor->reference->cursor_status)) { \
+			break; \
+		} \
+		ref_cursor = ref_cursor->next; \
+	} \
+	ref_cursor	= last; \
 	while (1) { \
 		_FROM_ADVANCE_CURSORS
 		/*if (!_FROM_CHECK_CURSOR(__VA_ARGS__)) {*/ \
@@ -225,17 +227,17 @@ while (NULL != copyer) { \
 
 #define QUERY(select, from, where, groupby, having, orderby, limit, when, p) \
 do { \
-	ion_status_t	status; \
 	err_t			error; \
 	iinq_result_t	result; \
 	result.num_bytes	= 0; \
 	from/* This includes a loop declaration with some other stuff. */ \
-		else if (!where) { \
+		if (!where) { \
 			continue; \
 		} \
 		select \
 		(p)->execute(&result, (p)->state); \
 	} \
+	IINQ_QUERY_CLEANUP: \
 	while (NULL != first) { \
 		first->reference->cursor->destroy(&first->reference->cursor); \
 		ion_close_dictionary(&first->reference->dictionary); \

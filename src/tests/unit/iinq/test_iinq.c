@@ -131,7 +131,7 @@ IINQ_NEW_PROCESSOR_FUNC(print_hello) {
 }
 
 void
-iinq_test_create_query_select_from_where_single_dictionary(
+iinq_test_create_query_select_all_from_where_single_dictionary(
 	planck_unit_test_t	*tc
 ) {
 	err_t					error;
@@ -182,6 +182,70 @@ iinq_test_create_query_select_from_where_single_dictionary(
 	DROP(test);
 }
 
+void
+iinq_test_create_query_select_all_from_where_two_dictionaries(
+		planck_unit_test_t	*tc
+) {
+	err_t					error;
+	ion_status_t			status;
+	iinq_query_processor_t	processor;
+
+	key_type_t				key_type;
+	ion_key_size_t			key_size;
+	ion_value_size_t		value_size;
+	ion_key_t				key;
+	ion_value_t 			value;
+
+	processor	= IINQ_QUERY_PROCESSOR(print_hello, NULL);
+
+	key_type	= key_type_numeric_signed;
+	key_size	= sizeof(int);
+	value_size	= sizeof(int);
+
+	error		= CREATE_DICTIONARY(test1, key_type, key_size, value_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
+
+	error		= CREATE_DICTIONARY(test2, key_type, key_size, value_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
+
+	key			= IONIZE(1, int);
+	value		= IONIZE(1, int);
+
+	status		= INSERT(test1, key, value);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	status		= INSERT(test2, key, value);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	key			= IONIZE(2, int);
+	value		= IONIZE(2, int);
+
+	status		= INSERT(test1, key, value);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	status		= INSERT(test2, key, value);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	QUERY(
+			SELECT_ALL,
+			FROM(test1, test2),
+			WHERE(NEUTRALIZE(test1.key, int) == 1),
+	,
+	,
+	,
+	,
+	,
+			&processor
+	);
+
+	DROP(test1);
+	DROP(test2);
+}
+
 planck_unit_suite_t *
 iinq_get_suite(
 ) {
@@ -190,7 +254,8 @@ iinq_get_suite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_open_source_intint);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_open_source_string10string20);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_insert_update_delete_drop_dictionary_intint);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_from_where_single_dictionary);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_single_dictionary);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_two_dictionaries);
 
 	return suite;
 }
