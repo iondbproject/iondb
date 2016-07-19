@@ -355,7 +355,7 @@ oafh_compute_simple_hash(
 	UNUSED(size_of_key);
 
 	/* convert to a hashable value */
-	hash_t hash = (hash_t) ((*(int *) key) + hashmap->map_size) % hashmap->map_size;
+	hash_t hash = (hash_t) (((*(int *) key) % hashmap->map_size) + hashmap->map_size) % hashmap->map_size;
 
 	return hash;
 }

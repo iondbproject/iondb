@@ -113,6 +113,8 @@ sldict_find(
 ) {
 	*cursor = malloc(sizeof(sldict_cursor_t));
 
+	skiplist_t *skip_list = (skiplist_t *) dictionary->instance;
+
 	if (NULL == *cursor) {
 		return err_out_of_memory;
 	}
@@ -230,6 +232,21 @@ sldict_find(
 			break;
 		}
 
+		case predicate_all_records: {
+			sldict_cursor_t *sl_cursor = (sldict_cursor_t *) (*cursor);
+
+			if (NULL == skip_list->head->next[0]) {
+				(*cursor)->status = cs_end_of_results;
+			}
+			else {
+				sl_cursor->current	= skip_list->head->next[0];
+				(*cursor)->status	= cs_cursor_initialized;
+			}
+
+			return err_ok;
+			break;
+		}
+
 		case predicate_predicate: {
 			/* TODO not implemented */
 			break;
@@ -319,6 +336,10 @@ sldict_test_predicate(
 
 			result = comp_lower && comp_upper;
 			break;
+		}
+
+		case predicate_all_records: {
+			return boolean_true;
 		}
 	}
 

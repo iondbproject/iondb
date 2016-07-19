@@ -160,7 +160,6 @@ oadict_find(
 		}
 
 		case predicate_range: {
-			/* as this is a range, need to malloc lower bound key */
 			if (((*cursor)->predicate->statement.range.lower_bound = (ion_key_t) malloc((((hashmap_t *) dictionary->instance)->super.record.key_size))) == NULL) {
 				free((*cursor)->predicate);
 				free(*cursor);	/* cleanup */
@@ -181,27 +180,38 @@ oadict_find(
 			/* copy across the key value as the predicate may be destroyed */
 			memcpy((*cursor)->predicate->statement.range.upper_bound, predicate->statement.range.upper_bound, (((hashmap_t *) dictionary->instance)->super.record.key_size));
 
-			/* find the location of the first element as this is a straight equality */
-			int location = cs_invalid_index;
+			oadict_cursor_t *oadict_cursor	= (oadict_cursor_t *) (*cursor);
+			hashmap_t		*hash_map		= ((hashmap_t *) dictionary->instance);
 
-			/* start at the lowest end of the range and check */
-			if (oah_find_item_loc((hashmap_t *) dictionary->instance, (*cursor)->predicate->statement.range.lower_bound, &location) == err_item_not_found) {
-				/* this will still have to be returned? */
-				(*cursor)->status = cs_end_of_results;
-				return err_ok;
-			}
-			else {
-				(*cursor)->status = cs_cursor_initialized;
+			(*cursor)->status		= cs_cursor_initialized;
+			oadict_cursor->first	= (hash_map->map_size) - 1;
+			oadict_cursor->current	= -1;
 
-				/* cast to specific instance type for conveniences of setup */
-				oadict_cursor_t *oadict_cursor = (oadict_cursor_t *) (*cursor);
+			err_t err = oadict_scan(oadict_cursor);
 
-				/* the cursor is ready to be consumed */
-				oadict_cursor->first	= location;
-				oadict_cursor->current	= location;
-				return err_ok;
+			if (cs_valid_data != err) {
+				(*cursor)->status = cs_cursor_uninitialized;
 			}
 
+			return err_ok;
+			break;
+		}
+
+		case predicate_all_records: {
+			oadict_cursor_t *oadict_cursor	= (oadict_cursor_t *) (*cursor);
+			hashmap_t		*hash_map		= ((hashmap_t *) dictionary->instance);
+
+			(*cursor)->status		= cs_cursor_initialized;
+			oadict_cursor->first	= (hash_map->map_size) - 1;
+			oadict_cursor->current	= -1;
+
+			err_t err = oadict_scan(oadict_cursor);
+
+			if (cs_valid_data != err) {
+				(*cursor)->status = cs_cursor_uninitialized;
+			}
+
+			return err_ok;
 			break;
 		}
 
@@ -332,6 +342,10 @@ oadict_test_predicate(
 
 			break;
 		}
+
+		case predicate_all_records: {
+			key_satisfies_predicate = boolean_true;
+		}
 	}
 
 	return key_satisfies_predicate;
@@ -370,9 +384,10 @@ oadict_scan(
 				cursor->current = loc;	/* this is the next index for value */
 				return cs_valid_data;
 			}
-		}
 
-		loc++;
+			/* If valid bucket is not found, advance current position. */
+			loc++;
+		}
 
 		if (loc >= hash_map->map_size) {
 			/* Perform wrapping */
