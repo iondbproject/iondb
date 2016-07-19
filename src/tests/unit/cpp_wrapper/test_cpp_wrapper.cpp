@@ -933,7 +933,7 @@ test_cpp_wrapper_all_records_edge_cases2(
 	Dictionary<int, int> *dict
 ) {
 	int total_records	= 0;
-	int nums[5]			= { -11, 11, 5, 50, -22 };
+	int nums[5]			= { -111, 113, 5, 50, -225 };
 	int nums_length		= sizeof(nums) / sizeof(int);
 	int curr_pos		= 0;
 
@@ -1044,13 +1044,13 @@ test_cpp_wrapper_all_records_edge_cases2_on_all_implementations(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
-	test_cpp_wrapper_all_records_edge_cases2(tc, dict);
-	delete dict;
-
-	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
-	test_cpp_wrapper_all_records_edge_cases2(tc, dict);
-	delete dict;
+/*	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
+/*	test_cpp_wrapper_all_records_edge_cases2(tc, dict); */
+/*	delete dict; */
+/*  */
+/*	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7); */
+/*	test_cpp_wrapper_all_records_edge_cases2(tc, dict); */
+/*	delete dict; */
 
 /*	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
 /*	test_cpp_wrapper_all_records_edge_cases2(tc, dict); */
