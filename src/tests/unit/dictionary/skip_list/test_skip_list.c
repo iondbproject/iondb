@@ -89,7 +89,7 @@ test_skiplist_initialize(
 
 	key_type	= key_type_numeric_signed;
 	compare		= dictionary_compare_signed_value;
-	key_size	= 4;
+	key_size	= sizeof(int);
 	value_size	= 10;
 	pnum		= 1;
 	pden		= 4;
@@ -285,8 +285,7 @@ test_skiplist_randomized_insert(
 /**
 @brief	  Tests node search on a single node in a skiplist with only one node.
 
-@details	Tests node search on a single node in a skiplist with only one node.
-			The key searched for is exact. The test compares the given node key
+@details	The key searched for is exact. The test compares the given node key
 			and value information with the information inserted into the
 			skiplist. The test passes if they are the same.
 
@@ -327,8 +326,7 @@ test_skiplist_get_node_single(
 /**
 @brief	  Tests node search on a single node in a skiplist with only one node.
 
-@details	Tests node search on a single node in a skiplist with only one node.
-			The key searched for is higher than the inserted key. The test
+@details	The key searched for is higher than the inserted key. The test
 			compares the given node key and value information with the
 			information inserted into the skiplist. The test passes if they are
 			the same.
@@ -373,8 +371,7 @@ test_skiplist_get_node_single_high(
 /**
 @brief	  Tests node search on a single node in a skiplist with only one node.
 
-@details	Tests node search on a single node in a skiplist with only one node.
-			The key searched for is lower than the inserted key. The test
+@details	The key searched for is lower than the inserted key. The test
 			compares the given node key and value information with the
 			information inserted into the skiplist. The test passes if the node
 			returned is the same as the head node. (Since there's only one node,
