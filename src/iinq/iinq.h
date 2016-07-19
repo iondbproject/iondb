@@ -179,7 +179,7 @@ do { \
 	ion_status_t	status; \
 	err_t			error; \
 	iinq_result_t	result; \
-	result.num_bytes= 0; \
+	result.num_bytes	= 0; \
 	from/* This includes a loop declaration with some other stuff. */ \
 		else if (!where) { \
 			continue; \
@@ -188,8 +188,9 @@ do { \
 		(p)->execute(&result, (p)->state); \
 	} \
 	while (NULL != first) { \
-		ion_close_dictionary(&last->reference->dictionary); \
-		first		= first->next; \
+		first->reference->cursor->destroy(&first->reference->cursor); \
+		ion_close_dictionary(&first->reference->dictionary); \
+		first			= first->next; \
 	}\
 } while (0);
 
