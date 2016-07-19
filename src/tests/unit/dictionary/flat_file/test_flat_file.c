@@ -220,7 +220,7 @@ test_flat_file_initialize(
 /**
 @brief	  Tests a simple delete from dictionary
 
-@details	Tests a simple delete from dictionary.  Builds a test collection
+@details	Tests a simple delete from dictionary.  builds a test dictionary instance
 			and then deletes records one by one, checking that each record has
 			been successfully deleted and that the rest of the map has not
 			been perturbed.
