@@ -28,8 +28,13 @@
 
 #include "behaviour_dictionary.h"
 
-bhdct_context_t bhdct_context;
+/* This is a private struct we use to track metadata about the dictionary. */
+bhdct_context_t bhdct_context = { NULL };
 
+/**
+@brief	This function binds the context properly. The context dictates what type of dictionary
+		we're testing, so that these tests may be re-used across several implementations.
+*/
 void
 bhdct_set_context(
 	void (*init_fcn)(dictionary_handler_t *)
@@ -56,6 +61,68 @@ bhdct_dictionary_initialization(
 }
 
 /**
+@brief	This function initializes the master table.
+*/
+void
+bhdct_master_table_init(
+	planck_unit_test_t *tc
+) {
+	err_t err = ion_init_master_table();
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+}
+
+/**
+@brief	This function un-registers a dictionary from the master table.
+*/
+void
+bhdct_delete_from_master_table(
+	planck_unit_test_t	*tc,
+	dictionary_t		*dict
+) {
+	err_t err = ion_delete_from_master_table(dict);	/* TODO: Change this once master table delete has been fixed */
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+}
+
+/**
+@brief	This function deletes a dictionary.
+*/
+void
+bhdct_delete_dictionary(
+	planck_unit_test_t	*tc,
+	dictionary_t		*dict
+) {
+	err_t err = dictionary_delete_dictionary(dict);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+}
+
+/**
+@brief	This function closes the master table.
+*/
+void
+bhdct_close_master_table(
+	planck_unit_test_t *tc
+) {
+	err_t err = ion_close_master_table();
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+}
+
+/**
+@brief	This function deletes the master table.
+*/
+void
+bhdct_delete_master_table(
+	planck_unit_test_t *tc
+) {
+	err_t err = ion_delete_master_table();
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+}
+
+/**
 @brief	This function performs the setup required for a test case.
 */
 void
@@ -64,31 +131,24 @@ bhdct_setup(
 	dictionary_handler_t	*handler,
 	dictionary_t			*dict
 ) {
-	err_t err = ion_init_master_table();
-
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+	bhdct_master_table_init(tc);
 	bhdct_context.init_fcn(handler);
 	bhdct_dictionary_initialization(tc, handler, dict, key_type_numeric_signed, sizeof(int), sizeof(int), 10);
 }
 
 /**
-@brief	This function performs the setup required for a test case.
+@brief	This function tears down a test case and cleans everything up.
 */
 void
 bhdct_takedown(
 	planck_unit_test_t	*tc,
 	dictionary_t		*dict
 ) {
-/*	err_t err = dictionary_delete_dictionary(dict); // todo: this isn't needed once master table properly tracks dictionaries */
-/*	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err); // FIXME: This has to be deleted one way or another */
+	bhdct_delete_from_master_table(tc, dict);
+	bhdct_delete_dictionary(tc, dict);
 
-	err_t err = ion_delete_from_master_table(dict);
-
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
-	err = ion_close_master_table();
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
-	err = ion_delete_master_table();
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+	bhdct_close_master_table(tc);
+	bhdct_delete_master_table(tc);
 }
 
 /**
@@ -110,6 +170,10 @@ planck_unit_suite_t *
 bhdct_getsuite(
 	void
 ) {
+	if (NULL == bhdct_context.init_fcn) {
+		return NULL;
+	}
+
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_setup);
