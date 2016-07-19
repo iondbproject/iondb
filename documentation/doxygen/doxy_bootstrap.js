@@ -58,7 +58,7 @@ $( document ).ready(function() {
 
     $("div.ah").addClass("btn btn-default");
     $("span.mlabels").addClass("pull-right");
-    $("table.mlabels").css("width", "100%")
+    $("table.mlabels").css("width", "100%");
     $("td.mlabels-right").addClass("pull-right");
 
     $("div.ttc").addClass("panel panel-primary");
