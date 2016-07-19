@@ -88,7 +88,7 @@ ff_destroy(
 	}
 
 	if (0 != fremove("file.bin")) {
-		return err_colllection_destruction_error;
+		return err_dictionary_destruction_error;
 	}
 
 	return err_ok;

@@ -96,7 +96,7 @@ oafh_destroy(
 		return err_ok;
 	}
 	else {
-		return err_colllection_destruction_error;
+		return err_dictionary_destruction_error;
 	}
 }
 

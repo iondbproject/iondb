@@ -14,7 +14,7 @@ extern "C" {
 #define MAX_HASH_TEST 100
 
 /**
-@brief		A helper function to build a test collection
+@brief		A helper function to build a test dictionary instance
 
 @param	  map_handler
 @param	  record
@@ -22,7 +22,7 @@ extern "C" {
 @param	  test_dictionary
  */
 void
-createTestCollection(
+createTestDictionary(
 	dictionary_handler_t	*map_handler,
 	const record_info_t		*record,
 	int						size,
@@ -30,7 +30,7 @@ createTestCollection(
 	key_type_t				key_type
 ) {
 	oadict_init(map_handler);	/* register handler for hashmap */
-	/* register the appropriate handler for a given collection */
+	/* register the appropriate handler for a given dictionary */
 
 	dictionary_create(map_handler, test_dictionary, 1, key_type, record->key_size, record->value_size, size);
 
@@ -93,10 +93,10 @@ test_open_address_hashmap_handler_create_destroy(
 
 	oadict_init(&map_handler);	/* register handler for hashmap */
 
-	/* collection handler for test collection */
+	/* dictionary handler for test instance */
 	dictionary_t test_dictionary;
 
-	/* register the appropriate handler for a given collection */
+	/* register the appropriate handler for a given dictionary */
 	dictionary_create(&map_handler, &test_dictionary, 1, key_type_numeric_signed, record.key_size, record.value_size, size);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, (((hashmap_t *) test_dictionary.instance)->super.record.key_size) == record.key_size);
@@ -123,9 +123,9 @@ test_open_address_dictionary_cursor_equality(
 	size				= 10;
 
 	dictionary_handler_t	map_handler;			/* create handler for hashmap */
-	dictionary_t			test_dictionary;		/* collection handler for test collection */
+	dictionary_t			test_dictionary;		/* dictionary handler for test instance */
 
-	createTestCollection(&map_handler, &record, size, &test_dictionary, key_type_numeric_signed);
+	createTestDictionary(&map_handler, &record, size, &test_dictionary, key_type_numeric_signed);
 
 	dict_cursor_t *cursor;	/* create a new cursor pointer */
 
@@ -134,7 +134,7 @@ test_open_address_dictionary_cursor_equality(
 
 	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(1, int));
 
-	/* test that the query runs on collection okay */
+	/* test that the query runs on dictionary instance okay */
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dictionary_find(&test_dictionary, &predicate, &cursor));
 
 	/* check the status of the cursor as it should be initialized */
@@ -146,7 +146,7 @@ test_open_address_dictionary_cursor_equality(
 	/* and check that cursor has been destroyed correctly */
 	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == cursor);
 
-	/* and destory the collection */
+	/* and destroy the dictionary instance */
 	dictionary_delete_dictionary(&test_dictionary);
 }
 
@@ -163,9 +163,9 @@ test_open_address_dictionary_handler_query_with_results(
 	size					= 10;
 
 	dictionary_handler_t	map_handler;			/* create handler for hashmap */
-	dictionary_t			test_dictionary;		/* collection handler for test collection */
+	dictionary_t			test_dictionary;		/* dictionary handler for test instance */
 
-	createTestCollection(&map_handler, &record_info, size, &test_dictionary, key_type_numeric_signed);
+	createTestDictionary(&map_handler, &record_info, size, &test_dictionary, key_type_numeric_signed);
 
 	dict_cursor_t *cursor;	/* create a new cursor pointer */
 
@@ -174,7 +174,7 @@ test_open_address_dictionary_handler_query_with_results(
 
 	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(1, int));
 
-	/* test that the query runs on collection okay */
+	/* test that the query runs on dictionary instance okay */
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dictionary_find(&test_dictionary, &predicate, &cursor));
 
 	/* check the status of the cursor as it should be initialized */
@@ -208,7 +208,7 @@ test_open_address_dictionary_handler_query_with_results(
 	free(record.key);
 	/* destory cursor for cleanup */
 	cursor->destroy(&cursor);
-	/* and destory the collection */
+	/* and destroy the dictionary instance */
 	dictionary_delete_dictionary(&test_dictionary);
 }
 
@@ -225,9 +225,9 @@ test_open_address_dictionary_handler_query_no_results(
 	size					= 10;
 
 	dictionary_handler_t	map_handler;			/* create handler for hashmap */
-	dictionary_t			test_dictionary;		/* collection handler for test collection */
+	dictionary_t			test_dictionary;		/* dictionary handler for test instance */
 
-	createTestCollection(&map_handler, &record_info, size, &test_dictionary, key_type_numeric_signed);
+	createTestDictionary(&map_handler, &record_info, size, &test_dictionary, key_type_numeric_signed);
 
 	dict_cursor_t *cursor;	/* create a new cursor pointer */
 
@@ -236,7 +236,7 @@ test_open_address_dictionary_handler_query_no_results(
 
 	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(-1, int));
 
-	/* test that the query runs on collection okay */
+	/* test that the query runs on dictionary instance okay */
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dictionary_find(&test_dictionary, &predicate, &cursor));
 
 	/* check the status of the cursor as it should be at the end of results as no values exist */
@@ -254,7 +254,7 @@ test_open_address_dictionary_handler_query_no_results(
 	free(record.key);
 	/* destroy cursor for cleanup */
 	cursor->destroy(&cursor);
-	/* and destroy the collection */
+	/* and destroy the dictionary instance */
 	dictionary_delete_dictionary(&test_dictionary);
 }
 
@@ -275,9 +275,9 @@ test_open_address_dictionary_predicate_equality(
 	size				= 10;
 
 	dictionary_handler_t	map_handler;			/* create handler for hashmap */
-	dictionary_t			test_dictionary;		/* collection handler for test collection */
+	dictionary_t			test_dictionary;		/* dictionary handler for test instance */
 
-	createTestCollection(&map_handler, &record, size, &test_dictionary, key_type_numeric_signed);
+	createTestDictionary(&map_handler, &record, size, &test_dictionary, key_type_numeric_signed);
 
 	dict_cursor_t cursor;	/* create a new cursor */
 
@@ -309,7 +309,7 @@ test_open_address_dictionary_predicate_equality(
 
 	/* destroy cursor for cleanup TODO TODO memory leak here CANNOT free!!! */
 	/* cursor->destroy(&cursor); */
-	/* and destroy the collection */
+	/* and destroy the dictionary instance */
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
 }
 
@@ -330,9 +330,9 @@ test_open_address_dictionary_predicate_range_signed(
 	size				= 10;
 
 	dictionary_handler_t	map_handler;			/* create handler for hashmap */
-	dictionary_t			test_dictionary;		/* collection handler for test collection */
+	dictionary_t			test_dictionary;		/* dictionary handler for test instance */
 
-	createTestCollection(&map_handler, &record, size, &test_dictionary, key_type_numeric_signed);
+	createTestDictionary(&map_handler, &record, size, &test_dictionary, key_type_numeric_signed);
 
 	dict_cursor_t cursor;	/* create a new cursor */
 
@@ -372,7 +372,7 @@ test_open_address_dictionary_predicate_range_signed(
 
 	/* destroy cursor for cleanup TODO TODO CANNOT free here!!! */
 	/* cursor->destroy(&cursor); */
-	/* and destroy the collection */
+	/* and destroy the dictionary instance */
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
 }
 
@@ -393,9 +393,9 @@ test_open_address_dictionary_predicate_range_unsigned(
 	size				= 10;
 
 	dictionary_handler_t	map_handler;			/* create handler for hashmap */
-	dictionary_t			test_dictionary;		/* collection handler for test collection */
+	dictionary_t			test_dictionary;		/* dictionary handler for test instance */
 
-	createTestCollection(&map_handler, &record, size, &test_dictionary, key_type_numeric_unsigned);
+	createTestDictionary(&map_handler, &record, size, &test_dictionary, key_type_numeric_unsigned);
 
 	dict_cursor_t cursor;	/* create a new cursor */
 
@@ -435,7 +435,7 @@ test_open_address_dictionary_predicate_range_unsigned(
 
 	/* destroy cursor for cleanup TODO TODO Memory leak here CANNOT free!!! */
 	/* cursor->destroy(&cursor); */
-	/* and destroy the collection */
+	/* and destroy the dictionary instance */
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
 }
 
@@ -452,9 +452,9 @@ test_open_address_dictionary_cursor_range(
 	size					= 10;
 
 	dictionary_handler_t	map_handler;			/* create handler for hashmap */
-	dictionary_t			test_dictionary;		/* collection handler for test collection */
+	dictionary_t			test_dictionary;		/* dictionary handler for test instance */
 
-	createTestCollection(&map_handler, &record_info, size, &test_dictionary, key_type_numeric_signed);
+	createTestDictionary(&map_handler, &record_info, size, &test_dictionary, key_type_numeric_signed);
 
 	dict_cursor_t *cursor;	/* create a new cursor */
 
@@ -462,7 +462,7 @@ test_open_address_dictionary_cursor_range(
 	predicate_t predicate;
 
 	dictionary_build_predicate(&predicate, predicate_range, IONIZE(1, int), IONIZE(5, int));
-	/* test that the query runs on collection okay */
+	/* test that the query runs on dictionary instance okay */
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dictionary_find(&test_dictionary, &predicate, &cursor));
 
 	/* check the status of the cursor as it should be initialized */
@@ -507,7 +507,7 @@ test_open_address_dictionary_cursor_range(
 	free(record.key);
 	free(record.value);
 
-	/* and destory the collection */
+	/* and destroy the dictionary instance */
 	dictionary_delete_dictionary(&test_dictionary);
 }
 

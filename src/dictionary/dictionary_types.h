@@ -161,7 +161,7 @@ typedef char cursor_status_t;
 /**
 @brief		A dictionary_handler is responsible for dealing with the specific
 			interface for an underlying dictionary, but is decoupled from a
-			specific collection.
+			specific implementation.
 */
 struct dictionary_handler {
 	ion_status_t (*insert)(
@@ -249,7 +249,7 @@ struct dictionary {
 	ion_dictionary_status_t status;	/**< A status describing the state
 											 of the dictionary. */
 	dictionary_parent_t		*instance;	/**< Specific instance of a
-											 collection (but we don't
+											 dictionary (but we don't
 											 know type). */
 	dictionary_handler_t	*handler;	/**< Handler for the specific type. */
 };
@@ -345,7 +345,7 @@ union predicate_statement {
 			dictionary operations.
 
 			A predicate is used with the find statement to produce a
-			collection with multiple values.
+			dictionary instance with multiple values.
 */
 struct predicate {
 	/**> Predicate type data for this predicate. */

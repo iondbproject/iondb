@@ -24,7 +24,7 @@
 				Size of dictionary
  */
 void
-create_test_collection(
+create_test_dictionary(
 	dictionary_t			*dictionary,
 	dictionary_handler_t	*handler,
 	record_info_t			*record,
@@ -58,7 +58,7 @@ create_test_collection(
 }
 
 /**
-@brief	  Helper function to create a collection using standard condition
+@brief	  Helper function to create a dictionary instance using standard condition
 			variables.
 
 @param	  dictionary
@@ -67,7 +67,7 @@ create_test_collection(
 				Handler to bind
  */
 void
-create_test_collection_std_conditions(
+create_test_dictionary_std_conditions(
 	dictionary_t			*dictionary,
 	dictionary_handler_t	*handler
 ) {
@@ -77,7 +77,7 @@ create_test_collection_std_conditions(
 	int				size			= 7;
 	int				num_elements	= 50;
 
-	create_test_collection(dictionary, handler, &record, key_type, size, num_elements);
+	create_test_dictionary(dictionary, handler, &record, key_type, size, num_elements);
 }
 
 /**
@@ -88,7 +88,7 @@ create_test_collection_std_conditions(
 				CuTest dependency
  */
 void
-test_collection_handler_binding(
+test_dictionary_handler_binding(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
@@ -105,14 +105,14 @@ test_collection_handler_binding(
 }
 
 /**
-@brief	  Tests the creation of a collection and verifies all properties
+@brief	  Tests the creation of a dictionary instance and verifies all properties
 			have been correctly initialized.
 
 @param	  tc
 				CuTest dependency
  */
 void
-test_collection_creation(
+test_dictionary_creation(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
@@ -124,7 +124,7 @@ test_collection_creation(
 	int						size			= 50;
 	int						num_elements	= 25;
 
-	create_test_collection(&dict, &handler, &record, key_type, size, num_elements);
+	create_test_dictionary(&dict, &handler, &record, key_type, size, num_elements);
 
 	skiplist_t *skiplist = (skiplist_t *) dict.instance;
 
@@ -158,7 +158,7 @@ test_slhandler_cursor_equality(
 	dictionary_t			dict;
 	dictionary_handler_t	handler;
 
-	create_test_collection_std_conditions(&dict, &handler);
+	create_test_dictionary_std_conditions(&dict, &handler);
 
 	dict_cursor_t	*cursor;
 	predicate_t		predicate;
@@ -192,7 +192,7 @@ test_slhandler_cursor_equality_with_results(
 	dictionary_t			dict;
 	dictionary_handler_t	handler;
 
-	create_test_collection_std_conditions(&dict, &handler);
+	create_test_dictionary_std_conditions(&dict, &handler);
 
 	dict_cursor_t	*cursor;
 	predicate_t		predicate;
@@ -247,7 +247,7 @@ test_slhandler_cursor_range(
 	dictionary_t			dict;
 	dictionary_handler_t	handler;
 
-	create_test_collection_std_conditions(&dict, &handler);
+	create_test_dictionary_std_conditions(&dict, &handler);
 
 	dict_cursor_t	*cursor;
 	predicate_t		predicate;
@@ -281,7 +281,7 @@ test_slhandler_cursor_range_with_results(
 	dictionary_t			dict;
 	dictionary_handler_t	handler;
 
-	create_test_collection_std_conditions(&dict, &handler);
+	create_test_dictionary_std_conditions(&dict, &handler);
 
 	dict_cursor_t	*cursor;
 	predicate_t		predicate;
@@ -342,7 +342,7 @@ test_slhandler_cursor_range_lower_missing(
 	dictionary_t			dict;
 	dictionary_handler_t	handler;
 
-	create_test_collection_std_conditions(&dict, &handler);
+	create_test_dictionary_std_conditions(&dict, &handler);
 
 	dict_cursor_t	*cursor;
 	predicate_t		predicate;
@@ -399,7 +399,7 @@ test_slhandler_cursor_range_exact_results(
 	dictionary_t			dict;
 	dictionary_handler_t	handler;
 
-	create_test_collection_std_conditions(&dict, &handler);
+	create_test_dictionary_std_conditions(&dict, &handler);
 
 	int extra_keys[]	= { 503, 504, 504, 504, 509, 542 };
 	int num_extra		= sizeof(extra_keys) / sizeof(int);
@@ -465,8 +465,8 @@ skiplist_handler_getsuite(
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
 	/* Creation test */
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_collection_handler_binding);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_collection_creation);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_dictionary_handler_binding);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_dictionary_creation);
 
 	/* Cursor Equality test */
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_slhandler_cursor_equality);
