@@ -36,7 +36,7 @@ typedef struct iinq_source iinq_source_t;
 
 typedef struct iinq_cleanup {
 	iinq_source_t		*reference;
-	struct iinq_cleanup *last;
+	struct iinq_cleanup *next;
 
 } iinq_cleanup_t;
 
@@ -110,6 +110,16 @@ iinq_drop(#schema_name ".inq")
 //iinq_insert_into(#schema_name ".inq", key, value)
 
 #define SELECT_ALL \
+iinq_result_size_t result_loc	= 0; \
+iinq_cleanup_t *copyer			= first; \
+while (NULL != copyer) { \
+	memcpy(result.data+(result_loc), copyer->reference->key, copyer->reference->dictionary.instance->record.key_size); \
+	result_loc += copyer->reference->dictionary.instance->record.key_size; \
+	memcpy(result.data+(result_loc), copyer->reference->value, copyer->reference->dictionary.instance->record.value_size); \
+	result_loc += copyer->reference->dictionary.instance->record.value_size; \
+	copyer						= copyer->next; \
+}
+#if 0
 iinq_result_size_t result_loc	= result.num_bytes; \
 iinq_cleanup_t *copyer			= last; \
 while (NULL != copyer) { \
@@ -117,13 +127,22 @@ while (NULL != copyer) { \
 	result_loc -= copyer->reference->dictionary.instance->record.value_size; \
 	memcpy(result.data+(result_loc - copyer->reference->dictionary.instance->record.key_size), copyer->reference->key, copyer->reference->dictionary.instance->record.key_size); \
 	result_loc -= copyer->reference->dictionary.instance->record.key_size; \
+	copyer						= copyer->last; \
 }
+#endif
 
 #define FROM_SINGLE(source) \
 	iinq_source_t source; \
-	source.cleanup.last			= last; \
+	source.cleanup.next			= NULL; \
 	source.cleanup.reference	= &source; \
-	last						= source.cleanup.last; \
+	if (NULL == first) { \
+		first					= &source.cleanup; \
+	} \
+	if (NULL != last) { \
+		last->next				= &source.cleanup; \
+	} \
+	last						= &source.cleanup; \
+	source.cleanup.next			= NULL; \
 	source.dictionary.handler	= &source.handler; \
 	iinq_open_source(#source ".inq", &(source.dictionary), &(source.handler)); \
 	source.key					= alloca(source.dictionary.instance->record.key_size); \
@@ -142,7 +161,9 @@ while (NULL != copyer) { \
 	FROM_CHECK_CURSOR_SINGLE(sources)
 
 #define FROM(sources) \
-	iinq_cleanup_t *last; \
+	iinq_cleanup_t	*first; \
+	iinq_cleanup_t	*last; \
+	first	= NULL; \
 	last	= NULL; \
 	FROM_SINGLE(sources) \
 	result.data	= alloca(result.num_bytes); \
@@ -166,9 +187,9 @@ do { \
 		select \
 		(p)->execute(&result, (p)->state); \
 	} \
-	while (NULL != last) { \
+	while (NULL != first) { \
 		ion_close_dictionary(&last->reference->dictionary); \
-		last		= last->last; \
+		first		= first->next; \
 	}\
 } while (0);
 
