@@ -56,8 +56,12 @@
 typedef char keyType;	/* keys entries are treated as char arrays */
 
 typedef struct {
+#if 0
 	char		leaf;			/* first bit = 1 if leaf */
 	uint16_t	ct;				/* count of keys present */
+#endif
+	unsigned int leaf:1;
+	unsigned int ct:15;
 	bAdrType	prev;			/* prev node in sequence (leaf) */
 	bAdrType	next;			/* next node in sequence (leaf) */
 	bAdrType	childLT;		/* child LT first key */
@@ -969,6 +973,8 @@ bOpen(
 		memset(root->p, 0, 3 * h->sectorSize);
 		leaf(root)		= 1;
 		h->nextFreeAdr	= 3 * h->sectorSize;
+		root->modified	= 1;
+		flushAll(h);
 	}
 	else {
 		/* something's wrong */

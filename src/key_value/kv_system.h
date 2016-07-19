@@ -171,6 +171,9 @@ enum error {
 	/**> An error code describing the situation where specified size is
 		 illegal, invalid, or otherwise unreasonable. */
 	err_invalid_initial_size,
+	/**> An error code returned when a dictionary of the same name as
+		 an existing dictionary is attempted to be created. */
+	err_duplicate_dictionary_error,
 	/**> An error code describing the situation a system object was not
 		 properly initialized. */
 	err_uninitialized
