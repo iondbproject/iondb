@@ -36,7 +36,7 @@ typedef struct ff_dictionary {
 
 /**
  @brief Cursor for dictionary specific implementations
- @todo What happens to the cursor if the collection is modified during traversal?
+ @todo What happens to the cursor if the dictionary instance is modified during traversal?
  */
 /*typedef struct ffdict_cursor
 {
@@ -154,7 +154,7 @@ ffdict_query(
 @param	  dictionary_size
 				The size of the hashmap in discrete units
 @param		compare
-				Function pointer for the comparison function for the collection.
+				Function pointer for the comparison function for the dictionary.
 @param	  handler
 				 THe handler for the specific dictionary being created.
 @param	  dictionary
@@ -251,7 +251,7 @@ ffdict_find(
 @brief		Compares two key and returns the difference
 
 @details	Compares two key and returns the difference depending on the type
-			of the key defined for the collection.  If the keys are of numeric
+			of the key defined for the dictionary instance.  If the keys are of numeric
 			type, the return value is the difference between the keys.  If the
 			value is negative, @p first_key is smaller than @p second_key.  If
 			return value is positive, then @p first_key is larger than

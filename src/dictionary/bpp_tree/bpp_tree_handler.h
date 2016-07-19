@@ -112,7 +112,7 @@ bpptree_query(
 @param		dictionary_size
 				The size of the hashmap in discrete units
 @param		compare
-				Function pointer for the comparison function for the collection.
+				Function pointer for the comparison function for the dictionary.
 @param		handler
 				 THe handler for the specific dictionary being created.
 @param		dictionary

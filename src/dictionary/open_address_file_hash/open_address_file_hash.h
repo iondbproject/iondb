@@ -64,7 +64,7 @@ struct file_hashmap {
 @param		hashing_function
 				Function pointer to the hashing function for the instance.
 @param		key_type
-				The type of key that is being stored in the collection.
+				The type of key that is being stored in the dictionary instance.
 @param	  key_size
 				The size of the key in bytes.
 @param		value_size
