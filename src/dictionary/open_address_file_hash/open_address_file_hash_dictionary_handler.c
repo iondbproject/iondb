@@ -182,41 +182,36 @@ oafdict_find(
 			/* copy across the key value as the predicate may be destroyed */
 			memcpy((*cursor)->predicate->statement.range.upper_bound, predicate->statement.range.upper_bound, (((file_hashmap_t *) dictionary->instance)->super.record.key_size));
 
-			/* find the location of the first element as this is a straight equality */
-			int location = cs_invalid_index;
+			oafdict_cursor_t	*oafdict_cursor = (oafdict_cursor_t *) (*cursor);
+			file_hashmap_t		*hash_map		= ((file_hashmap_t *) dictionary->instance);
 
-			/* start at the lowest end of the range and check */
-			if (oafh_find_item_loc((file_hashmap_t *) dictionary->instance, (*cursor)->predicate->statement.range.lower_bound, &location) == err_item_not_found) {
-				/* this will still have to be returned? */
-				(*cursor)->status = cs_end_of_results;
-				return err_ok;
-			}
-			else {
-				(*cursor)->status = cs_cursor_initialized;
+			(*cursor)->status		= cs_cursor_initialized;
+			oafdict_cursor->first	= (hash_map->map_size) - 1;
+			oafdict_cursor->current = -1;
 
-				/* cast to specific instance type for conveniences of setup */
-				oafdict_cursor_t *oadict_cursor = (oafdict_cursor_t *) (*cursor);
+			err_t err = oafdict_scan(oafdict_cursor);
 
-				/* the cursor is ready to be consumed */
-				oadict_cursor->first	= location;
-				oadict_cursor->current	= location;
-				return err_ok;
+			if (cs_valid_data != err) {
+				(*cursor)->status = cs_cursor_uninitialized;
 			}
 
+			return err_ok;
 			break;
 		}
 
 		case predicate_all_records: {
 			oafdict_cursor_t	*oafdict_cursor = (oafdict_cursor_t *) (*cursor);
-			file_hashmap_t		*hash_map		= ((file_hashmap_t *) (*cursor)->dictionary->instance);
-			int					data_length		= hash_map->super.record.key_size + hash_map->super.record.value_size;
-
-			fseek(hash_map->file, (SIZEOF(STATUS) + data_length) * oafdict_cursor->current	/* position is based on indexes (not abs file pos) */
-				+ SIZEOF(STATUS), SEEK_SET);
+			file_hashmap_t		*hash_map		= ((file_hashmap_t *) dictionary->instance);
 
 			(*cursor)->status		= cs_cursor_initialized;
-			oafdict_cursor->first	= 0;
-			oafdict_cursor->current = 0;
+			oafdict_cursor->first	= (hash_map->map_size) - 1;
+			oafdict_cursor->current = -1;
+
+			err_t err = oafdict_scan(oafdict_cursor);
+
+			if (cs_valid_data != err) {
+				(*cursor)->status = cs_cursor_uninitialized;
+			}
 
 			return err_ok;
 			break;
