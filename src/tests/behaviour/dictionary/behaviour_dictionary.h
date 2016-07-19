@@ -31,6 +31,7 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <alloca.h>
 #include "../../planckunit/src/planck_unit.h"
 #include "../../../dictionary/dictionary_types.h"
 #include "../../../dictionary/dictionary.h"

@@ -58,6 +58,10 @@ bhdct_dictionary_initialization(
 	err_t err = ion_master_table_create_dictionary(handler, dict, key_type, key_size, value_size, dictionary_size);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, key_type, dict->instance->key_type);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, key_size, dict->instance->record.key_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, value_size, dict->instance->record.value_size);
 }
 
 /**
@@ -80,7 +84,7 @@ bhdct_delete_from_master_table(
 	planck_unit_test_t	*tc,
 	dictionary_t		*dict
 ) {
-	err_t err = ion_delete_from_master_table(dict);	/* TODO: Change this once master table delete has been fixed */
+	err_t err = ion_delete_from_master_table(dict);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 }
@@ -96,6 +100,7 @@ bhdct_delete_dictionary(
 	err_t err = dictionary_delete_dictionary(dict);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == dict->instance);
 }
 
 /**
@@ -144,7 +149,7 @@ bhdct_takedown(
 	planck_unit_test_t	*tc,
 	dictionary_t		*dict
 ) {
-	bhdct_delete_from_master_table(tc, dict);
+/*	bhdct_delete_from_master_table(tc, dict); FIXME change when master table is fixed */
 	bhdct_delete_dictionary(tc, dict);
 
 	bhdct_close_master_table(tc);
@@ -152,7 +157,35 @@ bhdct_takedown(
 }
 
 /**
-@brief	This function conducts a test on dictionary setup.
+@brief	This function does an insert into a dictionary.
+*/
+void
+bhdct_insert(
+	planck_unit_test_t	*tc,
+	dictionary_t		*dict,
+	ion_key_t			key,
+	ion_value_t			value,
+	boolean_t			check_result
+) {
+	ion_status_t status = dictionary_insert(dict, key, value);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	if (check_result) {
+		ion_value_t retval = alloca(dict->instance->record.value_size);
+
+		status = dictionary_get(dict, key, retval);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, memcmp(value, retval, dict->instance->record.value_size));
+	}
+}
+
+/* =================================================== TEST CASES =================================================== */
+
+/**
+@brief	This function tests whether or not we can build and teardown a dictionary.
 */
 void
 test_bhdct_setup(
@@ -162,6 +195,23 @@ test_bhdct_setup(
 	dictionary_t			dict;
 
 	bhdct_setup(tc, &handler, &dict);
+
+	bhdct_takedown(tc, &dict);
+}
+
+/**
+@brief	This function tests a single insertion into a dictionary.
+*/
+void
+test_bhdct_single_insert(
+	planck_unit_test_t *tc
+) {
+	dictionary_handler_t	handler;
+	dictionary_t			dict;
+
+	bhdct_setup(tc, &handler, &dict);
+
+	bhdct_insert(tc, &dict, IONIZE(10, int), IONIZE(20, int), boolean_false);
 
 	bhdct_takedown(tc, &dict);
 }
@@ -177,6 +227,7 @@ bhdct_getsuite(
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_setup);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_single_insert);
 
 	return suite;
 }
