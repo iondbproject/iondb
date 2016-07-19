@@ -332,7 +332,7 @@ test_open_address_hashmap_simple_insert_and_query(
 /**
 @brief	  Tests a simple delete from dictionary
 
-@details	Tests a simple delete from dictionary.  Builds a test collection
+@details	Tests a simple delete from dictionary.  builds a test dictionary instance
 			and then deletes records one by one, checking that each record has
 			been successfully deleted and that the rest of the map has not
 			been perturbed.
