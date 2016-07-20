@@ -96,7 +96,7 @@ sd_fflush(
 int
 sd_fgetpos(
 	SD_FILE *stream,
-	fpos_t	*pos
+	ion_fpos_t	*pos
 );
 
 /**
@@ -176,7 +176,7 @@ sd_fseek(
 int
 sd_fsetpos(
 	SD_FILE *stream,
-	fpos_t	*pos
+	ion_fpos_t	*pos
 );
 
 /**

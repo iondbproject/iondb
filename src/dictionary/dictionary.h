@@ -55,12 +55,12 @@ extern "C" {
 				being used.
 @return		A status describing the result of dictionary creation.
 */
-err_t
+ion_err_t
 dictionary_create(
-	dictionary_handler_t	*handler,
-	dictionary_t			*dictionary,
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dictionary,
 	ion_dictionary_id_t		id,
-	key_type_t				key_type,
+	ion_key_type_t				key_type,
 	int						key_size,
 	int						value_size,
 	int						dictionary_size
@@ -79,7 +79,7 @@ dictionary_create(
 */
 ion_status_t
 dictionary_insert(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 );
@@ -97,7 +97,7 @@ dictionary_insert(
 */
 ion_status_t
 dictionary_get(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 );
@@ -112,7 +112,7 @@ dictionary_get(
 */
 ion_status_t
 dictionary_delete(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key
 );
 
@@ -128,7 +128,7 @@ dictionary_delete(
 */
 ion_status_t
 dictionary_update(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 );
@@ -140,9 +140,9 @@ dictionary_update(
 				The dictionary instance to destroy.
 @return		The status of the total destruction of the dictionary.
 */
-err_t
+ion_err_t
 dictionary_delete_dictionary(
-	dictionary_t *dictionary
+	ion_dictionary_t *dictionary
 );
 
 /**
@@ -249,10 +249,10 @@ dictionary_compare_null_terminated_string(
 				the dictionary with.
 @returns	An error describing the result of open operation.
 */
-err_t
+ion_err_t
 dictionary_open(
-	dictionary_handler_t			*handler,
-	dictionary_t					*dictionary,
+	ion_dictionary_handler_t			*handler,
+	ion_dictionary_t					*dictionary,
 	ion_dictionary_config_info_t	*config
 );
 
@@ -262,9 +262,9 @@ dictionary_open(
 				A pointer to the dictionary object to be closed.
 @returns	An error describing the result of open operation.
 */
-err_t
+ion_err_t
 dictionary_close(
-	dictionary_t *dictionary
+	ion_dictionary_t *dictionary
 );
 
 /**
@@ -285,10 +285,10 @@ dictionary_close(
 				Predicate:	  TODO to be implemented
 @returns	An error describing the result of open operation.
 */
-err_t
+ion_err_t
 dictionary_build_predicate(
-	predicate_t			*predicate,
-	predicate_type_t	type,
+	ion_predicate_t			*predicate,
+	ion_predicate_type_t	type,
 	...
 );
 
@@ -302,7 +302,7 @@ dictionary_build_predicate(
 */
 void
 dictionary_destroy_predicate_equality(
-	predicate_t **predicate
+	ion_predicate_t **predicate
 );
 
 /**
@@ -315,7 +315,7 @@ dictionary_destroy_predicate_equality(
 */
 void
 dictionary_destroy_predicate_range(
-	predicate_t **predicate
+	ion_predicate_t **predicate
 );
 
 /**
@@ -328,7 +328,7 @@ dictionary_destroy_predicate_range(
 */
 void
 dictionary_destroy_predicate_all_records(
-	predicate_t **predicate
+	ion_predicate_t **predicate
 );
 
 /**
@@ -346,11 +346,11 @@ dictionary_destroy_predicate_all_records(
 				already, we will leak memory.
 @returns	An error code describing the result of the operation.
 */
-err_t
+ion_err_t
 dictionary_find(
-	dictionary_t	*dictionary,
-	predicate_t		*predicate,
-	dict_cursor_t	**cursor
+	ion_dictionary_t	*dictionary,
+	ion_predicate_t		*predicate,
+	ion_dict_cursor_t	**cursor
 );
 
 #if defined(__cplusplus)

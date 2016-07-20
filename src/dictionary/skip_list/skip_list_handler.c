@@ -10,7 +10,7 @@
 
 void
 sldict_init(
-	dictionary_handler_t *handler
+	ion_dictionary_handler_t *handler
 ) {
 	handler->insert				= sldict_insert;
 	handler->get				= sldict_query;
@@ -24,38 +24,38 @@ sldict_init(
 
 ion_status_t
 sldict_insert(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 ) {
-	return sl_insert((skiplist_t *) dictionary->instance, key, value);
+	return sl_insert((ion_skiplist_t *) dictionary->instance, key, value);
 }
 
 ion_status_t
 sldict_query(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 ) {
-	return sl_query((skiplist_t *) dictionary->instance, key, value);
+	return sl_query((ion_skiplist_t *) dictionary->instance, key, value);
 }
 
-err_t
+ion_err_t
 sldict_create_dictionary(
 	ion_dictionary_id_t			id,
-	key_type_t					key_type,
+	ion_key_type_t					key_type,
 	int							key_size,
 	int							value_size,
 	int							dictionary_size,
 	ion_dictionary_compare_t	compare,
-	dictionary_handler_t		*handler,
-	dictionary_t				*dictionary
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary
 ) {
 	UNUSED(id);
 
 	int pnum, pden;
 
-	dictionary->instance = malloc(sizeof(skiplist_t));
+	dictionary->instance = malloc(sizeof(ion_skiplist_t));
 
 	if (NULL == dictionary->instance) {
 		return err_out_of_memory;
@@ -68,7 +68,7 @@ sldict_create_dictionary(
 
 	/* TODO Should we handle the possible error code returned by this?
 	 * If yes, what sorts of errors does it return? */
-	err_t result = sl_initialize((skiplist_t *) dictionary->instance, key_type, key_size, value_size, dictionary_size, pnum, pden);
+	ion_err_t result = sl_initialize((ion_skiplist_t *) dictionary->instance, key_type, key_size, value_size, dictionary_size, pnum, pden);
 
 	if (err_ok == result) {
 		dictionary->handler = handler;
@@ -79,17 +79,17 @@ sldict_create_dictionary(
 
 ion_status_t
 sldict_delete(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key
 ) {
-	return sl_delete((skiplist_t *) dictionary->instance, key);
+	return sl_delete((ion_skiplist_t *) dictionary->instance, key);
 }
 
-err_t
+ion_err_t
 sldict_delete_dictionary(
-	dictionary_t *dictionary
+	ion_dictionary_t *dictionary
 ) {
-	err_t result = sl_destroy((skiplist_t *) dictionary->instance);
+	ion_err_t result = sl_destroy((ion_skiplist_t *) dictionary->instance);
 
 	free(dictionary->instance);
 	dictionary->instance = NULL;
@@ -98,22 +98,22 @@ sldict_delete_dictionary(
 
 ion_status_t
 sldict_update(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 ) {
-	return sl_update((skiplist_t *) dictionary->instance, key, value);
+	return sl_update((ion_skiplist_t *) dictionary->instance, key, value);
 }
 
-err_t
+ion_err_t
 sldict_find(
-	dictionary_t	*dictionary,
-	predicate_t		*predicate,
-	dict_cursor_t	**cursor
+	ion_dictionary_t	*dictionary,
+	ion_predicate_t		*predicate,
+	ion_dict_cursor_t	**cursor
 ) {
-	*cursor = malloc(sizeof(sldict_cursor_t));
+	*cursor = malloc(sizeof(ion_sldict_cursor_t));
 
-	skiplist_t *skip_list = (skiplist_t *) dictionary->instance;
+	ion_skiplist_t *skip_list = (ion_skiplist_t *) dictionary->instance;
 
 	if (NULL == *cursor) {
 		return err_out_of_memory;
@@ -125,7 +125,7 @@ sldict_find(
 	(*cursor)->destroy		= sldict_destroy_cursor;
 	(*cursor)->next			= sldict_next;
 
-	(*cursor)->predicate	= malloc(sizeof(predicate_t));
+	(*cursor)->predicate	= malloc(sizeof(ion_predicate_t));
 
 	if (NULL == (*cursor)->predicate) {
 		free(*cursor);
@@ -152,7 +152,7 @@ sldict_find(
 
 			memcpy((*cursor)->predicate->statement.equality.equality_value, target_key, key_size);
 
-			sl_node_t *loc = sl_find_node((skiplist_t *) dictionary->instance, target_key);
+			ion_sl_node_t *loc = sl_find_node((ion_skiplist_t *) dictionary->instance, target_key);
 
 			if ((NULL == loc->key) || (dictionary->instance->compare(loc->key, target_key, key_size) != 0)) {
 				/* If this happens, that means the target key doesn't exist */
@@ -162,7 +162,7 @@ sldict_find(
 			else {
 				(*cursor)->status = cs_cursor_initialized;
 
-				sldict_cursor_t *sl_cursor = (sldict_cursor_t *) (*cursor);
+				ion_sldict_cursor_t *sl_cursor = (ion_sldict_cursor_t *) (*cursor);
 
 				sl_cursor->current = loc;
 				return err_ok;
@@ -194,7 +194,7 @@ sldict_find(
 			memcpy((*cursor)->predicate->statement.range.upper_bound, predicate->statement.range.upper_bound, key_size);
 
 			/* Try to find the node containing the upper bound. */
-			sl_node_t *loc = sl_find_node((skiplist_t *) dictionary->instance, (*cursor)->predicate->statement.range.upper_bound);
+			ion_sl_node_t *loc = sl_find_node((ion_skiplist_t *) dictionary->instance, (*cursor)->predicate->statement.range.upper_bound);
 
 			if ((NULL == loc->key) || (dictionary->instance->compare(loc->key, (*cursor)->predicate->statement.range.lower_bound, key_size) < 0)) {
 				/* This means the returned node is smaller than the lower bound, which means that there are no valid records to return */
@@ -202,7 +202,7 @@ sldict_find(
 				return err_ok;
 			}
 			else {
-				loc = sl_find_node((skiplist_t *) dictionary->instance, (*cursor)->predicate->statement.range.lower_bound);
+				loc = sl_find_node((ion_skiplist_t *) dictionary->instance, (*cursor)->predicate->statement.range.lower_bound);
 
 				if (NULL == loc->key) {
 					/* If this happens, then we hit the head node. Just move to the first valid data item (if exists) */
@@ -223,7 +223,7 @@ sldict_find(
 
 				(*cursor)->status = cs_cursor_initialized;
 
-				sldict_cursor_t *sl_cursor = (sldict_cursor_t *) (*cursor);
+				ion_sldict_cursor_t *sl_cursor = (ion_sldict_cursor_t *) (*cursor);
 
 				sl_cursor->current = loc;
 				return err_ok;
@@ -233,7 +233,7 @@ sldict_find(
 		}
 
 		case predicate_all_records: {
-			sldict_cursor_t *sl_cursor = (sldict_cursor_t *) (*cursor);
+			ion_sldict_cursor_t *sl_cursor = (ion_sldict_cursor_t *) (*cursor);
 
 			if (NULL == skip_list->head->next[0]) {
 				(*cursor)->status = cs_end_of_results;
@@ -261,12 +261,12 @@ sldict_find(
 	return err_ok;
 }
 
-cursor_status_t
+ion_cursor_status_t
 sldict_next(
-	dict_cursor_t	*cursor,
+	ion_dict_cursor_t	*cursor,
 	ion_record_t	*record
 ) {
-	sldict_cursor_t *sl_cursor = (sldict_cursor_t *) cursor;
+	ion_sldict_cursor_t *sl_cursor = (ion_sldict_cursor_t *) cursor;
 
 	if (cursor->status == cs_cursor_uninitialized) {
 		return cursor->status;
@@ -299,21 +299,21 @@ sldict_next(
 
 void
 sldict_destroy_cursor(
-	dict_cursor_t **cursor
+	ion_dict_cursor_t **cursor
 ) {
 	(*cursor)->predicate->destroy(&(*cursor)->predicate);
 	free(*cursor);
 	*cursor = NULL;
 }
 
-boolean_t
+ion_boolean_t
 sldict_test_predicate(
-	dict_cursor_t	*cursor,
+	ion_dict_cursor_t	*cursor,
 	ion_key_t		key
 ) {
-	skiplist_t		*skiplist	= (skiplist_t *) cursor->dictionary->instance;
+	ion_skiplist_t		*skiplist	= (ion_skiplist_t *) cursor->dictionary->instance;
 	ion_key_size_t	key_size	= cursor->dictionary->instance->record.key_size;
-	boolean_t		result		= boolean_false;
+	ion_boolean_t		result		= boolean_false;
 
 	switch (cursor->predicate->type) {
 		case predicate_equality: {
@@ -329,10 +329,10 @@ sldict_test_predicate(
 			ion_key_t	upper_b		= cursor->predicate->statement.range.upper_bound;
 
 			/* Check if key >= lower bound */
-			boolean_t comp_lower	= skiplist->super.compare(key, lower_b, key_size) >= 0;
+			ion_boolean_t comp_lower	= skiplist->super.compare(key, lower_b, key_size) >= 0;
 
 			/* Check if key <= upper bound */
-			boolean_t comp_upper	= skiplist->super.compare(key, upper_b, key_size) <= 0;
+			ion_boolean_t comp_upper	= skiplist->super.compare(key, upper_b, key_size) <= 0;
 
 			result = comp_lower && comp_upper;
 			break;

@@ -48,7 +48,7 @@ extern "C" {
 /* Stub */
 #else
 
-typedef long fpos_t;
+typedef long ion_fpos_t;
 
 #endif
 

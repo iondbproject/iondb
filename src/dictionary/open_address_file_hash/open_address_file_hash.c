@@ -17,11 +17,11 @@
 
 #define TEST_FILE "file.bin"
 
-err_t
+ion_err_t
 oafh_initialize(
-	file_hashmap_t *hashmap,
-	hash_t (*hashing_function)(file_hashmap_t *, ion_key_t, int),
-	key_type_t key_type,
+	ion_file_hashmap_t *hashmap,
+	ion_hash_t (*hashing_function)(ion_file_hashmap_t *, ion_key_t, int),
+	ion_key_type_t key_type,
 	ion_key_size_t key_size,
 	ion_value_size_t value_size,
 	int size
@@ -37,11 +37,11 @@ oafh_initialize(
 	/* open the file */
 	hashmap->file						= fopen(TEST_FILE, "w+b");
 
-	hash_bucket_t *file_record;
+	ion_hash_bucket_t *file_record;
 
 	int record_size = SIZEOF(STATUS) + hashmap->super.record.key_size + hashmap->super.record.value_size;
 
-	file_record			= (hash_bucket_t *) calloc(record_size, 1);
+	file_record			= (ion_hash_bucket_t *) calloc(record_size, 1);
 	file_record->status = EMPTY;
 
 	/* write out the records to disk to prep */
@@ -73,15 +73,15 @@ oafh_initialize(
 
 int
 oafh_get_location(
-	hash_t	num,
+	ion_hash_t	num,
 	int		size
 ) {
 	return num % size;
 }
 
-err_t
+ion_err_t
 oafh_destroy(
-	file_hashmap_t *hash_map
+	ion_file_hashmap_t *hash_map
 ) {
 	hash_map->compute_hash				= NULL;
 	hash_map->map_size					= 0;
@@ -102,12 +102,12 @@ oafh_destroy(
 
 ion_status_t
 oafh_update(
-	file_hashmap_t	*hash_map,
+	ion_file_hashmap_t	*hash_map,
 	ion_key_t		key,
 	ion_value_t		value
 ) {
 	/* TODO: lock potentially required */
-	write_concern_t current_write_concern = hash_map->write_concern;
+	ion_write_concern_t current_write_concern = hash_map->write_concern;
 
 	hash_map->write_concern = wc_update;/* change write concern to allow update */
 
@@ -119,22 +119,22 @@ oafh_update(
 
 ion_status_t
 oafh_insert(
-	file_hashmap_t	*hash_map,
+	ion_file_hashmap_t	*hash_map,
 	ion_key_t		key,
 	ion_value_t		value
 ) {
-	hash_t hash = hash_map->compute_hash(hash_map, key, hash_map->super.record.key_size);	/* compute hash value for given key */
+	ion_hash_t hash = hash_map->compute_hash(hash_map, key, hash_map->super.record.key_size);	/* compute hash value for given key */
 
 	int loc		= oafh_get_location(hash, hash_map->map_size);
 
 	/* Scan until find an empty location - oah_insert if found */
 	int count	= 0;
 
-	hash_bucket_t *item;
+	ion_hash_bucket_t *item;
 
 	int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS);
 
-	item = (hash_bucket_t *) malloc(record_size);
+	item = (ion_hash_bucket_t *) malloc(record_size);
 
 	/* set file position */
 	fseek(hash_map->file, loc * record_size, SEEK_SET);
@@ -210,13 +210,13 @@ oafh_insert(
 	return ION_STATUS_ERROR(err_max_capacity);
 }
 
-err_t
+ion_err_t
 oafh_find_item_loc(
-	file_hashmap_t	*hash_map,
+	ion_file_hashmap_t	*hash_map,
 	ion_key_t		key,
 	int				*location
 ) {
-	hash_t hash = hash_map->compute_hash(hash_map, key, hash_map->super.record.key_size);
+	ion_hash_t hash = hash_map->compute_hash(hash_map, key, hash_map->super.record.key_size);
 	/* compute hash value for given key */
 
 	int loc		= oafh_get_location(hash, hash_map->map_size);
@@ -224,11 +224,11 @@ oafh_find_item_loc(
 
 	int count	= 0;
 
-	hash_bucket_t *item;
+	ion_hash_bucket_t *item;
 
 	int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS);
 
-	item = (hash_bucket_t *) malloc(record_size);
+	item = (ion_hash_bucket_t *) malloc(record_size);
 
 	/* set file position */
 	fseek(hash_map->file, loc * record_size, SEEK_SET);
@@ -273,7 +273,7 @@ oafh_find_item_loc(
 
 ion_status_t
 oafh_delete(
-	file_hashmap_t	*hash_map,
+	ion_file_hashmap_t	*hash_map,
 	ion_key_t		key
 ) {
 	int loc;
@@ -286,11 +286,11 @@ oafh_delete(
 	}
 	else {
 		/* locate item */
-		hash_bucket_t *item;
+		ion_hash_bucket_t *item;
 
 		int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS);
 
-		item = (hash_bucket_t *) malloc(record_size);
+		item = (ion_hash_bucket_t *) malloc(record_size);
 
 		/* set file position */
 		fseek(hash_map->file, loc * record_size, SEEK_SET);
@@ -315,7 +315,7 @@ oafh_delete(
 
 ion_status_t
 oafh_query(
-	file_hashmap_t	*hash_map,
+	ion_file_hashmap_t	*hash_map,
 	ion_key_t		key,
 	ion_value_t		value
 ) {
@@ -346,16 +346,16 @@ oafh_query(
 	}
 }
 
-hash_t
+ion_hash_t
 oafh_compute_simple_hash(
-	file_hashmap_t	*hashmap,
+	ion_file_hashmap_t	*hashmap,
 	ion_key_t		key,
 	int				size_of_key
 ) {
 	UNUSED(size_of_key);
 
 	/* convert to a hashable value */
-	hash_t hash = (hash_t) (((*(int *) key) % hashmap->map_size) + hashmap->map_size) % hashmap->map_size;
+	ion_hash_t hash = (ion_hash_t) (((*(int *) key) % hashmap->map_size) + hashmap->map_size) % hashmap->map_size;
 
 	return hash;
 }

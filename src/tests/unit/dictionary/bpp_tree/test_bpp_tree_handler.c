@@ -4,7 +4,7 @@ void
 run_bpptreehandler_generic_test_set_1(
 	planck_unit_test_t *tc
 ) {
-	generic_test_t test;
+	ion_generic_test_t test;
 
 	int					keyvals[]	= { 5, -10, -5 };
 	ion_key_t			keys[]		= { &keyvals[0], &keyvals[1], &keyvals[2] };

@@ -54,7 +54,7 @@ typedef struct {
 													 identify the dictionary. */
 	ion_dict_use_t			use_type;			/**< How the dictionary will be
 													 used. Ignore if N/A. */
-	key_type_t				type;				/**< The type of key to store.
+	ion_key_type_t				type;				/**< The type of key to store.
 												*/
 	ion_key_size_t			key_size;			/**< The size of the key. */
 	ion_value_size_t		value_size;			/**< The size of the value. */
@@ -70,13 +70,13 @@ typedef struct {
 			implementation.
 @see		dictionary
 */
-typedef struct dictionary dictionary_t;
+typedef struct dictionary ion_dictionary_t;
 
 /**
 @brief		Struct defining all dictionary handling methods.
 @see		dictionary_handler
 */
-typedef struct dictionary_handler dictionary_handler_t;
+typedef struct dictionary_handler ion_dictionary_handler_t;
 
 /**
 @brief	Function pointer type for dictionary comparison methods.
@@ -91,25 +91,25 @@ typedef char (*ion_dictionary_compare_t)(
 @brief		The dictionary cursor type.
 @see		dictionary_cursor
 */
-typedef struct dictionary_cursor dict_cursor_t;
+typedef struct dictionary_cursor ion_dict_cursor_t;
 
 /**
 @brief		The dictionary predicate type.
 @see		predicate
 */
-typedef struct predicate predicate_t;
+typedef struct predicate ion_predicate_t;
 
 /**
 @brief		The dictionary predicate statement type.
 @see		predicate_statement
 */
-typedef union predicate_statement predicate_statement_t;
+typedef union predicate_statement ion_predicate_statement_t;
 
 /**
 @brief		The dictionary parent type.
 @see		dictionary_parent
 */
-typedef struct dictionary_parent dictionary_parent_t;
+typedef struct dictionary_parent ion_dictionary_parent_t;
 
 /**
 @brief		A comparison result type that describes the result of a comparison.
@@ -118,7 +118,7 @@ typedef enum comparison {
 	A_lt_B	= -1,	/**< The result for the comparison operation is A <= B. */
 	A_equ_B = 0,/**< The result for the comparison operation is A == B. */
 	A_gt_B	= 1		/**< The result for the comparison operation is A >= B. */
-} comparsion_t;
+} ion_comparsion_t;
 
 /**
 @brief		A status type describing the current state of an initialized cursor.
@@ -156,7 +156,7 @@ enum cursor_status {
 @details	This allows us to control the size of the status type,
 			rather than depending on the enum.
 */
-typedef char cursor_status_t;
+typedef char ion_cursor_status_t;
 
 /**
 @brief		A dictionary_handler is responsible for dealing with the specific
@@ -165,58 +165,58 @@ typedef char cursor_status_t;
 */
 struct dictionary_handler {
 	ion_status_t (*insert)(
-		dictionary_t *,
+		ion_dictionary_t *,
 		ion_key_t,
 		ion_value_t
 	);
 	/**< A pointer to the dictionaries insertion function. */
-	err_t (*create_dictionary)(
+	ion_err_t (*create_dictionary)(
 		ion_dictionary_id_t,
-		key_type_t,
+		ion_key_type_t,
 		int,
 		int,
 		int,
 		ion_dictionary_compare_t,
-		dictionary_handler_t *,
-		dictionary_t *
+		ion_dictionary_handler_t *,
+		ion_dictionary_t *
 	);
 	/**< A pointer to the dictionaries creation function. */
 	ion_status_t (*get)(
-		dictionary_t *,
+		ion_dictionary_t *,
 		ion_key_t,
 		ion_value_t
 	);
 	/**< A pointer to the dictionaries get function. */
 	ion_status_t (*update)(
-		dictionary_t *,
+		ion_dictionary_t *,
 		ion_key_t,
 		ion_value_t
 	);
 	/**< A pointer to the dictionaries update function. */
-	err_t (*find)(
-		dictionary_t *,
-		predicate_t *,
-		dict_cursor_t **
+	ion_err_t (*find)(
+		ion_dictionary_t *,
+		ion_predicate_t *,
+		ion_dict_cursor_t **
 	);
 	/**< A pointer to the dictionaries find function */
 	ion_status_t (*remove)(
-		dictionary_t *,
+		ion_dictionary_t *,
 		ion_key_t
 	);
 	/**< A pointer to the dictionaries key-value deletion function. */
-	err_t (*delete_dictionary)(
-		dictionary_t *
+	ion_err_t (*delete_dictionary)(
+		ion_dictionary_t *
 	);
 	/**< A pointer to the dictionaries dictionary removal function. */
-	err_t (*open_dictionary)(
-		dictionary_handler_t *,
-		dictionary_t *,
+	ion_err_t (*open_dictionary)(
+		ion_dictionary_handler_t *,
+		ion_dictionary_t *,
 		ion_dictionary_config_info_t *,
 		ion_dictionary_compare_t
 	);
 	/**< A pointer to the dictionaries open function. */
-	err_t (*close_dictionary)(
-		dictionary_t *
+	ion_err_t (*close_dictionary)(
+		ion_dictionary_t *
 	);
 	/**< A pointer to the dictionaries close function */
 };
@@ -248,18 +248,18 @@ typedef char ion_dictionary_status_t;
 struct dictionary {
 	ion_dictionary_status_t status;	/**< A status describing the state
 											 of the dictionary. */
-	dictionary_parent_t		*instance;	/**< Specific instance of a
+	ion_dictionary_parent_t		*instance;	/**< Specific instance of a
 											 dictionary (but we don't
 											 know type). */
-	dictionary_handler_t	*handler;	/**< Handler for the specific type. */
+	ion_dictionary_handler_t	*handler;	/**< Handler for the specific type. */
 };
 
 /**
 @brief	  This is the super type for all dictionaries.
 */
 struct dictionary_parent {
-	key_type_t					key_type;	/**< The key type stored in the map. */
-	record_info_t				record;	/**< The record structure for items. */
+	ion_key_type_t					key_type;	/**< The key type stored in the map. */
+	ion_record_info_t				record;	/**< The record structure for items. */
 	ion_dictionary_compare_t	compare;/**< Comparison function for
 											  instance of map. */
 	ion_dictionary_id_t			id;		/**< ID of dictionary instance. */
@@ -268,7 +268,7 @@ struct dictionary_parent {
 /**
 @brief		A type for storing predicate type data.
 */
-typedef char predicate_type_t;
+typedef char ion_predicate_type_t;
 
 /**
 @brief		The predicate type flag list.
@@ -289,7 +289,7 @@ enum predicate_type {
 typedef struct equality_statement {
 	ion_key_t equality_value;
 	/**< The value to match in the equality. */
-} equality_statement_t;
+} ion_equality_statement_t;
 
 /**
 @brief		This is a predicate data object for range queries.
@@ -300,7 +300,7 @@ typedef struct range_statement {
 	/**< The lower value in the range */
 	ion_key_t	upper_bound;
 	/**< The upper value in the range */
-} range_statement_t;
+} ion_range_statement_t;
 
 /**
 @brief		Predicate type for cursors that iterate over all records in set.
@@ -318,7 +318,7 @@ typedef struct ion_all_records_statement {
 typedef struct other_predicate_statement {
 	/**> For now, other_predicate has no required information. */
 	char unused;
-} other_predicate_statement_t;
+} ion_other_predicate_statement_t;
 
 /**
 @brief		This is used to pass predicate into a cursor-based query over
@@ -326,11 +326,11 @@ typedef struct other_predicate_statement {
 */
 union predicate_statement {
 	/**> An equality predicate statement. */
-	equality_statement_t		equality;
+	ion_equality_statement_t		equality;
 	/**> A range predicate statement. */
-	range_statement_t			range;
+	ion_range_statement_t			range;
 	/**> A general predicate statement. */
-	other_predicate_statement_t other_predicate;
+	ion_other_predicate_statement_t other_predicate;
 	/**> An all records predicate statement. */
 	ion_all_records_statement_t all_records;
 };
@@ -349,14 +349,14 @@ union predicate_statement {
 */
 struct predicate {
 	/**> Predicate type data for this predicate. */
-	predicate_type_t		type;
+	ion_predicate_type_t		type;
 	/**> Predicate statement data. This is specific to the type of predicate. */
-	predicate_statement_t	statement;
+	ion_predicate_statement_t	statement;
 
 	/**> A function pointer used to later free memory associated with the
 		 predicate. */
 	void (*destroy)(
-		predicate_t **
+		ion_predicate_t **
 	);
 };
 
@@ -370,20 +370,20 @@ struct predicate {
 			dictionary operations.
 */
 struct dictionary_cursor {
-	cursor_status_t status;	/**< Status of last cursor call. */
-	dictionary_t	*dictionary;			/**< A pointer to the dictionary
+	ion_cursor_status_t status;	/**< Status of last cursor call. */
+	ion_dictionary_t	*dictionary;			/**< A pointer to the dictionary
 												 object. */
-	predicate_t		*predicate;				/**< The predicate for the cursor.
+	ion_predicate_t		*predicate;				/**< The predicate for the cursor.
 											*/
 
-	cursor_status_t (*next)(
-		dict_cursor_t *,
+	ion_cursor_status_t (*next)(
+		ion_dict_cursor_t *,
 		ion_record_t *record
 	);
 	/**< A pointer to the next function,
-		 which sets cursor_status_t). */
+		 which sets ion_cursor_status_t). */
 	void (*destroy)(
-		dict_cursor_t **
+		ion_dict_cursor_t **
 	);
 	/**< A pointer to the function used
 		 to destroy the cursor (frees
@@ -411,7 +411,7 @@ enum write_concern {
 @brief		A type for write concern information used by hash table based
 			dictionaries which limit insert/update of values.
 */
-typedef char write_concern_t;
+typedef char ion_write_concern_t;
 
 /**
 @brief		Struct used to maintain individual records in the hashmap.
@@ -419,7 +419,7 @@ typedef char write_concern_t;
 typedef struct hash_bucket {
 	char		status;				/**< the status of the bucket */
 	ion_byte_t	data[];			/**< the data in the bucket */
-} hash_bucket_t;
+} ion_hash_bucket_t;
 
 #if defined(__cplusplus)
 }

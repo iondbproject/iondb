@@ -4,13 +4,13 @@ void
 iinq_test_create_open_source(
 	planck_unit_test_t	*tc,
 	char				*schema_file_name,
-	key_type_t			key_type,
+	ion_key_type_t			key_type,
 	ion_key_size_t		key_size,
 	ion_value_size_t	value_size
 ) {
-	err_t					error;
-	dictionary_t			dictionary;
-	dictionary_handler_t	handler;
+	ion_err_t					error;
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
 	ion_dictionary_id_t		id;
 
 	error				= iinq_create_source(schema_file_name, key_type, key_size, value_size);
@@ -37,14 +37,14 @@ iinq_test_create_open_source(
 void
 iinq_test_create_insert_update_delete_drop_dictionary(
 	planck_unit_test_t	*tc,
-	key_type_t			key_type,
+	ion_key_type_t			key_type,
 	ion_key_size_t		key_size,
 	ion_value_size_t	value_size,
 	ion_key_t			insert_key,
 	ion_value_t 		insert_value,
 	ion_value_t 		update_value
 ) {
-	err_t					error;
+	ion_err_t					error;
 	ion_status_t			status;
 
 	error				= CREATE_DICTIONARY(test, key_type, key_size, value_size);
@@ -74,7 +74,7 @@ iinq_test_create_open_source_intint(
 	planck_unit_test_t *tc
 ) {
 	char				*schema_file_name;
-	key_type_t			key_type;
+	ion_key_type_t			key_type;
 	ion_key_size_t		key_size;
 	ion_value_size_t	value_size;
 
@@ -91,7 +91,7 @@ iinq_test_create_open_source_string10string20(
 	planck_unit_test_t *tc
 ) {
 	char				*schema_file_name;
-	key_type_t			key_type;
+	ion_key_type_t			key_type;
 	ion_key_size_t		key_size;
 	ion_value_size_t	value_size;
 
@@ -107,7 +107,7 @@ void
 iinq_test_create_insert_update_delete_drop_dictionary_intint(
 	planck_unit_test_t	*tc
 ) {
-	key_type_t			key_type;
+	ion_key_type_t			key_type;
 	ion_key_size_t		key_size;
 	ion_value_size_t	value_size;
 	ion_key_t			insert_key;
@@ -134,11 +134,11 @@ void
 iinq_test_create_query_select_all_from_where_single_dictionary(
 	planck_unit_test_t	*tc
 ) {
-	err_t					error;
+	ion_err_t					error;
 	ion_status_t			status;
-	iinq_query_processor_t	processor;
+	ion_iinq_query_processor_t	processor;
 
-	key_type_t				key_type;
+	ion_key_type_t				key_type;
 	ion_key_size_t			key_size;
 	ion_value_size_t		value_size;
 	ion_key_t				key;
@@ -186,11 +186,11 @@ void
 iinq_test_create_query_select_all_from_where_two_dictionaries(
 		planck_unit_test_t	*tc
 ) {
-	err_t					error;
+	ion_err_t					error;
 	ion_status_t			status;
-	iinq_query_processor_t	processor;
+	ion_iinq_query_processor_t	processor;
 
-	key_type_t				key_type;
+	ion_key_type_t				key_type;
 	ion_key_size_t			key_size;
 	ion_value_size_t		value_size;
 	ion_key_t				key;

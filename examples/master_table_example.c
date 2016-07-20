@@ -9,9 +9,9 @@ main(
 	void
 ) {
 	int						key_size, value_size;
-	key_type_t				key_type;
-	dictionary_handler_t	bpp_tree_handler;
-	dictionary_t			dictionary;
+	ion_key_type_t				key_type;
+	ion_dictionary_handler_t	bpp_tree_handler;
+	ion_dictionary_t			dictionary;
 	ion_status_t			status;
 
 	/* These sizes are given in units of bytes. */
@@ -120,7 +120,7 @@ main(
 	*/
 	printf("Iterating through all records with key = %d...\n", key);
 
-	predicate_t predicate;
+	ion_predicate_t predicate;
 
 	if (dictionary_build_predicate(&predicate, predicate_equality, IONIZE(key, int)) != err_ok) {
 		printf("Failed to build predicate\n");
@@ -131,7 +131,7 @@ main(
 		Once we have the predicate, now we call the find operation to set-up the cursor. Note that we pass in the cursor
 		uninitialized on purpose, since find will handle the construction of the cursor.
 	*/
-	dict_cursor_t *cursor = NULL;
+	ion_dict_cursor_t *cursor = NULL;
 
 	if (dictionary_find(&dictionary, &predicate, &cursor) != err_ok) {
 		printf("Failed to set up cursor\n");
@@ -149,7 +149,7 @@ main(
 		("one-before" the first record) or active (in the process of iteration). Each time we call "next" on the cursor,
 		A new record is returned by writing into the given ion_record.
 	*/
-	cursor_status_t cursor_status;
+	ion_cursor_status_t cursor_status;
 
 	while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
 		printf("\tKey: %d, Value: %s\n", NEUTRALIZE(ion_record.key, int), (char *) ion_record.value);

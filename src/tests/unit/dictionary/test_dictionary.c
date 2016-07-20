@@ -176,7 +176,7 @@ void
 test_dictionary_master_table(
 	planck_unit_test_t *tc
 ) {
-	err_t err;
+	ion_err_t err;
 
 	/* Cleanup, just in case */
 	fremove(ION_MASTER_TABLE_FILENAME);
@@ -191,8 +191,8 @@ test_dictionary_master_table(
 	/*************/
 
 	/* Test create */
-	dictionary_handler_t	handler;
-	dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
+	ion_dictionary_t			dictionary;
 
 	sldict_init(&handler);
 	err = ion_master_table_create_dictionary(&handler, &dictionary, key_type_numeric_signed, sizeof(int), 10, 20);
@@ -232,8 +232,8 @@ test_dictionary_master_table(
 	/******************************/
 
 	/* Test create 2nd dictionary */
-	dictionary_handler_t	handler2;
-	dictionary_t			dictionary2;
+	ion_dictionary_handler_t	handler2;
+	ion_dictionary_t			dictionary2;
 
 	sldict_init(&handler2);
 	err = ion_master_table_create_dictionary(&handler2, &dictionary2, key_type_numeric_signed, sizeof(short), 7, 14);

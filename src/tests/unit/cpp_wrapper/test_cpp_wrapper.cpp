@@ -329,7 +329,7 @@ test_cpp_wrapper_equality_duplicates(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, eq_cursor->hasNext());
 
-	cursor_status_t status = eq_cursor->next();
+	ion_cursor_status_t status = eq_cursor->next();
 
 	while (status) {
 		for (int i = 0; i < eq_key; i++) {
@@ -379,7 +379,7 @@ test_cpp_wrapper_equality_no_duplicates(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, eq_cursor->hasNext());
 
-	cursor_status_t status = eq_cursor->next();
+	ion_cursor_status_t status = eq_cursor->next();
 
 	while (status) {
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, eq_key, eq_cursor->getKey());
@@ -512,7 +512,7 @@ test_cpp_wrapper_range_simple(
 	Cursor<int, int> *range_cursor	= dict->range(min_key, max_key);
 	PLANCK_UNIT_ASSERT_TRUE(tc, range_cursor->hasNext());
 
-	cursor_status_t status			= range_cursor->next();
+	ion_cursor_status_t status			= range_cursor->next();
 
 	while (status) {
 		for (int i = 0; i < max_key + 5; i++) {
@@ -565,7 +565,7 @@ test_cpp_wrapper_range_edge_case1(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, range_cursor->hasNext());
 
-	cursor_status_t status = range_cursor->next();
+	ion_cursor_status_t status = range_cursor->next();
 
 	while (status) {
 		for (int i = 0; i < nums_length; i++) {
@@ -618,7 +618,7 @@ test_cpp_wrapper_range_edge_case2(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, range_cursor->hasNext());
 
-	cursor_status_t status = range_cursor->next();
+	ion_cursor_status_t status = range_cursor->next();
 
 	while (status) {
 		for (int i = 0; i < 2; i++) {
@@ -670,7 +670,7 @@ test_cpp_wrapper_range_edge_case3(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, range_cursor->hasNext());
 
-	cursor_status_t status = range_cursor->next();
+	ion_cursor_status_t status = range_cursor->next();
 
 	while (status) {
 		for (int i = 0; i < nums_length; i++) {
@@ -842,7 +842,7 @@ test_cpp_wrapper_all_records_simple(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, all_rec_cursor->hasNext());
 
-	cursor_status_t status = all_rec_cursor->next();
+	ion_cursor_status_t status = all_rec_cursor->next();
 
 	while (status) {
 		for (int i = 0; i < random_positive_num; i++) {
@@ -895,7 +895,7 @@ test_cpp_wrapper_all_records_edge_cases1(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, all_rec_cursor->hasNext());
 
-	cursor_status_t status = all_rec_cursor->next();
+	ion_cursor_status_t status = all_rec_cursor->next();
 
 	while (status) {
 		for (int i = 0; i < nums_length; i++) {
@@ -947,7 +947,7 @@ test_cpp_wrapper_all_records_edge_cases2(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, all_rec_cursor->hasNext());
 
-	cursor_status_t status = all_rec_cursor->next();
+	ion_cursor_status_t status = all_rec_cursor->next();
 
 	while (status) {
 		for (int i = 0; i < nums_length; i++) {
@@ -1076,11 +1076,11 @@ test_cpp_wrapper_open_close(
 	int value
 ) {
 	ion_status_t		status;
-	err_t				error;
+	ion_err_t				error;
 	ion_dictionary_id_t gdict_id	= dict->dict.instance->id;
 	int					key_size	= dict->dict.instance->record.key_size;
 	int					val_size	= dict->dict.instance->record.value_size;
-	key_type_t			key_type	= dict->dict.instance->key_type;
+	ion_key_type_t			key_type	= dict->dict.instance->key_type;
 	int					dict_size	= dict->dict_size;
 
 	/* Insert test record so we can check data integrity after we close/open */

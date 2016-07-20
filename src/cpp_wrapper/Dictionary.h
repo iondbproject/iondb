@@ -20,8 +20,8 @@ template<typename K, typename V>
 class Dictionary {
 public:
 
-dictionary_handler_t	handler;
-dictionary_t			dict;
+ion_dictionary_handler_t	handler;
+ion_dictionary_t			dict;
 int						size_k;
 int						size_v;
 int						dict_size;
@@ -32,14 +32,14 @@ ion_status_t			last_status;
 	this->destroy();
 }
 
-err_t
+ion_err_t
 initializeDictionary(
-	key_type_t	type_key,
+	ion_key_type_t	type_key,
 	int			key_size,
 	int			value_size,
 	int			dictionary_size
 ) {
-	err_t err = dictionary_create(&handler, &dict, 0, type_key, key_size, value_size, dictionary_size);
+	ion_err_t err = dictionary_create(&handler, &dict, 0, type_key, key_size, value_size, dictionary_size);
 
 	size_k		= key_size;
 	size_v		= value_size;
@@ -131,10 +131,10 @@ update(
 
 @return		An error message describing the total destruction of the dictionary.
  */
-err_t
+ion_err_t
 destroy(
 ) {
-	err_t err = dictionary_delete_dictionary(&dict);
+	ion_err_t err = dictionary_delete_dictionary(&dict);
 
 	return err;
 }
@@ -146,11 +146,11 @@ destroy(
 				The configuration of the dictionary to be opened.
 @return	 An error message describing the result of of the open.
 */
-err_t
+ion_err_t
 open(
 	ion_dictionary_config_info_t config_info
 ) {
-	err_t err = dictionary_open(&handler, &dict, &config_info);
+	ion_err_t err = dictionary_open(&handler, &dict, &config_info);
 
 	return err;
 }
@@ -158,10 +158,10 @@ open(
 /**
 @brief	  Closes a dictionary.
 */
-err_t
+ion_err_t
 close(
 ) {
-	err_t err = dictionary_close(&dict);
+	ion_err_t err = dictionary_close(&dict);
 
 	return err;
 }
@@ -181,7 +181,7 @@ range(
 	K	min_key,
 	K	max_key
 ) {
-	predicate_t predicate;
+	ion_predicate_t predicate;
 	ion_key_t	ion_min_key = (ion_key_t) &min_key;
 	ion_key_t	ion_max_key = (ion_key_t) &max_key;
 
@@ -201,7 +201,7 @@ Cursor<K, V> *
 equality(
 	K key
 ) {
-	predicate_t predicate;
+	ion_predicate_t predicate;
 	ion_key_t	ion_key = (ion_key_t) &key;
 
 	dictionary_build_predicate(&predicate, predicate_equality, ion_key);
@@ -217,7 +217,7 @@ equality(
 Cursor<K, V> *
 allRecords(
 ) {
-	predicate_t predicate;
+	ion_predicate_t predicate;
 
 	dictionary_build_predicate(&predicate, predicate_all_records);
 	return new Cursor<K, V>(&dict, &predicate);

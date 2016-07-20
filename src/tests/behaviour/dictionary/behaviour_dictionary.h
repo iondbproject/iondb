@@ -39,15 +39,15 @@ extern "C" {
 
 typedef struct {
 	void (*init_fcn)(
-		dictionary_handler_t *
+		ion_dictionary_handler_t *
 	);										/**< A pointer to a handler initialization function. */
-} bhdct_context_t;
+} ion_bhdct_context_t;
 
 /**
 @brief	This function specifies an information context. Used by the concrete test runners
 		in order to properly designate which implementation we're specifically testing.
 */
-void bhdct_set_context(void (*)(dictionary_handler_t *));
+void bhdct_set_context(void (*)(ion_dictionary_handler_t *));
 
 /**
 @brief	Constructs the testing suite for the behaviour dictionary tests.

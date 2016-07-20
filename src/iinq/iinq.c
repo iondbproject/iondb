@@ -2,17 +2,17 @@
 #include "iinq.h"
 #include "../dictionary/bpp_tree/bpp_tree_handler.h"
 
-err_t
+ion_err_t
 iinq_create_source(
 	char					*schema_file_name,
-	key_type_t				key_type,
+	ion_key_type_t				key_type,
 	ion_key_size_t			key_size,
 	ion_value_size_t		value_size
 ) {
-	err_t					error;
+	ion_err_t					error;
 	FILE					*schema_file;
-	dictionary_t			dictionary;
-	dictionary_handler_t	handler;
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
 
 	dictionary.handler		= &handler;
 
@@ -65,13 +65,13 @@ iinq_create_source(
 	return error;
 }
 
-err_t
+ion_err_t
 iinq_open_source(
 	char					*schema_file_name,
-	dictionary_t			*dictionary,
-	dictionary_handler_t	*handler
+	ion_dictionary_t			*dictionary,
+	ion_dictionary_handler_t	*handler
 ) {
-	err_t				error;
+	ion_err_t				error;
 	FILE				*schema_file;
 	ion_dictionary_id_t id;
 
@@ -121,10 +121,10 @@ iinq_insert(
 	ion_key_t	key,
 	ion_value_t value
 ) {
-	err_t					error;
+	ion_err_t					error;
 	ion_status_t			status		= ION_STATUS_INITIALIZE;
-	dictionary_t			dictionary;
-	dictionary_handler_t	handler;
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
 
 	dictionary.handler		= &handler;
 
@@ -150,10 +150,10 @@ iinq_update(
 	ion_key_t	key,
 	ion_value_t value
 ) {
-	err_t					error;
+	ion_err_t					error;
 	ion_status_t			status		= ION_STATUS_INITIALIZE;
-	dictionary_t			dictionary;
-	dictionary_handler_t	handler;
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
 
 	dictionary.handler		= &handler;
 
@@ -178,10 +178,10 @@ iinq_delete(
 	char 		*schema_file_name,
 	ion_key_t	key
 ) {
-	err_t					error;
+	ion_err_t					error;
 	ion_status_t			status		= ION_STATUS_INITIALIZE;
-	dictionary_t			dictionary;
-	dictionary_handler_t	handler;
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
 
 	dictionary.handler		= &handler;
 
@@ -201,13 +201,13 @@ iinq_delete(
 	return status;
 }
 
-err_t
+ion_err_t
 iinq_drop(
 	char *schema_file_name
 ) {
-	err_t					error;
-	dictionary_t			dictionary;
-	dictionary_handler_t	handler;
+	ion_err_t					error;
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
 
 	dictionary.handler		= &handler;
 

@@ -19,7 +19,7 @@
  */
 void
 check_map(
-	hashmap_t *map
+	ion_hashmap_t *map
 ) {
 	int i;
 	int bucket_size = map->super.record.key_size + map->super.record.value_size + sizeof(char);
@@ -40,8 +40,8 @@ check_map(
 void
 initialize_hash_map(
 	int				size,
-	record_info_t	*record,
-	hashmap_t		*map
+	ion_record_info_t	*record,
+	ion_hashmap_t		*map
 ) {
 	map->super.compare = dictionary_compare_signed_value;
 	oah_initialize(map, oah_compute_simple_hash, /*dictionary_compare_signed_value,*/ map->super.key_type, record->key_size, record->value_size, size);
@@ -49,9 +49,9 @@ initialize_hash_map(
 
 void
 initialize_hash_map_std_conditions(
-	hashmap_t *map
+	ion_hashmap_t *map
 ) {
-	record_info_t record;
+	ion_record_info_t record;
 
 	record.key_size		= sizeof(int);
 	record.value_size	= 10;
@@ -71,13 +71,13 @@ test_open_address_hashmap_initialize(
 ) {
 	/* this is required for initializing the hash map and should come from the dictionary */
 	int				size;
-	record_info_t	record;
+	ion_record_info_t	record;
 
 	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 	size				= 10;
 
-	hashmap_t map;
+	ion_hashmap_t map;
 
 	map.super.key_type = key_type_numeric_signed;	/* default to use int key type */
 
@@ -103,7 +103,7 @@ void
 test_open_address_hashmap_compute_simple_hash(
 	planck_unit_test_t *tc
 ) {
-	hashmap_t	map;		/* create handler for hashmap */
+	ion_hashmap_t	map;		/* create handler for hashmap */
 	int			i;
 
 	initialize_hash_map_std_conditions(&map);
@@ -129,7 +129,7 @@ test_open_address_hashmap_get_location(
 	int i;
 
 	for (i = 0; i < MAX_HASH_TEST; i++) {
-		PLANCK_UNIT_ASSERT_TRUE(tc, (i % STD_MAP_SIZE) == oah_get_location((hash_t) i, STD_MAP_SIZE));
+		PLANCK_UNIT_ASSERT_TRUE(tc, (i % STD_MAP_SIZE) == oah_get_location((ion_hash_t) i, STD_MAP_SIZE));
 	}
 }
 
@@ -148,14 +148,14 @@ void
 test_open_address_hashmap_find_item_location(
 	planck_unit_test_t *tc
 ) {
-	hashmap_t	map;		/* create handler for hashmap */
+	ion_hashmap_t	map;		/* create handler for hashmap */
 	int			i;
 	int			offset;
 
 	initialize_hash_map_std_conditions(&map);
 
 	/*Manually populate records */
-	record_info_t record = map.super.record;
+	ion_record_info_t record = map.super.record;
 
 	char *item;
 
@@ -163,7 +163,7 @@ test_open_address_hashmap_find_item_location(
 	item = (char *) malloc(sizeof(char) * (record.key_size + record.value_size + sizeof(char)));
 
 	/* manually populate array */
-	hash_bucket_t	*item_ptr	= (hash_bucket_t *) item;
+	ion_hash_bucket_t	*item_ptr	= (ion_hash_bucket_t *) item;
 	char			*pos_ptr	= map.entry;
 
 	/* Bucket size includes flags, data, value */
@@ -215,14 +215,14 @@ test_open_address_hashmap_simple_insert(
 	planck_unit_test_t *tc
 ) {
 	/* create handler for hashmap */
-	hashmap_t	map;
+	ion_hashmap_t	map;
 	int			i;
 	int			offset;
 
 	initialize_hash_map_std_conditions(&map);
 
 	/*Manually populate records */
-	record_info_t record = map.super.record;
+	ion_record_info_t record = map.super.record;
 
 	/* manually populate array */
 #if DEBUG
@@ -256,9 +256,9 @@ test_open_address_hashmap_simple_insert(
 		}
 
 		for (i = 0; i < map.map_size; i++) {
-			ion_record_status_t status	= ((hash_bucket_t *) (map.entry + ((((i + offset) % map.map_size) * bucket_size) % (map.map_size * bucket_size))))->status;
-			ion_key_t			key		= (ion_key_t) (((hash_bucket_t *) (map.entry + ((((i + offset) % map.map_size) * bucket_size) % (map.map_size * bucket_size))))->data);
-			ion_value_t			value	= (ion_value_t) (((hash_bucket_t *) (map.entry + ((((i + offset) % map.map_size) * bucket_size) % (map.map_size * bucket_size))))->data + record.key_size);
+			ion_record_status_t status	= ((ion_hash_bucket_t *) (map.entry + ((((i + offset) % map.map_size) * bucket_size) % (map.map_size * bucket_size))))->status;
+			ion_key_t			key		= (ion_key_t) (((ion_hash_bucket_t *) (map.entry + ((((i + offset) % map.map_size) * bucket_size) % (map.map_size * bucket_size))))->data);
+			ion_value_t			value	= (ion_value_t) (((ion_hash_bucket_t *) (map.entry + ((((i + offset) % map.map_size) * bucket_size) % (map.map_size * bucket_size))))->data + record.key_size);
 
 			/* build up expected value */
 			ion_byte_t str[10];
@@ -288,7 +288,7 @@ test_open_address_hashmap_simple_insert_and_query(
 	planck_unit_test_t *tc
 ) {
 	/* create handler for hashmap */
-	hashmap_t		map;
+	ion_hashmap_t		map;
 	int				i;
 	ion_status_t	status;
 
@@ -345,7 +345,7 @@ test_open_address_hashmap_simple_delete(
 	planck_unit_test_t *tc
 ) {
 	/* create handler for hashmap */
-	hashmap_t		map;
+	ion_hashmap_t		map;
 	int				i, j;
 	ion_status_t	status;
 
@@ -431,7 +431,7 @@ void
 test_open_address_hashmap_duplicate_insert_1(
 	planck_unit_test_t *tc
 ) {
-	hashmap_t		map;						/* create handler for hashmap */
+	ion_hashmap_t		map;						/* create handler for hashmap */
 	int				i;
 	ion_status_t	status;
 
@@ -480,7 +480,7 @@ void
 test_open_address_hashmap_duplicate_insert_2(
 	planck_unit_test_t *tc
 ) {
-	hashmap_t		map;						/* create handler for hashmap */
+	ion_hashmap_t		map;						/* create handler for hashmap */
 	int				i;
 	ion_status_t	status;
 
@@ -570,7 +570,7 @@ void
 test_open_address_hashmap_update_1(
 	planck_unit_test_t *tc
 ) {
-	hashmap_t		map;						/* create handler for hashmap */
+	ion_hashmap_t		map;						/* create handler for hashmap */
 	int				i;
 	ion_status_t	status;
 
@@ -660,7 +660,7 @@ void
 test_open_address_hashmap_update_2(
 	planck_unit_test_t *tc
 ) {
-	hashmap_t		map;						/* create handler for hashmap */
+	ion_hashmap_t		map;						/* create handler for hashmap */
 	int				i;
 	ion_status_t	status;
 
@@ -748,7 +748,7 @@ void
 test_open_address_hashmap_delete_1(
 	planck_unit_test_t *tc
 ) {
-	hashmap_t		map;						/* create handler for hashmap */
+	ion_hashmap_t		map;						/* create handler for hashmap */
 	int				i = 2;
 	ion_status_t	status;
 
@@ -801,7 +801,7 @@ void
 test_open_address_hashmap_delete_2(
 	planck_unit_test_t *tc
 ) {
-	hashmap_t		map;						/* create handler for hashmap */
+	ion_hashmap_t		map;						/* create handler for hashmap */
 	int				i, j;
 	ion_status_t	status;
 
@@ -910,7 +910,7 @@ void
 test_open_address_hashmap_capacity(
 	planck_unit_test_t *tc
 ) {
-	hashmap_t		map;						/* create handler for hashmap */
+	ion_hashmap_t		map;						/* create handler for hashmap */
 	int				i;
 	ion_status_t	status;
 

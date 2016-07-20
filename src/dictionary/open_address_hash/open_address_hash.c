@@ -15,11 +15,11 @@
 
 #include "open_address_hash.h"
 
-err_t
+ion_err_t
 oah_initialize(
-	hashmap_t *hashmap,
-	hash_t (*hashing_function)(hashmap_t *, ion_key_t, int),
-	key_type_t key_type,
+	ion_hashmap_t *hashmap,
+	ion_hash_t (*hashing_function)(ion_hashmap_t *, ion_key_t, int),
+	ion_key_type_t key_type,
 	ion_key_size_t key_size,
 	ion_value_size_t value_size,
 	int size
@@ -49,7 +49,7 @@ oah_initialize(
 
 	/* Initialize hash table */
 	for (i = 0; i < size; i++) {
-		((hash_bucket_t *) (hashmap->entry + ((hashmap->super.record.key_size + hashmap->super.record.value_size + SIZEOF(STATUS)) * i)))->status = EMPTY;
+		((ion_hash_bucket_t *) (hashmap->entry + ((hashmap->super.record.key_size + hashmap->super.record.value_size + SIZEOF(STATUS)) * i)))->status = EMPTY;
 	}
 
 	return 0;
@@ -57,15 +57,15 @@ oah_initialize(
 
 int
 oah_get_location(
-	hash_t	num,
+	ion_hash_t	num,
 	int		size
 ) {
 	return num % size;
 }
 
-err_t
+ion_err_t
 oah_destroy(
-	hashmap_t *hash_map
+	ion_hashmap_t *hash_map
 ) {
 	hash_map->compute_hash				= NULL;
 	hash_map->map_size					= 0;
@@ -85,12 +85,12 @@ oah_destroy(
 
 ion_status_t
 oah_update(
-	hashmap_t	*hash_map,
+	ion_hashmap_t	*hash_map,
 	ion_key_t	key,
 	ion_value_t value
 ) {
 	/* TODO: lock potentially required */
-	write_concern_t current_write_concern = hash_map->write_concern;
+	ion_write_concern_t current_write_concern = hash_map->write_concern;
 
 	hash_map->write_concern = wc_update;/* change write concern to allow update */
 
@@ -102,21 +102,21 @@ oah_update(
 
 ion_status_t
 oah_insert(
-	hashmap_t	*hash_map,
+	ion_hashmap_t	*hash_map,
 	ion_key_t	key,
 	ion_value_t value
 ) {
-	hash_t hash = hash_map->compute_hash(hash_map, key, hash_map->super.record.key_size);	/* compute hash value for given key */
+	ion_hash_t hash = hash_map->compute_hash(hash_map, key, hash_map->super.record.key_size);	/* compute hash value for given key */
 
 	int loc		= oah_get_location(hash, hash_map->map_size);
 
 	/* Scan until find an empty location - oah_insert if found */
 	int count	= 0;
 
-	hash_bucket_t *item;
+	ion_hash_bucket_t *item;
 
 	while (count != hash_map->map_size) {
-		item = ((hash_bucket_t *) ((hash_map->entry + (hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS)) * loc)));
+		item = ((ion_hash_bucket_t *) ((hash_map->entry + (hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS)) * loc)));
 
 		if (item->status == IN_USE) {
 			/* if a cell is in use, need to key to */
@@ -164,14 +164,14 @@ oah_insert(
 	return ION_STATUS_ERROR(err_max_capacity);
 }
 
-err_t
+ion_err_t
 oah_find_item_loc(
-	hashmap_t	*hash_map,
+	ion_hashmap_t	*hash_map,
 	ion_key_t	key,
 	int			*location
 ) {
 	/* compute hash value for given key */
-	hash_t hash = hash_map->compute_hash(hash_map, key, hash_map->super.record.key_size);
+	ion_hash_t hash = hash_map->compute_hash(hash_map, key, hash_map->super.record.key_size);
 
 	int loc		= oah_get_location(hash, hash_map->map_size);
 	/* determine bucket based on hash */
@@ -181,7 +181,7 @@ oah_find_item_loc(
 	while (count != hash_map->map_size) {
 		/* check to see if current item is a match based on key */
 		/* locate first item */
-		hash_bucket_t *item = (((hash_bucket_t *) ((hash_map->entry + (hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS)) * loc))));
+		ion_hash_bucket_t *item = (((ion_hash_bucket_t *) ((hash_map->entry + (hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS)) * loc))));
 
 		if (item->status == EMPTY) {
 			return err_item_not_found;	/* if you hit an empty cell, exit */
@@ -217,7 +217,7 @@ oah_find_item_loc(
 
 ion_status_t
 oah_delete(
-	hashmap_t	*hash_map,
+	ion_hashmap_t	*hash_map,
 	ion_key_t	key
 ) {
 	int loc = -1;
@@ -230,7 +230,7 @@ oah_delete(
 	}
 	else {
 		/* locate item */
-		hash_bucket_t *item = (((hash_bucket_t *) ((hash_map->entry + (hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS)) * loc))));
+		ion_hash_bucket_t *item = (((ion_hash_bucket_t *) ((hash_map->entry + (hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS)) * loc))));
 
 		item->status = DELETED;	/* delete item */
 
@@ -243,7 +243,7 @@ oah_delete(
 
 ion_status_t
 oah_query(
-	hashmap_t	*hash_map,
+	ion_hashmap_t	*hash_map,
 	ion_key_t	key,
 	ion_value_t value
 ) {
@@ -255,7 +255,7 @@ oah_query(
 #endif
 
 		int				data_length = hash_map->super.record.key_size + hash_map->super.record.value_size;
-		hash_bucket_t	*item		= (((hash_bucket_t *) ((hash_map->entry + (data_length + SIZEOF(STATUS)) * loc))));
+		ion_hash_bucket_t	*item		= (((ion_hash_bucket_t *) ((hash_map->entry + (data_length + SIZEOF(STATUS)) * loc))));
 
 		/* *value				   = (ion_value_t)malloc(sizeof(char) * (hash_map->super.record.value_size)); */
 		memcpy(value, (ion_value_t) (item->data + hash_map->super.record.key_size), hash_map->super.record.value_size);
@@ -271,25 +271,25 @@ oah_query(
 
 void
 oah_print(
-	hashmap_t		*hash_map,
+	ion_hashmap_t		*hash_map,
 	int				size,
-	record_info_t	*record
+	ion_record_info_t	*record
 ) {
 	int i;
 
 	io_printf("Printing map\n");
 
 	for (i = 0; i < size; i++) {
-		io_printf("%d -- %i ", i, ((hash_bucket_t *) ((hash_map->entry + (record->key_size + record->value_size + SIZEOF(STATUS)) * i)))->status);
+		io_printf("%d -- %i ", i, ((ion_hash_bucket_t *) ((hash_map->entry + (record->key_size + record->value_size + SIZEOF(STATUS)) * i)))->status);
 		{
-			if (((hash_bucket_t *) ((hash_map->entry + (record->key_size + record->value_size + SIZEOF(STATUS)) * i)))->status == (EMPTY | DELETED)) {
+			if (((ion_hash_bucket_t *) ((hash_map->entry + (record->key_size + record->value_size + SIZEOF(STATUS)) * i)))->status == (EMPTY | DELETED)) {
 				io_printf("(null)");
 			}
 			else {
 				int j;
 
 				for (j = 0; j < (record->key_size + record->value_size); j++) {
-					io_printf("%X ", *(ion_byte_t *) (((hash_bucket_t *) ((hash_map->entry + (record->key_size + record->value_size + SIZEOF(STATUS)) * i)))->data + j));
+					io_printf("%X ", *(ion_byte_t *) (((ion_hash_bucket_t *) ((hash_map->entry + (record->key_size + record->value_size + SIZEOF(STATUS)) * i)))->data + j));
 				}
 			}
 
@@ -298,9 +298,9 @@ oah_print(
 	}
 }
 
-hash_t
+ion_hash_t
 oah_compute_simple_hash(
-	hashmap_t	*hashmap,
+	ion_hashmap_t	*hashmap,
 	ion_key_t	key,
 	int			size_of_key
 ) {
@@ -308,7 +308,7 @@ oah_compute_simple_hash(
 
 	/* convert to a hashable value */
 	/*@todo int will cause an issues depending on sizeof int */
-	hash_t hash = (hash_t) (((*(int *) key) % hashmap->map_size) + hashmap->map_size) % hashmap->map_size;
+	ion_hash_t hash = (ion_hash_t) (((*(int *) key) % hashmap->map_size) + hashmap->map_size) % hashmap->map_size;
 
 	return hash;
 }
