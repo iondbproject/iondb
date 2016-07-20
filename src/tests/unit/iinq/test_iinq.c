@@ -234,11 +234,11 @@ iinq_test_create_query_select_all_from_where_two_dictionaries(
 			SELECT_ALL,
 			FROM(test1, test2),
 			WHERE(NEUTRALIZE(test1.key, int) == 1),
-	,
-	,
-	,
-	,
-	,
+			,
+			,
+			,
+			,
+			,
 			&processor
 	);
 
