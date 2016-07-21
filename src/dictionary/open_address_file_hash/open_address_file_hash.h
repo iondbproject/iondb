@@ -56,6 +56,11 @@ struct file_hashmap {
 	FILE *file;	/**< file pointer */
 };
 
+err_t
+oaf_close(
+	file_hashmap_t *hashmap
+);
+
 /**
 @brief		This function initializes an open address in memory hash map.
 

@@ -14,8 +14,34 @@
 /******************************************************************************/
 
 #include "open_address_file_hash.h"
+#include "../../file/ion_file.h"
 
 #define TEST_FILE "file.bin"
+
+err_t
+bClose(
+	file_hashmap_t *hashmap
+) {
+	if (hashmap == NULL) {
+		return err_ok;
+	}
+
+	/* flush idx */
+/*TODO: Cleanup **/
+#if defined(ARDUINO)
+
+	if (hashmap->file.file) {
+#else
+
+	if (hashmap->file) {
+#endif
+		flushAll(hashmap);
+		ion_fclose(hashmap->file);
+	}
+
+	free(hashmap);
+	return err_ok;
+}
 
 err_t
 oafh_initialize(
@@ -358,4 +384,34 @@ oafh_compute_simple_hash(
 	hash_t hash = (hash_t) (((*(int *) key) % hashmap->map_size) + hashmap->map_size) % hashmap->map_size;
 
 	return hash;
+}
+
+static err_t
+flushAll(
+	file_hashmap_t *hashmap
+) {
+	err_t	rc;				/* return code */
+	char	*buf;				/* buffer */
+
+	hashmap->file->_bf;
+
+	if (h->root.modified) {
+		if ((rc = flush(handle, &h->root)) != 0) {
+			return rc;
+		}
+	}
+
+	buf = h->bufList.next;
+
+	while (buf != &h->bufList) {
+		if (buf->modified) {
+			if ((rc = flush(handle, buf)) != 0) {
+				return rc;
+			}
+		}
+
+		buf = buf->next;
+	}
+
+	return err_ok;
 }
