@@ -245,7 +245,7 @@ typedef int ion_result_count_t;
 			operation.
 */
 typedef struct {
-	ion_err_t				error;
+	ion_err_t			error;
 	/**< The error code. */
 	ion_result_count_t	count;	/**< The number of items affected. */
 } ion_status_t;
@@ -274,6 +274,18 @@ typedef struct ion_record {
 	/**< pointer to a key */
 	ion_value_t value;	/**< a pointer to value */
 } ion_record_t;
+
+/**
+@brief		An integral size type for buffers.
+@details	The size of the buffer is described in bytes.
+*/
+typedef uint32_t ion_buffer_size_t;
+
+/**
+@brief		An integral size type for pages.
+@details	The size of a page is described in bytes.
+*/
+typedef uint16_t ion_page_size_t;
 
 #if defined(__cplusplus)
 }
