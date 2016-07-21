@@ -31,12 +31,12 @@ typedef long int ion_fpos_t;/**< Flatfile file position type */
 @brief		Struct used to maintain an instance of a flat file store.
 */
 typedef struct ff_file {
-	dictionary_parent_t super;
+	ion_dictionary_parent_t super;
 	FILE				*file_ptr;		/**< Pointer to file store */
 	ion_fpos_t			start_of_data;		/**< indicates start of data block */
-	write_concern_t		write_concern;		/**< The current @p write_concern level
+	ion_write_concern_t		write_concern;		/**< The current @p write_concern level
 											 of the file*/
-} ff_file_t;
+} ion_ff_file_t;
 
 /**
 @brief		This function initializes a flat file.
@@ -54,10 +54,10 @@ typedef struct ff_file {
 				The size of the value in bytes.
 @return		The status describing the result of the initialization.
  */
-err_t
+ion_err_t
 ff_initialize(
-	ff_file_t			*file,
-	key_type_t			key_type,
+	ion_ff_file_t			*file,
+	ion_key_type_t			key_type,
 	ion_key_size_t		key_size,
 	ion_value_size_t	value_size
 );
@@ -71,9 +71,9 @@ ff_initialize(
 				The file to be destroyed.
 @return		The status describing the result of the destruction
 */
-err_t
+ion_err_t
 ff_destroy(
-	ff_file_t *file
+	ion_ff_file_t *file
 );
 
 /**
@@ -98,7 +98,7 @@ ff_destroy(
 */
 ion_status_t
 ff_insert(
-	ff_file_t	*file,
+	ion_ff_file_t	*file,
 	ion_key_t	key,
 	ion_value_t value
 );
@@ -121,7 +121,7 @@ FIXME THIS DOCUMENTATION IS ALL WRONG!
 */
 ion_status_t
 ff_update(
-	ff_file_t	*file,
+	ion_ff_file_t	*file,
 	ion_key_t	key,
 	ion_value_t value
 );
@@ -139,9 +139,9 @@ ff_update(
 				Pointer to the location variable
 @return		The status of the find
  */
-err_t
+ion_err_t
 ff_find_item_loc(
-	ff_file_t	*file,
+	ion_ff_file_t	*file,
 	ion_key_t	key,
 	ion_fpos_t	*location
 );
@@ -159,7 +159,7 @@ ff_find_item_loc(
 */
 ion_status_t
 ff_delete(
-	ff_file_t	*file,
+	ion_ff_file_t	*file,
 	ion_key_t	key
 );
 
@@ -180,7 +180,7 @@ ff_delete(
 */
 ion_status_t
 ff_query(
-	ff_file_t	*file,
+	ion_ff_file_t	*file,
 	ion_key_t	key,
 	ion_value_t value
 );

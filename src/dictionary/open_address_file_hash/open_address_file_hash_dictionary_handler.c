@@ -11,7 +11,7 @@
 
 void
 oafdict_init(
-	dictionary_handler_t *handler
+	ion_dictionary_handler_t *handler
 ) {
 	handler->insert				= oafdict_insert;
 	handler->create_dictionary	= oafdict_create_dictionary;
@@ -24,41 +24,41 @@ oafdict_init(
 
 ion_status_t
 oafdict_insert(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 ) {
-	return oafh_insert((file_hashmap_t *) dictionary->instance, key, value);
+	return oafh_insert((ion_file_hashmap_t *) dictionary->instance, key, value);
 }
 
 ion_status_t
 oafdict_query(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 ) {
-	return oafh_query((file_hashmap_t *) dictionary->instance, key, value);
+	return oafh_query((ion_file_hashmap_t *) dictionary->instance, key, value);
 }
 
-err_t
+ion_err_t
 oafdict_create_dictionary(
 	ion_dictionary_id_t			id,
-	key_type_t					key_type,
+	ion_key_type_t					key_type,
 	int							key_size,
 	int							value_size,
 	int							dictionary_size,
 	ion_dictionary_compare_t	compare,
-	dictionary_handler_t		*handler,
-	dictionary_t				*dictionary
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary
 ) {
 	UNUSED(id);
 	/* this is the instance of the hashmap */
-	dictionary->instance			= (dictionary_parent_t *) malloc(sizeof(file_hashmap_t));
+	dictionary->instance			= (ion_dictionary_parent_t *) malloc(sizeof(ion_file_hashmap_t));
 
 	dictionary->instance->compare	= compare;
 
 	/* this registers the dictionary the dictionary */
-	oafh_initialize((file_hashmap_t *) dictionary->instance, oafh_compute_simple_hash, key_type, key_size, value_size, dictionary_size);/* just pick an arbitary size for testing atm */
+	oafh_initialize((ion_file_hashmap_t *) dictionary->instance, oafh_compute_simple_hash, key_type, key_size, value_size, dictionary_size);/* just pick an arbitary size for testing atm */
 
 	/*TODO The correct comparison operator needs to be bound at run time
 	 * based on the type of key defined
@@ -72,17 +72,17 @@ oafdict_create_dictionary(
 
 ion_status_t
 oafdict_delete(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key
 ) {
-	return oafh_delete((file_hashmap_t *) dictionary->instance, key);
+	return oafh_delete((ion_file_hashmap_t *) dictionary->instance, key);
 }
 
-err_t
+ion_err_t
 oafdict_delete_dictionary(
-	dictionary_t *dictionary
+	ion_dictionary_t *dictionary
 ) {
-	err_t result = oafh_destroy((file_hashmap_t *) dictionary->instance);
+	ion_err_t result = oafh_destroy((ion_file_hashmap_t *) dictionary->instance);
 
 	free(dictionary->instance);
 	dictionary->instance = NULL;/* When releasing memory, set pointer to NULL */
@@ -91,22 +91,22 @@ oafdict_delete_dictionary(
 
 ion_status_t
 oafdict_update(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 ) {
-	return oafh_update((file_hashmap_t *) dictionary->instance, key, value);
+	return oafh_update((ion_file_hashmap_t *) dictionary->instance, key, value);
 }
 
 /*@todo What do we do if the cursor is already active? */
-err_t
+ion_err_t
 oafdict_find(
-	dictionary_t	*dictionary,
-	predicate_t		*predicate,
-	dict_cursor_t	**cursor
+	ion_dictionary_t	*dictionary,
+	ion_predicate_t		*predicate,
+	ion_dict_cursor_t	**cursor
 ) {
 	/* allocate memory for cursor */
-	if ((*cursor = (dict_cursor_t *) malloc(sizeof(oafdict_cursor_t))) == NULL) {
+	if ((*cursor = (ion_dict_cursor_t *) malloc(sizeof(ion_oafdict_cursor_t))) == NULL) {
 		return err_out_of_memory;
 	}
 
@@ -120,7 +120,7 @@ oafdict_find(
 	(*cursor)->next					= oafdict_next;	/* this will use the correct value */
 
 	/* allocate predicate */
-	(*cursor)->predicate			= (predicate_t *) malloc(sizeof(predicate_t));
+	(*cursor)->predicate			= (ion_predicate_t *) malloc(sizeof(ion_predicate_t));
 	(*cursor)->predicate->type		= predicate->type;
 	(*cursor)->predicate->destroy	= predicate->destroy;
 
@@ -128,19 +128,19 @@ oafdict_find(
 	switch (predicate->type) {
 		case predicate_equality: {
 			/* as this is an equality, need to malloc for key as well */
-			if (((*cursor)->predicate->statement.equality.equality_value = (ion_key_t) malloc((((file_hashmap_t *) dictionary->instance)->super.record.key_size))) == NULL) {
+			if (((*cursor)->predicate->statement.equality.equality_value = (ion_key_t) malloc((((ion_file_hashmap_t *) dictionary->instance)->super.record.key_size))) == NULL) {
 				free((*cursor)->predicate);
 				free(*cursor);	/* cleanup */
 				return err_out_of_memory;
 			}
 
 			/* copy across the key value as the predicate may be destroyed */
-			memcpy((*cursor)->predicate->statement.equality.equality_value, predicate->statement.equality.equality_value, ((((file_hashmap_t *) dictionary->instance)->super.record.key_size)));
+			memcpy((*cursor)->predicate->statement.equality.equality_value, predicate->statement.equality.equality_value, ((((ion_file_hashmap_t *) dictionary->instance)->super.record.key_size)));
 
 			/* find the location of the first element as this is a straight equality */
 			int location = cs_invalid_index;
 
-			if (oafh_find_item_loc((file_hashmap_t *) dictionary->instance, (*cursor)->predicate->statement.equality.equality_value, &location) == err_item_not_found) {
+			if (oafh_find_item_loc((ion_file_hashmap_t *) dictionary->instance, (*cursor)->predicate->statement.equality.equality_value, &location) == err_item_not_found) {
 				(*cursor)->status = cs_end_of_results;
 				return err_ok;
 			}
@@ -148,7 +148,7 @@ oafdict_find(
 				(*cursor)->status = cs_cursor_initialized;
 
 				/* cast to specific instance type for conveniences of setup */
-				oafdict_cursor_t *oadict_cursor = (oafdict_cursor_t *) (*cursor);
+				ion_oafdict_cursor_t *oadict_cursor = (ion_oafdict_cursor_t *) (*cursor);
 
 				/* the cursor is ready to be consumed */
 				oadict_cursor->first	= location;
@@ -162,17 +162,17 @@ oafdict_find(
 
 		case predicate_range: {
 			/* as this is a range, need to malloc lower bound key */
-			if (((*cursor)->predicate->statement.range.lower_bound = (ion_key_t) malloc((((file_hashmap_t *) dictionary->instance)->super.record.key_size))) == NULL) {
+			if (((*cursor)->predicate->statement.range.lower_bound = (ion_key_t) malloc((((ion_file_hashmap_t *) dictionary->instance)->super.record.key_size))) == NULL) {
 				free((*cursor)->predicate);
 				free(*cursor);	/* cleanup */
 				return err_out_of_memory;
 			}
 
 			/* copy across the key value as the predicate may be destroyed */
-			memcpy((*cursor)->predicate->statement.range.lower_bound, predicate->statement.range.lower_bound, (((file_hashmap_t *) dictionary->instance)->super.record.key_size));
+			memcpy((*cursor)->predicate->statement.range.lower_bound, predicate->statement.range.lower_bound, (((ion_file_hashmap_t *) dictionary->instance)->super.record.key_size));
 
 			/* as this is a range, need to malloc upper bound key */
-			if (((*cursor)->predicate->statement.range.upper_bound = (ion_key_t) malloc((((file_hashmap_t *) dictionary->instance)->super.record.key_size))) == NULL) {
+			if (((*cursor)->predicate->statement.range.upper_bound = (ion_key_t) malloc((((ion_file_hashmap_t *) dictionary->instance)->super.record.key_size))) == NULL) {
 				free((*cursor)->predicate->statement.range.lower_bound);
 				free((*cursor)->predicate);
 				free(*cursor);	/* cleanup */
@@ -180,19 +180,19 @@ oafdict_find(
 			}
 
 			/* copy across the key value as the predicate may be destroyed */
-			memcpy((*cursor)->predicate->statement.range.upper_bound, predicate->statement.range.upper_bound, (((file_hashmap_t *) dictionary->instance)->super.record.key_size));
+			memcpy((*cursor)->predicate->statement.range.upper_bound, predicate->statement.range.upper_bound, (((ion_file_hashmap_t *) dictionary->instance)->super.record.key_size));
 		}
 
 		/* Range query will intentionally continue to all record code to get rid of duplicate statements. */
 		case predicate_all_records: {
-			oafdict_cursor_t	*oafdict_cursor = (oafdict_cursor_t *) (*cursor);
-			file_hashmap_t		*hash_map		= ((file_hashmap_t *) dictionary->instance);
+			ion_oafdict_cursor_t	*oafdict_cursor = (ion_oafdict_cursor_t *) (*cursor);
+			ion_file_hashmap_t		*hash_map		= ((ion_file_hashmap_t *) dictionary->instance);
 
 			(*cursor)->status		= cs_cursor_initialized;
 			oafdict_cursor->first	= (hash_map->map_size) - 1;
 			oafdict_cursor->current = -1;
 
-			err_t err = oafdict_scan(oafdict_cursor);
+			ion_err_t err = oafdict_scan(oafdict_cursor);
 
 			if (cs_valid_data != err) {
 				(*cursor)->status = cs_end_of_results;
@@ -215,13 +215,13 @@ oafdict_find(
 	return err_ok;
 }
 
-cursor_status_t
+ion_cursor_status_t
 oafdict_next(
-	dict_cursor_t	*cursor,
+	ion_dict_cursor_t	*cursor,
 	ion_record_t	*record
 ) {
 	/* @todo if the dictionary instance changes, then the status of the cursor needs to change */
-	oafdict_cursor_t *oafdict_cursor = (oafdict_cursor_t *) cursor;
+	ion_oafdict_cursor_t *oafdict_cursor = (ion_oafdict_cursor_t *) cursor;
 
 	/* check the status of the cursor and if it is not valid or at the end, just exit */
 	if (cursor->status == cs_cursor_uninitialized) {
@@ -233,7 +233,7 @@ oafdict_next(
 	else if ((cursor->status == cs_cursor_initialized) || (cursor->status == cs_cursor_active)) {
 		/* cursor is active and results have never been accessed */
 		/* extract reference to map */
-		file_hashmap_t *hash_map = ((file_hashmap_t *) cursor->dictionary->instance);
+		ion_file_hashmap_t *hash_map = ((ion_file_hashmap_t *) cursor->dictionary->instance);
 
 		/* assume that the value has been pre-allocated */
 		/* compute length of data record stored in map */
@@ -275,13 +275,13 @@ oafdict_next(
 	return cs_invalid_cursor;
 }
 
-boolean_t
+ion_boolean_t
 oafdict_is_equal(
-	dictionary_t	*dict,
+	ion_dictionary_t	*dict,
 	ion_key_t		key1,
 	ion_key_t		key2
 ) {
-	if (memcmp(key1, key2, (((file_hashmap_t *) dict->instance)->super.record.key_size)) == IS_EQUAL) {
+	if (memcmp(key1, key2, (((ion_file_hashmap_t *) dict->instance)->super.record.key_size)) == IS_EQUAL) {
 		return boolean_true;
 	}
 	else {
@@ -291,16 +291,16 @@ oafdict_is_equal(
 
 void
 oafdict_destroy_cursor(
-	dict_cursor_t **cursor
+	ion_dict_cursor_t **cursor
 ) {
 	(*cursor)->predicate->destroy(&(*cursor)->predicate);
 	free(*cursor);
 	*cursor = NULL;
 }
 
-boolean_t
+ion_boolean_t
 oafdict_test_predicate(
-	dict_cursor_t	*cursor,
+	ion_dict_cursor_t	*cursor,
 	ion_key_t		key
 ) {
 	/* TODO need to check key match; what's the most efficient way? */
@@ -309,7 +309,7 @@ oafdict_test_predicate(
 	 * Compares value == key
 	 */
 	int				key_satisfies_predicate;
-	file_hashmap_t	*hash_map = (file_hashmap_t *) (cursor->dictionary->instance);
+	ion_file_hashmap_t	*hash_map = (ion_file_hashmap_t *) (cursor->dictionary->instance);
 
 	/* pre-prime value for faster exit */
 	key_satisfies_predicate = boolean_false;
@@ -344,12 +344,12 @@ oafdict_test_predicate(
 	return key_satisfies_predicate;
 }
 
-err_t
+ion_err_t
 oafdict_scan(
-	oafdict_cursor_t *cursor/* know exactly what implementation of cursor is */
+	ion_oafdict_cursor_t *cursor/* know exactly what implementation of cursor is */
 ) {
 	/* need to scan hashmap fully looking for values that satisfy - need to think about */
-	file_hashmap_t *hash_map	= (file_hashmap_t *) (cursor->super.dictionary->instance);
+	ion_file_hashmap_t *hash_map	= (ion_file_hashmap_t *) (cursor->super.dictionary->instance);
 
 	int loc						= (cursor->current + 1) % hash_map->map_size;
 	/* this is the current position of the cursor */
@@ -360,9 +360,9 @@ oafdict_scan(
 	/* move to the correct position in the fie */
 	fseek(hash_map->file, loc * record_size, SEEK_SET);
 
-	hash_bucket_t *item;
+	ion_hash_bucket_t *item;
 
-	item = (hash_bucket_t *) malloc(record_size);
+	item = (ion_hash_bucket_t *) malloc(record_size);
 
 	/* start at the current position, scan forward */
 	while (loc != cursor->first) {
@@ -377,7 +377,7 @@ oafdict_scan(
 
 			/* TODO need to check key match; what's the most efficient way? */
 
-			boolean_t key_satisfies_predicate = oafdict_test_predicate(&(cursor->super), (ion_key_t) item->data);	/* assumes that the key is first */
+			ion_boolean_t key_satisfies_predicate = oafdict_test_predicate(&(cursor->super), (ion_key_t) item->data);	/* assumes that the key is first */
 
 			if (key_satisfies_predicate == boolean_true) {
 				cursor->current = loc;	/* this is the next index for value */

@@ -19,15 +19,15 @@
  */
 void
 check_flat_file(
-	ff_file_t *flat_file
+	ion_ff_file_t *flat_file
 ) {
 	int bucket_size = flat_file->super.record.key_size + flat_file->super.record.value_size + sizeof(char);
 
 	frewind(flat_file->file_ptr);
 
-	f_file_record_t *record;
+	ion_f_file_record_t *record;
 
-	record = (f_file_record_t *) malloc(bucket_size);
+	record = (ion_f_file_record_t *) malloc(bucket_size);
 	DUMP(bucket_size, "%i");
 
 	while (!feof(flat_file->file_ptr)) {
@@ -50,8 +50,8 @@ check_flat_file(
 
 void
 initialize_flat_file(
-	record_info_t	*record,
-	ff_file_t		*flat_file
+	ion_record_info_t	*record,
+	ion_ff_file_t		*flat_file
 ) {
 	flat_file->super.compare = dictionary_compare_signed_value;
 	ff_initialize(flat_file, /*dictionary_compare_signed_value,*/ flat_file->super.key_type, record->key_size, record->value_size);
@@ -59,9 +59,9 @@ initialize_flat_file(
 
 void
 initialize_flat_file_std_conditions(
-	ff_file_t *flat_file
+	ion_ff_file_t *flat_file
 ) {
-	record_info_t *record = (record_info_t *) malloc(sizeof(record_info_t));
+	ion_record_info_t *record = (ion_record_info_t *) malloc(sizeof(ion_record_info_t));
 
 	record->key_size			= sizeof(int);
 	record->value_size			= 10;
@@ -74,13 +74,13 @@ initialize_flat_file_std_conditions(
 @brief	  Tests a simple insert into map and reads results directly from map
 
 @param	  tc
-				plank_unit_test_t
+				ion_plank_unit_test_t
  */
 void
 test_flat_file_simple_insert(
 	planck_unit_test_t *tc
 ) {
-	ff_file_t	flat_file;			/* create handler for flat file */
+	ion_ff_file_t	flat_file;			/* create handler for flat file */
 	int			i;
 
 	initialize_flat_file_std_conditions(&flat_file);
@@ -88,7 +88,7 @@ test_flat_file_simple_insert(
 	/* check_file_map(&map); */
 
 	/* Manually populate records */
-	record_info_t record	= flat_file.super.record;
+	ion_record_info_t record	= flat_file.super.record;
 
 	int bucket_size			= sizeof(char) + record.key_size + record.value_size;
 
@@ -111,9 +111,9 @@ test_flat_file_simple_insert(
 		/* set the position in the file */
 		fseek(flat_file.file_ptr, flat_file.start_of_data + (i * bucket_size), SEEK_SET);
 
-		ion_record_status_t record_status;	/* = ((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->status; */
-		int					key;		/* = *(int *)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data ); */
-		ion_byte_t			value[10];		/* = (ion_value_t)(((hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data + sizeof(int)); */
+		ion_record_status_t record_status;	/* = ((ion_hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->status; */
+		int					key;		/* = *(int *)(((ion_hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data ); */
+		ion_byte_t			value[10];		/* = (ion_value_t)(((ion_hash_bucket_t *)(map.entry + ((((i+offset)%map.map_size)*bucket_size )%(map.map_size*bucket_size))))->data + sizeof(int)); */
 
 		fread(&record_status, SIZEOF(STATUS), 1, flat_file.file_ptr);
 		fread(&key, flat_file.super.record.key_size, 1, flat_file.file_ptr);
@@ -138,13 +138,13 @@ test_flat_file_simple_insert(
 @details	Tests a simple insert into dictionary and simple query with the
 			write_concern set to insert only
 @param	  tc
-				plank_unit_test_t
+				ion_plank_unit_test_t
  */
 void
 test_flat_file_simple_insert_and_query(
 	planck_unit_test_t *tc
 ) {
-	ff_file_t	flat_file;								/* create handler for file */
+	ion_ff_file_t	flat_file;								/* create handler for file */
 	int			i;
 
 	initialize_flat_file_std_conditions(&flat_file);
@@ -197,12 +197,12 @@ test_flat_file_initialize(
 	fremove(TEST_FILE);
 
 	/* this is required for initializing the hash map and should come from the dictionary */
-	record_info_t record;
+	ion_record_info_t record;
 
 	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 
-	ff_file_t flat_file;
+	ion_ff_file_t flat_file;
 
 	flat_file.super.key_type = key_type_numeric_signed;	/* default to use int key type */
 
@@ -226,13 +226,13 @@ test_flat_file_initialize(
 			been perturbed.
 
 @param	  tc
-				plank_unit_test_t
+				ion_plank_unit_test_t
  */
 void
 test_flat_file_simple_delete(
 	planck_unit_test_t *tc
 ) {
-	ff_file_t	file;							/* create handler for hashmap */
+	ion_ff_file_t	file;							/* create handler for hashmap */
 	int			i, j;
 
 	initialize_flat_file_std_conditions(&file);
@@ -303,13 +303,13 @@ test_flat_file_simple_delete(
 			is set for wc_insert_unique.   Will generate error.
 
 @param	  tc
-				plank_unit_test_t
+				ion_plank_unit_test_t
  */
 void
 test_flat_file_duplicate_insert_1(
 	planck_unit_test_t *tc
 ) {
-	ff_file_t	file;								/* create handler */
+	ion_ff_file_t	file;								/* create handler */
 	int			i;
 
 	initialize_flat_file_std_conditions(&file);
@@ -356,13 +356,13 @@ test_flat_file_duplicate_insert_1(
 			is set for wc_update but will update the value.
 
 @param	  tc
-				plank_unit_test_t
+				ion_plank_unit_test_t
  */
 void
 test_flat_file_duplicate_insert_2(
 	planck_unit_test_t *tc
 ) {
-	ff_file_t	file;							/* create handler for hashmap */
+	ion_ff_file_t	file;							/* create handler for hashmap */
 	int			i;
 
 	initialize_flat_file_std_conditions(&file);
@@ -453,13 +453,13 @@ test_flat_file_duplicate_insert_2(
 @brief		Tests that values can be updated.
 
 @param	  tc
-				plank_unit_test_t
+				ion_plank_unit_test_t
  */
 void
 test_flat_file_update_1(
 	planck_unit_test_t *tc
 ) {
-	ff_file_t	file;							/* create handler for hashmap */
+	ion_ff_file_t	file;							/* create handler for hashmap */
 	int			i;
 
 	initialize_flat_file_std_conditions(&file);
@@ -551,13 +551,13 @@ test_flat_file_update_1(
 			in dictionary already.
 
 @param	  tc
-				plank_unit_test_t
+				ion_plank_unit_test_t
  */
 void
 test_flat_file_update_2(
 	planck_unit_test_t *tc
 ) {
-	ff_file_t	file;							/* create handler for hashmap */
+	ion_ff_file_t	file;							/* create handler for hashmap */
 	int			i;
 
 	initialize_flat_file_std_conditions(&file);
@@ -653,7 +653,7 @@ void
 test_flat_file_delete_1(
 	planck_unit_test_t *tc
 ) {
-	ff_file_t	file;							/* create handler for hashmap */
+	ion_ff_file_t	file;							/* create handler for hashmap */
 	int			i = 2;
 
 	initialize_flat_file_std_conditions(&file);
@@ -702,13 +702,13 @@ test_flat_file_delete_1(
 			undisturbed.
 
 @param	  tc
-				plank_unit_test_t
+				ion_plank_unit_test_t
  */
 void
 test_flat_file_delete_2(
 	planck_unit_test_t *tc
 ) {
-	ff_file_t	file;							/* create handler */
+	ion_ff_file_t	file;							/* create handler */
 	int			i, j;
 
 	initialize_flat_file_std_conditions(&file);

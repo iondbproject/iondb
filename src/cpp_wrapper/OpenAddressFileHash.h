@@ -33,7 +33,7 @@ public:
 				The size desired for the dictionary.
  */
 OpenAddressFileHash(
-	key_type_t	type_key,
+	ion_key_type_t	type_key,
 	int			key_size,
 	int			value_size,
 	int			dictionary_size

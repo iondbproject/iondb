@@ -47,7 +47,7 @@ ion_dictionary_id_t ion_master_table_next_id	= 1;
 						Write the record at the end of the file.
 @returns	An error code describing the result of the call.
 */
-err_t
+ion_err_t
 ion_master_table_write(
 	ion_dictionary_config_info_t	*config,
 	long							where
@@ -113,7 +113,7 @@ ion_master_table_write(
 						Calculate the position based on the passed-in config id.
 @returns	An error code describing the result of the call.
 */
-err_t
+ion_err_t
 ion_master_table_read(
 	ion_dictionary_config_info_t	*config,
 	long							where
@@ -164,11 +164,11 @@ ion_master_table_read(
 }
 
 /* Returns the next dictionary ID, then increments. */
-err_t
+ion_err_t
 ion_master_table_get_next_id(
 	ion_dictionary_id_t *id
 ) {
-	err_t error									= err_ok;
+	ion_err_t error									= err_ok;
 
 	/* Flush master row. This writes the next ID to be used, so add 1. */
 	ion_dictionary_config_info_t master_config	= { .id = ion_master_table_next_id + 1 };
@@ -184,11 +184,11 @@ ion_master_table_get_next_id(
 	return err_ok;
 }
 
-err_t
+ion_err_t
 ion_init_master_table(
 	void
 ) {
-	err_t error = err_ok;
+	ion_err_t error = err_ok;
 
 	/* If it's already open, then we don't do anything. */
 	if (NULL != ion_master_table_file) {
@@ -229,7 +229,7 @@ ion_init_master_table(
 	return err_ok;
 }
 
-err_t
+ion_err_t
 ion_close_master_table(
 	void
 ) {
@@ -244,7 +244,7 @@ ion_close_master_table(
 	return err_ok;
 }
 
-err_t
+ion_err_t
 ion_delete_master_table(
 	void
 ) {
@@ -257,16 +257,16 @@ ion_delete_master_table(
 	return err_ok;
 }
 
-err_t
+ion_err_t
 ion_master_table_create_dictionary(
-	dictionary_handler_t	*handler,
-	dictionary_t			*dictionary,
-	key_type_t				key_type,
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dictionary,
+	ion_key_type_t				key_type,
 	int						key_size,
 	int						value_size,
 	int						dictionary_size
 ) {
-	err_t				err;
+	ion_err_t				err;
 	ion_dictionary_id_t id;
 
 	err = ion_master_table_get_next_id(&id);
@@ -286,9 +286,9 @@ ion_master_table_create_dictionary(
 	return err;
 }
 
-err_t
+ion_err_t
 ion_add_to_master_table(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	int				dictionary_size
 ) {
 	ion_dictionary_config_info_t config = {
@@ -298,12 +298,12 @@ ion_add_to_master_table(
 	return ion_master_table_write(&config, ION_MASTER_TABLE_WRITE_FROM_END);
 }
 
-err_t
+ion_err_t
 ion_lookup_in_master_table(
 	ion_dictionary_id_t				id,
 	ion_dictionary_config_info_t	*config
 ) {
-	err_t error = err_ok;
+	ion_err_t error = err_ok;
 
 	config->id	= id;
 	error		= ion_master_table_read(config, ION_MASTER_TABLE_CALCULATE_POS);
@@ -315,7 +315,7 @@ ion_lookup_in_master_table(
 	return err_ok;
 }
 
-err_t
+ion_err_t
 ion_find_by_use_master_table(
 	ion_dictionary_config_info_t	*config,
 	ion_dict_use_t					use_type,
@@ -323,7 +323,7 @@ ion_find_by_use_master_table(
 ) {
 	ion_dictionary_id_t				id;
 	ion_dictionary_config_info_t	tconfig;
-	err_t							error;
+	ion_err_t							error;
 
 	tconfig.id	= 0;
 
@@ -356,11 +356,11 @@ ion_find_by_use_master_table(
 	return err_item_not_found;
 }
 
-err_t
+ion_err_t
 ion_delete_from_master_table(
-	dictionary_t *dictionary
+	ion_dictionary_t *dictionary
 ) {
-	err_t							error;
+	ion_err_t							error;
 	ion_dictionary_config_info_t	blank	= { 0 };
 	long							where	= (dictionary->instance->id * ION_MASTER_TABLE_RECORD_SIZE(&blank));
 
@@ -373,13 +373,13 @@ ion_delete_from_master_table(
 	return ion_master_table_write(&blank, where);
 }
 
-err_t
+ion_err_t
 ion_open_dictionary(
-	dictionary_handler_t	*handler,	/* This is already initialized. */
-	dictionary_t			*dictionary,	/* Passed in empty, to be set. */
+	ion_dictionary_handler_t	*handler,	/* This is already initialized. */
+	ion_dictionary_t			*dictionary,	/* Passed in empty, to be set. */
 	ion_dictionary_id_t		id
 ) {
-	err_t err;
+	ion_err_t err;
 
 	ion_dictionary_config_info_t config;
 
@@ -394,11 +394,11 @@ ion_open_dictionary(
 	return err;
 }
 
-err_t
+ion_err_t
 ion_close_dictionary(
-	dictionary_t *dictionary
+	ion_dictionary_t *dictionary
 ) {
-	err_t err;
+	ion_err_t err;
 
 	err = dictionary_close(dictionary);
 	return err;

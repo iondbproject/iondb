@@ -34,19 +34,19 @@ extern "C" {
 /**
 @brief		Prototype declaration for hashmap
  */
-typedef struct file_hashmap file_hashmap_t;
+typedef struct file_hashmap ion_file_hashmap_t;
 
 /**
 @brief		Struct used to maintain an instance of an in memory hashmap.
 */
 struct file_hashmap {
-	dictionary_parent_t super;
+	ion_dictionary_parent_t super;
 	int					map_size;		/**< The size of the map in item capacity */
-	write_concern_t		write_concern;	/**< The current @p write_concern level
+	ion_write_concern_t		write_concern;	/**< The current @p write_concern level
 											 of the hashmap*/
 
 	int					(*compute_hash)(
-		file_hashmap_t *,
+		ion_file_hashmap_t *,
 		ion_key_t,
 		int
 	);
@@ -79,11 +79,11 @@ oaf_close(
 				(@p key_size + @p value_size + @c 1)
 @return		The status describing the result of the initialization.
  */
-err_t
+ion_err_t
 oafh_initialize(
-	file_hashmap_t *hashmap,
-	hash_t (*hashing_function)(file_hashmap_t *, ion_key_t, int),
-	key_type_t key_type,
+	ion_file_hashmap_t *hashmap,
+	ion_hash_t (*hashing_function)(ion_file_hashmap_t *, ion_key_t, int),
+	ion_key_type_t key_type,
 	ion_key_size_t key_size,
 	ion_value_size_t value_size,
 	int size
@@ -98,9 +98,9 @@ oafh_initialize(
 				The map into which the data is going to be inserted
 @return		The status describing the result of the destruction
 */
-err_t
+ion_err_t
 oafh_destroy(
-	file_hashmap_t *hash_map
+	ion_file_hashmap_t *hash_map
 );
 
 /**
@@ -117,7 +117,7 @@ oafh_destroy(
 */
 int
 oafh_get_location(
-	hash_t	num,
+	ion_hash_t	num,
 	int		size
 );
 
@@ -142,7 +142,7 @@ oafh_get_location(
 */
 ion_status_t
 oafh_insert(
-	file_hashmap_t	*hash_map,
+	ion_file_hashmap_t	*hash_map,
 	ion_key_t		key,
 	ion_value_t		value
 );
@@ -163,7 +163,7 @@ oafh_insert(
 */
 ion_status_t
 oafh_update(
-	file_hashmap_t	*hash_map,
+	ion_file_hashmap_t	*hash_map,
 	ion_key_t		key,
 	ion_value_t		value
 );
@@ -181,9 +181,9 @@ oafh_update(
 				Pointer to the location variable
 @return		The status of the find
  */
-err_t
+ion_err_t
 oafh_find_item_loc(
-	file_hashmap_t	*hash_map,
+	ion_file_hashmap_t	*hash_map,
 	ion_key_t		key,
 	int				*location
 );
@@ -201,7 +201,7 @@ oafh_find_item_loc(
 */
 ion_status_t
 oafh_delete(
-	file_hashmap_t	*hash_map,
+	ion_file_hashmap_t	*hash_map,
 	ion_key_t		key
 );
 
@@ -222,7 +222,7 @@ oafh_delete(
 */
 ion_status_t
 oafh_query(
-	file_hashmap_t	*hash_map,
+	ion_file_hashmap_t	*hash_map,
 	ion_key_t		key,
 	ion_value_t		value
 );
@@ -238,15 +238,15 @@ oafh_query(
 				The size of the key in bytes.
 @return		The hashed value for the key.
 */
-hash_t
+ion_hash_t
 oafh_compute_simple_hash(
-	file_hashmap_t	*hashmap,
+	ion_file_hashmap_t	*hashmap,
 	ion_key_t		key,
 	int				size_of_key
 );
 
 /*void
-static_hash_init(dictonary_handler_t * client);*/
+static_hash_init(ion_dictonary_handler_t * client);*/
 
 #if defined(__cplusplus)
 }

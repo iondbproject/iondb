@@ -8,10 +8,10 @@
 #include "flat_file.h"
 #include "../../key_value/kv_system.h"
 
-err_t
+ion_err_t
 ff_initialize(
-	ff_file_t			*file,
-	key_type_t			key_type,
+	ion_ff_file_t			*file,
+	ion_key_type_t			key_type,
 	ion_key_size_t		key_size,
 	ion_value_size_t	value_size
 ) {
@@ -75,9 +75,9 @@ ff_initialize(
 	return err_ok;
 }
 
-err_t
+ion_err_t
 ff_destroy(
-	ff_file_t *file
+	ion_ff_file_t *file
 ) {
 	file->super.compare				= NULL;
 	file->super.record.key_size		= 0;
@@ -96,12 +96,12 @@ ff_destroy(
 
 ion_status_t
 ff_update(
-	ff_file_t	*file,
+	ion_ff_file_t	*file,
 	ion_key_t	key,
 	ion_value_t value
 ) {
 	/* TODO: lock potentially required */
-	write_concern_t current_write_concern = file->write_concern;
+	ion_write_concern_t current_write_concern = file->write_concern;
 
 	file->write_concern = wc_update;/* change write concern to allow update */
 
@@ -113,12 +113,12 @@ ff_update(
 
 ion_status_t
 ff_insert(
-	ff_file_t	*file,
+	ion_ff_file_t	*file,
 	ion_key_t	key,
 	ion_value_t value
 ) {
 /*@todo requires massive cleanup for function exit */
-	f_file_record_t *record;
+	ion_f_file_record_t *record;
 
 	int record_size = file->super.record.key_size + file->super.record.value_size + SIZEOF(STATUS);
 
@@ -126,7 +126,7 @@ ff_insert(
 	printf("inserting record of size %i \n", record_size);
 #endif
 
-	if ((record = (f_file_record_t *) malloc(record_size)) == NULL) {
+	if ((record = (ion_f_file_record_t *) malloc(record_size)) == NULL) {
 		return ION_STATUS_ERROR(err_out_of_memory);
 	}
 
@@ -213,9 +213,9 @@ ff_insert(
 	return ION_STATUS_OK(1);/* this needs to be corrected */
 }
 
-err_t
+ion_err_t
 ff_find_item_loc(
-	ff_file_t	*file,
+	ion_ff_file_t	*file,
 	ion_key_t	key,
 	ion_fpos_t	*location
 ) {
@@ -233,9 +233,9 @@ ff_find_item_loc(
 
 	int record_size = SIZEOF(STATUS) + file->super.record.key_size + file->super.record.value_size;
 
-	f_file_record_t *record;
+	ion_f_file_record_t *record;
 
-	if ((record = (f_file_record_t *) malloc(record_size)) == NULL) {
+	if ((record = (ion_f_file_record_t *) malloc(record_size)) == NULL) {
 		return err_out_of_memory;
 	}
 
@@ -279,7 +279,7 @@ ff_find_item_loc(
 
 ion_status_t
 ff_delete(
-	ff_file_t	*file,
+	ion_ff_file_t	*file,
 	ion_key_t	key
 ) {
 	ion_fpos_t		loc = UNINITIALISED;		/* position to delete */
@@ -288,7 +288,7 @@ ff_delete(
 	status = ION_STATUS_CREATE(err_item_not_found, 0);	/* init such that record will not be found */
 
 	while (err_item_not_found != ff_find_item_loc(file, key, &loc)) {
-		f_file_record_t record;
+		ion_f_file_record_t record;
 
 		record.status = DELETED;
 
@@ -317,7 +317,7 @@ ff_delete(
 
 ion_status_t
 ff_query(
-	ff_file_t	*file,
+	ion_ff_file_t	*file,
 	ion_key_t	key,
 	ion_value_t value
 ) {

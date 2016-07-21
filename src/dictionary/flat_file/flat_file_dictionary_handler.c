@@ -7,7 +7,7 @@
 
 void
 ffdict_init(
-	dictionary_handler_t *handler
+	ion_dictionary_handler_t *handler
 ) {
 	handler->insert				= ffdict_insert;
 	handler->create_dictionary	= ffdict_create_dictionary;
@@ -20,42 +20,42 @@ ffdict_init(
 
 ion_status_t
 ffdict_insert(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 ) {
-	return ff_insert((ff_file_t *) dictionary->instance, key, value);
+	return ff_insert((ion_ff_file_t *) dictionary->instance, key, value);
 }
 
 /* @todo the value needs to be fixed */
 ion_status_t
 ffdict_query(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 ) {
-	return ff_query((ff_file_t *) dictionary->instance, key, value);
+	return ff_query((ion_ff_file_t *) dictionary->instance, key, value);
 }
 
-err_t
+ion_err_t
 ffdict_create_dictionary(
 	ion_dictionary_id_t			id,
-	key_type_t					key_type,
+	ion_key_type_t					key_type,
 	ion_key_size_t				key_size,
 	ion_value_size_t			value_size,
 	int							dictionary_size,
 	ion_dictionary_compare_t	compare,
-	dictionary_handler_t		*handler,
-	dictionary_t				*dictionary
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary
 ) {
 	UNUSED(id);
 	UNUSED(dictionary_size);
-	dictionary->instance			= (dictionary_parent_t *) malloc(sizeof(ff_file_t));
+	dictionary->instance			= (ion_dictionary_parent_t *) malloc(sizeof(ion_ff_file_t));
 
 	dictionary->instance->compare	= compare;
 
 	/* this registers the dictionary the dictionary */
-	err_t result = ff_initialize((ff_file_t *) (dictionary->instance), key_type, key_size, value_size);
+	ion_err_t result = ff_initialize((ion_ff_file_t *) (dictionary->instance), key_type, key_size, value_size);
 
 	/*@todo The correct comparison operator needs to be bound at run time
 	 * based on the type of key defined
@@ -69,19 +69,19 @@ ffdict_create_dictionary(
 
 ion_status_t
 ffdict_delete(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key
 ) {
-	ion_status_t status = ff_delete((ff_file_t *) dictionary->instance, key);
+	ion_status_t status = ff_delete((ion_ff_file_t *) dictionary->instance, key);
 
 	return status;
 }
 
-err_t
+ion_err_t
 ffdict_delete_dictionary(
-	dictionary_t *dictionary
+	ion_dictionary_t *dictionary
 ) {
-	err_t result = ff_destroy((ff_file_t *) (dictionary->instance));
+	ion_err_t result = ff_destroy((ion_ff_file_t *) (dictionary->instance));
 
 	free(dictionary->instance);
 	dictionary->instance = NULL;/* When releasing memory, set pointer to NULL */
@@ -90,22 +90,22 @@ ffdict_delete_dictionary(
 
 ion_status_t
 ffdict_update(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 ) {
-	return ff_update((ff_file_t *) dictionary->instance, key, value);
+	return ff_update((ion_ff_file_t *) dictionary->instance, key, value);
 }
 
 /* @todo What do we do if the cursor is already active? */
-err_t
+ion_err_t
 ffdict_find(
-	dictionary_t	*dictionary,
-	predicate_t		*predicate,
-	dict_cursor_t	**cursor
+	ion_dictionary_t	*dictionary,
+	ion_predicate_t		*predicate,
+	ion_dict_cursor_t	**cursor
 ) {
 	/* allocate memory for cursor */
-	if ((*cursor = (dict_cursor_t *) malloc(sizeof(ffdict_cursor_t))) == NULL) {
+	if ((*cursor = (ion_dict_cursor_t *) malloc(sizeof(ion_ffdict_cursor_t))) == NULL) {
 		return err_out_of_memory;
 	}
 
@@ -119,7 +119,7 @@ ffdict_find(
 	(*cursor)->next					= ffdict_next;	/* this will use the correct value */
 
 	/* allocate predicate */
-	(*cursor)->predicate			= (predicate_t *) malloc(sizeof(predicate_t));
+	(*cursor)->predicate			= (ion_predicate_t *) malloc(sizeof(ion_predicate_t));
 	(*cursor)->predicate->type		= predicate->type;
 	(*cursor)->predicate->destroy	= predicate->destroy;
 
@@ -139,7 +139,7 @@ ffdict_find(
 			/* find the location of the first element as this is a straight equality */
 			ion_fpos_t location = cs_invalid_index;
 
-			if (ff_find_item_loc((ff_file_t *) dictionary->instance, (*cursor)->predicate->statement.equality.equality_value, &location) == err_item_not_found) {
+			if (ff_find_item_loc((ion_ff_file_t *) dictionary->instance, (*cursor)->predicate->statement.equality.equality_value, &location) == err_item_not_found) {
 				(*cursor)->status = cs_end_of_results;
 				return err_ok;
 			}
@@ -147,7 +147,7 @@ ffdict_find(
 				(*cursor)->status = cs_cursor_initialized;
 
 				/* cast to specific instance type for conveniences of setup */
-				ffdict_cursor_t *ffdict_cursor = (ffdict_cursor_t *) (*cursor);
+				ion_ffdict_cursor_t *ffdict_cursor = (ion_ffdict_cursor_t *) (*cursor);
 
 				/* the cursor is ready to be consumed */
 				/* ffdict_cursor->first = location; */
@@ -160,7 +160,7 @@ ffdict_find(
 
 		case predicate_range: {
 			/* as this is a range, need to malloc lower bound key */
-			if (((*cursor)->predicate->statement.range.lower_bound = (ion_key_t) malloc((((ff_file_t *) dictionary->instance)->super.record.key_size))) == NULL) {
+			if (((*cursor)->predicate->statement.range.lower_bound = (ion_key_t) malloc((((ion_ff_file_t *) dictionary->instance)->super.record.key_size))) == NULL) {
 				free((*cursor)->predicate);
 				free(*cursor);	/* cleanup */
 				return err_out_of_memory;
@@ -180,10 +180,10 @@ ffdict_find(
 			/* copy across the key value as the predicate may be destroyed */
 			memcpy((*cursor)->predicate->statement.range.upper_bound, predicate->statement.range.upper_bound, (int) (dictionary->instance->record.key_size));
 
-			ffdict_cursor_t *ffdict_cursor = (ffdict_cursor_t *) (*cursor);
+			ion_ffdict_cursor_t *ffdict_cursor = (ion_ffdict_cursor_t *) (*cursor);
 
 			/* set the start of the scan to be at the first record */
-			ffdict_cursor->current = ((ff_file_t *) dictionary->instance)->start_of_data;
+			ffdict_cursor->current = ((ion_ff_file_t *) dictionary->instance)->start_of_data;
 
 			/* scan for the first instance that satisfies the predicate */
 			if (cs_end_of_results == ffdict_scan(ffdict_cursor)) {
@@ -198,9 +198,9 @@ ffdict_find(
 		}
 
 		case predicate_all_records: {
-			ffdict_cursor_t *ffdict_cursor = (ffdict_cursor_t *) (*cursor);
+			ion_ffdict_cursor_t *ffdict_cursor = (ion_ffdict_cursor_t *) (*cursor);
 
-			ffdict_cursor->current	= ((ff_file_t *) dictionary->instance)->start_of_data;
+			ffdict_cursor->current	= ((ion_ff_file_t *) dictionary->instance)->start_of_data;
 			(*cursor)->status		= cs_cursor_initialized;
 
 			return err_ok;
@@ -219,13 +219,13 @@ ffdict_find(
 	return err_ok;
 }
 
-cursor_status_t
+ion_cursor_status_t
 ffdict_next(
-	dict_cursor_t	*cursor,
+	ion_dict_cursor_t	*cursor,
 	ion_record_t	*record
 ) {
 	/* @todo if the dictionary instance changes, then the status of the cursor needs to change */
-	ffdict_cursor_t *ffdict_cursor = (ffdict_cursor_t *) cursor;
+	ion_ffdict_cursor_t *ffdict_cursor = (ion_ffdict_cursor_t *) cursor;
 
 	/* check the status of the cursor and if it is not valid or at the end, just exit */
 	if (cursor->status == cs_cursor_uninitialized) {
@@ -236,7 +236,7 @@ ffdict_next(
 	}
 	else if ((cursor->status == cs_cursor_initialized) || (cursor->status == cs_cursor_active)) {
 		/* cursor is active and results have never been accessed */
-		ff_file_t *file = (ff_file_t *) (cursor->dictionary->instance);
+		ion_ff_file_t *file = (ion_ff_file_t *) (cursor->dictionary->instance);
 
 		if (cursor->status == cs_cursor_active) {
 			/* find the next valid entry */
@@ -282,22 +282,22 @@ ffdict_next(
 
 void
 ffdict_destroy_cursor(
-	dict_cursor_t **cursor
+	ion_dict_cursor_t **cursor
 ) {
 	(*cursor)->predicate->destroy(&(*cursor)->predicate);
 	free(*cursor);
 	*cursor = NULL;
 }
 
-boolean_t
+ion_boolean_t
 ffdict_test_predicate(
-	dict_cursor_t	*cursor,
+	ion_dict_cursor_t	*cursor,
 	ion_key_t		key
 ) {
 	/* TODO need to check key match; what's the most efficient way? */
 	int key_satisfies_predicate;
 
-	ff_file_t *file = (ff_file_t *) (cursor->dictionary->instance);
+	ion_ff_file_t *file = (ion_ff_file_t *) (cursor->dictionary->instance);
 
 	/* pre-prime value for faster exit */
 	key_satisfies_predicate = boolean_false;
@@ -331,14 +331,14 @@ ffdict_test_predicate(
 	return key_satisfies_predicate;
 }
 
-err_t
+ion_err_t
 ffdict_scan(
-	ffdict_cursor_t *cursor	/* know exactly what implementation of cursor is */
+	ion_ffdict_cursor_t *cursor	/* know exactly what implementation of cursor is */
 ) {
 	/* need to scan hashmap fully looking for values that satisfy - need to think about */
-	ff_file_t *file = (ff_file_t *) (cursor->super.dictionary->instance);
+	ion_ff_file_t *file = (ion_ff_file_t *) (cursor->super.dictionary->instance);
 
-	f_file_record_t *record;
+	ion_f_file_record_t *record;
 
 	ion_fpos_t cur_pos = ftell(file->file_ptr);	/* this is where you are current */
 
@@ -361,7 +361,7 @@ ffdict_scan(
 		}
 	}
 
-	if (NULL == (record = (f_file_record_t *) malloc(record_size))) {
+	if (NULL == (record = (ion_f_file_record_t *) malloc(record_size))) {
 		return err_out_of_memory;
 	}
 
@@ -372,7 +372,7 @@ ffdict_scan(
 			/**
 			 * Compares value == key
 			 */
-			boolean_t key_satisfies_predicate = ffdict_test_predicate(&(cursor->super), (ion_key_t) record->data);	/* assumes that the key is first */
+			ion_boolean_t key_satisfies_predicate = ffdict_test_predicate(&(cursor->super), (ion_key_t) record->data);	/* assumes that the key is first */
 
 			if (key_satisfies_predicate == boolean_true) {
 				/*@todo revisit to cache result? */

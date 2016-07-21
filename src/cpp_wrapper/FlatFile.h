@@ -29,7 +29,7 @@ public:
 				The size of the values to be stored in the dictionary.
  */
 FlatFile(
-	key_type_t	type_key,
+	ion_key_type_t	type_key,
 	int			key_size,
 	int			value_size
 ) {

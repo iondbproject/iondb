@@ -28,9 +28,9 @@ extern "C" {
 typedef struct oaf_dictionary {
 	/* what needs to go in here? */
 	char			*dictionary_name;	/**<The name of the dictionary*/
-	file_hashmap_t	*hashmap;			/**<The map that the operations
+	ion_file_hashmap_t	*hashmap;			/**<The map that the operations
 										will operate upon*/
-} oaf_dictionary_t;
+} ion_oaf_dictionary_t;
 
 /**
  @brief Cursor for dictionary specific implementations
@@ -38,18 +38,18 @@ typedef struct oaf_dictionary {
  */
 /*typedef struct oadict_cursor
 {
-	hash_t				first;		*<First visited spot
-	hash_t				current;	*<Currently visited spot
+	ion_hash_t				first;		*<First visited spot
+	ion_hash_t				current;	*<Currently visited spot
 	char				status;		*@todo what is this for again as there are two status
-} oadict_cursor_t;*/
+} ion_oadict_cursor_t;*/
 
 /*
 typedef struct equality_cursor
 {
-	dict_cursor_t   super;
+	ion_dict_cursor_t   super;
 		*< Cursor supertype this type inherits from.
 
-}equality_cursor_t;
+}ion_equality_cursor_t;
 */
 
 /**
@@ -60,17 +60,17 @@ typedef struct equality_cursor
 			dictionary.
 */
 typedef struct oafdict_equality_cursor {
-	dict_cursor_t		super;				/**<Super type this cursor inherits from*/
-	oafdict_cursor_t	cursor_info;			/**<Super type to dict implementation*/
+	ion_dict_cursor_t		super;				/**<Super type this cursor inherits from*/
+	ion_oafdict_cursor_t	cursor_info;			/**<Super type to dict implementation*/
 	ion_key_t			value;
 
-	boolean_t (*equal)(
-		dictionary_t *,
+	ion_boolean_t (*equal)(
+		ion_dictionary_t *,
 		ion_key_t,
 		ion_key_t
 	);
 	/**< A pointer to an equality function. */
-} oafdict_equality_cursor_t;
+} ion_oafdict_equality_cursor_t;
 
 /**
 @brief		Registers a specific handler for a  dictionary instance.
@@ -84,7 +84,7 @@ typedef struct oafdict_equality_cursor {
  */
 void
 oafdict_init(
-	dictionary_handler_t *handler
+	ion_dictionary_handler_t *handler
 );
 
 /**
@@ -100,7 +100,7 @@ oafdict_init(
  */
 ion_status_t
 oafdict_insert(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 );
@@ -131,7 +131,7 @@ oafdict_insert(
  */
 ion_status_t
 oafdict_query(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 );
@@ -160,16 +160,16 @@ oafdict_query(
 				 the instance of the dictionary created.
 @return		The status of the creation of the dictionary.
  */
-err_t
+ion_err_t
 oafdict_create_dictionary(
 	ion_dictionary_id_t			id,
-	key_type_t					key_type,
+	ion_key_type_t					key_type,
 	int							key_size,
 	int							value_size,
 	int							dictionary_size,
 	ion_dictionary_compare_t	compare,
-	dictionary_handler_t		*handler,
-	dictionary_t				*dictionary
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary
 );
 
 /**
@@ -184,7 +184,7 @@ oafdict_create_dictionary(
  */
 ion_status_t
 oafdict_delete(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key
 );
 
@@ -195,9 +195,9 @@ oafdict_delete(
 				The instance of the dictionary to delete.
 @return		The status of the dictionary deletion.
  */
-err_t
+ion_err_t
 oafdict_delete_dictionary(
-	dictionary_t *dictionary
+	ion_dictionary_t *dictionary
 );
 
 /**
@@ -216,7 +216,7 @@ oafdict_delete_dictionary(
  */
 ion_status_t
 oafdict_update(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 );
@@ -238,11 +238,11 @@ oafdict_update(
 				is responsible for populating.
 @return		The status of the operation.
  */
-err_t
+ion_err_t
 oafdict_find(
-	dictionary_t	*dictionary,
-	predicate_t		*predicate,
-	dict_cursor_t	**cursor
+	ion_dictionary_t	*dictionary,
+	ion_predicate_t		*predicate,
+	ion_dict_cursor_t	**cursor
 );
 
 /**
@@ -284,9 +284,9 @@ oafdict_compare(
 				The cursor to iterate over the results.
 @return		The status of the cursor.
  */
-/*err_t
+/*ion_err_t
 oadict_next(
-	dict_cursor_t   *cursor,
+	ion_dict_cursor_t   *cursor,
 	ion_value_t		*value
 );*/
 
@@ -299,9 +299,9 @@ oadict_next(
 @param		record
 @return		The status of the cursor.
  */
-cursor_status_t
+ion_cursor_status_t
 oafdict_next(
-	dict_cursor_t	*cursor,
+	ion_dict_cursor_t	*cursor,
 	ion_record_t	*record
 );
 
@@ -317,10 +317,10 @@ oafdict_next(
 					 The second key for comparison.
 @return		If the keys are equal.
  */
-boolean_t
+ion_boolean_t
 /*TODO Fix name of function */
 oafdict_is_equal(
-	dictionary_t	*dict,
+	ion_dictionary_t	*dict,
 	ion_key_t		key1,
 	ion_key_t		key2
 );
@@ -339,7 +339,7 @@ oafdict_is_equal(
  */
 void
 oafdict_destroy_cursor(
-	dict_cursor_t **cursor
+	ion_dict_cursor_t **cursor
 );
 
 /**
@@ -352,9 +352,9 @@ oafdict_destroy_cursor(
 				The key to test.
 @return		The result is the key passes or fails the predicate test.
  */
-boolean_t
+ion_boolean_t
 oafdict_test_predicate(
-	dict_cursor_t	*cursor,
+	ion_dict_cursor_t	*cursor,
 	ion_key_t		key
 );
 
@@ -371,9 +371,9 @@ oafdict_test_predicate(
 
 @return			The status of the scan.
  */
-err_t
+ion_err_t
 oafdict_scan(
-	oafdict_cursor_t *cursor/* don't need to pass in the cursor */
+	ion_oafdict_cursor_t *cursor/* don't need to pass in the cursor */
 );
 
 #if defined(__cplusplus)

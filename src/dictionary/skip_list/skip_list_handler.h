@@ -28,7 +28,7 @@ extern "C" {
  */
 void
 sldict_init(
-	dictionary_handler_t *handler
+	ion_dictionary_handler_t *handler
 );
 
 /**
@@ -44,7 +44,7 @@ sldict_init(
  */
 ion_status_t
 sldict_insert(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 );
@@ -71,7 +71,7 @@ sldict_insert(
  */
 ion_status_t
 sldict_query(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 );
@@ -102,16 +102,16 @@ sldict_query(
 				the user.
 @return	 Status of creation.
  */
-err_t
+ion_err_t
 sldict_create_dictionary(
 	ion_dictionary_id_t			id,
-	key_type_t					key_type,
+	ion_key_type_t					key_type,
 	int							key_size,
 	int							value_size,
 	int							dictionary_size,
 	ion_dictionary_compare_t	compare,
-	dictionary_handler_t		*handler,
-	dictionary_t				*dictionary
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary
 );
 
 /**
@@ -126,7 +126,7 @@ sldict_create_dictionary(
  */
 ion_status_t
 sldict_delete(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key
 );
 
@@ -137,9 +137,9 @@ sldict_delete(
 				The instance of the dictionary to be deleted.
 @return	 Status of dictionary deletion.
  */
-err_t
+ion_err_t
 sldict_delete_dictionary(
-	dictionary_t *dictionary
+	ion_dictionary_t *dictionary
 );
 
 /**
@@ -158,7 +158,7 @@ sldict_delete_dictionary(
  */
 ion_status_t
 sldict_update(
-	dictionary_t	*dictionary,
+	ion_dictionary_t	*dictionary,
 	ion_key_t		key,
 	ion_value_t		value
 );
@@ -179,11 +179,11 @@ sldict_update(
 				and populated within the function.
 @return	 Status of find.
  */
-err_t
+ion_err_t
 sldict_find(
-	dictionary_t	*dictionary,
-	predicate_t		*predicate,
-	dict_cursor_t	**cursor
+	ion_dictionary_t	*dictionary,
+	ion_predicate_t		*predicate,
+	ion_dict_cursor_t	**cursor
 );
 
 /**
@@ -198,9 +198,9 @@ sldict_find(
 				is that the caller will also free this memory.
 @return	 Status of cursor.
  */
-cursor_status_t
+ion_cursor_status_t
 sldict_next(
-	dict_cursor_t	*cursor,
+	ion_dict_cursor_t	*cursor,
 	ion_record_t	*record
 );
 
@@ -216,7 +216,7 @@ sldict_next(
  */
 void
 sldict_destroy_cursor(
-	dict_cursor_t **cursor
+	ion_dict_cursor_t **cursor
 );
 
 /**
@@ -228,9 +228,9 @@ sldict_destroy_cursor(
 				Key to test.
 @return	 Result of predicate comparison.
  */
-boolean_t
+ion_boolean_t
 sldict_test_predicate(
-	dict_cursor_t	*cursor,
+	ion_dict_cursor_t	*cursor,
 	ion_key_t		key
 );
 

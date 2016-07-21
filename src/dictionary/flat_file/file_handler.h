@@ -25,7 +25,7 @@ typedef struct f_file_record {
 	ion_record_status_t status;	/**< the status of the record */
 
 	ion_byte_t			data[];		/**< the data in the record */
-} f_file_record_t;
+} ion_f_file_record_t;
 
 #if defined(__cplusplus)
 }

@@ -78,7 +78,7 @@ sd_fflush(
 int
 sd_fsetpos(
 	SD_FILE *stream,
-	fpos_t	*pos
+	ion_fpos_t	*pos
 ) {
 	return (stream) ? !(stream->f.seek(*pos)) : 1;
 }
@@ -86,7 +86,7 @@ sd_fsetpos(
 int
 sd_fgetpos(
 	SD_FILE *stream,
-	fpos_t	*pos
+	ion_fpos_t	*pos
 ) {
 	*pos = (stream) ? stream->f.position() : 0;
 	return 0;
