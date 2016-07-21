@@ -7,6 +7,7 @@ extern "C" {
 
 #include <stdio.h>
 #include <stdint.h>
+#include <alloca.h>
 #include "../../key_value/kv_system.h"
 
 typedef enum {
@@ -15,11 +16,12 @@ typedef enum {
 
 ion_err_t
 ion_in_memory_sort(
-	void							*data,
-	uint32_t						num_values,
-	ion_value_size_t				value_size,
-	/* TODO: Put comparator here */
-	ion_in_memory_sort_algorithm_e	sort_algorithm
+	void *data,
+	uint32_t num_values,
+	ion_value_size_t value_size,
+	/* TODO: Put in proper comparator here */
+	int8_t (*compare_fcn)(void *data, ion_value_size_t value_size, uint32_t a, uint32_t b),
+	ion_in_memory_sort_algorithm_e sort_algorithm
 );
 
 #if defined(__cplusplus)
