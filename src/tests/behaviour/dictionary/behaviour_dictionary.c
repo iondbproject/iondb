@@ -171,11 +171,8 @@ bhdct_get(
 	ion_result_count_t	expected_count
 ) {
 	ion_value_t defaultval = alloca(dict->instance->record.value_size);
-
 	memset(defaultval, 0x76, dict->instance->record.value_size);
-
 	ion_value_t retval = alloca(dict->instance->record.value_size);
-
 	memcpy(retval, defaultval, dict->instance->record.value_size);
 
 	ion_status_t status = dictionary_get(dict, key, retval);
@@ -463,7 +460,7 @@ bhdct_getsuite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_single);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_many);
 
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_exist_single);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_exist_single);
 
 	return suite;
 }
