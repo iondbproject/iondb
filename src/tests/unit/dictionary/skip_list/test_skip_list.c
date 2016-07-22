@@ -31,8 +31,8 @@
  */
 void
 initialize_skiplist(
-	ion_skiplist_t					*skiplist,
-	ion_key_type_t					key_type,
+	ion_skiplist_t				*skiplist,
+	ion_key_type_t				key_type,
 	ion_dictionary_compare_t	compare,
 	int							maxheight,
 	int							key_size,
@@ -56,7 +56,7 @@ initialize_skiplist_std_conditions(
 	ion_skiplist_t *skiplist
 ) {
 	int							key_size, value_size, pden, pnum, maxheight;
-	ion_key_type_t					key_type;
+	ion_key_type_t				key_type;
 	ion_dictionary_compare_t	compare;
 
 	key_type	= key_type_numeric_signed;
@@ -83,9 +83,9 @@ test_skiplist_initialize(
 	PRINT_HEADER();
 
 	int							key_size, value_size, pden, pnum, maxheight;
-	ion_key_type_t					key_type;
+	ion_key_type_t				key_type;
 	ion_dictionary_compare_t	compare;
-	ion_skiplist_t					skiplist;
+	ion_skiplist_t				skiplist;
 
 	key_type	= key_type_numeric_signed;
 	compare		= dictionary_compare_signed_value;
@@ -313,7 +313,7 @@ test_skiplist_get_node_single(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
-	int			search	= 3;
+	int				search	= 3;
 	ion_sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &search);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, node != NULL);
@@ -359,7 +359,7 @@ test_skiplist_get_node_single_high(
 	print_skiplist(&skip_list);
 #endif
 
-	int			search	= 10;
+	int				search	= 10;
 	ion_sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &search);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, *((int *) node->key) == key);
@@ -405,7 +405,7 @@ test_skiplist_get_node_single_low(
 	print_skiplist(&skip_list);
 #endif
 
-	int			search	= 2;
+	int				search	= 2;
 	ion_sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &search);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, node == skiplist.head);
@@ -466,7 +466,7 @@ test_skiplist_get_node_single_many(
 	print_skiplist(&skip_list);
 #endif
 
-	int			search	= 25;
+	int				search	= 25;
 	ion_sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &search);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, *((int *) node->key) == key);
@@ -493,11 +493,6 @@ test_skiplist_get_node_several(
 
 	initialize_skiplist_std_conditions(&skiplist);
 
-#if DEBUG
-	/* If debugging, use a static seed */
-	srand(0xDEADBEEF);
-#endif
-
 	int			targets[50];
 	ion_byte_t	buffer[10];
 	int			i;
@@ -519,7 +514,7 @@ test_skiplist_get_node_several(
 #endif
 
 	for (i = 0; i < 50; i++) {
-		int			key		= targets[i];
+		int				key		= targets[i];
 		ion_sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &key);
 
 		sprintf((char *) buffer, "TEST %d", key);
@@ -1426,7 +1421,7 @@ test_skiplist_update_several_many_exist(
 #endif
 
 	for (i = 60; i < 99; i += 3) {
-		ion_status_t status = sl_update(&skiplist, (ion_key_t) &i, (ion_value_t) (char *) { "VALUE" });
+		ion_status_t status		= sl_update(&skiplist, (ion_key_t) &i, (ion_value_t) (char *) { "VALUE" });
 
 		ion_sl_node_t *cursor	= sl_find_node(&skiplist, (ion_key_t) &i);
 
@@ -1791,9 +1786,9 @@ test_skiplist_different_size(
 ) {
 	PRINT_HEADER();
 
-	ion_skiplist_t					skiplist;
+	ion_skiplist_t				skiplist;
 	int							key_size, value_size, pden, pnum, maxheight;
-	ion_key_type_t					key_type;
+	ion_key_type_t				key_type;
 	ion_dictionary_compare_t	compare;
 
 	key_type	= key_type_numeric_unsigned;
