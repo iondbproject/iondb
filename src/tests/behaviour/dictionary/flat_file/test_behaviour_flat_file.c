@@ -24,14 +24,13 @@
 #include "../../../planckunit/src/planck_unit.h"
 #include "../behaviour_dictionary.h"
 #include "../../../../dictionary/flat_file/flat_file_dictionary_handler.h"
-#include "../../../../dictionary/bpp_tree/bpp_tree_handler.h"
 #include "test_behaviour_flat_file.h"
 
 void
 runalltests_behaviour_flat_file(
 	void
 ) {
-	bhdct_set_context(bpptree_init);
+	bhdct_set_context(ffdict_init);
 
 	planck_unit_suite_t *suite = bhdct_getsuite();
 

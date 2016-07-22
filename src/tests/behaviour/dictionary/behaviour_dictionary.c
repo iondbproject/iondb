@@ -33,6 +33,20 @@ typedef enum {
 	ion_fill_none, ion_fill_low, ion_fill_medium, ion_fill_high, ion_fill_edge_cases
 } ion_behaviour_fill_level_e;
 
+#define ION_FILL_LOW_LOOP(var) \
+	for (var = 0; var < 10; var++)
+#define ION_FILL_MEDIUM_LOOP(var) \
+	for (var = 50; var < 100; var += 2)
+#define ION_FILL_HIGH_LOOP(var) \
+	for (var = 500; var < 1000; var += 5)
+#define ION_FILL_EDGE_LOOP(var) \
+	for (var = -100; var < -50; var += 2)
+
+#define ION_LOW_VALUE(var)		IONIZE((var) * 2, int)
+#define ION_MEDIUM_VALUE(var)	IONIZE((var) * 5, int)
+#define ION_HIGH_VALUE(var)		IONIZE((var) * 10, int)
+#define ION_EDGE_VALUE(var)		IONIZE((var) * 3, int)
+
 /* This is a private struct we use to track metadata about the dictionary. */
 ion_bhdct_context_t bhdct_context = { NULL };
 
@@ -133,32 +147,6 @@ bhdct_delete_master_table(
 }
 
 /**
-@brief	This function does an insert into a dictionary.
-*/
-void
-bhdct_insert(
-	planck_unit_test_t	*tc,
-	ion_dictionary_t	*dict,
-	ion_key_t			key,
-	ion_value_t			value,
-	ion_boolean_t		check_result
-) {
-	ion_status_t status = dictionary_insert(dict, key, value);
-
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
-
-	if (check_result) {
-		ion_value_t retval = alloca(dict->instance->record.value_size);
-
-		status = dictionary_get(dict, key, retval);
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, memcmp(value, retval, dict->instance->record.value_size));
-	}
-}
-
-/**
 @brief	This function performs a get on a dictionary.
 */
 void
@@ -193,6 +181,49 @@ bhdct_get(
 }
 
 /**
+@brief	This function does an insert into a dictionary.
+*/
+void
+bhdct_insert(
+	planck_unit_test_t	*tc,
+	ion_dictionary_t	*dict,
+	ion_key_t			key,
+	ion_value_t			value,
+	ion_boolean_t		check_result
+) {
+	ion_status_t status = dictionary_insert(dict, key, value);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	if (check_result) {
+		bhdct_get(tc, dict, key, value, err_ok, 1);
+	}
+}
+
+/**
+@brief	This function performs a delete on a dictionary.
+*/
+void
+bhdct_delete(
+	planck_unit_test_t	*tc,
+	ion_dictionary_t	*dict,
+	ion_key_t			key,
+	ion_err_t			expected_status,
+	ion_result_count_t	expected_count,
+	ion_boolean_t		check_result
+) {
+	ion_status_t status = dictionary_delete(dict, key);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_status, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, status.count);
+
+	if (check_result) {
+		bhdct_get(tc, dict, key, NULL, err_item_not_found, 0);
+	}
+}
+
+/**
 @brief	This function performs the setup required for a test case.
 */
 void
@@ -211,26 +242,26 @@ bhdct_setup(
 
 	switch (fill_level) {
 		case ion_fill_edge_cases: {
-			for (i = -100; i < -50; i += 2) {
-				bhdct_insert(tc, dict, IONIZE(i, int), IONIZE(i * 3, int), boolean_true);
+			ION_FILL_EDGE_LOOP(i) {
+				bhdct_insert(tc, dict, IONIZE(i, int), ION_EDGE_VALUE(i), boolean_true);
 			}
 		}
 
 		case ion_fill_high: {
-			for (i = 500; i < 1000; i += 5) {
-				bhdct_insert(tc, dict, IONIZE(i, int), IONIZE(i * 10, int), boolean_true);
+			ION_FILL_HIGH_LOOP(i) {
+				bhdct_insert(tc, dict, IONIZE(i, int), ION_HIGH_VALUE(i), boolean_true);
 			}
 		}
 
 		case ion_fill_medium: {
-			for (i = 50; i < 100; i += 2) {
-				bhdct_insert(tc, dict, IONIZE(i, int), IONIZE(i * 5, int), boolean_true);
+			ION_FILL_MEDIUM_LOOP(i) {
+				bhdct_insert(tc, dict, IONIZE(i, int), ION_MEDIUM_VALUE(i), boolean_true);
 			}
 		}
 
 		case ion_fill_low: {
-			for (i = 0; i < 10; i++) {
-				bhdct_insert(tc, dict, IONIZE(i, int), IONIZE(i * 2, int), boolean_true);
+			ION_FILL_LOW_LOOP(i) {
+				bhdct_insert(tc, dict, IONIZE(i, int), ION_LOW_VALUE(i), boolean_true);
 			}
 		}
 
@@ -425,6 +456,7 @@ test_bhdct_get_nonexist_many(
 
 /**
 @brief	This function tests retrieval on a dictionary that has one record in it.
+		We search for a key that exists, and expect that we get a positive response back.
 */
 void
 test_bhdct_get_exist_single(
@@ -440,6 +472,106 @@ test_bhdct_get_exist_single(
 
 	bhdct_takedown(tc, &dict);
 }
+
+/**
+@brief	This function tests retrieval on a dictionary that has many records in it.
+		We expect a positive result.
+*/
+void
+test_bhdct_get_populated_single(
+	planck_unit_test_t *tc
+) {
+	ion_dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+
+	bhdct_setup(tc, &handler, &dict, ion_fill_low);
+
+	bhdct_insert(tc, &dict, IONIZE(92, int), IONIZE(92, int), boolean_true);
+	bhdct_get(tc, &dict, IONIZE(92, int), IONIZE(92, int), err_ok, 1);
+
+	bhdct_takedown(tc, &dict);
+}
+
+/**
+@brief	This function tests retrieval on a dictionary that has many records in it.
+		We expect a positive result on all gets run.
+*/
+void
+test_bhdct_get_populated_multiple(
+	planck_unit_test_t *tc
+) {
+	ion_dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+
+	bhdct_setup(tc, &handler, &dict, ion_fill_low);
+
+	int i;
+
+	ION_FILL_LOW_LOOP(i) {
+		bhdct_get(tc, &dict, IONIZE(i, int), ION_LOW_VALUE(i), err_ok, 1);
+	}
+
+	bhdct_takedown(tc, &dict);
+}
+
+/**
+@brief	This function tests deletion on an empty dictionary.
+		We expect to receive err_item_not_found and for everything to remain as-is.
+*/
+void
+test_bhdct_delete_empty(
+	planck_unit_test_t *tc
+) {
+	ion_dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+
+	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+
+	bhdct_delete(tc, &dict, IONIZE(3, int), err_item_not_found, 0, boolean_true);
+
+	bhdct_takedown(tc, &dict);
+}
+
+/**
+@brief	This function tests deletion on a dictionary that has one element,
+		but not the one we are looking for. We expect to receive err_item_not_found
+		and for everything to remain as-is.
+*/
+void
+test_bhdct_delete_nonexist_single(
+	planck_unit_test_t *tc
+) {
+	ion_dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+
+	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+
+	bhdct_insert(tc, &dict, IONIZE(5, int), IONIZE(10, int), boolean_true);
+	bhdct_delete(tc, &dict, IONIZE(3, int), err_item_not_found, 0, boolean_true);
+
+	bhdct_takedown(tc, &dict);
+}
+
+/**
+@brief	This function tests deletion on a dictionary that has many elements,
+		but not the one we are looking for. We expect to receive err_item_not_found
+		and for everything to remain as-is.
+*/
+void
+test_bhdct_delete_nonexist_several(
+	planck_unit_test_t *tc
+) {
+	ion_dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+
+	bhdct_setup(tc, &handler, &dict, ion_fill_medium);
+
+	bhdct_delete(tc, &dict, IONIZE(-100, int), err_item_not_found, 0, boolean_true);
+
+	bhdct_takedown(tc, &dict);
+}
+
+/* TODO: Next test to write is test_skiplist_delete_single */
 
 planck_unit_suite_t *
 bhdct_getsuite(
@@ -464,6 +596,12 @@ bhdct_getsuite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_many);
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_exist_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_multiple);
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_empty);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_several);
 
 	return suite;
 }
