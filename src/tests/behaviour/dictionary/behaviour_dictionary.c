@@ -436,8 +436,7 @@ test_bhdct_get_exist_single(
 	bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
 	bhdct_insert(tc, &dict, IONIZE(30, int), IONIZE(30, int), boolean_true);
-	/* FIXME: Intentional error here */
-	bhdct_get(tc, &dict, IONIZE(30, int), IONIZE(000, int), err_ok, 1);
+	bhdct_get(tc, &dict, IONIZE(30, int), IONIZE(30, int), err_ok, 1);
 
 	bhdct_takedown(tc, &dict);
 }
