@@ -65,4 +65,8 @@ hooks: $(SCRIPTS_DIR)/setuphooks.py
 .PHONY: format
 format: $(SCRIPTS_DIR)/format.py
 	$(PY) $(SCRIPTS_DIR)/format.py src
+
+.PHONY: checktest
+checktest: $(SCRIPTS_DIR)/checktest.py
+	$(PY) $(SCRIPTS_DIR)/checktest.py
 ################################################################################
