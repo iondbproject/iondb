@@ -23,7 +23,7 @@
 
 #include "test_in_memory_sort.h"
 #include "../../../../key_value/kv_system.h"
-#include "../../../../util/in_memory_sort/sort.h"
+#include "../../../../util/sort/in_memory_sort/in_memory_sort.h"
 
 int8_t
 quick_sort_int_comparator(

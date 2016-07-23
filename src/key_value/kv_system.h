@@ -35,6 +35,16 @@ extern "C" {
 
 #include "kv_io.h"
 
+/**> No relation implementation is to be used. */
+#define ION_NO_RELATION			0
+/**> The IINQ relation implementation is to be used. */
+#define ION_IINQ				1
+/**> The IonTable relation implementation is to be used. */
+#define ION_TABLE				2
+
+/**> Defines the relation implementation to use on top of IonDB. */
+#define ION_RELATION			ION_NO_RELATION
+
 #define ION_USING_MASTER_TABLE	1
 #define USING_ECLIPSE			0
 #define DEBUG					0
@@ -287,6 +297,15 @@ typedef uint32_t ion_buffer_size_t;
 @details	The size of a page is described in bytes.
 */
 typedef uint16_t ion_page_size_t;
+
+/**
+@brief		A comparison result type that describes the result of a comparison.
+*/
+typedef enum comparison {
+	less_than		= -1,	/**< The result for the comparison operation is A <= B. */
+	equal			= 0,/**< The result for the comparison operation is A == B. */
+	greater_than	= 1		/**< The result for the comparison operation is A >= B. */
+} ion_comparison_e;
 
 #if defined(__cplusplus)
 }

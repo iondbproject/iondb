@@ -1,6 +1,6 @@
 #include <SPI.h>
 #include <SD.h>
-#include "test_file_sort.h"
+#include "test_external_sort.h"
 
 void
 setup(

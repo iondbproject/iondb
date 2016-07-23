@@ -1,10 +1,13 @@
 cmake_minimum_required(VERSION 3.5)
-project(in_memory_sort)
+project(external_sort)
 
 set(SOURCE_FILES
-        sort.h
-        sort.c
-        ../../key_value/kv_system.h)
+        external_sort.h
+        external_sort.c
+        flash_min_sort.h
+        flash_min_sort.c
+        ../sort.h
+        ../../../key_value/kv_system.h)
 
 if(USE_ARDUINO)
     set(${PROJECT_NAME}_BOARD       ${BOARD})

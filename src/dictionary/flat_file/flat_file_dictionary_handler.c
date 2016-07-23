@@ -21,8 +21,8 @@ ffdict_init(
 ion_status_t
 ffdict_insert(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	return ff_insert((ion_ff_file_t *) dictionary->instance, key, value);
 }
@@ -31,8 +31,8 @@ ffdict_insert(
 ion_status_t
 ffdict_query(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	return ff_query((ion_ff_file_t *) dictionary->instance, key, value);
 }
@@ -40,13 +40,13 @@ ffdict_query(
 ion_err_t
 ffdict_create_dictionary(
 	ion_dictionary_id_t			id,
-	ion_key_type_t					key_type,
+	ion_key_type_t				key_type,
 	ion_key_size_t				key_size,
 	ion_value_size_t			value_size,
 	int							dictionary_size,
 	ion_dictionary_compare_t	compare,
-	ion_dictionary_handler_t		*handler,
-	ion_dictionary_t				*dictionary
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dictionary
 ) {
 	UNUSED(id);
 	UNUSED(dictionary_size);
@@ -70,7 +70,7 @@ ffdict_create_dictionary(
 ion_status_t
 ffdict_delete(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key
+	ion_key_t			key
 ) {
 	ion_status_t status = ff_delete((ion_ff_file_t *) dictionary->instance, key);
 
@@ -91,8 +91,8 @@ ffdict_delete_dictionary(
 ion_status_t
 ffdict_update(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	return ff_update((ion_ff_file_t *) dictionary->instance, key, value);
 }
@@ -222,7 +222,7 @@ ffdict_find(
 ion_cursor_status_t
 ffdict_next(
 	ion_dict_cursor_t	*cursor,
-	ion_record_t	*record
+	ion_record_t		*record
 ) {
 	/* @todo if the dictionary instance changes, then the status of the cursor needs to change */
 	ion_ffdict_cursor_t *ffdict_cursor = (ion_ffdict_cursor_t *) cursor;
@@ -292,7 +292,7 @@ ffdict_destroy_cursor(
 ion_boolean_t
 ffdict_test_predicate(
 	ion_dict_cursor_t	*cursor,
-	ion_key_t		key
+	ion_key_t			key
 ) {
 	/* TODO need to check key match; what's the most efficient way? */
 	int key_satisfies_predicate;
@@ -315,8 +315,8 @@ ffdict_test_predicate(
 		case predicate_range:	/* range check */
 		{
 			if (/* lower_bound <= key <==> !(lower_bound > key) */
-				(!(A_gt_B == file->super.compare(cursor->predicate->statement.range.lower_bound, key, file->super.record.key_size))) &&	/* key <= upper_bound <==> !(key > upper_bound) */
-				(!(A_gt_B == file->super.compare(key, cursor->predicate->statement.range.upper_bound, file->super.record.key_size)))) {
+				(!(greater_than == file->super.compare(cursor->predicate->statement.range.lower_bound, key, file->super.record.key_size))) &&	/* key <= upper_bound <==> !(key > upper_bound) */
+				(!(greater_than == file->super.compare(key, cursor->predicate->statement.range.upper_bound, file->super.record.key_size)))) {
 				key_satisfies_predicate = boolean_true;
 			}
 

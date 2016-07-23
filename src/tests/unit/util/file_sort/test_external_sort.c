@@ -1,4 +1,4 @@
-#include "test_file_sort.h"
+#include "test_external_sort.h"
 
 void
 test_(
