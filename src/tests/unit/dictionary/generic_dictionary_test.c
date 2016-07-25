@@ -3,9 +3,9 @@
 
 int
 get_count_index_by_key(
-	ion_key_t		needle,
-	ion_key_t		*haystack,
-	int				length,
+	ion_key_t			needle,
+	ion_key_t			*haystack,
+	int					length,
 	ion_dictionary_t	*dictionary
 ) {
 	int i = 0;
@@ -21,9 +21,9 @@ get_count_index_by_key(
 
 void
 init_generic_dictionary_test(
-	ion_generic_test_t			*test,
+	ion_generic_test_t		*test,
 	void (					*init_dict_handler)(ion_dictionary_handler_t *),
-	ion_key_type_t				key_type,
+	ion_key_type_t			key_type,
 	ion_key_size_t			key_size,
 	ion_value_size_t		value_size,
 	ion_dictionary_size_t	dictionary_size
@@ -44,7 +44,7 @@ cleanup_generic_dictionary_test(
 
 void
 dictionary_test_init(
-	ion_generic_test_t		*test,
+	ion_generic_test_t	*test,
 	planck_unit_test_t	*tc
 ) {
 	ion_err_t error;
@@ -64,7 +64,7 @@ dictionary_test_init(
 
 void
 dictionary_test_insert_get(
-	ion_generic_test_t		*test,
+	ion_generic_test_t	*test,
 	int					num_to_insert,
 	ion_key_t			*count_keys,
 	ion_result_count_t	*counts,
@@ -136,7 +136,7 @@ dictionary_test_insert_get(
 
 void
 dictionary_test_insert_get_edge_cases(
-	ion_generic_test_t		*test,
+	ion_generic_test_t	*test,
 	ion_key_t			*count_keys,
 	ion_result_count_t	*counts,
 	int					length,
@@ -146,7 +146,7 @@ dictionary_test_insert_get_edge_cases(
 	int				k;
 	ion_key_t		key = IONIZE(-10, int);
 
-	status	= dictionary_insert(&(test->dictionary), key, GTEST_DATA);
+	status	= dictionary_insert(&(test->dictionary), key, IONIZE(44, int));
 	k		= get_count_index_by_key(key, count_keys, length, &(test->dictionary));
 
 	if ((-1 != k) && (err_ok == status.error) && (1 == status.count)) {
@@ -162,12 +162,12 @@ dictionary_test_insert_get_edge_cases(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
-	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == test->dictionary.instance->compare(GTEST_DATA, test_buf, test->key_size));
+	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == test->dictionary.instance->compare(IONIZE(44, int), test_buf, test->value_size));
 }
 
 void
 dictionary_test_delete(
-	ion_generic_test_t		*test,
+	ion_generic_test_t	*test,
 	ion_key_t			key_to_delete,
 	ion_result_count_t	count,
 	planck_unit_test_t	*tc
@@ -179,7 +179,14 @@ dictionary_test_delete(
 
 	status = dictionary_delete(&(test->dictionary), key_to_delete);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	/* If we don't expect to delete anything, then we expect to see that the item didn't exist. */
+	if (0 == count) {
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
+	}
+	else {
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	}
+
 	PLANCK_UNIT_ASSERT_TRUE(tc, count == status.count);
 
 	status = dictionary_get(&(test->dictionary), key_to_delete, test_val);
@@ -190,7 +197,7 @@ dictionary_test_delete(
 
 void
 dictionary_test_update(
-	ion_generic_test_t		*test,
+	ion_generic_test_t	*test,
 	ion_key_t			key_to_update,
 	ion_value_t			update_with,
 	ion_result_count_t	count,
@@ -216,7 +223,7 @@ dictionary_test_update(
 
 void
 dictionary_test_equality(
-	ion_generic_test_t		*test,
+	ion_generic_test_t	*test,
 	ion_key_t			eq_key,
 	planck_unit_test_t	*tc
 ) {
@@ -252,7 +259,7 @@ dictionary_test_equality(
 
 void
 dictionary_test_range(
-	ion_generic_test_t		*test,
+	ion_generic_test_t	*test,
 	ion_key_t			lower_bound,
 	ion_key_t			upper_bound,
 	planck_unit_test_t	*tc
@@ -290,7 +297,7 @@ dictionary_test_range(
 
 void
 dictionary_test_all_records(
-	ion_generic_test_t		*test,
+	ion_generic_test_t	*test,
 	int					expected_count,
 	planck_unit_test_t	*tc
 ) {
@@ -332,10 +339,10 @@ dictionary_test_all_records(
 
 void
 dictionary_test_open_close(
-	ion_generic_test_t		*test,
+	ion_generic_test_t	*test,
 	planck_unit_test_t	*tc
 ) {
-	ion_err_t				error;
+	ion_err_t			error;
 	ion_status_t		status;
 	ion_dictionary_id_t gdict_id = test->dictionary.instance->id;
 
