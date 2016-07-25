@@ -33,6 +33,8 @@ extern "C" {
 #include "../sort.h"
 #include "../../../key_value/kv_system.h"
 
+#define ION_EXTERNAL_SORT_CEILING(numerator, denominator) (1 + (numerator - 1) / (denominator))
+
 typedef enum {
 	ION_FILE_SORT_FLASH_MINSORT
 } ion_file_sort_algorithm_e;
@@ -41,20 +43,22 @@ typedef struct ion_external_sort_cursor_s ion_external_sort_cursor_t;
 
 typedef struct {
 	FILE							*input_file;
-	void							*buffer;
-	ion_buffer_size_t				buffer_size;
 	ion_sort_comparator_context_t	context;
 	ion_sort_comparator_t			compare_function;
 	ion_key_size_t					key_size;
 	ion_value_size_t				value_size;
 	ion_page_size_t					page_size;
+	uint32_t						num_pages;
+	uint16_t						num_records_last_page;
 	ion_file_sort_algorithm_e		sort_algorithm;
 } ion_external_sort_t;
 
 struct ion_external_sort_cursor_s {
 	ion_external_sort_t *es;
-	FILE				*output_file;
 	void				*implementation_data;
+	FILE				*output_file;
+	void				*buffer;
+	ion_buffer_size_t	buffer_size;
 
 	ion_err_t			(*next)(
 		ion_external_sort_cursor_t *es

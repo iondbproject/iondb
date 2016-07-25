@@ -30,10 +30,23 @@
 #include "../sort.h"
 #include "../../../key_value/kv_system.h"
 
+/* #define ION_FLASH_MIN_SORT_GET_FLAG(bit_vector_arr, bit_index) \
+   //			((((uint8_t *)bit_vector_arr)[(bit_index) >> 3] >> ((bit_index) & 7)) & 1) */
+/*  */
+/* #define ION_FLASH_MIN_SORT_TOGGLE_FLAG(bit_vector_arr, bit_index) \
+   //			(((uint8_t *)bit_vector_arr)[(bit_index) >> 3] ^= (1 << ((bit_index) & 7))) */
+
+/* #define ION_FLASH_MIN_SORT_DIV_BY_POW_2_EXP(number, pow_2_exponent) \
+   //			((number) >> (pow_2_exponent)) */
+
 typedef struct {
 	uint32_t	num_pages_per_region;
 	uint32_t	num_regions;
+	void		*temp_value;
+	void		*current_value;
+	void		*next_value;
 	long		next_index;
+	uint32_t	last_page_in_last_region;
 } ion_flash_min_sort_t;
 
 /**

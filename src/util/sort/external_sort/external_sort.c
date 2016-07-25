@@ -42,6 +42,25 @@ ion_external_sort_init(
 	es->page_size			= page_size;
 	es->sort_algorithm		= sort_algorithm;
 
+	if (0 != fseek(es->input_file, 0, SEEK_END)) {
+		return err_file_bad_seek;
+	}
+
+	long file_size_in_bytes = ftell(es->input_file);
+
+	if (-1 == file_size_in_bytes) {
+		return err_file_bad_seek;
+	}
+
+	if ((0 == file_size_in_bytes % es->page_size) % es->value_size) {
+		es->num_records_last_page = (uint16_t) ((file_size_in_bytes % es->page_size) / es->value_size);
+	}
+	else {
+		return err_invalid_initial_size;
+	}
+
+	es->num_pages = ION_EXTERNAL_SORT_CEILING((uint32_t) file_size_in_bytes, es->page_size);
+
 	return err_ok;
 }
 
@@ -53,9 +72,9 @@ ion_external_sort_init_cursor(
 	ion_buffer_size_t			buffer_size
 ) {
 	cursor->es			= es;
-	es->buffer			= buffer;
-	es->buffer_size		= buffer_size;
 	cursor->output_file = NULL;
+	cursor->buffer		= buffer;
+	cursor->buffer_size = buffer_size;
 
 	switch (es->sort_algorithm) {
 		case ION_FILE_SORT_FLASH_MINSORT: {
@@ -93,6 +112,8 @@ ion_external_sort_dump_all(
 
 	cursor.es			= es;
 	cursor.output_file	= output_file;
+	cursor.buffer		= buffer;
+	cursor.buffer_size	= buffer_size;
 
 	switch (es->sort_algorithm) {
 		case ION_FILE_SORT_FLASH_MINSORT: {

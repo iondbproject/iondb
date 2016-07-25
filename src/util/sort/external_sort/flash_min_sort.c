@@ -24,30 +24,58 @@
 /******************************************************************************/
 
 #include "flash_min_sort.h"
+#include "external_sort_types.h"
 
 ion_err_t
 ion_flash_min_sort_init(
 	ion_external_sort_t			*es,
 	ion_external_sort_cursor_t	*cursor
 ) {
-#define ION_FILE_SORT_CEILING(numerator, denominator) (1 + (numerator - 1) / (denominator))
-
 	ion_flash_min_sort_t *flash_min_sort_data = cursor->implementation_data;
 
-	if (0 != fseek(es->input_file, 0, SEEK_END)) {
-		return err_file_bad_seek;
-	}
-
-	long file_size_in_bytes = ftell(es->input_file);
-
-	if (-1 == file_size_in_bytes) {
-		return err_file_bad_seek;
-	}
-
-	flash_min_sort_data->num_pages_per_region	= ION_FILE_SORT_CEILING(((uint32_t) file_size_in_bytes / es->page_size * es->key_size), (es->buffer_size));
-	flash_min_sort_data->num_regions			= ION_FILE_SORT_CEILING(((uint32_t) file_size_in_bytes / es->page_size), (flash_min_sort_data->num_pages_per_region));
-
 	rewind(es->input_file);
+
+	/* Calculate the number of regions and pages in each region. Note that the value instead of the key is stored in
+	   the buckets of the minimal index to preserve generality. The size for the bit vectors to indicate uninitialized
+	   value is also included in the calculation. */
+	flash_min_sort_data->num_pages_per_region		= ION_EXTERNAL_SORT_CEILING(((uint32_t) es->num_pages * es->value_size), (cursor->buffer_size - 3 * es->value_size));
+
+	flash_min_sort_data->num_regions				= ION_EXTERNAL_SORT_CEILING(((uint32_t) es->num_pages), (flash_min_sort_data->num_pages_per_region));
+
+	flash_min_sort_data->last_page_in_last_region	= es->num_pages % flash_min_sort_data->num_pages_per_region;
+
+	/* Do the initial pass. This requires scanning through the all of the values and finding the
+	   minimum values in each region. */
+	uint32_t	cur_region;
+	uint32_t	cur_region_page;/* Current page in region */
+	uint16_t	cur_page_byte;	/* Current byte in page */
+
+	flash_min_sort_data->temp_value = (void *) (((uint8_t *) cursor->buffer) + flash_min_sort_data->num_regions * es->value_size);
+
+	for (cur_region = 0; cur_region < flash_min_sort_data->num_regions; cur_region++) {
+		for (cur_region_page = 0; cur_region_page < flash_min_sort_data->num_pages_per_region; cur_region_page++) {
+			for (cur_page_byte = 0; cur_page_byte < es->page_size; cur_page_byte += es->value_size) {
+				if ((cur_region_page == 0) && (cur_page_byte == 0)) {
+					/* Insert the value into the index since it is the first value in the region. */
+					memcpy((void *) (((uint8_t *) cursor->buffer) + cur_region * es->value_size), flash_min_sort_data->temp_value, es->value_size);
+				}
+				else if ((cur_region >= flash_min_sort_data->num_regions - 1) &&/* TODO: is it -1? */
+						 (cur_region_page >= flash_min_sort_data->last_page_in_last_region) && (cur_page_byte >= es->num_records_last_page * es->value_size)) {
+					/* This checks if the last record was reached. */
+					break;
+				}
+				else {
+					if (0 == fread(flash_min_sort_data->temp_value, es->value_size, 1, es->input_file)) {
+						return err_file_read_error;
+					}
+
+					if (less_than == es->compare_function(es->context, flash_min_sort_data->temp_value, (void *) (((uint8_t *) cursor->buffer) + cur_region * es->value_size))) {
+						memcpy((void *) (((uint8_t *) cursor->buffer) + cur_region * es->value_size), flash_min_sort_data->temp_value, es->value_size);
+					}
+				}
+			}
+		}
+	}
 
 	return err_ok;
 }

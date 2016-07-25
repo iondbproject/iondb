@@ -3,6 +3,8 @@
 @file
 @author		Wade Penson
 @brief		External sorting algorithms for values stored in files.
+@details	Assumes unspanned pages (A whole resides in page boundaries. It is not
+			spanned across multiple pages).
 @copyright	Copyright 2016
 				The University of British Columbia,
 				IonDB Project Contributors (see AUTHORS.md)
