@@ -19,7 +19,7 @@ if(USE_ARDUINO)
 
 	generate_arduino_firmware(${PROJECT_NAME})
 else()
-	add_executable(${PROJECT_NAME}          ${SOURCE_FILES} run_behaviour_open_address_hash.c)
+	add_executable(${PROJECT_NAME}          ${SOURCE_FILES} run_behaviour_open_address_file_hash.c)
 
 	target_link_libraries(${PROJECT_NAME}   behaviour_dictionary)
 
