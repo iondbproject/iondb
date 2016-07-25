@@ -29,7 +29,7 @@ typedef int ion_record_idx_t;
  */
 typedef struct ff_dictionary {
 	/* what needs to go in here? */
-	char		*dictionary_name;	/**<The name of the dictionary*/
+	char			*dictionary_name;	/**<The name of the dictionary*/
 	ion_ff_file_t	*file;			/**<The map that the operations
 										will operate upon*/
 } ion_ff_dictionary_t;
@@ -64,7 +64,7 @@ typedef struct equality_cursor
 typedef struct ffdict_equality_cursor {
 	ion_dict_cursor_t	super;					/**<Super type this cursor inherits from*/
 	ion_ffdict_cursor_t cursor_info;/**<Super type to dict implementation*/
-	ion_key_t		value;
+	ion_key_t			value;
 
 	ion_boolean_t (*equal)(
 		ion_dictionary_t *,
@@ -103,8 +103,8 @@ ffdict_init(
 ion_status_t
 ffdict_insert(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -134,8 +134,8 @@ ffdict_insert(
 ion_status_t
 ffdict_query(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -165,13 +165,13 @@ ffdict_query(
 ion_err_t
 ffdict_create_dictionary(
 	ion_dictionary_id_t			id,
-	ion_key_type_t					key_type,
+	ion_key_type_t				key_type,
 	ion_key_size_t				key_size,
 	ion_value_size_t			value_size,
 	int							dictionary_size,	/* @todo this needs to be fixed or defined */
 	ion_dictionary_compare_t	compare,
-	ion_dictionary_handler_t		*handler,
-	ion_dictionary_t				*dictionary
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dictionary
 );
 
 /**
@@ -187,7 +187,7 @@ ffdict_create_dictionary(
 ion_status_t
 ffdict_delete(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key
+	ion_key_t			key
 );
 
 /**
@@ -219,8 +219,8 @@ ffdict_delete_dictionary(
 ion_status_t
 ffdict_update(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -304,7 +304,7 @@ oadict_next(
 ion_cursor_status_t
 ffdict_next(
 	ion_dict_cursor_t	*cursor,
-	ion_record_t	*record
+	ion_record_t		*record
 );
 
 /**
@@ -323,8 +323,8 @@ ion_boolean_t
 /*TODO Fix name of function */
 ff_is_equal(
 	ion_dictionary_t	*dict,
-	ion_key_t		key1,
-	ion_key_t		key2
+	ion_key_t			key1,
+	ion_key_t			key2
 );
 
 /**
@@ -357,7 +357,7 @@ ffdict_destroy_cursor(
 ion_boolean_t
 ffdict_test_predicate(
 	ion_dict_cursor_t	*cursor,
-	ion_key_t		key
+	ion_key_t			key
 );
 
 /**

@@ -64,10 +64,10 @@ typedef void *ion_bpp_handle_t;
 
 typedef struct {
 	/* info for bOpen() */
-	char		*iName;			/* name of index file */
-	int			keySize;		/* length, in bytes, of key */
-	ion_bpp_bool_t	dupKeys;				/* true if duplicate keys allowed */
-	size_t		sectorSize;		/* size of sector on disk */
+	char					*iName;	/* name of index file */
+	int						keySize;/* length, in bytes, of key */
+	ion_bpp_bool_t			dupKeys;		/* true if duplicate keys allowed */
+	size_t					sectorSize;	/* size of sector on disk */
 	ion_bpp_comparison_t	comp;			/* pointer to compare function */
 } ion_bpp_open_t;
 
@@ -76,8 +76,8 @@ typedef struct {
  ***********************/
 ion_bpp_err_t
 bOpen(
-	ion_bpp_open_t	info,
-	ion_bpp_handle_t *handle
+	ion_bpp_open_t		info,
+	ion_bpp_handle_t	*handle
 );
 
 /*
@@ -106,8 +106,8 @@ bClose(
 
 ion_bpp_err_t
 bInsertKey(
-	ion_bpp_handle_t handle,
-	void		*key,
+	ion_bpp_handle_t			handle,
+	void						*key,
 	ion_bpp_external_address_t	rec
 );
 
@@ -129,8 +129,8 @@ bInsertKey(
 
 ion_bpp_err_t
 bUpdateKey(
-	ion_bpp_handle_t handle,
-	void		*key,
+	ion_bpp_handle_t			handle,
+	void						*key,
 	ion_bpp_external_address_t	rec
 );
 
@@ -152,8 +152,8 @@ bUpdateKey(
 
 ion_bpp_err_t
 bDeleteKey(
-	ion_bpp_handle_t handle,
-	void		*key,
+	ion_bpp_handle_t			handle,
+	void						*key,
 	ion_bpp_external_address_t	*rec
 );
 
@@ -175,8 +175,8 @@ bDeleteKey(
 
 ion_bpp_err_t
 bFindKey(
-	ion_bpp_handle_t handle,
-	void		*key,
+	ion_bpp_handle_t			handle,
+	void						*key,
 	ion_bpp_external_address_t	*rec
 );
 
@@ -193,9 +193,9 @@ bFindKey(
 
 ion_bpp_err_t
 bFindFirstGreaterOrEqual(
-	ion_bpp_handle_t handle,
-	void		*key,
-	void		*mkey,
+	ion_bpp_handle_t			handle,
+	void						*key,
+	void						*mkey,
 	ion_bpp_external_address_t	*rec
 );
 
@@ -212,8 +212,8 @@ bFindFirstGreaterOrEqual(
 
 ion_bpp_err_t
 bFindFirstKey(
-	ion_bpp_handle_t handle,
-	void		*key,
+	ion_bpp_handle_t			handle,
+	void						*key,
 	ion_bpp_external_address_t	*rec
 );
 
@@ -230,8 +230,8 @@ bFindFirstKey(
 
 ion_bpp_err_t
 bFindLastKey(
-	ion_bpp_handle_t handle,
-	void		*key,
+	ion_bpp_handle_t			handle,
+	void						*key,
 	ion_bpp_external_address_t	*rec
 );
 
@@ -248,8 +248,8 @@ bFindLastKey(
 
 ion_bpp_err_t
 bFindNextKey(
-	ion_bpp_handle_t handle,
-	void		*key,
+	ion_bpp_handle_t			handle,
+	void						*key,
 	ion_bpp_external_address_t	*rec
 );
 
@@ -266,8 +266,8 @@ bFindNextKey(
 
 ion_bpp_err_t
 bFindPrevKey(
-	ion_bpp_handle_t handle,
-	void		*key,
+	ion_bpp_handle_t			handle,
+	void						*key,
 	ion_bpp_external_address_t	*rec
 );
 

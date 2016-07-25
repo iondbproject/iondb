@@ -47,13 +47,13 @@ bhdct_set_context(
 */
 void
 bhdct_dictionary_initialization(
-	planck_unit_test_t		*tc,
+	planck_unit_test_t			*tc,
 	ion_dictionary_handler_t	*handler,
 	ion_dictionary_t			*dict,
 	ion_key_type_t				key_type,
-	int						key_size,
-	int						value_size,
-	int						dictionary_size
+	int							key_size,
+	int							value_size,
+	int							dictionary_size
 ) {
 	ion_err_t err = ion_master_table_create_dictionary(handler, dict, key_type, key_size, value_size, dictionary_size);
 
@@ -82,7 +82,7 @@ bhdct_master_table_init(
 void
 bhdct_delete_from_master_table(
 	planck_unit_test_t	*tc,
-	ion_dictionary_t		*dict
+	ion_dictionary_t	*dict
 ) {
 	ion_err_t err = ion_delete_from_master_table(dict);
 
@@ -95,7 +95,7 @@ bhdct_delete_from_master_table(
 void
 bhdct_delete_dictionary(
 	planck_unit_test_t	*tc,
-	ion_dictionary_t		*dict
+	ion_dictionary_t	*dict
 ) {
 	ion_err_t err = dictionary_delete_dictionary(dict);
 
@@ -132,7 +132,7 @@ bhdct_delete_master_table(
 */
 void
 bhdct_setup(
-	planck_unit_test_t		*tc,
+	planck_unit_test_t			*tc,
 	ion_dictionary_handler_t	*handler,
 	ion_dictionary_t			*dict
 ) {
@@ -147,7 +147,7 @@ bhdct_setup(
 void
 bhdct_takedown(
 	planck_unit_test_t	*tc,
-	ion_dictionary_t		*dict
+	ion_dictionary_t	*dict
 ) {
 /*	bhdct_delete_from_master_table(tc, dict); FIXME change when master table is fixed */
 	bhdct_delete_dictionary(tc, dict);
@@ -162,10 +162,10 @@ bhdct_takedown(
 void
 bhdct_insert(
 	planck_unit_test_t	*tc,
-	ion_dictionary_t		*dict,
+	ion_dictionary_t	*dict,
 	ion_key_t			key,
 	ion_value_t			value,
-	ion_boolean_t			check_result
+	ion_boolean_t		check_result
 ) {
 	ion_status_t status = dictionary_insert(dict, key, value);
 

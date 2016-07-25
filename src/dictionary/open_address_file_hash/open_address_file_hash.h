@@ -41,11 +41,11 @@ typedef struct file_hashmap ion_file_hashmap_t;
 */
 struct file_hashmap {
 	ion_dictionary_parent_t super;
-	int					map_size;		/**< The size of the map in item capacity */
+	int						map_size;	/**< The size of the map in item capacity */
 	ion_write_concern_t		write_concern;	/**< The current @p write_concern level
 											 of the hashmap*/
 
-	int					(*compute_hash)(
+	int						(*compute_hash)(
 		ion_file_hashmap_t *,
 		ion_key_t,
 		int
@@ -113,7 +113,7 @@ oafh_destroy(
 int
 oafh_get_location(
 	ion_hash_t	num,
-	int		size
+	int			size
 );
 
 /**
@@ -138,8 +138,8 @@ oafh_get_location(
 ion_status_t
 oafh_insert(
 	ion_file_hashmap_t	*hash_map,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -159,8 +159,8 @@ oafh_insert(
 ion_status_t
 oafh_update(
 	ion_file_hashmap_t	*hash_map,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -179,8 +179,8 @@ oafh_update(
 ion_err_t
 oafh_find_item_loc(
 	ion_file_hashmap_t	*hash_map,
-	ion_key_t		key,
-	int				*location
+	ion_key_t			key,
+	int					*location
 );
 
 /**
@@ -197,7 +197,7 @@ oafh_find_item_loc(
 ion_status_t
 oafh_delete(
 	ion_file_hashmap_t	*hash_map,
-	ion_key_t		key
+	ion_key_t			key
 );
 
 /**
@@ -218,8 +218,8 @@ oafh_delete(
 ion_status_t
 oafh_query(
 	ion_file_hashmap_t	*hash_map,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -236,8 +236,8 @@ oafh_query(
 ion_hash_t
 oafh_compute_simple_hash(
 	ion_file_hashmap_t	*hashmap,
-	ion_key_t		key,
-	int				size_of_key
+	ion_key_t			key,
+	int					size_of_key
 );
 
 /*void

@@ -22,7 +22,7 @@ typedef struct oadict_cursor {
 	ion_dict_cursor_t	super;			/**< Cursor supertype this type inherits from */
 	ion_hash_t			first;			/**<First visited spot*/
 	ion_hash_t			current;		/**<Currently visited spot*/
-	char			status;			/*todo what is this for again as there are two status */
+	char				status;		/*todo what is this for again as there are two status */
 } ion_oadict_cursor_t;
 
 #if defined(__cplusplus)

@@ -13,8 +13,7 @@
 #include "../key_value/kv_system.h"
 #include "../dictionary/open_address_hash/open_address_hash_dictionary_handler.h"
 
-template<typename K, typename V>
-class OpenAddressHash:public Dictionary<K, V> {
+template<typename K, typename V>class OpenAddressHash:public Dictionary<K, V> {
 public:
 /**
 @brief		Registers a specific open address hash dictionary instance.
@@ -32,9 +31,9 @@ public:
  */
 OpenAddressHash(
 	ion_key_type_t	type_key,
-	int			key_size,
-	int			value_size,
-	int			dictionary_size
+	int				key_size,
+	int				value_size,
+	int				dictionary_size
 ) {
 	oadict_init(&this->handler);
 

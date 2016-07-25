@@ -38,11 +38,11 @@ ion_err_t
 sl_initialize(
 	ion_skiplist_t	*skiplist,
 	ion_key_type_t	key_type,
-	int			key_size,
-	int			value_size,
-	int			maxheight,
-	int			pnum,
-	int			pden
+	int				key_size,
+	int				value_size,
+	int				maxheight,
+	int				pnum,
+	int				pden
 );
 
 /**
@@ -77,8 +77,8 @@ sl_destroy(
 ion_status_t
 sl_insert(
 	ion_skiplist_t	*skiplist,
-	ion_key_t	key,
-	ion_value_t value
+	ion_key_t		key,
+	ion_value_t		value
 );
 
 /**
@@ -98,8 +98,8 @@ sl_insert(
 ion_status_t
 sl_query(
 	ion_skiplist_t	*skiplist,
-	ion_key_t	key,
-	ion_value_t value
+	ion_key_t		key,
+	ion_value_t		value
 );
 
 /**
@@ -121,8 +121,8 @@ sl_query(
 ion_status_t
 sl_update(
 	ion_skiplist_t	*skiplist,
-	ion_key_t	key,
-	ion_value_t value
+	ion_key_t		key,
+	ion_value_t		value
 );
 
 /**
@@ -142,7 +142,7 @@ sl_update(
 ion_status_t
 sl_delete(
 	ion_skiplist_t	*skiplist,
-	ion_key_t	key
+	ion_key_t		key
 );
 
 /**
@@ -157,7 +157,7 @@ sl_delete(
 ion_sl_node_t *
 sl_find_node(
 	ion_skiplist_t	*skiplist,
-	ion_key_t	key
+	ion_key_t		key
 );
 
 /**

@@ -25,8 +25,7 @@
 #if !defined(CURSOR_H)
 #define CURSOR_H
 
-template<typename K, typename V>
-class Cursor {
+template<typename K, typename V>class Cursor {
 public:
 Cursor(
 	ion_dictionary_t	*dictionary,
@@ -74,7 +73,7 @@ private:
 
 ion_dictionary_t	*dictionary;
 ion_dict_cursor_t	*cursor;
-ion_record_t	record;
+ion_record_t		record;
 };
 
 #endif

@@ -13,8 +13,7 @@
 #include "../key_value/kv_system.h"
 #include "../dictionary/bpp_tree/bpp_tree_handler.h"
 
-template<typename K, typename V>
-class BppTree:public Dictionary<K, V> {
+template<typename K, typename V>class BppTree:public Dictionary<K, V> {
 public:
 /**
 @brief		Registers a specific B+ tree dictionary instance.
@@ -30,8 +29,8 @@ public:
  */
 BppTree(
 	ion_key_type_t	type_key,
-	int			key_size,
-	int			value_size
+	int				key_size,
+	int				value_size
 ) {
 	bpptree_init(&this->handler);
 

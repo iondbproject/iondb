@@ -1,37 +1,53 @@
+/******************************************************************************/
+/**
+@file
+@author		Wade Penson
+@brief		Implementation of the flash minsort algorithm that does not use
+			dynamic sizing of the minimum index since the number of values
+			is already known.
+@copyright	Copyright 2016
+				The University of British Columbia,
+				IonDB Project Contributors (see AUTHORS.md)
+@par
+			Licensed under the Apache License, Version 2.0 (the "License");
+			you may not use this file except in compliance with the License.
+			You may obtain a copy of the License at
+					http://www.apache.org/licenses/LICENSE-2.0
+@par
+			Unless required by applicable law or agreed to in writing,
+			software distributed under the License is distributed on an
+			"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+			either express or implied. See the License for the specific
+			language governing permissions and limitations under the
+			License.
+*/
+/******************************************************************************/
+
 #include "flash_min_sort.h"
 
-inline ion_err_t
+ion_err_t
 ion_flash_min_sort_init(
-	ion_external_sort_t				*es,
-	FILE							*file,
-	void							*buffer,
-	ion_sort_comparator_context_t	context,
-	ion_sort_comparator_t			compare_function,
-	ion_key_size_t					key_size,
-	ion_value_size_t				value_size,
-	ion_page_size_t					page_size,
-	ion_buffer_size_t				buffer_size
+	ion_external_sort_t			*es,
+	ion_external_sort_cursor_t	*cursor
 ) {
 #define ION_FILE_SORT_CEILING(numerator, denominator) (1 + (numerator - 1) / (denominator))
 
-	uint32_t	num_pages_per_region;
-	uint32_t	num_regions;
-	long		next_index;
+	ion_flash_min_sort_t *flash_min_sort_data = cursor->implementation_data;
 
-	if (0 != fseek(file, 0, SEEK_END)) {
+	if (0 != fseek(es->input_file, 0, SEEK_END)) {
 		return err_file_bad_seek;
 	}
 
-	long file_size_in_bytes = ftell(file);
+	long file_size_in_bytes = ftell(es->input_file);
 
 	if (-1 == file_size_in_bytes) {
 		return err_file_bad_seek;
 	}
 
-	num_pages_per_region	= ION_FILE_SORT_CEILING(((uint32_t) file_size_in_bytes / page_size * key_size), (buffer_size - 2 * key_size - sizeof(next_index)));
-	num_regions				= ION_FILE_SORT_CEILING(((uint32_t) file_size_in_bytes / page_size), (num_pages_per_region));
+	flash_min_sort_data->num_pages_per_region	= ION_FILE_SORT_CEILING(((uint32_t) file_size_in_bytes / es->page_size * es->key_size), (es->buffer_size));
+	flash_min_sort_data->num_regions			= ION_FILE_SORT_CEILING(((uint32_t) file_size_in_bytes / es->page_size), (flash_min_sort_data->num_pages_per_region));
 
-	rewind(file);
+	rewind(es->input_file);
 
 	return err_ok;
 }
@@ -40,7 +56,9 @@ ion_err_t
 ion_flash_min_sort_next(
 	ion_external_sort_cursor_t *cursor
 ) {
-	if (NULL == cursor->es->output_file) {}
+	ion_flash_min_sort_t *flash_min_sort_data = cursor->implementation_data;
+
+	if (NULL == cursor->output_file) {}
 
 	return err_ok;
 }

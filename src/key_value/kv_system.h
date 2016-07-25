@@ -35,16 +35,6 @@ extern "C" {
 
 #include "kv_io.h"
 
-/**> No relation implementation is to be used. */
-#define ION_NO_RELATION			0
-/**> The IINQ relation implementation is to be used. */
-#define ION_IINQ				1
-/**> The IonTable relation implementation is to be used. */
-#define ION_TABLE				2
-
-/**> Defines the relation implementation to use on top of IonDB. */
-#define ION_RELATION			ION_NO_RELATION
-
 #define ION_USING_MASTER_TABLE	1
 #define USING_ECLIPSE			0
 #define DEBUG					0

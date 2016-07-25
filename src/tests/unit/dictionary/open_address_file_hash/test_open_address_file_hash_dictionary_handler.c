@@ -25,7 +25,7 @@ void
 createFileTestDictionary(
 	ion_dictionary_handler_t	*map_handler,
 	const ion_record_info_t		*record,
-	int						size,
+	int							size,
 	ion_dictionary_t			*test_dictionary,
 	ion_key_type_t				key_type
 ) {
@@ -81,7 +81,7 @@ void
 test_open_address_file_hashmap_handler_create_destroy(
 	planck_unit_test_t *tc
 ) {
-	int				size;
+	int					size;
 	ion_record_info_t	record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
@@ -112,7 +112,7 @@ void
 test_open_address_file_dictionary_cursor_equality(
 	planck_unit_test_t *tc
 ) {
-	int				size;
+	int					size;
 	ion_record_info_t	record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
@@ -152,7 +152,7 @@ void
 test_open_address_file_dictionary_handler_query_with_results(
 	planck_unit_test_t *tc
 ) {
-	int				size;
+	int					size;
 	ion_record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
@@ -216,7 +216,7 @@ void
 test_open_address_file_dictionary_handler_query_no_results(
 	planck_unit_test_t *tc
 ) {
-	int				size;
+	int					size;
 	ion_record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
@@ -268,7 +268,7 @@ test_open_address_file_dictionary_predicate_equality(
 
 	key_under_test = (ion_key_t) malloc(sizeof(int));
 
-	int				size;
+	int					size;
 	ion_record_info_t	record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
@@ -325,7 +325,7 @@ test_open_address_file_dictionary_predicate_range_signed(
 
 	key_under_test = (ion_key_t) malloc(sizeof(int));
 
-	int				size;
+	int					size;
 	ion_record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
@@ -391,7 +391,7 @@ test_open_address_file_dictionary_predicate_range_unsigned(
 
 	key_under_test = (ion_key_t) malloc(sizeof(unsigned int));
 
-	int				size;
+	int					size;
 	ion_record_info_t	record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
@@ -453,7 +453,7 @@ void
 test_open_address_file_dictionary_cursor_range(
 	planck_unit_test_t *tc
 ) {
-	int				size;
+	int					size;
 	ion_record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
@@ -485,7 +485,7 @@ test_open_address_file_dictionary_cursor_range(
 	record.key		= (ion_key_t) malloc(record_info.key_size);
 	record.value	= (ion_value_t) malloc(record_info.value_size);
 
-	int				result_count = 0;
+	int					result_count = 0;
 	ion_cursor_status_t cursor_status;
 
 	while (cs_cursor_active == (cursor_status = cursor->next(cursor, &record))) {

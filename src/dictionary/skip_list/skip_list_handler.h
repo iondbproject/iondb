@@ -45,8 +45,8 @@ sldict_init(
 ion_status_t
 sldict_insert(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -72,8 +72,8 @@ sldict_insert(
 ion_status_t
 sldict_query(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -105,13 +105,13 @@ sldict_query(
 ion_err_t
 sldict_create_dictionary(
 	ion_dictionary_id_t			id,
-	ion_key_type_t					key_type,
+	ion_key_type_t				key_type,
 	int							key_size,
 	int							value_size,
 	int							dictionary_size,
 	ion_dictionary_compare_t	compare,
-	ion_dictionary_handler_t		*handler,
-	ion_dictionary_t				*dictionary
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dictionary
 );
 
 /**
@@ -127,7 +127,7 @@ sldict_create_dictionary(
 ion_status_t
 sldict_delete(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key
+	ion_key_t			key
 );
 
 /**
@@ -159,8 +159,8 @@ sldict_delete_dictionary(
 ion_status_t
 sldict_update(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -201,7 +201,7 @@ sldict_find(
 ion_cursor_status_t
 sldict_next(
 	ion_dict_cursor_t	*cursor,
-	ion_record_t	*record
+	ion_record_t		*record
 );
 
 /**
@@ -231,7 +231,7 @@ sldict_destroy_cursor(
 ion_boolean_t
 sldict_test_predicate(
 	ion_dict_cursor_t	*cursor,
-	ion_key_t		key
+	ion_key_t			key
 );
 
 #if defined(__cplusplus)

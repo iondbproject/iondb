@@ -59,11 +59,11 @@ ion_err_t
 dictionary_create(
 	ion_dictionary_handler_t	*handler,
 	ion_dictionary_t			*dictionary,
-	ion_dictionary_id_t		id,
+	ion_dictionary_id_t			id,
 	ion_key_type_t				key_type,
-	int						key_size,
-	int						value_size,
-	int						dictionary_size
+	int							key_size,
+	int							value_size,
+	int							dictionary_size
 );
 
 /**
@@ -80,8 +80,8 @@ dictionary_create(
 ion_status_t
 dictionary_insert(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -98,8 +98,8 @@ dictionary_insert(
 ion_status_t
 dictionary_get(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -113,7 +113,7 @@ dictionary_get(
 ion_status_t
 dictionary_delete(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key
+	ion_key_t			key
 );
 
 /**
@@ -129,8 +129,8 @@ dictionary_delete(
 ion_status_t
 dictionary_update(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -251,8 +251,8 @@ dictionary_compare_null_terminated_string(
 */
 ion_err_t
 dictionary_open(
-	ion_dictionary_handler_t			*handler,
-	ion_dictionary_t					*dictionary,
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary,
 	ion_dictionary_config_info_t	*config
 );
 

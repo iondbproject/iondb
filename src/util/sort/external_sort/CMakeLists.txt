@@ -4,6 +4,7 @@ project(external_sort)
 set(SOURCE_FILES
         external_sort.h
         external_sort.c
+        external_sort_types.h
         flash_min_sort.h
         flash_min_sort.c
         ../sort.h

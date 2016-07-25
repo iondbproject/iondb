@@ -22,24 +22,19 @@
 /******************************************************************************/
 
 #include "external_sort.h"
-#include "../sort.h"
 
 ion_err_t
 ion_external_sort_init(
 	ion_external_sort_t				*es,
 	FILE							*input_file,
-	void							*buffer,
 	ion_sort_comparator_context_t	context,
 	ion_sort_comparator_t			compare_function,
 	ion_key_size_t					key_size,
 	ion_value_size_t				value_size,
 	ion_page_size_t					page_size,
-	ion_buffer_size_t				buffer_size,
 	ion_file_sort_algorithm_e		sort_algorithm
 ) {
 	es->input_file			= input_file;
-	es->buffer				= buffer;
-	es->buffer_size			= buffer_size;
 	es->context				= context;
 	es->compare_function	= compare_function;
 	es->key_size			= key_size;
@@ -47,39 +42,75 @@ ion_external_sort_init(
 	es->page_size			= page_size;
 	es->sort_algorithm		= sort_algorithm;
 
-	es->output_file			= NULL;
-
 	return err_ok;
 }
 
 ion_err_t
 ion_external_sort_init_cursor(
 	ion_external_sort_t			*es,
-	ion_external_sort_cursor_t	*cursor
+	ion_external_sort_cursor_t	*cursor,
+	void						*buffer,
+	ion_buffer_size_t			buffer_size
 ) {
-	cursor->es = es;
+	cursor->es			= es;
+	es->buffer			= buffer;
+	es->buffer_size		= buffer_size;
+	cursor->output_file = NULL;
 
 	switch (es->sort_algorithm) {
 		case ION_FILE_SORT_FLASH_MINSORT: {
+			cursor->implementation_data = malloc(sizeof(ion_flash_min_sort_t));
+
+			if (NULL == cursor->implementation_data) {
+				return err_out_of_memory;
+			}
+
 			cursor->next = ion_flash_min_sort_next;
+			return ion_flash_min_sort_init(es, cursor);
+		}
+
+		default: {
+			return err_ok;
 		}
 	}
+}
 
-	return err_ok;
+void
+ion_external_sort_destroy_cursor(
+	ion_external_sort_cursor_t *cursor
+) {
+	free(cursor->implementation_data);
 }
 
 ion_err_t
 ion_external_sort_dump_all(
 	ion_external_sort_t *es,
-	FILE				*output_file
+	FILE				*output_file,
+	void				*buffer,
+	ion_buffer_size_t	buffer_size
 ) {
-	es->output_file = output_file;
-
 	ion_external_sort_cursor_t cursor;
 
-	if (err_ok != ion_external_sort_init_cursor(es, &cursor)) {
-		/* TODO: some error here */
-	}
+	cursor.es			= es;
+	cursor.output_file	= output_file;
 
-	return cursor.next(&cursor);
+	switch (es->sort_algorithm) {
+		case ION_FILE_SORT_FLASH_MINSORT: {
+			cursor.next = ion_flash_min_sort_next;
+
+			if (err_ok != ion_flash_min_sort_init(es, &cursor)) {
+				/* TODO: some error */
+			}
+
+			ion_flash_min_sort_t flash_min_sort_data;
+
+			cursor.implementation_data = &flash_min_sort_data;
+
+			return cursor.next(&cursor);
+		}
+
+		default: {
+			return err_ok;
+		}
+	}
 }

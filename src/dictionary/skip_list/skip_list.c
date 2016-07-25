@@ -13,11 +13,11 @@ ion_err_t
 sl_initialize(
 	ion_skiplist_t	*skiplist,
 	ion_key_type_t	key_type,
-	int			key_size,
-	int			value_size,
-	int			maxheight,
-	int			pnum,
-	int			pden
+	int				key_size,
+	int				value_size,
+	int				maxheight,
+	int				pnum,
+	int				pden
 ) {
 	/* TODO srand may need to be changed */
 	/* srand(time(NULL)); */
@@ -88,12 +88,12 @@ sl_destroy(
 ion_status_t
 sl_insert(
 	ion_skiplist_t	*skiplist,
-	ion_key_t	key,
-	ion_value_t value
+	ion_key_t		key,
+	ion_value_t		value
 ) {
 	/* TODO Should this be refactored to be size_t? */
-	int key_size		= skiplist->super.record.key_size;
-	int value_size		= skiplist->super.record.value_size;
+	int key_size			= skiplist->super.record.key_size;
+	int value_size			= skiplist->super.record.value_size;
 
 	ion_sl_node_t *newnode	= malloc(sizeof(ion_sl_node_t));
 
@@ -181,12 +181,12 @@ sl_insert(
 ion_status_t
 sl_query(
 	ion_skiplist_t	*skiplist,
-	ion_key_t	key,
-	ion_value_t value
+	ion_key_t		key,
+	ion_value_t		value
 ) {
 	/* TODO These should be size_t */
-	int			key_size	= skiplist->super.record.key_size;
-	int			value_size	= skiplist->super.record.value_size;
+	int				key_size	= skiplist->super.record.key_size;
+	int				value_size	= skiplist->super.record.value_size;
 	ion_sl_node_t	*cursor		= sl_find_node(skiplist, key);
 
 	if ((NULL == cursor->key) || (skiplist->super.compare(cursor->key, key, key_size) != 0)) {
@@ -201,16 +201,16 @@ sl_query(
 ion_status_t
 sl_update(
 	ion_skiplist_t	*skiplist,
-	ion_key_t	key,
-	ion_value_t value
+	ion_key_t		key,
+	ion_value_t		value
 ) {
 	ion_status_t status;
 
 	status = ION_STATUS_INITIALIZE;
 
 	/* TODO size_t */
-	int			key_size	= skiplist->super.record.key_size;
-	int			value_size	= skiplist->super.record.value_size;
+	int				key_size	= skiplist->super.record.key_size;
+	int				value_size	= skiplist->super.record.value_size;
 	ion_sl_node_t	*cursor		= sl_find_node(skiplist, key);
 
 	/* If the key doesn't exist in the skiplist... */
@@ -239,7 +239,7 @@ sl_update(
 ion_status_t
 sl_delete(
 	ion_skiplist_t	*skiplist,
-	ion_key_t	key
+	ion_key_t		key
 ) {
 	/* TODO size_t this */
 	int key_size = skiplist->super.record.key_size;
@@ -296,9 +296,9 @@ sl_delete(
 ion_sl_node_t *
 sl_find_node(
 	ion_skiplist_t	*skiplist,
-	ion_key_t	key
+	ion_key_t		key
 ) {
-	int			key_size	= skiplist->super.record.key_size;
+	int				key_size	= skiplist->super.record.key_size;
 	ion_sl_node_t	*cursor		= skiplist->head;
 	ion_sl_level_t	h;
 
@@ -337,8 +337,8 @@ print_skiplist(
 	ion_sl_node_t *cursor = skiplist->head;
 
 	while (NULL != cursor->next[0]) {
-		int			key		= *((int *) cursor->next[0]->key);
-		char		*value	= (char *) cursor->next[0]->value;
+		int				key		= *((int *) cursor->next[0]->key);
+		char			*value	= (char *) cursor->next[0]->value;
 		ion_sl_level_t	level	= cursor->next[0]->height + 1;
 
 		printf("k: %d (v: %s) [l: %d] -- ", key, value, level);

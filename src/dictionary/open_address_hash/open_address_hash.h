@@ -42,11 +42,11 @@ typedef struct hashmap ion_hashmap_t;
 */
 struct hashmap {
 	ion_dictionary_parent_t super;
-	int					map_size;		/**< The size of the map in item capacity */
+	int						map_size;	/**< The size of the map in item capacity */
 	ion_write_concern_t		write_concern;	/**< The current @p write_concern level
 											 of the hashmap*/
 
-	int					(*compute_hash)(
+	int						(*compute_hash)(
 		ion_hashmap_t *,
 		ion_key_t,
 		int
@@ -114,7 +114,7 @@ oah_destroy(
 int
 oah_get_location(
 	ion_hash_t	num,
-	int		size
+	int			size
 );
 
 /**
@@ -139,8 +139,8 @@ oah_get_location(
 ion_status_t
 oah_insert(
 	ion_hashmap_t	*hash_map,
-	ion_key_t	key,
-	ion_value_t value
+	ion_key_t		key,
+	ion_value_t		value
 );
 
 /**
@@ -160,8 +160,8 @@ oah_insert(
 ion_status_t
 oah_update(
 	ion_hashmap_t	*hash_map,
-	ion_key_t	key,
-	ion_value_t value
+	ion_key_t		key,
+	ion_value_t		value
 );
 
 /**
@@ -180,8 +180,8 @@ oah_update(
 ion_err_t
 oah_find_item_loc(
 	ion_hashmap_t	*hash_map,
-	ion_key_t	key,
-	int			*location
+	ion_key_t		key,
+	int				*location
 );
 
 /**
@@ -198,7 +198,7 @@ oah_find_item_loc(
 ion_status_t
 oah_delete(
 	ion_hashmap_t	*hash_map,
-	ion_key_t	key
+	ion_key_t		key
 );
 
 /**
@@ -219,8 +219,8 @@ oah_delete(
 ion_status_t
 oah_query(
 	ion_hashmap_t	*hash_map,
-	ion_key_t	key,
-	ion_value_t value
+	ion_key_t		key,
+	ion_value_t		value
 );
 
 /**
@@ -239,7 +239,7 @@ oah_query(
 void
 oah_print(
 	ion_hashmap_t		*hash_map,
-	int				size,
+	int					size,
 	ion_record_info_t	*record
 );
 
@@ -257,8 +257,8 @@ oah_print(
 ion_hash_t
 oah_compute_simple_hash(
 	ion_hashmap_t	*hashmap,
-	ion_key_t	key,
-	int			size_of_key
+	ion_key_t		key,
+	int				size_of_key
 );
 
 #if defined(__cplusplus)

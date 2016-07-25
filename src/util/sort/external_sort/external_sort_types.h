@@ -2,7 +2,7 @@
 /**
 @file
 @author		Wade Penson
-@brief		External sorting algorithms for values stored in files.
+@brief		Structures and other types used by the external sorting algorithms.
 @copyright	Copyright 2016
 				The University of British Columbia,
 				IonDB Project Contributors (see AUTHORS.md)
@@ -21,8 +21,8 @@
 */
 /******************************************************************************/
 
-#if !defined(ION_FILE_SORT_H_)
-#define ION_FILE_SORT_H_
+#if !defined(ION_EXTERNAL_SORT_TYPES_H_)
+#define ION_EXTERNAL_SORT_TYPES_H_
 
 #if defined(__cplusplus)
 extern "C" {
@@ -32,39 +32,37 @@ extern "C" {
 #include <stdint.h>
 #include "../sort.h"
 #include "../../../key_value/kv_system.h"
-#include "external_sort_types.h"
-#include "flash_min_sort.h"
 
-ion_err_t
-ion_external_sort_init(
-	ion_external_sort_t				*es,
-	FILE							*file,
-	ion_sort_comparator_context_t	context,
-	ion_sort_comparator_t			compare_function,
-	ion_key_size_t					key_size,
-	ion_value_size_t				value_size,
-	ion_page_size_t					page_size,
-	ion_file_sort_algorithm_e		sort_algorithm
-);
+typedef enum {
+	ION_FILE_SORT_FLASH_MINSORT
+} ion_file_sort_algorithm_e;
 
-ion_err_t
-ion_external_sort_init_cursor(
-	ion_external_sort_t			*es,
-	ion_external_sort_cursor_t	*cursor,
-	void						*buffer,
-	ion_buffer_size_t			buffer_size
-);
+typedef struct ion_external_sort_cursor_s ion_external_sort_cursor_t;
 
-ion_err_t
-ion_external_sort_dump_all(
-	ion_external_sort_t *es,
-	FILE				*output_file,
-	void				*buffer,
-	ion_buffer_size_t	buffer_size
-);
+typedef struct {
+	FILE							*input_file;
+	void							*buffer;
+	ion_buffer_size_t				buffer_size;
+	ion_sort_comparator_context_t	context;
+	ion_sort_comparator_t			compare_function;
+	ion_key_size_t					key_size;
+	ion_value_size_t				value_size;
+	ion_page_size_t					page_size;
+	ion_file_sort_algorithm_e		sort_algorithm;
+} ion_external_sort_t;
+
+struct ion_external_sort_cursor_s {
+	ion_external_sort_t *es;
+	FILE				*output_file;
+	void				*implementation_data;
+
+	ion_err_t			(*next)(
+		ion_external_sort_cursor_t *es
+	);
+};
 
 #if defined(__cplusplus)
 }
 #endif
 
-#endif /* ION_FILE_SORT_H_ */
+#endif /* ION_EXTERNAL_SORT_TYPES_H_ */
