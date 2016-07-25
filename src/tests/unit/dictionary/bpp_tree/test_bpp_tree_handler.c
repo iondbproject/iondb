@@ -6,9 +6,9 @@ run_bpptreehandler_generic_test_set_1(
 ) {
 	ion_generic_test_t test;
 
-	int					keyvals[]	= { 5, -10, -5 };
-	ion_key_t			keys[]		= { &keyvals[0], &keyvals[1], &keyvals[2] };
-	int					length		= sizeof(keys) / sizeof(ion_key_t);
+	int					keyvals[100];
+	ion_key_t			keys[100];
+	int					length = sizeof(keys) / sizeof(ion_key_t);
 	ion_result_count_t	count;
 	ion_result_count_t	counts[length];
 	int					k;
@@ -16,7 +16,9 @@ run_bpptreehandler_generic_test_set_1(
 	int i;
 
 	for (i = 0; i < length; i++) {
-		counts[i] = 0;
+		keyvals[i]	= i;
+		keys[i]		= &keyvals[i];
+		counts[i]	= 0;
 	}
 
 	init_generic_dictionary_test(&test, bpptree_init, key_type_numeric_signed, sizeof(int), sizeof(int), -1	/* Dictionary size, for now is unbounded. */

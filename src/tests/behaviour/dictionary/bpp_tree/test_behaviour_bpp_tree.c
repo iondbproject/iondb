@@ -2,7 +2,7 @@
 /**
 @file
 @author		Kris Wallperington
-@brief		Behaviour tests for the flat file implementation.
+@brief		Behaviour tests for the B+ Tree implementation.
 @copyright	Copyright 2016
 				The University of British Columbia,
 				IonDB Project Contributors (see AUTHORS.md)
@@ -23,14 +23,14 @@
 
 #include "../../../planckunit/src/planck_unit.h"
 #include "../behaviour_dictionary.h"
-#include "../../../../dictionary/flat_file/flat_file_dictionary_handler.h"
-#include "test_behaviour_flat_file.h"
+#include "../../../../dictionary/bpp_tree/bpp_tree_handler.h"
+#include "test_behaviour_bpp_tree.h"
 
 void
-runalltests_behaviour_flat_file(
+runalltests_behaviour_bpp_tree(
 	void
 ) {
-	bhdct_set_context(ffdict_init, -1, boolean_false);
+	bhdct_set_context(bpptree_init, -1, boolean_true);
 
 	planck_unit_suite_t *suite = bhdct_getsuite();
 

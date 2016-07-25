@@ -3,6 +3,9 @@
 @file
 @author		Kris Wallperington
 @brief		Entry point for dictionary level behaviour tests.
+@details	Note that the tests assume a minimum capacity of 160 simultaneous
+			records being present in the dictionary at any given time. A max
+			capacity of 200 is suggested.
 @copyright	Copyright 2016
 				The University of British Columbia,
 				IonDB Project Contributors (see AUTHORS.md)
@@ -41,13 +44,17 @@ typedef struct {
 	void (*init_fcn)(
 		ion_dictionary_handler_t *
 	);										/**< A pointer to a handler initialization function. */
+
+	ion_dictionary_size_t	dictionary_size;/**< Some configuration for the dictionary, so that we can change parameters
+												   on a per-implementation basis. */
+	ion_boolean_t			duplicate_support;	/**< Tells whether or not the implementation being tested supports duplicates. */
 } ion_bhdct_context_t;
 
 /**
 @brief	This function specifies an information context. Used by the concrete test runners
 		in order to properly designate which implementation we're specifically testing.
 */
-void bhdct_set_context(void (*)(ion_dictionary_handler_t *));
+void bhdct_set_context(void (*)(ion_dictionary_handler_t *), ion_dictionary_size_t, ion_boolean_t);
 
 /**
 @brief	Constructs the testing suite for the behaviour dictionary tests.

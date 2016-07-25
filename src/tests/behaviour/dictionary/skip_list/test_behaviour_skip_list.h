@@ -2,7 +2,7 @@
 /**
 @file
 @author		Kris Wallperington
-@brief		Behaviour tests for the flat file implementation.
+@brief		Entry point for skip list behaviour tests.
 @copyright	Copyright 2016
 				The University of British Columbia,
 				IonDB Project Contributors (see AUTHORS.md)
@@ -21,19 +21,20 @@
 */
 /******************************************************************************/
 
-#include "../../../planckunit/src/planck_unit.h"
-#include "../behaviour_dictionary.h"
-#include "../../../../dictionary/flat_file/flat_file_dictionary_handler.h"
-#include "test_behaviour_flat_file.h"
+#if !defined(TEST_BEHAVIOUR_SKIP_LIST_H)
+#define TEST_BEHAVIOUR_SKIP_LIST_H
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 void
-runalltests_behaviour_flat_file(
+runalltests_behaviour_skip_list(
 	void
-) {
-	bhdct_set_context(ffdict_init, -1, boolean_false);
+);
 
-	planck_unit_suite_t *suite = bhdct_getsuite();
-
-	planck_unit_run_suite(suite);
-	planck_unit_destroy_suite(suite);
+#if defined(__cplusplus)
 }
+#endif
+
+#endif

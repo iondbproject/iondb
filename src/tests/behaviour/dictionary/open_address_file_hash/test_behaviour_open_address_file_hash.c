@@ -2,7 +2,7 @@
 /**
 @file
 @author		Kris Wallperington
-@brief		Behaviour tests for the flat file implementation.
+@brief		Behaviour tests for the Open Address File Hash implementation.
 @copyright	Copyright 2016
 				The University of British Columbia,
 				IonDB Project Contributors (see AUTHORS.md)
@@ -23,14 +23,14 @@
 
 #include "../../../planckunit/src/planck_unit.h"
 #include "../behaviour_dictionary.h"
-#include "../../../../dictionary/flat_file/flat_file_dictionary_handler.h"
-#include "test_behaviour_flat_file.h"
+#include "../../../../dictionary/open_address_file_hash/open_address_file_hash_dictionary_handler.h"
+#include "test_behaviour_open_address_file_hash.h"
 
 void
-runalltests_behaviour_flat_file(
+runalltests_behaviour_open_address_file_hash(
 	void
 ) {
-	bhdct_set_context(ffdict_init, -1, boolean_false);
+	bhdct_set_context(oafdict_init, 200, boolean_false);
 
 	planck_unit_suite_t *suite = bhdct_getsuite();
 
