@@ -50,7 +50,7 @@ ffdict_create_dictionary(
 ) {
 	UNUSED(id);
 	UNUSED(dictionary_size);
-	dictionary->instance			= (ion_dictionary_parent_t *) malloc(sizeof(ion_ff_file_t));
+	dictionary->instance			= malloc(sizeof(ion_ff_file_t));
 
 	dictionary->instance->compare	= compare;
 
@@ -105,7 +105,7 @@ ffdict_find(
 	ion_dict_cursor_t	**cursor
 ) {
 	/* allocate memory for cursor */
-	if ((*cursor = (ion_dict_cursor_t *) malloc(sizeof(ion_ffdict_cursor_t))) == NULL) {
+	if ((*cursor = malloc(sizeof(ion_ffdict_cursor_t))) == NULL) {
 		return err_out_of_memory;
 	}
 
@@ -119,7 +119,7 @@ ffdict_find(
 	(*cursor)->next					= ffdict_next;	/* this will use the correct value */
 
 	/* allocate predicate */
-	(*cursor)->predicate			= (ion_predicate_t *) malloc(sizeof(ion_predicate_t));
+	(*cursor)->predicate			= malloc(sizeof(ion_predicate_t));
 	(*cursor)->predicate->type		= predicate->type;
 	(*cursor)->predicate->destroy	= predicate->destroy;
 
@@ -127,7 +127,7 @@ ffdict_find(
 	switch (predicate->type) {
 		case predicate_equality: {
 			/* as this is an equality, need to malloc for key as well */
-			if (((*cursor)->predicate->statement.equality.equality_value = (ion_key_t) malloc((int) (dictionary->instance->record.key_size))) == NULL) {
+			if (((*cursor)->predicate->statement.equality.equality_value = malloc((int) (dictionary->instance->record.key_size))) == NULL) {
 				free((*cursor)->predicate);
 				free(*cursor);	/* cleanup */
 				return err_out_of_memory;
@@ -160,7 +160,7 @@ ffdict_find(
 
 		case predicate_range: {
 			/* as this is a range, need to malloc lower bound key */
-			if (((*cursor)->predicate->statement.range.lower_bound = (ion_key_t) malloc((((ion_ff_file_t *) dictionary->instance)->super.record.key_size))) == NULL) {
+			if (((*cursor)->predicate->statement.range.lower_bound = malloc((((ion_ff_file_t *) dictionary->instance)->super.record.key_size))) == NULL) {
 				free((*cursor)->predicate);
 				free(*cursor);	/* cleanup */
 				return err_out_of_memory;
@@ -361,7 +361,7 @@ ffdict_scan(
 		}
 	}
 
-	if (NULL == (record = (ion_f_file_record_t *) malloc(record_size))) {
+	if (NULL == (record = malloc(record_size))) {
 		return err_out_of_memory;
 	}
 
@@ -372,7 +372,7 @@ ffdict_scan(
 			/**
 			 * Compares value == key
 			 */
-			ion_boolean_t key_satisfies_predicate = ffdict_test_predicate(&(cursor->super), (ion_key_t) record->data);	/* assumes that the key is first */
+			ion_boolean_t key_satisfies_predicate = ffdict_test_predicate(&(cursor->super), record->data);	/* assumes that the key is first */
 
 			if (key_satisfies_predicate == boolean_true) {
 				/*@todo revisit to cache result? */

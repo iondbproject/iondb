@@ -134,7 +134,7 @@ oafh_insert(
 
 	int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS);
 
-	item = (ion_hash_bucket_t *) malloc(record_size);
+	item = malloc(record_size);
 
 	/* set file position */
 	fseek(hash_map->file, loc * record_size, SEEK_SET);
@@ -228,7 +228,7 @@ oafh_find_item_loc(
 
 	int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS);
 
-	item = (ion_hash_bucket_t *) malloc(record_size);
+	item = malloc(record_size);
 
 	/* set file position */
 	fseek(hash_map->file, loc * record_size, SEEK_SET);
@@ -290,7 +290,7 @@ oafh_delete(
 
 		int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS);
 
-		item = (ion_hash_bucket_t *) malloc(record_size);
+		item = malloc(record_size);
 
 		/* set file position */
 		fseek(hash_map->file, loc * record_size, SEEK_SET);

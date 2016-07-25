@@ -401,7 +401,7 @@ search(
 	while (lb <= ub) {
 		m		= (lb + ub) / 2;
 		*mkey	= fkey(buf) + ks(m);
-		cc		= h->comp((ion_key_t) key, (ion_key_t) key(*mkey), (ion_key_size_t) (h->keySize));
+		cc		= h->comp(key, key(*mkey), (ion_key_size_t) (h->keySize));
 
 		if ((cc < 0) || ((cc == 0) && (MODE_FGEQ == mode))) {
 			/* key less than key[m] */
@@ -463,11 +463,11 @@ search(
 
 	if (MODE_LLEQ == mode) {
 		*mkey	= fkey(buf) + ks(ub + 1);
-		cc		= h->comp((ion_key_t) key, (ion_key_t) key(*mkey), (ion_key_size_t) (h->keySize));
+		cc		= h->comp(key, key(*mkey), (ion_key_size_t) (h->keySize));
 
 		if ((ub == ct(buf) - 1) || ((ub != -1) && (cc <= 0))) {
 			*mkey	= fkey(buf) + ks(ub);
-			cc		= h->comp((ion_key_t) key, (ion_key_t) key(*mkey), (ion_key_size_t) (h->keySize));
+			cc		= h->comp(key, key(*mkey), (ion_key_size_t) (h->keySize));
 		}
 
 		return cc;
@@ -475,11 +475,11 @@ search(
 
 	if (MODE_FGEQ == mode) {
 		*mkey	= fkey(buf) + ks(lb);
-		cc		= h->comp((ion_key_t) key, (ion_key_t) key(*mkey), (ion_key_size_t) (h->keySize));
+		cc		= h->comp(key, key(*mkey), (ion_key_size_t) (h->keySize));
 
 		if ((lb < ct(buf) - 1) && (cc < 0)) {
 			*mkey	= fkey(buf) + ks(lb + 1);
-			cc		= h->comp((ion_key_t) key, (ion_key_t) key(*mkey), (ion_key_size_t) (h->keySize));
+			cc		= h->comp(key, key(*mkey), (ion_key_size_t) (h->keySize));
 		}
 
 		return cc;
@@ -1167,7 +1167,7 @@ bInsertKey(
 			switch (search(handle, buf, key, rec, &mkey, MODE_MATCH)) {
 				case CC_LT:	/* key < mkey */
 
-					if (!h->dupKeys && (0 != ct(buf)) && (h->comp((ion_key_t) key, (ion_key_t) mkey, (ion_key_size_t) (h->keySize)) == CC_EQ)) {
+					if (!h->dupKeys && (0 != ct(buf)) && (h->comp(key, mkey, (ion_key_size_t) (h->keySize)) == CC_EQ)) {
 						return bErrDupKeys;
 					}
 
@@ -1179,7 +1179,7 @@ bInsertKey(
 
 				case CC_GT:	/* key > mkey */
 
-					if (!h->dupKeys && (h->comp((ion_key_t) key, (ion_key_t) mkey, (ion_key_size_t) (h->keySize)) == CC_EQ)) {
+					if (!h->dupKeys && (h->comp(key, mkey, (ion_key_size_t) (h->keySize)) == CC_EQ)) {
 						return bErrDupKeys;
 					}
 
