@@ -48,7 +48,7 @@ typedef enum {
 #define ION_EDGE_VALUE(var)		IONIZE((var) * 3, int)
 
 /* This is a private struct we use to track metadata about the dictionary. */
-ion_bhdct_context_t bhdct_context = { NULL };
+ion_bhdct_context_t bhdct_context = { 0 };
 
 /**
 @brief	This function binds the context properly. The context dictates what type of dictionary
@@ -56,9 +56,13 @@ ion_bhdct_context_t bhdct_context = { NULL };
 */
 void
 bhdct_set_context(
-	void (*init_fcn)(ion_dictionary_handler_t *)
+	void (					*init_fcn)(ion_dictionary_handler_t *),
+	ion_dictionary_size_t	dictionary_size,
+	ion_boolean_t			duplicate_support
 ) {
-	bhdct_context.init_fcn = init_fcn;
+	bhdct_context.init_fcn			= init_fcn;
+	bhdct_context.dictionary_size	= dictionary_size;
+	bhdct_context.duplicate_support = duplicate_support;
 }
 
 /**
@@ -258,7 +262,8 @@ bhdct_setup(
 ) {
 	bhdct_master_table_init(tc);
 	bhdct_context.init_fcn(handler);
-	bhdct_dictionary_initialization(tc, handler, dict, key_type_numeric_signed, sizeof(int), sizeof(int), 10);
+	/* Note most of these are fixed except the dictionary size */
+	bhdct_dictionary_initialization(tc, handler, dict, key_type_numeric_signed, sizeof(int), sizeof(int), bhdct_context.dictionary_size);
 
 	/* This switch statement intentionally doesn't have breaks - we want it to fall through. */
 	int i;

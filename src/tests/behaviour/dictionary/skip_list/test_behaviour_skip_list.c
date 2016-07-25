@@ -30,7 +30,7 @@ void
 runalltests_behaviour_skip_list(
 	void
 ) {
-	bhdct_set_context(sldict_init);
+	bhdct_set_context(sldict_init, 7, boolean_true);
 
 	planck_unit_suite_t *suite = bhdct_getsuite();
 

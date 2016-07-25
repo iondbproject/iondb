@@ -30,7 +30,7 @@ void
 runalltests_behaviour_bpp_tree(
 	void
 ) {
-	bhdct_set_context(bpptree_init);
+	bhdct_set_context(bpptree_init, -1, boolean_true);
 
 	planck_unit_suite_t *suite = bhdct_getsuite();
 

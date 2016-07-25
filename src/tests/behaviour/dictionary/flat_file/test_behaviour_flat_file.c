@@ -30,7 +30,7 @@ void
 runalltests_behaviour_flat_file(
 	void
 ) {
-	bhdct_set_context(ffdict_init);
+	bhdct_set_context(ffdict_init, -1, boolean_false);
 
 	planck_unit_suite_t *suite = bhdct_getsuite();
 
