@@ -29,12 +29,17 @@ serial_printf_c(
 	const char *format,
 	...
 ) {
-	va_list args;
-	int		bufsize = vsnprintf(NULL, 0, format, args);
-	char	buf[bufsize];
+	va_list args, countpass;
 
 	va_start(args, format);
+	va_copy(countpass, args);
+
+	int		bufsize = vsnprintf(NULL, 0, format, countpass);
+	char	buf[bufsize];
+
 	vsnprintf(buf, bufsize, format, args);
+
+	va_end(countpass);
 	va_end(args);
 	return serial_print(buf);
 }
