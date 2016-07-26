@@ -33,9 +33,9 @@ serial_printf_c(
 
 	va_start(args, format);
 
-	int bufsize = vsnprintf(NULL, 0, format, args);
 	/* +1 for the null terminator \0 at the end */
-	char buf[bufsize + 1];
+	int		bufsize = vsnprintf(NULL, 0, format, args) + 1;
+	char	buf[bufsize];
 
 	va_end(args);
 
