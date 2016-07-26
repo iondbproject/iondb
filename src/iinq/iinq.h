@@ -93,6 +93,31 @@ iinq_drop(
 	char *schema_file_name
 );
 
+/* Some helper macros. See http://jhnet.co.uk/articles/cpp_magic */
+#define SECOND(a, b, ...) b
+
+#define IS_PROBE(...) SECOND(__VA_ARGS__, 0, 0)
+#define PROBE() ~, 1
+
+#define CAT(a,b) a ## b
+
+#define NOT(x) IS_PROBE(CAT(_NOT_, x))
+#define _NOT_0 PROBE()
+
+#define BOOL(x) NOT(NOT(x))
+
+#define IF_ELSE(condition) _IF_ELSE(BOOL(condition))
+#define _IF_ELSE(condition) CAT(_IF_, condition)
+
+#define _IF_1(...) __VA_ARGS__ _IF_1_ELSE
+#define _IF_0(...)             _IF_0_ELSE
+
+#define _IF_1_ELSE(...)
+#define _IF_0_ELSE(...) __VA_ARGS__
+
+#define DEFINE_SCHEMA(source_name, struct_def) \
+struct iinq_ ## source_name ## _schema struct_def
+
 #define CREATE_DICTIONARY(schema_name, key_type, key_size, value_size) \
 iinq_create_source(#schema_name ".inq", key_type, key_size, value_size)
 
@@ -149,6 +174,10 @@ while (NULL != copyer) { \
 	} \
 	dictionary_find(&source.dictionary, &source.predicate, &source.cursor);
 
+#define _FROM_WITH_SCHEMA_SINGLE(source) \
+	struct iinq_ ## source ## _schema *source ## _tuple; \
+	source ## _tuple = source.value;
+
 #define _FROM_CHECK_CURSOR_SINGLE(source) \
 	(cs_cursor_active == (source.cursor_status = source.cursor->next(source.cursor, &source.ion_record)) || cs_cursor_initialized == source.cursor_status)
 
@@ -173,6 +202,10 @@ while (NULL != copyer) { \
 			ref_cursor	= last; \
 		}
 
+/*
+ * The last parameter, the variable arguments, is a black whole to swallow unused macro names.
+ */
+#define _FROM_SOURCE_GET_OVERRIDE(_1, _2, _3, _4, _5, _6, _7, _8, MACRO, ...) MACRO
 /* Here we define a number of FROM macros to facilitate up to 8 sources. */
 #define _FROM_SOURCE_1(_1) _FROM_SOURCE_SINGLE(_1)
 #define _FROM_SOURCE_2(_1, _2) _FROM_SOURCE_1(_1) _FROM_SOURCE_1(_2)
@@ -183,21 +216,31 @@ while (NULL != copyer) { \
 #define _FROM_SOURCE_7(_1, _2, _3, _4, _5, _6, _7) _FROM_SOURCE_6(_1, _2, _3, _4, _5, _6) _FROM_SOURCE_1(_7)
 #define _FROM_SOURCE_8(_1, _2, _3, _4, _5, _6, _7, _8) _FROM_SOURCE_7(_1, _2, _3, _4, _5, _6, _7) _FROM_SOURCE_1(_8)
 /*
- * The last parameter, the variable arguments, is a black whole to swallow unused macro names.
- */
-#define _FROM_SOURCE_GET_OVERRIDE(_1, _2, _3, _4, _5, _6, _7, _8, MACRO, ...) MACRO
-/*
  * So this one is pretty ugly.
  *
  * We "slide" the correct macro based on the number of arguments. At the end, we add a comma so that we don't get a
  * compiler warning when only passing in only ONE argument into the variable argument list.
 */
-#define _FROM_SOURCES(...) _FROM_SOURCE_GET_OVERRIDE(__VA_ARGS__, _FROM_SOURCE_8, _FROM_SOURCE_7, _FROM_SOURCE_6, _FROM_SOURCE_5, _FROM_SOURCE_4, _FROM_SOURCE_3, _FROM_SOURCE_2, _FROM_SOURCE_1, THEBLACKWHOLE)(__VA_ARGS__)
+#define _FROM_SOURCES(...) _FROM_SOURCE_GET_OVERRIDE(__VA_ARGS__, _FROM_SOURCE_8, _FROM_SOURCE_7, _FROM_SOURCE_6, _FROM_SOURCE_5, _FROM_SOURCE_4, _FROM_SOURCE_3, _FROM_SOURCE_2, _FROM_SOURCE_1, THEBLACKHOLE)(__VA_ARGS__)
+
+/* Here we define a number of FROM macros to facilitate up to 8 sources, with schemas. */
+#define _FROM_SOURCE_WITH_SCHEMA_1(_1) _FROM_SOURCE_SINGLE(_1) _FROM_WITH_SCHEMA_SINGLE(_1)
+#define _FROM_SOURCE_WITH_SCHEMA_2(_1, _2) _FROM_SOURCE_WITH_SCHEMA_1(_1) _FROM_SOURCE_WITH_SCHEMA_1(_2)
+#define _FROM_SOURCE_WITH_SCHEMA_3(_1, _2, _3) _FROM_SOURCE_WITH_SCHEMA_2(_1, _2) _FROM_SOURCE_WITH_SCHEMA_1(_3)
+#define _FROM_SOURCE_WITH_SCHEMA_4(_1, _2, _3, _4) _FROM_SOURCE_WITH_SCHEMA_3(_1, _2, _3) _FROM_SOURCE_WITH_SCHEMA_1(_4)
+#define _FROM_SOURCE_WITH_SCHEMA_5(_1, _2, _3, _4, _5) _FROM_SOURCE_WITH_SCHEMA_4(_1, _2, _3, _4) _FROM_SOURCE_WITH_SCHEMA_1(_5)
+#define _FROM_SOURCE_WITH_SCHEMA_6(_1, _2, _3, _4, _5, _6) _FROM_SOURCE_WITH_SCHEMA_5(_1, _2, _3, _4, _5) _FROM_SOURCE_WITH_SCHEMA_1(_6)
+#define _FROM_SOURCE_WITH_SCHEMA_7(_1, _2, _3, _4, _5, _6, _7) _FROM_SOURCE_WITH_SCHEMA_6(_1, _2, _3, _4, _5, _6) _FROM_SOURCE_WITH_SCHEMA_1(_7)
+#define _FROM_SOURCE_WITH_SCHEMA_8(_1, _2, _3, _4, _5, _6, _7, _8) _FROM_SOURCE_WITH_SCHEMA_7(_1, _2, _3, _4, _5, _6, _7) _FROM_SOURCE_WITH_SCHEMA_1(_8)
+/*
+ * Like it's cousin above, this one is also ugly. We again leverage the sliding macro trick.
+*/
+#define _FROM_SOURCES_WITH_SCHEMA(...) _FROM_SOURCE_GET_OVERRIDE(__VA_ARGS__, _FROM_SOURCE_WITH_SCHEMA_8, _FROM_SOURCE_WITH_SCHEMA_7, _FROM_SOURCE_WITH_SCHEMA_6, _FROM_SOURCE_WITH_SCHEMA_5, _FROM_SOURCE_WITH_SCHEMA_4, _FROM_SOURCE_WITH_SCHEMA_3, _FROM_SOURCE_WITH_SCHEMA_2, _FROM_SOURCE_WITH_SCHEMA_1, THEBLACKHOLE)(__VA_ARGS__)
 
 #define _FROM_CHECK_CURSOR(sources) \
 	_FROM_CHECK_CURSOR_SINGLE(sources)
 
-#define FROM(...) \
+#define FROM(with_schemas, ...) \
 	ion_iinq_cleanup_t	*first; \
 	ion_iinq_cleanup_t	*last; \
 	ion_iinq_cleanup_t	*ref_cursor; \
@@ -206,7 +249,9 @@ while (NULL != copyer) { \
 	last		= NULL; \
 	ref_cursor	= NULL; \
 	last_cursor	= NULL; \
-	_FROM_SOURCES(__VA_ARGS__) \
+	/*IF_ELSE((with_schema))(_FROM_SOURCES_WITH_SCHEMA(__VA_ARGS__))(_FROM_SOURCES(__VA_ARGS__));*/ \
+	/*_FROM_SOURCES(__VA_ARGS__)*/; \
+	IF_ELSE(with_schema)(_FROM_SOURCES_WITH_SCHEMA(__VA_ARGS__))(_FROM_SOURCES(__VA_ARGS__)); \
 	result.data	= alloca(result.num_bytes); \
 	ref_cursor	= first; \
 	/* Initialize all cursors except the last one. */ \
@@ -224,6 +269,31 @@ while (NULL != copyer) { \
 		/*}*/
 
 #define WHERE(condition) (condition)
+#define HAVING(condition) (condition)
+
+#define QUERY_SFW(select, from, where, limit, when, p) \
+do { \
+	ion_err_t			error; \
+	ion_iinq_result_t	result; \
+	result.num_bytes	= 0; \
+	from/* This includes a loop declaration with some other stuff. */ \
+		if (!where) { \
+			continue; \
+		} \
+		select \
+		(p)->execute(&result, (p)->state); \
+	} \
+	IINQ_QUERY_CLEANUP: \
+	while (NULL != first) { \
+		first->reference->cursor->destroy(&first->reference->cursor); \
+		ion_close_dictionary(&first->reference->dictionary); \
+		first			= first->next; \
+	} \
+} while (0);
+
+#define _GROUPBY_SINGLE(_1) apple
+#define _GROUPBY_1(_1) _GROUPBY_SINGLE(_1)
+#define GROUPBY(...)
 
 #define QUERY(select, from, where, groupby, having, orderby, limit, when, p) \
 do { \
@@ -242,7 +312,55 @@ do { \
 		first->reference->cursor->destroy(&first->reference->cursor); \
 		ion_close_dictionary(&first->reference->dictionary); \
 		first			= first->next; \
-	}\
+	} \
+} while (0);
+
+#define IINQ_AGGREGATE \
+		for (i_agg = 0; i_agg < num_agg; i_agg++) { \
+			switch (aggregates[i_agg]->type) { \
+				case IINQ_COUNT: { \
+                } break; \
+				case IINQ_MIN: { \
+                } break; \
+				case IINQ_MAX: { \
+                } break; \
+				case IINQ_AVERAGE: { \
+                } break; \
+				case IINQ_VARIANCE: { \
+                } break; \
+            } \
+        }
+
+#define MATERIALIZED_QUERY(select, aggregate_exprs, from, where, groupby, having, orderby, limit, when, p) \
+do { \
+	ion_err_t			error; \
+	FILE				*input_file; \
+	FILE				*output_file; \
+	ion_iinq_result_t	result; \
+	result.num_bytes	= 0; \
+	aggregates_exprs \
+	from/* This includes a loop declaration with some other stuff. */ \
+		if (!where) { \
+			continue; \
+		} \
+		IINQ_AGGREGATE; \
+	} \
+	/* Group by. */ \
+	/* Aggregate function loop. */ \
+	while (/* Has more records. */) { \
+    } \
+	/* Order by. */ \
+	/* Projection. */ \
+	while (/* Result has more records. */) { \
+		select \
+		(p)->execute(&result, (p)->state); \
+	} \
+	IINQ_QUERY_CLEANUP: \
+	while (NULL != first) { \
+		first->reference->cursor->destroy(&first->reference->cursor); \
+		ion_close_dictionary(&first->reference->dictionary); \
+		first			= first->next; \
+	} \
 } while (0);
 
 #if defined(__cplusplus)
