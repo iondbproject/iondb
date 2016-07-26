@@ -29,13 +29,20 @@ serial_printf_c(
 	const char *format,
 	...
 ) {
-	/* Resulting string limited to 512 characters. */
-	char	buf[512];
 	va_list args;
 
 	va_start(args, format);
-	vsnprintf(buf, 512, format, args);
+
+	/* +1 for the null terminator \0 at the end */
+	int		bufsize = vsnprintf(NULL, 0, format, args) + 1;
+	char	buf[bufsize];
+
 	va_end(args);
+
+	va_start(args, format);
+	vsnprintf(buf, bufsize, format, args);
+	va_end(args);
+
 	return serial_print(buf);
 }
 
