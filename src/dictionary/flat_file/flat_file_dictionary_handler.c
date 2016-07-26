@@ -127,14 +127,14 @@ ffdict_find(
 	switch (predicate->type) {
 		case predicate_equality: {
 			/* as this is an equality, need to malloc for key as well */
-			if (((*cursor)->predicate->statement.equality.equality_value = malloc((int) (dictionary->instance->record.key_size))) == NULL) {
+			if (((*cursor)->predicate->statement.equality.equality_value = malloc((size_t)(dictionary->instance->record.key_size))) == NULL) {
 				free((*cursor)->predicate);
 				free(*cursor);	/* cleanup */
 				return err_out_of_memory;
 			}
 
 			/* copy across the key value as the predicate may be destroyed */
-			memcpy((*cursor)->predicate->statement.equality.equality_value, predicate->statement.equality.equality_value, (int) (dictionary->instance->record.key_size));
+			memcpy((*cursor)->predicate->statement.equality.equality_value, predicate->statement.equality.equality_value, (size_t)(dictionary->instance->record.key_size));
 
 			/* find the location of the first element as this is a straight equality */
 			ion_fpos_t location = cs_invalid_index;
@@ -167,10 +167,10 @@ ffdict_find(
 			}
 
 			/* copy across the key value as the predicate may be destroyed */
-			memcpy((*cursor)->predicate->statement.range.lower_bound, predicate->statement.range.lower_bound, (int) (dictionary->instance->record.key_size));
+			memcpy((*cursor)->predicate->statement.range.lower_bound, predicate->statement.range.lower_bound, (size_t) (dictionary->instance->record.key_size));
 
 			/* as this is a range, need to malloc upper bound key */
-			if (((*cursor)->predicate->statement.range.upper_bound = malloc((int) (dictionary->instance->record.key_size))) == NULL) {
+			if (((*cursor)->predicate->statement.range.upper_bound = malloc((size_t) (dictionary->instance->record.key_size))) == NULL) {
 				free((*cursor)->predicate->statement.range.lower_bound);
 				free((*cursor)->predicate);
 				free(*cursor);	/* cleanup */
@@ -178,7 +178,7 @@ ffdict_find(
 			}
 
 			/* copy across the key value as the predicate may be destroyed */
-			memcpy((*cursor)->predicate->statement.range.upper_bound, predicate->statement.range.upper_bound, (int) (dictionary->instance->record.key_size));
+			memcpy((*cursor)->predicate->statement.range.upper_bound, predicate->statement.range.upper_bound, (size_t) (dictionary->instance->record.key_size));
 
 			ion_ffdict_cursor_t *ffdict_cursor = (ion_ffdict_cursor_t *) (*cursor);
 

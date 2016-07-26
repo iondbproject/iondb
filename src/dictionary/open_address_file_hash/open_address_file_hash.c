@@ -41,7 +41,7 @@ oafh_initialize(
 
 	int record_size = SIZEOF(STATUS) + hashmap->super.record.key_size + hashmap->super.record.value_size;
 
-	file_record			= (ion_hash_bucket_t *) calloc(record_size, 1);
+	file_record			= calloc(record_size, 1);
 	file_record->status = EMPTY;
 
 	/* write out the records to disk to prep */
