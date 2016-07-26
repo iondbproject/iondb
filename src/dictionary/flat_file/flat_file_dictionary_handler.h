@@ -32,9 +32,8 @@
 extern "C" {
 #endif
 
-#include "flat_file.h"
 #include "flat_file_types.h"
-#include "../../file/SD_stdio_c_iface.h"
+#include "flat_file.h"
 
 /**
 @brief		Given the @p handler instance, bind the appropriate flat file functions.

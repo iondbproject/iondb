@@ -29,6 +29,7 @@ extern "C" {
 #endif
 
 #include "../dictionary.h"
+#include "../../file/SD_stdio_c_iface.h"
 
 #if defined(__cplusplus)
 }
