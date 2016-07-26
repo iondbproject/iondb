@@ -1,9 +1,8 @@
 /******************************************************************************/
 /**
 @file
-@author		Scott Fazackerley
-@brief		Wraps the Arduino Serial object and provides a simple printf
-			implementation for C.
+@author		Kris Wallperington
+@brief		Behaviour tests for the skip list implementation.
 @copyright	Copyright 2016
 				The University of British Columbia,
 				IonDB Project Contributors (see AUTHORS.md)
@@ -22,52 +21,19 @@
 */
 /******************************************************************************/
 
-#include "serial_c_iface.h"
-
-int
-serial_printf_c(
-	const char *format,
-	...
-) {
-	va_list args;
-
-	va_start(args, format);
-
-	/* +1 for the null terminator \0 at the end */
-	int		bufsize = vsnprintf(NULL, 0, format, args) + 1;
-	char	buf[bufsize];
-
-	va_end(args);
-
-	va_start(args, format);
-	vsnprintf(buf, bufsize, format, args);
-	va_end(args);
-
-	return serial_print(buf);
-}
-
-int
-serial_print(
-	const char *buffer
-) {
-	int num;
-
-	num = Serial.print(buffer);
-#if DEBUG
-	Serial.flush();
-#endif
-	return num;
-}
+#include "../../../planckunit/src/planck_unit.h"
+#include "../behaviour_dictionary.h"
+#include "../../../../dictionary/skip_list/skip_list_handler.h"
+#include "test_behaviour_skip_list.h"
 
 void
-serial_init(
-	int baud_rate
+runalltests_behaviour_skip_list(
+	void
 ) {
-	Serial.begin(baud_rate);
-}
+	bhdct_set_context(sldict_init, 7, boolean_true);
 
-void
-serial_close(
-) {
-	Serial.end();
+	planck_unit_suite_t *suite = bhdct_getsuite();
+
+	planck_unit_run_suite(suite);
+	planck_unit_destroy_suite(suite);
 }

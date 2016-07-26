@@ -1,9 +1,8 @@
 /******************************************************************************/
 /**
 @file
-@author		Scott Fazackerley
-@brief		Wraps the Arduino Serial object and provides a simple printf
-			implementation for C.
+@author		Kris Wallperington
+@brief		Entry point for Open Address Hash behaviour tests.
 @copyright	Copyright 2016
 				The University of British Columbia,
 				IonDB Project Contributors (see AUTHORS.md)
@@ -22,52 +21,20 @@
 */
 /******************************************************************************/
 
-#include "serial_c_iface.h"
+#if !defined(TEST_BEHAVIOUR_OPEN_ADDRESS_HASH_H)
+#define TEST_BEHAVIOUR_OPEN_ADDRESS_HASH_H
 
-int
-serial_printf_c(
-	const char *format,
-	...
-) {
-	va_list args;
-
-	va_start(args, format);
-
-	/* +1 for the null terminator \0 at the end */
-	int		bufsize = vsnprintf(NULL, 0, format, args) + 1;
-	char	buf[bufsize];
-
-	va_end(args);
-
-	va_start(args, format);
-	vsnprintf(buf, bufsize, format, args);
-	va_end(args);
-
-	return serial_print(buf);
-}
-
-int
-serial_print(
-	const char *buffer
-) {
-	int num;
-
-	num = Serial.print(buffer);
-#if DEBUG
-	Serial.flush();
+#if defined(__cplusplus)
+extern "C" {
 #endif
-	return num;
-}
 
 void
-serial_init(
-	int baud_rate
-) {
-	Serial.begin(baud_rate);
-}
+runalltests_behaviour_open_address_hash(
+	void
+);
 
-void
-serial_close(
-) {
-	Serial.end();
+#if defined(__cplusplus)
 }
+#endif
+
+#endif
