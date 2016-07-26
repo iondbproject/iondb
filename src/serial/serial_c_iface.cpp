@@ -38,7 +38,7 @@ serial_printf_c(
 
 	va_end(args);
 
-	va_start(args);
+	va_start(args, format);
 	vsnprintf(buf, bufsize, format, args);
 	va_end(args);
 
