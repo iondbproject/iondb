@@ -3,15 +3,15 @@
  *
  *  Created on: Aug 14, 2014
  *	  Author: workstation
- */
+*/
 
 #include "flat_file.h"
 #include "../../key_value/kv_system.h"
 
 ion_err_t
 ff_initialize(
-	ion_ff_file_t			*file,
-	ion_key_type_t			key_type,
+	ion_ff_file_t		*file,
+	ion_key_type_t		key_type,
 	ion_key_size_t		key_size,
 	ion_value_size_t	value_size
 ) {
@@ -97,8 +97,8 @@ ff_destroy(
 ion_status_t
 ff_update(
 	ion_ff_file_t	*file,
-	ion_key_t	key,
-	ion_value_t value
+	ion_key_t		key,
+	ion_value_t		value
 ) {
 	/* TODO: lock potentially required */
 	ion_write_concern_t current_write_concern = file->write_concern;
@@ -114,8 +114,8 @@ ff_update(
 ion_status_t
 ff_insert(
 	ion_ff_file_t	*file,
-	ion_key_t	key,
-	ion_value_t value
+	ion_key_t		key,
+	ion_value_t		value
 ) {
 /*@todo requires massive cleanup for function exit */
 	ion_f_file_record_t *record;
@@ -216,8 +216,8 @@ ff_insert(
 ion_err_t
 ff_find_item_loc(
 	ion_ff_file_t	*file,
-	ion_key_t	key,
-	ion_fpos_t	*location
+	ion_key_t		key,
+	ion_fpos_t		*location
 ) {
 	if (*location == -1) {
 		/* then the position has not been initialized */
@@ -280,7 +280,7 @@ ff_find_item_loc(
 ion_status_t
 ff_delete(
 	ion_ff_file_t	*file,
-	ion_key_t	key
+	ion_key_t		key
 ) {
 	ion_fpos_t		loc = UNINITIALISED;		/* position to delete */
 	ion_status_t	status;					/* return status */
@@ -318,8 +318,8 @@ ff_delete(
 ion_status_t
 ff_query(
 	ion_ff_file_t	*file,
-	ion_key_t	key,
-	ion_value_t value
+	ion_key_t		key,
+	ion_value_t		value
 ) {
 	ion_fpos_t loc = -1;/* initialize */
 

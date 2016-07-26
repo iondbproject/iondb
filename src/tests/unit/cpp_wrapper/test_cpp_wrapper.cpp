@@ -512,7 +512,7 @@ test_cpp_wrapper_range_simple(
 	Cursor<int, int> *range_cursor	= dict->range(min_key, max_key);
 	PLANCK_UNIT_ASSERT_TRUE(tc, range_cursor->hasNext());
 
-	ion_cursor_status_t status			= range_cursor->next();
+	ion_cursor_status_t status		= range_cursor->next();
 
 	while (status) {
 		for (int i = 0; i < max_key + 5; i++) {
@@ -1076,11 +1076,11 @@ test_cpp_wrapper_open_close(
 	int value
 ) {
 	ion_status_t		status;
-	ion_err_t				error;
+	ion_err_t			error;
 	ion_dictionary_id_t gdict_id	= dict->dict.instance->id;
 	int					key_size	= dict->dict.instance->record.key_size;
 	int					val_size	= dict->dict.instance->record.value_size;
-	ion_key_type_t			key_type	= dict->dict.instance->key_type;
+	ion_key_type_t		key_type	= dict->dict.instance->key_type;
 	int					dict_size	= dict->dict_size;
 
 	/* Insert test record so we can check data integrity after we close/open */
@@ -1170,7 +1170,7 @@ cpp_wrapper_getsuite(
 
 /**
 @brief	  Runs all C++ Related related tests and outputs the result.
- */
+*/
 void
 runalltests_cpp_wrapper(
 ) {

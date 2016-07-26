@@ -64,13 +64,13 @@ ion_err_t
 dictionary_create(
 	ion_dictionary_handler_t	*handler,
 	ion_dictionary_t			*dictionary,
-	ion_dictionary_id_t		id,
+	ion_dictionary_id_t			id,
 	ion_key_type_t				key_type,
-	int						key_size,
-	int						value_size,
-	int						dictionary_size
+	int							key_size,
+	int							value_size,
+	int							dictionary_size
 ) {
-	ion_err_t						err;
+	ion_err_t					err;
 	ion_dictionary_compare_t	compare = dictionary_switch_compare(key_type);
 
 	err							= handler->create_dictionary(id, key_type, key_size, value_size, dictionary_size, compare, handler, dictionary);
@@ -92,8 +92,8 @@ dictionary_create(
 ion_status_t
 dictionary_insert(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	return dictionary->handler->insert(dictionary, key, value);
 }
@@ -101,8 +101,8 @@ dictionary_insert(
 ion_status_t
 dictionary_get(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	return dictionary->handler->get(dictionary, key, value);
 }
@@ -110,8 +110,8 @@ dictionary_get(
 ion_status_t
 dictionary_update(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	return dictionary->handler->update(dictionary, key, value);
 }
@@ -126,7 +126,7 @@ dictionary_delete_dictionary(
 ion_status_t
 dictionary_delete(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key
+	ion_key_t			key
 ) {
 	return dictionary->handler->remove(dictionary, key);
 }
@@ -143,7 +143,7 @@ dictionary_compare_unsigned_value(
 	/*
 	 * In this case, the endianness of the process does matter as the code does
 	 * a direct comparison of bytes in memory starting for MSB.
-	 */
+	*/
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 
 	for (idx = key_size - 1; idx >= 0; idx--) {
@@ -176,7 +176,7 @@ dictionary_compare_signed_value(
 	/*
 	 * In this case, the endianness of the process does matter as the code does
 	 * a direct comparison of bytes in memory starting for MSB.
-	 */
+	*/
 
 /* Start at the MSB */
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
@@ -233,13 +233,13 @@ dictionary_compare_null_terminated_string(
 
 ion_err_t
 dictionary_open(
-	ion_dictionary_handler_t			*handler,
-	ion_dictionary_t					*dictionary,
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary,
 	ion_dictionary_config_info_t	*config
 ) {
 	ion_dictionary_compare_t compare	= dictionary_switch_compare(config->type);
 
-	ion_err_t error							= handler->open_dictionary(handler, dictionary, config, compare);
+	ion_err_t error						= handler->open_dictionary(handler, dictionary, config, compare);
 
 	dictionary->instance->id = config->id;
 

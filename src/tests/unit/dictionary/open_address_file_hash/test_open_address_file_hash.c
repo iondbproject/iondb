@@ -3,7 +3,7 @@
 @author		Scott Ronald Fazackerley
 
 @details	Tests base operations for open address hash map
- */
+*/
 
 #include "test_open_address_file_hash.h"
 #include "../../../../key_value/kv_system.h"
@@ -17,7 +17,7 @@
 
 @param		  map
 					The hashmap to visualize.
- */
+*/
 void
 check_file_map(
 	ion_file_hashmap_t *map
@@ -54,7 +54,7 @@ check_file_map(
 
 void
 initialize_file_hash_map(
-	int				size,
+	int					size,
 	ion_record_info_t	*record,
 	ion_file_hashmap_t	*map
 ) {
@@ -79,13 +79,13 @@ initialize_file_hash_map_std_conditions(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_file_hashmap_initialize(
 	planck_unit_test_t *tc
 ) {
 	/* this is required for initializing the hash map and should come from the dictionary */
-	int				size;
+	int					size;
 	ion_record_info_t	record;
 
 	record.key_size		= sizeof(int);
@@ -113,13 +113,13 @@ test_open_address_file_hashmap_initialize(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_file_hashmap_compute_simple_hash(
 	planck_unit_test_t *tc
 ) {
 	ion_file_hashmap_t	map;		/* create handler for hashmap */
-	int				i;
+	int					i;
 
 	initialize_file_hash_map_std_conditions(&map);
 
@@ -136,7 +136,7 @@ test_open_address_file_hashmap_compute_simple_hash(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_file_hashmap_get_location(
 	planck_unit_test_t *tc
@@ -158,14 +158,14 @@ test_open_address_file_hashmap_get_location(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_file_hashmap_find_item_location(
 	planck_unit_test_t *tc
 ) {
 	ion_file_hashmap_t	map;		/* create handler for hashmap */
-	int				i;
-	int				offset;
+	int					i;
+	int					offset;
 
 	initialize_file_hash_map_std_conditions(&map);
 
@@ -239,15 +239,15 @@ test_open_address_file_hashmap_find_item_location(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_file_hashmap_simple_insert(
 	planck_unit_test_t *tc
 ) {
 	ion_file_hashmap_t	map;		/* create handler for hashmap */
-	int				i;
-	int				offset = 0;
-	ion_status_t	status;
+	int					i;
+	int					offset = 0;
+	ion_status_t		status;
 
 	initialize_file_hash_map_std_conditions(&map);
 
@@ -256,7 +256,7 @@ test_open_address_file_hashmap_simple_insert(
 	/* Manually populate records */
 	ion_record_info_t record	= map.super.record;
 
-	int bucket_size			= sizeof(char) + record.key_size + record.value_size;
+	int bucket_size				= sizeof(char) + record.key_size + record.value_size;
 
 	/* rewind */
 	frewind(map.file);
@@ -307,14 +307,14 @@ test_open_address_file_hashmap_simple_insert(
 			write_concern set to insert only
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_file_hashmap_simple_insert_and_query(
 	planck_unit_test_t *tc
 ) {
 	ion_file_hashmap_t	map;							/* create handler for hashmap */
-	int				i;
-	ion_status_t	status;
+	int					i;
+	ion_status_t		status;
 
 	initialize_file_hash_map_std_conditions(&map);
 
@@ -359,14 +359,14 @@ test_open_address_file_hashmap_simple_insert_and_query(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_file_hashmap_simple_delete(
 	planck_unit_test_t *tc
 ) {
 	ion_file_hashmap_t	map;							/* create handler for hashmap */
-	int				i, j;
-	ion_status_t	status;
+	int					i, j;
+	ion_status_t		status;
 
 	initialize_file_hash_map_std_conditions(&map);
 
@@ -429,14 +429,14 @@ test_open_address_file_hashmap_simple_delete(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_file_hashmap_duplicate_insert_1(
 	planck_unit_test_t *tc
 ) {
 	ion_file_hashmap_t	map;							/* create handler for hashmap */
-	int				i;
-	ion_status_t	status;
+	int					i;
+	ion_status_t		status;
 
 	initialize_file_hash_map_std_conditions(&map);
 
@@ -478,14 +478,14 @@ test_open_address_file_hashmap_duplicate_insert_1(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_file_hashmap_duplicate_insert_2(
 	planck_unit_test_t *tc
 ) {
 	ion_file_hashmap_t	map;							/* create handler for hashmap */
-	int				i;
-	ion_status_t	status;
+	int					i;
+	ion_status_t		status;
 
 	initialize_file_hash_map_std_conditions(&map);
 
@@ -569,14 +569,14 @@ test_open_address_file_hashmap_duplicate_insert_2(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_file_hashmap_update_1(
 	planck_unit_test_t *tc
 ) {
 	ion_file_hashmap_t	map;							/* create handler for hashmap */
-	int				i;
-	ion_status_t	status;
+	int					i;
+	ion_status_t		status;
 
 	initialize_file_hash_map_std_conditions(&map);
 
@@ -661,14 +661,14 @@ test_open_address_file_hashmap_update_1(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_file_hashmap_update_2(
 	planck_unit_test_t *tc
 ) {
 	ion_file_hashmap_t	map;							/* create handler for hashmap */
-	int				i;
-	ion_status_t	status;
+	int					i;
+	ion_status_t		status;
 
 	initialize_file_hash_map_std_conditions(&map);
 
@@ -749,14 +749,14 @@ test_open_address_file_hashmap_update_2(
 
 @param	  tc
 				CuTeest
- */
+*/
 void
 test_open_address_file_hashmap_delete_1(
 	planck_unit_test_t *tc
 ) {
 	ion_file_hashmap_t	map;							/* create handler for hashmap */
-	int				i = 2;
-	ion_status_t	status;
+	int					i = 2;
+	ion_status_t		status;
 
 	initialize_file_hash_map_std_conditions(&map);
 
@@ -802,14 +802,14 @@ test_open_address_file_hashmap_delete_1(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_file_hashmap_delete_2(
 	planck_unit_test_t *tc
 ) {
 	ion_file_hashmap_t	map;							/* create handler for hashmap */
-	int				i, j;
-	ion_status_t	status;
+	int					i, j;
+	ion_status_t		status;
 
 	initialize_file_hash_map_std_conditions(&map);
 
@@ -911,14 +911,14 @@ test_open_address_file_hashmap_delete_2(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_file_hashmap_capacity(
 	planck_unit_test_t *tc
 ) {
 	ion_file_hashmap_t	map;							/* create handler for hashmap */
-	int				i;
-	ion_status_t	status;
+	int					i;
+	ion_status_t		status;
 
 	initialize_file_hash_map_std_conditions(&map);
 

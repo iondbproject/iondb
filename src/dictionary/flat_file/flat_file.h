@@ -3,7 +3,7 @@
  *
  *  Created on: Aug 14, 2014
  *	  Author: workstation
- */
+*/
 
 #if !defined(FLAT_FILE_H_)
 #define FLAT_FILE_H_
@@ -17,7 +17,7 @@ extern "C" {
 
 #include "../dictionary_types.h"
 #include "./../dictionary.h"
-#include "file_handler.h"
+#include "flat_file_types.h"
 
 #include "../../key_value/kv_system.h"
 #include "../../key_value/kv_io.h"
@@ -32,10 +32,10 @@ typedef long int ion_fpos_t;/**< Flatfile file position type */
 */
 typedef struct ff_file {
 	ion_dictionary_parent_t super;
-	FILE				*file_ptr;		/**< Pointer to file store */
-	ion_fpos_t			start_of_data;		/**< indicates start of data block */
+	FILE					*file_ptr;	/**< Pointer to file store */
+	ion_fpos_t				start_of_data;	/**< indicates start of data block */
 	ion_write_concern_t		write_concern;		/**< The current @p write_concern level
-											 of the file*/
+												of the file*/
 } ion_ff_file_t;
 
 /**
@@ -53,11 +53,11 @@ typedef struct ff_file {
 @param		value_size
 				The size of the value in bytes.
 @return		The status describing the result of the initialization.
- */
+*/
 ion_err_t
 ff_initialize(
-	ion_ff_file_t			*file,
-	ion_key_type_t			key_type,
+	ion_ff_file_t		*file,
+	ion_key_type_t		key_type,
 	ion_key_size_t		key_size,
 	ion_value_size_t	value_size
 );
@@ -99,8 +99,8 @@ ff_destroy(
 ion_status_t
 ff_insert(
 	ion_ff_file_t	*file,
-	ion_key_t	key,
-	ion_value_t value
+	ion_key_t		key,
+	ion_value_t		value
 );
 
 /**
@@ -122,8 +122,8 @@ FIXME THIS DOCUMENTATION IS ALL WRONG!
 ion_status_t
 ff_update(
 	ion_ff_file_t	*file,
-	ion_key_t	key,
-	ion_value_t value
+	ion_key_t		key,
+	ion_value_t		value
 );
 
 /**
@@ -138,12 +138,12 @@ ff_update(
 @param		location
 				Pointer to the location variable
 @return		The status of the find
- */
+*/
 ion_err_t
 ff_find_item_loc(
 	ion_ff_file_t	*file,
-	ion_key_t	key,
-	ion_fpos_t	*location
+	ion_key_t		key,
+	ion_fpos_t		*location
 );
 
 /**
@@ -160,7 +160,7 @@ ff_find_item_loc(
 ion_status_t
 ff_delete(
 	ion_ff_file_t	*file,
-	ion_key_t	key
+	ion_key_t		key
 );
 
 /**
@@ -181,8 +181,8 @@ ff_delete(
 ion_status_t
 ff_query(
 	ion_ff_file_t	*file,
-	ion_key_t	key,
-	ion_value_t value
+	ion_key_t		key,
+	ion_value_t		value
 );
 
 #if defined(__cplusplus)

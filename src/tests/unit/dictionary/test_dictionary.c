@@ -3,7 +3,7 @@
  *
  *  Created on: Jul 15, 2014
  *	  Author: workstation
- */
+*/
 
 #include "test_dictionary.h"
 

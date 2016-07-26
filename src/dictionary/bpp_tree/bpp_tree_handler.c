@@ -3,7 +3,7 @@
 @file
 @author		Graeme Douglas
 @brief		The handler for a disk-backed B+ Tree.
- */
+*/
 /******************************************************************************/
 
 #include "bpp_tree_handler.h"

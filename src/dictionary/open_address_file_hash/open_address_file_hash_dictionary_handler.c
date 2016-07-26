@@ -3,7 +3,7 @@
  @file
  @author		Scott Ronald Fazackerley
  @brief		The handler for a hash table using linear probing.
- */
+*/
 /******************************************************************************/
 
 #include "open_address_file_hash_dictionary_handler.h"
@@ -25,8 +25,8 @@ oafdict_init(
 ion_status_t
 oafdict_insert(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	return oafh_insert((ion_file_hashmap_t *) dictionary->instance, key, value);
 }
@@ -34,8 +34,8 @@ oafdict_insert(
 ion_status_t
 oafdict_query(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	return oafh_query((ion_file_hashmap_t *) dictionary->instance, key, value);
 }
@@ -43,13 +43,13 @@ oafdict_query(
 ion_err_t
 oafdict_create_dictionary(
 	ion_dictionary_id_t			id,
-	ion_key_type_t					key_type,
+	ion_key_type_t				key_type,
 	int							key_size,
 	int							value_size,
 	int							dictionary_size,
 	ion_dictionary_compare_t	compare,
-	ion_dictionary_handler_t		*handler,
-	ion_dictionary_t				*dictionary
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dictionary
 ) {
 	UNUSED(id);
 	/* this is the instance of the hashmap */
@@ -62,7 +62,7 @@ oafdict_create_dictionary(
 
 	/*TODO The correct comparison operator needs to be bound at run time
 	 * based on the type of key defined
-	 */
+	*/
 
 	/* register the correct handler */
 	dictionary->handler = handler;	/* todo: need to check to make sure that the handler is registered */
@@ -73,7 +73,7 @@ oafdict_create_dictionary(
 ion_status_t
 oafdict_delete(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key
+	ion_key_t			key
 ) {
 	return oafh_delete((ion_file_hashmap_t *) dictionary->instance, key);
 }
@@ -92,8 +92,8 @@ oafdict_delete_dictionary(
 ion_status_t
 oafdict_update(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	return oafh_update((ion_file_hashmap_t *) dictionary->instance, key, value);
 }
@@ -218,7 +218,7 @@ oafdict_find(
 ion_cursor_status_t
 oafdict_next(
 	ion_dict_cursor_t	*cursor,
-	ion_record_t	*record
+	ion_record_t		*record
 ) {
 	/* @todo if the dictionary instance changes, then the status of the cursor needs to change */
 	ion_oafdict_cursor_t *oafdict_cursor = (ion_oafdict_cursor_t *) cursor;
@@ -263,7 +263,7 @@ oafdict_next(
 			+ SIZEOF(STATUS), SEEK_SET);
 
 /*@todo this needs to be addressed in terms of return type
- */
+*/
 		fread(record->key, hash_map->super.record.key_size, 1, hash_map->file);
 		fread(record->value, hash_map->super.record.value_size, 1, hash_map->file);
 
@@ -278,8 +278,8 @@ oafdict_next(
 ion_boolean_t
 oafdict_is_equal(
 	ion_dictionary_t	*dict,
-	ion_key_t		key1,
-	ion_key_t		key2
+	ion_key_t			key1,
+	ion_key_t			key2
 ) {
 	if (memcmp(key1, key2, (((ion_file_hashmap_t *) dict->instance)->super.record.key_size)) == IS_EQUAL) {
 		return boolean_true;
@@ -301,14 +301,14 @@ oafdict_destroy_cursor(
 ion_boolean_t
 oafdict_test_predicate(
 	ion_dict_cursor_t	*cursor,
-	ion_key_t		key
+	ion_key_t			key
 ) {
 	/* TODO need to check key match; what's the most efficient way? */
 
 	/**
 	 * Compares value == key
-	 */
-	int				key_satisfies_predicate;
+	*/
+	int					key_satisfies_predicate;
 	ion_file_hashmap_t	*hash_map = (ion_file_hashmap_t *) (cursor->dictionary->instance);
 
 	/* pre-prime value for faster exit */
@@ -351,7 +351,7 @@ oafdict_scan(
 	/* need to scan hashmap fully looking for values that satisfy - need to think about */
 	ion_file_hashmap_t *hash_map	= (ion_file_hashmap_t *) (cursor->super.dictionary->instance);
 
-	int loc						= (cursor->current + 1) % hash_map->map_size;
+	int loc							= (cursor->current + 1) % hash_map->map_size;
 	/* this is the current position of the cursor */
 	/* and start scanning 1 ahead */
 

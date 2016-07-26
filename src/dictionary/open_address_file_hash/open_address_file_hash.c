@@ -10,7 +10,7 @@
 @todo   When creating the hash-map, need to know something about what is going in it.
 		What we need to know if the the size of the key and the size of the data.
 		That is all.  Nothing else.
- */
+*/
 /******************************************************************************/
 
 #include "open_address_file_hash.h"
@@ -74,7 +74,7 @@ oafh_initialize(
 int
 oafh_get_location(
 	ion_hash_t	num,
-	int		size
+	int			size
 ) {
 	return num % size;
 }
@@ -103,8 +103,8 @@ oafh_destroy(
 ion_status_t
 oafh_update(
 	ion_file_hashmap_t	*hash_map,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	/* TODO: lock potentially required */
 	ion_write_concern_t current_write_concern = hash_map->write_concern;
@@ -120,15 +120,15 @@ oafh_update(
 ion_status_t
 oafh_insert(
 	ion_file_hashmap_t	*hash_map,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	ion_hash_t hash = hash_map->compute_hash(hash_map, key, hash_map->super.record.key_size);	/* compute hash value for given key */
 
-	int loc		= oafh_get_location(hash, hash_map->map_size);
+	int loc			= oafh_get_location(hash, hash_map->map_size);
 
 	/* Scan until find an empty location - oah_insert if found */
-	int count	= 0;
+	int count		= 0;
 
 	ion_hash_bucket_t *item;
 
@@ -213,16 +213,16 @@ oafh_insert(
 ion_err_t
 oafh_find_item_loc(
 	ion_file_hashmap_t	*hash_map,
-	ion_key_t		key,
-	int				*location
+	ion_key_t			key,
+	int					*location
 ) {
 	ion_hash_t hash = hash_map->compute_hash(hash_map, key, hash_map->super.record.key_size);
 	/* compute hash value for given key */
 
-	int loc		= oafh_get_location(hash, hash_map->map_size);
+	int loc			= oafh_get_location(hash, hash_map->map_size);
 	/* determine bucket based on hash */
 
-	int count	= 0;
+	int count		= 0;
 
 	ion_hash_bucket_t *item;
 
@@ -274,7 +274,7 @@ oafh_find_item_loc(
 ion_status_t
 oafh_delete(
 	ion_file_hashmap_t	*hash_map,
-	ion_key_t		key
+	ion_key_t			key
 ) {
 	int loc;
 
@@ -316,8 +316,8 @@ oafh_delete(
 ion_status_t
 oafh_query(
 	ion_file_hashmap_t	*hash_map,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	int loc;
 
@@ -349,8 +349,8 @@ oafh_query(
 ion_hash_t
 oafh_compute_simple_hash(
 	ion_file_hashmap_t	*hashmap,
-	ion_key_t		key,
-	int				size_of_key
+	ion_key_t			key,
+	int					size_of_key
 ) {
 	UNUSED(size_of_key);
 
