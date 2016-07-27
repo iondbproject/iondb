@@ -65,7 +65,7 @@ typedef unsigned char byte;
 #endif
 /* ===================================================================================== */
 
-#define IONIZE(something, type)		(ion_key_t) &(type) { (something) }
+#define IONIZE(something, type)		&(type) { (something) }
 #define NEUTRALIZE(something, type) (*((type *) (something)))
 #define IONIZE_VAL(varname, size)	ion_byte_t varname[size]
 

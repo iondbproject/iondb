@@ -12,6 +12,7 @@ if(USE_ARDUINO)
 	set(${PROJECT_NAME}_BOARD       ${BOARD})
 	set(${PROJECT_NAME}_PROCESSOR   ${PROCESSOR})
 	set(${PROJECT_NAME}_MANUAL      ${MANUAL})
+	set(${PROJECT_NAME}_SRCS		${SOURCE_FILES})
 	set(${PROJECT_NAME}_LIBS        planck_unit bpp_tree skip_list flat_file open_address_hash open_address_file_hash)
 
 	generate_arduino_library(${PROJECT_NAME})

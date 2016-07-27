@@ -126,7 +126,7 @@ ff_insert(
 	printf("inserting record of size %i \n", record_size);
 #endif
 
-	if ((record = (ion_f_file_record_t *) malloc(record_size)) == NULL) {
+	if ((record = malloc(record_size)) == NULL) {
 		return ION_STATUS_ERROR(err_out_of_memory);
 	}
 
@@ -175,7 +175,7 @@ ff_insert(
 #endif
 
 			/*if (memcmp(item->data, key, hash_map->record.key_size) == IS_EQUAL)*/
-			if (IS_EQUAL == file->super.compare((ion_key_t) record->data, key, file->super.record.key_size)) {
+			if (IS_EQUAL == file->super.compare(record->data, key, file->super.record.key_size)) {
 				if (wc_insert_unique == file->write_concern) {
 					/* allow unique entries only */
 					free(record);
@@ -235,7 +235,7 @@ ff_find_item_loc(
 
 	ion_f_file_record_t *record;
 
-	if ((record = (ion_f_file_record_t *) malloc(record_size)) == NULL) {
+	if ((record = malloc(record_size)) == NULL) {
 		return err_out_of_memory;
 	}
 
@@ -263,7 +263,7 @@ ff_find_item_loc(
 
 		if (!feof(file->file_ptr) && (DELETED != record->status)) {
 			/*@todo correct compare to use proper return type*/
-			int key_is_equal = file->super.compare((ion_key_t) record->data, key, file->super.record.key_size);
+			int key_is_equal = file->super.compare(record->data, key, file->super.record.key_size);
 
 			if (IS_EQUAL == key_is_equal) {
 				*location = cur_pos;
