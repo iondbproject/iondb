@@ -1,3 +1,4 @@
+/* *INDENT-OFF* */
 #if !defined(IINQ_H_)
 #define IINQ_H_
 
@@ -317,10 +318,13 @@ do { \
 
 #define IINQ_AGGREGATE \
 		for (i_agg = 0; i_agg < num_agg; i_agg++) { \
-			switch (aggregates[i_agg]->type) { \
+			switch (aggregates[i_agg].type) { \
 				case IINQ_COUNT: { \
+					aggregates[i_agg].value.integer += 1; \
                 } break; \
 				case IINQ_MIN: { \
+					if (aggregates[i_agg]) { \
+                    } \
                 } break; \
 				case IINQ_MAX: { \
                 } break; \
@@ -328,6 +332,8 @@ do { \
                 } break; \
 				case IINQ_VARIANCE: { \
                 } break; \
+				default: \
+					goto IINQ_QUERY_CLEANUP; \
             } \
         }
 
@@ -368,3 +374,4 @@ do { \
 #endif
 
 #endif
+/* *INDENT-ON* */
