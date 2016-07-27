@@ -8,6 +8,24 @@
 
 #include "open_address_file_hash_dictionary_handler.h"
 #include "../../key_value/kv_system.h"
+#include "open_address_file_hash.h"
+#include "../../file/ion_file.h"
+
+void
+oafdict_get_addr_filename(
+	ion_dictionary_id_t id,
+	char				*str
+) {
+	sprintf(str, "%d.oaf", id);
+}
+
+void
+oafdict_get_value_filename(
+	ion_dictionary_id_t id,
+	char				*str
+) {
+	sprintf(str, "%d.val", id);
+}
 
 void
 oafdict_init(
@@ -20,13 +38,15 @@ oafdict_init(
 	handler->find				= oafdict_find;
 	handler->remove				= oafdict_delete;
 	handler->delete_dictionary	= oafdict_delete_dictionary;
+	handler->open_dictionary	= oafdict_open_dictionary;
+	handler->close_dictionary	= oafdict_close_dictionary;
 }
 
 ion_status_t
 oafdict_insert(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	return oafh_insert((ion_file_hashmap_t *) dictionary->instance, key, value);
 }
@@ -34,8 +54,8 @@ oafdict_insert(
 ion_status_t
 oafdict_query(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	return oafh_query((ion_file_hashmap_t *) dictionary->instance, key, value);
 }
@@ -43,13 +63,13 @@ oafdict_query(
 ion_err_t
 oafdict_create_dictionary(
 	ion_dictionary_id_t			id,
-	ion_key_type_t					key_type,
+	ion_key_type_t				key_type,
 	int							key_size,
 	int							value_size,
 	int							dictionary_size,
 	ion_dictionary_compare_t	compare,
-	ion_dictionary_handler_t		*handler,
-	ion_dictionary_t				*dictionary
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dictionary
 ) {
 	UNUSED(id);
 	/* this is the instance of the hashmap */
@@ -58,7 +78,7 @@ oafdict_create_dictionary(
 	dictionary->instance->compare	= compare;
 
 	/* this registers the dictionary the dictionary */
-	oafh_initialize((ion_file_hashmap_t *) dictionary->instance, oafh_compute_simple_hash, key_type, key_size, value_size, dictionary_size);/* just pick an arbitary size for testing atm */
+	oafh_initialize((ion_file_hashmap_t *) dictionary->instance, oafh_compute_simple_hash, key_type, key_size, value_size, dictionary_size, id);/* just pick an arbitary size for testing atm */
 
 	/*TODO The correct comparison operator needs to be bound at run time
 	 * based on the type of key defined
@@ -73,7 +93,7 @@ oafdict_create_dictionary(
 ion_status_t
 oafdict_delete(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key
+	ion_key_t			key
 ) {
 	return oafh_delete((ion_file_hashmap_t *) dictionary->instance, key);
 }
@@ -92,8 +112,8 @@ oafdict_delete_dictionary(
 ion_status_t
 oafdict_update(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	return oafh_update((ion_file_hashmap_t *) dictionary->instance, key, value);
 }
@@ -218,7 +238,7 @@ oafdict_find(
 ion_cursor_status_t
 oafdict_next(
 	ion_dict_cursor_t	*cursor,
-	ion_record_t	*record
+	ion_record_t		*record
 ) {
 	/* @todo if the dictionary instance changes, then the status of the cursor needs to change */
 	ion_oafdict_cursor_t *oafdict_cursor = (ion_oafdict_cursor_t *) cursor;
@@ -278,8 +298,8 @@ oafdict_next(
 ion_boolean_t
 oafdict_is_equal(
 	ion_dictionary_t	*dict,
-	ion_key_t		key1,
-	ion_key_t		key2
+	ion_key_t			key1,
+	ion_key_t			key2
 ) {
 	if (memcmp(key1, key2, (((ion_file_hashmap_t *) dict->instance)->super.record.key_size)) == IS_EQUAL) {
 		return boolean_true;
@@ -301,14 +321,14 @@ oafdict_destroy_cursor(
 ion_boolean_t
 oafdict_test_predicate(
 	ion_dict_cursor_t	*cursor,
-	ion_key_t		key
+	ion_key_t			key
 ) {
 	/* TODO need to check key match; what's the most efficient way? */
 
 	/**
 	 * Compares value == key
 	 */
-	int				key_satisfies_predicate;
+	int					key_satisfies_predicate;
 	ion_file_hashmap_t	*hash_map = (ion_file_hashmap_t *) (cursor->dictionary->instance);
 
 	/* pre-prime value for faster exit */
@@ -351,7 +371,7 @@ oafdict_scan(
 	/* need to scan hashmap fully looking for values that satisfy - need to think about */
 	ion_file_hashmap_t *hash_map	= (ion_file_hashmap_t *) (cursor->super.dictionary->instance);
 
-	int loc						= (cursor->current + 1) % hash_map->map_size;
+	int loc							= (cursor->current + 1) % hash_map->map_size;
 	/* this is the current position of the cursor */
 	/* and start scanning 1 ahead */
 
@@ -398,4 +418,44 @@ oafdict_scan(
 	/* if you end up here, you've wrapped the entire data structure and not found a value */
 	free(item);
 	return cs_end_of_results;
+}
+
+ion_err_t
+oafdict_open_dictionary(
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary,
+	ion_dictionary_config_info_t	*config,
+	ion_dictionary_compare_t		compare
+) {
+	ion_err_t error;
+
+	error = oafdict_create_dictionary(config->id, config->type, config->key_size, config->value_size, config->dictionary_size, compare, handler, dictionary);
+
+	if (err_ok != error) {
+		return error;
+	}
+
+	return err_ok;
+}
+
+ion_err_t
+oafdict_close_dictionary(
+	ion_dictionary_t *dictionary
+) {
+	ion_file_hashmap_t	*hash_map;
+	ion_err_t			err;
+
+	hash_map	= (ion_file_hashmap_t *) dictionary->instance;
+	err			= oafh_close(hash_map);
+
+	/* The following line creates an allocation error. Will not including it create a memory leak? */
+/*	free(dictionary->instance); */
+
+	dictionary->instance = NULL;
+
+	if (err_ok != err) {
+		return err_dictionary_destruction_error;
+	}
+
+	return err_ok;
 }

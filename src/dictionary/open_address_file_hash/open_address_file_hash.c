@@ -14,33 +14,25 @@
 /******************************************************************************/
 
 #include "open_address_file_hash.h"
+#include "open_address_file_hash_dictionary_handler.c"
 #include "../../file/ion_file.h"
+#include "../dictionary_types.h"
 
 #define TEST_FILE "file.bin"
 
 ion_err_t
-bClose(
-	ion_file_hashmap_t *hashmap
+oafh_close(
+	ion_file_hashmap_t *hash_map
 ) {
-	if (hashmap == NULL) {
+	if (NULL != hash_map->file) {
+		/* check to ensure that you are not freeing something already free */
+		fclose(hash_map->file);
+		free(hash_map);
 		return err_ok;
 	}
-
-	/* flush idx */
-/*TODO: Cleanup **/
-#if defined(ARDUINO)
-
-	if (hashmap->file.file) {
-#else
-
-	if (hashmap->file) {
-#endif
-		flushAll(hashmap);
-		ion_fclose(hashmap->file);
+	else {
+		return err_file_close_error;
 	}
-
-	free(hashmap);
-	return err_ok;
 }
 
 ion_err_t
@@ -50,7 +42,8 @@ oafh_initialize(
 	ion_key_type_t key_type,
 	ion_key_size_t key_size,
 	ion_value_size_t value_size,
-	int size
+	int size,
+	ion_dictionary_id_t id
 ) {
 	hashmap->write_concern				= wc_insert_unique;			/* By default allow unique inserts only */
 	hashmap->super.record.key_size		= key_size;
@@ -60,8 +53,26 @@ oafh_initialize(
 	/* The hash map is allocated as a single contiguous file*/
 	hashmap->map_size					= size;
 
+	hashmap->compute_hash				= (*hashing_function);	/* Allows for binding of different hash functions
+																depending on requirements */
+
+	char addr_filename[20];
+
 	/* open the file */
-	hashmap->file						= fopen(TEST_FILE, "w+b");
+	oafdict_get_addr_filename(id, addr_filename);
+
+	if (ion_fexists(addr_filename)) {
+		hashmap->file	= fopen(addr_filename, "r+b");
+
+#if defined(ARDUINO)
+		hashmap->file	= ion_fopen(addr_filename)).file
+#endif
+
+		return err_ok;
+	}
+
+	/* open the file */
+	hashmap->file = fopen(addr_filename, "w+b");
 
 	ion_hash_bucket_t *file_record;
 
@@ -89,9 +100,6 @@ oafh_initialize(
 		return err_file_write_error;
 	}
 
-	hashmap->compute_hash = (*hashing_function);/* Allows for binding of different hash functions
-																depending on requirements */
-
 	free(file_record);
 
 	return err_ok;
@@ -100,7 +108,7 @@ oafh_initialize(
 int
 oafh_get_location(
 	ion_hash_t	num,
-	int		size
+	int			size
 ) {
 	return num % size;
 }
@@ -114,10 +122,14 @@ oafh_destroy(
 	hash_map->super.record.key_size		= 0;
 	hash_map->super.record.value_size	= 0;
 
+	char addr_filename[20];
+
+	oafdict_get_addr_filename(hash_map->super.id, addr_filename);
+
 	if (hash_map->file != NULL) {
 		/* check to ensure that you are not freeing something already free */
 		fclose(hash_map->file);
-		fremove(TEST_FILE);
+		fremove(addr_filename);
 		hash_map->file = NULL;
 		return err_ok;
 	}
@@ -129,8 +141,8 @@ oafh_destroy(
 ion_status_t
 oafh_update(
 	ion_file_hashmap_t	*hash_map,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	/* TODO: lock potentially required */
 	ion_write_concern_t current_write_concern = hash_map->write_concern;
@@ -146,15 +158,15 @@ oafh_update(
 ion_status_t
 oafh_insert(
 	ion_file_hashmap_t	*hash_map,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	ion_hash_t hash = hash_map->compute_hash(hash_map, key, hash_map->super.record.key_size);	/* compute hash value for given key */
 
-	int loc		= oafh_get_location(hash, hash_map->map_size);
+	int loc			= oafh_get_location(hash, hash_map->map_size);
 
 	/* Scan until find an empty location - oah_insert if found */
-	int count	= 0;
+	int count		= 0;
 
 	ion_hash_bucket_t *item;
 
@@ -239,16 +251,16 @@ oafh_insert(
 ion_err_t
 oafh_find_item_loc(
 	ion_file_hashmap_t	*hash_map,
-	ion_key_t		key,
-	int				*location
+	ion_key_t			key,
+	int					*location
 ) {
 	ion_hash_t hash = hash_map->compute_hash(hash_map, key, hash_map->super.record.key_size);
 	/* compute hash value for given key */
 
-	int loc		= oafh_get_location(hash, hash_map->map_size);
+	int loc			= oafh_get_location(hash, hash_map->map_size);
 	/* determine bucket based on hash */
 
-	int count	= 0;
+	int count		= 0;
 
 	ion_hash_bucket_t *item;
 
@@ -300,7 +312,7 @@ oafh_find_item_loc(
 ion_status_t
 oafh_delete(
 	ion_file_hashmap_t	*hash_map,
-	ion_key_t		key
+	ion_key_t			key
 ) {
 	int loc;
 
@@ -342,8 +354,8 @@ oafh_delete(
 ion_status_t
 oafh_query(
 	ion_file_hashmap_t	*hash_map,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	int loc;
 
@@ -375,8 +387,8 @@ oafh_query(
 ion_hash_t
 oafh_compute_simple_hash(
 	ion_file_hashmap_t	*hashmap,
-	ion_key_t		key,
-	int				size_of_key
+	ion_key_t			key,
+	int					size_of_key
 ) {
 	UNUSED(size_of_key);
 
@@ -384,34 +396,4 @@ oafh_compute_simple_hash(
 	ion_hash_t hash = (ion_hash_t) (((*(int *) key) % hashmap->map_size) + hashmap->map_size) % hashmap->map_size;
 
 	return hash;
-}
-
-static err_t
-flushAll(
-	file_hashmap_t *hashmap
-) {
-	err_t	rc;				/* return code */
-	char	*buf;				/* buffer */
-
-	hashmap->file->_bf;
-
-	if (h->root.modified) {
-		if ((rc = flush(handle, &h->root)) != 0) {
-			return rc;
-		}
-	}
-
-	buf = h->bufList.next;
-
-	while (buf != &h->bufList) {
-		if (buf->modified) {
-			if ((rc = flush(handle, buf)) != 0) {
-				return rc;
-			}
-		}
-
-		buf = buf->next;
-	}
-
-	return err_ok;
 }
