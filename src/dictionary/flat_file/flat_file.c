@@ -115,3 +115,15 @@ flat_file_destroy(
 
 	return err_ok;
 }
+
+ion_status_t
+flat_file_insert(
+	ion_flat_file_t *flat_file,
+	ion_key_t		key,
+	ion_value_t		value
+) {
+	/* TODO: Need to factor in empty spots (overwrite them), sorted order insert, and reading buffer size rows at a time */
+	struct row_record {};
+
+	while (boolean_false) {}
+}

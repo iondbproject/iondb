@@ -43,7 +43,7 @@ ffdict_insert(
 	ion_key_t			key,
 	ion_value_t			value
 ) {
-	return ION_STATUS_CREATE(err_not_implemented, 0);
+	return flat_file_insert((ion_flat_file_t *) dictionary->instance, key, value);
 }
 
 ion_status_t

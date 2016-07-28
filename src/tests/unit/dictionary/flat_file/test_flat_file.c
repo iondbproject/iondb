@@ -22,6 +22,7 @@
 /******************************************************************************/
 
 #include "test_flat_file.h"
+#include "../../../../dictionary/flat_file/flat_file_types.h"
 
 /**
 @brief		Initializes a test flatfile instance and does a few sanity checks.
@@ -66,6 +67,7 @@ ftest_setup(
 	ion_flat_file_t		*flat_file
 ) {
 	ftest_create(tc, flat_file, key_type_numeric_signed, sizeof(int), sizeof(int), 1);
+	flat_file->super.compare = dictionary_compare_signed_value;
 }
 
 /**

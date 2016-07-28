@@ -72,6 +72,23 @@ flat_file_destroy(
 	ion_flat_file_t *flat_file
 );
 
+/**
+@brief		Inserts the given record into the flat file store.
+@param		flat_file
+				Which flat file to insert into.
+@param		key
+				Key portion of the record to insert.
+@param		value
+				Value portion of the record to insert.
+@return		Resulting status of insertion.
+*/
+ion_status_t
+flat_file_insert(
+	ion_flat_file_t *flat_file,
+	ion_key_t		key,
+	ion_value_t		value
+);
+
 #if defined(__cplusplus)
 }
 #endif
