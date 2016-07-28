@@ -43,7 +43,7 @@ run_bpptreehandler_generic_test_set_1(
 			count = 0;
 		}
 
-		dictionary_test_delete(&test, (ion_key_t) (&(to_delete[i])), count, tc);
+		dictionary_test_delete(&test, (&(to_delete[i])), count, tc);
 
 		if (k != -1) {
 			counts[k] = 0;
@@ -65,7 +65,7 @@ run_bpptreehandler_generic_test_set_1(
 		count = 0;
 	}
 
-	dictionary_test_update(&test, (ion_key_t) (&update_key), (ion_value_t) (&update_value), count, tc);
+	dictionary_test_update(&test, (&update_key), (&update_value), count, tc);
 
 	update_key		= 1;
 	update_value	= 12;
@@ -78,7 +78,7 @@ run_bpptreehandler_generic_test_set_1(
 		count = 0;
 	}
 
-	dictionary_test_update(&test, (ion_key_t) (&update_key), (ion_value_t) (&update_value), count, tc);
+	dictionary_test_update(&test, (&update_key), (&update_value), count, tc);
 
 	update_key		= 12;
 	update_value	= 1;
@@ -91,7 +91,7 @@ run_bpptreehandler_generic_test_set_1(
 		count = 0;
 	}
 
-	dictionary_test_update(&test, (ion_key_t) (&update_key), (ion_value_t) (&update_value), count, tc);
+	dictionary_test_update(&test, (&update_key), (&update_value), count, tc);
 
 	dictionary_insert(&test.dictionary, IONIZE(5, int), IONIZE(3, int));
 	dictionary_insert(&test.dictionary, IONIZE(5, int), IONIZE(5, int));

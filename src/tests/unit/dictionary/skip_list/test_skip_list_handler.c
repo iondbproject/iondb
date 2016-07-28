@@ -43,13 +43,13 @@ create_test_dictionary(
 
 	/* First insert one of each element, up to half... */
 	for (i = 0; i < half_elements; i++) {
-		dictionary_insert(dictionary, (ion_key_t) &i, (ion_value_t) value);
+		dictionary_insert(dictionary, &i, value);
 	}
 
 	/* Continue inserting, this time with an increasing amount of duplicates */
 	for (; i < num_elements; i++) {
 		for (j = 0; j < num_duplicates; j++) {
-			dictionary_insert(dictionary, (ion_key_t) &i, (ion_value_t) value);
+			dictionary_insert(dictionary, &i, value);
 		}
 
 		/* Each time we increment the key, add one more duplicate */
@@ -213,11 +213,11 @@ test_slhandler_cursor_equality_with_results(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(26, int), dict.instance->record.key_size) == 0);
-	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 
 	while (c_status != cs_end_of_results) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(26, int), dict.instance->record.key_size) == 0);
-		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 		c_status = cursor->next(cursor, &record);
 	}
 
@@ -303,12 +303,12 @@ test_slhandler_cursor_range_with_results(
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(5, int), dict.instance->record.key_size) >= 0);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(78, int), dict.instance->record.key_size) <= 0);
-	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 
 	while (c_status != cs_end_of_results) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(5, int), dict.instance->record.key_size) >= 0);
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(78, int), dict.instance->record.key_size) <= 0);
-		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 		c_status = cursor->next(cursor, &record);
 	}
 
@@ -364,12 +364,12 @@ test_slhandler_cursor_range_lower_missing(
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(-50, int), dict.instance->record.key_size) >= 0);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(50, int), dict.instance->record.key_size) <= 0);
-	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 
 	while (c_status != cs_end_of_results) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(-50, int), dict.instance->record.key_size) >= 0);
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(50, int), dict.instance->record.key_size) <= 0);
-		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 		c_status = cursor->next(cursor, &record);
 	}
 
@@ -438,7 +438,7 @@ test_slhandler_cursor_range_exact_results(
 		int expected_key = extra_keys[key_idx];
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, &expected_key, dict.instance->record.key_size) == 0);
-		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "test" }, dict.instance->record.value_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "test" }, dict.instance->record.value_size) == 0);
 		c_status = cursor->next(cursor, &record);
 		key_idx++;
 	}

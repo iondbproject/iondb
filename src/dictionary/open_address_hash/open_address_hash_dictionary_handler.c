@@ -52,7 +52,7 @@ oadict_create_dictionary(
 ) {
 	UNUSED(id);
 	/* this is the instance of the hashmap */
-	dictionary->instance			= (ion_dictionary_parent_t *) malloc(sizeof(ion_hashmap_t));
+	dictionary->instance			= malloc(sizeof(ion_hashmap_t));
 
 	dictionary->instance->compare	= compare;
 
@@ -105,7 +105,7 @@ oadict_find(
 	ion_dict_cursor_t	**cursor
 ) {
 	/* allocate memory for cursor */
-	if ((*cursor = (ion_dict_cursor_t *) malloc(sizeof(ion_oadict_cursor_t))) == NULL) {
+	if ((*cursor = malloc(sizeof(ion_oadict_cursor_t))) == NULL) {
 		return err_out_of_memory;
 	}
 
@@ -119,7 +119,7 @@ oadict_find(
 	(*cursor)->next					= oadict_next;	/* this will use the correct value */
 
 	/* allocate predicate */
-	(*cursor)->predicate			= (ion_predicate_t *) malloc(sizeof(ion_predicate_t));
+	(*cursor)->predicate			= malloc(sizeof(ion_predicate_t));
 	(*cursor)->predicate->type		= predicate->type;
 	(*cursor)->predicate->destroy	= predicate->destroy;
 
@@ -127,7 +127,7 @@ oadict_find(
 	switch (predicate->type) {
 		case predicate_equality: {
 			/* as this is an equality, need to malloc for key as well */
-			if (((*cursor)->predicate->statement.equality.equality_value = (ion_key_t) malloc((((ion_hashmap_t *) dictionary->instance)->super.record.key_size))) == NULL) {
+			if (((*cursor)->predicate->statement.equality.equality_value = malloc((((ion_hashmap_t *) dictionary->instance)->super.record.key_size))) == NULL) {
 				free((*cursor)->predicate);
 				free(*cursor);	/* cleanup */
 				return err_out_of_memory;
@@ -160,7 +160,7 @@ oadict_find(
 		}
 
 		case predicate_range: {
-			if (((*cursor)->predicate->statement.range.lower_bound = (ion_key_t) malloc((((ion_hashmap_t *) dictionary->instance)->super.record.key_size))) == NULL) {
+			if (((*cursor)->predicate->statement.range.lower_bound = malloc((((ion_hashmap_t *) dictionary->instance)->super.record.key_size))) == NULL) {
 				free((*cursor)->predicate);
 				free(*cursor);	/* cleanup */
 				return err_out_of_memory;
@@ -170,7 +170,7 @@ oadict_find(
 			memcpy((*cursor)->predicate->statement.range.lower_bound, predicate->statement.range.lower_bound, (((ion_hashmap_t *) dictionary->instance)->super.record.key_size));
 
 			/* as this is a range, need to malloc upper bound key */
-			if (((*cursor)->predicate->statement.range.upper_bound = (ion_key_t) malloc((((ion_hashmap_t *) dictionary->instance)->super.record.key_size))) == NULL) {
+			if (((*cursor)->predicate->statement.range.upper_bound = malloc((((ion_hashmap_t *) dictionary->instance)->super.record.key_size))) == NULL) {
 				free((*cursor)->predicate->statement.range.lower_bound);
 				free((*cursor)->predicate);
 				free(*cursor);	/* cleanup */
@@ -274,9 +274,9 @@ oadict_next(
 		/*@todo A discussion needs to be had regarding ion_record_t and its format in memory etc */
 		/* and copy key and value in */
 
-		memcpy(record->key, (ion_key_t) (item->data), hash_map->super.record.key_size);
+		memcpy(record->key, (item->data), hash_map->super.record.key_size);
 
-		memcpy(record->value, (ion_value_t) (item->data + hash_map->super.record.key_size), hash_map->super.record.value_size);
+		memcpy(record->value, (item->data + hash_map->super.record.key_size), hash_map->super.record.value_size);
 
 		/* and update current cursor position */
 		return cursor->status;
@@ -378,7 +378,7 @@ oadict_scan(
 
 			/* TODO need to check key match; what's the most efficient way? */
 
-			ion_boolean_t key_satisfies_predicate = oadict_test_predicate(&(cursor->super), (ion_key_t) item->data);/* assumes that the key is first */
+			ion_boolean_t key_satisfies_predicate = oadict_test_predicate(&(cursor->super), item->data);/* assumes that the key is first */
 
 			if (key_satisfies_predicate == boolean_true) {
 				cursor->current = loc;	/* this is the next index for value */

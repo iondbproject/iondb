@@ -35,7 +35,7 @@ oah_initialize(
 
 	/* The hash map is allocated as a single contiguous array*/
 	hashmap->map_size		= size;
-	hashmap->entry			= (void *) malloc((hashmap->super.record.key_size + hashmap->super.record.value_size + 1) * hashmap->map_size);
+	hashmap->entry			= malloc((hashmap->super.record.key_size + hashmap->super.record.value_size + 1) * hashmap->map_size);
 	/* Allows for binding of different hash function depending on requirements. */
 	hashmap->compute_hash	= (*hashing_function);
 
@@ -257,8 +257,8 @@ oah_query(
 		int					data_length = hash_map->super.record.key_size + hash_map->super.record.value_size;
 		ion_hash_bucket_t	*item		= (((ion_hash_bucket_t *) ((hash_map->entry + (data_length + SIZEOF(STATUS)) * loc))));
 
-		/* *value				   = (ion_value_t)malloc(sizeof(char) * (hash_map->super.record.value_size)); */
-		memcpy(value, (ion_value_t) (item->data + hash_map->super.record.key_size), hash_map->super.record.value_size);
+		/* *value				   = malloc(sizeof(char) * (hash_map->super.record.value_size)); */
+		memcpy(value, (item->data + hash_map->super.record.key_size), hash_map->super.record.value_size);
 		return ION_STATUS_OK(1);
 	}
 	else {
