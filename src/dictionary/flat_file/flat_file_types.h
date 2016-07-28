@@ -34,23 +34,29 @@ extern "C" {
 /**
 @brief		This type describes the status flag within a flat file row.
 */
-typedef ion_byte_t flat_file_row_status_t;
+typedef ion_byte_t ion_flat_file_row_status_t;
 
 /**
 @brief		Metadata container that holds flat file specific information.
 */
 typedef struct {
-	ion_dictionary_parent_t super;	/**< Parent structure that holds dictionary level information. */
-	ion_boolean_t			sorted_mode;/**< Flag to toggle whether or not to activate "sorted mode" for storage. */
-	ion_fpos_t				start_of_data;	/**< This signifies where the actual record data starts, in case we want to
-											write some metadata at the beginning of the flat file's file. */
-	ion_dictionary_size_t	num_buffered;	/**< This comes from the given dictionary size, and signifies how many
-											 records we want to buffer at a time. This is a trade-off between
-											 better performance and increased memory usage. */
-	FILE					*data_file;	/**< The file descriptor of the file this flat file instance operates on. */
-	size_t					row_size;	/**< This value expresses the size of one row inside the @p data_file. A row is defined
-										as a record + metadata. */
-} ion_flatfile_t;
+	/**> Parent structure that holds dictionary level information. */
+	ion_dictionary_parent_t super;
+	/**> Flag to toggle whether or not to activate "sorted mode" for storage. */
+	ion_boolean_t			sorted_mode;
+	/**> This signifies where the actual record data starts, in case we want to
+		 write some metadata at the beginning of the flat file's file. */
+	ion_fpos_t				start_of_data;
+	/**> This comes from the given dictionary size, and signifies how many
+		 records we want to buffer at a time. This is a trade-off between
+		 better performance and increased memory usage. */
+	ion_dictionary_size_t	num_buffered;
+	/**> The file descriptor of the file this flat file instance operates on. */
+	FILE					*data_file;
+	/**> This value expresses the size of one row inside the @p data_file. A row is defined
+		 as a record + metadata. */
+	size_t					row_size;
+} ion_flat_file_t;
 
 #if defined(__cplusplus)
 }

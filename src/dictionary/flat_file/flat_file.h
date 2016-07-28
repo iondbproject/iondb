@@ -35,7 +35,7 @@ extern "C" {
 @details	A check is done to see if this is actually an attempt to open a previously existing
 			flat file instance. This (should) only happen when this is called from an open context
 			instead of an initialize.
-@param[in]	flatfile
+@param[in]	flat_file
 				Given instance of a flat file struct to initialize. This must be allocated **heap** memory,
 				as destruction will assume that it needs to be freed.
 @param[in]	id
@@ -53,12 +53,23 @@ extern "C" {
  */
 ion_err_t
 flat_file_initialize(
-	ion_flatfile_t			*flatfile,
+	ion_flat_file_t			*flat_file,
 	ion_dictionary_id_t		id,
 	ion_key_type_t			key_type,
 	ion_key_size_t			key_size,
 	ion_value_size_t		value_size,
 	ion_dictionary_size_t	dictionary_size
+);
+
+/**
+@brief		Destroys and cleans up any implementation specific memory or files.
+@param		flat_file
+				Given flat file instance to destroy.
+@return		The resulting status of destruction.
+*/
+ion_err_t
+flat_file_destroy(
+	ion_flat_file_t *flat_file
 );
 
 #if defined(__cplusplus)

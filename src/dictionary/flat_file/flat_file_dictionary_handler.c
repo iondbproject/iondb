@@ -66,7 +66,7 @@ ffdict_create_dictionary(
 	ion_dictionary_handler_t	*handler,
 	ion_dictionary_t			*dictionary
 ) {
-	dictionary->instance = malloc(sizeof(ion_flatfile_t));
+	dictionary->instance = malloc(sizeof(ion_flat_file_t));
 
 	if (NULL == dictionary->instance) {
 		return err_out_of_memory;
@@ -74,7 +74,7 @@ ffdict_create_dictionary(
 
 	dictionary->instance->compare = compare;
 
-	ion_err_t result = flat_file_initialize((ion_flatfile_t *) dictionary->instance, id, key_type, key_size, value_size, dictionary_size);
+	ion_err_t result = flat_file_initialize((ion_flat_file_t *) dictionary->instance, id, key_type, key_size, value_size, dictionary_size);
 
 	if (err_ok == result) {
 		dictionary->handler = handler;
@@ -95,7 +95,11 @@ ion_err_t
 ffdict_delete_dictionary(
 	ion_dictionary_t *dictionary
 ) {
-	return err_not_implemented;
+	ion_err_t result = flat_file_destroy((ion_flat_file_t *) dictionary->instance);
+
+	free(dictionary->instance);
+	dictionary->instance = NULL;
+	return result;
 }
 
 ion_status_t

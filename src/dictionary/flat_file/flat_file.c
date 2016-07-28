@@ -44,7 +44,7 @@ flat_file_get_filename(
 
 ion_err_t
 flat_file_initialize(
-	ion_flatfile_t			*flatfile,
+	ion_flat_file_t			*flat_file,
 	ion_dictionary_id_t		id,
 	ion_key_type_t			key_type,
 	ion_key_size_t			key_size,
@@ -56,9 +56,9 @@ flat_file_initialize(
 		return err_invalid_initial_size;/* Can't have a negative dictionary size for the flat file */
 	}
 
-	flatfile->super.key_type			= key_type;
-	flatfile->super.record.key_size		= key_size;
-	flatfile->super.record.value_size	= value_size;
+	flat_file->super.key_type			= key_type;
+	flat_file->super.record.key_size	= key_size;
+	flat_file->super.record.value_size	= value_size;
 
 	char	filename[ION_MAX_FILENAME_LENGTH];
 	int		actual_filename_length = flat_file_get_filename(id, filename);
@@ -67,15 +67,51 @@ flat_file_initialize(
 		return err_dictionary_initialization_failed;
 	}
 
-	flatfile->sorted_mode	= boolean_false;/* By default, we don't use sorted mode */
-	flatfile->num_buffered	= dictionary_size;
+	flat_file->sorted_mode	= boolean_false;/* By default, we don't use sorted mode */
+	flat_file->num_buffered = dictionary_size;
 
-	flatfile->data_file		= fopen(filename, "r+b");
-	flatfile->start_of_data = ftell(flatfile->data_file);	/* For now, we don't have any header information. */
+	flat_file->data_file	= fopen(filename, "r+b");
+
+	if (NULL == flat_file->data_file) {
+		/* The file did not exist - lets open to write */
+		flat_file->data_file = fopen(filename, "w+b");
+
+		if (NULL == flat_file->data_file) {
+			/* Failed to open, even to create */
+			return err_file_open_error;
+		}
+	}
+
+	flat_file->start_of_data = ftell(flat_file->data_file);	/* For now, we don't have any header information. */
+
+	if (-1 == flat_file->start_of_data) {
+		return err_file_read_error;
+	}
 
 	/* A record is laid out as: | STATUS |	  KEY	 |	   VALUE	  | */
-	/*				   Bytes:	   (1)		(key_size)		 (value_size) */
-	flatfile->row_size = sizeof(flat_file_row_status_t) + key_size + value_size;
+	/*				   Bytes:	(1)	 (key_size)   (value_size)	*/
+	flat_file->row_size = sizeof(ion_flat_file_row_status_t) + key_size + value_size;
+
+	return err_ok;
+}
+
+ion_err_t
+flat_file_destroy(
+	ion_flat_file_t *flat_file
+) {
+	if (0 != fclose(flat_file->data_file)) {
+		return err_file_close_error;
+	}
+
+	char filename[ION_MAX_FILENAME_LENGTH];
+
+	flat_file_get_filename(flat_file->super.id, filename);
+
+	if (0 != fremove(filename)) {
+		return err_file_delete_error;
+	}
+
+	flat_file->data_file = NULL;
 
 	return err_ok;
 }
