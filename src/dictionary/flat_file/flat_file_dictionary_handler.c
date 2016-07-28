@@ -66,7 +66,21 @@ ffdict_create_dictionary(
 	ion_dictionary_handler_t	*handler,
 	ion_dictionary_t			*dictionary
 ) {
-	return err_not_implemented;
+	dictionary->instance = malloc(sizeof(ion_flatfile_t));
+
+	if (NULL == dictionary->instance) {
+		return err_out_of_memory;
+	}
+
+	dictionary->instance->compare = compare;
+
+	ion_err_t result = flat_file_initialize((ion_flatfile_t *) dictionary->instance, id, key_type, key_size, value_size, dictionary_size);
+
+	if (err_ok == result) {
+		dictionary->handler = handler;
+	}
+
+	return result;
 }
 
 ion_status_t
@@ -117,9 +131,9 @@ ffdict_destroy_cursor(
 
 /**
 @brief		Checks to see if the given @p key satisfies the predicate stored in @p cursor.
-@param		cursor
+@param[in]	cursor
 				Which cursor to test within.
-@param		key
+@param[in]	key
 				The key under test.
 @return		@p boolean_true if the key satisfies the predicate, @p boolean_false otherwise.
 */

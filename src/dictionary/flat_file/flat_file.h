@@ -30,6 +30,37 @@ extern "C" {
 
 #include "flat_file_types.h"
 
+/**
+@brief		Initializes the flat file implementation and creates all necessary files.
+@details	A check is done to see if this is actually an attempt to open a previously existing
+			flat file instance. This (should) only happen when this is called from an open context
+			instead of an initialize.
+@param[in]	flatfile
+				Given instance of a flat file struct to initialize. This must be allocated **heap** memory,
+				as destruction will assume that it needs to be freed.
+@param[in]	id
+				The assigned ID of this dictionary.
+@param[in]	key_type
+				Key category to use for this instance.
+@param[in]	key_size
+				Key size, in bytes used for this instance.
+@param[in]	value_size
+				Value size, in bytes used for this instance.
+@param[in]	dictionary_size
+				Dictionary size is interpreted as how many records (key value pairs) are buffered. This should be given
+				as somewhere between 1 (minimum) and the page size of the device you are working on.
+@return		The status of initialization.
+ */
+ion_err_t
+flat_file_initialize(
+	ion_flatfile_t			*flatfile,
+	ion_dictionary_id_t		id,
+	ion_key_type_t			key_type,
+	ion_key_size_t			key_size,
+	ion_value_size_t		value_size,
+	ion_dictionary_size_t	dictionary_size
+);
+
 #if defined(__cplusplus)
 }
 #endif

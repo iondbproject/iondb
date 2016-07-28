@@ -41,6 +41,10 @@ extern "C" {
 #define IS_GREATER				1
 #define IS_LESS					-1
 #define ZERO					0
+/**
+@brief		Since the arduino conforms to 8.3 syntax, that's 8 + 3 = 11 + 1 (null terminator) characters.
+*/
+#define ION_MAX_FILENAME_LENGTH 12
 
 /* ==================== ARDUINO CONDITIONAL COMPILATION ================================ */
 #if !defined(ARDUINO)
@@ -192,6 +196,10 @@ typedef char ion_err_t;
 */
 typedef unsigned char ion_byte_t;
 
+/**
+@brief		A file position type.
+*/
+typedef long ion_fpos_t;
 /**
 @brief		A dictionary key.
 */

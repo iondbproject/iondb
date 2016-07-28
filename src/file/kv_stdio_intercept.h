@@ -41,17 +41,6 @@
 extern "C" {
 #endif
 
-/* @todo requires testing on previous versions of avr-gcc */
-#if __GNUC__ > 4 || \
-	(__GNUC__ == 4 && (__GNUC_MINOR__ > 8 || \
-					   (__GNUC_MINOR__ == 1)))
-/* Stub */
-#else
-
-typedef long ion_fpos_t;
-
-#endif
-
 #define  FILE SD_FILE
 #define  fopen(x, y)		sd_fopen(x, y)
 #define  fclose(x)			sd_fclose(x)
