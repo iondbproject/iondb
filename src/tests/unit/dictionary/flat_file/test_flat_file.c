@@ -22,7 +22,18 @@
 /******************************************************************************/
 
 #include "test_flat_file.h"
-#include "../../../../dictionary/flat_file/flat_file_types.h"
+
+/********* PRIVATE METHOD DECLARATIONS **********/
+
+ion_err_t
+flat_file_scan(
+	ion_flat_file_t				*flat_file,
+	ion_fpos_t					*location,
+	ion_boolean_t				scan_forwards,
+	ion_flat_file_predicate_t	predicate
+);
+
+/************************************************/
 
 /**
 @brief		Initializes a test flatfile instance and does a few sanity checks.

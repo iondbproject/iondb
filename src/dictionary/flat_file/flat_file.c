@@ -23,13 +23,14 @@
 
 #include "flat_file.h"
 #include "flat_file_types.h"
+#include "../../key_value/kv_system.h"
 
 /**
 @brief			Given the ID and a buffer to write to, writes back the formatted filename
 				for this flat file instance to the given @p str.
 @param[in]		id
 					Given ID to use to generate a unique filename.
-@param[in,out]	str
+@param[out]		str
 					Char buffer to write-back into. This must be allocated memory.
 @return			How many characters would have been written. It is a good idea to check that this does not exceed
 				@ref ION_MAX_FILENAME_LENGTH.
@@ -116,14 +117,128 @@ flat_file_destroy(
 	return err_ok;
 }
 
+/**
+@brief			Performs a linear scan of the flat file, going forwards
+				if @p scan_forwards is true, writing the first location
+				seen that satisfies the given @p predicate to @p location.
+@param[in]	  flat_file
+					Which flat file instance to scan.
+@param[out]		location
+					Allocated memory location to write back the found location to.
+					Is not changed in the event of a failure or error condition. This
+					location is given back as a row index.
+@param[in]		scan_forwards
+					Scans front-to-back if @p true, else scans back-to-front.
+@param[in]		predicate
+					Given test function to check each row against. Once this function
+					returns true, the scan is terminated and the found location is written.
+@return			Resulting status of scan.
+@todo			Try changing the predicate to be an enum-and-switch to eliminate the function
+				call. Benchmark the performance gain and decide which strategy to use.
+*/
+ion_err_t
+flat_file_scan(
+	ion_flat_file_t				*flat_file,
+	ion_fpos_t					*location,
+	ion_boolean_t				scan_forwards,
+	ion_flat_file_predicate_t	predicate
+) {
+	return err_not_implemented;
+}
+
+/**
+@brief		Predicate function to return any row that is empty or deleted.
+@see		ion_flat_file_predicate_t
+ */
+ion_boolean_t
+flat_file_predicate_empty(
+	ion_flat_file_t				*flat_file,
+	ion_flat_file_row_status_t	row_status,
+	ion_key_t					key,
+	ion_value_t					value
+) {
+	UNUSED(flat_file);
+	UNUSED(key);
+	UNUSED(value);
+
+	return FLAT_FILE_STATUS_EMPTY == row_status;
+}
+
+/**
+@brief		Writes the given row out to the data file.
+@details	If the key or value is given as @p NULL, then no write will be performed
+			for that @p NULL key/value. This can be used to perform a status-only write
+			by passing in @p NULL for both the key and value.
+@param[in]	flat_file
+				Which flat file instance to write to.
+@param[in]	location
+				Which row index to write to. This function will compute
+				the file offset of the row index.
+@param[in]	row_status
+				Given status to write into the row.
+@param[in]	key
+				Given key to write into the row.
+@param[in]	value
+				Given value to write into the row.
+@return		Resulting status of the file operations.
+*/
+ion_err_t
+flat_file_write_row(
+	ion_flat_file_t				*flat_file,
+	ion_fpos_t					location,
+	ion_flat_file_row_status_t	row_status,
+	ion_key_t					key,
+	ion_value_t					value
+) {
+	if (0 != fseek(flat_file->data_file, location, SEEK_SET)) {
+		return err_file_bad_seek;
+	}
+
+	if (1 != fwrite(&row_status, sizeof(row_status), 1, flat_file->data_file)) {
+		return err_file_write_error;
+	}
+
+	if (NULL != key) {
+		if (1 != fwrite(key, flat_file->super.record.key_size, 1, flat_file->data_file)) {
+			return err_file_write_error;
+		}
+	}
+
+	if (NULL != value) {
+		if (1 != fwrite(value, flat_file->super.record.value_size, 1, flat_file->data_file)) {
+			return err_file_write_error;
+		}
+	}
+
+	return err_ok;
+}
+
 ion_status_t
 flat_file_insert(
 	ion_flat_file_t *flat_file,
 	ion_key_t		key,
 	ion_value_t		value
 ) {
+	ion_status_t status		= ION_STATUS_INITIALIZE;
 	/* TODO: Need to factor in empty spots (overwrite them), sorted order insert, and reading buffer size rows at a time */
-	struct row_record {};
+	ion_fpos_t	insert_loc	= -1;
+	ion_err_t	err			= flat_file_scan(flat_file, &insert_loc, boolean_true, flat_file_predicate_empty);
 
-	while (boolean_false) {}
+	if (err_ok != err) {
+		status.error = err;
+		return status;
+	}
+
+	err = flat_file_write_row(flat_file, insert_loc, FLAT_FILE_STATUS_OCCUPIED, key, value);
+
+	if (err_ok != err) {
+		status.error = err;
+		return status;
+	}
+
+	if (flat_file->sorted_mode) {
+		/* TODO: Do the thing */
+	}
+
+	return status;
 }

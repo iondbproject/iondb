@@ -174,7 +174,7 @@ ffdict_update(
 					Which dictionary to query on.
 @param[in]		predicate
 					An allocated, initialized predicate object that defines the parameters of the query.
-@param[in,out]	cursor
+@param[out]		cursor
 					A cursor pointer should be initialized to @p NULL, and then given to this function.
 					This function shall allocate appropriate memory and redirect @p cursor to point to
 					the allocated memory. **NOTE:** Anything originally pointed to by this cursor will
@@ -195,7 +195,7 @@ ffdict_find(
 				This function should not be called directly, but instead will be bound to the cursor like a method.
 @param[in]		cursor
 					Which cursor to fetch results from.
-@param[in,out]	record
+@param[out]		record
 					An initialized record struct with the @p key and @p value appropriately allocated to fit
 					the returned key and value. This function will write back data to the struct.
 @return			The resulting status of the operation.

@@ -67,6 +67,16 @@ typedef struct {
 	size_t					row_size;
 } ion_flat_file_t;
 
+/**
+@brief		The function signature of a flat file predicate, used in searches.
+*/
+typedef ion_boolean_t (*ion_flat_file_predicate_t)(
+	ion_flat_file_t *,
+	ion_flat_file_row_status_t,
+	ion_key_t,
+	ion_value_t
+);
+
 #if defined(__cplusplus)
 }
 #endif
