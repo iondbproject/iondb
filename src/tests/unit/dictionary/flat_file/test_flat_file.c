@@ -22,15 +22,27 @@
 /******************************************************************************/
 
 #include "test_flat_file.h"
+#include "../../../../dictionary/flat_file/flat_file_types.h"
 
 /********* PRIVATE METHOD DECLARATIONS **********/
 
 ion_err_t
 flat_file_scan(
-	ion_flat_file_t				*flat_file,
-	ion_fpos_t					*location,
-	ion_boolean_t				scan_forwards,
-	ion_flat_file_predicate_t	predicate
+	ion_flat_file_t *,
+	ion_fpos_t,
+	ion_fpos_t *,
+	ion_boolean_t,
+	ion_flat_file_predicate_t,
+	...
+);
+
+ion_boolean_t
+flat_file_predicate_key_match(
+	ion_flat_file_t *,
+	ion_flat_file_row_status_t,
+	ion_key_t,
+	ion_value_t,
+	va_list *
 );
 
 /************************************************/
@@ -93,6 +105,108 @@ ftest_takedown(
 }
 
 /**
+@brief		Inserts into the flat file and optionally checks if the insert was OK
+			by reading the data file.
+*/
+void
+ftest_insert(
+	planck_unit_test_t	*tc,
+	ion_flat_file_t		*flat_file,
+	ion_key_t			key,
+	ion_value_t			value,
+	ion_boolean_t		check_result
+) {
+	ion_status_t status = flat_file_insert(flat_file, key, value);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	if (check_result) {
+		/* TODO: This makes a big assumption on the layout of the data file. Is there a way to eliminate this? */
+		ion_byte_t expected_result[flat_file->row_size];
+
+		memset(expected_result, FLAT_FILE_STATUS_OCCUPIED, sizeof(ion_flat_file_row_status_t));
+		memcpy(expected_result + sizeof(ion_flat_file_row_status_t), key, flat_file->super.record.key_size);
+		memcpy(expected_result + sizeof(ion_flat_file_row_status_t) + flat_file->super.record.key_size, value, flat_file->super.record.value_size);
+
+		ion_byte_t read_buffer[flat_file->row_size];
+
+		fseek(flat_file->data_file, flat_file->start_of_data, SEEK_SET);
+
+		while (boolean_true) {
+			if (1 != fread(read_buffer, flat_file->row_size, 1, flat_file->data_file)) {
+				break;
+			}
+
+			if (0 == memcmp(read_buffer, expected_result, flat_file->row_size)) {
+				return;
+			}
+		}
+
+		/* If we reach here that means that the record we were looking for wasn't found :( */
+		PLANCK_UNIT_SET_FAIL(tc);
+	}
+}
+
+/**
+@brief		Tests and asserts the correctness of the file scan method.
+*/
+void
+ftest_file_scan(
+	planck_unit_test_t	*tc,
+	ion_flat_file_t		*flat_file,
+	ion_boolean_t		scan_forwards,
+	ion_fpos_t			start_location,
+	ion_key_t			target_key,
+	ion_err_t			expected_status,
+	ion_fpos_t			expected_location
+) {
+	ion_fpos_t	found_loc	= -1;
+	ion_err_t	err			= flat_file_scan(flat_file, start_location, &found_loc, scan_forwards, flat_file_predicate_key_match, target_key);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_status, err);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_location, found_loc);
+}
+
+/**
+@brief		Tests several cases of a file scan.
+*/
+void
+ftest_file_scan_cases(
+	planck_unit_test_t	*tc,
+	ion_flat_file_t		*flat_file
+) {
+	ftest_insert(tc, flat_file, IONIZE(1, int), IONIZE(0, int), boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(-50, int), IONIZE(0, int), boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(2, int), IONIZE(0, int), boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(3, int), IONIZE(0, int), boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(-100, int), IONIZE(0, int), boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(4, int), IONIZE(0, int), boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(-150, int), IONIZE(0, int), boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(5, int), IONIZE(0, int), boolean_true);
+
+	/* Forwards from start | Forwards from middle | Forwards near end */
+	ftest_file_scan(tc, flat_file, boolean_true, -1, IONIZE(-150, int), err_ok, 6);
+	ftest_file_scan(tc, flat_file, boolean_true, 3, IONIZE(4, int), err_ok, 5);
+	ftest_file_scan(tc, flat_file, boolean_true, 6, IONIZE(5, int), err_ok, 7);
+
+	/* Backwards from end | Backwards from middle | Backwards near start */
+	ftest_file_scan(tc, flat_file, boolean_false, -1, IONIZE(-50, int), err_ok, 1);
+	ftest_file_scan(tc, flat_file, boolean_false, 4, IONIZE(2, int), err_ok, 2);
+	ftest_file_scan(tc, flat_file, boolean_false, 1, IONIZE(1, int), err_ok, 0);
+
+	/* Fallthrough forwards from start | Fallthrough forwards from middle | Fallthrough forwards near end */
+	ftest_file_scan(tc, flat_file, boolean_true, -1, IONIZE(333, int), err_file_hit_eof, 8);
+	ftest_file_scan(tc, flat_file, boolean_true, 3, IONIZE(333, int), err_file_hit_eof, 8);
+	ftest_file_scan(tc, flat_file, boolean_true, 6, IONIZE(333, int), err_file_hit_eof, 8);
+
+	/* Fallthrough backwards from end | Fallthrough backwards from middle | Fallthrough backwards near start */
+	ftest_file_scan(tc, flat_file, boolean_false, -1, IONIZE(333, int), err_file_hit_eof, 8);
+	ftest_file_scan(tc, flat_file, boolean_false, 4, IONIZE(333, int), err_file_hit_eof, 8);
+	ftest_file_scan(tc, flat_file, boolean_false, 1, IONIZE(333, int), err_file_hit_eof, 8);
+}
+
+/**
 @brief		Tests some basic creation and destruction stuff for the flat file.
 */
 void
@@ -106,12 +220,87 @@ test_flat_file_create_destroy(
 	ftest_takedown(tc, &flat_file);
 }
 
+/**
+@brief		Tests a single insert statement.
+*/
+void
+test_flat_file_insert_single(
+	planck_unit_test_t *tc
+) {
+	ion_flat_file_t flat_file;
+
+	ftest_setup(tc, &flat_file);
+
+	ftest_insert(tc, &flat_file, IONIZE(5, int), IONIZE(5, int), boolean_true);
+
+	ftest_takedown(tc, &flat_file);
+}
+
+/**
+@brief		Tests insertion of many things.
+*/
+void
+test_flat_file_insert_many(
+	planck_unit_test_t *tc
+) {
+	ion_flat_file_t flat_file;
+
+	ftest_setup(tc, &flat_file);
+
+	ftest_insert(tc, &flat_file, IONIZE(5, int), IONIZE(1, int), boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(10, int), IONIZE(2, int), boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(4, int), IONIZE(3, int), boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(500, int), IONIZE(4, int), boolean_true);
+
+	ftest_takedown(tc, &flat_file);
+}
+
+/**
+@brief		Tests all the different cases that the scan method can run into.
+			With a small buffer size.
+*/
+void
+test_flat_file_scan_cases_small_buf(
+	planck_unit_test_t *tc
+) {
+	ion_flat_file_t flat_file;
+
+	ftest_create(tc, &flat_file, key_type_numeric_signed, sizeof(int), sizeof(int), 1);
+	flat_file.super.compare = dictionary_compare_signed_value;
+
+	ftest_file_scan_cases(tc, &flat_file);
+
+	ftest_takedown(tc, &flat_file);
+}
+
+/**
+@brief		Tests all the different cases that the scan method can run into.
+			With a large buffer size.
+*/
+void
+test_flat_file_scan_cases_large_buf(
+	planck_unit_test_t *tc
+) {
+	ion_flat_file_t flat_file;
+
+	ftest_create(tc, &flat_file, key_type_numeric_signed, sizeof(int), sizeof(int), 10);
+	flat_file.super.compare = dictionary_compare_signed_value;
+
+	ftest_file_scan_cases(tc, &flat_file);
+
+	ftest_takedown(tc, &flat_file);
+}
+
 planck_unit_suite_t *
 flat_file_getsuite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_create_destroy);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_insert_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_insert_many);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_scan_cases_small_buf);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_scan_cases_large_buf);
 
 	return suite;
 }

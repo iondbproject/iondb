@@ -74,7 +74,8 @@ typedef ion_boolean_t (*ion_flat_file_predicate_t)(
 	ion_flat_file_t *,
 	ion_flat_file_row_status_t,
 	ion_key_t,
-	ion_value_t
+	ion_value_t,
+	va_list *args
 );
 
 #if defined(__cplusplus)

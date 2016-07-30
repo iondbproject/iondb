@@ -163,6 +163,9 @@ enum error {
 	/**> An error code describing the situation where a seek operation could
 		 not be made to completion. */
 	err_file_bad_seek,
+	/**> An error code describing the situation where a file operation hit
+		 the EOF. */
+	err_file_hit_eof,
 	/**> An error code describing the situation where a requested item could
 		 not be found in the primary page. */
 	err_not_in_primary_page,

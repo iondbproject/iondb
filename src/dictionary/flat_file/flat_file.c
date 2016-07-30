@@ -23,7 +23,6 @@
 
 #include "flat_file.h"
 #include "flat_file_types.h"
-#include "../../key_value/kv_system.h"
 
 /**
 @brief			Given the ID and a buffer to write to, writes back the formatted filename
@@ -121,8 +120,17 @@ flat_file_destroy(
 @brief			Performs a linear scan of the flat file, going forwards
 				if @p scan_forwards is true, writing the first location
 				seen that satisfies the given @p predicate to @p location.
-@param[in]	  flat_file
+@details		If the scan falls through, then the location is written as
+				the EOF position of the file. The variadic arguments accepted
+				by this function are passed into the predicate additional parameters.
+				This can be used to provide additional context to the predicate for use
+				in determining whether or not the row is a match.
+@param[in]		flat_file
 					Which flat file instance to scan.
+@param[in]		start_location
+					Where to begin the scan. This is given as a row index. If
+					given as -1, then it is assumed to be either the start of
+					file or end of file, depending on the state of @p scan_forwards.
 @param[out]		location
 					Allocated memory location to write back the found location to.
 					Is not changed in the event of a failure or error condition. This
@@ -135,15 +143,106 @@ flat_file_destroy(
 @return			Resulting status of scan.
 @todo			Try changing the predicate to be an enum-and-switch to eliminate the function
 				call. Benchmark the performance gain and decide which strategy to use.
+@todo			Consider changing to @p SEEK_CUR whenever possible. Benchmark this and see
+				if the performance gain (if any) is worth it.
 */
 ion_err_t
 flat_file_scan(
 	ion_flat_file_t				*flat_file,
+	ion_fpos_t					start_location,
 	ion_fpos_t					*location,
 	ion_boolean_t				scan_forwards,
-	ion_flat_file_predicate_t	predicate
+	ion_flat_file_predicate_t	predicate,
+	...
 ) {
-	return err_not_implemented;
+	ion_fpos_t eof_pos = 0;
+
+	if (0 != fseek(flat_file->data_file, 0, SEEK_END)) {
+		return err_file_bad_seek;
+	}
+
+	if (-1 == (eof_pos = ftell(flat_file->data_file))) {
+		return err_file_read_error;
+	}
+
+	ion_fpos_t	cur_offset	= start_location * flat_file->row_size;
+	ion_fpos_t	end_offset	= scan_forwards ? eof_pos : flat_file->start_of_data;
+
+	if (-1 == start_location) {
+		if (scan_forwards) {
+			cur_offset = flat_file->start_of_data;
+		}
+		else {
+			cur_offset = eof_pos;
+		}
+	}
+
+	ion_byte_t read_buffer[flat_file->row_size * flat_file->num_buffered];
+
+	memset(read_buffer, 0, flat_file->row_size * flat_file->num_buffered);
+
+	while (cur_offset != end_offset) {
+		fseek(flat_file->data_file, cur_offset, SEEK_SET);
+
+		size_t num_records_to_process = flat_file->num_buffered;
+
+		if (scan_forwards) {
+			/* It's possible for this to do a partial read (if you're close to EOF) */
+			/* so we just check that it doesn't read nothing */
+			if (0 == (num_records_to_process = fread(read_buffer, flat_file->row_size, flat_file->num_buffered, flat_file->data_file))) {
+				return err_file_read_error;
+			}
+
+			if (-1 == (cur_offset = ftell(flat_file->data_file))) {
+				return err_file_read_error;
+			}
+		}
+		else {
+			/* Move the offset pointer to the next read location, clamp it at start_of_file if we go too far */
+			cur_offset -= flat_file->row_size * flat_file->num_buffered;
+
+			if (cur_offset < flat_file->start_of_data) {
+				/* We know how many rows we went past the start of file, calculate it so we don't fread too much */
+				num_records_to_process	= flat_file->num_buffered - (flat_file->start_of_data - cur_offset) / flat_file->row_size;
+				cur_offset				= flat_file->start_of_data;
+			}
+
+			if (0 != fseek(flat_file->data_file, cur_offset, SEEK_SET)) {
+				return err_file_bad_seek;
+			}
+
+			if (num_records_to_process != fread(read_buffer, flat_file->row_size, num_records_to_process, flat_file->data_file)) {
+				return err_file_read_error;
+			}
+		}
+
+		size_t i;
+
+		for (i = 0; i < num_records_to_process; i++) {
+			/* This cast is done because its possible for the status change in type */
+			size_t						cur_rec		= i * flat_file->row_size;
+			ion_flat_file_row_status_t	row_status	= *((ion_flat_file_row_status_t *) &read_buffer[cur_rec]);
+			ion_key_t					key			= &read_buffer[cur_rec + sizeof(ion_flat_file_row_status_t)];
+			ion_value_t					value		= &read_buffer[cur_rec + sizeof(ion_flat_file_row_status_t) + flat_file->super.record.key_size];
+
+			va_list predicate_arguments;
+
+			va_start(predicate_arguments, predicate);
+
+			ion_boolean_t predicate_test = predicate(flat_file, row_status, key, value, &predicate_arguments);
+
+			va_end(predicate_arguments);
+
+			if (predicate_test) {
+				*location = (cur_offset - flat_file->start_of_data) / flat_file->row_size + i;
+				return err_ok;
+			}
+		}
+	}
+
+	/* If we reach this point, then no row matched the predicate */
+	*location = (end_offset - flat_file->start_of_data) / flat_file->row_size;
+	return err_file_hit_eof;
 }
 
 /**
@@ -155,13 +254,35 @@ flat_file_predicate_empty(
 	ion_flat_file_t				*flat_file,
 	ion_flat_file_row_status_t	row_status,
 	ion_key_t					key,
-	ion_value_t					value
+	ion_value_t					value,
+	va_list						*args
 ) {
 	UNUSED(flat_file);
 	UNUSED(key);
 	UNUSED(value);
+	UNUSED(args);
 
 	return FLAT_FILE_STATUS_EMPTY == row_status;
+}
+
+/**
+@brief		Predicate function to return any row that has an exact match to the given target key.
+@details	We expect one ion_key_t to be in @p args.
+@see		ion_flat_file_predicate_t
+ */
+ion_boolean_t
+flat_file_predicate_key_match(
+	ion_flat_file_t				*flat_file,
+	ion_flat_file_row_status_t	row_status,
+	ion_key_t					key,
+	ion_value_t					value,
+	va_list						*args
+) {
+	UNUSED(value);
+
+	ion_key_t target_key = va_arg(*args, ion_key_t);
+
+	return FLAT_FILE_STATUS_OCCUPIED == row_status && 0 == flat_file->super.compare(target_key, key, flat_file->super.record.key_size);
 }
 
 /**
@@ -190,7 +311,7 @@ flat_file_write_row(
 	ion_key_t					key,
 	ion_value_t					value
 ) {
-	if (0 != fseek(flat_file->data_file, location, SEEK_SET)) {
+	if (0 != fseek(flat_file->data_file, location * flat_file->row_size, SEEK_SET)) {
 		return err_file_bad_seek;
 	}
 
@@ -198,16 +319,12 @@ flat_file_write_row(
 		return err_file_write_error;
 	}
 
-	if (NULL != key) {
-		if (1 != fwrite(key, flat_file->super.record.key_size, 1, flat_file->data_file)) {
-			return err_file_write_error;
-		}
+	if ((NULL != key) && (1 != fwrite(key, flat_file->super.record.key_size, 1, flat_file->data_file))) {
+		return err_file_write_error;
 	}
 
-	if (NULL != value) {
-		if (1 != fwrite(value, flat_file->super.record.value_size, 1, flat_file->data_file)) {
-			return err_file_write_error;
-		}
+	if ((NULL != value) && (1 != fwrite(value, flat_file->super.record.value_size, 1, flat_file->data_file))) {
+		return err_file_write_error;
 	}
 
 	return err_ok;
@@ -219,12 +336,12 @@ flat_file_insert(
 	ion_key_t		key,
 	ion_value_t		value
 ) {
-	ion_status_t status		= ION_STATUS_INITIALIZE;
 	/* TODO: Need to factor in empty spots (overwrite them), sorted order insert, and reading buffer size rows at a time */
-	ion_fpos_t	insert_loc	= -1;
-	ion_err_t	err			= flat_file_scan(flat_file, &insert_loc, boolean_true, flat_file_predicate_empty);
+	ion_status_t	status		= ION_STATUS_INITIALIZE;
+	ion_fpos_t		insert_loc	= -1;
+	ion_err_t		err			= flat_file_scan(flat_file, -1, &insert_loc, boolean_true, flat_file_predicate_empty);
 
-	if (err_ok != err) {
+	if ((err_ok != err) && (err_file_hit_eof != err)) {
 		status.error = err;
 		return status;
 	}
@@ -240,5 +357,7 @@ flat_file_insert(
 		/* TODO: Do the thing */
 	}
 
+	status.error	= err_ok;
+	status.count	= 1;
 	return status;
 }
