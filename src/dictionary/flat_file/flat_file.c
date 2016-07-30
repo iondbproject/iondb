@@ -184,7 +184,10 @@ flat_file_scan(
 	while (cur_offset != end_offset) {
 		fseek(flat_file->data_file, cur_offset, SEEK_SET);
 
-		size_t num_records_to_process = flat_file->num_buffered;
+		/* We set cur_offset to be the next block to read after this next code segment, so */
+		/* we need t save what block we're currently reading now for location calculation purposes */
+		ion_fpos_t	prev_offset				= cur_offset;
+		size_t		num_records_to_process	= flat_file->num_buffered;
 
 		if (scan_forwards) {
 			/* It's possible for this to do a partial read (if you're close to EOF) */
@@ -214,6 +217,9 @@ flat_file_scan(
 			if (num_records_to_process != fread(read_buffer, flat_file->row_size, num_records_to_process, flat_file->data_file)) {
 				return err_file_read_error;
 			}
+
+			/* In this case, the prev_offset is actually the cur_offset. */
+			prev_offset = cur_offset;
 		}
 
 		size_t i;
@@ -234,14 +240,14 @@ flat_file_scan(
 			va_end(predicate_arguments);
 
 			if (predicate_test) {
-				*location = (cur_offset - flat_file->start_of_data) / flat_file->row_size + i;
+				*location = (prev_offset - flat_file->start_of_data) / flat_file->row_size + i;
 				return err_ok;
 			}
 		}
 	}
 
 	/* If we reach this point, then no row matched the predicate */
-	*location = (end_offset - flat_file->start_of_data) / flat_file->row_size;
+	*location = (eof_pos - flat_file->start_of_data) / flat_file->row_size;
 	return err_file_hit_eof;
 }
 
