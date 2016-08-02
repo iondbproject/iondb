@@ -21,8 +21,8 @@ ffdict_init(
 ion_status_t
 ffdict_insert(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	return ff_insert((ion_ff_file_t *) dictionary->instance, key, value);
 }
@@ -31,8 +31,8 @@ ffdict_insert(
 ion_status_t
 ffdict_query(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	return ff_query((ion_ff_file_t *) dictionary->instance, key, value);
 }
@@ -40,17 +40,17 @@ ffdict_query(
 ion_err_t
 ffdict_create_dictionary(
 	ion_dictionary_id_t			id,
-	ion_key_type_t					key_type,
+	ion_key_type_t				key_type,
 	ion_key_size_t				key_size,
 	ion_value_size_t			value_size,
 	int							dictionary_size,
 	ion_dictionary_compare_t	compare,
-	ion_dictionary_handler_t		*handler,
-	ion_dictionary_t				*dictionary
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dictionary
 ) {
 	UNUSED(id);
 	UNUSED(dictionary_size);
-	dictionary->instance			= (ion_dictionary_parent_t *) malloc(sizeof(ion_ff_file_t));
+	dictionary->instance			= malloc(sizeof(ion_ff_file_t));
 
 	dictionary->instance->compare	= compare;
 
@@ -70,7 +70,7 @@ ffdict_create_dictionary(
 ion_status_t
 ffdict_delete(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key
+	ion_key_t			key
 ) {
 	ion_status_t status = ff_delete((ion_ff_file_t *) dictionary->instance, key);
 
@@ -91,8 +91,8 @@ ffdict_delete_dictionary(
 ion_status_t
 ffdict_update(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	return ff_update((ion_ff_file_t *) dictionary->instance, key, value);
 }
@@ -105,7 +105,7 @@ ffdict_find(
 	ion_dict_cursor_t	**cursor
 ) {
 	/* allocate memory for cursor */
-	if ((*cursor = (ion_dict_cursor_t *) malloc(sizeof(ion_ffdict_cursor_t))) == NULL) {
+	if ((*cursor = malloc(sizeof(ion_ffdict_cursor_t))) == NULL) {
 		return err_out_of_memory;
 	}
 
@@ -119,7 +119,7 @@ ffdict_find(
 	(*cursor)->next					= ffdict_next;	/* this will use the correct value */
 
 	/* allocate predicate */
-	(*cursor)->predicate			= (ion_predicate_t *) malloc(sizeof(ion_predicate_t));
+	(*cursor)->predicate			= malloc(sizeof(ion_predicate_t));
 	(*cursor)->predicate->type		= predicate->type;
 	(*cursor)->predicate->destroy	= predicate->destroy;
 
@@ -127,14 +127,14 @@ ffdict_find(
 	switch (predicate->type) {
 		case predicate_equality: {
 			/* as this is an equality, need to malloc for key as well */
-			if (((*cursor)->predicate->statement.equality.equality_value = (ion_key_t) malloc((int) (dictionary->instance->record.key_size))) == NULL) {
+			if (((*cursor)->predicate->statement.equality.equality_value = malloc((size_t) (dictionary->instance->record.key_size))) == NULL) {
 				free((*cursor)->predicate);
 				free(*cursor);	/* cleanup */
 				return err_out_of_memory;
 			}
 
 			/* copy across the key value as the predicate may be destroyed */
-			memcpy((*cursor)->predicate->statement.equality.equality_value, predicate->statement.equality.equality_value, (int) (dictionary->instance->record.key_size));
+			memcpy((*cursor)->predicate->statement.equality.equality_value, predicate->statement.equality.equality_value, (size_t) (dictionary->instance->record.key_size));
 
 			/* find the location of the first element as this is a straight equality */
 			ion_fpos_t location = cs_invalid_index;
@@ -160,17 +160,17 @@ ffdict_find(
 
 		case predicate_range: {
 			/* as this is a range, need to malloc lower bound key */
-			if (((*cursor)->predicate->statement.range.lower_bound = (ion_key_t) malloc((((ion_ff_file_t *) dictionary->instance)->super.record.key_size))) == NULL) {
+			if (((*cursor)->predicate->statement.range.lower_bound = malloc((((ion_ff_file_t *) dictionary->instance)->super.record.key_size))) == NULL) {
 				free((*cursor)->predicate);
 				free(*cursor);	/* cleanup */
 				return err_out_of_memory;
 			}
 
 			/* copy across the key value as the predicate may be destroyed */
-			memcpy((*cursor)->predicate->statement.range.lower_bound, predicate->statement.range.lower_bound, (int) (dictionary->instance->record.key_size));
+			memcpy((*cursor)->predicate->statement.range.lower_bound, predicate->statement.range.lower_bound, (size_t) (dictionary->instance->record.key_size));
 
 			/* as this is a range, need to malloc upper bound key */
-			if (((*cursor)->predicate->statement.range.upper_bound = malloc((int) (dictionary->instance->record.key_size))) == NULL) {
+			if (((*cursor)->predicate->statement.range.upper_bound = malloc((size_t) (dictionary->instance->record.key_size))) == NULL) {
 				free((*cursor)->predicate->statement.range.lower_bound);
 				free((*cursor)->predicate);
 				free(*cursor);	/* cleanup */
@@ -178,7 +178,7 @@ ffdict_find(
 			}
 
 			/* copy across the key value as the predicate may be destroyed */
-			memcpy((*cursor)->predicate->statement.range.upper_bound, predicate->statement.range.upper_bound, (int) (dictionary->instance->record.key_size));
+			memcpy((*cursor)->predicate->statement.range.upper_bound, predicate->statement.range.upper_bound, (size_t) (dictionary->instance->record.key_size));
 
 			ion_ffdict_cursor_t *ffdict_cursor = (ion_ffdict_cursor_t *) (*cursor);
 
@@ -222,7 +222,7 @@ ffdict_find(
 ion_cursor_status_t
 ffdict_next(
 	ion_dict_cursor_t	*cursor,
-	ion_record_t	*record
+	ion_record_t		*record
 ) {
 	/* @todo if the dictionary instance changes, then the status of the cursor needs to change */
 	ion_ffdict_cursor_t *ffdict_cursor = (ion_ffdict_cursor_t *) cursor;
@@ -292,7 +292,7 @@ ffdict_destroy_cursor(
 ion_boolean_t
 ffdict_test_predicate(
 	ion_dict_cursor_t	*cursor,
-	ion_key_t		key
+	ion_key_t			key
 ) {
 	/* TODO need to check key match; what's the most efficient way? */
 	int key_satisfies_predicate;
@@ -361,7 +361,7 @@ ffdict_scan(
 		}
 	}
 
-	if (NULL == (record = (ion_f_file_record_t *) malloc(record_size))) {
+	if (NULL == (record = malloc(record_size))) {
 		return err_out_of_memory;
 	}
 
@@ -372,7 +372,7 @@ ffdict_scan(
 			/**
 			 * Compares value == key
 			 */
-			ion_boolean_t key_satisfies_predicate = ffdict_test_predicate(&(cursor->super), (ion_key_t) record->data);	/* assumes that the key is first */
+			ion_boolean_t key_satisfies_predicate = ffdict_test_predicate(&(cursor->super), record->data);	/* assumes that the key is first */
 
 			if (key_satisfies_predicate == boolean_true) {
 				/*@todo revisit to cache result? */

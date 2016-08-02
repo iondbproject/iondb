@@ -6,9 +6,9 @@ run_bpptreehandler_generic_test_set_1(
 ) {
 	ion_generic_test_t test;
 
-	int					keyvals[]	= { 5, -10, -5 };
-	ion_key_t			keys[]		= { &keyvals[0], &keyvals[1], &keyvals[2] };
-	int					length		= sizeof(keys) / sizeof(ion_key_t);
+	int					keyvals[100];
+	ion_key_t			keys[100];
+	int					length = sizeof(keys) / sizeof(ion_key_t);
 	ion_result_count_t	count;
 	ion_result_count_t	counts[length];
 	int					k;
@@ -16,7 +16,9 @@ run_bpptreehandler_generic_test_set_1(
 	int i;
 
 	for (i = 0; i < length; i++) {
-		counts[i] = 0;
+		keyvals[i]	= i;
+		keys[i]		= &keyvals[i];
+		counts[i]	= 0;
 	}
 
 	init_generic_dictionary_test(&test, bpptree_init, key_type_numeric_signed, sizeof(int), sizeof(int), -1	/* Dictionary size, for now is unbounded. */
@@ -41,7 +43,7 @@ run_bpptreehandler_generic_test_set_1(
 			count = 0;
 		}
 
-		dictionary_test_delete(&test, (ion_key_t) (&(to_delete[i])), count, tc);
+		dictionary_test_delete(&test, (&(to_delete[i])), count, tc);
 
 		if (k != -1) {
 			counts[k] = 0;
@@ -63,7 +65,7 @@ run_bpptreehandler_generic_test_set_1(
 		count = 0;
 	}
 
-	dictionary_test_update(&test, (ion_key_t) (&update_key), (ion_value_t) (&update_value), count, tc);
+	dictionary_test_update(&test, (&update_key), (&update_value), count, tc);
 
 	update_key		= 1;
 	update_value	= 12;
@@ -76,7 +78,7 @@ run_bpptreehandler_generic_test_set_1(
 		count = 0;
 	}
 
-	dictionary_test_update(&test, (ion_key_t) (&update_key), (ion_value_t) (&update_value), count, tc);
+	dictionary_test_update(&test, (&update_key), (&update_value), count, tc);
 
 	update_key		= 12;
 	update_value	= 1;
@@ -89,7 +91,7 @@ run_bpptreehandler_generic_test_set_1(
 		count = 0;
 	}
 
-	dictionary_test_update(&test, (ion_key_t) (&update_key), (ion_value_t) (&update_value), count, tc);
+	dictionary_test_update(&test, (&update_key), (&update_value), count, tc);
 
 	dictionary_insert(&test.dictionary, IONIZE(5, int), IONIZE(3, int));
 	dictionary_insert(&test.dictionary, IONIZE(5, int), IONIZE(5, int));

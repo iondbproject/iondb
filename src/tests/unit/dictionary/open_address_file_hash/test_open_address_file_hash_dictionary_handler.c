@@ -25,7 +25,7 @@ void
 createFileTestDictionary(
 	ion_dictionary_handler_t	*map_handler,
 	const ion_record_info_t		*record,
-	int						size,
+	int							size,
 	ion_dictionary_t			*test_dictionary,
 	ion_key_type_t				key_type
 ) {
@@ -38,11 +38,11 @@ createFileTestDictionary(
 	int			i;
 	ion_value_t str;
 
-	str = (ion_value_t) malloc(record->value_size);
+	str = malloc(record->value_size);
 
 	for (i = 0; i < size; i++) {
 		sprintf((char *) str, "value : %i", i);
-		test_dictionary->handler->insert(test_dictionary, (ion_key_t) &i, str);
+		test_dictionary->handler->insert(test_dictionary, &i, str);
 	}
 
 	free(str);
@@ -81,7 +81,7 @@ void
 test_open_address_file_hashmap_handler_create_destroy(
 	planck_unit_test_t *tc
 ) {
-	int				size;
+	int					size;
 	ion_record_info_t	record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
@@ -112,7 +112,7 @@ void
 test_open_address_file_dictionary_cursor_equality(
 	planck_unit_test_t *tc
 ) {
-	int				size;
+	int					size;
 	ion_record_info_t	record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
@@ -152,7 +152,7 @@ void
 test_open_address_file_dictionary_handler_query_with_results(
 	planck_unit_test_t *tc
 ) {
-	int				size;
+	int					size;
 	ion_record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
@@ -181,15 +181,15 @@ test_open_address_file_dictionary_handler_query_with_results(
 	/* user must allocate memory before calling next() */
 	ion_record_t record;
 
-	record.key		= (ion_key_t) malloc(record_info.key_size);
-	record.value	= (ion_value_t) malloc(record_info.value_size);
+	record.key		= malloc(record_info.key_size);
+	record.value	= malloc(record_info.value_size);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == cursor->next(cursor, &record));
 
 	/* check that value is correct that has been returned */
 	ion_value_t str;
 
-	str = (ion_value_t) malloc(record_info.value_size);
+	str = malloc(record_info.value_size);
 	sprintf((char *) str, "value : %i", *(int *) predicate.statement.equality.equality_value);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL == memcmp(record.value, str, record_info.value_size));
@@ -216,7 +216,7 @@ void
 test_open_address_file_dictionary_handler_query_no_results(
 	planck_unit_test_t *tc
 ) {
-	int				size;
+	int					size;
 	ion_record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
@@ -245,8 +245,8 @@ test_open_address_file_dictionary_handler_query_no_results(
 	/* user must allocate memory before calling next() */
 	ion_record_t record;
 
-	record.key		= (ion_key_t) malloc(record_info.key_size);
-	record.value	= (ion_value_t) malloc(record_info.value_size);
+	record.key		= malloc(record_info.key_size);
+	record.value	= malloc(record_info.value_size);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_end_of_results == cursor->next(cursor, &record));
 
@@ -266,9 +266,9 @@ test_open_address_file_dictionary_predicate_equality(
 ) {
 	ion_key_t key_under_test;
 
-	key_under_test = (ion_key_t) malloc(sizeof(int));
+	key_under_test = malloc(sizeof(int));
 
-	int				size;
+	int					size;
 	ion_record_info_t	record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
@@ -283,7 +283,7 @@ test_open_address_file_dictionary_predicate_equality(
 
 	ion_dict_cursor_t *cursor;	/* create a new cursor pointer */
 
-	cursor			= (ion_dict_cursor_t *) malloc(sizeof(ion_dict_cursor_t));
+	cursor			= malloc(sizeof(ion_dict_cursor_t));
 	cursor->destroy = oafdict_destroy_cursor;
 
 	/* create a new predicate statement */
@@ -294,17 +294,17 @@ test_open_address_file_dictionary_predicate_equality(
 	cursor->dictionary	= &test_dictionary;					/* register test dictionary */
 	cursor->predicate	= &predicate;						/* register predicate */
 
-	memcpy(key_under_test, (ion_key_t) &(int) { 1 }, sizeof(int));
+	memcpy(key_under_test, &(int) { 1 }, sizeof(int));
 
 	/* printf("key %i\n",*(int *)key_under_test); */
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == oafdict_test_predicate(cursor, key_under_test));
 
-	memcpy(key_under_test, (ion_key_t) &(int) { 2 }, sizeof(int));
+	memcpy(key_under_test, &(int) { 2 }, sizeof(int));
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == oafdict_test_predicate(cursor, key_under_test));
 
-	memcpy(key_under_test, (ion_key_t) &(int) { -1 }, sizeof(int));
+	memcpy(key_under_test, &(int) { -1 }, sizeof(int));
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == oafdict_test_predicate(cursor, key_under_test));
 
@@ -323,9 +323,9 @@ test_open_address_file_dictionary_predicate_range_signed(
 ) {
 	ion_key_t key_under_test;
 
-	key_under_test = (ion_key_t) malloc(sizeof(int));
+	key_under_test = malloc(sizeof(int));
 
-	int				size;
+	int					size;
 	ion_record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
@@ -340,7 +340,7 @@ test_open_address_file_dictionary_predicate_range_signed(
 
 	ion_dict_cursor_t *cursor;	/* create a new cursor pointer */
 
-	cursor			= (ion_dict_cursor_t *) malloc(sizeof(ion_dict_cursor_t));
+	cursor			= malloc(sizeof(ion_dict_cursor_t));
 	cursor->destroy = oafdict_destroy_cursor;
 
 	/* create a new predicate statement */
@@ -351,25 +351,25 @@ test_open_address_file_dictionary_predicate_range_signed(
 	cursor->dictionary	= &test_dictionary;					/* register test dictionary */
 	cursor->predicate	= &predicate;						/* register predicate */
 
-	memcpy(key_under_test, (ion_key_t) &(int) { 0 }, sizeof(int));
+	memcpy(key_under_test, &(int) { 0 }, sizeof(int));
 
 	/* DUMP(*(int *)key_under_test,"%i"); */
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == oafdict_test_predicate(cursor, key_under_test));
 
-	memcpy(key_under_test, (ion_key_t) &(int) { -1 }, sizeof(int));
+	memcpy(key_under_test, &(int) { -1 }, sizeof(int));
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == oafdict_test_predicate(cursor, key_under_test));
 
-	memcpy(key_under_test, (ion_key_t) &(int) { 1 }, sizeof(int));
+	memcpy(key_under_test, &(int) { 1 }, sizeof(int));
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == oafdict_test_predicate(cursor, key_under_test));
 
-	memcpy(key_under_test, (ion_key_t) &(int) { 2 }, sizeof(int));
+	memcpy(key_under_test, &(int) { 2 }, sizeof(int));
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == oafdict_test_predicate(cursor, key_under_test));
 
-	memcpy(key_under_test, (ion_key_t) &(int) { -2 }, sizeof(int));
+	memcpy(key_under_test, &(int) { -2 }, sizeof(int));
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == oafdict_test_predicate(cursor, key_under_test));
 
@@ -389,9 +389,9 @@ test_open_address_file_dictionary_predicate_range_unsigned(
 ) {
 	ion_key_t key_under_test;
 
-	key_under_test = (ion_key_t) malloc(sizeof(unsigned int));
+	key_under_test = malloc(sizeof(unsigned int));
 
-	int				size;
+	int					size;
 	ion_record_info_t	record;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
@@ -406,7 +406,7 @@ test_open_address_file_dictionary_predicate_range_unsigned(
 
 	ion_dict_cursor_t *cursor;	/* create a new cursor pointer */
 
-	cursor			= (ion_dict_cursor_t *) malloc(sizeof(ion_dict_cursor_t));
+	cursor			= malloc(sizeof(ion_dict_cursor_t));
 	cursor->destroy = oafdict_destroy_cursor;
 
 	/* create a new predicate statement */
@@ -417,25 +417,25 @@ test_open_address_file_dictionary_predicate_range_unsigned(
 	cursor->dictionary	= &test_dictionary;					/* register test dictionary */
 	cursor->predicate	= &predicate;						/* register predicate */
 
-	memcpy(key_under_test, (ion_key_t) &(unsigned int) { 0 }, sizeof(unsigned int));
+	memcpy(key_under_test, &(unsigned int) { 0 }, sizeof(unsigned int));
 
 	/* printf("key %i\n",*(unsigned int *)key_under_test); */
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == oafdict_test_predicate(cursor, key_under_test));
 
-	memcpy(key_under_test, (ion_key_t) &(unsigned int) { 1 }, sizeof(unsigned int));
+	memcpy(key_under_test, &(unsigned int) { 1 }, sizeof(unsigned int));
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == oafdict_test_predicate(cursor, key_under_test));
 
-	memcpy(key_under_test, (ion_key_t) &(unsigned int) { 2 }, sizeof(unsigned int));
+	memcpy(key_under_test, &(unsigned int) { 2 }, sizeof(unsigned int));
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == oafdict_test_predicate(cursor, key_under_test));
 
-	memcpy(key_under_test, (ion_key_t) &(unsigned int) { 3 }, sizeof(unsigned int));
+	memcpy(key_under_test, &(unsigned int) { 3 }, sizeof(unsigned int));
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == oafdict_test_predicate(cursor, key_under_test));
 
-	memcpy(key_under_test, (ion_key_t) &(unsigned int) { 4 }, sizeof(unsigned int));
+	memcpy(key_under_test, &(unsigned int) { 4 }, sizeof(unsigned int));
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == oafdict_test_predicate(cursor, key_under_test));
 
@@ -453,7 +453,7 @@ void
 test_open_address_file_dictionary_cursor_range(
 	planck_unit_test_t *tc
 ) {
-	int				size;
+	int					size;
 	ion_record_info_t	record_info;
 
 	/* this is required for initializing the hash map and should come from the dictionary */
@@ -482,10 +482,10 @@ test_open_address_file_dictionary_cursor_range(
 	/* user must allocate memory before calling next() */
 	ion_record_t record;
 
-	record.key		= (ion_key_t) malloc(record_info.key_size);
-	record.value	= (ion_value_t) malloc(record_info.value_size);
+	record.key		= malloc(record_info.key_size);
+	record.value	= malloc(record_info.value_size);
 
-	int				result_count = 0;
+	int					result_count = 0;
 	ion_cursor_status_t cursor_status;
 
 	while (cs_cursor_active == (cursor_status = cursor->next(cursor, &record))) {
@@ -494,7 +494,7 @@ test_open_address_file_dictionary_cursor_range(
 		/* check that value is correct that has been returned */
 		ion_value_t str;
 
-		str = (ion_value_t) malloc(record_info.value_size);
+		str = malloc(record_info.value_size);
 		sprintf((char *) str, "value : %i", (*(int *) predicate.statement.range.lower_bound) + result_count);
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL == memcmp(record.value, str, record_info.value_size));

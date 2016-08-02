@@ -65,7 +65,7 @@ typedef unsigned char byte;
 #endif
 /* ===================================================================================== */
 
-#define IONIZE(something, type)		(ion_key_t) &(type) { (something) }
+#define IONIZE(something, type)		& (type) { (something) }
 #define NEUTRALIZE(something, type) (*((type *) (something)))
 #define IONIZE_VAL(varname, size)	ion_byte_t varname[size]
 
@@ -245,7 +245,7 @@ typedef int ion_result_count_t;
 			operation.
 */
 typedef struct {
-	ion_err_t				error;
+	ion_err_t			error;
 	/**< The error code. */
 	ion_result_count_t	count;	/**< The number of items affected. */
 } ion_status_t;

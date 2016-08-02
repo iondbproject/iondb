@@ -8,7 +8,7 @@
 #include "../../../dictionary/dictionary_types.h"
 #include "./../../../dictionary/dictionary.h"
 #include "./../../../dictionary/ion_master_table.h"
-#include "../../../dictionary/skip_list/skip_list_handler.h"
+#include "../../../dictionary/bpp_tree/bpp_tree_handler.h"
 
 #ifdef  __cplusplus
 extern "C" {

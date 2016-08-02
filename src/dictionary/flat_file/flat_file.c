@@ -10,8 +10,8 @@
 
 ion_err_t
 ff_initialize(
-	ion_ff_file_t			*file,
-	ion_key_type_t			key_type,
+	ion_ff_file_t		*file,
+	ion_key_type_t		key_type,
 	ion_key_size_t		key_size,
 	ion_value_size_t	value_size
 ) {
@@ -97,8 +97,8 @@ ff_destroy(
 ion_status_t
 ff_update(
 	ion_ff_file_t	*file,
-	ion_key_t	key,
-	ion_value_t value
+	ion_key_t		key,
+	ion_value_t		value
 ) {
 	/* TODO: lock potentially required */
 	ion_write_concern_t current_write_concern = file->write_concern;
@@ -114,8 +114,8 @@ ff_update(
 ion_status_t
 ff_insert(
 	ion_ff_file_t	*file,
-	ion_key_t	key,
-	ion_value_t value
+	ion_key_t		key,
+	ion_value_t		value
 ) {
 /*@todo requires massive cleanup for function exit */
 	ion_f_file_record_t *record;
@@ -126,7 +126,7 @@ ff_insert(
 	printf("inserting record of size %i \n", record_size);
 #endif
 
-	if ((record = (ion_f_file_record_t *) malloc(record_size)) == NULL) {
+	if ((record = malloc(record_size)) == NULL) {
 		return ION_STATUS_ERROR(err_out_of_memory);
 	}
 
@@ -175,7 +175,7 @@ ff_insert(
 #endif
 
 			/*if (memcmp(item->data, key, hash_map->record.key_size) == IS_EQUAL)*/
-			if (IS_EQUAL == file->super.compare((ion_key_t) record->data, key, file->super.record.key_size)) {
+			if (IS_EQUAL == file->super.compare(record->data, key, file->super.record.key_size)) {
 				if (wc_insert_unique == file->write_concern) {
 					/* allow unique entries only */
 					free(record);
@@ -216,8 +216,8 @@ ff_insert(
 ion_err_t
 ff_find_item_loc(
 	ion_ff_file_t	*file,
-	ion_key_t	key,
-	ion_fpos_t	*location
+	ion_key_t		key,
+	ion_fpos_t		*location
 ) {
 	if (*location == -1) {
 		/* then the position has not been initialized */
@@ -235,7 +235,7 @@ ff_find_item_loc(
 
 	ion_f_file_record_t *record;
 
-	if ((record = (ion_f_file_record_t *) malloc(record_size)) == NULL) {
+	if ((record = malloc(record_size)) == NULL) {
 		return err_out_of_memory;
 	}
 
@@ -263,7 +263,7 @@ ff_find_item_loc(
 
 		if (!feof(file->file_ptr) && (DELETED != record->status)) {
 			/*@todo correct compare to use proper return type*/
-			int key_is_equal = file->super.compare((ion_key_t) record->data, key, file->super.record.key_size);
+			int key_is_equal = file->super.compare(record->data, key, file->super.record.key_size);
 
 			if (IS_EQUAL == key_is_equal) {
 				*location = cur_pos;
@@ -280,7 +280,7 @@ ff_find_item_loc(
 ion_status_t
 ff_delete(
 	ion_ff_file_t	*file,
-	ion_key_t	key
+	ion_key_t		key
 ) {
 	ion_fpos_t		loc = UNINITIALISED;		/* position to delete */
 	ion_status_t	status;					/* return status */
@@ -318,8 +318,8 @@ ff_delete(
 ion_status_t
 ff_query(
 	ion_ff_file_t	*file,
-	ion_key_t	key,
-	ion_value_t value
+	ion_key_t		key,
+	ion_value_t		value
 ) {
 	ion_fpos_t loc = -1;/* initialize */
 

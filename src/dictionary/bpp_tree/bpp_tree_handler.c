@@ -188,6 +188,9 @@ bpptree_delete(
 	if (bErrKeyNotFound != bErr) {
 		status.error = lfb_delete_all(&(bpptree->values), offset, &(status.count));
 	}
+	else {
+		status.error = err_item_not_found;
+	}
 
 	return status;
 }
