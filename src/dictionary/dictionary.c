@@ -252,7 +252,7 @@ dictionary_open(
 		bpptree_init(&bpp_tree_handler);
 
 		ion_dictionary_config_info_t bpp_config = {
-			100, 0, config->type, config->key_size, config->value_size, config->dictionary_size
+			config->id, 0, config->type, config->key_size, config->value_size, config->dictionary_size
 		};
 
 		if (err_ok != dictionary_open(&bpp_tree_handler, &bpp_dict, &bpp_config)) {
@@ -288,7 +288,8 @@ dictionary_open(
 	}
 
 	if (err_ok == error) {
-		dictionary->status = ion_dictionary_status_ok;
+		dictionary->status			= ion_dictionary_status_ok;
+		dictionary->instance->id	= config->id;
 	}
 	else {
 		dictionary->status = ion_dictionary_status_error;
@@ -325,7 +326,7 @@ dictionary_close(
 
 		bpptree_init(&bpp_tree_handler);
 
-		if (dictionary_create(&bpp_tree_handler, &bpp_dict, 100, key_type, key_size, value_size, 1) != err_ok) {
+		if (dictionary_create(&bpp_tree_handler, &bpp_dict, dictionary->instance->id, key_type, key_size, value_size, 1) != err_ok) {
 			return err_dictionary_initialization_failed;
 		}
 
