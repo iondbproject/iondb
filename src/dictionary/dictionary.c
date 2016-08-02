@@ -242,8 +242,6 @@ dictionary_open(
 
 	ion_err_t error						= handler->open_dictionary(handler, dictionary, config, compare);
 
-	dictionary->instance->id = config->id;
-
 	if (err_not_implemented == error) {
 		ion_predicate_t				predicate;
 		ion_dict_cursor_t			*cursor = NULL;
@@ -263,10 +261,10 @@ dictionary_open(
 
 		dictionary_build_predicate(&predicate, predicate_all_records);
 		dictionary_find(&bpp_dict, &predicate, &cursor);
-		record.key		= (ion_key_t) malloc((size_t) dictionary->instance->record.key_size);
-		record.value	= (ion_value_t) malloc((size_t) dictionary->instance->record.value_size);
+		record.key		= (ion_key_t) malloc((size_t) config->key_size);
+		record.value	= (ion_value_t) malloc((size_t) config->value_size);
 
-		if (dictionary_create(handler, dictionary, 0, config->type, config->key_size, config->value_size, config->dictionary_size) != err_ok) {
+		if (dictionary_create(handler, dictionary, config->id, config->type, config->key_size, config->value_size, config->dictionary_size) != err_ok) {
 			return err_dictionary_initialization_failed;
 		}
 
@@ -346,6 +344,7 @@ dictionary_close(
 		free(record.value);
 
 		dictionary_close(&bpp_dict);
+		dictionary_delete_dictionary(dictionary);
 
 		error = err_ok;
 	}
