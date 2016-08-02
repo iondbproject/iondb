@@ -20,14 +20,6 @@ oafdict_get_addr_filename(
 }
 
 void
-oafdict_get_value_filename(
-	ion_dictionary_id_t id,
-	char				*str
-) {
-	sprintf(str, "%d.val", id);
-}
-
-void
 oafdict_init(
 	ion_dictionary_handler_t *handler
 ) {
@@ -427,15 +419,7 @@ oafdict_open_dictionary(
 	ion_dictionary_config_info_t	*config,
 	ion_dictionary_compare_t		compare
 ) {
-	ion_err_t error;
-
-	error = oafdict_create_dictionary(config->id, config->type, config->key_size, config->value_size, config->dictionary_size, compare, handler, dictionary);
-
-	if (err_ok != error) {
-		return error;
-	}
-
-	return err_ok;
+	return oafdict_create_dictionary(config->id, config->type, config->key_size, config->value_size, config->dictionary_size, compare, handler, dictionary);
 }
 
 ion_err_t

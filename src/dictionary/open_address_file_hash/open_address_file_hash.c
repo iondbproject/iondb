@@ -61,13 +61,9 @@ oafh_initialize(
 	/* open the file */
 	oafdict_get_addr_filename(id, addr_filename);
 
-	if (ion_fexists(addr_filename)) {
-		hashmap->file	= fopen(addr_filename, "r+b");
+	hashmap->file = fopen(addr_filename, "r+b");
 
-#if defined(ARDUINO)
-		hashmap->file	= ion_fopen(addr_filename)).file
-#endif
-
+	if (NULL != hashmap->file) {
 		return err_ok;
 	}
 
