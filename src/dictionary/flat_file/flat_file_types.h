@@ -60,21 +60,34 @@ typedef struct {
 		 records we want to buffer at a time. This is a trade-off between
 		 better performance and increased memory usage. */
 	ion_dictionary_size_t	num_buffered;
+	/**> Memory buffer capable of holding @p row_size number of rows. This is used
+		 for many purposes throughout the flat file. */
+	ion_byte_t				*buffer;
 	/**> The file descriptor of the file this flat file instance operates on. */
 	FILE					*data_file;
 	/**> This value expresses the size of one row inside the @p data_file. A row is defined
-		 as a record + metadata. */
+		 as a record + metadata. Change this if @ref ion_flat_file_row_t changes!*/
 	size_t					row_size;
 } ion_flat_file_t;
+
+/**
+@brief		Container for the rows written in the flat file data file.
+*/
+typedef struct {
+	/**> A flag indicating the status of the row. */
+	ion_flat_file_row_status_t	row_status;
+	/**> The key stored in this row. */
+	ion_key_t					key;
+	/**> The value stored in this row. */
+	ion_value_t					value;
+} ion_flat_file_row_t;
 
 /**
 @brief		The function signature of a flat file predicate, used in searches.
 */
 typedef ion_boolean_t (*ion_flat_file_predicate_t)(
 	ion_flat_file_t *,
-	ion_flat_file_row_status_t,
-	ion_key_t,
-	ion_value_t,
+	ion_flat_file_row_t *,
 	va_list *args
 );
 

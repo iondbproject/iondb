@@ -30,7 +30,7 @@ ffdict_init(
 ) {
 	handler->insert				= ffdict_insert;
 	handler->create_dictionary	= ffdict_create_dictionary;
-	handler->get				= ffdict_query;
+	handler->get				= ffdict_get;
 	handler->update				= ffdict_update;
 	handler->find				= ffdict_find;
 	handler->remove				= ffdict_delete;
@@ -47,12 +47,12 @@ ffdict_insert(
 }
 
 ion_status_t
-ffdict_query(
+ffdict_get(
 	ion_dictionary_t	*dictionary,
 	ion_key_t			key,
 	ion_value_t			value
 ) {
-	return ION_STATUS_CREATE(err_not_implemented, 0);
+	return flat_file_get((ion_flat_file_t *) dictionary->instance, key, value);
 }
 
 ion_err_t

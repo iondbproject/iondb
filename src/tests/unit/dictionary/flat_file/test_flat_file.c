@@ -31,6 +31,7 @@ flat_file_scan(
 	ion_flat_file_t *,
 	ion_fpos_t,
 	ion_fpos_t *,
+	ion_flat_file_row_t *,
 	ion_boolean_t,
 	ion_flat_file_predicate_t,
 	...
@@ -39,9 +40,7 @@ flat_file_scan(
 ion_boolean_t
 flat_file_predicate_key_match(
 	ion_flat_file_t *,
-	ion_flat_file_row_status_t,
-	ion_key_t,
-	ion_value_t,
+	ion_flat_file_row_t *,
 	va_list *
 );
 
@@ -60,6 +59,9 @@ ftest_create(
 	ion_dictionary_size_t	dictionary_size
 ) {
 	ion_err_t err = flat_file_initialize(flat_file, 0, key_type, key_size, value_size, dictionary_size);
+
+	flat_file->super.compare	= dictionary_compare_signed_value;
+	flat_file->super.id			= 0;
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 	PLANCK_UNIT_ASSERT_TRUE(tc, NULL != flat_file->data_file);
@@ -90,7 +92,6 @@ ftest_setup(
 	ion_flat_file_t		*flat_file
 ) {
 	ftest_create(tc, flat_file, key_type_numeric_signed, sizeof(int), sizeof(int), 1);
-	flat_file->super.compare = dictionary_compare_signed_value;
 }
 
 /**
@@ -161,11 +162,16 @@ ftest_file_scan(
 	ion_err_t			expected_status,
 	ion_fpos_t			expected_location
 ) {
-	ion_fpos_t	found_loc	= -1;
-	ion_err_t	err			= flat_file_scan(flat_file, start_location, &found_loc, scan_forwards, flat_file_predicate_key_match, target_key);
+	ion_fpos_t			found_loc	= -1;
+	ion_flat_file_row_t row;
+	ion_err_t			err			= flat_file_scan(flat_file, start_location, &found_loc, &row, scan_forwards, flat_file_predicate_key_match, target_key);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_status, err);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_location, found_loc);
+
+	if (err_ok == expected_status) {
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, flat_file->super.compare(target_key, row.key, flat_file->super.record.key_size));
+	}
 }
 
 /**
@@ -266,7 +272,6 @@ test_flat_file_scan_cases_small_buf(
 	ion_flat_file_t flat_file;
 
 	ftest_create(tc, &flat_file, key_type_numeric_signed, sizeof(int), sizeof(int), 1);
-	flat_file.super.compare = dictionary_compare_signed_value;
 
 	ftest_file_scan_cases(tc, &flat_file);
 
@@ -284,7 +289,6 @@ test_flat_file_scan_cases_large_buf(
 	ion_flat_file_t flat_file;
 
 	ftest_create(tc, &flat_file, key_type_numeric_signed, sizeof(int), sizeof(int), 10);
-	flat_file.super.compare = dictionary_compare_signed_value;
 
 	ftest_file_scan_cases(tc, &flat_file);
 

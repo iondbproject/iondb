@@ -80,7 +80,7 @@ ffdict_insert(
 @return		The resulting status of the operation.
 */
 ion_status_t
-ffdict_query(
+ffdict_get(
 	ion_dictionary_t	*dictionary,
 	ion_key_t			key,
 	ion_value_t			value

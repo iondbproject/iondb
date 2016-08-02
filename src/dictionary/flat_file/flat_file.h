@@ -50,6 +50,7 @@ extern "C" {
 				Dictionary size is interpreted as how many records (key value pairs) are buffered. This should be given
 				as somewhere between 1 (minimum) and the page size of the device you are working on.
 @return		The status of initialization.
+@see		ffdict_create_dictionary
  */
 ion_err_t
 flat_file_initialize(
@@ -63,9 +64,10 @@ flat_file_initialize(
 
 /**
 @brief		Destroys and cleans up any implementation specific memory or files.
-@param		flat_file
+@param[in]	flat_file
 				Given flat file instance to destroy.
 @return		The resulting status of destruction.
+@see		ffdict_delete_dictionary
 */
 ion_err_t
 flat_file_destroy(
@@ -74,16 +76,37 @@ flat_file_destroy(
 
 /**
 @brief		Inserts the given record into the flat file store.
-@param		flat_file
+@param[in]	flat_file
 				Which flat file to insert into.
-@param		key
+@param[in]	key
 				Key portion of the record to insert.
-@param		value
+@param[in]	value
 				Value portion of the record to insert.
 @return		Resulting status of insertion.
+@see		ffdict_insert
+@todo		Write tests for sorted mode insert.
 */
 ion_status_t
 flat_file_insert(
+	ion_flat_file_t *flat_file,
+	ion_key_t		key,
+	ion_value_t		value
+);
+
+/**
+@brief		Fetches the record stored with the given @p key.
+@param[in]	flat_file
+				Which flat file to look in.
+@param[in]	key
+				Specified key to look for.
+@param[out]	value
+				Value portion of the record to insert.
+@return		Resulting status of the operation.
+@see		ffdict_get
+@todo		Write tests for sorted mode get.
+*/
+ion_status_t
+flat_file_get(
 	ion_flat_file_t *flat_file,
 	ion_key_t		key,
 	ion_value_t		value
