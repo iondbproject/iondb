@@ -30,6 +30,10 @@ oadict_open_dictionary(
 	ion_dictionary_config_info_t	*config,
 	ion_dictionary_compare_t		compare
 ) {
+	UNUSED(handler);
+	UNUSED(dictionary);
+	UNUSED(config);
+	UNUSED(compare);
 	return err_not_implemented;
 }
 
@@ -37,6 +41,7 @@ ion_err_t
 oadict_close_dictionary(
 	ion_dictionary_t *dictionary
 ) {
+	UNUSED(dictionary);
 	return err_not_implemented;
 }
 
