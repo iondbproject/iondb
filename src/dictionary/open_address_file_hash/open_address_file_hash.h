@@ -59,9 +59,9 @@ struct file_hashmap {
 /**
 @brief		This function opens a hashmap dictionary.
 
-@param		info
+@param		config
 				Configuration info of the desired dictionary to open.
-@param		hashmap
+@param		hash_map
 				Pointer to the hashmap, used in subsequent calls.
 @return		The status describing the result of opening the dictionary.
  */
@@ -74,7 +74,7 @@ oafh_open(
 /**
 @brief		This function closes a hashmap dictionary.
 
-@param		hashmap
+@param		hash_map
 				Pointer to the hashmap instance to close.
 @return		The status describing the result of closing the dictionary.
  */
