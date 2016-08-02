@@ -113,7 +113,6 @@ flat_file_destroy(
 	flat_file_get_filename(flat_file->super.id, filename);
 
 	if (0 != fremove(filename)) {
-		perror("ff destroy");
 		return err_file_delete_error;
 	}
 
