@@ -1099,8 +1099,8 @@ test_cpp_wrapper_open_close(
 	error = dict->open(config);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == error);
-	PLANCK_UNIT_ASSERT_TRUE(tc, dict->dict.instance->record.key_size == key_size);
-	PLANCK_UNIT_ASSERT_TRUE(tc, dict->dict.instance->record.value_size == val_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, dict->dict.instance->record.key_size, key_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, dict->dict.instance->record.value_size, val_size);
 
 	/* Check the test record */
 	int ret_val = dict->get(key);
@@ -1108,82 +1108,6 @@ test_cpp_wrapper_open_close(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == dict->last_status.count);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, value, ret_val);
-}
-
-/**
-@brief	Tests open and close functionality of a dictionary.
-*/
-void
-test_cpp_wrapper_close(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict
-) {
-	ion_status_t	status;
-	ion_err_t		error;
-
-	/* Insert test record so we can check data integrity after we close/open */
-	status = dict->insert(5, 10);
-
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
-	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
-
-	error = dict->close();
-
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == error);
-}
-
-void
-test_cpp_wrapper_oaf_close_fail(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict,
-	Dictionary<int, int> *dict2
-) {
-	ion_status_t	status;
-	ion_err_t		error;
-
-	/* Insert test record so we can check data integrity after we close/open */
-	status = dict->insert(1, 1);
-
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
-	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
-
-	status = dict2->insert(2, 2);
-
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
-	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
-
-	int ret_val = dict->get(1);
-
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, ret_val);
-
-	int ret_val2 = dict2->get(2);
-
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict2->last_status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict2->last_status.count);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, ret_val2);
-
-	error = dict->close();
-
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == error);
-
-	error = dict2->close();
-
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == error);
-}
-
-void
-test_cpp_wrapper_oaf_only_close_fail(
-	planck_unit_test_t *tc
-) {
-	Dictionary<int, int>	*dict;
-	Dictionary<int, int>	*dict2;
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
-	dict2	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
-	test_cpp_wrapper_oaf_close_fail(tc, dict, dict2);
-/*	delete dict; */
-/*	delete dict2; */
 }
 
 /**
@@ -1199,49 +1123,21 @@ test_cpp_wrapper_open_close_on_all_implementations(
 	test_cpp_wrapper_open_close(tc, dict, 66, 12);
 	delete dict;
 
-/*	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7); */
-/*	test_cpp_wrapper_open_close(tc, dict, 1, 13); */
-/*	delete dict; */
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_open_close(tc, dict, 1, 13);
+	delete dict;
 
 /*	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
 /*	test_cpp_wrapper_open_close(tc, dict, 45, 14); */
 /*	delete dict; */
 
-/*	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50); */
-/*	test_cpp_wrapper_open_close(tc, dict, 3, 15); */
-/*	delete dict; */
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_open_close(tc, dict, 3, 15);
+	delete dict;
 
 	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_open_close(tc, dict, 5, 12);
 	delete dict;
-}
-
-/**
-@brief	Aggregate test to test open/close functionality on all implementations.
-*/
-void
-test_cpp_wrapper_close_on_all_implementations(
-	planck_unit_test_t *tc
-) {
-	Dictionary<int, int> *dict;
-
-	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
-	test_cpp_wrapper_close(tc, dict);
-
-/*	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7); */
-/*	test_cpp_wrapper_close(tc, dict); */
-/*	delete dict; */
-
-/*	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
-/*	test_cpp_wrapper_close(tc, dict); */
-/*	delete dict; */
-
-/*	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50); */
-/*	test_cpp_wrapper_close(tc, dict); */
-/*	delete dict; */
-
-	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
-	test_cpp_wrapper_close(tc, dict);
 }
 
 /**
@@ -1253,7 +1149,6 @@ cpp_wrapper_getsuite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_open_close_on_all_implementations);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_create_and_destroy);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_insert_on_all_implementations);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_delete_on_all_implementations);
@@ -1267,8 +1162,7 @@ cpp_wrapper_getsuite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_all_records_simple_on_all_implementations);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_all_records_edge_cases1_on_all_implementations);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_all_records_edge_cases2_on_all_implementations);
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_close_on_all_implementations); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_oaf_only_close_fail); */
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_open_close_on_all_implementations);
 
 	return suite;
 }
