@@ -28,9 +28,13 @@ if(USE_ARDUINO)
             ../../serial/serial_c_iface.cpp")
     endif()
 
+    set(${PROJECT_NAME}_LIBS bpp_tree)
+
     generate_arduino_library(${PROJECT_NAME})
 else()
     add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
+
+    target_link_libraries(${PROJECT_NAME} bpp_tree)
 
     # Required on Unix OS family to be able to be linked into shared libraries.
     set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
