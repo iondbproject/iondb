@@ -59,7 +59,7 @@ initialize_file_hash_map(
 	ion_file_hashmap_t	*map
 ) {
 	map->super.compare = dictionary_compare_signed_value;
-	oafh_initialize(map, oafh_compute_simple_hash, /*dictionary_compare_signed_value,*/ map->super.key_type, record->key_size, record->value_size, size, map->super.id);
+	oafh_initialize(map, oafh_compute_simple_hash, /*dictionary_compare_signed_value,*/ map->super.key_type, record->key_size, record->value_size, size, 0);
 }
 
 void
