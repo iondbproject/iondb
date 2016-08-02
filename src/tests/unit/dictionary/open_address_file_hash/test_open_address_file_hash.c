@@ -58,7 +58,8 @@ initialize_file_hash_map(
 	ion_record_info_t	*record,
 	ion_file_hashmap_t	*map
 ) {
-	map->super.compare = dictionary_compare_signed_value;
+	map->super.compare	= dictionary_compare_signed_value;
+	map->super.id		= 0;
 	oafh_initialize(map, oafh_compute_simple_hash, /*dictionary_compare_signed_value,*/ map->super.key_type, record->key_size, record->value_size, size, 0);
 }
 
@@ -1016,5 +1017,5 @@ runalltests_open_address_file_hash(
 	/* CuSuiteDelete(suite); */
 	/* CuStringDelete(output); */
 
-	fremove(TEST_FILE);
+	fremove("0.oaf");
 }
