@@ -81,7 +81,7 @@ test_flat_file_simple_insert(
 	planck_unit_test_t *tc
 ) {
 	ion_ff_file_t	flat_file;			/* create handler for flat file */
-	int			i;
+	int				i;
 
 	initialize_flat_file_std_conditions(&flat_file);
 
@@ -90,7 +90,7 @@ test_flat_file_simple_insert(
 	/* Manually populate records */
 	ion_record_info_t record	= flat_file.super.record;
 
-	int bucket_size			= sizeof(char) + record.key_size + record.value_size;
+	int bucket_size				= sizeof(char) + record.key_size + record.value_size;
 
 	/* rewind */
 	frewind(flat_file.file_ptr);
@@ -145,7 +145,7 @@ test_flat_file_simple_insert_and_query(
 	planck_unit_test_t *tc
 ) {
 	ion_ff_file_t	flat_file;								/* create handler for file */
-	int			i;
+	int				i;
 
 	initialize_flat_file_std_conditions(&flat_file);
 
@@ -233,7 +233,7 @@ test_flat_file_simple_delete(
 	planck_unit_test_t *tc
 ) {
 	ion_ff_file_t	file;							/* create handler for hashmap */
-	int			i, j;
+	int				i, j;
 
 	initialize_flat_file_std_conditions(&file);
 
@@ -243,7 +243,7 @@ test_flat_file_simple_delete(
 
 		sprintf(str, "%02i is key", i);
 
-		ion_status_t status = ff_insert(&file, (&i), str);/* this is will wrap */
+		ion_status_t status = ff_insert(&file, (&i), str);	/* this is will wrap */
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
@@ -310,7 +310,7 @@ test_flat_file_duplicate_insert_1(
 	planck_unit_test_t *tc
 ) {
 	ion_ff_file_t	file;								/* create handler */
-	int			i;
+	int				i;
 
 	initialize_flat_file_std_conditions(&file);
 
@@ -363,7 +363,7 @@ test_flat_file_duplicate_insert_2(
 	planck_unit_test_t *tc
 ) {
 	ion_ff_file_t	file;							/* create handler for hashmap */
-	int			i;
+	int				i;
 
 	initialize_flat_file_std_conditions(&file);
 
@@ -460,7 +460,7 @@ test_flat_file_update_1(
 	planck_unit_test_t *tc
 ) {
 	ion_ff_file_t	file;							/* create handler for hashmap */
-	int			i;
+	int				i;
 
 	initialize_flat_file_std_conditions(&file);
 
@@ -558,7 +558,7 @@ test_flat_file_update_2(
 	planck_unit_test_t *tc
 ) {
 	ion_ff_file_t	file;							/* create handler for hashmap */
-	int			i;
+	int				i;
 
 	initialize_flat_file_std_conditions(&file);
 
@@ -654,7 +654,7 @@ test_flat_file_delete_1(
 	planck_unit_test_t *tc
 ) {
 	ion_ff_file_t	file;							/* create handler for hashmap */
-	int			i = 2;
+	int				i = 2;
 
 	initialize_flat_file_std_conditions(&file);
 
@@ -709,7 +709,7 @@ test_flat_file_delete_2(
 	planck_unit_test_t *tc
 ) {
 	ion_ff_file_t	file;							/* create handler */
-	int			i, j;
+	int				i, j;
 
 	initialize_flat_file_std_conditions(&file);
 

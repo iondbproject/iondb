@@ -29,8 +29,8 @@ create_test_dictionary(
 	ion_dictionary_handler_t	*handler,
 	ion_record_info_t			*record,
 	ion_key_type_t				key_type,
-	int						size,
-	int						num_elements
+	int							size,
+	int							num_elements
 ) {
 	sldict_init(handler);
 
@@ -74,8 +74,8 @@ create_test_dictionary_std_conditions(
 	/* This means keysize 4 (on a desktop platform) and valuesize 10 */
 	ion_record_info_t	record			= { sizeof(int), 10 };
 	ion_key_type_t		key_type		= key_type_numeric_signed;
-	int				size			= 7;
-	int				num_elements	= 50;
+	int					size			= 7;
+	int					num_elements	= 50;
 
 	create_test_dictionary(dictionary, handler, &record, key_type, size, num_elements);
 }
@@ -121,8 +121,8 @@ test_dictionary_creation(
 	ion_dictionary_handler_t	handler;
 	ion_record_info_t			record			= { sizeof(int), 10 };
 	ion_key_type_t				key_type		= key_type_numeric_signed;
-	int						size			= 50;
-	int						num_elements	= 25;
+	int							size			= 50;
+	int							num_elements	= 25;
 
 	create_test_dictionary(&dict, &handler, &record, key_type, size, num_elements);
 

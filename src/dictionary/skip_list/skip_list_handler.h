@@ -45,8 +45,8 @@ sldict_init(
 ion_status_t
 sldict_insert(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -72,8 +72,8 @@ sldict_insert(
 ion_status_t
 sldict_query(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -105,13 +105,13 @@ sldict_query(
 ion_err_t
 sldict_create_dictionary(
 	ion_dictionary_id_t			id,
-	ion_key_type_t					key_type,
+	ion_key_type_t				key_type,
 	int							key_size,
 	int							value_size,
 	int							dictionary_size,
 	ion_dictionary_compare_t	compare,
-	ion_dictionary_handler_t		*handler,
-	ion_dictionary_t				*dictionary
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dictionary
 );
 
 /**
@@ -127,7 +127,7 @@ sldict_create_dictionary(
 ion_status_t
 sldict_delete(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key
+	ion_key_t			key
 );
 
 /**
@@ -159,8 +159,8 @@ sldict_delete_dictionary(
 ion_status_t
 sldict_update(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -201,7 +201,7 @@ sldict_find(
 ion_cursor_status_t
 sldict_next(
 	ion_dict_cursor_t	*cursor,
-	ion_record_t	*record
+	ion_record_t		*record
 );
 
 /**
@@ -231,7 +231,43 @@ sldict_destroy_cursor(
 ion_boolean_t
 sldict_test_predicate(
 	ion_dict_cursor_t	*cursor,
-	ion_key_t		key
+	ion_key_t			key
+);
+
+/**
+@brief			Opens a specific skiplist instance of a dictionary.
+
+@param			handler
+					A pointer to the handler for the specific dictionary being opened.
+@param			dictionary
+					The pointer declared by the caller that will reference
+					the instance of the dictionary opened.
+@param			config
+					The configuration info of the specific dictionary to be opened.
+@param			compare
+					Function pointer for the comparison function for the dictionary.
+
+@return			The status of opening the dictionary.
+ */
+ion_err_t
+sldict_open_dictionary(
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary,
+	ion_dictionary_config_info_t	*config,
+	ion_dictionary_compare_t		compare
+);
+
+/**
+@brief			Closes a skiplist instance of a dictionary.
+
+@param			dictionary
+					A pointer to the specific dictionary instance to be closed.
+
+@return			The status of closing the dictionary.
+ */
+ion_err_t
+sldict_close_dictionary(
+	ion_dictionary_t *dictionary
 );
 
 #if defined(__cplusplus)

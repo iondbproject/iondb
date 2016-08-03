@@ -22,10 +22,10 @@ public:
 
 ion_dictionary_handler_t	handler;
 ion_dictionary_t			dict;
-int						size_k;
-int						size_v;
-int						dict_size;
-ion_status_t			last_status;
+int							size_k;
+int							size_v;
+int							dict_size;
+ion_status_t				last_status;
 
 ~Dictionary(
 ) {
@@ -35,9 +35,9 @@ ion_status_t			last_status;
 ion_err_t
 initializeDictionary(
 	ion_key_type_t	type_key,
-	int			key_size,
-	int			value_size,
-	int			dictionary_size
+	int				key_size,
+	int				value_size,
+	int				dictionary_size
 ) {
 	ion_err_t err = dictionary_create(&handler, &dict, 0, type_key, key_size, value_size, dictionary_size);
 
@@ -182,8 +182,8 @@ range(
 	K	max_key
 ) {
 	ion_predicate_t predicate;
-	ion_key_t	ion_min_key = &min_key;
-	ion_key_t	ion_max_key = &max_key;
+	ion_key_t		ion_min_key = &min_key;
+	ion_key_t		ion_max_key = &max_key;
 
 	dictionary_build_predicate(&predicate, predicate_range, ion_min_key, ion_max_key);
 	return new Cursor<K, V>(&dict, &predicate);
@@ -202,7 +202,7 @@ equality(
 	K key
 ) {
 	ion_predicate_t predicate;
-	ion_key_t	ion_key = &key;
+	ion_key_t		ion_key = &key;
 
 	dictionary_build_predicate(&predicate, predicate_equality, ion_key);
 	return new Cursor<K, V>(&dict, &predicate);

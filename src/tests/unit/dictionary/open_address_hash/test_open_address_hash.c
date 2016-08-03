@@ -39,7 +39,7 @@ check_map(
 
 void
 initialize_hash_map(
-	int				size,
+	int					size,
 	ion_record_info_t	*record,
 	ion_hashmap_t		*map
 ) {
@@ -70,7 +70,7 @@ test_open_address_hashmap_initialize(
 	planck_unit_test_t *tc
 ) {
 	/* this is required for initializing the hash map and should come from the dictionary */
-	int				size;
+	int					size;
 	ion_record_info_t	record;
 
 	record.key_size		= sizeof(int);
@@ -104,7 +104,7 @@ test_open_address_hashmap_compute_simple_hash(
 	planck_unit_test_t *tc
 ) {
 	ion_hashmap_t	map;		/* create handler for hashmap */
-	int			i;
+	int				i;
 
 	initialize_hash_map_std_conditions(&map);
 
@@ -149,8 +149,8 @@ test_open_address_hashmap_find_item_location(
 	planck_unit_test_t *tc
 ) {
 	ion_hashmap_t	map;		/* create handler for hashmap */
-	int			i;
-	int			offset;
+	int				i;
+	int				offset;
 
 	initialize_hash_map_std_conditions(&map);
 
@@ -164,10 +164,10 @@ test_open_address_hashmap_find_item_location(
 
 	/* manually populate array */
 	ion_hash_bucket_t	*item_ptr	= (ion_hash_bucket_t *) item;
-	char			*pos_ptr	= map.entry;
+	char				*pos_ptr	= map.entry;
 
 	/* Bucket size includes flags, data, value */
-	int bucket_size				= sizeof(char) + record.key_size + record.value_size;
+	int bucket_size					= sizeof(char) + record.key_size + record.value_size;
 
 	for (offset = 0; offset < map.map_size; offset++) {
 		/* apply continual offsets to traverse map */
@@ -216,8 +216,8 @@ test_open_address_hashmap_simple_insert(
 ) {
 	/* create handler for hashmap */
 	ion_hashmap_t	map;
-	int			i;
-	int			offset;
+	int				i;
+	int				offset;
 
 	initialize_hash_map_std_conditions(&map);
 
@@ -246,7 +246,7 @@ test_open_address_hashmap_simple_insert(
 
 			sprintf((char *) str, "%02i is key", i);
 
-			ion_status_t status = oah_insert(&map, (&i), str);/* this is will wrap */
+			ion_status_t status = oah_insert(&map, (&i), str);	/* this is will wrap */
 
 			/* FIXME: Why are we inserting inside two loops?!? */
 			if ((offset == 0) || (wc_duplicate == map.write_concern)) {
@@ -288,7 +288,7 @@ test_open_address_hashmap_simple_insert_and_query(
 	planck_unit_test_t *tc
 ) {
 	/* create handler for hashmap */
-	ion_hashmap_t		map;
+	ion_hashmap_t	map;
 	int				i;
 	ion_status_t	status;
 
@@ -345,7 +345,7 @@ test_open_address_hashmap_simple_delete(
 	planck_unit_test_t *tc
 ) {
 	/* create handler for hashmap */
-	ion_hashmap_t		map;
+	ion_hashmap_t	map;
 	int				i, j;
 	ion_status_t	status;
 
@@ -431,7 +431,7 @@ void
 test_open_address_hashmap_duplicate_insert_1(
 	planck_unit_test_t *tc
 ) {
-	ion_hashmap_t		map;						/* create handler for hashmap */
+	ion_hashmap_t	map;							/* create handler for hashmap */
 	int				i;
 	ion_status_t	status;
 
@@ -480,7 +480,7 @@ void
 test_open_address_hashmap_duplicate_insert_2(
 	planck_unit_test_t *tc
 ) {
-	ion_hashmap_t		map;						/* create handler for hashmap */
+	ion_hashmap_t	map;							/* create handler for hashmap */
 	int				i;
 	ion_status_t	status;
 
@@ -570,7 +570,7 @@ void
 test_open_address_hashmap_update_1(
 	planck_unit_test_t *tc
 ) {
-	ion_hashmap_t		map;						/* create handler for hashmap */
+	ion_hashmap_t	map;							/* create handler for hashmap */
 	int				i;
 	ion_status_t	status;
 
@@ -660,7 +660,7 @@ void
 test_open_address_hashmap_update_2(
 	planck_unit_test_t *tc
 ) {
-	ion_hashmap_t		map;						/* create handler for hashmap */
+	ion_hashmap_t	map;							/* create handler for hashmap */
 	int				i;
 	ion_status_t	status;
 
@@ -748,7 +748,7 @@ void
 test_open_address_hashmap_delete_1(
 	planck_unit_test_t *tc
 ) {
-	ion_hashmap_t		map;						/* create handler for hashmap */
+	ion_hashmap_t	map;							/* create handler for hashmap */
 	int				i = 2;
 	ion_status_t	status;
 
@@ -801,7 +801,7 @@ void
 test_open_address_hashmap_delete_2(
 	planck_unit_test_t *tc
 ) {
-	ion_hashmap_t		map;						/* create handler for hashmap */
+	ion_hashmap_t	map;							/* create handler for hashmap */
 	int				i, j;
 	ion_status_t	status;
 
@@ -910,7 +910,7 @@ void
 test_open_address_hashmap_capacity(
 	planck_unit_test_t *tc
 ) {
-	ion_hashmap_t		map;						/* create handler for hashmap */
+	ion_hashmap_t	map;							/* create handler for hashmap */
 	int				i;
 	ion_status_t	status;
 

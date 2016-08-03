@@ -19,14 +19,37 @@ sldict_init(
 	handler->delete_dictionary	= sldict_delete_dictionary;
 	handler->update				= sldict_update;
 	handler->find				= sldict_find;
-	handler->close_dictionary	= sldict_delete_dictionary;
+	handler->close_dictionary	= sldict_close_dictionary;
+	handler->open_dictionary	= sldict_open_dictionary;
+}
+
+ion_err_t
+sldict_open_dictionary(
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary,
+	ion_dictionary_config_info_t	*config,
+	ion_dictionary_compare_t		compare
+) {
+	UNUSED(handler);
+	UNUSED(dictionary);
+	UNUSED(config);
+	UNUSED(compare);
+	return err_not_implemented;
+}
+
+ion_err_t
+sldict_close_dictionary(
+	ion_dictionary_t *dictionary
+) {
+	UNUSED(dictionary);
+	return err_not_implemented;
 }
 
 ion_status_t
 sldict_insert(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	return sl_insert((ion_skiplist_t *) dictionary->instance, key, value);
 }
@@ -34,8 +57,8 @@ sldict_insert(
 ion_status_t
 sldict_query(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	return sl_query((ion_skiplist_t *) dictionary->instance, key, value);
 }
@@ -43,13 +66,13 @@ sldict_query(
 ion_err_t
 sldict_create_dictionary(
 	ion_dictionary_id_t			id,
-	ion_key_type_t					key_type,
+	ion_key_type_t				key_type,
 	int							key_size,
 	int							value_size,
 	int							dictionary_size,
 	ion_dictionary_compare_t	compare,
-	ion_dictionary_handler_t		*handler,
-	ion_dictionary_t				*dictionary
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dictionary
 ) {
 	UNUSED(id);
 
@@ -80,7 +103,7 @@ sldict_create_dictionary(
 ion_status_t
 sldict_delete(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key
+	ion_key_t			key
 ) {
 	return sl_delete((ion_skiplist_t *) dictionary->instance, key);
 }
@@ -99,8 +122,8 @@ sldict_delete_dictionary(
 ion_status_t
 sldict_update(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	return sl_update((ion_skiplist_t *) dictionary->instance, key, value);
 }
@@ -264,7 +287,7 @@ sldict_find(
 ion_cursor_status_t
 sldict_next(
 	ion_dict_cursor_t	*cursor,
-	ion_record_t	*record
+	ion_record_t		*record
 ) {
 	ion_sldict_cursor_t *sl_cursor = (ion_sldict_cursor_t *) cursor;
 
@@ -309,11 +332,11 @@ sldict_destroy_cursor(
 ion_boolean_t
 sldict_test_predicate(
 	ion_dict_cursor_t	*cursor,
-	ion_key_t		key
+	ion_key_t			key
 ) {
-	ion_skiplist_t		*skiplist	= (ion_skiplist_t *) cursor->dictionary->instance;
+	ion_skiplist_t	*skiplist	= (ion_skiplist_t *) cursor->dictionary->instance;
 	ion_key_size_t	key_size	= cursor->dictionary->instance->record.key_size;
-	ion_boolean_t		result		= boolean_false;
+	ion_boolean_t	result		= boolean_false;
 
 	switch (cursor->predicate->type) {
 		case predicate_equality: {
@@ -325,8 +348,8 @@ sldict_test_predicate(
 		}
 
 		case predicate_range: {
-			ion_key_t	lower_b		= cursor->predicate->statement.range.lower_bound;
-			ion_key_t	upper_b		= cursor->predicate->statement.range.upper_bound;
+			ion_key_t	lower_b			= cursor->predicate->statement.range.lower_bound;
+			ion_key_t	upper_b			= cursor->predicate->statement.range.upper_bound;
 
 			/* Check if key >= lower bound */
 			ion_boolean_t comp_lower	= skiplist->super.compare(key, lower_b, key_size) >= 0;

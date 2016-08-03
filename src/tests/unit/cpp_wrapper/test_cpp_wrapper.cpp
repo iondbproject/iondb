@@ -15,7 +15,6 @@
 #include "../../../cpp_wrapper/OpenAddressHash.h"
 #include "../../../cpp_wrapper/SkipList.h"
 #include "test_cpp_wrapper.h"
-#include "../../../key_value/kv_system.h"
 
 /**
 @brief	Tests the creation of a B+ Tree (arbitrarily chosen) dictionary and asserts
@@ -512,7 +511,7 @@ test_cpp_wrapper_range_simple(
 	Cursor<int, int> *range_cursor	= dict->range(min_key, max_key);
 	PLANCK_UNIT_ASSERT_TRUE(tc, range_cursor->hasNext());
 
-	ion_cursor_status_t status			= range_cursor->next();
+	ion_cursor_status_t status		= range_cursor->next();
 
 	while (status) {
 		for (int i = 0; i < max_key + 5; i++) {
@@ -1044,13 +1043,13 @@ test_cpp_wrapper_all_records_edge_cases2_on_all_implementations(
 ) {
 	Dictionary<int, int> *dict;
 
-/*	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
-/*	test_cpp_wrapper_all_records_edge_cases2(tc, dict); */
-/*	delete dict; */
-/*  */
-/*	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7); */
-/*	test_cpp_wrapper_all_records_edge_cases2(tc, dict); */
-/*	delete dict; */
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_all_records_edge_cases2(tc, dict);
+	delete dict;
+
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_all_records_edge_cases2(tc, dict);
+	delete dict;
 
 /*	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
 /*	test_cpp_wrapper_all_records_edge_cases2(tc, dict); */
@@ -1076,11 +1075,11 @@ test_cpp_wrapper_open_close(
 	int value
 ) {
 	ion_status_t		status;
-	ion_err_t				error;
+	ion_err_t			error;
 	ion_dictionary_id_t gdict_id	= dict->dict.instance->id;
 	int					key_size	= dict->dict.instance->record.key_size;
 	int					val_size	= dict->dict.instance->record.value_size;
-	ion_key_type_t			key_type	= dict->dict.instance->key_type;
+	ion_key_type_t		key_type	= dict->dict.instance->key_type;
 	int					dict_size	= dict->dict_size;
 
 	/* Insert test record so we can check data integrity after we close/open */
@@ -1100,8 +1099,8 @@ test_cpp_wrapper_open_close(
 	error = dict->open(config);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == error);
-	PLANCK_UNIT_ASSERT_TRUE(tc, dict->dict.instance->record.key_size == key_size);
-	PLANCK_UNIT_ASSERT_TRUE(tc, dict->dict.instance->record.value_size == val_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, dict->dict.instance->record.key_size, key_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, dict->dict.instance->record.value_size, val_size);
 
 	/* Check the test record */
 	int ret_val = dict->get(key);
@@ -1124,21 +1123,21 @@ test_cpp_wrapper_open_close_on_all_implementations(
 	test_cpp_wrapper_open_close(tc, dict, 66, 12);
 	delete dict;
 
-/*	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7); */
-/*	test_cpp_wrapper_open_close(tc, dict, 1, 13); */
-/*	delete dict; */
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_open_close(tc, dict, 1, 13);
+	delete dict;
 
 /*	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
 /*	test_cpp_wrapper_open_close(tc, dict, 45, 14); */
 /*	delete dict; */
 
-/*	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50); */
-/*	test_cpp_wrapper_open_close(tc, dict, 3, 15); */
-/*	delete dict; */
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_open_close(tc, dict, 3, 15);
+	delete dict;
 
-/*	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50); */
-/*	test_cpp_wrapper_open_close(tc, dict, 11, 16); */
-/*	delete dict; */
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_open_close(tc, dict, 5, 12);
+	delete dict;
 }
 
 /**

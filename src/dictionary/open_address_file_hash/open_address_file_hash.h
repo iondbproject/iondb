@@ -41,11 +41,11 @@ typedef struct file_hashmap ion_file_hashmap_t;
 */
 struct file_hashmap {
 	ion_dictionary_parent_t super;
-	int					map_size;		/**< The size of the map in item capacity */
+	int						map_size;	/**< The size of the map in item capacity */
 	ion_write_concern_t		write_concern;	/**< The current @p write_concern level
 											 of the hashmap*/
 
-	int					(*compute_hash)(
+	int						(*compute_hash)(
 		ion_file_hashmap_t *,
 		ion_key_t,
 		int
@@ -57,6 +57,33 @@ struct file_hashmap {
 };
 
 /**
+@brief		This function opens a hashmap dictionary.
+
+@param		config
+				Configuration info of the desired dictionary to open.
+@param		hash_map
+				Pointer to the hashmap, used in subsequent calls.
+@return		The status describing the result of opening the dictionary.
+ */
+ion_err_t
+oafh_open(
+	ion_dictionary_config_info_t	config,
+	ion_file_hashmap_t				*hash_map
+);
+
+/**
+@brief		This function closes a hashmap dictionary.
+
+@param		hash_map
+				Pointer to the hashmap instance to close.
+@return		The status describing the result of closing the dictionary.
+ */
+ion_err_t
+oafh_close(
+	ion_file_hashmap_t *hash_map
+);
+
+/**
 @brief		This function initializes an open address in memory hash map.
 
 @param		hashmap
@@ -65,13 +92,15 @@ struct file_hashmap {
 				Function pointer to the hashing function for the instance.
 @param		key_type
 				The type of key that is being stored in the dictionary instance.
-@param	  key_size
+@param		key_size
 				The size of the key in bytes.
 @param		value_size
 				The size of the value in bytes.
 @param		size
 				The size of the hashmap in item
 				(@p key_size + @p value_size + @c 1)
+@param		id
+				The id of hashmap.
 @return		The status describing the result of the initialization.
  */
 ion_err_t
@@ -81,7 +110,8 @@ oafh_initialize(
 	ion_key_type_t key_type,
 	ion_key_size_t key_size,
 	ion_value_size_t value_size,
-	int size
+	int size,
+	ion_dictionary_id_t id
 );
 
 /**
@@ -113,7 +143,7 @@ oafh_destroy(
 int
 oafh_get_location(
 	ion_hash_t	num,
-	int		size
+	int			size
 );
 
 /**
@@ -138,8 +168,8 @@ oafh_get_location(
 ion_status_t
 oafh_insert(
 	ion_file_hashmap_t	*hash_map,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -159,8 +189,8 @@ oafh_insert(
 ion_status_t
 oafh_update(
 	ion_file_hashmap_t	*hash_map,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -179,8 +209,8 @@ oafh_update(
 ion_err_t
 oafh_find_item_loc(
 	ion_file_hashmap_t	*hash_map,
-	ion_key_t		key,
-	int				*location
+	ion_key_t			key,
+	int					*location
 );
 
 /**
@@ -197,7 +227,7 @@ oafh_find_item_loc(
 ion_status_t
 oafh_delete(
 	ion_file_hashmap_t	*hash_map,
-	ion_key_t		key
+	ion_key_t			key
 );
 
 /**
@@ -218,8 +248,8 @@ oafh_delete(
 ion_status_t
 oafh_query(
 	ion_file_hashmap_t	*hash_map,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -236,8 +266,8 @@ oafh_query(
 ion_hash_t
 oafh_compute_simple_hash(
 	ion_file_hashmap_t	*hashmap,
-	ion_key_t		key,
-	int				size_of_key
+	ion_key_t			key,
+	int					size_of_key
 );
 
 /*void

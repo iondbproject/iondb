@@ -74,7 +74,7 @@ private:
 
 ion_dictionary_t	*dictionary;
 ion_dict_cursor_t	*cursor;
-ion_record_t	record;
+ion_record_t		record;
 };
 
 #endif
