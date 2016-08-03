@@ -22,6 +22,7 @@
 /******************************************************************************/
 
 #include "external_sort.h"
+#include "external_sort_types.h"
 
 ion_err_t
 ion_external_sort_init(
@@ -32,6 +33,7 @@ ion_external_sort_init(
 	ion_key_size_t					key_size,
 	ion_value_size_t				value_size,
 	ion_page_size_t					page_size,
+	ion_boolean_e					sorted_pages,
 	ion_file_sort_algorithm_e		sort_algorithm
 ) {
 	es->input_file			= input_file;
@@ -40,6 +42,7 @@ ion_external_sort_init(
 	es->key_size			= key_size;
 	es->value_size			= value_size;
 	es->page_size			= page_size;
+	es->sorted_pages		= sorted_pages;
 	es->sort_algorithm		= sort_algorithm;
 
 	if (0 != fseek(es->input_file, 0, SEEK_END)) {
@@ -52,11 +55,9 @@ ion_external_sort_init(
 		return err_file_bad_seek;
 	}
 
-	if ((0 == file_size_in_bytes % es->page_size) % es->value_size) {
-		es->num_records_last_page = (uint16_t) ((file_size_in_bytes % es->page_size) / es->value_size);
-	}
-	else {
-		return err_invalid_initial_size;
+	es->num_values_last_page = (uint16_t) ((file_size_in_bytes % es->page_size) / es->value_size);
+	if (0 == es->num_values_last_page) {
+		es->num_values_last_page = es->page_size / (uint16_t) es->value_size; // TODO
 	}
 
 	es->num_pages = ION_EXTERNAL_SORT_CEILING((uint32_t) file_size_in_bytes, es->page_size);
@@ -115,23 +116,33 @@ ion_external_sort_dump_all(
 	cursor.buffer		= buffer;
 	cursor.buffer_size	= buffer_size;
 
+	void *value = malloc(es->value_size);
+
+	if (NULL == value) {
+		return err_out_of_memory;
+	}
+
+	ion_err_t error = err_ok;
+
 	switch (es->sort_algorithm) {
 		case ION_FILE_SORT_FLASH_MINSORT: {
 			cursor.next = ion_flash_min_sort_next;
 
-			if (err_ok != ion_flash_min_sort_init(es, &cursor)) {
-				/* TODO: some error */
+			if (err_ok != (error = ion_flash_min_sort_init(es, &cursor))) {
+				break;
 			}
 
 			ion_flash_min_sort_t flash_min_sort_data;
-
 			cursor.implementation_data = &flash_min_sort_data;
 
-			return cursor.next(&cursor);
+			error = cursor.next(&cursor, value);
+			break;
 		}
-
 		default: {
-			return err_ok;
+			break;
 		}
 	}
+
+	free(value);
+	return error;
 }

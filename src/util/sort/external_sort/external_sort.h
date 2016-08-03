@@ -40,12 +40,13 @@ extern "C" {
 ion_err_t
 ion_external_sort_init(
 	ion_external_sort_t				*es,
-	FILE							*file,
+	FILE							*input_file,
 	ion_sort_comparator_context_t	context,
 	ion_sort_comparator_t			compare_function,
 	ion_key_size_t					key_size,
 	ion_value_size_t				value_size,
 	ion_page_size_t					page_size,
+	ion_boolean_e					sorted_pages,
 	ion_file_sort_algorithm_e		sort_algorithm
 );
 
@@ -55,6 +56,11 @@ ion_external_sort_init_cursor(
 	ion_external_sort_cursor_t	*cursor,
 	void						*buffer,
 	ion_buffer_size_t			buffer_size
+);
+
+void
+ion_external_sort_destroy_cursor(
+	ion_external_sort_cursor_t *cursor
 );
 
 ion_err_t

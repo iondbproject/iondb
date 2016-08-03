@@ -112,44 +112,6 @@ typedef union predicate_statement ion_predicate_statement_t;
 typedef struct dictionary_parent ion_dictionary_parent_t;
 
 /**
-@brief		A status type describing the current state of an initialized cursor.
-*/
-enum cursor_status {
-	cs_invalid_index = -1,	/**< A cursor status stating that
-											 the cursor has an invalid index. */
-	cs_invalid_cursor,	/**< A cursor status stating that the
-											 cursor is generally invalid. */
-	cs_end_of_results,	/**< A cursor status stating that the
-											 the cursor has reached the end of
-											 the results. */
-	cs_cursor_initialized,	/**< A cursor status stating that the
-											 cursor has been initialized but has
-											 data that hasn't yet been
-											 accessed.
-											 Cursor is valid but data has need
-											 been accessed. */
-	cs_cursor_uninitialized,/**< A cursor status stating that
-											 the cursor has not yet been
-											 attached to a predicate statement
-											 and associated data. */
-	cs_cursor_active,	/**< A cursor status stating that
-											 the cursor is active and is
-											 traversing data. */
-	cs_possible_data_inconsistency,	/**< A cursor status stating that the
-											 data in the underlying dictionary
-											 has been changed, making the cursor
-											 invalid. */
-	cs_valid_data	/**< The data in the cursor is valid. @todo we should delete this. */
-};
-
-/**
-@brief		A type for the status of a cursor.
-@details	This allows us to control the size of the status type,
-			rather than depending on the enum.
-*/
-typedef char ion_cursor_status_t;
-
-/**
 @brief		A dictionary_handler is responsible for dealing with the specific
 			interface for an underlying dictionary, but is decoupled from a
 			specific implementation.
