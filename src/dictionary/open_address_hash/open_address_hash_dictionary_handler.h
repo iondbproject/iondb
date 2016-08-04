@@ -353,6 +353,42 @@ oadict_scan(
 	ion_oadict_cursor_t *cursor	/* don't need to pass in the cursor */
 );
 
+/**
+@brief			Opens a specific open address hash instance of a dictionary.
+
+@param			handler
+					A pointer to the handler for the specific dictionary being opened.
+@param			dictionary
+					The pointer declared by the caller that will reference
+					the instance of the dictionary opened.
+@param			config
+					The configuration info of the specific dictionary to be opened.
+@param			compare
+					Function pointer for the comparison function for the dictionary.
+
+@return			The status of opening the dictionary.
+ */
+ion_err_t
+oadict_open_dictionary(
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary,
+	ion_dictionary_config_info_t	*config,
+	ion_dictionary_compare_t		compare
+);
+
+/**
+@brief			Closes an open address hash instance of a dictionary.
+
+@param			dictionary
+					A pointer to the specific dictionary instance to be closed.
+
+@return			The status of closing the dictionary.
+ */
+ion_err_t
+oadict_close_dictionary(
+	ion_dictionary_t *dictionary
+);
+
 #if defined(__cplusplus)
 }
 #endif

@@ -23,6 +23,7 @@
 
 #include "dictionary.h"
 #include "dictionary_types.h"
+#include "bpp_tree/bpp_tree_handler.h"
 
 ion_dictionary_compare_t
 dictionary_switch_compare(
@@ -241,10 +242,54 @@ dictionary_open(
 
 	ion_err_t error						= handler->open_dictionary(handler, dictionary, config, compare);
 
-	dictionary->instance->id = config->id;
+	if (err_not_implemented == error) {
+		ion_predicate_t				predicate;
+		ion_dict_cursor_t			*cursor = NULL;
+		ion_record_t				record;
+		ion_dictionary_handler_t	bpp_tree_handler;
+		ion_dictionary_t			bpp_dict;
+
+		bpptree_init(&bpp_tree_handler);
+
+		ion_dictionary_config_info_t bpp_config = {
+			config->id, 0, config->type, config->key_size, config->value_size, config->dictionary_size
+		};
+
+		if (err_ok != dictionary_open(&bpp_tree_handler, &bpp_dict, &bpp_config)) {
+			return err_dictionary_initialization_failed;
+		}
+
+		dictionary_build_predicate(&predicate, predicate_all_records);
+		dictionary_find(&bpp_dict, &predicate, &cursor);
+		record.key		= malloc((size_t) config->key_size);
+		record.value	= malloc((size_t) config->value_size);
+
+		if (dictionary_create(handler, dictionary, config->id, config->type, config->key_size, config->value_size, config->dictionary_size) != err_ok) {
+			return err_dictionary_initialization_failed;
+		}
+
+		ion_cursor_status_t cursor_status;
+
+		while ((cursor_status = cursor->next(cursor, &record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
+			dictionary_insert(dictionary, record.key, record.value);
+		}
+
+		if (cursor_status != cs_end_of_results) {
+			return err_dictionary_initialization_failed;
+		}
+
+		cursor->destroy(&cursor);
+		free(record.key);
+		free(record.value);
+
+		dictionary_delete_dictionary(&bpp_dict);
+
+		error = err_ok;
+	}
 
 	if (err_ok == error) {
-		dictionary->status = ion_dictionary_status_ok;
+		dictionary->status			= ion_dictionary_status_ok;
+		dictionary->instance->id	= config->id;
 	}
 	else {
 		dictionary->status = ion_dictionary_status_error;
@@ -262,6 +307,48 @@ dictionary_close(
 	}
 
 	ion_err_t error = dictionary->handler->close_dictionary(dictionary);
+
+	if (err_not_implemented == error) {
+		ion_predicate_t		predicate;
+		ion_dict_cursor_t	*cursor = NULL;
+		ion_record_t		record;
+
+		dictionary_build_predicate(&predicate, predicate_all_records);
+		dictionary_find(dictionary, &predicate, &cursor);
+		record.key		= (ion_key_t) malloc((size_t) dictionary->instance->record.key_size);
+		record.value	= (ion_value_t) malloc((size_t) dictionary->instance->record.value_size);
+
+		int							key_size	= dictionary->instance->record.key_size;
+		int							value_size	= dictionary->instance->record.value_size;
+		ion_key_type_t				key_type	= dictionary->instance->key_type;
+		ion_dictionary_handler_t	bpp_tree_handler;
+		ion_dictionary_t			bpp_dict;
+
+		bpptree_init(&bpp_tree_handler);
+
+		if (dictionary_create(&bpp_tree_handler, &bpp_dict, dictionary->instance->id, key_type, key_size, value_size, 1) != err_ok) {
+			return err_dictionary_initialization_failed;
+		}
+
+		ion_cursor_status_t cursor_status;
+
+		while ((cursor_status = cursor->next(cursor, &record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
+			dictionary_insert(&bpp_dict, record.key, record.value);
+		}
+
+		if (cursor_status != cs_end_of_results) {
+			return err_dictionary_initialization_failed;
+		}
+
+		cursor->destroy(&cursor);
+		free(record.key);
+		free(record.value);
+
+		dictionary_close(&bpp_dict);
+		dictionary_delete_dictionary(dictionary);
+
+		error = err_ok;
+	}
 
 	if (err_ok == error) {
 		dictionary->status = ion_dictionary_status_closed;

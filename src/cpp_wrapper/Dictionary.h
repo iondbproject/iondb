@@ -182,8 +182,8 @@ range(
 	K	max_key
 ) {
 	ion_predicate_t predicate;
-	ion_key_t		ion_min_key = (ion_key_t) &min_key;
-	ion_key_t		ion_max_key = (ion_key_t) &max_key;
+	ion_key_t		ion_min_key = &min_key;
+	ion_key_t		ion_max_key = &max_key;
 
 	dictionary_build_predicate(&predicate, predicate_range, ion_min_key, ion_max_key);
 	return new Cursor<K, V>(&dict, &predicate);
@@ -202,7 +202,7 @@ equality(
 	K key
 ) {
 	ion_predicate_t predicate;
-	ion_key_t		ion_key = (ion_key_t) &key;
+	ion_key_t		ion_key = &key;
 
 	dictionary_build_predicate(&predicate, predicate_equality, ion_key);
 	return new Cursor<K, V>(&dict, &predicate);

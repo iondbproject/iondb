@@ -14,8 +14,26 @@
 /******************************************************************************/
 
 #include "open_address_file_hash.h"
+#include "open_address_file_hash_dictionary_handler.c"
+#include "../../file/ion_file.h"
+#include "../dictionary_types.h"
 
 #define TEST_FILE "file.bin"
+
+ion_err_t
+oafh_close(
+	ion_file_hashmap_t *hash_map
+) {
+	if (NULL != hash_map->file) {
+		/* check to ensure that you are not freeing something already free */
+		fclose(hash_map->file);
+		free(hash_map);
+		return err_ok;
+	}
+	else {
+		return err_file_close_error;
+	}
+}
 
 ion_err_t
 oafh_initialize(
@@ -24,7 +42,8 @@ oafh_initialize(
 	ion_key_type_t key_type,
 	ion_key_size_t key_size,
 	ion_value_size_t value_size,
-	int size
+	int size,
+	ion_dictionary_id_t id
 ) {
 	hashmap->write_concern				= wc_insert_unique;			/* By default allow unique inserts only */
 	hashmap->super.record.key_size		= key_size;
@@ -34,8 +53,22 @@ oafh_initialize(
 	/* The hash map is allocated as a single contiguous file*/
 	hashmap->map_size					= size;
 
+	hashmap->compute_hash				= (*hashing_function);	/* Allows for binding of different hash functions
+																depending on requirements */
+
+	char addr_filename[20];
+
 	/* open the file */
-	hashmap->file						= fopen(TEST_FILE, "w+b");
+	oafdict_get_addr_filename(id, addr_filename);
+
+	hashmap->file = fopen(addr_filename, "r+b");
+
+	if (NULL != hashmap->file) {
+		return err_ok;
+	}
+
+	/* open the file */
+	hashmap->file = fopen(addr_filename, "w+b");
 
 	ion_hash_bucket_t *file_record;
 
@@ -63,9 +96,6 @@ oafh_initialize(
 		return err_file_write_error;
 	}
 
-	hashmap->compute_hash = (*hashing_function);/* Allows for binding of different hash functions
-																depending on requirements */
-
 	free(file_record);
 
 	return err_ok;
@@ -88,10 +118,14 @@ oafh_destroy(
 	hash_map->super.record.key_size		= 0;
 	hash_map->super.record.value_size	= 0;
 
+	char addr_filename[20];
+
+	oafdict_get_addr_filename(hash_map->super.id, addr_filename);
+
 	if (hash_map->file != NULL) {
 		/* check to ensure that you are not freeing something already free */
 		fclose(hash_map->file);
-		fremove(TEST_FILE);
+		fremove(addr_filename);
 		hash_map->file = NULL;
 		return err_ok;
 	}
