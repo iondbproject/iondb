@@ -22,8 +22,6 @@
 /******************************************************************************/
 
 #include "flat_file.h"
-#include "flat_file_types.h"
-#include "../../key_value/kv_system.h"
 
 /**
 @brief			Given the ID and a buffer to write to, writes back the formatted filename
@@ -53,8 +51,8 @@ flat_file_initialize(
 	ion_dictionary_size_t	dictionary_size
 ) {
 	if (dictionary_size <= 0) {
-		/* TODO: Should we instead just clamp at 1 instead of failing? */
-		return err_invalid_initial_size;/* Can't have a negative dictionary size for the flat file */
+		/* Clamp the dictionary size since we always need at least 1 row to buffer */
+		dictionary_size = 1;
 	}
 
 	flat_file->super.key_type			= key_type;

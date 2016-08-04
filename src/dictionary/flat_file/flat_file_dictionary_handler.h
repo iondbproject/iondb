@@ -218,6 +218,44 @@ ffdict_destroy_cursor(
 	ion_dict_cursor_t **cursor
 );
 
+/**
+@brief		Re-instances a previously created flat file store instance
+			and prepares it to be used again.
+@param[in]	handler
+				A handler that must be bound with the flat file's functions.
+@param[in]	dictionary
+				A dictionary that is allocated but not initialized. We will
+				store the details of the re-instanced flat file store in here.
+@param[in]	config
+				The configuration parameters previously used by the flat file store
+				we are opening. This must either be provided directly if dictionaries
+				are being managed manually, or will be provided by the dictionary manager
+				that is currently in use.
+@param[in]	compare
+				The comparison function that will be given by higher layers, based on the
+				destined key type.
+@return		The resulting status of the operation.
+*/
+ion_err_t
+ffdict_open_dictionary(
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary,
+	ion_dictionary_config_info_t	*config,
+	ion_dictionary_compare_t		compare
+);
+
+/**
+@brief		Closes this flat file store and persists everything to disk
+			to be brought back later using @ref dictionary_open.
+@param[in]	dictionary
+				Which instance of a flat file store to close.
+@return		The resuling status of the operation.
+*/
+ion_err_t
+ffdict_close_dictionary(
+	ion_dictionary_t *dictionary
+);
+
 #if defined(__cplusplus)
 }
 #endif

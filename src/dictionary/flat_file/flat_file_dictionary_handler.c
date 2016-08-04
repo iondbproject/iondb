@@ -35,6 +35,8 @@ ffdict_init(
 	handler->find				= ffdict_find;
 	handler->remove				= ffdict_delete;
 	handler->delete_dictionary	= ffdict_delete_dictionary;
+	handler->open_dictionary	= ffdict_open_dictionary;
+	handler->close_dictionary	= ffdict_close_dictionary;
 }
 
 ion_status_t
@@ -147,4 +149,21 @@ ffdict_test_predicate(
 	ion_key_t			key
 ) {
 	return boolean_false;
+}
+
+ion_err_t
+ffdict_open_dictionary(
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary,
+	ion_dictionary_config_info_t	*config,
+	ion_dictionary_compare_t		compare
+) {
+	return err_not_implemented;
+}
+
+ion_err_t
+ffdict_close_dictionary(
+	ion_dictionary_t *dictionary
+) {
+	return err_not_implemented;
 }
