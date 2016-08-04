@@ -23,7 +23,6 @@
 /******************************************************************************/
 
 #include "flat_file_dictionary_handler.h"
-#include "flat_file_types.h"
 
 void
 ffdict_init(
@@ -234,14 +233,22 @@ ffdict_find(
 		}
 
 		case predicate_all_records: {
-			ion_flat_file_cursor_t *flat_file_cursor = (ion_flat_file_cursor_t *) (*cursor);
+			ion_flat_file_cursor_t *flat_file_cursor	= (ion_flat_file_cursor_t *) (*cursor);
 
-			if (flat_file_is_empty(flat_file)) {
+			ion_fpos_t			loc						= -1;
+			ion_flat_file_row_t row;
+			ion_err_t			scan_result				= flat_file_scan(flat_file, -1, &loc, &row, boolean_true, flat_file_predicate_not_empty);
+
+			if (err_file_hit_eof == scan_result) {
 				(*cursor)->status = cs_end_of_results;
 			}
-			else {
-				flat_file_cursor->current_location	= 0;
+			else if (err_ok == scan_result) {
+				flat_file_cursor->current_location	= loc;
 				(*cursor)->status					= cs_cursor_initialized;
+			}
+			else {
+				/* Scan failure */
+				return scan_result;
 			}
 
 			return err_ok;
@@ -278,17 +285,12 @@ ffdict_next(
 	}
 	else if ((cursor->status == cs_cursor_initialized) || (cursor->status == cs_cursor_active)) {
 		if (cursor->status == cs_cursor_active) {
-			ion_boolean_t		have_results = boolean_false;
 			ion_flat_file_row_t throwaway_row;
-			ion_err_t			err;
+			ion_err_t			err = err_uninitialized;
 
 			switch (cursor->predicate->type) {
 				case predicate_equality: {
 					err = flat_file_scan(flat_file, flat_file_cursor->current_location + 1, &flat_file_cursor->current_location, &throwaway_row, boolean_true, flat_file_predicate_key_match, cursor->predicate->statement.equality.equality_value);
-
-					if (err_ok == err) {
-						have_results = boolean_true;
-					}
 
 					break;
 				}
@@ -296,17 +298,11 @@ ffdict_next(
 				case predicate_range: {
 					err = flat_file_scan(flat_file, flat_file_cursor->current_location + 1, &flat_file_cursor->current_location, &throwaway_row, boolean_true, flat_file_predicate_within_bounds, cursor->predicate->statement.range.lower_bound, cursor->predicate->statement.range.upper_bound);
 
-					if (err_ok == err) {
-						have_results = boolean_true;
-					}
-
 					break;
 				}
 
 				case predicate_all_records: {
-					flat_file_cursor->current_location++;
-
-					have_results = flat_file_check_index(flat_file, flat_file_cursor->current_location);
+					err = flat_file_scan(flat_file, flat_file_cursor->current_location + 1, &flat_file_cursor->current_location, &throwaway_row, boolean_true, flat_file_predicate_not_empty);
 
 					break;
 				}
@@ -317,8 +313,12 @@ ffdict_next(
 				}
 			}
 
-			if (!have_results) {
+			if (err_file_hit_eof == err) {
 				cursor->status = cs_end_of_results;
+				return cursor->status;
+			}
+			else if (err_ok != err) {
+				cursor->status = cs_possible_data_inconsistency;
 				return cursor->status;
 			}
 		}

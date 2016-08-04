@@ -233,15 +233,14 @@ flat_file_predicate_within_bounds(
 );
 
 /**
-@brief		Returns true or false depending on whether or not there are
-			records stored within the flat file.
-@param		flat_file
-				Which flat file to check.
-@return		Resulting emptiness status.
+@brief		Predicate function to return any row that is **not** empty or deleted.
+@see		ion_flat_file_predicate_t
 */
 ion_boolean_t
-flat_file_is_empty(
-	ion_flat_file_t *flat_file
+flat_file_predicate_not_empty(
+	ion_flat_file_t		*flat_file,
+	ion_flat_file_row_t *row,
+	va_list				*args
 );
 
 /**
@@ -267,22 +266,6 @@ flat_file_read_row(
 	ion_flat_file_t		*flat_file,
 	ion_fpos_t			location,
 	ion_flat_file_row_t *row
-);
-
-/**
-@brief		Checks to see if the given location (as an index) is within
-			the bounds of the flat file (i.e. not past EOF, and not before the
-			data segement).
-@param		flat_file
-				Which flat file to check within.
-@param		location
-				The target index to check.
-@return		@ref boolean_true if OK, else @ref boolean_false if out of bounds.
-*/
-ion_boolean_t
-flat_file_check_index(
-	ion_flat_file_t *flat_file,
-	ion_fpos_t		location
 );
 
 #if defined(__cplusplus)

@@ -22,7 +22,6 @@
 /******************************************************************************/
 
 #include "flat_file.h"
-#include "flat_file_types.h"
 
 /**
 @brief			Given the ID and a buffer to write to, writes back the formatted filename
@@ -119,25 +118,6 @@ flat_file_destroy(
 	return err_ok;
 }
 
-ion_boolean_t
-flat_file_check_index(
-	ion_flat_file_t *flat_file,
-	ion_fpos_t		location
-) {
-	ion_fpos_t	eof_pos = 0;
-	ion_fpos_t	offset	= location * flat_file->row_size;
-
-	if (0 != fseek(flat_file->data_file, 0, SEEK_END)) {
-		return boolean_false;
-	}
-
-	if (-1 == (eof_pos = ftell(flat_file->data_file))) {
-		return boolean_false;
-	}
-
-	return (offset <= eof_pos) && (offset >= flat_file->start_of_data);
-}
-
 ion_err_t
 flat_file_scan(
 	ion_flat_file_t				*flat_file,
@@ -169,10 +149,9 @@ flat_file_scan(
 			cur_offset = eof_pos;
 		}
 	}
-	else {
-		if (!flat_file_check_index(flat_file, start_location)) {
-			return err_out_of_bounds;
-		}
+
+	if ((cur_offset > eof_pos) || (cur_offset < flat_file->start_of_data)) {
+		return err_out_of_bounds;
 	}
 
 	/* This line is likely not needed, as long as we're careful to only read good data */
@@ -254,7 +233,7 @@ flat_file_scan(
 /**
 @brief		Predicate function to return any row that is empty or deleted.
 @see		ion_flat_file_predicate_t
- */
+*/
 ion_boolean_t
 flat_file_predicate_empty(
 	ion_flat_file_t		*flat_file,
@@ -265,6 +244,18 @@ flat_file_predicate_empty(
 	UNUSED(args);
 
 	return FLAT_FILE_STATUS_EMPTY == row->row_status;
+}
+
+ion_boolean_t
+flat_file_predicate_not_empty(
+	ion_flat_file_t		*flat_file,
+	ion_flat_file_row_t *row,
+	va_list				*args
+) {
+	UNUSED(flat_file);
+	UNUSED(args);
+
+	return FLAT_FILE_STATUS_OCCUPIED == row->row_status;
 }
 
 ion_boolean_t
@@ -312,10 +303,6 @@ flat_file_write_row(
 	ion_fpos_t			location,
 	ion_flat_file_row_t *row
 ) {
-	if (!flat_file_check_index(flat_file, location)) {
-		return err_out_of_bounds;
-	}
-
 	if (0 != fseek(flat_file->data_file, location * flat_file->row_size, SEEK_SET)) {
 		return err_file_bad_seek;
 	}
@@ -341,10 +328,6 @@ flat_file_read_row(
 	ion_fpos_t			location,
 	ion_flat_file_row_t *row
 ) {
-	if (!flat_file_check_index(flat_file, location)) {
-		return err_out_of_bounds;
-	}
-
 	if (0 != fseek(flat_file->data_file, location * flat_file->row_size, SEEK_SET)) {
 		return err_file_bad_seek;
 	}
@@ -524,17 +507,4 @@ flat_file_close(
 	}
 
 	return err_ok;
-}
-
-ion_boolean_t
-flat_file_is_empty(
-	ion_flat_file_t *flat_file
-) {
-	if (0 != fseek(flat_file->data_file, 0, SEEK_END)) {
-		return boolean_true;
-	}
-
-	ion_fpos_t eof_pos = ftell(flat_file->data_file);
-
-	return eof_pos == -1 || eof_pos == flat_file->start_of_data;
 }

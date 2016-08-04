@@ -22,7 +22,6 @@
 /******************************************************************************/
 
 #include "test_flat_file.h"
-#include "../../../../dictionary/flat_file/flat_file_types.h"
 
 /********* PRIVATE METHOD DECLARATIONS **********/
 
