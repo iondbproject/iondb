@@ -150,10 +150,6 @@ flat_file_scan(
 ) {
 	ion_fpos_t eof_pos = 0;
 
-	if (!flat_file_check_index(flat_file, start_location)) {
-		return err_out_of_bounds;
-	}
-
 	if (0 != fseek(flat_file->data_file, 0, SEEK_END)) {
 		return err_file_bad_seek;
 	}
@@ -171,6 +167,11 @@ flat_file_scan(
 		}
 		else {
 			cur_offset = eof_pos;
+		}
+	}
+	else {
+		if (!flat_file_check_index(flat_file, start_location)) {
+			return err_out_of_bounds;
 		}
 	}
 

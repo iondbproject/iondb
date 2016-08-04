@@ -294,7 +294,7 @@ ffdict_next(
 				}
 
 				case predicate_range: {
-					flat_file_scan(flat_file, flat_file_cursor->current_location + 1, &flat_file_cursor->current_location, &throwaway_row, boolean_true, flat_file_predicate_within_bounds, cursor->predicate->statement.range.lower_bound, cursor->predicate->statement.range.upper_bound);
+					err = flat_file_scan(flat_file, flat_file_cursor->current_location + 1, &flat_file_cursor->current_location, &throwaway_row, boolean_true, flat_file_predicate_within_bounds, cursor->predicate->statement.range.lower_bound, cursor->predicate->statement.range.upper_bound);
 
 					if (err_ok == err) {
 						have_results = boolean_true;
@@ -306,9 +306,7 @@ ffdict_next(
 				case predicate_all_records: {
 					flat_file_cursor->current_location++;
 
-					if (!flat_file_check_index(flat_file, flat_file_cursor->current_location)) {
-						have_results = boolean_false;
-					}
+					have_results = flat_file_check_index(flat_file, flat_file_cursor->current_location);
 
 					break;
 				}

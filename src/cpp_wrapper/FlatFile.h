@@ -35,7 +35,7 @@ FlatFile(
 ) {
 	ffdict_init(&this->handler);
 
-	this->initializeDictionary(type_key, key_size, value_size, 0);
+	this->initializeDictionary(type_key, key_size, value_size, 1);
 }
 };
 
