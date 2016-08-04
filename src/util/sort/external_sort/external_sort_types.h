@@ -39,7 +39,7 @@ typedef uint8_t ion_external_sort_data_pointer_t;
 
 typedef enum {
 	ION_FILE_SORT_FLASH_MINSORT
-} ion_file_sort_algorithm_e;
+} ion_external_sort_algorithm_e;
 
 typedef struct ion_external_sort_cursor_s ion_external_sort_cursor_t;
 
@@ -53,7 +53,7 @@ typedef struct {
 	uint32_t						num_pages;
 	uint16_t						num_values_last_page;
 	ion_boolean_e					sorted_pages;
-	ion_file_sort_algorithm_e		sort_algorithm;
+	ion_external_sort_algorithm_e		sort_algorithm;
 } ion_external_sort_t;
 
 struct ion_external_sort_cursor_s {

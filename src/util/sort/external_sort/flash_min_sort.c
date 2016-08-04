@@ -2,9 +2,9 @@
 /**
 @file
 @author		Wade Penson
-@brief		Implementation of the flash minsort algorithm that does not use
-            dynamic sizing of the minimum index since the number of values
-            is already known.
+@brief		Implementation of the flash minsort algorithm.
+@details	It does not use dynamic sizing of the minimum index since the
+ 			number of values is already known.
 @copyright	Copyright 2016
                 The University of British Columbia,
                 IonDB Project Contributors (see AUTHORS.md)
@@ -27,7 +27,6 @@
 /******************************************************************************/
 
 #include "flash_min_sort.h"
-#include "external_sort_types.h"
 
 ion_err_t
 ion_flash_min_sort_init(
@@ -36,16 +35,16 @@ ion_flash_min_sort_init(
 ) {
 	ion_flash_min_sort_t *fms = cursor->implementation_data;
 
-	/* Check if the buffer is large enough for the algorithm. */
-	if (((int32_t) cursor->buffer_size - 3 * es->value_size - (int32_t) ION_EXTERNAL_SORT_CEILING(es->num_pages, 8)) < 0) {
-		return err_out_of_memory;
-	}
-
 	/* Calculate the number of regions and pages in each region. Note that the value instead of the key is stored in
 	   the buckets of the minimal index to preserve generality. The size for the bit vectors to indicate uninitialized
 	   value is also included in the calculation. */
-	fms->num_pages_per_region	= ION_EXTERNAL_SORT_CEILING(((uint32_t) es->num_pages * es->value_size + ION_EXTERNAL_SORT_CEILING(es->num_pages, 8)), (cursor->buffer_size - 2 * es->value_size));
-	fms->num_regions			= ION_EXTERNAL_SORT_CEILING(((uint32_t) es->num_pages), (fms->num_pages_per_region));
+	fms->num_regions			= ((cursor->buffer_size - 2 * es->value_size) * 8) / (es->value_size * 8 + 1);
+	fms->num_pages_per_region	= ION_EXTERNAL_SORT_CEILING(((uint32_t) es->num_pages), (fms->num_regions));
+
+	/* Check if the buffer is large enough for the algorithm. */
+	if (((int32_t) cursor->buffer_size - 3 * es->value_size - (int32_t) ION_EXTERNAL_SORT_CEILING(fms->num_regions, 8)) < 0) {
+		return err_out_of_memory;
+	}
 
 	/* TODO: Check to see if there is more memory left in buffer for page caching */
 
@@ -57,7 +56,7 @@ ion_flash_min_sort_init(
 	/* Set the bits to 0 in the minimum index bit vector. */
 	uint32_t i;
 
-	for (i = 0; i < ION_EXTERNAL_SORT_CEILING(es->num_pages, 8); i++) {
+	for (i = 0; i < ION_EXTERNAL_SORT_CEILING(fms->num_regions, 8); i++) {
 		(fms->min_index_bit_vector)[i] = 0xFF;
 	}
 
@@ -69,18 +68,17 @@ ion_flash_min_sort_init(
 	fms->cur_page_in_region = 0;
 	fms->cur_byte_in_buffer = 0;
 
-	fms->num_bytes_in_page	= es->page_size; /////////
+	fms->num_bytes_in_page	= (es->page_size / (uint32_t) es->value_size) * (uint32_t) es->value_size;
 
 	rewind(es->input_file);
 
 	for (fms->cur_page = 0; fms->cur_page < es->num_pages; fms->cur_page++) {
 		/* If it is the last page, change the number of value to loop through */
 		if (fms->cur_page == es->num_pages - 1) {
-			fms->num_bytes_in_page = (uint32_t) es->num_values_last_page * es->value_size; /////////
+			fms->num_bytes_in_page = (uint32_t) es->num_values_last_page * es->value_size;
 		}
 
 		for (fms->cur_byte_in_page = 0; fms->cur_byte_in_page < fms->num_bytes_in_page; fms->cur_byte_in_page += es->value_size) {
-//			printf("%d\n", ftell(es->input_file));
 			if (0 == fread(fms->temp_value, es->value_size, 1, es->input_file)) {
 				return err_file_read_error;
 			}
@@ -101,14 +99,14 @@ ion_flash_min_sort_init(
 				fms->cur_page_in_region++;
 			}
 
-//			/* Seek to beginning of the next page. */
-//			if (0 != fseek(es->input_file, es->page_size - (fms->cur_byte_in_page + es->value_size), SEEK_CUR)) {
-//				return err_file_bad_seek;
-//			}
+			/* Seek to beginning of the next page. */
+			if (0 != fseek(es->input_file, es->page_size - (fms->cur_byte_in_page), SEEK_CUR)) {
+				return err_file_bad_seek;
+			}
 		}
 	}
 
-	fms->num_bytes_in_page	= es->page_size; ///////
+	fms->num_bytes_in_page	= (es->page_size / (uint32_t) es->value_size) * (uint32_t) es->value_size;
 
 	fms->cur_byte_in_page	= 0;
 	fms->cur_page_in_region = 0;
@@ -153,8 +151,6 @@ ion_flash_min_sort_next(
 				break;
 			}
 
-//
-
 			/* Seek to the beginning of the region. */
 			if (0 != fseek(es->input_file, fms->cur_page * es->page_size, SEEK_SET)) {
 				return err_file_bad_seek;
@@ -183,7 +179,6 @@ ion_flash_min_sort_next(
 			}
 
 			while (fms->cur_byte_in_page < fms->num_bytes_in_page) {
-//				printf("%d\n", ftell(es->input_file));
 				if (0 == fread(fms->temp_value, es->value_size, 1, es->input_file)) {
 					return err_file_read_error;
 				}
@@ -212,9 +207,9 @@ ion_flash_min_sort_next(
 			}
 
 			/* Seek to the beginning of the next page. */
-//			if (0 != fseek(es->input_file, es->page_size - (fms->num_bytes_in_page + es->value_size), SEEK_CUR)) { // TODO
-//				return err_file_bad_seek;
-//			}
+			if (0 != fseek(es->input_file, es->page_size - (fms->num_bytes_in_page), SEEK_CUR)) {
+				return err_file_bad_seek;
+			}
 
 			fms->cur_byte_in_page = 0;
 			fms->cur_page++;
@@ -222,7 +217,7 @@ ion_flash_min_sort_next(
 		}
 
 		if (fms->cur_page == es->num_pages) {
-			fms->num_bytes_in_page = es->page_size; ///////
+			fms->num_bytes_in_page = (es->page_size / (uint32_t) es->value_size) * (uint32_t) es->value_size;
 		}
 
 		fms->cur_page = 0;
