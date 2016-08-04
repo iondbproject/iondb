@@ -28,7 +28,7 @@ typedef long	ion_bpp_address_t;		/* record address for btree node */
  *	CC_LT	 key1 < key2
  *	CC_GT	 key1 > key2
  *	CC_EQ	 key1 = key2
- */
+*/
 typedef char (*ion_bpp_comparison_t)(
 	ion_key_t		key1,
 	ion_key_t		key2,
@@ -64,10 +64,10 @@ typedef void *ion_bpp_handle_t;
 
 typedef struct {
 	/* info for bOpen() */
-	char		*iName;			/* name of index file */
-	int			keySize;		/* length, in bytes, of key */
-	ion_bpp_bool_t	dupKeys;				/* true if duplicate keys allowed */
-	size_t		sectorSize;		/* size of sector on disk */
+	char					*iName;	/* name of index file */
+	int						keySize;/* length, in bytes, of key */
+	ion_bpp_bool_t			dupKeys;		/* true if duplicate keys allowed */
+	size_t					sectorSize;	/* size of sector on disk */
 	ion_bpp_comparison_t	comp;			/* pointer to compare function */
 } ion_bpp_open_t;
 
@@ -76,8 +76,8 @@ typedef struct {
  ***********************/
 ion_bpp_err_t
 bOpen(
-	ion_bpp_open_t	info,
-	ion_bpp_handle_t *handle
+	ion_bpp_open_t		info,
+	ion_bpp_handle_t	*handle
 );
 
 /*
@@ -90,7 +90,7 @@ bOpen(
  *   bErrMemory			 insufficient memory
  *   bErrSectorSize		 sector size too small or not 0 mod 4
  *   bErrFileNotOpen		unable to open index file
- */
+*/
 
 ion_bpp_err_t
 bClose(
@@ -102,12 +102,12 @@ bClose(
  *   handle				 handle returned by bOpen
  * returns:
  *   bErrOk				 file closed, resources deleted
- */
+*/
 
 ion_bpp_err_t
 bInsertKey(
-	ion_bpp_handle_t handle,
-	void		*key,
+	ion_bpp_handle_t			handle,
+	void						*key,
 	ion_bpp_external_address_t	rec
 );
 
@@ -125,12 +125,12 @@ bInsertKey(
  *   allowed, but they must all have unique record addresses.
  *   In this case, record addresses are included in internal
  *   nodes to generate a "unique" key.
- */
+*/
 
 ion_bpp_err_t
 bUpdateKey(
-	ion_bpp_handle_t handle,
-	void		*key,
+	ion_bpp_handle_t			handle,
+	void						*key,
 	ion_bpp_external_address_t	rec
 );
 
@@ -148,12 +148,12 @@ bUpdateKey(
  *   allowed, but they must all have unique record addresses.
  *   In this case, record addresses are included in internal
  *   nodes to generate a "unique" key.
- */
+*/
 
 ion_bpp_err_t
 bDeleteKey(
-	ion_bpp_handle_t handle,
-	void		*key,
+	ion_bpp_handle_t			handle,
+	void						*key,
 	ion_bpp_external_address_t	*rec
 );
 
@@ -171,12 +171,12 @@ bDeleteKey(
  *   If dupKeys is false, all keys are unique, and rec is not used
  *   to determine which key to delete.  If dupKeys is true, then
  *   rec is used to determine which key to delete.
- */
+*/
 
 ion_bpp_err_t
 bFindKey(
-	ion_bpp_handle_t handle,
-	void		*key,
+	ion_bpp_handle_t			handle,
+	void						*key,
 	ion_bpp_external_address_t	*rec
 );
 
@@ -189,13 +189,13 @@ bFindKey(
  * returns:
  *   bErrOk				 operation successful
  *   bErrKeyNotFound		key not found
- */
+*/
 
 ion_bpp_err_t
 bFindFirstGreaterOrEqual(
-	ion_bpp_handle_t handle,
-	void		*key,
-	void		*mkey,
+	ion_bpp_handle_t			handle,
+	void						*key,
+	void						*mkey,
 	ion_bpp_external_address_t	*rec
 );
 
@@ -208,12 +208,12 @@ bFindFirstGreaterOrEqual(
  *   rec					record address of least element greater than or equal to
  * returns:
  *   bErrOk				 operation successful
- */
+*/
 
 ion_bpp_err_t
 bFindFirstKey(
-	ion_bpp_handle_t handle,
-	void		*key,
+	ion_bpp_handle_t			handle,
+	void						*key,
 	ion_bpp_external_address_t	*rec
 );
 
@@ -226,12 +226,12 @@ bFindFirstKey(
  * returns:
  *   bErrOk				 operation successful
  *   bErrKeyNotFound		key not found
- */
+*/
 
 ion_bpp_err_t
 bFindLastKey(
-	ion_bpp_handle_t handle,
-	void		*key,
+	ion_bpp_handle_t			handle,
+	void						*key,
 	ion_bpp_external_address_t	*rec
 );
 
@@ -244,12 +244,12 @@ bFindLastKey(
  * returns:
  *   bErrOk				 operation successful
  *   bErrKeyNotFound		key not found
- */
+*/
 
 ion_bpp_err_t
 bFindNextKey(
-	ion_bpp_handle_t handle,
-	void		*key,
+	ion_bpp_handle_t			handle,
+	void						*key,
 	ion_bpp_external_address_t	*rec
 );
 
@@ -262,12 +262,12 @@ bFindNextKey(
  * returns:
  *   bErrOk				 operation successful
  *   bErrKeyNotFound		key not found
- */
+*/
 
 ion_bpp_err_t
 bFindPrevKey(
-	ion_bpp_handle_t handle,
-	void		*key,
+	ion_bpp_handle_t			handle,
+	void						*key,
 	ion_bpp_external_address_t	*rec
 );
 
@@ -280,7 +280,7 @@ bFindPrevKey(
  * returns:
  *   bErrOk				 operation successful
  *   bErrKeyNotFound		key not found
- */
+*/
 
 #if defined(__cplusplus)
 }

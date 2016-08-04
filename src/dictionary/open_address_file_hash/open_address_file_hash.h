@@ -33,7 +33,7 @@ extern "C" {
 
 /**
 @brief		Prototype declaration for hashmap
- */
+*/
 typedef struct file_hashmap ion_file_hashmap_t;
 
 /**
@@ -102,7 +102,7 @@ oafh_close(
 @param		id
 				The id of hashmap.
 @return		The status describing the result of the initialization.
- */
+*/
 ion_err_t
 oafh_initialize(
 	ion_file_hashmap_t *hashmap,
@@ -205,7 +205,7 @@ oafh_update(
 @param		location
 				Pointer to the location variable
 @return		The status of the find
- */
+*/
 ion_err_t
 oafh_find_item_loc(
 	ion_file_hashmap_t	*hash_map,

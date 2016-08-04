@@ -3,7 +3,7 @@
 @author		Scott Ronald Fazackerley
 
 @details	Tests base operations for open address hash map
- */
+*/
 
 #include "test_open_address_hash.h"
 #include "../../../../key_value/kv_system.h"
@@ -16,7 +16,7 @@
 
 @param		  map
 					The hashmap to visualize.
- */
+*/
 void
 check_map(
 	ion_hashmap_t *map
@@ -64,7 +64,7 @@ initialize_hash_map_std_conditions(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_hashmap_initialize(
 	planck_unit_test_t *tc
@@ -98,7 +98,7 @@ test_open_address_hashmap_initialize(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_hashmap_compute_simple_hash(
 	planck_unit_test_t *tc
@@ -121,7 +121,7 @@ test_open_address_hashmap_compute_simple_hash(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_hashmap_get_location(
 	planck_unit_test_t *tc
@@ -143,7 +143,7 @@ test_open_address_hashmap_get_location(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_hashmap_find_item_location(
 	planck_unit_test_t *tc
@@ -209,7 +209,7 @@ test_open_address_hashmap_find_item_location(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_hashmap_simple_insert(
 	planck_unit_test_t *tc
@@ -282,7 +282,7 @@ test_open_address_hashmap_simple_insert(
 			write_concern set to insert only
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_hashmap_simple_insert_and_query(
 	planck_unit_test_t *tc
@@ -339,7 +339,7 @@ test_open_address_hashmap_simple_insert_and_query(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_hashmap_simple_delete(
 	planck_unit_test_t *tc
@@ -426,7 +426,7 @@ test_open_address_hashmap_simple_delete(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_hashmap_duplicate_insert_1(
 	planck_unit_test_t *tc
@@ -475,7 +475,7 @@ test_open_address_hashmap_duplicate_insert_1(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_hashmap_duplicate_insert_2(
 	planck_unit_test_t *tc
@@ -565,7 +565,7 @@ test_open_address_hashmap_duplicate_insert_2(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_hashmap_update_1(
 	planck_unit_test_t *tc
@@ -655,7 +655,7 @@ test_open_address_hashmap_update_1(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_hashmap_update_2(
 	planck_unit_test_t *tc
@@ -743,7 +743,7 @@ test_open_address_hashmap_update_2(
 
 @param	  tc
 				CuTeest
- */
+*/
 void
 test_open_address_hashmap_delete_1(
 	planck_unit_test_t *tc
@@ -796,7 +796,7 @@ test_open_address_hashmap_delete_1(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_hashmap_delete_2(
 	planck_unit_test_t *tc
@@ -905,7 +905,7 @@ test_open_address_hashmap_delete_2(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_hashmap_capacity(
 	planck_unit_test_t *tc

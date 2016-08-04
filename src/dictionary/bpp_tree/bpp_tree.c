@@ -27,7 +27,7 @@
  *	To simplify matters, both internal nodes and leafs contain the
  *	same fields.
  *
- */
+*/
 
 /* macros for addressing fields */
 
@@ -388,7 +388,7 @@ search(
 	 *   CC_EQ				  key = mkey
 	 *   CC_LT				  key < mkey
 	 *   CC_GT				  key > mkey
-	 */
+	*/
 	ion_bpp_h_node_t	*h = handle;
 	int					cc;		/* condition code */
 	int					m;		/* midpoint of search */
@@ -543,7 +543,7 @@ scatter(
 	 *   tmp					array of tmp's to be used for scattering
 	 * output:
 	 *   tmp					array of tmp's used for scattering
-	 */
+	*/
 
 	/* scatter gbuf to tmps, placing 3/4 max in each tmp */
 
@@ -781,7 +781,7 @@ gather(
 	 *   doing the following:
 	 *	 - setup tmp buffer array for scattered buffers
 	 *	 - adjust pkey to point to first key of 3 buffers
-	 */
+	*/
 
 	/* find 3 adjacent buffers */
 	if (*pkey == lkey(pbuf)) {
@@ -891,7 +891,7 @@ bOpen(
 	 *  - 1 parent buf
 	 *  - 1 next sequential link
 	 *  - 1 lastGE
-	 */
+	*/
 	bufCt			= 7;
 
 	if ((h->malloc1 = malloc(bufCt * sizeof(ion_bpp_buffer_t))) == NULL) {
@@ -911,7 +911,7 @@ bOpen(
 	 *  - 1 buffer for root, of size 3*sectorSize
 	 *  - 1 buffer for gbuf, size 3*sectorsize + 2 extra keys
 	 *	to allow for LT pointers in last 2 nodes when gathering 3 full nodes
-	 */
+	*/
 	if ((h->malloc2 = malloc((bufCt + 6) * h->sectorSize + 2 * h->ks)) == NULL) {
 		return error(bErrMemory);
 	}

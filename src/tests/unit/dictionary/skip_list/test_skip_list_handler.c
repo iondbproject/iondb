@@ -22,7 +22,7 @@
 				Type of key used
 @param	  size
 				Size of dictionary
- */
+*/
 void
 create_test_dictionary(
 	ion_dictionary_t			*dictionary,
@@ -65,7 +65,7 @@ create_test_dictionary(
 				Dictionary to initialize
 @param	  handler
 				Handler to bind
- */
+*/
 void
 create_test_dictionary_std_conditions(
 	ion_dictionary_t			*dictionary,
@@ -86,7 +86,7 @@ create_test_dictionary_std_conditions(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_dictionary_handler_binding(
 	planck_unit_test_t *tc
@@ -110,7 +110,7 @@ test_dictionary_handler_binding(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_dictionary_creation(
 	planck_unit_test_t *tc
@@ -458,7 +458,7 @@ test_slhandler_cursor_range_exact_results(
 /**
 @brief	  Creates the suite to test using CuTest.
 @return	 Pointer to a CuTest suite.
- */
+*/
 planck_unit_suite_t *
 skiplist_handler_getsuite(
 ) {
@@ -483,7 +483,7 @@ skiplist_handler_getsuite(
 
 /**
 @brief	  Runs all skiplist related test and outputs the result.
- */
+*/
 void
 runalltests_skiplist_handler(
 ) {

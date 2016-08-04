@@ -144,7 +144,7 @@ dictionary_compare_unsigned_value(
 	/*
 	 * In this case, the endianness of the process does matter as the code does
 	 * a direct comparison of bytes in memory starting for MSB.
-	 */
+	*/
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 
 	for (idx = key_size - 1; idx >= 0; idx--) {
@@ -177,7 +177,7 @@ dictionary_compare_signed_value(
 	/*
 	 * In this case, the endianness of the process does matter as the code does
 	 * a direct comparison of bytes in memory starting for MSB.
-	 */
+	*/
 
 /* Start at the MSB */
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__

@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file
-@author		Kris Wallperington
+@author		Kris Wallperington, Dana Klamut
 @brief		Unit test for the C++ Wrapper
 @todo		These tests need to be fully fleshed out.
 */
@@ -744,9 +744,9 @@ test_cpp_wrapper_range_edge_case1_on_all_implementations(
 	test_cpp_wrapper_range_edge_case1(tc, dict);
 	delete dict;
 
-/*	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
-/*	test_cpp_wrapper_range_edge_case1(tc, dict); */
-/*	delete dict; */
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_range_edge_case1(tc, dict);
+	delete dict;
 
 	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_range_edge_case1(tc, dict);
@@ -804,9 +804,9 @@ test_cpp_wrapper_range_edge_case3_on_all_implementations(
 	test_cpp_wrapper_range_edge_case3(tc, dict);
 	delete dict;
 
-/*	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
-/*	test_cpp_wrapper_range_edge_case3(tc, dict); */
-/*	delete dict; */
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_range_edge_case3(tc, dict);
+	delete dict;
 
 	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_range_edge_case3(tc, dict);
@@ -991,9 +991,9 @@ test_cpp_wrapper_all_records_simple_on_all_implementations(
 	test_cpp_wrapper_all_records_simple(tc, dict, 4);
 	delete dict;
 
-/*	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
-/*	test_cpp_wrapper_all_records_simple(tc, dict, 13); */
-/*	delete dict; */
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_all_records_simple(tc, dict, 13);
+	delete dict;
 
 	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 20);
 	test_cpp_wrapper_all_records_simple(tc, dict, 5);
@@ -1021,9 +1021,9 @@ test_cpp_wrapper_all_records_edge_cases1_on_all_implementations(
 	test_cpp_wrapper_all_records_edge_cases1(tc, dict);
 	delete dict;
 
-/*	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
-/*	test_cpp_wrapper_all_records_edge_cases1(tc, dict); */
-/*	delete dict; */
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_all_records_edge_cases1(tc, dict);
+	delete dict;
 
 	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 20);
 	test_cpp_wrapper_all_records_edge_cases1(tc, dict);
@@ -1051,9 +1051,9 @@ test_cpp_wrapper_all_records_edge_cases2_on_all_implementations(
 	test_cpp_wrapper_all_records_edge_cases2(tc, dict);
 	delete dict;
 
-/*	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
-/*	test_cpp_wrapper_all_records_edge_cases2(tc, dict); */
-/*	delete dict; */
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_all_records_edge_cases2(tc, dict);
+	delete dict;
 
 	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 20);
 	test_cpp_wrapper_all_records_edge_cases2(tc, dict);
@@ -1127,9 +1127,9 @@ test_cpp_wrapper_open_close_on_all_implementations(
 	test_cpp_wrapper_open_close(tc, dict, 1, 13);
 	delete dict;
 
-/*	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
-/*	test_cpp_wrapper_open_close(tc, dict, 45, 14); */
-/*	delete dict; */
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_open_close(tc, dict, 45, 14);
+	delete dict;
 
 	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_open_close(tc, dict, 3, 15);
@@ -1169,7 +1169,7 @@ cpp_wrapper_getsuite(
 
 /**
 @brief	  Runs all C++ Related related tests and outputs the result.
- */
+*/
 void
 runalltests_cpp_wrapper(
 ) {

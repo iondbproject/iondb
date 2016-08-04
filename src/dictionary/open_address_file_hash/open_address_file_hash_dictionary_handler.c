@@ -3,7 +3,7 @@
  @file
  @author		Scott Ronald Fazackerley
  @brief		The handler for a hash table using linear probing.
- */
+*/
 /******************************************************************************/
 
 #include "open_address_file_hash_dictionary_handler.h"
@@ -74,7 +74,7 @@ oafdict_create_dictionary(
 
 	/*TODO The correct comparison operator needs to be bound at run time
 	 * based on the type of key defined
-	 */
+	*/
 
 	/* register the correct handler */
 	dictionary->handler = handler;	/* todo: need to check to make sure that the handler is registered */
@@ -275,7 +275,7 @@ oafdict_next(
 			+ SIZEOF(STATUS), SEEK_SET);
 
 /*@todo this needs to be addressed in terms of return type
- */
+*/
 		fread(record->key, hash_map->super.record.key_size, 1, hash_map->file);
 		fread(record->value, hash_map->super.record.value_size, 1, hash_map->file);
 
@@ -319,7 +319,7 @@ oafdict_test_predicate(
 
 	/**
 	 * Compares value == key
-	 */
+	*/
 	int					key_satisfies_predicate;
 	ion_file_hashmap_t	*hash_map = (ion_file_hashmap_t *) (cursor->dictionary->instance);
 

@@ -130,7 +130,7 @@ update(
 @brief	  Destroys dictionary.
 
 @return		An error message describing the total destruction of the dictionary.
- */
+*/
 ion_err_t
 destroy(
 ) {

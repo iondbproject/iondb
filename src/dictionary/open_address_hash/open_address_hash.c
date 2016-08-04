@@ -10,7 +10,7 @@
 @todo   When creating the hash-map, need to know something about what is going in it.
 		What we need to know if the the size of the key and the size of the data.
 		That is all.  Nothing else.
- */
+*/
 /******************************************************************************/
 
 #include "open_address_hash.h"

@@ -3,7 +3,7 @@
  @file
  @author		Scott Ronald Fazackerley
  @brief		The handler for a hash table using linear probing.
- */
+*/
 /******************************************************************************/
 
 #include "open_address_hash_dictionary_handler.h"
@@ -85,7 +85,7 @@ oadict_create_dictionary(
 
 	/*TODO The correct comparison operator needs to be bound at run time
 	 * based on the type of key defined
-	 */
+	*/
 
 	/* register the correct handler */
 	dictionary->handler = handler;	/* todo: need to check to make sure that the handler is registered */

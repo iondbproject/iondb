@@ -2,8 +2,7 @@
 @file
 
 @author		Scott Ronald Fazackerley
-
- */
+*/
 
 #if defined(__cplusplus)
 extern "C" {
@@ -20,7 +19,7 @@ extern "C" {
 @param	  record
 @param	  size
 @param	  test_dictionary
- */
+*/
 void
 createTestDictionary(
 	ion_dictionary_handler_t	*map_handler,
@@ -54,7 +53,7 @@ createTestDictionary(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_hashmap_handler_function_registration(
 	planck_unit_test_t *tc
@@ -76,7 +75,7 @@ test_open_address_hashmap_handler_function_registration(
 
 @param	  tc
 				CuTest
- */
+*/
 void
 test_open_address_hashmap_handler_create_destroy(
 	planck_unit_test_t *tc
