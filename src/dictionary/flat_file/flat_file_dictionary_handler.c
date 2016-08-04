@@ -145,6 +145,7 @@ ffdict_find(
 
 	ion_key_size_t key_size = dictionary->instance->record.key_size;
 
+	/* TODO: Implement sorted mode search here */
 	switch (predicate->type) {
 		case predicate_equality: {
 			ion_key_t target_key = predicate->statement.equality.equality_value;
@@ -288,6 +289,7 @@ ffdict_next(
 			ion_flat_file_row_t throwaway_row;
 			ion_err_t			err = err_uninitialized;
 
+			/* TODO: Implement sorted mode search */
 			switch (cursor->predicate->type) {
 				case predicate_equality: {
 					err = flat_file_scan(flat_file, flat_file_cursor->current_location + 1, &flat_file_cursor->current_location, &throwaway_row, boolean_true, flat_file_predicate_key_match, cursor->predicate->statement.equality.equality_value);
