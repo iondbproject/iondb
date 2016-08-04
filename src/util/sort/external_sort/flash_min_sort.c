@@ -39,6 +39,9 @@ ion_flash_min_sort_init(
 	   the buckets of the minimal index to preserve generality. The size for the bit vectors to indicate uninitialized
 	   value is also included in the calculation. */
 	fms->num_regions			= ((cursor->buffer_size - 2 * es->value_size) * 8) / (es->value_size * 8 + 1);
+
+	fms->num_regions = (fms->num_regions > es->num_pages) ? es->num_pages : fms->num_regions;
+
 	fms->num_pages_per_region	= ION_EXTERNAL_SORT_CEILING(((uint32_t) es->num_pages), (fms->num_regions));
 
 	/* Check if the buffer is large enough for the algorithm. */
@@ -131,7 +134,6 @@ ion_flash_min_sort_next(
 			uint32_t temp_page = 0;
 			uint32_t temp_region = 0;
 			uint16_t temp_byte_in_buffer = 0;
-			fms->cur_byte_in_buffer = 0;
 
 			while (temp_region < fms->num_regions) {
 				if (0 != ION_FMS_GET_FLAG(fms->min_index_bit_vector, temp_region) && (boolean_true == fms->is_cur_null || greater_than == es->compare_function(es->context, fms->cur_value, cursor->buffer + temp_byte_in_buffer))) {
