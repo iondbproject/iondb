@@ -441,6 +441,8 @@ flat_file_delete(
 	else {
 		/* TODO: Do the thing */
 	}
+
+	return status;
 }
 
 ion_status_t
@@ -478,4 +480,6 @@ flat_file_update(
 	else {
 		/* TODO: Do the thing */
 	}
+
+	return status;
 }
