@@ -26,24 +26,6 @@
 
 /********* PRIVATE METHOD DECLARATIONS **********/
 
-ion_err_t
-flat_file_scan(
-	ion_flat_file_t *,
-	ion_fpos_t,
-	ion_fpos_t *,
-	ion_flat_file_row_t *,
-	ion_boolean_t,
-	ion_flat_file_predicate_t,
-	...
-);
-
-ion_boolean_t
-flat_file_predicate_key_match(
-	ion_flat_file_t *,
-	ion_flat_file_row_t *,
-	va_list *
-);
-
 /************************************************/
 
 /**
@@ -134,14 +116,25 @@ ftest_insert(
 
 		fseek(flat_file->data_file, flat_file->start_of_data, SEEK_SET);
 
+		ion_fpos_t cur_index = 0;
+
 		while (boolean_true) {
 			if (1 != fread(read_buffer, flat_file->row_size, 1, flat_file->data_file)) {
 				break;
 			}
 
 			if (0 == memcmp(read_buffer, expected_result, flat_file->row_size)) {
+				ion_flat_file_row_t test_row;
+				ion_err_t			err = flat_file_read_row(flat_file, cur_index, &test_row);
+
+				PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+				PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, FLAT_FILE_STATUS_OCCUPIED, test_row.row_status);
+				PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, memcmp(test_row.key, key, flat_file->super.record.key_size));
+				PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, memcmp(test_row.value, value, flat_file->super.record.value_size));
 				return;
 			}
+
+			cur_index++;
 		}
 
 		/* If we reach here that means that the record we were looking for wasn't found :( */

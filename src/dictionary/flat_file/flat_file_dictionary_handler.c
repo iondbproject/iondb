@@ -23,7 +23,7 @@
 /******************************************************************************/
 
 #include "flat_file_dictionary_handler.h"
-#include "../dictionary_types.h"
+#include "flat_file_types.h"
 
 void
 ffdict_init(
@@ -120,7 +120,146 @@ ffdict_find(
 	ion_predicate_t		*predicate,
 	ion_dict_cursor_t	**cursor
 ) {
-	return err_not_implemented;
+	*cursor = malloc(sizeof(ion_flat_file_cursor_t));
+
+	ion_flat_file_t *flat_file = (ion_flat_file_t *) dictionary->instance;
+
+	if (NULL == *cursor) {
+		return err_out_of_memory;
+	}
+
+	(*cursor)->dictionary	= dictionary;
+	(*cursor)->status		= cs_cursor_uninitialized;
+
+	(*cursor)->destroy		= ffdict_destroy_cursor;
+	(*cursor)->next			= ffdict_next;
+
+	(*cursor)->predicate	= malloc(sizeof(ion_predicate_t));
+
+	if (NULL == (*cursor)->predicate) {
+		free(*cursor);
+		return err_out_of_memory;
+	}
+
+	(*cursor)->predicate->type		= predicate->type;
+	(*cursor)->predicate->destroy	= predicate->destroy;
+
+	ion_key_size_t key_size = dictionary->instance->record.key_size;
+
+	switch (predicate->type) {
+		case predicate_equality: {
+			ion_key_t target_key = predicate->statement.equality.equality_value;
+
+			(*cursor)->predicate->statement.equality.equality_value = malloc(key_size);
+
+			if (NULL == (*cursor)->predicate->statement.equality.equality_value) {
+				free((*cursor)->predicate);
+				free(*cursor);
+				return err_out_of_memory;
+			}
+
+			memcpy((*cursor)->predicate->statement.equality.equality_value, target_key, key_size);
+
+			ion_fpos_t			loc			= -1;
+			ion_flat_file_row_t row;
+			ion_err_t			scan_result = flat_file_scan(flat_file, -1, &loc, &row, boolean_true, flat_file_predicate_key_match, target_key);
+
+			if (err_file_hit_eof == scan_result) {
+				/* If this happens, that means the target key doesn't exist */
+				(*cursor)->status = cs_end_of_results;
+				return err_ok;
+			}
+			else if (err_ok == scan_result) {
+				(*cursor)->status = cs_cursor_initialized;
+
+				ion_flat_file_cursor_t *flat_file_cursor = (ion_flat_file_cursor_t *) (*cursor);
+
+				flat_file_cursor->current_location = loc;
+				return err_ok;
+			}
+			else {
+				/* File scan hit an error condition */
+				return scan_result;
+			}
+
+			break;
+		}
+
+		case predicate_range: {
+			(*cursor)->predicate->statement.range.lower_bound = malloc(key_size);
+
+			if (NULL == (*cursor)->predicate->statement.range.lower_bound) {
+				free((*cursor)->predicate);
+				free(*cursor);
+				return err_out_of_memory;
+			}
+
+			memcpy((*cursor)->predicate->statement.range.lower_bound, predicate->statement.range.lower_bound, key_size);
+
+			(*cursor)->predicate->statement.range.upper_bound = malloc(key_size);
+
+			if (NULL == (*cursor)->predicate->statement.range.upper_bound) {
+				free((*cursor)->predicate->statement.range.lower_bound);
+				free((*cursor)->predicate);
+				free(*cursor);
+				return err_out_of_memory;
+			}
+
+			memcpy((*cursor)->predicate->statement.range.upper_bound, predicate->statement.range.upper_bound, key_size);
+
+			/* Find the first satisfactory key. */
+			ion_fpos_t			loc			= -1;
+			ion_flat_file_row_t row;
+			ion_err_t			scan_result = flat_file_scan(flat_file, -1, &loc, &row, boolean_true, flat_file_predicate_within_bounds, (*cursor)->predicate->statement.range.lower_bound, (*cursor)->predicate->statement.range.upper_bound);
+
+			if (err_file_hit_eof == scan_result) {
+				/* This means the returned node is smaller than the lower bound, which means that there are no valid records to return */
+				(*cursor)->status = cs_end_of_results;
+				return err_ok;
+			}
+			else if (err_ok == scan_result) {
+				(*cursor)->status = cs_cursor_initialized;
+
+				ion_flat_file_cursor_t *flat_file_cursor = (ion_flat_file_cursor_t *) (*cursor);
+
+				flat_file_cursor->current_location = loc;
+				return err_ok;
+			}
+			else {
+				/* Scan failed due to external error */
+				return scan_result;
+			}
+
+			break;
+		}
+
+		case predicate_all_records: {
+			ion_flat_file_cursor_t *flat_file_cursor = (ion_flat_file_cursor_t *) (*cursor);
+
+			if (flat_file_is_empty(flat_file)) {
+				(*cursor)->status = cs_end_of_results;
+			}
+			else {
+				flat_file_cursor->current_location	= 0;
+				(*cursor)->status					= cs_cursor_initialized;
+			}
+
+			return err_ok;
+			break;
+		}
+
+		case predicate_predicate: {
+			/* TODO not implemented */
+			break;
+		}
+
+		default: {
+			return err_invalid_predicate;
+			break;
+		}
+	}
+
+	return err_ok;
 }
 
 ion_cursor_status_t
@@ -128,13 +267,93 @@ ffdict_next(
 	ion_dict_cursor_t	*cursor,
 	ion_record_t		*record
 ) {
-	return err_not_implemented;
+	ion_flat_file_t			*flat_file			= (ion_flat_file_t *) cursor->dictionary->instance;
+	ion_flat_file_cursor_t	*flat_file_cursor	= (ion_flat_file_cursor_t *) cursor;
+
+	if (cursor->status == cs_cursor_uninitialized) {
+		return cursor->status;
+	}
+	else if (cursor->status == cs_end_of_results) {
+		return cursor->status;
+	}
+	else if ((cursor->status == cs_cursor_initialized) || (cursor->status == cs_cursor_active)) {
+		if (cursor->status == cs_cursor_active) {
+			ion_boolean_t		have_results = boolean_false;
+			ion_flat_file_row_t throwaway_row;
+			ion_err_t			err;
+
+			switch (cursor->predicate->type) {
+				case predicate_equality: {
+					err = flat_file_scan(flat_file, flat_file_cursor->current_location + 1, &flat_file_cursor->current_location, &throwaway_row, boolean_true, flat_file_predicate_key_match, cursor->predicate->statement.equality.equality_value);
+
+					if (err_ok == err) {
+						have_results = boolean_true;
+					}
+
+					break;
+				}
+
+				case predicate_range: {
+					flat_file_scan(flat_file, flat_file_cursor->current_location + 1, &flat_file_cursor->current_location, &throwaway_row, boolean_true, flat_file_predicate_within_bounds, cursor->predicate->statement.range.lower_bound, cursor->predicate->statement.range.upper_bound);
+
+					if (err_ok == err) {
+						have_results = boolean_true;
+					}
+
+					break;
+				}
+
+				case predicate_all_records: {
+					flat_file_cursor->current_location++;
+
+					if (!flat_file_check_index(flat_file, flat_file_cursor->current_location)) {
+						have_results = boolean_false;
+					}
+
+					break;
+				}
+
+				case predicate_predicate: {
+					/* TODO not implemented */
+					break;
+				}
+			}
+
+			if (!have_results) {
+				cursor->status = cs_end_of_results;
+				return cursor->status;
+			}
+		}
+		else {
+			/* The status is cs_cursor_initialized */
+			cursor->status = cs_cursor_active;
+		}
+
+		ion_flat_file_row_t row;
+		ion_err_t			err = flat_file_read_row(flat_file, flat_file_cursor->current_location, &row);
+
+		if (err_ok != err) {
+			return cs_invalid_index;
+		}
+
+		/*Copy both key and value into user provided struct */
+		memcpy(record->key, row.key, cursor->dictionary->instance->record.key_size);
+		memcpy(record->value, row.value, cursor->dictionary->instance->record.value_size);
+
+		return cursor->status;
+	}
+
+	return cs_invalid_cursor;
 }
 
 void
 ffdict_destroy_cursor(
 	ion_dict_cursor_t **cursor
-) {}
+) {
+	(*cursor)->predicate->destroy(&(*cursor)->predicate);
+	free(*cursor);
+	*cursor = NULL;
+}
 
 /**
 @brief		Checks to see if the given @p key satisfies the predicate stored in @p cursor.

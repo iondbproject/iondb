@@ -91,6 +91,16 @@ typedef ion_boolean_t (*ion_flat_file_predicate_t)(
 	va_list *args
 );
 
+/**
+@brief		Implementation cursor type for the flat file store cursor.
+*/
+typedef struct {
+	/**> Supertype of the dictionary cursor. */
+	ion_dict_cursor_t	super;
+	/**> Holds the index of the current location in our search. */
+	ion_fpos_t			current_location;
+} ion_flat_file_cursor_t;
+
 #if defined(__cplusplus)
 }
 #endif

@@ -22,6 +22,7 @@
 /******************************************************************************/
 
 #include "flat_file.h"
+#include "flat_file_types.h"
 
 /**
 @brief			Given the ID and a buffer to write to, writes back the formatted filename
@@ -118,42 +119,25 @@ flat_file_destroy(
 	return err_ok;
 }
 
-/**
-@brief			Performs a linear scan of the flat file, going forwards
-				if @p scan_forwards is true, writing the first location
-				seen that satisfies the given @p predicate to @p location.
-@details		If the scan falls through, then the location is written as
-				the EOF position of the file. The variadic arguments accepted
-				by this function are passed into the predicate additional parameters.
-				This can be used to provide additional context to the predicate for use
-				in determining whether or not the row is a match.
-@param[in]		flat_file
-					Which flat file instance to scan.
-@param[in]		start_location
-					Where to begin the scan. This is given as a row index. If
-					given as -1, then it is assumed to be either the start of
-					file or end of file, depending on the state of @p scan_forwards.
-@param[out]		location
-					Allocated memory location to write back the found location into.
-					Is not changed in the event of a failure or error condition. This
-					location is given back as a row index.
-@param[out]		row
-					A row struct to write back the found row into. This is allocated
-					by the user.
-@param[in]		scan_forwards
-					Scans front-to-back if @p true, else scans back-to-front.
-@param[in]		predicate
-					Given test function to check each row against. Once this function
-					returns true, the scan is terminated and the found location and row
-					are written back to their respective output parameters.
-@return			Resulting status of scan.
-@todo			Try changing the predicate to be an enum-and-switch to eliminate the function
-				call. Benchmark the performance gain and decide which strategy to use.
-@todo			Consider changing to @p SEEK_CUR whenever possible. Benchmark this and see
-				if the performance gain (if any) is worth it.
-@todo			Consider doing bounds checking on the given @p location. May need to change the
-				@p -1 start flag if we do so.
-*/
+ion_boolean_t
+flat_file_check_index(
+	ion_flat_file_t *flat_file,
+	ion_fpos_t		location
+) {
+	ion_fpos_t	eof_pos = 0;
+	ion_fpos_t	offset	= location * flat_file->row_size;
+
+	if (0 != fseek(flat_file->data_file, 0, SEEK_END)) {
+		return boolean_false;
+	}
+
+	if (-1 == (eof_pos = ftell(flat_file->data_file))) {
+		return boolean_false;
+	}
+
+	return (offset <= eof_pos) && (offset >= flat_file->start_of_data);
+}
+
 ion_err_t
 flat_file_scan(
 	ion_flat_file_t				*flat_file,
@@ -165,6 +149,10 @@ flat_file_scan(
 	...
 ) {
 	ion_fpos_t eof_pos = 0;
+
+	if (!flat_file_check_index(flat_file, start_location)) {
+		return err_out_of_bounds;
+	}
 
 	if (0 != fseek(flat_file->data_file, 0, SEEK_END)) {
 		return err_file_bad_seek;
@@ -184,10 +172,6 @@ flat_file_scan(
 		else {
 			cur_offset = eof_pos;
 		}
-	}
-
-	if ((cur_offset > eof_pos) || (cur_offset < flat_file->start_of_data)) {
-		return err_file_read_error;
 	}
 
 	/* This line is likely not needed, as long as we're careful to only read good data */
@@ -282,11 +266,6 @@ flat_file_predicate_empty(
 	return FLAT_FILE_STATUS_EMPTY == row->row_status;
 }
 
-/**
-@brief		Predicate function to return any row that has an exact match to the given target key.
-@details	We expect one ion_key_t to be in @p args.
-@see		ion_flat_file_predicate_t
- */
 ion_boolean_t
 flat_file_predicate_key_match(
 	ion_flat_file_t		*flat_file,
@@ -296,6 +275,18 @@ flat_file_predicate_key_match(
 	ion_key_t target_key = va_arg(*args, ion_key_t);
 
 	return FLAT_FILE_STATUS_OCCUPIED == row->row_status && 0 == flat_file->super.compare(target_key, row->key, flat_file->super.record.key_size);
+}
+
+ion_boolean_t
+flat_file_predicate_within_bounds(
+	ion_flat_file_t		*flat_file,
+	ion_flat_file_row_t *row,
+	va_list				*args
+) {
+	ion_key_t	lower_bound = va_arg(*args, ion_key_t);
+	ion_key_t	upper_bound = va_arg(*args, ion_key_t);
+
+	return FLAT_FILE_STATUS_OCCUPIED == row->row_status && flat_file->super.compare(row->key, lower_bound, flat_file->super.record.key_size) >= 0 && flat_file->super.compare(row->key, upper_bound, flat_file->super.record.key_size) <= 0;
 }
 
 /**
@@ -320,6 +311,10 @@ flat_file_write_row(
 	ion_fpos_t			location,
 	ion_flat_file_row_t *row
 ) {
+	if (!flat_file_check_index(flat_file, location)) {
+		return err_out_of_bounds;
+	}
+
 	if (0 != fseek(flat_file->data_file, location * flat_file->row_size, SEEK_SET)) {
 		return err_file_bad_seek;
 	}
@@ -335,6 +330,39 @@ flat_file_write_row(
 	if ((NULL != row->value) && (1 != fwrite(row->value, flat_file->super.record.value_size, 1, flat_file->data_file))) {
 		return err_file_incomplete_write;
 	}
+
+	return err_ok;
+}
+
+ion_err_t
+flat_file_read_row(
+	ion_flat_file_t		*flat_file,
+	ion_fpos_t			location,
+	ion_flat_file_row_t *row
+) {
+	if (!flat_file_check_index(flat_file, location)) {
+		return err_out_of_bounds;
+	}
+
+	if (0 != fseek(flat_file->data_file, location * flat_file->row_size, SEEK_SET)) {
+		return err_file_bad_seek;
+	}
+
+	if (1 != fread(flat_file->buffer, sizeof(row->row_status), 1, flat_file->data_file)) {
+		return err_file_incomplete_write;
+	}
+
+	if (1 != fread(flat_file->buffer + sizeof(row->row_status), flat_file->super.record.key_size, 1, flat_file->data_file)) {
+		return err_file_incomplete_write;
+	}
+
+	if (1 != fread(flat_file->buffer + sizeof(row->row_status) + flat_file->super.record.key_size, flat_file->super.record.value_size, 1, flat_file->data_file)) {
+		return err_file_incomplete_write;
+	}
+
+	row->row_status = *((ion_flat_file_row_status_t *) flat_file->buffer);
+	row->key		= flat_file->buffer + sizeof(ion_flat_file_row_status_t);
+	row->value		= flat_file->buffer + sizeof(ion_flat_file_row_status_t) + flat_file->super.record.key_size;
 
 	return err_ok;
 }
@@ -495,4 +523,17 @@ flat_file_close(
 	}
 
 	return err_ok;
+}
+
+ion_boolean_t
+flat_file_is_empty(
+	ion_flat_file_t *flat_file
+) {
+	if (0 != fseek(flat_file->data_file, 0, SEEK_END)) {
+		return boolean_true;
+	}
+
+	ion_fpos_t eof_pos = ftell(flat_file->data_file);
+
+	return eof_pos == -1 || eof_pos == flat_file->start_of_data;
 }

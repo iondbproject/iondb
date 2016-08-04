@@ -183,7 +183,10 @@ enum error {
 	err_duplicate_dictionary_error,
 	/**> An error code describing the situation a system object was not
 		 properly initialized. */
-	err_uninitialized
+	err_uninitialized,
+	/**> An error code describing the situation where something is out of
+		 valid bounds. */
+	err_out_of_bounds
 };
 
 /**

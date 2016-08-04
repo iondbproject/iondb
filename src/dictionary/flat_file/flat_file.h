@@ -158,6 +158,133 @@ flat_file_close(
 	ion_flat_file_t *flat_file
 );
 
+/**
+@brief			Performs a linear scan of the flat file, going forwards
+				if @p scan_forwards is true, writing the first location
+				seen that satisfies the given @p predicate to @p location.
+@details		If the scan falls through, then the location is written as
+				the EOF position of the file. The variadic arguments accepted
+				by this function are passed into the predicate additional parameters.
+				This can be used to provide additional context to the predicate for use
+				in determining whether or not the row is a match.
+@param[in]		flat_file
+					Which flat file instance to scan.
+@param[in]		start_location
+					Where to begin the scan. This is given as a row index. If
+					given as -1, then it is assumed to be either the start of
+					file or end of file, depending on the state of @p scan_forwards.
+@param[out]		location
+					Allocated memory location to write back the found location into.
+					Is not changed in the event of a failure or error condition. This
+					location is given back as a row index.
+@param[out]		row
+					A row struct to write back the found row into. This is allocated
+					by the user.
+@param[in]		scan_forwards
+					Scans front-to-back if @p true, else scans back-to-front.
+@param[in]		predicate
+					Given test function to check each row against. Once this function
+					returns true, the scan is terminated and the found location and row
+					are written back to their respective output parameters.
+@return			Resulting status of scan.
+@todo			Try changing the predicate to be an enum-and-switch to eliminate the function
+				call. Benchmark the performance gain and decide which strategy to use.
+@todo			Consider changing to @p SEEK_CUR whenever possible. Benchmark this and see
+				if the performance gain (if any) is worth it.
+@todo			Consider doing bounds checking on the given @p location. May need to change the
+				@p -1 start flag if we do so.
+*/
+ion_err_t
+flat_file_scan(
+	ion_flat_file_t				*flat_file,
+	ion_fpos_t					start_location,
+	ion_fpos_t					*location,
+	ion_flat_file_row_t			*row,
+	ion_boolean_t				scan_forwards,
+	ion_flat_file_predicate_t	predicate,
+	...
+);
+
+/**
+@brief		Predicate function to return any row that has an exact match to the given target key.
+@details	We expect one @ref ion_key_t to be in @p args.
+@see		ion_flat_file_predicate_t
+*/
+ion_boolean_t
+flat_file_predicate_key_match(
+	ion_flat_file_t		*flat_file,
+	ion_flat_file_row_t *row,
+	va_list				*args
+);
+
+/**
+@brief		Predicate function to return any row that has a key such that
+			`lower_bound <= key <= upper_bound` holds true.
+@details	We expect two @ref ion_key_t parameters to be in @p args - the first
+			to represent the lower bound of the key, and the second to represent the
+			upper bound.
+@see		ion_flat_file_predicate_t
+*/
+ion_boolean_t
+flat_file_predicate_within_bounds(
+	ion_flat_file_t		*flat_file,
+	ion_flat_file_row_t *row,
+	va_list				*args
+);
+
+/**
+@brief		Returns true or false depending on whether or not there are
+			records stored within the flat file.
+@param		flat_file
+				Which flat file to check.
+@return		Resulting emptiness status.
+*/
+ion_boolean_t
+flat_file_is_empty(
+	ion_flat_file_t *flat_file
+);
+
+/**
+@brief		Reads the row specified by the given location into the buffer.
+@details	The returned row is given by attaching pointers correctly from
+			the given row parameter. These pointers are associated with the
+			internal read buffer of the flat file. You should assume that the
+			row does not have a lifetime beyond the scope of where you call
+			this function - any subsequent operation that mutates the read buffer
+			will cause the row to become garbage. Copy the row data out if you want
+			it to persist.
+@param[in]	flat_file
+				Which flat file instance to read from.
+@param[in]	location
+				Which row index to read. This function will compute
+				the file offset of the row index.
+@param[in]	row
+				Write back row to place read data from the desired @p location.
+@return		Resulting status of the several file operations used to perform the read.
+*/
+ion_err_t
+flat_file_read_row(
+	ion_flat_file_t		*flat_file,
+	ion_fpos_t			location,
+	ion_flat_file_row_t *row
+);
+
+/**
+@brief		Checks to see if the given location (as an index) is within
+			the bounds of the flat file (i.e. not past EOF, and not before the
+			data segement).
+@param		flat_file
+				Which flat file to check within.
+@param		location
+				The target index to check.
+@return		@ref boolean_true if OK, else @ref boolean_false if out of bounds.
+*/
+ion_boolean_t
+flat_file_check_index(
+	ion_flat_file_t *flat_file,
+	ion_fpos_t		location
+);
+
 #if defined(__cplusplus)
 }
 #endif
