@@ -210,6 +210,12 @@ ftest_file_scan_cases(
 	ftest_file_scan(tc, flat_file, boolean_false, -1, IONIZE(333, int), err_file_hit_eof, 8);
 	ftest_file_scan(tc, flat_file, boolean_false, 4, IONIZE(333, int), err_file_hit_eof, 8);
 	ftest_file_scan(tc, flat_file, boolean_false, 1, IONIZE(333, int), err_file_hit_eof, 8);
+
+	/* Crazy start location cases */
+	ftest_file_scan(tc, flat_file, boolean_true, -100, IONIZE(333, int), err_file_read_error, -1);
+	ftest_file_scan(tc, flat_file, boolean_true, 100, IONIZE(333, int), err_file_read_error, -1);
+	ftest_file_scan(tc, flat_file, boolean_false, -100, IONIZE(333, int), err_file_read_error, -1);
+	ftest_file_scan(tc, flat_file, boolean_false, 100, IONIZE(333, int), err_file_read_error, -1);
 }
 
 /**

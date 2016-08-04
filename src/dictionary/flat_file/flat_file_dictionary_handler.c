@@ -88,7 +88,7 @@ ffdict_delete(
 	ion_dictionary_t	*dictionary,
 	ion_key_t			key
 ) {
-	ION_STATUS_CREATE(err_not_implemented, 0);
+	return flat_file_delete((ion_flat_file_t *) dictionary->instance, key);
 }
 
 ion_err_t
@@ -108,7 +108,7 @@ ffdict_update(
 	ion_key_t			key,
 	ion_value_t			value
 ) {
-	return ION_STATUS_CREATE(err_not_implemented, 0);
+	return flat_file_update((ion_flat_file_t *) dictionary->instance, key, value);
 }
 
 ion_err_t

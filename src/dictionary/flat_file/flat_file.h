@@ -112,6 +112,41 @@ flat_file_get(
 	ion_value_t		value
 );
 
+/**
+@brief		Deletes all records stored with the given @p key.
+@param[in]	flat_file
+				Which flat file to delete in.
+@param[in]	key
+				Specified key to find and delete.
+@return		Resulting status of the operation.
+@see		ffdict_delete
+@todo		Write tests for sorted mode delete.
+*/
+ion_status_t
+flat_file_delete(
+	ion_flat_file_t *flat_file,
+	ion_key_t		key
+);
+
+/**
+@brief		Updates all records stored with the given @p key to have @p value.
+@param[in]	flat_file
+				Which flat file to update in.
+@param[in]	key
+				Specified key to find and update.
+@param[in]	value
+				New value to replace old values with.
+@return		Resulting status of the operation.
+@see		ffdict_update
+@todo		Write tests for sorted mode update.
+*/
+ion_status_t
+flat_file_update(
+	ion_flat_file_t *flat_file,
+	ion_key_t		key,
+	ion_value_t		value
+);
+
 #if defined(__cplusplus)
 }
 #endif

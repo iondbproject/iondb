@@ -137,7 +137,7 @@ flat_file_destroy(
 					given as -1, then it is assumed to be either the start of
 					file or end of file, depending on the state of @p scan_forwards.
 @param[out]		location
-					Allocated memory location to write back the found location to.
+					Allocated memory location to write back the found location into.
 					Is not changed in the event of a failure or error condition. This
 					location is given back as a row index.
 @param[out]		row
@@ -147,7 +147,8 @@ flat_file_destroy(
 					Scans front-to-back if @p true, else scans back-to-front.
 @param[in]		predicate
 					Given test function to check each row against. Once this function
-					returns true, the scan is terminated and the found location is written.
+					returns true, the scan is terminated and the found location and row
+					are written back to their respective output parameters.
 @return			Resulting status of scan.
 @todo			Try changing the predicate to be an enum-and-switch to eliminate the function
 				call. Benchmark the performance gain and decide which strategy to use.
@@ -188,11 +189,17 @@ flat_file_scan(
 		}
 	}
 
+	if ((cur_offset > eof_pos) || (cur_offset < flat_file->start_of_data)) {
+		return err_file_read_error;
+	}
+
 	/* This line is likely not needed, as long as we're careful to only read good data */
 	/* memset(read_buffer, 0, flat_file->row_size * flat_file->num_buffered); */
 
 	while (cur_offset != end_offset) {
-		fseek(flat_file->data_file, cur_offset, SEEK_SET);
+		if (0 != fseek(flat_file->data_file, cur_offset, SEEK_SET)) {
+			return err_file_bad_seek;
+		}
 
 		/* We set cur_offset to be the next block to read after this next code segment, so */
 		/* we need t save what block we're currently reading now for location calculation purposes */
@@ -203,7 +210,7 @@ flat_file_scan(
 			/* It's possible for this to do a partial read (if you're close to EOF) */
 			/* so we just check that it doesn't read nothing */
 			if (0 == (num_records_to_process = fread(flat_file->buffer, flat_file->row_size, flat_file->num_buffered, flat_file->data_file))) {
-				return err_file_read_error;
+				return err_file_incomplete_read;
 			}
 
 			if (-1 == (cur_offset = ftell(flat_file->data_file))) {
@@ -225,7 +232,7 @@ flat_file_scan(
 			}
 
 			if (num_records_to_process != fread(flat_file->buffer, flat_file->row_size, num_records_to_process, flat_file->data_file)) {
-				return err_file_read_error;
+				return err_file_incomplete_read;
 			}
 
 			/* In this case, the prev_offset is actually the cur_offset. */
@@ -235,9 +242,9 @@ flat_file_scan(
 		size_t i;
 
 		for (i = 0; i < num_records_to_process; i++) {
-			/* This cast is done because it's possible for the status change in type */
 			size_t cur_rec = i * flat_file->row_size;
 
+			/* This cast is done because it's possible for the status change in type */
 			row->row_status = *((ion_flat_file_row_status_t *) &flat_file->buffer[cur_rec]);
 			row->key		= &flat_file->buffer[cur_rec + sizeof(ion_flat_file_row_status_t)];
 			row->value		= &flat_file->buffer[cur_rec + sizeof(ion_flat_file_row_status_t) + flat_file->super.record.key_size];
@@ -298,19 +305,17 @@ flat_file_predicate_key_match(
 @brief		Writes the given row out to the data file.
 @details	If the key or value is given as @p NULL, then no write will be performed
 			for that @p NULL key/value. This can be used to perform a status-only write
-			by passing in @p NULL for both the key and value.
+			by passing in @p NULL for both the key and value. **NOTE:** The alignment
+			of the write is dependent on the occurence of the writes that come before
+			it. This means that the @p key cannot be @p NULL while the value is not @p NULL.
 @param[in]	flat_file
 				Which flat file instance to write to.
 @param[in]	location
 				Which row index to write to. This function will compute
 				the file offset of the row index.
-@param[in]	row_status
-				Given status to write into the row.
-@param[in]	key
-				Given key to write into the row.
-@param[in]	value
-				Given value to write into the row.
-@return		Resulting status of the file operations.
+@param[in]	row
+				Given row to write out at the destined @p location.
+@return		Resulting status of the several file operations used to commit the write.
 */
 ion_err_t
 flat_file_write_row(
@@ -323,15 +328,15 @@ flat_file_write_row(
 	}
 
 	if (1 != fwrite(&row->row_status, sizeof(row->row_status), 1, flat_file->data_file)) {
-		return err_file_write_error;
+		return err_file_incomplete_write;
 	}
 
 	if ((NULL != row->key) && (1 != fwrite(row->key, flat_file->super.record.key_size, 1, flat_file->data_file))) {
-		return err_file_write_error;
+		return err_file_incomplete_write;
 	}
 
 	if ((NULL != row->value) && (1 != fwrite(row->value, flat_file->super.record.value_size, 1, flat_file->data_file))) {
-		return err_file_write_error;
+		return err_file_incomplete_write;
 	}
 
 	return err_ok;
@@ -343,7 +348,6 @@ flat_file_insert(
 	ion_key_t		key,
 	ion_value_t		value
 ) {
-	/* TODO: Need to factor in sorted order insert */
 	ion_status_t		status		= ION_STATUS_INITIALIZE;
 	ion_fpos_t			insert_loc	= -1;
 	ion_flat_file_row_t row;
@@ -387,6 +391,8 @@ flat_file_get(
 			status.error = err;
 
 			if (err_file_hit_eof == err) {
+				/* Alias the error since in this case, since hitting the EOF signifies */
+				/* that we didn't find what we were looking for */
 				status.error = err_item_not_found;
 			}
 
@@ -402,4 +408,76 @@ flat_file_get(
 	}
 
 	return status;
+}
+
+ion_status_t
+flat_file_delete(
+	ion_flat_file_t *flat_file,
+	ion_key_t		key
+) {
+	ion_status_t status = ION_STATUS_INITIALIZE;
+
+	if (!flat_file->sorted_mode) {
+		ion_fpos_t			loc = -1;
+		ion_flat_file_row_t row;
+		ion_err_t			err;
+
+		while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, boolean_true, flat_file_predicate_key_match, key))) {
+			flat_file_write_row(flat_file, loc, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_EMPTY, NULL, NULL });
+			status.count++;
+			/* Move the loc one-forwards so that we skip the one we just deleted */
+			loc++;
+		}
+
+		status.error = err_ok;
+
+		if ((err == err_file_hit_eof) && (status.count == 0)) {
+			status.error = err_item_not_found;
+		}
+		else if (err != err_file_hit_eof) {
+			status.error = err;
+		}
+
+		return status;
+	}
+	else {
+		/* TODO: Do the thing */
+	}
+}
+
+ion_status_t
+flat_file_update(
+	ion_flat_file_t *flat_file,
+	ion_key_t		key,
+	ion_value_t		value
+) {
+	ion_status_t status = ION_STATUS_INITIALIZE;
+
+	if (!flat_file->sorted_mode) {
+		ion_fpos_t			loc = -1;
+		ion_flat_file_row_t row;
+		ion_err_t			err;
+
+		while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, boolean_true, flat_file_predicate_key_match, key))) {
+			flat_file_write_row(flat_file, loc, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_OCCUPIED, key, value });
+			status.count++;
+			/* Move one-forwards to skip the one we just updated */
+			loc++;
+		}
+
+		status.error = err_ok;
+
+		if ((err == err_file_hit_eof) && (status.count == 0)) {
+			/* If this is the case, then we had nothing to update. Do an upsert instead */
+			return flat_file_insert(flat_file, key, value);
+		}
+		else if (err != err_file_hit_eof) {
+			status.error = err;
+		}
+
+		return status;
+	}
+	else {
+		/* TODO: Do the thing */
+	}
 }
