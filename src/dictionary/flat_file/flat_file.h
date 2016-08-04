@@ -147,6 +147,17 @@ flat_file_update(
 	ion_value_t		value
 );
 
+/**
+@brief		Closes and frees any memory associated with the flat file.
+@param		flat_file
+				Which flat file to close.
+@return		Status of closure.
+*/
+ion_err_t
+flat_file_close(
+	ion_flat_file_t *flat_file
+);
+
 #if defined(__cplusplus)
 }
 #endif

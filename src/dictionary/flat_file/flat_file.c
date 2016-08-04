@@ -67,7 +67,7 @@ flat_file_initialize(
 	}
 
 	flat_file->sorted_mode	= boolean_false;/* By default, we don't use sorted mode */
-	flat_file->num_buffered = dictionary_size;
+	flat_file->num_buffered = dictionary_size;	/* TODO: Sorted mode needs to be written out as a header? */
 
 	flat_file->data_file	= fopen(filename, "r+b");
 
@@ -99,11 +99,10 @@ ion_err_t
 flat_file_destroy(
 	ion_flat_file_t *flat_file
 ) {
-	free(flat_file->buffer);
-	flat_file->buffer = NULL;
+	ion_err_t err = flat_file_close(flat_file);
 
-	if (0 != fclose(flat_file->data_file)) {
-		return err_file_close_error;
+	if (err_ok != err) {
+		return err;
 	}
 
 	char filename[ION_MAX_FILENAME_LENGTH];
@@ -482,4 +481,18 @@ flat_file_update(
 	}
 
 	return status;
+}
+
+ion_err_t
+flat_file_close(
+	ion_flat_file_t *flat_file
+) {
+	free(flat_file->buffer);
+	flat_file->buffer = NULL;
+
+	if (0 != fclose(flat_file->data_file)) {
+		return err_file_close_error;
+	}
+
+	return err_ok;
 }

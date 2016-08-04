@@ -23,6 +23,7 @@
 /******************************************************************************/
 
 #include "flat_file_dictionary_handler.h"
+#include "../dictionary_types.h"
 
 void
 ffdict_init(
@@ -158,12 +159,12 @@ ffdict_open_dictionary(
 	ion_dictionary_config_info_t	*config,
 	ion_dictionary_compare_t		compare
 ) {
-	return err_not_implemented;
+	return ffdict_create_dictionary(config->id, config->type, config->key_size, config->value_size, config->dictionary_size, compare, handler, dictionary);
 }
 
 ion_err_t
 ffdict_close_dictionary(
 	ion_dictionary_t *dictionary
 ) {
-	return err_not_implemented;
+	return flat_file_close((ion_flat_file_t *) dictionary->instance);
 }

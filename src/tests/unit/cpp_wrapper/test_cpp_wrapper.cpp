@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file
-@author		Kris Wallperington
+@author		Kris Wallperington, Dana Klamut
 @brief		Unit test for the C++ Wrapper
 @todo		These tests need to be fully fleshed out.
 */
@@ -434,9 +434,9 @@ test_cpp_wrapper_equality_on_all_implementations(
 	test_cpp_wrapper_equality_duplicates(tc, dict, 4);
 	delete dict;
 
-	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
-	test_cpp_wrapper_equality_no_duplicates(tc, dict, 4);
-	delete dict;
+/*	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
+/*	test_cpp_wrapper_equality_no_duplicates(tc, dict, 4); */
+/*	delete dict; */
 
 	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 20);
 	test_cpp_wrapper_equality_no_duplicates(tc, dict, 3);
@@ -464,9 +464,9 @@ test_cpp_wrapper_equality_edge_case1_on_all_implementations(
 	test_cpp_wrapper_equality_edge_case1(tc, dict);
 	delete dict;
 
-	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
-	test_cpp_wrapper_equality_edge_case1(tc, dict);
-	delete dict;
+/*	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
+/*	test_cpp_wrapper_equality_edge_case1(tc, dict); */
+/*	delete dict; */
 
 	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 20);
 	test_cpp_wrapper_equality_edge_case1(tc, dict);
@@ -714,9 +714,9 @@ test_cpp_wrapper_range_simple_on_all_implementations(
 	test_cpp_wrapper_range_simple(tc, dict, 1, 3);
 	delete dict;
 
-	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
-	test_cpp_wrapper_range_simple(tc, dict, 4, 18);
-	delete dict;
+/*	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
+/*	test_cpp_wrapper_range_simple(tc, dict, 4, 18); */
+/*	delete dict; */
 
 	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_range_simple(tc, dict, 30, 36);
@@ -774,9 +774,9 @@ test_cpp_wrapper_range_edge_case2_on_all_implementations(
 	test_cpp_wrapper_range_edge_case2(tc, dict);
 	delete dict;
 
-	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
-	test_cpp_wrapper_range_edge_case2(tc, dict);
-	delete dict;
+/*	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
+/*	test_cpp_wrapper_range_edge_case2(tc, dict); */
+/*	delete dict; */
 
 	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_range_edge_case2(tc, dict);
@@ -1127,9 +1127,9 @@ test_cpp_wrapper_open_close_on_all_implementations(
 	test_cpp_wrapper_open_close(tc, dict, 1, 13);
 	delete dict;
 
-/*	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
-/*	test_cpp_wrapper_open_close(tc, dict, 45, 14); */
-/*	delete dict; */
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_open_close(tc, dict, 45, 14);
+	delete dict;
 
 	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_open_close(tc, dict, 3, 15);
