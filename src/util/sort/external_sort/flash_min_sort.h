@@ -31,6 +31,13 @@
 #include "../sort.h"
 #include "../../../key_value/kv_system.h"
 
+#if defined(ARDUINO)
+#include "../../../serial/printf_redirect.h"
+#include "../../../serial/serial_c_iface.h"
+#include "../../../file/kv_stdio_intercept.h"
+#include "../../../file/SD_stdio_c_iface.h"
+#endif
+
 #define ION_FMS_GET_FLAG(bit_vector_arr, flag_index) \
 	((((uint8_t *)bit_vector_arr)[(flag_index) >> 3] >> ((flag_index) & 7)) & 1)
 

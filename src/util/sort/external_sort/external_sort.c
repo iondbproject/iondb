@@ -55,6 +55,10 @@ ion_external_sort_init(
 		return err_file_bad_seek;
 	}
 
+	if (0 == file_size_in_bytes) {
+		return err_invalid_initial_size;
+	}
+
 	es->num_values_last_page = (uint16_t) ((file_size_in_bytes % es->page_size) / es->value_size);
 	if (0 == es->num_values_last_page) {
 		es->num_values_last_page = es->page_size / (uint16_t) es->value_size; // TODO
@@ -63,6 +67,34 @@ ion_external_sort_init(
 	es->num_pages = ION_EXTERNAL_SORT_CEILING((uint32_t) file_size_in_bytes, es->page_size);
 
 	return err_ok;
+}
+
+uint32_t
+ion_external_sort_bytes_of_memory_required(
+	ion_external_sort_t				*es,
+	uint32_t 						max_number_bytes_available,
+	uint8_t 						num_cache_pages
+) {
+	uint32_t memory_required = 0;
+
+	switch (es->sort_algorithm) {
+		case ION_FILE_SORT_FLASH_MINSORT: {
+			uint32_t min_memory_required = 3 * (uint32_t) es->value_size + 1;
+
+			if ((int32_t) max_number_bytes_available - (int32_t) num_cache_pages * es->page_size - (int32_t) min_memory_required < 0) {
+				return num_cache_pages * es->page_size + min_memory_required;
+			}
+
+			uint32_t num_regions = ((max_number_bytes_available - num_cache_pages * es->page_size - 2 * es->value_size) * 8) / (es->value_size * 8 + 1);
+			num_regions = (num_regions > es->num_pages) ? es->num_pages : num_regions;
+
+			memory_required = num_regions * es->value_size + 2 * es->value_size + ION_EXTERNAL_SORT_CEILING(num_regions, 8) + num_cache_pages * es->page_size;
+
+			break;
+		}
+	}
+
+	return memory_required;
 }
 
 ion_err_t
@@ -88,7 +120,6 @@ ion_external_sort_init_cursor(
 			cursor->next = ion_flash_min_sort_next;
 			return ion_flash_min_sort_init(es, cursor);
 		}
-
 		default: {
 			return err_ok;
 		}

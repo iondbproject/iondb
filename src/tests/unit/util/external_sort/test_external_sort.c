@@ -151,6 +151,111 @@ test_sort(
 }
 
 void
+test_macro_get_flag(
+	planck_unit_test_t *tc
+) {
+	uint8_t bit_vector[10];
+
+	int i;
+	for (i = 0; i < 10; i++) {
+		bit_vector[i] = 0; /* bit_vector[i] = 0000 0000 */
+	}
+
+	bit_vector[1] = 0xFF; /* 1111 1111 */
+	bit_vector[9] = 0x23; /* 0010 0011 */
+
+	for (i = 0; i < 8 * 1; i++) {
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, ION_FMS_GET_FLAG(bit_vector, i));
+	}
+
+	for (; i < 8 * 2; i++) {
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, ION_FMS_GET_FLAG(bit_vector, i));
+	}
+
+	for (; i < 8 * 9; i++) {
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, ION_FMS_GET_FLAG(bit_vector, i));
+	}
+
+	for (; i < 8 * 9 + 2; i++) {
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, ION_FMS_GET_FLAG(bit_vector, i));
+	}
+
+	for (; i < 8 * 9 + 5; i++) {
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, ION_FMS_GET_FLAG(bit_vector, i));
+	}
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, ION_FMS_GET_FLAG(bit_vector, i));
+	i++;
+
+	for (; i < 8 * 10; i++) {
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, ION_FMS_GET_FLAG(bit_vector, i));
+	}
+}
+
+void
+test_macro_set_flag(
+	planck_unit_test_t *tc
+) {
+	uint8_t bit_vector[10];
+
+	int i;
+	for (i = 0; i < 10; i++) {
+		bit_vector[i] = 0; /* bit_vector[i] = 0000 0000 */
+	}
+
+	ION_FMS_SET_FLAG(bit_vector, 8 * 9); /* bit_vector[9] = 0000 0001 */
+	ION_FMS_SET_FLAG(bit_vector, 8 * 9 + 6); /* bit_vector[9] = 0100 0001 */
+
+	for (; i < 9; i++) {
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, bit_vector[i]);
+	}
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0x41, bit_vector[9]);
+}
+
+void
+test_macro_clear_flag(
+	planck_unit_test_t *tc
+) {
+	uint8_t bit_vector[10];
+
+	int i;
+	for (i = 0; i < 10; i++) {
+		bit_vector[i] = 0xFF; /* bit_vector[i] = 1111 1111 */
+	}
+
+	ION_FMS_CLEAR_FLAG(bit_vector, 8 * 9); /* bit_vector[9] = 1111 1110 */
+	ION_FMS_CLEAR_FLAG(bit_vector, 8 * 9 + 6); /* bit_vector[9] = 1011 1110 */
+
+	for (; i < 9; i++) {
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0xFF, bit_vector[i]);
+	}
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0xBE, bit_vector[9]);
+}
+
+void
+test_flash_min_sort_recommended_memory(
+	planck_unit_test_t *tc
+) {
+	FILE *unsorted_file = fopen(ion_external_sort_fname, "w+b");
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, unsorted_file != NULL);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, ion_external_sort_write_uint16_data(unsorted_file, 1000));
+
+	ion_external_sort_t			es;
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, ion_external_sort_init(&es, unsorted_file, NULL, ion_external_sort_uint16_comparator, sizeof(uint16_t), sizeof(uint16_t), 512, boolean_false, ION_FILE_SORT_FLASH_MINSORT));
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 512 + 7, ion_external_sort_bytes_of_memory_required(&es, 0, 1));
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 512 + 9, ion_external_sort_bytes_of_memory_required(&es, 521, 1));
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 512 + 11, ion_external_sort_bytes_of_memory_required(&es, 523, 1));
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 512 + 13, ion_external_sort_bytes_of_memory_required(&es, 1000, 1));
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 7, ion_external_sort_bytes_of_memory_required(&es, 0, 0));
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 512 * 2 + 7, ion_external_sort_bytes_of_memory_required(&es, 0, 2));
+}
+
+void
 test_flash_min_sort_small_sort_record_at_a_time_with_page_aligned_data(
 	planck_unit_test_t *tc
 ) {
@@ -206,80 +311,20 @@ test_flash_min_sort_large_sort_record_at_a_time_with_page_unaligned_data(
 	test_sort(tc, num_records, buffer_size, value_size, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, comparator);
 }
 
-void
-test_macro_get_flag(
-	planck_unit_test_t *tc
-) {
-	uint8_t bit_vector[10];
-
-	int i;
-	for (i = 0; i < 10; i++) {
-		bit_vector[i] = 0; // 0000 0000
-	}
-
-	bit_vector[1] = 0xFF; // 1111 1111
-	bit_vector[9] = 0x23; // 0010 0011
-
-	for (i = 0; i < 8 * 1; i++) {
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, ION_FMS_GET_FLAG(bit_vector, i));
-	}
-
-	for (; i < 8 * 2; i++) {
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, ION_FMS_GET_FLAG(bit_vector, i));
-	}
-
-	for (; i < 8 * 9; i++) {
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, ION_FMS_GET_FLAG(bit_vector, i));
-	}
-
-	for (; i < 8 * 9 + 2; i++) {
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, ION_FMS_GET_FLAG(bit_vector, i));
-	}
-
-	for (; i < 8 * 9 + 5; i++) {
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, ION_FMS_GET_FLAG(bit_vector, i));
-	}
-
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, ION_FMS_GET_FLAG(bit_vector, i));
-	i++;
-
-	for (; i < 8 * 10; i++) {
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, ION_FMS_GET_FLAG(bit_vector, i));
-	}
-}
-
-void
-test_macro_toggle_flag(
-	planck_unit_test_t *tc
-) {
-	uint8_t bit_vector[10];
-
-	int i;
-	for (i = 0; i < 10; i++) {
-		bit_vector[i] = 0; // 0000 0000
-	}
-
-	ION_FMS_SET_FLAG(bit_vector, 8 * 9); // bit_vector[9] = 0000 0001
-	ION_FMS_SET_FLAG(bit_vector, 8 * 9 + 6); // bit_vector[9] = 0100 0001
-
-	for (; i < 9; i++) {
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, bit_vector[i]);
-	}
-
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0x41, bit_vector[9]);
-}
-
 planck_unit_suite_t *
 file_sort_getsuite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_macro_get_flag);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_macro_set_flag);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_macro_clear_flag);
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_recommended_memory);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_small_sort_record_at_a_time_with_page_aligned_data);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_large_sort_record_at_a_time_with_page_aligned_data);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_small_sort_record_at_a_time_with_page_unaligned_data);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_large_sort_record_at_a_time_with_page_unaligned_data);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_macro_get_flag);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_macro_toggle_flag);
 
 	return suite;
 }

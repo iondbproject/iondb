@@ -15,7 +15,14 @@ if(USE_ARDUINO)
     set(${PROJECT_NAME}_PROCESSOR   ${PROCESSOR})
     set(${PROJECT_NAME}_MANUAL      ${MANUAL})
 
-    set(${PROJECT_NAME}_SRCS        ${SOURCE_FILES})
+    set(${PROJECT_NAME}_SRCS
+            ${SOURCE_FILES}
+            ../../../serial/printf_redirect.h
+            ../../../serial/serial_c_iface.h
+            ../../../serial/serial_c_iface.cpp
+            ../../../file/kv_stdio_intercept.h
+            ../../../file/SD_stdio_c_iface.h
+            ../../../file/SD_stdio_c_iface.cpp)
 
     generate_arduino_library(${PROJECT_NAME})
 else()

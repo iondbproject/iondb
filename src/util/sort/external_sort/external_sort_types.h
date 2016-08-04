@@ -33,6 +33,13 @@ extern "C" {
 #include "../sort.h"
 #include "../../../key_value/kv_system.h"
 
+#if defined(ARDUINO)
+#include "../../../serial/printf_redirect.h"
+#include "../../../serial/serial_c_iface.h"
+#include "../../../file/kv_stdio_intercept.h"
+#include "../../../file/SD_stdio_c_iface.h"
+#endif
+
 #define ION_EXTERNAL_SORT_CEILING(numerator, denominator) (1 + (numerator - 1) / (denominator))
 
 typedef uint8_t ion_external_sort_data_pointer_t;

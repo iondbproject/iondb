@@ -33,9 +33,16 @@ extern "C" {
 #include <stdio.h>
 #include <stdint.h>
 #include "../sort.h"
-#include "../../../key_value/kv_system.h"
 #include "external_sort_types.h"
 #include "flash_min_sort.h"
+#include "../../../key_value/kv_system.h"
+
+#if defined(ARDUINO)
+#include "../../../serial/printf_redirect.h"
+#include "../../../serial/serial_c_iface.h"
+#include "../../../file/kv_stdio_intercept.h"
+#include "../../../file/SD_stdio_c_iface.h"
+#endif
 
 ion_err_t
 ion_external_sort_init(
@@ -48,6 +55,13 @@ ion_external_sort_init(
 	ion_page_size_t					page_size,
 	ion_boolean_e					sorted_pages,
 	ion_external_sort_algorithm_e		sort_algorithm
+);
+
+uint32_t
+ion_external_sort_bytes_of_memory_required(
+	ion_external_sort_t				*es,
+	uint32_t 						max_number_bytes_available,
+	uint8_t 						num_cache_pages
 );
 
 ion_err_t
