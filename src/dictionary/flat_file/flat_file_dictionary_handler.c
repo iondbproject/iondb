@@ -369,5 +369,14 @@ ion_err_t
 ffdict_close_dictionary(
 	ion_dictionary_t *dictionary
 ) {
-	return flat_file_close((ion_flat_file_t *) dictionary->instance);
+	ion_err_t err = flat_file_close((ion_flat_file_t *) dictionary->instance);
+
+	free(dictionary->instance);
+	dictionary->instance = NULL;
+
+	if (err_ok != err) {
+		return err_dictionary_destruction_error;
+	}
+
+	return err_ok;
 }
