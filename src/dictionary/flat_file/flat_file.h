@@ -35,7 +35,7 @@ extern "C" {
 @details	A check is done to see if this is actually an attempt to open a previously existing
 			flat file instance. This (should) only happen when this is called from an open context
 			instead of an initialize.
-@param[in]	flat_file
+@param[in]	flat_fileggggggggg
 				Given instance of a flat file struct to initialize. This must be allocated **heap** memory,
 				as destruction will assume that it needs to be freed.
 @param[in]	id
