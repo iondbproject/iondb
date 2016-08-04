@@ -168,7 +168,7 @@ void
 test_flash_min_sort_large_sort_record_at_a_time_with_page_aligned_data(
 	planck_unit_test_t *tc
 ) {
-	uint32_t num_records = 100000;
+	uint32_t num_records = 10000;
 	uint16_t buffer_size = 500;
 	ion_value_size_t value_size = sizeof(uint16_t);
 	ion_boolean_e sorted_pages = boolean_false;
@@ -196,7 +196,7 @@ void
 test_flash_min_sort_large_sort_record_at_a_time_with_page_unaligned_data(
 	planck_unit_test_t *tc
 ) {
-	uint32_t num_records = 100000;
+	uint32_t num_records = 10000;
 	uint16_t buffer_size = 500;
 	ion_value_size_t value_size = 3;
 	ion_boolean_e sorted_pages = boolean_false;
