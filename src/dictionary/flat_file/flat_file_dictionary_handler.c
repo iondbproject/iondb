@@ -355,22 +355,6 @@ ffdict_destroy_cursor(
 	*cursor = NULL;
 }
 
-/**
-@brief		Checks to see if the given @p key satisfies the predicate stored in @p cursor.
-@param[in]	cursor
-				Which cursor to test within.
-@param[in]	key
-				The key under test.
-@return		@p boolean_true if the key satisfies the predicate, @p boolean_false otherwise.
-*/
-ion_boolean_t
-ffdict_test_predicate(
-	ion_dict_cursor_t	*cursor,
-	ion_key_t			key
-) {
-	return boolean_false;
-}
-
 ion_err_t
 ffdict_open_dictionary(
 	ion_dictionary_handler_t		*handler,
