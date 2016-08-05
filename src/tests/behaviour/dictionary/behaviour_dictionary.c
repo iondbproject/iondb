@@ -312,7 +312,7 @@ bhdct_setup_string_key(
 	bhdct_master_table_init(tc);
 	bhdct_context.init_fcn(handler);
 	/* Note most of these are fixed except the dictionary size */
-	bhdct_dictionary_initialization(tc, handler, dict, key_type_char_array, (int) (strlen("key:") + 5), sizeof(int), bhdct_context.dictionary_size);
+	bhdct_dictionary_initialization(tc, handler, dict, key_type_null_terminated_string, (int) (strlen("key:") + 6), sizeof(int), bhdct_context.dictionary_size);
 
 	char key[12];
 
