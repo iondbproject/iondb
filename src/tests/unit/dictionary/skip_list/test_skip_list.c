@@ -28,7 +28,7 @@
 				Probability numerator
 @param	  pden
 				Probability denominator
- */
+*/
 void
 initialize_skiplist(
 	ion_skiplist_t				*skiplist,
@@ -50,7 +50,7 @@ initialize_skiplist(
 
 @param	  skiplist
 				Skiplist to initialize
- */
+*/
 void
 initialize_skiplist_std_conditions(
 	ion_skiplist_t *skiplist
@@ -75,7 +75,7 @@ initialize_skiplist_std_conditions(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_initialize(
 	planck_unit_test_t *tc
@@ -120,7 +120,7 @@ test_skiplist_initialize(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_free_all(
 	planck_unit_test_t *tc
@@ -141,7 +141,7 @@ test_skiplist_free_all(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_single_insert(
 	planck_unit_test_t *tc
@@ -178,7 +178,7 @@ test_skiplist_single_insert(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_insert_multiple(
 	planck_unit_test_t *tc
@@ -238,7 +238,7 @@ test_skiplist_insert_multiple(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_randomized_insert(
 	planck_unit_test_t *tc
@@ -291,7 +291,7 @@ test_skiplist_randomized_insert(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_get_node_single(
 	planck_unit_test_t *tc
@@ -333,7 +333,7 @@ test_skiplist_get_node_single(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_get_node_single_high(
 	planck_unit_test_t *tc
@@ -379,7 +379,7 @@ test_skiplist_get_node_single_high(
 			node.)
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_get_node_single_low(
 	planck_unit_test_t *tc
@@ -423,7 +423,7 @@ test_skiplist_get_node_single_low(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_get_node_single_many(
 	planck_unit_test_t *tc
@@ -482,7 +482,7 @@ test_skiplist_get_node_single_many(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_get_node_several(
 	planck_unit_test_t *tc
@@ -532,7 +532,7 @@ test_skiplist_get_node_several(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_query_nonexist_empty(
 	planck_unit_test_t *tc
@@ -567,7 +567,7 @@ test_skiplist_query_nonexist_empty(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_query_nonexist_populated_single(
 	planck_unit_test_t *tc
@@ -612,7 +612,7 @@ test_skiplist_query_nonexist_populated_single(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_query_nonexist_populated_several(
 	planck_unit_test_t *tc
@@ -662,7 +662,7 @@ test_skiplist_query_nonexist_populated_several(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_query_exist_single(
 	planck_unit_test_t *tc
@@ -707,7 +707,7 @@ test_skiplist_query_exist_single(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_query_exist_populated_single(
 	planck_unit_test_t *tc
@@ -755,7 +755,7 @@ test_skiplist_query_exist_populated_single(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_query_exist_populated_several(
 	planck_unit_test_t *tc
@@ -806,7 +806,7 @@ test_skiplist_query_exist_populated_several(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_delete_empty(
 	planck_unit_test_t *tc
@@ -838,7 +838,7 @@ test_skiplist_delete_empty(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_delete_nonexist_single(
 	planck_unit_test_t *tc
@@ -881,7 +881,7 @@ test_skiplist_delete_nonexist_single(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_delete_nonexist_several(
 	planck_unit_test_t *tc
@@ -929,7 +929,7 @@ test_skiplist_delete_nonexist_several(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_delete_single(
 	planck_unit_test_t *tc
@@ -977,7 +977,7 @@ test_skiplist_delete_single(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_delete_single_several(
 	planck_unit_test_t *tc
@@ -1013,7 +1013,7 @@ test_skiplist_delete_single_several(
 
 	/* This copies all the pointers that the target linked to before for assert
 	 * testing.
-	 */
+	*/
 	ion_sl_node_t *oldnextarr[theone_h];
 
 	for (i = 0; i < theone_h; i++) {
@@ -1049,7 +1049,7 @@ test_skiplist_delete_single_several(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_delete_single_several_noncont(
 	planck_unit_test_t *tc
@@ -1085,7 +1085,7 @@ test_skiplist_delete_single_several_noncont(
 
 	/* This copies all the pointers that the target linked to before for assert
 	 * testing.
-	 */
+	*/
 	ion_sl_node_t *oldnextarr[theone_h];
 
 	for (i = 0; i < theone_h; i++) {
@@ -1119,7 +1119,7 @@ test_skiplist_delete_single_several_noncont(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_delete_several_all(
 	planck_unit_test_t *tc
@@ -1176,7 +1176,7 @@ test_skiplist_delete_several_all(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_update_single_nonexist(
 	planck_unit_test_t *tc
@@ -1208,7 +1208,7 @@ test_skiplist_update_single_nonexist(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_update_single_nonexist_nonempty(
 	planck_unit_test_t *tc
@@ -1251,7 +1251,7 @@ test_skiplist_update_single_nonexist_nonempty(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_update_many_nonexist_nonempty(
 	planck_unit_test_t *tc
@@ -1301,7 +1301,7 @@ test_skiplist_update_many_nonexist_nonempty(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_update_single_exist(
 	planck_unit_test_t *tc
@@ -1345,7 +1345,7 @@ test_skiplist_update_single_exist(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_update_single_many_exist(
 	planck_unit_test_t *tc
@@ -1395,7 +1395,7 @@ test_skiplist_update_single_many_exist(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_update_several_many_exist(
 	planck_unit_test_t *tc
@@ -1446,7 +1446,7 @@ test_skiplist_update_several_many_exist(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_update_several_same_key(
 	planck_unit_test_t *tc
@@ -1498,7 +1498,7 @@ test_skiplist_update_several_same_key(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_update_several_same_key_in_mix(
 	planck_unit_test_t *tc
@@ -1554,7 +1554,7 @@ test_skiplist_update_several_same_key_in_mix(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_delete_then_insert_single(
 	planck_unit_test_t *tc
@@ -1609,7 +1609,7 @@ test_skiplist_delete_then_insert_single(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_delete_then_insert_several(
 	planck_unit_test_t *tc
@@ -1675,7 +1675,7 @@ test_skiplist_delete_then_insert_several(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_delete_several_same_key(
 	planck_unit_test_t *tc
@@ -1726,7 +1726,7 @@ test_skiplist_delete_several_same_key(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_delete_several_same_key_in_mix(
 	planck_unit_test_t *tc
@@ -1779,7 +1779,7 @@ test_skiplist_delete_several_same_key_in_mix(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_skiplist_different_size(
 	planck_unit_test_t *tc
@@ -1869,7 +1869,7 @@ test_skiplist_different_size(
 
 @param	  tc
 				Cutest dependency
- */
+*/
 void
 test_skiplist_big_keys(
 	planck_unit_test_t *tc
@@ -1989,7 +1989,7 @@ skiplist_getsuite(
 
 /**
 @brief	  Runs all skiplist related test and outputs the result.
- */
+*/
 void
 runalltests_skiplist(
 ) {

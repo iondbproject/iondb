@@ -3,7 +3,7 @@
 @file
 @author		Graeme Douglas
 @brief		The handler for a disk-backed B+ Tree.
- */
+*/
 /******************************************************************************/
 
 #include "bpp_tree_handler.h"
@@ -529,15 +529,7 @@ bpptree_open_dictionary(
 	ion_dictionary_config_info_t	*config,
 	ion_dictionary_compare_t		compare
 ) {
-	ion_err_t error;
-
-	error = bpptree_create_dictionary(config->id, config->type, config->key_size, config->value_size, config->dictionary_size, compare, handler, dictionary);
-
-	if (err_ok != error) {
-		return error;
-	}
-
-	return err_ok;
+	return bpptree_create_dictionary(config->id, config->type, config->key_size, config->value_size, config->dictionary_size, compare, handler, dictionary);
 }
 
 ion_err_t

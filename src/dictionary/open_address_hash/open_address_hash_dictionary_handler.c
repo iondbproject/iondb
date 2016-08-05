@@ -3,7 +3,7 @@
  @file
  @author		Scott Ronald Fazackerley
  @brief		The handler for a hash table using linear probing.
- */
+*/
 /******************************************************************************/
 
 #include "open_address_hash_dictionary_handler.h"
@@ -19,13 +19,37 @@ oadict_init(
 	handler->find				= oadict_find;
 	handler->remove				= oadict_delete;
 	handler->delete_dictionary	= oadict_delete_dictionary;
+	handler->close_dictionary	= oadict_close_dictionary;
+	handler->open_dictionary	= oadict_open_dictionary;
+}
+
+ion_err_t
+oadict_open_dictionary(
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary,
+	ion_dictionary_config_info_t	*config,
+	ion_dictionary_compare_t		compare
+) {
+	UNUSED(handler);
+	UNUSED(dictionary);
+	UNUSED(config);
+	UNUSED(compare);
+	return err_not_implemented;
+}
+
+ion_err_t
+oadict_close_dictionary(
+	ion_dictionary_t *dictionary
+) {
+	UNUSED(dictionary);
+	return err_not_implemented;
 }
 
 ion_status_t
 oadict_insert(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	return oah_insert((ion_hashmap_t *) dictionary->instance, key, value);
 }
@@ -33,8 +57,8 @@ oadict_insert(
 ion_status_t
 oadict_query(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	return oah_query((ion_hashmap_t *) dictionary->instance, key, value);
 }
@@ -42,13 +66,13 @@ oadict_query(
 ion_err_t
 oadict_create_dictionary(
 	ion_dictionary_id_t			id,
-	ion_key_type_t					key_type,
+	ion_key_type_t				key_type,
 	int							key_size,
 	int							value_size,
 	int							dictionary_size,
 	ion_dictionary_compare_t	compare,
-	ion_dictionary_handler_t		*handler,
-	ion_dictionary_t				*dictionary
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dictionary
 ) {
 	UNUSED(id);
 	/* this is the instance of the hashmap */
@@ -61,7 +85,7 @@ oadict_create_dictionary(
 
 	/*TODO The correct comparison operator needs to be bound at run time
 	 * based on the type of key defined
-	 */
+	*/
 
 	/* register the correct handler */
 	dictionary->handler = handler;	/* todo: need to check to make sure that the handler is registered */
@@ -72,7 +96,7 @@ oadict_create_dictionary(
 ion_status_t
 oadict_delete(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key
+	ion_key_t			key
 ) {
 	return oah_delete((ion_hashmap_t *) dictionary->instance, key);
 }
@@ -91,8 +115,8 @@ oadict_delete_dictionary(
 ion_status_t
 oadict_update(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	return oah_update((ion_hashmap_t *) dictionary->instance, key, value);
 }
@@ -231,7 +255,7 @@ oadict_find(
 ion_cursor_status_t
 oadict_next(
 	ion_dict_cursor_t	*cursor,
-	ion_record_t	*record
+	ion_record_t		*record
 ) {
 	/* @todo if the dictionary instance changes, then the status of the cursor needs to change */
 	ion_oadict_cursor_t *oadict_cursor = (ion_oadict_cursor_t *) cursor;
@@ -289,8 +313,8 @@ oadict_next(
 ion_boolean_t
 is_equal(
 	ion_dictionary_t	*dict,
-	ion_key_t		key1,
-	ion_key_t		key2
+	ion_key_t			key1,
+	ion_key_t			key2
 ) {
 	if (memcmp(key1, key2, (((ion_hashmap_t *) dict->instance)->super.record.key_size)) == IS_EQUAL) {
 		return boolean_true;
@@ -312,11 +336,11 @@ oadict_destroy_cursor(
 ion_boolean_t
 oadict_test_predicate(
 	ion_dict_cursor_t	*cursor,
-	ion_key_t		key
+	ion_key_t			key
 ) {
 	/* TODO need to check key match; what's the most efficient way? */
 
-	int			key_satisfies_predicate;
+	int				key_satisfies_predicate;
 	ion_hashmap_t	*hash_map = (ion_hashmap_t *) (cursor->dictionary->instance);
 
 	/* pre-prime value for faster exit */
@@ -358,7 +382,7 @@ oadict_scan(
 	/* need to scan hashmap fully looking for values that satisfy - need to think about */
 	ion_hashmap_t *hash_map = (ion_hashmap_t *) (cursor->super.dictionary->instance);
 
-	int loc				= (cursor->current + 1) % hash_map->map_size;
+	int loc					= (cursor->current + 1) % hash_map->map_size;
 
 	/* this is the current position of the cursor */
 	/* and start scanning 1 ahead */
