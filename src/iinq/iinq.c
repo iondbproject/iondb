@@ -222,3 +222,12 @@ iinq_drop(
 
 	return error;
 }
+
+void 					// TODO: Make this ion_comparison_e.
+iinq_sort_compare(
+	void	*context,	// TODO: Turn this into a ion_sort_comparator_context_t.
+	void	*a,
+	void	*b
+) {
+
+}
