@@ -27,15 +27,15 @@ public:
 				The size of keys to be stored in the dictionary.
 @param	  value_size
 				The size of the values to be stored in the dictionary.
- */
+*/
 FlatFile(
 	ion_key_type_t	type_key,
-	int			key_size,
-	int			value_size
+	int				key_size,
+	int				value_size
 ) {
 	ffdict_init(&this->handler);
 
-	this->initializeDictionary(type_key, key_size, value_size, 0);
+	this->initializeDictionary(type_key, key_size, value_size, 1);
 }
 };
 

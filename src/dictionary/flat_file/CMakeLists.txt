@@ -4,9 +4,8 @@ project(flat_file)
 set(SOURCE_FILES
     flat_file.h
     flat_file.c
-    file_handler.h
-    flat_file_dictionary.h
-    flat_file_dictionary_handler.h
+		flat_file_types.h
+        flat_file_dictionary_handler.h
     flat_file_dictionary_handler.c
     ../dictionary.h
     ../dictionary.c
@@ -34,9 +33,13 @@ if(USE_ARDUINO)
             ../../serial/serial_c_iface.cpp)
 #    endif()
 
+    set(${PROJECT_NAME}_LIBS bpp_tree)
+
     generate_arduino_library(${PROJECT_NAME})
 else()
     add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
+
+    target_link_libraries(${PROJECT_NAME} bpp_tree)
 
     # Required on Unix OS family to be able to be linked into shared libraries.
     set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)

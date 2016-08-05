@@ -54,8 +54,8 @@ typedef struct {
 													 identify the dictionary. */
 	ion_dict_use_t			use_type;			/**< How the dictionary will be
 													 used. Ignore if N/A. */
-	ion_key_type_t				type;				/**< The type of key to store.
-												*/
+	ion_key_type_t			type;					/**< The type of key to store.
+													*/
 	ion_key_size_t			key_size;			/**< The size of the key. */
 	ion_value_size_t		value_size;			/**< The size of the value. */
 	ion_dictionary_size_t	dictionary_size;	/**< The dictionary size
@@ -246,7 +246,7 @@ typedef char ion_dictionary_status_t;
 			storage element and the associated handler.
 */
 struct dictionary {
-	ion_dictionary_status_t status;	/**< A status describing the state
+	ion_dictionary_status_t		status;	/**< A status describing the state
 											 of the dictionary. */
 	ion_dictionary_parent_t		*instance;	/**< Specific instance of a
 											 dictionary (but we don't
@@ -258,8 +258,8 @@ struct dictionary {
 @brief	  This is the super type for all dictionaries.
 */
 struct dictionary_parent {
-	ion_key_type_t					key_type;	/**< The key type stored in the map. */
-	ion_record_info_t				record;	/**< The record structure for items. */
+	ion_key_type_t				key_type;		/**< The key type stored in the map. */
+	ion_record_info_t			record;		/**< The record structure for items. */
 	ion_dictionary_compare_t	compare;/**< Comparison function for
 											  instance of map. */
 	ion_dictionary_id_t			id;		/**< ID of dictionary instance. */
@@ -332,7 +332,7 @@ union predicate_statement {
 	/**> A general predicate statement. */
 	ion_other_predicate_statement_t other_predicate;
 	/**> An all records predicate statement. */
-	ion_all_records_statement_t all_records;
+	ion_all_records_statement_t		all_records;
 };
 
 /**
@@ -374,7 +374,7 @@ struct dictionary_cursor {
 	ion_dictionary_t	*dictionary;			/**< A pointer to the dictionary
 												 object. */
 	ion_predicate_t		*predicate;				/**< The predicate for the cursor.
-											*/
+												*/
 
 	ion_cursor_status_t (*next)(
 		ion_dict_cursor_t *,

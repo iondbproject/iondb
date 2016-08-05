@@ -21,13 +21,13 @@ extern "C" {
 
 typedef struct bplusplustree {
 	ion_dictionary_parent_t super;
-	ion_bpp_handle_t			tree;
+	ion_bpp_handle_t		tree;
 	ion_lfb_t				values;
 } ion_bpptree_t;
 
 typedef struct {
 	ion_dict_cursor_t	super;		/**< Supertype of cursor		*/
-	ion_key_t		cur_key;	/**< Current key we're visiting */
+	ion_key_t			cur_key;/**< Current key we're visiting */
 	ion_file_offset_t	offset;		/**< offset in LFB; holds value */
 } ion_bpp_cursor_t;
 
@@ -40,7 +40,7 @@ typedef struct {
 @param	  handler
 				The handler for the dictionary instance that is to be
 				initialized.
- */
+*/
 void
 bpptree_init(
 	ion_dictionary_handler_t *handler
@@ -56,12 +56,12 @@ bpptree_init(
 @param	  value
 				The value to use.
 @return		The status on the insertion of the record.
- */
+*/
 ion_status_t
 bpptree_insert(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -87,12 +87,12 @@ bpptree_insert(
 				value and it is up to the consumer the free the associated
 				memory.
 @return		The status of the query.
- */
+*/
 ion_status_t
 bpptree_query(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -119,17 +119,17 @@ bpptree_query(
 				 The pointer declared by the caller that will reference
 				 the instance of the dictionary created.
 @return		The status of the creation of the dictionary.
- */
+*/
 ion_err_t
 bpptree_create_dictionary(
 	ion_dictionary_id_t			id,
-	ion_key_type_t					key_type,
+	ion_key_type_t				key_type,
 	int							key_size,
 	int							value_size,
 	int							dictionary_size,
 	ion_dictionary_compare_t	compare,
-	ion_dictionary_handler_t		*handler,
-	ion_dictionary_t				*dictionary
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dictionary
 );
 
 /**
@@ -141,11 +141,11 @@ bpptree_create_dictionary(
 @param	  key
 				The key that is to be deleted.
 @return		The status of the deletion
- */
+*/
 ion_status_t
 bpptree_delete(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key
+	ion_key_t			key
 );
 
 /**
@@ -154,7 +154,7 @@ bpptree_delete(
 @param	  dictionary
 				The instance of the dictionary to delete.
 @return		The status of the dictionary deletion.
- */
+*/
 ion_err_t
 bpptree_delete_dictionary(
 	ion_dictionary_t *dictionary
@@ -173,12 +173,12 @@ bpptree_delete_dictionary(
 @param	  value
 				The value that is to be updated.
 @return		The status of the update.
- */
+*/
 ion_status_t
 bpptree_update(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -197,7 +197,7 @@ bpptree_update(
 				The pointer to a cursor which is caller declared but callee
 				is responsible for populating.
 @return		The status of the operation.
- */
+*/
 ion_err_t
 bpptree_find(
 	ion_dictionary_t	*dictionary,
@@ -216,11 +216,11 @@ bpptree_find(
 				pair. This must be properly initialized and allocated
 				by the user.
 @return		The status of the cursor.
- */
+*/
 ion_cursor_status_t
 bpptree_next(
 	ion_dict_cursor_t	*cursor,
-	ion_record_t	*record
+	ion_record_t		*record
 );
 
 /**
@@ -234,7 +234,7 @@ bpptree_next(
 
 @param	  cursor
 				** pointer to cursor.
- */
+*/
 void
 bpptree_destroy_cursor(
 	ion_dict_cursor_t **cursor
@@ -249,18 +249,18 @@ bpptree_destroy_cursor(
 @param	  key
 				The key to test.
 @return		The result is the key passes or fails the predicate test.
- */
+*/
 ion_boolean_t
 bpptree_test_predicate(
 	ion_dict_cursor_t	*cursor,
-	ion_key_t		key
+	ion_key_t			key
 );
 
 /* TODO Write me doc! */
 ion_err_t
 bpptree_open_dictionary(
-	ion_dictionary_handler_t			*handler,
-	ion_dictionary_t					*dictionary,
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary,
 	ion_dictionary_config_info_t	*config,
 	ion_dictionary_compare_t		compare
 );

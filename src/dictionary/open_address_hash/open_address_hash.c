@@ -10,7 +10,7 @@
 @todo   When creating the hash-map, need to know something about what is going in it.
 		What we need to know if the the size of the key and the size of the data.
 		That is all.  Nothing else.
- */
+*/
 /******************************************************************************/
 
 #include "open_address_hash.h"
@@ -58,7 +58,7 @@ oah_initialize(
 int
 oah_get_location(
 	ion_hash_t	num,
-	int		size
+	int			size
 ) {
 	return num % size;
 }
@@ -86,8 +86,8 @@ oah_destroy(
 ion_status_t
 oah_update(
 	ion_hashmap_t	*hash_map,
-	ion_key_t	key,
-	ion_value_t value
+	ion_key_t		key,
+	ion_value_t		value
 ) {
 	/* TODO: lock potentially required */
 	ion_write_concern_t current_write_concern = hash_map->write_concern;
@@ -103,15 +103,15 @@ oah_update(
 ion_status_t
 oah_insert(
 	ion_hashmap_t	*hash_map,
-	ion_key_t	key,
-	ion_value_t value
+	ion_key_t		key,
+	ion_value_t		value
 ) {
 	ion_hash_t hash = hash_map->compute_hash(hash_map, key, hash_map->super.record.key_size);	/* compute hash value for given key */
 
-	int loc		= oah_get_location(hash, hash_map->map_size);
+	int loc			= oah_get_location(hash, hash_map->map_size);
 
 	/* Scan until find an empty location - oah_insert if found */
-	int count	= 0;
+	int count		= 0;
 
 	ion_hash_bucket_t *item;
 
@@ -167,16 +167,16 @@ oah_insert(
 ion_err_t
 oah_find_item_loc(
 	ion_hashmap_t	*hash_map,
-	ion_key_t	key,
-	int			*location
+	ion_key_t		key,
+	int				*location
 ) {
 	/* compute hash value for given key */
 	ion_hash_t hash = hash_map->compute_hash(hash_map, key, hash_map->super.record.key_size);
 
-	int loc		= oah_get_location(hash, hash_map->map_size);
+	int loc			= oah_get_location(hash, hash_map->map_size);
 	/* determine bucket based on hash */
 
-	int count	= 0;
+	int count		= 0;
 
 	while (count != hash_map->map_size) {
 		/* check to see if current item is a match based on key */
@@ -218,7 +218,7 @@ oah_find_item_loc(
 ion_status_t
 oah_delete(
 	ion_hashmap_t	*hash_map,
-	ion_key_t	key
+	ion_key_t		key
 ) {
 	int loc = -1;
 
@@ -244,8 +244,8 @@ oah_delete(
 ion_status_t
 oah_query(
 	ion_hashmap_t	*hash_map,
-	ion_key_t	key,
-	ion_value_t value
+	ion_key_t		key,
+	ion_value_t		value
 ) {
 	int loc;
 
@@ -254,7 +254,7 @@ oah_query(
 		io_printf("Item found at location %d\n", loc);
 #endif
 
-		int				data_length = hash_map->super.record.key_size + hash_map->super.record.value_size;
+		int					data_length = hash_map->super.record.key_size + hash_map->super.record.value_size;
 		ion_hash_bucket_t	*item		= (((ion_hash_bucket_t *) ((hash_map->entry + (data_length + SIZEOF(STATUS)) * loc))));
 
 		/* *value				   = malloc(sizeof(char) * (hash_map->super.record.value_size)); */
@@ -272,7 +272,7 @@ oah_query(
 void
 oah_print(
 	ion_hashmap_t		*hash_map,
-	int				size,
+	int					size,
 	ion_record_info_t	*record
 ) {
 	int i;
@@ -301,8 +301,8 @@ oah_print(
 ion_hash_t
 oah_compute_simple_hash(
 	ion_hashmap_t	*hashmap,
-	ion_key_t	key,
-	int			size_of_key
+	ion_key_t		key,
+	int				size_of_key
 ) {
 	UNUSED(size_of_key);
 
