@@ -31,11 +31,12 @@ public:
 FlatFile(
 	ion_key_type_t	type_key,
 	int				key_size,
-	int				value_size
+	int				value_size,
+	int				dictionary_size
 ) {
 	ffdict_init(&this->handler);
 
-	this->initializeDictionary(type_key, key_size, value_size, 1);
+	this->initializeDictionary(type_key, key_size, value_size, dictionary_size);
 }
 };
 

@@ -22,7 +22,7 @@ if(USE_ARDUINO)
 else()
     add_executable(${PROJECT_NAME}          ${SOURCE_FILES} run_open_address_file_hash.c)
 
-    target_link_libraries(${PROJECT_NAME}   planck_unit open_address_file_hash)
+    target_link_libraries(${PROJECT_NAME}   planck_unit open_address_file_hash flat_file)
 
     # Use cmake -DCOVERAGE_TESTING=ON to include coverage testing information.
     if (CMAKE_COMPILER_IS_GNUCC AND COVERAGE_TESTING)
