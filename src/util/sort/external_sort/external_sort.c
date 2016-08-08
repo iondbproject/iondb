@@ -73,22 +73,31 @@ uint32_t
 ion_external_sort_bytes_of_memory_required(
 	ion_external_sort_t				*es,
 	uint32_t 						max_number_bytes_available,
-	uint8_t 						num_cache_pages
+	ion_boolean_e					dump_all
 ) {
 	uint32_t memory_required = 0;
 
 	switch (es->sort_algorithm) {
 		case ION_FILE_SORT_FLASH_MINSORT: {
-			uint32_t min_memory_required = 3 * (uint32_t) es->value_size + 1;
+			memory_required += es->page_size + 4;
 
-			if ((int32_t) max_number_bytes_available - (int32_t) num_cache_pages * es->page_size - (int32_t) min_memory_required < 0) {
-				return num_cache_pages * es->page_size + min_memory_required;
+			if (boolean_true == dump_all) {
+				memory_required += es->page_size + 4;
 			}
 
-			uint32_t num_regions = ((max_number_bytes_available - num_cache_pages * es->page_size - 2 * es->value_size) * 8) / (es->value_size * 8 + 1);
+			if ((int32_t) max_number_bytes_available - (int32_t) (3 * es->value_size + 1 + memory_required) < 0) {
+				return 3 * es->value_size + 1 + memory_required;
+			}
+
+			uint32_t num_regions = ((max_number_bytes_available - 2 * es->value_size - memory_required) * 8) / (es->value_size * 8 + 1);
 			num_regions = (num_regions > es->num_pages) ? es->num_pages : num_regions;
 
-			memory_required = num_regions * es->value_size + 2 * es->value_size + ION_EXTERNAL_SORT_CEILING(num_regions, 8) + num_cache_pages * es->page_size;
+			memory_required += num_regions * es->value_size + 2 * es->value_size + ION_EXTERNAL_SORT_CEILING(num_regions, 8);
+
+			int32_t num_cache_pages = ((int32_t) max_number_bytes_available - (int32_t) memory_required) / (es->page_size + 4);
+			if (num_cache_pages > 0) {
+				memory_required += num_cache_pages * (uint32_t) es->page_size + num_cache_pages * 4;
+			}
 
 			break;
 		}

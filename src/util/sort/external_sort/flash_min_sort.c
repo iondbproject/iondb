@@ -27,32 +27,40 @@
 /******************************************************************************/
 
 #include "flash_min_sort.h"
+#include "external_sort_types.h"
 
+uint32_t page_reads;
 ion_err_t
 ion_flash_min_sort_init(
 	ion_external_sort_t			*es,
 	ion_external_sort_cursor_t	*cursor
 ) {
+	page_reads = 0;
+
 	ion_flash_min_sort_t *fms = cursor->implementation_data;
 
 	/* Calculate the number of regions and pages in each region. Note that the value instead of the key is stored in
 	   the buckets of the minimal index to preserve generality. The size for the bit vectors to indicate uninitialized
 	   value is also included in the calculation. */
-	fms->num_regions			= ((cursor->buffer_size - 2 * es->value_size) * 8) / (es->value_size * 8 + 1);
-	fms->num_regions = (fms->num_regions > es->num_pages) ? es->num_pages : fms->num_regions;
-	fms->num_pages_per_region	= ION_EXTERNAL_SORT_CEILING(((uint32_t) es->num_pages), (fms->num_regions));
+	fms->num_regions = cursor->buffer_size - (es->page_size + 4) - 2 * es->value_size;
 
-	/* Check if the buffer is large enough for the algorithm. */
-	if (((int32_t) cursor->buffer_size - 3 * es->value_size - (int32_t) ION_EXTERNAL_SORT_CEILING(fms->num_regions, 8)) < 0) {
-		return err_out_of_memory;
+	if (NULL != cursor->output_file) {
+		fms->num_regions -= (es->page_size + 4);
 	}
 
-	/* TODO: Check to see if there is more memory left in buffer for page caching */
+	fms->num_regions = (fms->num_regions * 8) / (es->value_size * 8 + 1);
+	fms->num_regions = (fms->num_regions > es->num_pages) ? es->num_pages : fms->num_regions;
+
+	fms->num_pages_per_region	= ION_EXTERNAL_SORT_CEILING(((uint32_t) es->num_pages), (fms->num_regions));
+
+	fms->num_cache_pages = ((int32_t) cursor->buffer_size - ((int32_t) fms->num_regions * es->value_size + 2 * es->value_size + ION_EXTERNAL_SORT_CEILING(fms->num_regions, 8))) / (es->page_size + 4);
 
 	/* Initialize pointers to the corresponding locations in the buffer. */
 	fms->cur_value				= cursor->buffer + fms->num_regions * es->value_size;
-	fms->temp_value				= fms->cur_value + es->value_size;
+	fms->temp_value				= fms->cur_value + es->value_size; // TODO: Does not need to be allocated
 	fms->min_index_bit_vector	= fms->temp_value + es->value_size;
+	fms->page_statuses			= (uint32_t *) fms->min_index_bit_vector + ION_EXTERNAL_SORT_CEILING(fms->num_regions, 8);
+	fms->cache_pages			= (ion_external_sort_data_pointer_t *) fms->page_statuses + fms->num_cache_pages * 4;
 
 	/* Set the bits to 0 in the minimum index bit vector. */
 	uint32_t i;
@@ -114,6 +122,8 @@ ion_flash_min_sort_init(
 	fms->cur_byte_in_page	= 0;
 	fms->cur_page_in_region = 0;
 	fms->is_cur_null = boolean_false;
+	fms->page_statuses[0] = 0xFFFFFFFF;
+	fms->page_statuses[1] = es->value_size;
 
 	cursor->status = cs_cursor_initialized;
 	return err_ok;
@@ -166,28 +176,65 @@ ion_flash_min_sort_next(
 			if (fms->cur_page >= es->num_pages - 1) {
 				if (fms->cur_page > es->num_pages - 1) {
 					fms->cur_page_in_region = 0;
-
 					break;
 				}
 
 				fms->num_bytes_in_page = es->num_values_last_page * (uint32_t) es->value_size;
 			}
 
-//			read(current_page)
-
-			if (boolean_true == es->sorted_pages && 0 == fms->cur_byte_in_page) {
-				// binary search
-//				set current_byte
-			}
-
-			while (fms->cur_byte_in_page < fms->num_bytes_in_page) {
-				if (0 == fread(fms->temp_value, es->value_size, 1, es->input_file)) {
+			if (fms->cur_page != fms->page_statuses[0]) {
+				if (0 == fread(fms->cache_pages, fms->num_bytes_in_page, 1, es->input_file)) {
 					return err_file_read_error;
 				}
 
+				page_reads++;
+				fms->page_statuses[0] = fms->cur_page;
+			}
+
+			if (boolean_true == es->sorted_pages && 0 == fms->cur_byte_in_page) {
+				/* Binary search */
+				uint16_t lower_bound = 0;
+				uint16_t upper_bound = fms->num_bytes_in_page / es->value_size;
+
+				while (1) {
+					if (upper_bound < lower_bound) {
+						return err_item_not_found;
+					}
+
+					uint16_t mid_point = lower_bound + (upper_bound - lower_bound) / 2;
+
+					if (less_than == es->compare_function(es->context, fms->cache_pages + mid_point * es->value_size, fms->cur_value)) {
+						lower_bound = mid_point + 1;
+					}
+
+					if (greater_than == es->compare_function(es->context, fms->cache_pages + mid_point * es->value_size, fms->cur_value)) {
+						upper_bound = mid_point - 1;
+					}
+
+					if (equal == es->compare_function(es->context, fms->cache_pages + mid_point * es->value_size, fms->cur_value)) {
+						fms->cur_byte_in_page = mid_point * es->value_size;
+						break;
+					}
+				}
+			}
+
+			while (fms->cur_byte_in_page < fms->num_bytes_in_page) {
+				fms->temp_value = fms->cache_pages + fms->cur_byte_in_page;
+
 				if (equal == es->compare_function(es->context, fms->temp_value, fms->cur_value)) {
 					if (NULL != cursor->output_file) {
-//						dump value to file
+						/* Dump values to file */
+						fms->page_statuses[1] += es->value_size;
+
+						if (fms->page_statuses[1] > es->page_size) {
+							if (0 == fwrite(fms->cache_pages + es->page_size, fms->num_bytes_in_page, 1, cursor->output_file)) {
+								return err_file_write_error;
+							}
+
+							fms->page_statuses[1] = es->value_size;
+						}
+
+						memcpy(fms->cache_pages + es->page_size + fms->page_statuses[1], fms->temp_value, es->value_size);
 					}
 					else {
 						fms->cur_byte_in_page += es->value_size;
@@ -208,13 +255,6 @@ ion_flash_min_sort_next(
 				fms->cur_byte_in_page += es->value_size;
 			}
 
-			if (fms->cur_page != es->num_pages - 1) {
-				/* Seek to the beginning of the next page. */
-				if (0 != fseek(es->input_file, es->page_size - (fms->num_bytes_in_page), SEEK_CUR)) {
-					return err_file_bad_seek;
-				}
-			}
-
 			fms->cur_byte_in_page = 0;
 			fms->cur_page++;
 			fms->cur_page_in_region++;
@@ -228,6 +268,8 @@ ion_flash_min_sort_next(
 		fms->cur_page_in_region = 0;
 		fms->cur_byte_in_page = 0;
 	}
+
+	printf("%d\n", page_reads);
 
 	cursor->status = cs_end_of_results;
 	return err_ok;
