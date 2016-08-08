@@ -31,9 +31,10 @@ Cursor(
 	ion_dictionary_t	*dictionary,
 	ion_predicate_t		*predicate
 ) {
+	this->dictionary	= dictionary;
 	dictionary_find(dictionary, predicate, &cursor);
-	record.key		= (ion_key_t) malloc(dictionary->instance->record.key_size);
-	record.value	= (ion_value_t) malloc(dictionary->instance->record.value_size);
+	record.key			= malloc(dictionary->instance->record.key_size);
+	record.value		= malloc(dictionary->instance->record.value_size);
 }
 
 ~Cursor(

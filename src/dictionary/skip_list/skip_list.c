@@ -121,7 +121,7 @@ sl_insert(
 
 	/* First we check if there's already a duplicate node. If there is, we're
 	 * going to do a modified insert instead. TODO write unit cpp_wrapper to check this
-	 */
+	*/
 	ion_sl_node_t *duplicate = sl_find_node(skiplist, key);
 
 	if ((NULL != duplicate->key) && (skiplist->super.compare(duplicate->key, key, key_size) == 0)) {
@@ -138,7 +138,7 @@ sl_insert(
 
 		/* We want duplicate to be the last node in the block of duplicate
 		 * nodes, so we traverse along the bottom until we get there.
-		 */
+		*/
 		while (NULL != duplicate->next[0] && skiplist->super.compare(duplicate->next[0]->key, key, key_size) == 0) {
 			duplicate = duplicate->next[0];
 		}

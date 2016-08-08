@@ -19,7 +19,30 @@ sldict_init(
 	handler->delete_dictionary	= sldict_delete_dictionary;
 	handler->update				= sldict_update;
 	handler->find				= sldict_find;
-	handler->close_dictionary	= sldict_delete_dictionary;
+	handler->close_dictionary	= sldict_close_dictionary;
+	handler->open_dictionary	= sldict_open_dictionary;
+}
+
+ion_err_t
+sldict_open_dictionary(
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary,
+	ion_dictionary_config_info_t	*config,
+	ion_dictionary_compare_t		compare
+) {
+	UNUSED(handler);
+	UNUSED(dictionary);
+	UNUSED(config);
+	UNUSED(compare);
+	return err_not_implemented;
+}
+
+ion_err_t
+sldict_close_dictionary(
+	ion_dictionary_t *dictionary
+) {
+	UNUSED(dictionary);
+	return err_not_implemented;
 }
 
 ion_status_t

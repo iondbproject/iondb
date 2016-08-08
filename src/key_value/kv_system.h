@@ -42,6 +42,10 @@ extern "C" {
 #define IS_GREATER				1
 #define IS_LESS					-1
 #define ZERO					0
+/**
+@brief		Since the arduino conforms to 8.3 syntax, that's 8 + 3 = 11 + 1 (null terminator) characters.
+*/
+#define ION_MAX_FILENAME_LENGTH 12
 
 /* ==================== ARDUINO CONDITIONAL COMPILATION ================================ */
 #if !defined(ARDUINO)
@@ -66,7 +70,7 @@ typedef unsigned char byte;
 #endif
 /* ===================================================================================== */
 
-#define IONIZE(something, type)		(ion_key_t) &(type) { (something) }
+#define IONIZE(something, type)		& (type) { (something) }
 #define NEUTRALIZE(something, type) (*((type *) (something)))
 #define IONIZE_VAL(varname, size)	ion_byte_t varname[size]
 
@@ -160,6 +164,9 @@ enum error {
 	/**> An error code describing the situation where a seek operation could
 		 not be made to completion. */
 	err_file_bad_seek,
+	/**> An error code describing the situation where a file operation hit
+		 the EOF. */
+	err_file_hit_eof,
 	/**> An error code describing the situation where a requested item could
 		 not be found in the primary page. */
 	err_not_in_primary_page,
@@ -177,7 +184,10 @@ enum error {
 	err_duplicate_dictionary_error,
 	/**> An error code describing the situation a system object was not
 		 properly initialized. */
-	err_uninitialized
+	err_uninitialized,
+	/**> An error code describing the situation where something is out of
+		 valid bounds. */
+	err_out_of_bounds
 };
 
 /**
@@ -193,6 +203,10 @@ typedef char ion_err_t;
 */
 typedef unsigned char ion_byte_t;
 
+/**
+@brief		A file position type.
+*/
+typedef long ion_fpos_t;
 /**
 @brief		A dictionary key.
 */

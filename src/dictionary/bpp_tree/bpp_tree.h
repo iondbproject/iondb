@@ -28,7 +28,7 @@ typedef long	ion_bpp_address_t;		/* record address for btree node */
  *	CC_LT	 key1 < key2
  *	CC_GT	 key1 > key2
  *	CC_EQ	 key1 = key2
- */
+*/
 typedef char (*ion_bpp_comparison_t)(
 	ion_key_t		key1,
 	ion_key_t		key2,
@@ -90,7 +90,7 @@ bOpen(
  *   bErrMemory			 insufficient memory
  *   bErrSectorSize		 sector size too small or not 0 mod 4
  *   bErrFileNotOpen		unable to open index file
- */
+*/
 
 ion_bpp_err_t
 bClose(
@@ -102,7 +102,7 @@ bClose(
  *   handle				 handle returned by bOpen
  * returns:
  *   bErrOk				 file closed, resources deleted
- */
+*/
 
 ion_bpp_err_t
 bInsertKey(
@@ -125,7 +125,7 @@ bInsertKey(
  *   allowed, but they must all have unique record addresses.
  *   In this case, record addresses are included in internal
  *   nodes to generate a "unique" key.
- */
+*/
 
 ion_bpp_err_t
 bUpdateKey(
@@ -148,7 +148,7 @@ bUpdateKey(
  *   allowed, but they must all have unique record addresses.
  *   In this case, record addresses are included in internal
  *   nodes to generate a "unique" key.
- */
+*/
 
 ion_bpp_err_t
 bDeleteKey(
@@ -171,7 +171,7 @@ bDeleteKey(
  *   If dupKeys is false, all keys are unique, and rec is not used
  *   to determine which key to delete.  If dupKeys is true, then
  *   rec is used to determine which key to delete.
- */
+*/
 
 ion_bpp_err_t
 bFindKey(
@@ -189,7 +189,7 @@ bFindKey(
  * returns:
  *   bErrOk				 operation successful
  *   bErrKeyNotFound		key not found
- */
+*/
 
 ion_bpp_err_t
 bFindFirstGreaterOrEqual(
@@ -208,7 +208,7 @@ bFindFirstGreaterOrEqual(
  *   rec					record address of least element greater than or equal to
  * returns:
  *   bErrOk				 operation successful
- */
+*/
 
 ion_bpp_err_t
 bFindFirstKey(
@@ -226,7 +226,7 @@ bFindFirstKey(
  * returns:
  *   bErrOk				 operation successful
  *   bErrKeyNotFound		key not found
- */
+*/
 
 ion_bpp_err_t
 bFindLastKey(
@@ -244,7 +244,7 @@ bFindLastKey(
  * returns:
  *   bErrOk				 operation successful
  *   bErrKeyNotFound		key not found
- */
+*/
 
 ion_bpp_err_t
 bFindNextKey(
@@ -262,7 +262,7 @@ bFindNextKey(
  * returns:
  *   bErrOk				 operation successful
  *   bErrKeyNotFound		key not found
- */
+*/
 
 ion_bpp_err_t
 bFindPrevKey(
@@ -280,7 +280,7 @@ bFindPrevKey(
  * returns:
  *   bErrOk				 operation successful
  *   bErrKeyNotFound		key not found
- */
+*/
 
 #if defined(__cplusplus)
 }

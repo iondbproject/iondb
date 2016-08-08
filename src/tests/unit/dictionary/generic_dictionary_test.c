@@ -146,7 +146,7 @@ dictionary_test_insert_get_edge_cases(
 	int				k;
 	ion_key_t		key = IONIZE(-10, int);
 
-	status	= dictionary_insert(&(test->dictionary), key, GTEST_DATA);
+	status	= dictionary_insert(&(test->dictionary), key, IONIZE(44, int));
 	k		= get_count_index_by_key(key, count_keys, length, &(test->dictionary));
 
 	if ((-1 != k) && (err_ok == status.error) && (1 == status.count)) {
@@ -162,7 +162,7 @@ dictionary_test_insert_get_edge_cases(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
-	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == test->dictionary.instance->compare(GTEST_DATA, test_buf, test->key_size));
+	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == test->dictionary.instance->compare(IONIZE(44, int), test_buf, test->value_size));
 }
 
 void
@@ -179,7 +179,14 @@ dictionary_test_delete(
 
 	status = dictionary_delete(&(test->dictionary), key_to_delete);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	/* If we don't expect to delete anything, then we expect to see that the item didn't exist. */
+	if (0 == count) {
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
+	}
+	else {
+		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+	}
+
 	PLANCK_UNIT_ASSERT_TRUE(tc, count == status.count);
 
 	status = dictionary_get(&(test->dictionary), key_to_delete, test_val);

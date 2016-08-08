@@ -25,7 +25,7 @@ extern "C" {
 @param	  handler
 				An instance of a dictionary handler that is to be bound.
 				It is assumed @p handler is initialized by the user.
- */
+*/
 void
 sldict_init(
 	ion_dictionary_handler_t *handler
@@ -41,7 +41,7 @@ sldict_init(
 @param	  value
 				The value to use.
 @return	 Status of insertion.
- */
+*/
 ion_status_t
 sldict_insert(
 	ion_dictionary_t	*dictionary,
@@ -68,7 +68,7 @@ sldict_insert(
 				memory for value is assumed to be allocated and freed by the
 				user.
 @return	 Status of query.
- */
+*/
 ion_status_t
 sldict_query(
 	ion_dictionary_t	*dictionary,
@@ -101,7 +101,7 @@ sldict_query(
 				stored. Assumption is that it has been properly allocated by
 				the user.
 @return	 Status of creation.
- */
+*/
 ion_err_t
 sldict_create_dictionary(
 	ion_dictionary_id_t			id,
@@ -123,7 +123,7 @@ sldict_create_dictionary(
 @param	  key
 				The key to be deleted.
 @return	 Status of deletion.
- */
+*/
 ion_status_t
 sldict_delete(
 	ion_dictionary_t	*dictionary,
@@ -136,7 +136,7 @@ sldict_delete(
 @param	  dictionary
 				The instance of the dictionary to be deleted.
 @return	 Status of dictionary deletion.
- */
+*/
 ion_err_t
 sldict_delete_dictionary(
 	ion_dictionary_t *dictionary
@@ -155,7 +155,7 @@ sldict_delete_dictionary(
 @param	  value
 				The new value to be used.
 @return Status of update.
- */
+*/
 ion_status_t
 sldict_update(
 	ion_dictionary_t	*dictionary,
@@ -178,7 +178,7 @@ sldict_update(
 				The pointer to a cursor declared by the caller, but initialized
 				and populated within the function.
 @return	 Status of find.
- */
+*/
 ion_err_t
 sldict_find(
 	ion_dictionary_t	*dictionary,
@@ -197,7 +197,7 @@ sldict_find(
 				cursor will fill with the next key/value result. The assumption
 				is that the caller will also free this memory.
 @return	 Status of cursor.
- */
+*/
 ion_cursor_status_t
 sldict_next(
 	ion_dict_cursor_t	*cursor,
@@ -213,7 +213,7 @@ sldict_next(
 
 @param	  cursor
 				Pointer to a pointer of a cursor.
- */
+*/
 void
 sldict_destroy_cursor(
 	ion_dict_cursor_t **cursor
@@ -227,11 +227,47 @@ sldict_destroy_cursor(
 @param	  key
 				Key to test.
 @return	 Result of predicate comparison.
- */
+*/
 ion_boolean_t
 sldict_test_predicate(
 	ion_dict_cursor_t	*cursor,
 	ion_key_t			key
+);
+
+/**
+@brief			Opens a specific skiplist instance of a dictionary.
+
+@param			handler
+					A pointer to the handler for the specific dictionary being opened.
+@param			dictionary
+					The pointer declared by the caller that will reference
+					the instance of the dictionary opened.
+@param			config
+					The configuration info of the specific dictionary to be opened.
+@param			compare
+					Function pointer for the comparison function for the dictionary.
+
+@return			The status of opening the dictionary.
+ */
+ion_err_t
+sldict_open_dictionary(
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary,
+	ion_dictionary_config_info_t	*config,
+	ion_dictionary_compare_t		compare
+);
+
+/**
+@brief			Closes a skiplist instance of a dictionary.
+
+@param			dictionary
+					A pointer to the specific dictionary instance to be closed.
+
+@return			The status of closing the dictionary.
+ */
+ion_err_t
+sldict_close_dictionary(
+	ion_dictionary_t *dictionary
 );
 
 #if defined(__cplusplus)

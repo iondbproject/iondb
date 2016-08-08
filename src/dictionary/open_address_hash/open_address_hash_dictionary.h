@@ -1,7 +1,6 @@
 /**
 
 @details		This file includes common components for oadictionary and oahash.
-
 */
 
 #if !defined(OPEN_ADDRESS_DICTIONARY_H_)
@@ -15,7 +14,7 @@ extern "C" {
 
 /**
 @brief		The position in the hashmap.
- */
+*/
 typedef int ion_hash_t;
 
 typedef struct oadict_cursor {

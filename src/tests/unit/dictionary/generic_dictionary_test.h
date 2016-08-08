@@ -13,7 +13,7 @@ extern "C" {
 #include "./../../../dictionary/dictionary.h"
 #include "./../../../dictionary/ion_master_table.h"
 
-#define GTEST_DATA (ion_value_t) "Test data, please ignore! 123 123 abc abc"
+#define GTEST_DATA "Test data, please ignore! 123 123 abc abc"
 
 int
 get_count_index_by_key(

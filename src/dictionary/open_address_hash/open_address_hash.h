@@ -34,7 +34,7 @@ extern "C" {
 
 /**
 @brief		Prototype declaration for hashmap
- */
+*/
 typedef struct hashmap ion_hashmap_t;
 
 /**
@@ -74,7 +74,7 @@ struct hashmap {
 				The size of the hashmap in item
 				(@p key_size + @p value_size + @c 1)
 @return		The status describing the result of the initialization.
- */
+*/
 ion_err_t
 oah_initialize(
 	ion_hashmap_t *hashmap,
@@ -176,7 +176,7 @@ oah_update(
 @param		location
 				Pointer to the location variable
 @return		The status of the find
- */
+*/
 ion_err_t
 oah_find_item_loc(
 	ion_hashmap_t	*hash_map,

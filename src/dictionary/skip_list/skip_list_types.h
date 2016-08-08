@@ -49,7 +49,8 @@ typedef struct skiplist {
 	int						pden;	/**< Probability DENominator, used in height gen */
 } ion_skiplist_t;
 
-typedef struct sldict_cursor {
+typedef struct
+	sldict_cursor {
 	ion_dict_cursor_t	super;			/**< Supertype of cursor */
 	ion_sl_node_t		*current;		/**< Current visited spot */
 } ion_sldict_cursor_t;

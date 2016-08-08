@@ -3,11 +3,21 @@
  @file
  @author		Scott Ronald Fazackerley
  @brief		The handler for a hash table using linear probing.
- */
+*/
 /******************************************************************************/
 
 #include "open_address_file_hash_dictionary_handler.h"
 #include "../../key_value/kv_system.h"
+#include "open_address_file_hash.h"
+#include "../../file/ion_file.h"
+
+void
+oafdict_get_addr_filename(
+	ion_dictionary_id_t id,
+	char				*str
+) {
+	sprintf(str, "%d.oaf", id);
+}
 
 void
 oafdict_init(
@@ -20,6 +30,8 @@ oafdict_init(
 	handler->find				= oafdict_find;
 	handler->remove				= oafdict_delete;
 	handler->delete_dictionary	= oafdict_delete_dictionary;
+	handler->open_dictionary	= oafdict_open_dictionary;
+	handler->close_dictionary	= oafdict_close_dictionary;
 }
 
 ion_status_t
@@ -53,16 +65,16 @@ oafdict_create_dictionary(
 ) {
 	UNUSED(id);
 	/* this is the instance of the hashmap */
-	dictionary->instance			= (ion_dictionary_parent_t *) malloc(sizeof(ion_file_hashmap_t));
+	dictionary->instance			= malloc(sizeof(ion_file_hashmap_t));
 
 	dictionary->instance->compare	= compare;
 
 	/* this registers the dictionary the dictionary */
-	oafh_initialize((ion_file_hashmap_t *) dictionary->instance, oafh_compute_simple_hash, key_type, key_size, value_size, dictionary_size);/* just pick an arbitary size for testing atm */
+	oafh_initialize((ion_file_hashmap_t *) dictionary->instance, oafh_compute_simple_hash, key_type, key_size, value_size, dictionary_size, id);/* just pick an arbitary size for testing atm */
 
 	/*TODO The correct comparison operator needs to be bound at run time
 	 * based on the type of key defined
-	 */
+	*/
 
 	/* register the correct handler */
 	dictionary->handler = handler;	/* todo: need to check to make sure that the handler is registered */
@@ -106,7 +118,7 @@ oafdict_find(
 	ion_dict_cursor_t	**cursor
 ) {
 	/* allocate memory for cursor */
-	if ((*cursor = (ion_dict_cursor_t *) malloc(sizeof(ion_oafdict_cursor_t))) == NULL) {
+	if ((*cursor = malloc(sizeof(ion_oafdict_cursor_t))) == NULL) {
 		return err_out_of_memory;
 	}
 
@@ -120,7 +132,7 @@ oafdict_find(
 	(*cursor)->next					= oafdict_next;	/* this will use the correct value */
 
 	/* allocate predicate */
-	(*cursor)->predicate			= (ion_predicate_t *) malloc(sizeof(ion_predicate_t));
+	(*cursor)->predicate			= malloc(sizeof(ion_predicate_t));
 	(*cursor)->predicate->type		= predicate->type;
 	(*cursor)->predicate->destroy	= predicate->destroy;
 
@@ -128,7 +140,7 @@ oafdict_find(
 	switch (predicate->type) {
 		case predicate_equality: {
 			/* as this is an equality, need to malloc for key as well */
-			if (((*cursor)->predicate->statement.equality.equality_value = (ion_key_t) malloc((((ion_file_hashmap_t *) dictionary->instance)->super.record.key_size))) == NULL) {
+			if (((*cursor)->predicate->statement.equality.equality_value = malloc((((ion_file_hashmap_t *) dictionary->instance)->super.record.key_size))) == NULL) {
 				free((*cursor)->predicate);
 				free(*cursor);	/* cleanup */
 				return err_out_of_memory;
@@ -162,7 +174,7 @@ oafdict_find(
 
 		case predicate_range: {
 			/* as this is a range, need to malloc lower bound key */
-			if (((*cursor)->predicate->statement.range.lower_bound = (ion_key_t) malloc((((ion_file_hashmap_t *) dictionary->instance)->super.record.key_size))) == NULL) {
+			if (((*cursor)->predicate->statement.range.lower_bound = malloc((((ion_file_hashmap_t *) dictionary->instance)->super.record.key_size))) == NULL) {
 				free((*cursor)->predicate);
 				free(*cursor);	/* cleanup */
 				return err_out_of_memory;
@@ -172,7 +184,7 @@ oafdict_find(
 			memcpy((*cursor)->predicate->statement.range.lower_bound, predicate->statement.range.lower_bound, (((ion_file_hashmap_t *) dictionary->instance)->super.record.key_size));
 
 			/* as this is a range, need to malloc upper bound key */
-			if (((*cursor)->predicate->statement.range.upper_bound = (ion_key_t) malloc((((ion_file_hashmap_t *) dictionary->instance)->super.record.key_size))) == NULL) {
+			if (((*cursor)->predicate->statement.range.upper_bound = malloc((((ion_file_hashmap_t *) dictionary->instance)->super.record.key_size))) == NULL) {
 				free((*cursor)->predicate->statement.range.lower_bound);
 				free((*cursor)->predicate);
 				free(*cursor);	/* cleanup */
@@ -263,7 +275,7 @@ oafdict_next(
 			+ SIZEOF(STATUS), SEEK_SET);
 
 /*@todo this needs to be addressed in terms of return type
- */
+*/
 		fread(record->key, hash_map->super.record.key_size, 1, hash_map->file);
 		fread(record->value, hash_map->super.record.value_size, 1, hash_map->file);
 
@@ -307,7 +319,7 @@ oafdict_test_predicate(
 
 	/**
 	 * Compares value == key
-	 */
+	*/
 	int					key_satisfies_predicate;
 	ion_file_hashmap_t	*hash_map = (ion_file_hashmap_t *) (cursor->dictionary->instance);
 
@@ -327,8 +339,8 @@ oafdict_test_predicate(
 		case predicate_range:	/* range check */
 		{
 			if (/* lower_bound <= key <==> !(lower_bound > key) */
-				(!(greater_than == hash_map->super.compare(cursor->predicate->statement.range.lower_bound, key, hash_map->super.record.key_size))) &&	/* key <= upper_bound <==> !(key > upper_bound) */
-				(!(greater_than == hash_map->super.compare(key, cursor->predicate->statement.range.upper_bound, hash_map->super.record.key_size)))) {
+				(!(A_gt_B == hash_map->super.compare(cursor->predicate->statement.range.lower_bound, key, hash_map->super.record.key_size))) &&	/* key <= upper_bound <==> !(key > upper_bound) */
+				(!(A_gt_B == hash_map->super.compare(key, cursor->predicate->statement.range.upper_bound, hash_map->super.record.key_size)))) {
 				key_satisfies_predicate = boolean_true;
 			}
 
@@ -362,7 +374,7 @@ oafdict_scan(
 
 	ion_hash_bucket_t *item;
 
-	item = (ion_hash_bucket_t *) malloc(record_size);
+	item = malloc(record_size);
 
 	/* start at the current position, scan forward */
 	while (loc != cursor->first) {
@@ -377,7 +389,7 @@ oafdict_scan(
 
 			/* TODO need to check key match; what's the most efficient way? */
 
-			ion_boolean_t key_satisfies_predicate = oafdict_test_predicate(&(cursor->super), (ion_key_t) item->data);	/* assumes that the key is first */
+			ion_boolean_t key_satisfies_predicate = oafdict_test_predicate(&(cursor->super), item->data);	/* assumes that the key is first */
 
 			if (key_satisfies_predicate == boolean_true) {
 				cursor->current = loc;	/* this is the next index for value */
@@ -398,4 +410,36 @@ oafdict_scan(
 	/* if you end up here, you've wrapped the entire data structure and not found a value */
 	free(item);
 	return cs_end_of_results;
+}
+
+ion_err_t
+oafdict_open_dictionary(
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary,
+	ion_dictionary_config_info_t	*config,
+	ion_dictionary_compare_t		compare
+) {
+	return oafdict_create_dictionary(config->id, config->type, config->key_size, config->value_size, config->dictionary_size, compare, handler, dictionary);
+}
+
+ion_err_t
+oafdict_close_dictionary(
+	ion_dictionary_t *dictionary
+) {
+	ion_file_hashmap_t	*hash_map;
+	ion_err_t			err;
+
+	hash_map	= (ion_file_hashmap_t *) dictionary->instance;
+	err			= oafh_close(hash_map);
+
+	/* The following line creates an allocation error. Will not including it create a memory leak? */
+/*	free(dictionary->instance); */
+
+	dictionary->instance = NULL;
+
+	if (err_ok != err) {
+		return err_dictionary_destruction_error;
+	}
+
+	return err_ok;
 }

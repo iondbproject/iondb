@@ -168,7 +168,7 @@ dictionary_delete_dictionary(
 @param	  key_size
 				The length of the key in bytes.
 @return		The resulting comparison value.
- */
+*/
 char
 dictionary_compare_unsigned_value(
 	ion_key_t		first_key,
@@ -195,7 +195,7 @@ dictionary_compare_unsigned_value(
 @param	  key_size
 				The length of the key in bytes.
 @return		The resulting comparison value.
- */
+*/
 char
 dictionary_compare_signed_value(
 	ion_key_t		first_key,

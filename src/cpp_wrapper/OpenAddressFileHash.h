@@ -30,7 +30,7 @@ public:
 				The size of the values to be stored in the dictionary.
 @param	  dictionary_size
 				The size desired for the dictionary.
- */
+*/
 OpenAddressFileHash(
 	ion_key_type_t	type_key,
 	int				key_size,

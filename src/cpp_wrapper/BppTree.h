@@ -26,7 +26,7 @@ public:
 				The size of keys to be stored in the dictionary.
 @param		value_size
 				The size of the values to be stored in the dictionary.
- */
+*/
 BppTree(
 	ion_key_type_t	type_key,
 	int				key_size,

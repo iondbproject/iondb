@@ -77,6 +77,10 @@ add_subdirectory(src/tests/unit/dictionary/skip_list)
 
 add_subdirectory(src/tests/behaviour/dictionary)
 add_subdirectory(src/tests/behaviour/dictionary/flat_file)
+add_subdirectory(src/tests/behaviour/dictionary/skip_list)
+add_subdirectory(src/tests/behaviour/dictionary/bpp_tree)
+add_subdirectory(src/tests/behaviour/dictionary/open_address_hash)
+add_subdirectory(src/tests/behaviour/dictionary/open_address_file_hash)
 
 add_subdirectory(src/cpp_wrapper)
 add_subdirectory(src/tests/unit/cpp_wrapper)

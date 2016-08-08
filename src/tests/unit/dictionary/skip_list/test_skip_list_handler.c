@@ -22,7 +22,7 @@
 				Type of key used
 @param	  size
 				Size of dictionary
- */
+*/
 void
 create_test_dictionary(
 	ion_dictionary_t			*dictionary,
@@ -43,13 +43,13 @@ create_test_dictionary(
 
 	/* First insert one of each element, up to half... */
 	for (i = 0; i < half_elements; i++) {
-		dictionary_insert(dictionary, (ion_key_t) &i, (ion_value_t) value);
+		dictionary_insert(dictionary, &i, value);
 	}
 
 	/* Continue inserting, this time with an increasing amount of duplicates */
 	for (; i < num_elements; i++) {
 		for (j = 0; j < num_duplicates; j++) {
-			dictionary_insert(dictionary, (ion_key_t) &i, (ion_value_t) value);
+			dictionary_insert(dictionary, &i, value);
 		}
 
 		/* Each time we increment the key, add one more duplicate */
@@ -65,7 +65,7 @@ create_test_dictionary(
 				Dictionary to initialize
 @param	  handler
 				Handler to bind
- */
+*/
 void
 create_test_dictionary_std_conditions(
 	ion_dictionary_t			*dictionary,
@@ -86,7 +86,7 @@ create_test_dictionary_std_conditions(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_dictionary_handler_binding(
 	planck_unit_test_t *tc
@@ -110,7 +110,7 @@ test_dictionary_handler_binding(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_dictionary_creation(
 	planck_unit_test_t *tc
@@ -213,11 +213,11 @@ test_slhandler_cursor_equality_with_results(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(26, int), dict.instance->record.key_size) == 0);
-	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 
 	while (c_status != cs_end_of_results) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(26, int), dict.instance->record.key_size) == 0);
-		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 		c_status = cursor->next(cursor, &record);
 	}
 
@@ -303,12 +303,12 @@ test_slhandler_cursor_range_with_results(
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(5, int), dict.instance->record.key_size) >= 0);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(78, int), dict.instance->record.key_size) <= 0);
-	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 
 	while (c_status != cs_end_of_results) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(5, int), dict.instance->record.key_size) >= 0);
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(78, int), dict.instance->record.key_size) <= 0);
-		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 		c_status = cursor->next(cursor, &record);
 	}
 
@@ -364,12 +364,12 @@ test_slhandler_cursor_range_lower_missing(
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(-50, int), dict.instance->record.key_size) >= 0);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(50, int), dict.instance->record.key_size) <= 0);
-	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 
 	while (c_status != cs_end_of_results) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(-50, int), dict.instance->record.key_size) >= 0);
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(50, int), dict.instance->record.key_size) <= 0);
-		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 		c_status = cursor->next(cursor, &record);
 	}
 
@@ -438,7 +438,7 @@ test_slhandler_cursor_range_exact_results(
 		int expected_key = extra_keys[key_idx];
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, &expected_key, dict.instance->record.key_size) == 0);
-		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "test" }, dict.instance->record.value_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "test" }, dict.instance->record.value_size) == 0);
 		c_status = cursor->next(cursor, &record);
 		key_idx++;
 	}
@@ -458,7 +458,7 @@ test_slhandler_cursor_range_exact_results(
 /**
 @brief	  Creates the suite to test using CuTest.
 @return	 Pointer to a CuTest suite.
- */
+*/
 planck_unit_suite_t *
 skiplist_handler_getsuite(
 ) {
@@ -483,7 +483,7 @@ skiplist_handler_getsuite(
 
 /**
 @brief	  Runs all skiplist related test and outputs the result.
- */
+*/
 void
 runalltests_skiplist_handler(
 ) {
