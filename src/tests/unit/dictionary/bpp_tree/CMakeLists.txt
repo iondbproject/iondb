@@ -16,13 +16,13 @@ if(USE_ARDUINO)
 
     set(${PROJECT_NAME}_SKETCH      bpp_tree.ino)
     set(${PROJECT_NAME}_SRCS        ${SOURCE_FILES})
-    set(${PROJECT_NAME}_LIBS        planck_unit bpp_tree)
+    set(${PROJECT_NAME}_LIBS        planck_unit bpp_tree flat_file)
 
     generate_arduino_firmware(${PROJECT_NAME})
 else()
     add_executable(${PROJECT_NAME}          run_bpp_tree.c ${SOURCE_FILES})
 
-    target_link_libraries(${PROJECT_NAME}   planck_unit bpp_tree)
+    target_link_libraries(${PROJECT_NAME}   planck_unit bpp_tree flat_file)
 
     # Use cmake -DCOVERAGE_TESTING=ON to include coverage testing information.
     if (CMAKE_COMPILER_IS_GNUCC AND COVERAGE_TESTING)
