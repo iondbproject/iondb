@@ -164,7 +164,7 @@ flat_file_close(
 				seen that satisfies the given @p predicate to @p location.
 @details		If the scan falls through, then the location is written as
 				the EOF position of the file. The variadic arguments accepted
-				by this function are passed into the predicate additional parameters.
+				by this function are passed into the predicate's additional parameters.
 				This can be used to provide additional context to the predicate for use
 				in determining whether or not the row is a match.
 @param[in]		flat_file
