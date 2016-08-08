@@ -205,7 +205,7 @@ flat_file_scan(
 		for (i = 0; i < num_records_to_process; i++) {
 			size_t cur_rec = i * flat_file->row_size;
 
-			/* This cast is done because it's possible for the status change in type */
+			/* This cast is done because it's possible for the status to be a non-byte */
 			row->row_status = *((ion_flat_file_row_status_t *) &flat_file->buffer[cur_rec]);
 			row->key		= &flat_file->buffer[cur_rec + sizeof(ion_flat_file_row_status_t)];
 			row->value		= &flat_file->buffer[cur_rec + sizeof(ion_flat_file_row_status_t) + flat_file->super.record.key_size];
