@@ -23,7 +23,7 @@ if(USE_ARDUINO)
 else()
     add_executable(${PROJECT_NAME}          ${SOURCE_FILES} run_skip_list.c)
 
-    target_link_libraries(${PROJECT_NAME}   planck_unit skip_list)
+    target_link_libraries(${PROJECT_NAME}   planck_unit skip_list flat_file)
 
     # Use cmake -DCOVERAGE_TESTING=ON to include coverage testing information.
     if (CMAKE_COMPILER_IS_GNUCC AND COVERAGE_TESTING)
