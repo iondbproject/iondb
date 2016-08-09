@@ -422,7 +422,7 @@ typedef struct hash_bucket {
 } ion_hash_bucket_t;
 
 /**
-@brief		Function signature for all implementation specific init functions.
+@brief		Function signature for all init functions.
 */
 typedef void init_t (ion_dictionary_handler_t *handler);
 
