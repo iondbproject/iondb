@@ -37,7 +37,11 @@
 #include "../../../file/kv_stdio_intercept.h"
 #include "../../../file/SD_stdio_c_iface.h"
 #endif
+
+#if defined(DEGUB)
 extern uint32_t page_reads;
+#endif
+
 #define ION_FMS_GET_FLAG(bit_vector_arr, flag_index) \
 	((((uint8_t *)bit_vector_arr)[(flag_index) >> 3] >> ((flag_index) & 7)) & 1)
 

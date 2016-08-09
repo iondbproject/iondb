@@ -27,15 +27,19 @@
 /******************************************************************************/
 
 #include "flash_min_sort.h"
-#include "external_sort_types.h"
 
+#if defined(DEGUB)
 uint32_t page_reads;
+#endif
+
 ion_err_t
 ion_flash_min_sort_init(
 	ion_external_sort_t			*es,
 	ion_external_sort_cursor_t	*cursor
 ) {
+#if defined(DEGUB)
 	page_reads = 0;
+#endif
 
 	ion_flash_min_sort_t *fms = cursor->implementation_data;
 
@@ -187,7 +191,10 @@ ion_flash_min_sort_next(
 					return err_file_read_error;
 				}
 
+#if defined(DEGUB)
 				page_reads++;
+#endif
+
 				fms->page_statuses[0] = fms->cur_page;
 			}
 
@@ -227,14 +234,16 @@ ion_flash_min_sort_next(
 						fms->page_statuses[1] += es->value_size;
 
 						if (fms->page_statuses[1] > es->page_size) {
-							if (0 == fwrite(fms->cache_pages + es->page_size, fms->num_bytes_in_page, 1, cursor->output_file)) {
+							memset(fms->cache_pages + es->page_size + fms->page_statuses[1] - es->value_size, 0, es->page_size - (fms->page_statuses[1] - es->value_size));
+
+							if (0 == fwrite(fms->cache_pages + es->page_size, es->page_size, 1, cursor->output_file)) {
 								return err_file_write_error;
 							}
 
 							fms->page_statuses[1] = es->value_size;
 						}
 
-						memcpy(fms->cache_pages + es->page_size + fms->page_statuses[1], fms->temp_value, es->value_size);
+						memcpy(fms->cache_pages + es->page_size + fms->page_statuses[1] - es->value_size, fms->temp_value, es->value_size);
 					}
 					else {
 						fms->cur_byte_in_page += es->value_size;
@@ -269,7 +278,19 @@ ion_flash_min_sort_next(
 		fms->cur_byte_in_page = 0;
 	}
 
+#if defined(DEGUB)
 	printf("%d\n", page_reads);
+#endif
+
+	if (NULL != cursor->output_file) {
+		if (0 == fwrite(fms->cache_pages + es->page_size, es->num_values_last_page * es->value_size, 1, cursor->output_file)) {
+			return err_file_write_error;
+		}
+
+		if (0 != fseek(cursor->output_file, 0, SEEK_SET)) {
+			return err_file_bad_seek;
+		}
+	}
 
 	cursor->status = cs_end_of_results;
 	return err_ok;

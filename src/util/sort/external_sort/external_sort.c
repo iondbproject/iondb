@@ -156,26 +156,20 @@ ion_external_sort_dump_all(
 	cursor.buffer		= buffer;
 	cursor.buffer_size	= buffer_size;
 
-	void *value = malloc(es->value_size);
-
-	if (NULL == value) {
-		return err_out_of_memory;
-	}
-
 	ion_err_t error = err_ok;
 
 	switch (es->sort_algorithm) {
 		case ION_FILE_SORT_FLASH_MINSORT: {
 			cursor.next = ion_flash_min_sort_next;
 
+			ion_flash_min_sort_t flash_min_sort_data;
+			cursor.implementation_data = &flash_min_sort_data;
+
 			if (err_ok != (error = ion_flash_min_sort_init(es, &cursor))) {
 				break;
 			}
 
-			ion_flash_min_sort_t flash_min_sort_data;
-			cursor.implementation_data = &flash_min_sort_data;
-
-			error = cursor.next(&cursor, value);
+			error = cursor.next(&cursor, NULL);
 			break;
 		}
 		default: {
@@ -183,6 +177,5 @@ ion_external_sort_dump_all(
 		}
 	}
 
-	free(value);
 	return error;
 }
