@@ -127,7 +127,7 @@ ion_flash_min_sort_init(
 	fms->cur_page_in_region = 0;
 	fms->is_cur_null = boolean_false;
 	fms->page_statuses[0] = 0xFFFFFFFF;
-	fms->page_statuses[1] = es->value_size;
+	fms->page_statuses[1] = 0;
 
 	cursor->status = cs_cursor_initialized;
 	return err_ok;

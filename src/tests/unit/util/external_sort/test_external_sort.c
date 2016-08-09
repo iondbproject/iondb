@@ -166,6 +166,8 @@ test_sort(
 			else {
 				cur_value_in_page++;
 			}
+
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, fread(value_2, value_size, 1, sorted_file));
 		}
 		else {
 			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, cursor.next(&cursor, &value_2));
@@ -185,6 +187,10 @@ test_sort(
 	}
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, fclose(unsorted_file));
+
+	if (NULL != sorted_file) {
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, fclose(sorted_file));
+	}
 }
 
 void
