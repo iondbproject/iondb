@@ -56,6 +56,8 @@ typedef struct {
 	/**> This signifies where the actual record data starts, in case we want to
 		 write some metadata at the beginning of the flat file's file. */
 	ion_fpos_t				start_of_data;
+	/**> This marks the eof position within the file, so that we can efficiently find it. */
+	ion_fpos_t				eof_position;
 	/**> This comes from the given dictionary size, and signifies how many
 		 records we want to buffer at a time. This is a trade-off between
 		 better performance and increased memory usage. */

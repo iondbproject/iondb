@@ -22,6 +22,7 @@
 /******************************************************************************/
 
 #include "flat_file.h"
+#include "flat_file_types.h"
 
 /**
 @brief			Given the ID and a buffer to write to, writes back the formatted filename
@@ -87,6 +88,16 @@ flat_file_initialize(
 		return err_file_read_error;
 	}
 
+	if (0 != fseek(flat_file->data_file, 0, SEEK_END)) {
+		return err_file_bad_seek;
+	}
+
+	flat_file->eof_position = ftell(flat_file->data_file);
+
+	if (-1 == flat_file->eof_position) {
+		return err_file_read_error;
+	}
+
 	/* A record is laid out as: | STATUS |	  KEY	 |	   VALUE	  | */
 	/*				   Bytes:	(1)	 (key_size)   (value_size)	*/
 	flat_file->row_size = sizeof(ion_flat_file_row_status_t) + key_size + value_size;
@@ -128,29 +139,19 @@ flat_file_scan(
 	ion_flat_file_predicate_t	predicate,
 	...
 ) {
-	ion_fpos_t eof_pos = 0;
-
-	if (0 != fseek(flat_file->data_file, 0, SEEK_END)) {
-		return err_file_bad_seek;
-	}
-
-	if (-1 == (eof_pos = ftell(flat_file->data_file))) {
-		return err_file_read_error;
-	}
-
 	ion_fpos_t	cur_offset	= start_location * flat_file->row_size;
-	ion_fpos_t	end_offset	= scan_forwards ? eof_pos : flat_file->start_of_data;
+	ion_fpos_t	end_offset	= scan_forwards ? flat_file->eof_position : flat_file->start_of_data;
 
 	if (-1 == start_location) {
 		if (scan_forwards) {
 			cur_offset = flat_file->start_of_data;
 		}
 		else {
-			cur_offset = eof_pos;
+			cur_offset = flat_file->eof_position;
 		}
 	}
 
-	if ((cur_offset > eof_pos) || (cur_offset < flat_file->start_of_data)) {
+	if ((cur_offset > flat_file->eof_position) || (cur_offset < flat_file->start_of_data)) {
 		return err_out_of_bounds;
 	}
 
@@ -226,7 +227,7 @@ flat_file_scan(
 	}
 
 	/* If we reach this point, then no row matched the predicate. */
-	*location = (eof_pos - flat_file->start_of_data) / flat_file->row_size;
+	*location = (flat_file->eof_position - flat_file->start_of_data) / flat_file->row_size;
 	return err_file_hit_eof;
 }
 
@@ -367,11 +368,21 @@ flat_file_insert(
 		return status;
 	}
 
-	err = flat_file_write_row(flat_file, insert_loc, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_OCCUPIED, key, value });
+	ion_err_t write_err = flat_file_write_row(flat_file, insert_loc, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_OCCUPIED, key, value });
 
-	if (err_ok != err) {
-		status.error = err;
+	if (err_ok != write_err) {
+		status.error = write_err;
 		return status;
+	}
+
+	if (err_file_hit_eof == err) {
+		/* If the write operation was an append, then we need to record the new eof position of the file. */
+		flat_file->eof_position = ftell(flat_file->data_file);
+
+		if (-1 == flat_file->eof_position) {
+			status.error = err_file_read_error;
+			return status;
+		}
 	}
 
 	if (flat_file->sorted_mode) {
