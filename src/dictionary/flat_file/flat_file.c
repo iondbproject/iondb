@@ -472,10 +472,20 @@ flat_file_delete(
 		ion_err_t			err;
 
 		while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, boolean_true, flat_file_predicate_key_match, key))) {
-			flat_file_write_row(flat_file, loc, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_EMPTY, NULL, NULL });
+			ion_fpos_t			last_record_offset	= flat_file->eof_position - flat_file->row_size;
+			ion_flat_file_row_t last_row;
+			ion_fpos_t			last_record_index	= last_record_offset / flat_file->row_size;
+
+			flat_file_read_row(flat_file, last_record_index, &last_row);
+			flat_file_write_row(flat_file, loc, &last_row);
+			/* Set last row to be empty just for sanity reasons. */
+			flat_file_write_row(flat_file, last_record_index, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_EMPTY, NULL, NULL });
+			/* Soft truncate the file by bumping the eof position up one. */
+			flat_file->eof_position = last_record_offset;
 			status.count++;
-			/* Move the loc one-forwards so that we skip the one we just deleted */
-			loc++;
+
+			/* No location movement is done here, since we need to check the row we just swapped in to see if it is */
+			/* also a match. */
 		}
 
 		status.error = err_ok;
