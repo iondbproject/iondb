@@ -24,11 +24,9 @@ get_count_index_by_key(
 );
 
 typedef struct generic_test {
-	ion_dictionary_t dictionary;
+	ion_dictionary_t			dictionary;
 
-	void (*init_dict_handler)(
-		ion_dictionary_handler_t *
-	);
+	init_t						*init_dict_handler;
 
 	ion_key_type_t				key_type;
 	ion_key_size_t				key_size;
@@ -40,7 +38,7 @@ typedef struct generic_test {
 void
 init_generic_dictionary_test(
 	ion_generic_test_t		*test,
-	void (					*init_dict_handler)(ion_dictionary_handler_t *),
+	init_t					*init_dict_handler,
 	ion_key_type_t			key_type,
 	ion_key_size_t			key_size,
 	ion_value_size_t		value_size,
