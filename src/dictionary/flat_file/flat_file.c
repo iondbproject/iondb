@@ -82,19 +82,13 @@ flat_file_initialize(
 		}
 	}
 
-	flat_file->start_of_data = ftell(flat_file->data_file);	/* For now, we don't have any header information. */
+	/* For now, we don't have any header information. But we write some garbage there just so that
+	   we can verify that the code to handle the header is working.*/
+	fwrite(&(int) { 0xDEADBEEF }, sizeof(int), 1, flat_file->data_file);
+	flat_file->start_of_data = ftell(flat_file->data_file);
 
 	if (-1 == flat_file->start_of_data) {
-		return err_file_read_error;
-	}
-
-	if (0 != fseek(flat_file->data_file, 0, SEEK_END)) {
-		return err_file_bad_seek;
-	}
-
-	flat_file->eof_position = ftell(flat_file->data_file);
-
-	if (-1 == flat_file->eof_position) {
+		fclose(flat_file->data_file);
 		return err_file_read_error;
 	}
 
@@ -102,6 +96,41 @@ flat_file_initialize(
 	/*				   Bytes:	(1)	 (key_size)   (value_size)	*/
 	flat_file->row_size = sizeof(ion_flat_file_row_status_t) + key_size + value_size;
 	flat_file->buffer	= calloc(flat_file->num_buffered, flat_file->row_size);
+
+	if (NULL == flat_file->buffer) {
+		fclose(flat_file->data_file);
+		return err_out_of_memory;
+	}
+
+	if (0 != fseek(flat_file->data_file, 0, SEEK_END)) {
+		fclose(flat_file->data_file);
+		return err_file_bad_seek;
+	}
+
+	flat_file->eof_position = ftell(flat_file->data_file);
+
+	if (-1 == flat_file->eof_position) {
+		fclose(flat_file->data_file);
+		return err_file_read_error;
+	}
+
+	/* Now move the eof to the last non-empty row in the file */
+	ion_fpos_t			loc = -1;
+	ion_flat_file_row_t row;
+	ion_err_t			err = flat_file_scan(flat_file, -1, &loc, &row, boolean_false, flat_file_predicate_not_empty);
+
+	if ((err_ok != err) && (err_file_hit_eof != err)) {
+		fclose(flat_file->data_file);
+		return err;
+	}
+
+	if (err_file_hit_eof == err) {
+		/* Then there are no occupied rows in the file. We'll set to the start of data. */
+		loc = -1;
+	}
+
+	/* Move to its final position as one-past the position found. */
+	flat_file->eof_position = flat_file->start_of_data + (loc + 1) * flat_file->row_size;
 
 	return err_ok;
 }
@@ -139,7 +168,7 @@ flat_file_scan(
 	ion_flat_file_predicate_t	predicate,
 	...
 ) {
-	ion_fpos_t	cur_offset	= start_location * flat_file->row_size;
+	ion_fpos_t	cur_offset	= flat_file->start_of_data + start_location * flat_file->row_size;
 	ion_fpos_t	end_offset	= scan_forwards ? flat_file->eof_position : flat_file->start_of_data;
 
 	if (-1 == start_location) {
@@ -304,7 +333,7 @@ flat_file_write_row(
 	ion_fpos_t			location,
 	ion_flat_file_row_t *row
 ) {
-	if (0 != fseek(flat_file->data_file, location * flat_file->row_size, SEEK_SET)) {
+	if (0 != fseek(flat_file->data_file, flat_file->start_of_data + location * flat_file->row_size, SEEK_SET)) {
 		return err_file_bad_seek;
 	}
 
@@ -329,7 +358,7 @@ flat_file_read_row(
 	ion_fpos_t			location,
 	ion_flat_file_row_t *row
 ) {
-	if (0 != fseek(flat_file->data_file, location * flat_file->row_size, SEEK_SET)) {
+	if (0 != fseek(flat_file->data_file, flat_file->start_of_data + location * flat_file->row_size, SEEK_SET)) {
 		return err_file_bad_seek;
 	}
 
