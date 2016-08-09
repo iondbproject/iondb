@@ -22,7 +22,7 @@ get_count_index_by_key(
 void
 init_generic_dictionary_test(
 	ion_generic_test_t		*test,
-	init_t					*init_dict_handler,
+	init_t					init_dict_handler,
 	ion_key_type_t			key_type,
 	ion_key_size_t			key_size,
 	ion_value_size_t		value_size,
