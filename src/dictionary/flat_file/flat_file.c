@@ -387,31 +387,23 @@ flat_file_insert(
 	ion_key_t		key,
 	ion_value_t		value
 ) {
-	ion_status_t		status		= ION_STATUS_INITIALIZE;
-	ion_fpos_t			insert_loc	= -1;
-	ion_flat_file_row_t row;
-	ion_err_t			err			= flat_file_scan(flat_file, -1, &insert_loc, &row, boolean_true, flat_file_predicate_empty);
+	ion_status_t status		= ION_STATUS_INITIALIZE;
+	/* We can assume append-only insert here because our delete operation does a swap replacement */
+	ion_fpos_t insert_loc	= flat_file->eof_position / flat_file->row_size;
 
-	if ((err_ok != err) && (err_file_hit_eof != err)) {
-		status.error = err;
-		return status;
-	}
-
-	ion_err_t write_err = flat_file_write_row(flat_file, insert_loc, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_OCCUPIED, key, value });
+	ion_err_t write_err		= flat_file_write_row(flat_file, insert_loc, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_OCCUPIED, key, value });
 
 	if (err_ok != write_err) {
 		status.error = write_err;
 		return status;
 	}
 
-	if (err_file_hit_eof == err) {
-		/* If the write operation was an append, then we need to record the new eof position of the file. */
-		flat_file->eof_position = ftell(flat_file->data_file);
+	/* Record new eof position */
+	flat_file->eof_position = ftell(flat_file->data_file);
 
-		if (-1 == flat_file->eof_position) {
-			status.error = err_file_read_error;
-			return status;
-		}
+	if (-1 == flat_file->eof_position) {
+		status.error = err_file_read_error;
+		return status;
 	}
 
 	if (flat_file->sorted_mode) {
