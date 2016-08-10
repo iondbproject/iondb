@@ -223,11 +223,33 @@ iinq_drop(
 	return error;
 }
 
-void 					// TODO: Make this ion_comparison_e.
+ion_comparsion_t
 iinq_sort_compare(
 	void	*context,	// TODO: Turn this into a ion_sort_comparator_context_t.
 	void	*a,
 	void	*b
 ) {
+#define TO_COMPARISON_RESULT(r)	((r) > 0 ? A_gt_B : ((r) < 0 ? A_lt_B : A_equ_B))
 
+	iinq_size_t			k_i;
+	int					i;
+	iinq_sort_context_t	*c;
+	int 				result;
+
+	result		= 0;
+	k_i			= 0;
+	c			= (iinq_sort_context_t *)context;
+
+	/* Loop through each ordering part. Stop early if possible. */
+	for (i = 0; i < c->n; i++) {
+		result	= (c->parts[i].direction)*(memcmp(a+k_i, b+k_i, c->parts[i].size));
+		if (result != 0) {
+			return TO_COMPARISON_RESULT(result);
+		}
+		k_i		+= c->parts[i].size;
+	}
+
+	return TO_COMPARISON_RESULT(result);
+
+#undef TO_COMPARISON_RESULT
 }
