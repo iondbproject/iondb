@@ -70,6 +70,13 @@ typedef struct {
 	/**> This value expresses the size of one row inside the @p data_file. A row is defined
 		 as a record + metadata. Change this if @ref ion_flat_file_row_t changes!*/
 	size_t					row_size;
+	/**> When a scan is performed, a region (defined as @p num_in_buffer number of records) is loaded into
+		 memory. We can utilize this fact to do efficient cached reads as long as the buffer is intact.
+		 This is expressed as an index that points to the first record in the region. @p num_in_buffer-1 would
+		 be the last index in the region. */
+	ion_fpos_t	current_loaded_region;
+	/**> Expresses how many valid records are currently in the buffer. */
+	size_t		num_in_buffer;
 } ion_flat_file_t;
 
 /**

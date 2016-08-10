@@ -67,10 +67,11 @@ flat_file_initialize(
 		return err_dictionary_initialization_failed;
 	}
 
-	flat_file->sorted_mode	= boolean_false;/* By default, we don't use sorted mode */
-	flat_file->num_buffered = dictionary_size;	/* TODO: Sorted mode needs to be written out as a header? */
+	flat_file->sorted_mode				= boolean_false;/* By default, we don't use sorted mode */
+	flat_file->num_buffered				= dictionary_size;	/* TODO: Sorted mode needs to be written out as a header? */
+	flat_file->current_loaded_region	= -1;	/* No loaded region yet */
 
-	flat_file->data_file	= fopen(filename, "r+b");
+	flat_file->data_file				= fopen(filename, "r+b");
 
 	if (NULL == flat_file->data_file) {
 		/* The file did not exist - lets open to write */
@@ -230,6 +231,9 @@ flat_file_scan(
 			prev_offset = cur_offset;
 		}
 
+		flat_file->current_loaded_region	= (prev_offset - flat_file->start_of_data) / flat_file->row_size;
+		flat_file->num_in_buffer			= num_records_to_process;
+
 		size_t i;
 
 		for (i = 0; i < num_records_to_process; i++) {
@@ -349,6 +353,10 @@ flat_file_write_row(
 		return err_file_incomplete_write;
 	}
 
+	/* Invalidate the region cache since data has been mutated. */
+	flat_file->current_loaded_region	= -1;
+	flat_file->num_in_buffer			= 0;
+
 	return err_ok;
 }
 
@@ -358,25 +366,34 @@ flat_file_read_row(
 	ion_fpos_t			location,
 	ion_flat_file_row_t *row
 ) {
-	if (0 != fseek(flat_file->data_file, flat_file->start_of_data + location * flat_file->row_size, SEEK_SET)) {
-		return err_file_bad_seek;
+	ion_fpos_t read_index = 0;
+
+	if ((location >= flat_file->current_loaded_region) && (location < flat_file->num_in_buffer)) {
+		/* Cache hit, return directly from buffer */
+		read_index = location - flat_file->current_loaded_region;
+	}
+	else {
+		/* Cache miss, have to re-read from file */
+		if (0 != fseek(flat_file->data_file, flat_file->start_of_data + location * flat_file->row_size, SEEK_SET)) {
+			return err_file_bad_seek;
+		}
+
+		if (1 != fread(flat_file->buffer, sizeof(row->row_status), 1, flat_file->data_file)) {
+			return err_file_incomplete_write;
+		}
+
+		if (1 != fread(flat_file->buffer + sizeof(row->row_status), flat_file->super.record.key_size, 1, flat_file->data_file)) {
+			return err_file_incomplete_write;
+		}
+
+		if (1 != fread(flat_file->buffer + sizeof(row->row_status) + flat_file->super.record.key_size, flat_file->super.record.value_size, 1, flat_file->data_file)) {
+			return err_file_incomplete_write;
+		}
 	}
 
-	if (1 != fread(flat_file->buffer, sizeof(row->row_status), 1, flat_file->data_file)) {
-		return err_file_incomplete_write;
-	}
-
-	if (1 != fread(flat_file->buffer + sizeof(row->row_status), flat_file->super.record.key_size, 1, flat_file->data_file)) {
-		return err_file_incomplete_write;
-	}
-
-	if (1 != fread(flat_file->buffer + sizeof(row->row_status) + flat_file->super.record.key_size, flat_file->super.record.value_size, 1, flat_file->data_file)) {
-		return err_file_incomplete_write;
-	}
-
-	row->row_status = *((ion_flat_file_row_status_t *) flat_file->buffer);
-	row->key		= flat_file->buffer + sizeof(ion_flat_file_row_status_t);
-	row->value		= flat_file->buffer + sizeof(ion_flat_file_row_status_t) + flat_file->super.record.key_size;
+	row->row_status = *((ion_flat_file_row_status_t *) &flat_file->buffer[read_index]);
+	row->key		= &flat_file->buffer[read_index + sizeof(ion_flat_file_row_status_t)];
+	row->value		= &flat_file->buffer[read_index + sizeof(ion_flat_file_row_status_t) + flat_file->super.record.key_size];
 
 	return err_ok;
 }
