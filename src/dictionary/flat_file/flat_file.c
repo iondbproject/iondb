@@ -203,7 +203,7 @@ flat_file_scan(
 			/* It's possible for this to do a partial read (if you're close to EOF), calculate how many we need to read */
 			size_t records_left = (end_offset - cur_offset) / flat_file->row_size;
 
-			num_records_to_process = records_left > (unsigned) /* TODO HACK: remove this */ flat_file->num_buffered ? flat_file->num_buffered : records_left;
+			num_records_to_process = records_left > (unsigned) /* TODO HACK: remove this */ flat_file->num_buffered ? (unsigned) flat_file->num_buffered : records_left;
 
 			if (num_records_to_process != fread(flat_file->buffer, flat_file->row_size, num_records_to_process, flat_file->data_file)) {
 				return err_file_incomplete_read;
