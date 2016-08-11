@@ -72,7 +72,7 @@ ftest_setup(
 	planck_unit_test_t	*tc,
 	ion_flat_file_t		*flat_file
 ) {
-	ftest_create(tc, flat_file, key_type_numeric_signed, sizeof(int), sizeof(int), 1);
+	ftest_create(tc, flat_file, key_type_numeric_signed, sizeof(int), sizeof(int), 15);
 }
 
 /**

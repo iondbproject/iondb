@@ -188,6 +188,7 @@ flat_file_scan(
 	/* This line is likely not needed, as long as we're careful to only read good data */
 	/* memset(read_buffer, 0, flat_file->row_size * flat_file->num_buffered); */
 
+	/* Loop condition changes depending on whether we're going back or forwards. */
 	while (cur_offset != end_offset) {
 		if (0 != fseek(flat_file->data_file, cur_offset, SEEK_SET)) {
 			return err_file_bad_seek;
@@ -199,9 +200,12 @@ flat_file_scan(
 		size_t		num_records_to_process	= flat_file->num_buffered;
 
 		if (scan_forwards) {
-			/* It's possible for this to do a partial read (if you're close to EOF) */
-			/* so we just check that it doesn't read nothing */
-			if (0 == (num_records_to_process = fread(flat_file->buffer, flat_file->row_size, flat_file->num_buffered, flat_file->data_file))) {
+			/* It's possible for this to do a partial read (if you're close to EOF), calculate how many we need to read */
+			size_t records_left = (end_offset - cur_offset) / flat_file->row_size;
+
+			num_records_to_process = records_left > (unsigned) /* TODO HACK: remove this */ flat_file->num_buffered ? flat_file->num_buffered : records_left;
+
+			if (num_records_to_process != fread(flat_file->buffer, flat_file->row_size, num_records_to_process, flat_file->data_file)) {
 				return err_file_incomplete_read;
 			}
 
@@ -368,7 +372,7 @@ flat_file_read_row(
 ) {
 	ion_fpos_t read_index = 0;
 
-	if ((location >= flat_file->current_loaded_region) && (location < flat_file->num_in_buffer)) {
+	if ((flat_file->current_loaded_region != -1) && (location >= flat_file->current_loaded_region) && ((unsigned) location < flat_file->num_in_buffer)) {
 		/* Cache hit, return directly from buffer */
 		read_index = location - flat_file->current_loaded_region;
 	}
@@ -391,9 +395,9 @@ flat_file_read_row(
 		}
 	}
 
-	row->row_status = *((ion_flat_file_row_status_t *) &flat_file->buffer[read_index]);
-	row->key		= &flat_file->buffer[read_index + sizeof(ion_flat_file_row_status_t)];
-	row->value		= &flat_file->buffer[read_index + sizeof(ion_flat_file_row_status_t) + flat_file->super.record.key_size];
+	row->row_status = *((ion_flat_file_row_status_t *) &flat_file->buffer[read_index * flat_file->row_size]);
+	row->key		= &flat_file->buffer[read_index * flat_file->row_size + sizeof(ion_flat_file_row_status_t)];
+	row->value		= &flat_file->buffer[read_index * flat_file->row_size + sizeof(ion_flat_file_row_status_t) + flat_file->super.record.key_size];
 
 	return err_ok;
 }
@@ -485,6 +489,7 @@ flat_file_delete(
 			ion_flat_file_row_t last_row;
 			ion_fpos_t			last_record_index	= last_record_offset / flat_file->row_size;
 
+			/* TODO: This is broken on a cache hit. It ends up reading bad broken data somehow which corrupts subsequent operations. */
 			flat_file_read_row(flat_file, last_record_index, &last_row);
 			flat_file_write_row(flat_file, loc, &last_row);
 			/* Set last row to be empty just for sanity reasons. */
