@@ -22,24 +22,7 @@
 /******************************************************************************/
 
 #include "flat_file.h"
-
-/**
-@brief			Given the ID and a buffer to write to, writes back the formatted filename
-				for this flat file instance to the given @p str.
-@param[in]		id
-					Given ID to use to generate a unique filename.
-@param[out]		str
-					Char buffer to write-back into. This must be allocated memory.
-@return			How many characters would have been written. It is a good idea to check that this does not exceed
-				@ref ION_MAX_FILENAME_LENGTH.
-*/
-int
-flat_file_get_filename(
-	ion_dictionary_id_t id,
-	char				*str
-) {
-	return snprintf(str, ION_MAX_FILENAME_LENGTH, "%d.ffs", id);
-}
+#include "flat_file_types.h"
 
 ion_err_t
 flat_file_initialize(
@@ -60,7 +43,7 @@ flat_file_initialize(
 	flat_file->super.record.value_size	= value_size;
 
 	char	filename[ION_MAX_FILENAME_LENGTH];
-	int		actual_filename_length = flat_file_get_filename(id, filename);
+	int		actual_filename_length = dictionary_get_filename(id, "ffs", filename);
 
 	if (actual_filename_length >= ION_MAX_FILENAME_LENGTH) {
 		return err_dictionary_initialization_failed;
@@ -107,7 +90,7 @@ flat_file_destroy(
 
 	char filename[ION_MAX_FILENAME_LENGTH];
 
-	flat_file_get_filename(flat_file->super.id, filename);
+	dictionary_get_filename(flat_file->super.id, "ffs", filename);
 
 	if (0 != fremove(filename)) {
 		return err_file_delete_error;

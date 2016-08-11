@@ -56,10 +56,14 @@ oafh_initialize(
 	hashmap->compute_hash				= (*hashing_function);	/* Allows for binding of different hash functions
 																depending on requirements */
 
-	char addr_filename[20];
+	char addr_filename[ION_MAX_FILENAME_LENGTH];
 
 	/* open the file */
-	oafdict_get_addr_filename(id, addr_filename);
+	int actual_filename_length = dictionary_get_filename(id, "oaf", addr_filename);
+
+	if (actual_filename_length >= ION_MAX_FILENAME_LENGTH) {
+		return err_dictionary_initialization_failed;
+	}
 
 	hashmap->file = fopen(addr_filename, "r+b");
 
@@ -118,9 +122,13 @@ oafh_destroy(
 	hash_map->super.record.key_size		= 0;
 	hash_map->super.record.value_size	= 0;
 
-	char addr_filename[20];
+	char addr_filename[ION_MAX_FILENAME_LENGTH];
 
-	oafdict_get_addr_filename(hash_map->super.id, addr_filename);
+	int actual_filename_length = dictionary_get_filename(hash_map->super.id, "oaf", addr_filename);
+
+	if (actual_filename_length >= ION_MAX_FILENAME_LENGTH) {
+		return err_dictionary_destruction_error;
+	}
 
 	if (hash_map->file != NULL) {
 		/* check to ensure that you are not freeing something already free */

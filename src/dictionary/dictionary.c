@@ -25,6 +25,15 @@
 #include "dictionary_types.h"
 #include "bpp_tree/bpp_tree_handler.h"
 
+int
+dictionary_get_filename(
+	ion_dictionary_id_t id,
+	char				*ext,
+	char				*filename
+) {
+	return snprintf(filename, ION_MAX_FILENAME_LENGTH, "%d.%s", id, ext);
+}
+
 ion_dictionary_compare_t
 dictionary_switch_compare(
 	ion_key_type_t key_type
