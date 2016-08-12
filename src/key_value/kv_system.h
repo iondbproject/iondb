@@ -18,7 +18,6 @@
 			either express or implied. See the License for the specific
 			language governing permissions and limitations under the
 			License.
-@todo		Resolve issue between ion_status_t and ion_err_t. ion_Status_t is a struct that should have and ion_err_t and number of item affected.
 */
 /******************************************************************************/
 #if !defined(KV_SYSTEM_H_)
@@ -31,6 +30,7 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "kv_io.h"
 
@@ -186,7 +186,10 @@ enum error {
 	err_uninitialized,
 	/**> An error code describing the situation where something is out of
 		 valid bounds. */
-	err_out_of_bounds
+	err_out_of_bounds,
+	/**> An error code describing the situation where an insert would violate
+		 the sorted order of data. */
+	err_sorted_order_violation
 };
 
 /**

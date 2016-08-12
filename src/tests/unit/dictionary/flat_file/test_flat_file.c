@@ -76,6 +76,18 @@ ftest_setup(
 }
 
 /**
+@brief		Sets up the default test instance we're going to use, using a sorted backend.
+*/
+void
+ftest_setup_sorted(
+	planck_unit_test_t	*tc,
+	ion_flat_file_t		*flat_file
+) {
+	ftest_create(tc, flat_file, key_type_numeric_signed, sizeof(int), sizeof(int), 15);
+	flat_file->sorted_mode = boolean_true;
+}
+
+/**
 @brief		Tears down the default test instance we're going to use.
 */
 void
@@ -88,7 +100,8 @@ ftest_takedown(
 
 /**
 @brief		Inserts into the flat file and optionally checks if the insert was OK
-			by reading the data file.
+			by reading the data file. Don't turn on check_result unless you expect
+			the insert to fully pass.
 */
 void
 ftest_insert(
@@ -96,12 +109,14 @@ ftest_insert(
 	ion_flat_file_t		*flat_file,
 	ion_key_t			key,
 	ion_value_t			value,
+	ion_err_t			expected_status,
+	ion_result_count_t	expected_count,
 	ion_boolean_t		check_result
 ) {
 	ion_status_t status = flat_file_insert(flat_file, key, value);
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_status, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, status.count);
 
 	if (check_result) {
 		/* TODO: This makes a big assumption on the layout of the data file. Is there a way to eliminate this? */
@@ -174,14 +189,14 @@ ftest_file_scan_cases(
 	planck_unit_test_t	*tc,
 	ion_flat_file_t		*flat_file
 ) {
-	ftest_insert(tc, flat_file, IONIZE(1, int), IONIZE(0, int), boolean_true);
-	ftest_insert(tc, flat_file, IONIZE(-50, int), IONIZE(0, int), boolean_true);
-	ftest_insert(tc, flat_file, IONIZE(2, int), IONIZE(0, int), boolean_true);
-	ftest_insert(tc, flat_file, IONIZE(3, int), IONIZE(0, int), boolean_true);
-	ftest_insert(tc, flat_file, IONIZE(-100, int), IONIZE(0, int), boolean_true);
-	ftest_insert(tc, flat_file, IONIZE(4, int), IONIZE(0, int), boolean_true);
-	ftest_insert(tc, flat_file, IONIZE(-150, int), IONIZE(0, int), boolean_true);
-	ftest_insert(tc, flat_file, IONIZE(5, int), IONIZE(0, int), boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(1, int), IONIZE(0, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(-50, int), IONIZE(0, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(2, int), IONIZE(0, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(3, int), IONIZE(0, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(-100, int), IONIZE(0, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(4, int), IONIZE(0, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(-150, int), IONIZE(0, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(5, int), IONIZE(0, int), err_ok, 1, boolean_true);
 
 	/* Forwards from start | Forwards from middle | Forwards near end */
 	ftest_file_scan(tc, flat_file, boolean_true, -1, IONIZE(-150, int), err_ok, 6);
@@ -235,7 +250,7 @@ test_flat_file_insert_single(
 
 	ftest_setup(tc, &flat_file);
 
-	ftest_insert(tc, &flat_file, IONIZE(5, int), IONIZE(5, int), boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(5, int), IONIZE(5, int), err_ok, 1, boolean_true);
 
 	ftest_takedown(tc, &flat_file);
 }
@@ -251,10 +266,10 @@ test_flat_file_insert_many(
 
 	ftest_setup(tc, &flat_file);
 
-	ftest_insert(tc, &flat_file, IONIZE(5, int), IONIZE(1, int), boolean_true);
-	ftest_insert(tc, &flat_file, IONIZE(10, int), IONIZE(2, int), boolean_true);
-	ftest_insert(tc, &flat_file, IONIZE(4, int), IONIZE(3, int), boolean_true);
-	ftest_insert(tc, &flat_file, IONIZE(500, int), IONIZE(4, int), boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(5, int), IONIZE(1, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(10, int), IONIZE(2, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(4, int), IONIZE(3, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(500, int), IONIZE(4, int), err_ok, 1, boolean_true);
 
 	ftest_takedown(tc, &flat_file);
 }
@@ -293,6 +308,58 @@ test_flat_file_scan_cases_large_buf(
 	ftest_takedown(tc, &flat_file);
 }
 
+/**
+@brief		Tests an invalid insertion that would violate sorted order.
+*/
+void
+test_flat_file_insert_bad_sort(
+	planck_unit_test_t *tc
+) {
+	ion_flat_file_t flat_file;
+
+	ftest_setup_sorted(tc, &flat_file);
+
+	ftest_insert(tc, &flat_file, IONIZE(5, int), IONIZE(1, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(3, int), IONIZE(99, int), err_sorted_order_violation, 0, boolean_false);
+
+	ftest_takedown(tc, &flat_file);
+}
+
+/**
+@brief		Tests a valid insertion that does preserve sorted order.
+*/
+void
+test_flat_file_insert_good_sort(
+	planck_unit_test_t *tc
+) {
+	ion_flat_file_t flat_file;
+
+	ftest_setup_sorted(tc, &flat_file);
+
+	ftest_insert(tc, &flat_file, IONIZE(5, int), IONIZE(1, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(76, int), IONIZE(99, int), err_ok, 1, boolean_true);
+
+	ftest_takedown(tc, &flat_file);
+}
+
+/**
+@brief		Tests a insert-delete-insert sequence that is invalid.
+*/
+void
+test_flat_file_sort_invalid_sequence(
+	planck_unit_test_t *tc
+) {
+	ion_flat_file_t flat_file;
+
+	ftest_setup_sorted(tc, &flat_file);
+
+	ftest_insert(tc, &flat_file, IONIZE(5, int), IONIZE(1, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(7, int), IONIZE(99, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(9, int), IONIZE(99, int), err_ok, 1, boolean_true);
+
+	ftest_takedown(tc, &flat_file);
+}
+
 planck_unit_suite_t *
 flat_file_getsuite(
 ) {
@@ -303,6 +370,9 @@ flat_file_getsuite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_insert_many);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_scan_cases_small_buf);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_scan_cases_large_buf);
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_insert_bad_sort);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_insert_good_sort);
 
 	return suite;
 }

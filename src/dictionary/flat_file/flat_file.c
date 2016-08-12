@@ -22,6 +22,8 @@
 /******************************************************************************/
 
 #include "flat_file.h"
+#include "flat_file_types.h"
+#include "../../key_value/kv_system.h"
 
 ion_err_t
 flat_file_initialize(
@@ -379,7 +381,23 @@ flat_file_insert(
 	/* We can assume append-only insert here because our delete operation does a swap replacement */
 	ion_fpos_t insert_loc	= flat_file->eof_position / flat_file->row_size;
 
-	ion_err_t write_err		= flat_file_write_row(flat_file, insert_loc, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_OCCUPIED, key, value });
+	if (flat_file->sorted_mode) {
+		ion_fpos_t previous_record_loc = flat_file->eof_position / flat_file->row_size - 1;
+
+		if (previous_record_loc >= 0) {
+			/* If < 0, then the flatfile is empty and there is nothing to check. */
+			ion_flat_file_row_t row;
+
+			flat_file_read_row(flat_file, previous_record_loc, &row);
+
+			if (flat_file->super.compare(key, row.key, flat_file->super.record.key_size) < 0) {
+				status.error = err_sorted_order_violation;
+				return status;
+			}
+		}
+	}
+
+	ion_err_t write_err = flat_file_write_row(flat_file, insert_loc, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_OCCUPIED, key, value });
 
 	if (err_ok != write_err) {
 		status.error = write_err;
@@ -392,10 +410,6 @@ flat_file_insert(
 	if (-1 == flat_file->eof_position) {
 		status.error = err_file_read_error;
 		return status;
-	}
-
-	if (flat_file->sorted_mode) {
-		/* TODO: Do the thing */
 	}
 
 	status.error	= err_ok;
