@@ -704,7 +704,19 @@ do { \
 
 #define _CLOSE_ORDERING_FILE(f) \
 	if (0 != fclose(f)) { \
-		error			= err_record_size_too_large; \
+		error			= err_file_close_error; \
+		goto IINQ_QUERY_END; \
+	}
+
+#define _REMOVE_ORDERING_FILE(name) \
+	if (0 != remove(name)) { \
+		error			= err_file_delete_error; \
+		goto IINQ_QUERY_END; \
+	}
+
+#define _RENAME_ORDERING_FILE(old_name, new_name) \
+	if (0 != rename(old_name, new_name)) { \
+		error			= err_file_rename_error; \
 		goto IINQ_QUERY_END; \
 	}
 
@@ -723,11 +735,11 @@ do { \
 	}; \
 	/* Walk through each item in the order parts, write out data. */ \
 	for (i_ ## name = 0; i_ ## name < name ## _n; i_ ## name ++) { \
-		if (1 != fwrite(name # _order_part[ i_ ## name ].pointer, name # _order_part[ i_ ## name ].size, 1, output_file)) { \
+		if (1 != fwrite(name ## _order_part[ i_ ## name ].pointer, name ## _order_part[ i_ ## name ].size, 1, output_file)) { \
 			break; \
         } \
 		else { \
-			write_page_remaining	-= name # _order_part[ i_ ## name ].size; \
+			write_page_remaining	-= name ## _order_part[ i_ ## name ].size; \
 		} \
     } \
 	/* If we require writing aggregates, do so. */ \
@@ -910,6 +922,26 @@ do { \
 	/* If we have both aggregates and a groupby elements, we must sort the file. */ \
 	if (agg_n > 0 && groupby_n > 0) { \
 		/* TODO: Wade sort output_file. */ \
+		_OPEN_ORDERING_FILE_READ(groupby, 0, result.num_bytes); \
+		_OPEN_ORDERING_FILE_WRITE(temp, 0, result.num_bytes); \
+		ion_external_sort_t	es; \
+		iinq_sort_context_t *context = _IINQ_SORT_CONTEXT(groupby); \
+		if (err_ok != (error = ion_external_sort_init(&es, input_file, context, iinq_sort_compare, result.num_bytes, IINQ_PAGE_SIZE, boolean_false, ION_FILE_SORT_FLASH_MINSORT))) { \
+			_CLOSE_ORDERING_FILE(input_file); \
+			_CLOSE_ORDERING_FILE(output_file); \
+			goto IINQ_QUERY_END; \
+		} \
+		uint16_t buffer_size = ion_external_sort_bytes_of_memory_required(&es, 0, boolean_true); \
+		char buffer[buffer_size]; \
+		if (err_ok != (error = ion_external_sort_dump_all(&es, output_file, buffer, buffer_size))) { \
+			_CLOSE_ORDERING_FILE(input_file); \
+			_CLOSE_ORDERING_FILE(output_file); \
+			goto IINQ_QUERY_END; \
+        } \
+		_CLOSE_ORDERING_FILE(input_file); \
+		_CLOSE_ORDERING_FILE(output_file); \
+		_REMOVE_ORDERING_FILE(groupby); \
+		_RENAME_ORDERING_FILE(temp, groupby); \
     } \
 	/* Aggregates and GROUPBY handling. */ \
 	if (agg_n > 0) { \
@@ -927,7 +959,7 @@ do { \
 		while (1) { \
 			_READ_ORDERING_RECORD(groupby, total_groupby_size, NULL, cur_key, result, /* Empty on purpose. */) \
 			/* TODO: Graeme, make sure you setup all necessary error codes in above and related, as well as handle them here. */ \
-			if (total_groupby_size > 0 && !is_first && A_equ_B != iinq_sort_compare(_IINQ_SORT_CONTEXT(groupby, cur_key, old_key))) { \
+			if (total_groupby_size > 0 && !is_first && A_equ_B != iinq_sort_compare(_IINQ_SORT_CONTEXT(groupby), cur_key, old_key)) { \
 				_WRITE_ORDERING_RECORD(orderby, 1, result) \
 				_AGGREGATES_INITIALIZE \
             } \
@@ -944,12 +976,36 @@ do { \
 	if (orderby_n > 0 || agg_n > 0) { \
 		/* TODO: Think about making this the select + the aggregates at the end. We have the values, just process them together. Might be hard? */ \
 		result.bytes			= alloca(result.num_bytes); \
-		/* TODO: Wade sort the orderby file. Using the cursor style. */ \
 		/* We can safely ALWAYS open with aggregates, because it doesn't increase the size if no aggregates exist (0*8 == 0). */ \
+		/* TODO: Wade sort the orderby file. Using the cursor style. */ \
 		_OPEN_ORDERING_FILE_READ(orderby, 1, result.num_bytes); \
+		ion_external_sort_t	es; \
+		iinq_sort_context_t *context = _IINQ_SORT_CONTEXT(orderby); \
+		if (err_ok != (error = ion_external_sort_init(&es, input_file, context, iinq_sort_compare, result.num_bytes, IINQ_PAGE_SIZE, boolean_false, ION_FILE_SORT_FLASH_MINSORT))) { \
+			_CLOSE_ORDERING_FILE(input_file); \
+			goto IINQ_QUERY_END; \
+		} \
+		uint16_t buffer_size = ion_external_sort_bytes_of_memory_required(&es, 0, boolean_false); \
+		char buffer[buffer_size]; \
+		ion_external_sort_cursor_t cursor; \
+		if (err_ok != (error = ion_external_sort_init_cursor(&es, &cursor, buffer, buffer_size))) { \
+			_CLOSE_ORDERING_FILE(input_file); \
+			goto IINQ_QUERY_END; \
+        } \
+		_CLOSE_ORDERING_FILE(input_file); \
 		/* TODO: Store each record in result, then the following code SHOULD work: */ \
 		/* TODO: We need to pass in the aggregates into the result, somehow. Godspeed. */ \
-		(p)->execute(&result, (p)->state); \
+		if (err_ok != (error = cursor.next(&cursor, result.data))) { \
+			_CLOSE_ORDERING_FILE(input_file); \
+			goto IINQ_QUERY_END; \
+		} \
+		while (cs_cursor_active == cursor.status) { \
+			(p)->execute(&result, (p)->state); \
+			if (err_ok != (error = cursor.next(&cursor, result.data))) { \
+				_CLOSE_ORDERING_FILE(input_file); \
+				goto IINQ_QUERY_END; \
+			} \
+        } \
     } \
 	\
 	IINQ_QUERY_END: ; \

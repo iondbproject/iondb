@@ -144,6 +144,9 @@ enum error {
 	/**> An error code describing the situation where an delete operation
 		 has failed. */
 	err_file_delete_error,
+	/**> An error code describing the situation where a rename operation
+	 has failed. */
+	err_file_rename_error,
 	/**> An error code describing the situation where a dictionary has failed
 		 has failed to initialize. */
 	err_dictionary_initialization_failed,
