@@ -157,6 +157,32 @@ ftest_insert(
 }
 
 /**
+@brief		Deletes from the flat file and asserts that the deletion was as expected.
+*/
+void
+ftest_delete(
+	planck_unit_test_t	*tc,
+	ion_flat_file_t		*flat_file,
+	ion_key_t			key,
+	ion_err_t			expected_status,
+	ion_result_count_t	expected_count,
+	ion_boolean_t		check_result
+) {
+	ion_status_t status = flat_file_delete(flat_file, key);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_status, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, status.count);
+
+	if (check_result) {
+		ion_fpos_t			loc = -1;
+		ion_flat_file_row_t row;
+		ion_err_t			err = flat_file_scan(flat_file, -1, &loc, &row, boolean_true, flat_file_predicate_key_match, key);
+
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_file_hit_eof, err);
+	}
+}
+
+/**
 @brief		Tests and asserts the correctness of the file scan method.
 */
 void
@@ -223,6 +249,56 @@ ftest_file_scan_cases(
 	ftest_file_scan(tc, flat_file, boolean_true, 100, IONIZE(333, int), err_out_of_bounds, -1);
 	ftest_file_scan(tc, flat_file, boolean_false, -100, IONIZE(333, int), err_out_of_bounds, -1);
 	ftest_file_scan(tc, flat_file, boolean_false, 100, IONIZE(333, int), err_out_of_bounds, -1);
+}
+
+/**
+@brief		Tests and asserts the correctness of the binary search method.
+*/
+void
+ftest_file_binary_search(
+	planck_unit_test_t	*tc,
+	ion_flat_file_t		*flat_file,
+	ion_key_t			target_key,
+	ion_err_t			expected_status,
+	ion_fpos_t			expected_location
+) {
+	ion_fpos_t	found_loc	= -1;
+	ion_err_t	err			= flat_file_binary_search(flat_file, target_key, &found_loc);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_status, err);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_location, found_loc);
+}
+
+/**
+@brief		Tests several cases of a binary search. TODO: write cases for binary searching after there's been deletions.
+*/
+void
+ftest_file_binary_search_cases(
+	planck_unit_test_t	*tc,
+	ion_flat_file_t		*flat_file
+) {
+	ftest_insert(tc, flat_file, IONIZE(2, int), IONIZE(0, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(7, int), IONIZE(0, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(9, int), IONIZE(0, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(9, int), IONIZE(0, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(9, int), IONIZE(0, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(13, int), IONIZE(0, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(24, int), IONIZE(0, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(36, int), IONIZE(0, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(99, int), IONIZE(0, int), err_ok, 1, boolean_true);
+
+	/* Most typical search case */
+	ftest_file_binary_search(tc, flat_file, IONIZE(13, int), err_ok, 5);
+	/* Find a duplicate - should return the first in block */
+	ftest_file_binary_search(tc, flat_file, IONIZE(9, int), err_ok, 2);
+	/* Find missing from middle - should return the first less than */
+	ftest_file_binary_search(tc, flat_file, IONIZE(12, int), err_ok, 4);
+	/* Same as above but on lower end */
+	ftest_file_binary_search(tc, flat_file, IONIZE(5, int), err_ok, 0);
+	/* Same as above but on upper end */
+	ftest_file_binary_search(tc, flat_file, IONIZE(130, int), err_ok, 8);
+	/* Fall off bottom */
+	ftest_file_binary_search(tc, flat_file, IONIZE(-5, int), err_ok, -1);
 }
 
 /**
@@ -309,6 +385,28 @@ test_flat_file_scan_cases_large_buf(
 }
 
 /**
+@brief		Tests the deletion edge case of deleting the last thing in the flat file.
+*/
+void
+test_flat_file_delete_edge_case(
+	planck_unit_test_t *tc
+) {
+	ion_flat_file_t flat_file;
+
+	ftest_setup(tc, &flat_file);
+
+	ftest_insert(tc, &flat_file, IONIZE(5, int), IONIZE(1, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(10, int), IONIZE(2, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(4, int), IONIZE(3, int), err_ok, 1, boolean_true);
+
+	ftest_delete(tc, &flat_file, IONIZE(4, int), err_ok, 1, boolean_true);
+
+	ftest_insert(tc, &flat_file, IONIZE(23, int), IONIZE(3, int), err_ok, 1, boolean_true);
+
+	ftest_takedown(tc, &flat_file);
+}
+
+/**
 @brief		Tests an invalid insertion that would violate sorted order.
 */
 void
@@ -343,6 +441,22 @@ test_flat_file_insert_good_sort(
 }
 
 /**
+@brief		Tests several of the binary search cases to ensure they are all as expected.
+*/
+void
+test_flat_file_sort_binary_search_cases(
+	planck_unit_test_t *tc
+) {
+	ion_flat_file_t flat_file;
+
+	ftest_setup_sorted(tc, &flat_file);
+
+	ftest_file_binary_search_cases(tc, &flat_file);
+
+	ftest_takedown(tc, &flat_file);
+}
+
+/**
 @brief		Tests a insert-delete-insert sequence that is invalid.
 */
 void
@@ -357,6 +471,32 @@ test_flat_file_sort_invalid_sequence(
 	ftest_insert(tc, &flat_file, IONIZE(7, int), IONIZE(99, int), err_ok, 1, boolean_true);
 	ftest_insert(tc, &flat_file, IONIZE(9, int), IONIZE(99, int), err_ok, 1, boolean_true);
 
+	ftest_delete(tc, &flat_file, IONIZE(9, int), err_ok, 1, boolean_true);
+
+	ftest_insert(tc, &flat_file, IONIZE(6, int), IONIZE(32, int), err_sorted_order_violation, 0, boolean_false);
+
+	ftest_takedown(tc, &flat_file);
+}
+
+/**
+@brief		Tests a insert-delete-insert sequence that is valid.
+*/
+void
+test_flat_file_sort_valid_sequence(
+	planck_unit_test_t *tc
+) {
+	ion_flat_file_t flat_file;
+
+	ftest_setup_sorted(tc, &flat_file);
+
+	ftest_insert(tc, &flat_file, IONIZE(5, int), IONIZE(1, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(7, int), IONIZE(99, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(9, int), IONIZE(99, int), err_ok, 1, boolean_true);
+
+	ftest_delete(tc, &flat_file, IONIZE(9, int), err_ok, 1, boolean_true);
+
+	ftest_insert(tc, &flat_file, IONIZE(8, int), IONIZE(11, int), err_ok, 1, boolean_true);
+
 	ftest_takedown(tc, &flat_file);
 }
 
@@ -370,9 +510,13 @@ flat_file_getsuite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_insert_many);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_scan_cases_small_buf);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_scan_cases_large_buf);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_delete_edge_case);
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_insert_bad_sort);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_insert_good_sort);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_sort_binary_search_cases);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_sort_invalid_sequence);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_sort_valid_sequence);
 
 	return suite;
 }

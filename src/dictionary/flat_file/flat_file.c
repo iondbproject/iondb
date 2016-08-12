@@ -23,7 +23,6 @@
 
 #include "flat_file.h"
 #include "flat_file_types.h"
-#include "../../key_value/kv_system.h"
 
 ion_err_t
 flat_file_initialize(
@@ -68,7 +67,7 @@ flat_file_initialize(
 
 	/* For now, we don't have any header information. But we write some garbage there just so that
 	   we can verify that the code to handle the header is working.*/
-	fwrite(&(int) { 0xDEADBEEF }, sizeof(int), 1, flat_file->data_file);
+	fwrite(&(int) { 0xADDE }, sizeof(int), 1, flat_file->data_file);
 	flat_file->start_of_data = ftell(flat_file->data_file);
 
 	if (-1 == flat_file->start_of_data) {
@@ -377,18 +376,24 @@ flat_file_insert(
 	ion_key_t		key,
 	ion_value_t		value
 ) {
-	ion_status_t status		= ION_STATUS_INITIALIZE;
+	ion_status_t	status	= ION_STATUS_INITIALIZE;
+	ion_err_t		err;
 	/* We can assume append-only insert here because our delete operation does a swap replacement */
 	ion_fpos_t insert_loc	= flat_file->eof_position / flat_file->row_size;
 
 	if (flat_file->sorted_mode) {
-		ion_fpos_t previous_record_loc = flat_file->eof_position / flat_file->row_size - 1;
+		ion_fpos_t last_record_loc = flat_file->eof_position / flat_file->row_size - 1;
 
-		if (previous_record_loc >= 0) {
+		if (last_record_loc >= 0) {
 			/* If < 0, then the flatfile is empty and there is nothing to check. */
 			ion_flat_file_row_t row;
 
-			flat_file_read_row(flat_file, previous_record_loc, &row);
+			err = flat_file_read_row(flat_file, last_record_loc, &row);
+
+			if (err_ok != err) {
+				status.error = err;
+				return status;
+			}
 
 			if (flat_file->super.compare(key, row.key, flat_file->super.record.key_size) < 0) {
 				status.error = err_sorted_order_violation;
@@ -397,10 +402,10 @@ flat_file_insert(
 		}
 	}
 
-	ion_err_t write_err = flat_file_write_row(flat_file, insert_loc, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_OCCUPIED, key, value });
+	err = flat_file_write_row(flat_file, insert_loc, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_OCCUPIED, key, value });
 
-	if (err_ok != write_err) {
-		status.error = write_err;
+	if (err_ok != err) {
+		status.error = err;
 		return status;
 	}
 
@@ -469,18 +474,39 @@ flat_file_delete(
 			ion_fpos_t			last_record_offset	= flat_file->eof_position - flat_file->row_size;
 			ion_flat_file_row_t last_row;
 			ion_fpos_t			last_record_index	= last_record_offset / flat_file->row_size;
+			ion_err_t			row_err;
 
-			/* TODO: This is broken on a cache hit. It ends up reading bad broken data somehow which corrupts subsequent operations. */
-			flat_file_read_row(flat_file, last_record_index, &last_row);
-			flat_file_write_row(flat_file, loc, &last_row);
+			/* If the last index and the loc are the same, then we can just move the eof position. Saves a read/write. */
+			if (last_record_index != loc) {
+				row_err = flat_file_read_row(flat_file, last_record_index, &last_row);
+
+				if (err_ok != row_err) {
+					status.error = row_err;
+					return status;
+				}
+
+				row_err = flat_file_write_row(flat_file, loc, &last_row);
+
+				if (err_ok != row_err) {
+					status.error = row_err;
+					return status;
+				}
+			}
+
 			/* Set last row to be empty just for sanity reasons. */
-			flat_file_write_row(flat_file, last_record_index, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_EMPTY, NULL, NULL });
+			row_err = flat_file_write_row(flat_file, last_record_index, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_EMPTY, NULL, NULL });
+
+			if (err_ok != row_err) {
+				status.error = row_err;
+				return status;
+			}
+
 			/* Soft truncate the file by bumping the eof position up one. */
 			flat_file->eof_position = last_record_offset;
 			status.count++;
 
-			/* No location movement is done here, since we need to check the row we just swapped in to see if it is */
-			/* also a match. */
+			/* No location movement is done here, since we need to check the row we just swapped in to see if it is
+			   also a match. */
 		}
 
 		status.error = err_ok;
@@ -515,7 +541,13 @@ flat_file_update(
 		ion_err_t			err;
 
 		while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, boolean_true, flat_file_predicate_key_match, key))) {
-			flat_file_write_row(flat_file, loc, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_OCCUPIED, key, value });
+			ion_err_t row_err = flat_file_write_row(flat_file, loc, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_OCCUPIED, key, value });
+
+			if (err_ok != row_err) {
+				status.error = row_err;
+				return status;
+			}
+
 			status.count++;
 			/* Move one-forwards to skip the one we just updated */
 			loc++;
@@ -552,4 +584,17 @@ flat_file_close(
 	}
 
 	return err_ok;
+}
+
+ion_err_t
+flat_file_binary_search(
+	ion_flat_file_t *flat_file,
+	ion_key_t		target_key,
+	ion_fpos_t		*location
+) {
+	if (boolean_false != flat_file->sorted_mode) {
+		return err_sorted_order_violation;
+	}
+
+	return err_not_implemented;
 }

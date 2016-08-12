@@ -186,8 +186,8 @@ enum error {
 	/**> An error code describing the situation where something is out of
 		 valid bounds. */
 	err_out_of_bounds,
-	/**> An error code describing the situation where an insert would violate
-		 the sorted order of data. */
+	/**> An error code describing the situation where an operation would
+		 violate the sorted precondition. */
 	err_sorted_order_violation
 };
 

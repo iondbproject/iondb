@@ -253,7 +253,10 @@ flat_file_predicate_not_empty(
 			row does not have a lifetime beyond the scope of where you call
 			this function - any subsequent operation that mutates the read buffer
 			will cause the row to become garbage. Copy the row data out if you want
-			it to persist.
+			it to persist. If the requested row has already been loaded by a prior
+			call to @ref flat_file_scan, then it will retrieve it as a cache hit
+			directly from the buffer. Otherwise, it will do a seek and read to fetch
+			the row.
 @param[in]	flat_file
 				Which flat file instance to read from.
 @param[in]	location
@@ -268,6 +271,30 @@ flat_file_read_row(
 	ion_flat_file_t		*flat_file,
 	ion_fpos_t			location,
 	ion_flat_file_row_t *row
+);
+
+/**
+@brief		Performs a binary search for the given @p target_key, returning to @p location
+			the first-less-than-or-equal key within the flat file. This can only be used if
+			@p sorted_mode is enabled within the flat file.
+@details	In the case of duplicates, this function will scroll to the beginning of the block
+			of duplicates, before writing back to @p location. As a result, it is guaranteed that
+			the returned index points to the first key in a contiguous block of duplicate keys. If
+			no key in the flat file satisfies the condition of being less-than-or-equal, then @p -1
+			is returned. This function will only return records that are not deleted.
+@param[in]		flat_file
+				Which flat file instance to search within.
+@param[in]		target_key
+				Desired key to search for.
+@param[out]		location
+				Found location to write back into. Must be allocated by caller.
+@return		Resulting status of the binary search operation.
+*/
+ion_err_t
+flat_file_binary_search(
+	ion_flat_file_t *flat_file,
+	ion_key_t		target_key,
+	ion_fpos_t		*location
 );
 
 #if defined(__cplusplus)
