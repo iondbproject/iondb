@@ -22,7 +22,6 @@
 /******************************************************************************/
 
 #include "flat_file.h"
-#include "flat_file_types.h"
 
 ion_err_t
 flat_file_initialize(
@@ -250,22 +249,6 @@ flat_file_scan(
 	return err_file_hit_eof;
 }
 
-/**
-@brief		Predicate function to return any row that is empty or deleted.
-@see		ion_flat_file_predicate_t
-*/
-ion_boolean_t
-flat_file_predicate_empty(
-	ion_flat_file_t		*flat_file,
-	ion_flat_file_row_t *row,
-	va_list				*args
-) {
-	UNUSED(flat_file);
-	UNUSED(args);
-
-	return FLAT_FILE_STATUS_EMPTY == row->row_status;
-}
-
 ion_boolean_t
 flat_file_predicate_not_empty(
 	ion_flat_file_t		*flat_file,
@@ -308,6 +291,8 @@ flat_file_predicate_within_bounds(
 			by passing in @p NULL for both the key and value. **NOTE:** The alignment
 			of the write is dependent on the occurence of the writes that come before
 			it. This means that the @p key cannot be @p NULL while the value is not @p NULL.
+			After any call to this function, the internal cache of the flat file is considered
+			to be invalidated.
 @param[in]	flat_file
 				Which flat file instance to write to.
 @param[in]	location
@@ -323,6 +308,10 @@ flat_file_write_row(
 	ion_fpos_t			location,
 	ion_flat_file_row_t *row
 ) {
+	/* Invalidate the region cache, since data will be mutated. */
+	flat_file->current_loaded_region	= -1;
+	flat_file->num_in_buffer			= 0;
+
 	if (0 != fseek(flat_file->data_file, flat_file->start_of_data + location * flat_file->row_size, SEEK_SET)) {
 		return err_file_bad_seek;
 	}
@@ -338,10 +327,6 @@ flat_file_write_row(
 	if ((NULL != row->value) && (1 != fwrite(row->value, flat_file->super.record.value_size, 1, flat_file->data_file))) {
 		return err_file_incomplete_write;
 	}
-
-	/* Invalidate the region cache since data has been mutated. */
-	flat_file->current_loaded_region	= -1;
-	flat_file->num_in_buffer			= 0;
 
 	return err_ok;
 }
