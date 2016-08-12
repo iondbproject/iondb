@@ -21,10 +21,10 @@ extern "C" {
 
 /**
 @brief Struct used to for instance of a given dictionary.
- */
+*/
 typedef struct oa_dictionary {
 	/* what needs to go in here? */
-	char		*dictionary_name;	/**<The name of the dictionary*/
+	char			*dictionary_name;	/**<The name of the dictionary*/
 	ion_hashmap_t	*hashmap;			/**<The map that the operations
 										will operate upon*/
 } ion_oa_dictionary_t;
@@ -39,7 +39,7 @@ typedef struct oa_dictionary {
 typedef struct oadict_equality_cursor {
 	ion_dict_cursor_t	super;					/**<Super type this cursor inherits from*/
 	ion_oadict_cursor_t cursor_info;/**<Super type to dict implementation*/
-	ion_key_t		value;
+	ion_key_t			value;
 
 	ion_boolean_t (*equal)(
 		ion_dictionary_t *,
@@ -58,7 +58,7 @@ typedef struct oadict_equality_cursor {
 @param	  handler
 				The handler for the dictionary instance that is to be
 				initialized.
- */
+*/
 void
 oadict_init(
 	ion_dictionary_handler_t *handler
@@ -74,12 +74,12 @@ oadict_init(
 @param	  value
 				The value to use.
 @return	 The status on the insertion of the record.
- */
+*/
 ion_status_t
 oadict_insert(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -105,12 +105,12 @@ oadict_insert(
 				value and it is up to the consumer the free the associated
 				memory.
 @return	 The status of the query.
- */
+*/
 ion_status_t
 oadict_query(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -136,17 +136,17 @@ oadict_query(
 				 The pointer declared by the caller that will reference
 				 the instance of the dictionary created.
 @return	 The status of the creation of the dictionary.
- */
+*/
 ion_err_t
 oadict_create_dictionary(
 	ion_dictionary_id_t			id,
-	ion_key_type_t					key_type,
+	ion_key_type_t				key_type,
 	int							key_size,
 	int							value_size,
 	int							dictionary_size,
 	ion_dictionary_compare_t	compare,
-	ion_dictionary_handler_t		*handler,
-	ion_dictionary_t				*dictionary
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dictionary
 );
 
 /**
@@ -158,11 +158,11 @@ oadict_create_dictionary(
 @param	  key
 				The key that is to be deleted.
 @return	 The status of the deletion
- */
+*/
 ion_status_t
 oadict_delete(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key
+	ion_key_t			key
 );
 
 /**
@@ -171,7 +171,7 @@ oadict_delete(
 @param	  dictionary
 				The instance of the dictionary to delete.
 @return	 The status of the dictionary deletion.
- */
+*/
 ion_err_t
 oadict_delete_dictionary(
 	ion_dictionary_t *dictionary
@@ -190,12 +190,12 @@ oadict_delete_dictionary(
 @param	  value
 				The value that is to be updated.
 @return	 The status of the update.
- */
+*/
 ion_status_t
 oadict_update(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -214,7 +214,7 @@ oadict_update(
 				The pointer to a cursor which is caller declared but callee
 				is responsible for populating.
 @return	 The status of the operation.
- */
+*/
 ion_err_t
 oadict_find(
 	ion_dictionary_t	*dictionary,
@@ -246,7 +246,7 @@ oadict_find(
 @param	  second_key
 				The second key in the comparison.
 @return	 The difference between the keys.
- */
+*/
 int
 oadict_compare(
 	ion_key_t	first_key,
@@ -260,7 +260,7 @@ oadict_compare(
 @param	  cursor
 				The cursor to iterate over the results.
 @return	 The status of the cursor.
- */
+*/
 /*ion_err_t
 oadict_next(
 	ion_dict_cursor_t   *cursor,
@@ -275,11 +275,11 @@ oadict_next(
 				The cursor to iterate over the results.
 @param		record
 @return	 The status of the cursor.
- */
+*/
 ion_cursor_status_t
 oadict_next(
 	ion_dict_cursor_t	*cursor,
-	ion_record_t	*record
+	ion_record_t		*record
 );
 
 /**
@@ -293,13 +293,13 @@ oadict_next(
 @param	  key2
 					 The second key for comparison.
 @return	 If the keys are equal.
- */
+*/
 ion_boolean_t
 /*TODO Fix name of function */
 is_equal(
 	ion_dictionary_t	*dict,
-	ion_key_t		key1,
-	ion_key_t		key2
+	ion_key_t			key1,
+	ion_key_t			key2
 );
 
 /**
@@ -313,7 +313,7 @@ is_equal(
 
 @param	  cursor
 				** pointer to cursor.
- */
+*/
 void
 oadict_destroy_cursor(
 	ion_dict_cursor_t **cursor
@@ -328,11 +328,11 @@ oadict_destroy_cursor(
 @param	  key
 				The key to test.
 @return	 The result is the key passes or fails the predicate test.
- */
+*/
 ion_boolean_t
 oadict_test_predicate(
 	ion_dict_cursor_t	*cursor,
-	ion_key_t		key
+	ion_key_t			key
 );
 
 /**
@@ -347,10 +347,46 @@ oadict_test_predicate(
 					A pointer to the cursor that is operating on the map.
 
 @return		 The status of the scan.
- */
+*/
 ion_err_t
 oadict_scan(
 	ion_oadict_cursor_t *cursor	/* don't need to pass in the cursor */
+);
+
+/**
+@brief			Opens a specific open address hash instance of a dictionary.
+
+@param			handler
+					A pointer to the handler for the specific dictionary being opened.
+@param			dictionary
+					The pointer declared by the caller that will reference
+					the instance of the dictionary opened.
+@param			config
+					The configuration info of the specific dictionary to be opened.
+@param			compare
+					Function pointer for the comparison function for the dictionary.
+
+@return			The status of opening the dictionary.
+ */
+ion_err_t
+oadict_open_dictionary(
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary,
+	ion_dictionary_config_info_t	*config,
+	ion_dictionary_compare_t		compare
+);
+
+/**
+@brief			Closes an open address hash instance of a dictionary.
+
+@param			dictionary
+					A pointer to the specific dictionary instance to be closed.
+
+@return			The status of closing the dictionary.
+ */
+ion_err_t
+oadict_close_dictionary(
+	ion_dictionary_t *dictionary
 );
 
 #if defined(__cplusplus)

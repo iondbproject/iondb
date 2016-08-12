@@ -22,15 +22,15 @@
 				Type of key used
 @param	  size
 				Size of dictionary
- */
+*/
 void
 create_test_dictionary(
 	ion_dictionary_t			*dictionary,
 	ion_dictionary_handler_t	*handler,
 	ion_record_info_t			*record,
 	ion_key_type_t				key_type,
-	int						size,
-	int						num_elements
+	int							size,
+	int							num_elements
 ) {
 	sldict_init(handler);
 
@@ -65,7 +65,7 @@ create_test_dictionary(
 				Dictionary to initialize
 @param	  handler
 				Handler to bind
- */
+*/
 void
 create_test_dictionary_std_conditions(
 	ion_dictionary_t			*dictionary,
@@ -74,8 +74,8 @@ create_test_dictionary_std_conditions(
 	/* This means keysize 4 (on a desktop platform) and valuesize 10 */
 	ion_record_info_t	record			= { sizeof(int), 10 };
 	ion_key_type_t		key_type		= key_type_numeric_signed;
-	int				size			= 7;
-	int				num_elements	= 50;
+	int					size			= 7;
+	int					num_elements	= 50;
 
 	create_test_dictionary(dictionary, handler, &record, key_type, size, num_elements);
 }
@@ -86,7 +86,7 @@ create_test_dictionary_std_conditions(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_dictionary_handler_binding(
 	planck_unit_test_t *tc
@@ -110,7 +110,7 @@ test_dictionary_handler_binding(
 
 @param	  tc
 				CuTest dependency
- */
+*/
 void
 test_dictionary_creation(
 	planck_unit_test_t *tc
@@ -121,8 +121,8 @@ test_dictionary_creation(
 	ion_dictionary_handler_t	handler;
 	ion_record_info_t			record			= { sizeof(int), 10 };
 	ion_key_type_t				key_type		= key_type_numeric_signed;
-	int						size			= 50;
-	int						num_elements	= 25;
+	int							size			= 50;
+	int							num_elements	= 25;
 
 	create_test_dictionary(&dict, &handler, &record, key_type, size, num_elements);
 
@@ -458,7 +458,7 @@ test_slhandler_cursor_range_exact_results(
 /**
 @brief	  Creates the suite to test using CuTest.
 @return	 Pointer to a CuTest suite.
- */
+*/
 planck_unit_suite_t *
 skiplist_handler_getsuite(
 ) {
@@ -483,7 +483,7 @@ skiplist_handler_getsuite(
 
 /**
 @brief	  Runs all skiplist related test and outputs the result.
- */
+*/
 void
 runalltests_skiplist_handler(
 ) {

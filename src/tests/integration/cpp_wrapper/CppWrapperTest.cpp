@@ -21,7 +21,7 @@ int
 main(
 ) {
 	/* The following is example test code using int keys and string values */
-	Dictionary<int, string> *dict = new FlatFile<int, string>(key_type_numeric_signed, sizeof(int), 10);
+	Dictionary<int, string> *dict = new FlatFile<int, string>(key_type_numeric_signed, sizeof(int), 10, 30);
 
 	printf("Insert %d [%s]\n", 3, "hello!");
 

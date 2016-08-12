@@ -33,6 +33,25 @@ extern "C" {
 #include "dictionary_types.h"
 
 /**
+@brief			Given the ID, implementation specific extension, and a buffer to write to,
+				writes back the formatted filename for any implementation instance.
+@param[in]		id
+					Given ID to use to generate a unique filename.
+@param[in]		ext
+					Given implementation specific filename extension to be used.
+@param[out]		filename
+					Char buffer to write-back into. This must be allocated memory.
+@return			How many characters would have been written. It is a good idea to check that this does not exceed
+				@ref ION_MAX_FILENAME_LENGTH.
+*/
+int
+dictionary_get_filename(
+	ion_dictionary_id_t id,
+	char				*ext,
+	char				*filename
+);
+
+/**
 @brief		Creates as instance of a specific type of dictionary.
 @details	This function is not to be used if you are using the master table.
 @param		handler
@@ -59,11 +78,11 @@ ion_err_t
 dictionary_create(
 	ion_dictionary_handler_t	*handler,
 	ion_dictionary_t			*dictionary,
-	ion_dictionary_id_t		id,
+	ion_dictionary_id_t			id,
 	ion_key_type_t				key_type,
-	int						key_size,
-	int						value_size,
-	int						dictionary_size
+	int							key_size,
+	int							value_size,
+	int							dictionary_size
 );
 
 /**
@@ -80,8 +99,8 @@ dictionary_create(
 ion_status_t
 dictionary_insert(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -98,8 +117,8 @@ dictionary_insert(
 ion_status_t
 dictionary_get(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -113,7 +132,7 @@ dictionary_get(
 ion_status_t
 dictionary_delete(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key
+	ion_key_t			key
 );
 
 /**
@@ -129,8 +148,8 @@ dictionary_delete(
 ion_status_t
 dictionary_update(
 	ion_dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -168,7 +187,7 @@ dictionary_delete_dictionary(
 @param	  key_size
 				The length of the key in bytes.
 @return		The resulting comparison value.
- */
+*/
 char
 dictionary_compare_unsigned_value(
 	ion_key_t		first_key,
@@ -195,7 +214,7 @@ dictionary_compare_unsigned_value(
 @param	  key_size
 				The length of the key in bytes.
 @return		The resulting comparison value.
- */
+*/
 char
 dictionary_compare_signed_value(
 	ion_key_t		first_key,
@@ -251,8 +270,8 @@ dictionary_compare_null_terminated_string(
 */
 ion_err_t
 dictionary_open(
-	ion_dictionary_handler_t			*handler,
-	ion_dictionary_t					*dictionary,
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary,
 	ion_dictionary_config_info_t	*config
 );
 
