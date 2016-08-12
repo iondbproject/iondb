@@ -56,16 +56,19 @@ add_subdirectory(src/tests/unit/dictionary)
 
 add_subdirectory(examples)
 
+#add_subdirectory(src/iinq)
+add_subdirectory(src/util/sort/external_sort)
+add_subdirectory(src/util/sort/in_memory_sort)
 add_subdirectory(src/util/lfsr)
-
-add_subdirectory(src/iinq)
 add_subdirectory(src/dictionary/bpp_tree)
 add_subdirectory(src/dictionary/flat_file)
 add_subdirectory(src/dictionary/open_address_file_hash)
 add_subdirectory(src/dictionary/open_address_hash)
 add_subdirectory(src/dictionary/skip_list)
 
-add_subdirectory(src/tests/unit/iinq)
+#add_subdirectory(src/tests/unit/iinq)
+add_subdirectory(src/tests/unit/util/external_sort)
+add_subdirectory(src/tests/unit/util/in_memory_sort)
 add_subdirectory(src/tests/unit/dictionary/bpp_tree)
 add_subdirectory(src/tests/unit/dictionary/flat_file)
 add_subdirectory(src/tests/unit/dictionary/open_address_file_hash)

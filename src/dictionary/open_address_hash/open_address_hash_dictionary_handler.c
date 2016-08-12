@@ -358,9 +358,9 @@ oadict_test_predicate(
 
 		case predicate_range:	/* range check */
 		{
-			if ((!(A_gt_B	/* lower_bound <= key <==> !(lower_bound > key) */
+			if ((!(greater_than	/* lower_bound <= key <==> !(lower_bound > key) */
 				   == hash_map->super.compare(cursor->predicate->statement.range.lower_bound, key, hash_map->super.record.key_size))) &&/* key <= upper_bound <==> !(key > upper_bound) */
-				(!(A_gt_B == hash_map->super.compare(key, cursor->predicate->statement.range.upper_bound, hash_map->super.record.key_size)))) {
+				(!(greater_than == hash_map->super.compare(key, cursor->predicate->statement.range.upper_bound, hash_map->super.record.key_size)))) {
 				key_satisfies_predicate = boolean_true;
 			}
 
