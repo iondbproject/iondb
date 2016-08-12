@@ -424,7 +424,7 @@ typedef struct hash_bucket {
 /**
 @brief		Function signature for all init functions.
 */
-typedef void (*init_t)(
+typedef void (*ion_handler_initializer_t)(
 	ion_dictionary_handler_t *
 );
 
