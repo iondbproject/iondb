@@ -33,6 +33,25 @@ extern "C" {
 #include "dictionary_types.h"
 
 /**
+@brief			Given the ID, implementation specific extension, and a buffer to write to,
+				writes back the formatted filename for any implementation instance.
+@param[in]		id
+					Given ID to use to generate a unique filename.
+@param[in]		ext
+					Given implementation specific filename extension to be used.
+@param[out]		filename
+					Char buffer to write-back into. This must be allocated memory.
+@return			How many characters would have been written. It is a good idea to check that this does not exceed
+				@ref ION_MAX_FILENAME_LENGTH.
+*/
+int
+dictionary_get_filename(
+	ion_dictionary_id_t id,
+	char				*ext,
+	char				*filename
+);
+
+/**
 @brief		Creates as instance of a specific type of dictionary.
 @details	This function is not to be used if you are using the master table.
 @param		handler

@@ -144,9 +144,14 @@ bpptree_create_dictionary(
 	/* FIXME: read this from a property bag. */
 
 	/* FIXME: VARIABLE NAMES! */
-	char addr_filename[20];
+	char addr_filename[ION_MAX_FILENAME_LENGTH];
 
-	bpptree_get_addr_filename(id, addr_filename);
+	int actual_filename_length = dictionary_get_filename(id, "bpt", addr_filename);
+
+	if (actual_filename_length >= ION_MAX_FILENAME_LENGTH) {
+		return err_dictionary_initialization_failed;
+	}
+
 	info.iName		= addr_filename;
 	info.keySize	= key_size;
 	info.dupKeys	= boolean_false;
@@ -201,17 +206,15 @@ bpptree_delete_dictionary(
 ) {
 	ion_err_t error;
 
-	char	addr_filename[20];
-	char	value_filename[20];
-	int		i;
+	char	addr_filename[ION_MAX_FILENAME_LENGTH];
+	char	value_filename[ION_MAX_FILENAME_LENGTH];
 
-	for (i = 0; i < 20; i++) {
-		addr_filename[i]	= '\0';
-		value_filename[i]	= '\0';
+	int actual_addr_filename_length		= dictionary_get_filename(dictionary->instance->id, "bpt", addr_filename);
+	int actual_value_filename_length	= dictionary_get_filename(dictionary->instance->id, "val", value_filename);
+
+	if ((actual_addr_filename_length >= ION_MAX_FILENAME_LENGTH) || (actual_value_filename_length >= ION_MAX_FILENAME_LENGTH)) {
+		return err_dictionary_destruction_error;
 	}
-
-	bpptree_get_addr_filename(dictionary->instance->id, addr_filename);
-	bpptree_get_value_filename(dictionary->instance->id, value_filename);
 
 	error = bpptree_close_dictionary(dictionary);
 
