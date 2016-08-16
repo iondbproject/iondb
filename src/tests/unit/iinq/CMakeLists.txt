@@ -12,19 +12,7 @@ if(USE_ARDUINO)
     set(${PROJECT_NAME}_PORT        ${PORT})
     set(${PROJECT_NAME}_SERIAL      ${SERIAL})
 
-    set(${PROJECT_NAME}_SRCS
-            ${SOURCE_FILES}
-            ../file/kv_stdio_intercept.h
-            ../file/SD_stdio_c_iface.h
-            ../file/SD_stdio_c_iface.cpp)
-
-    if(DEBUG)
-        set(${PROJECT_NAME}_SRCS "${PROJECT_NAME}_SRCS
-            ../serial/printf_redirect.h
-            ../serial/serial_c_iface.h
-            ../serial/serial_c_iface.cpp")
-    endif()
-
+    set(${PROJECT_NAME}_SRCS        ${SOURCE_FILES})
     set(${PROJECT_NAME}_SKETCH      iinq.ino)
     set(${PROJECT_NAME}_LIBS        planck_unit iinq external_sort)
 

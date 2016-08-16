@@ -42,6 +42,10 @@ if(USE_ARDUINO)
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -std=c++11 -Wno-vla -Wno-vla-extension -Wno-c99-extensions -Wno-writable-strings -Wno-write-strings")
     set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -g -Wall -Wextra -pedantic -std=c99 -Wno-missing-field-initializers")
+
+    set(CMAKE_CXX_FLAGS_PRECOMPILE "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -std=c++11 -Wno-vla -Wno-vla-extension -Wno-c99-extensions -Wno-writable-strings -Wno-write-strings -E")
+    set(CMAKE_C_FLAGS_PRECOMPILE   "${CMAKE_C_FLAGS} -g -Wall -Wextra -pedantic -std=c99 -Wno-missing-field-initializers -E")
+
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 endif()
 
