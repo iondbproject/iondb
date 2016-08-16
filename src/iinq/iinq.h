@@ -697,7 +697,7 @@ do { \
 		goto IINQ_QUERY_END; \
 	} \
 	write_page_remaining	= IINQ_PAGE_SIZE; \
-	if ((int) read_page_remaining < (int) (total_ ## name ## _size + record_size IF_ELSE(with_aggregates)(+ (8*agg_n))())) { /* Record size is size of records, not including sort key. */ \
+	if ((int) write_page_remaining < (int) (total_ ## name ## _size + record_size IF_ELSE(with_aggregates)(+ (8*agg_n))())) { /* Record size is size of records, not including sort key. */ \
 		/* In this case, there isn't enough space in a page to sort records. Fail. */ \
 		error			= err_record_size_too_large; \
 		goto IINQ_QUERY_END; \
@@ -781,13 +781,13 @@ do { \
  * execute_expr can be set to something if there needs to be something executed.
  */
 #define _READ_ORDERING_RECORD(name, ordering_size, aggregate_data, key, record, execute_expr) \
-	if ((int) read_page_remaining < (int)(ordering_size + record.num_bytes + ((aggregate_data) ? 8*agg_n: 0))) { /* Record size is size of records, not including sort key. */ \
+	if ((int) read_page_remaining < (int)(ordering_size + record.num_bytes + ((NULL != aggregate_data) ? 8*agg_n : 0))) { /* Record size is size of records, not including sort key. */ \
 		if (0 != fseek(input_file, read_page_remaining, SEEK_CUR)) { \
 			break; \
 		} \
 	} \
 	/* If the key is a non-null pointer. */ \
-	if (key) {  \
+	if (NULL != key) {  \
 		if (0 == ordering_size || 1 != fread((key), ordering_size, 1, input_file)) { \
 			break; \
 		} \
@@ -804,7 +804,7 @@ do { \
         } \
 	} \
 	/* If the aggregate_data is a non-null pointer. */ \
-	if (aggregate_data) {  \
+	if (NULL != aggregate_data) {  \
 		/* The magic number 8 again comes from the fact that all aggregate values are 8 bytes in size. */ \
 		if (1 != fread((aggregate_data), 8*agg_n, 1, input_file)) { \
 			break; \
