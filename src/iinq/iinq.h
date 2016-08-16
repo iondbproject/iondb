@@ -971,11 +971,11 @@ do { \
 		ion_boolean_t	is_first		= boolean_true; \
 		/* We need to track two keys. We need to be able to compare the last key seen to the next
 		 * to know if the next key is equal (and is thus part of the same grouping attribute. */ \
-		char		*old_key		= malloc(total_groupby_size);/*[total_groupby_size];*/ \
-		char		*cur_key		= malloc(total_groupby_size);/*[total_groupby_size];*/ \
+		char		*old_key			= alloca(total_groupby_size);/*[total_groupby_size];*/ \
+		char		*cur_key		= alloca(total_groupby_size);/*[total_groupby_size];*/ \
 		/* While we have more records in the sorted group by file, read them, check if keys are the same. */ \
 		read_page_remaining			= IINQ_PAGE_SIZE; \
-		result.data					= malloc(result.num_bytes); \
+		result.data					= alloca(result.num_bytes); \
 		while (1) { \
 			_READ_ORDERING_RECORD(groupby, total_groupby_size, NULL, cur_key, result, /* Empty on purpose. */) \
 			/* TODO: Graeme, make sure you setup all necessary error codes in above and related, as well as handle them here. */ \
@@ -991,9 +991,6 @@ do { \
 		_WRITE_ORDERING_RECORD(orderby, 1, result) \
 		_CLOSE_ORDERING_FILE(output_file) \
 		_CLOSE_ORDERING_FILE(input_file) \
-		free(old_key); \
-		free(cur_key); \
-		free(result.data); \
     } \
 	/* ORDERBY handling. Do this anytime we have ORDERBY or aggregates, since we abuse the use of orderby file to accomodate when we have aggregates but no orderby. */ \
 	if (orderby_n > 0 || agg_n > 0) { \
