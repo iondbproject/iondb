@@ -14,13 +14,13 @@ if(USE_ARDUINO)
 
     set(${PROJECT_NAME}_SKETCH      iinq.ino)
     set(${PROJECT_NAME}_SRCS        ${SOURCE_FILES})
-    set(${PROJECT_NAME}_LIBS        planck_unit iinq)
+    set(${PROJECT_NAME}_LIBS        planck_unit iinq external_sort)
 
     generate_arduino_firmware(${PROJECT_NAME})
 else()
     add_executable(${PROJECT_NAME}          run_iinq.c ${SOURCE_FILES})
 
-    target_link_libraries(${PROJECT_NAME}   planck_unit iinq flat_file)
+    target_link_libraries(${PROJECT_NAME}   planck_unit iinq flat_file external_sort)
 
     # Use cmake -DCOVERAGE_TESTING=ON to include coverage testing information.
     if (CMAKE_COMPILER_IS_GNUCC AND COVERAGE_TESTING)

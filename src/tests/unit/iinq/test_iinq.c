@@ -31,7 +31,7 @@ iinq_test_create_open_source(
 	fremove(cleanup_name);
 	sprintf(cleanup_name, "%d.val", (int) id);
 	fremove(cleanup_name);
-	sprintf(cleanup_name, "%d.bpt", (int) id);
+	sprintf(cleanup_name, "%d.bpt", (int) id); // TODO: is this correct?
 	fremove(schema_file_name);
 }
 
@@ -169,7 +169,7 @@ iinq_test_create_query_select_all_from_where_single_dictionary(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
 
-	QUERY(SELECT_ALL, FROM(test), WHERE(NEUTRALIZE(test.key, int) == 1), , , , , , &processor);
+	QUERY(SELECT_ALL, FROM(0, test), WHERE(NEUTRALIZE(test.key, int) == 1), , , , , , &processor);
 
 	DROP(test);
 }
@@ -222,10 +222,52 @@ iinq_test_create_query_select_all_from_where_two_dictionaries(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
 
-	QUERY(SELECT_ALL, FROM(test1, test2), WHERE(NEUTRALIZE(test1.key, int) == 1), , , , , , &processor);
+	QUERY(SELECT_ALL, FROM(0, test1, test2), WHERE(NEUTRALIZE(test1.key, int) == 1), , , , , , &processor);
 
 	DROP(test1);
 	DROP(test2);
+}
+
+void
+iinq_test_create_query_select_all_from_where_aggregates(
+	planck_unit_test_t *tc
+) {
+	ion_err_t					error;
+	ion_status_t				status;
+	ion_iinq_query_processor_t	processor;
+
+	ion_key_type_t		key_type;
+	ion_key_size_t		key_size;
+	ion_value_size_t	value_size;
+	ion_key_t			key;
+	ion_value_t			value;
+
+	processor	= IINQ_QUERY_PROCESSOR(print_hello, NULL);
+
+	key_type	= key_type_numeric_signed;
+	key_size	= sizeof(int);
+	value_size	= sizeof(int);
+
+	error		= CREATE_DICTIONARY(test, key_type, key_size, value_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
+
+	key			= IONIZE(1, int);
+	value		= IONIZE(1, int);
+
+	status		= INSERT(test, key, value);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	key		= IONIZE(2, int);
+	value	= IONIZE(2, int);
+
+	status	= INSERT(test, key, value);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	MATERIALIZED_QUERY(SELECT_ALL, AGGREGATES(MAX(NEUTRALIZE(test.key, int))), FROM(0, test), WHERE(NEUTRALIZE(test.key, int) == 1), , , , , , &processor);
+
+	DROP(test);
 }
 
 planck_unit_suite_t *
@@ -237,6 +279,7 @@ iinq_get_suite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_open_source_string10string20);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_insert_update_delete_drop_dictionary_intint);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_single_dictionary);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_two_dictionaries);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_two_dictionaries);
 
 	return suite;

@@ -33,7 +33,7 @@ extern "C" {
 typedef void *ion_sort_comparator_context_t;
 
 typedef ion_comparison_e (*ion_sort_comparator_t)(
-	ion_sort_comparator_context_t	*context,
+	ion_sort_comparator_context_t	context,
 	void							*value_a,
 	void							*value_b
 );
