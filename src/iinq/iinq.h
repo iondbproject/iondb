@@ -13,6 +13,11 @@ extern "C" {
 #include "../key_value/kv_system.h"
 #include "../util/sort/external_sort/external_sort.h"
 
+#if defined(ARDUINO)
+#include "../file/kv_stdio_intercept.h"
+#include "../file/SD_stdio_c_iface.h"
+#endif
+
 /**
 @brief		Page size in bytes.
 */
