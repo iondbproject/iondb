@@ -915,16 +915,30 @@ do { \
 	IINQ_SKIP_COMPUTE_ORDERBY: ; \
 
 #define ORDERBY_NONE \
+	goto IINQ_SKIP_COMPUTE_ORDERBY; \
 	IINQ_COMPUTE_ORDERBY: ; \
-	goto IINQ_DONE_COMPUTE_ORDERBY;
+	goto IINQ_DONE_COMPUTE_ORDERBY; \
+	IINQ_SKIP_COMPUTE_ORDERBY: ;
 
-#define _GROUPBY_SETUP(n) \
-	groupby_n	= (n);	\
-
-#define _GROUPBY_SINGLE(_1) apple
-#define _GROUPBY_1(_1) _GROUPBY_SINGLE(_1)
 #define GROUPBY(...) \
-	_GROUPBY_SETUP(PP_NARG(__VA_ARGS__)); \
+	_ORDERING_SETUP(groupby, PP_NARG(__VA_ARGS__)) \
+	_ORDERING(groupby, __VA_ARGS__) \
+	goto IINQ_SKIP_COMPUTE_GROUPBY; \
+	IINQ_COMPUTE_GROUPBY: ; \
+	_COMPUTE_ORDERING(groupby, __VA_ARGS__) \
+	goto IINQ_DONE_COMPUTE_GROUPBY; \
+	IINQ_SKIP_COMPUTE_GROUPBY: ; \
+
+#define GROUPBY_NONE \
+	goto IINQ_SKIP_COMPUTE_GROUPBY; \
+	IINQ_COMPUTE_GROUPBY: ; \
+	goto IINQ_DONE_COMPUTE_GROUPBY; \
+	IINQ_SKIP_COMPUTE_GROUPBY: ;
+
+#define SELECT_ITEM(expr) \
+
+
+#define SELECT(...)
 
 #define MATERIALIZED_QUERY(select_clause, aggregate_exprs, from_clause, where_clause, groupby_clause, having_clause, orderby_clause, limit, when, p) \
 do { \
@@ -962,10 +976,14 @@ do { \
             if (!where_clause) { \
                 continue; \
             } \
-			select_clause \
+			/* select_clause */ \
+			/* We need to select everything in order to guarantee clauses requiring sorting work. */ \
+			SELECT_ALL \
 			/* If there are grouping/aggregate attributes. */ \
 			if (agg_n > 0) { \
 				/* Write out the groupby records to disk for sorting. */ \
+				goto IINQ_COMPUTE_GROUPBY; \
+				IINQ_DONE_COMPUTE_GROUPBY: ; \
 				_WRITE_ORDERING_RECORD(groupby, 0, result) \
 			} \
 			else if (orderby_n > 0) { \
@@ -999,7 +1017,7 @@ do { \
 		_OPEN_ORDERING_FILE_WRITE(temp, 0, result.num_bytes); \
 		ion_external_sort_t	es; \
 		iinq_sort_context_t context = _IINQ_SORT_CONTEXT(groupby); \
-		if (err_ok != (error = ion_external_sort_init(&es, input_file, &context, iinq_sort_compare, result.num_bytes, result.num_bytes, IINQ_PAGE_SIZE, boolean_false, ION_FILE_SORT_FLASH_MINSORT))) { /* TODO: remove key_size */ \
+		if (err_ok != (error = ion_external_sort_init(&es, input_file, &context, iinq_sort_compare, result.num_bytes, result.num_bytes+total_groupby_size, IINQ_PAGE_SIZE, boolean_false, ION_FILE_SORT_FLASH_MINSORT))) { /* TODO: remove key_size */ \
 			_CLOSE_ORDERING_FILE(input_file); \
 			_CLOSE_ORDERING_FILE(output_file); \
 			goto IINQ_QUERY_END; \
@@ -1013,6 +1031,7 @@ do { \
         } \
 		_CLOSE_ORDERING_FILE(input_file); \
 		_CLOSE_ORDERING_FILE(output_file); \
+		/* TODO: HEY THIS IS A BAD SOLUTION SINCE DEVICES DON'T REALLY SUPPORT RENAMING FILES. */ \
 		_REMOVE_ORDERING_FILE(groupby); \
 		_RENAME_ORDERING_FILE(temp, groupby); \
     } \
@@ -1043,9 +1062,16 @@ do { \
 			memcpy(old_key, cur_key, total_groupby_size); \
 			is_first				= boolean_false; \
         } \
-		_WRITE_ORDERING_RECORD(orderby, 1, result) \
+		/* Condition where there were some records, meaning we set is_first to true.  */ \
+		if (boolean_false == is_first) { \
+			_WRITE_ORDERING_RECORD(orderby, 1, result) \
+		} \
 		_CLOSE_ORDERING_FILE(output_file) \
 		_CLOSE_ORDERING_FILE(input_file) \
+		/* Condition where there were no records, meaning we never set is_first to false.  */ \
+		if (boolean_true == is_first) { \
+			goto IINQ_QUERY_END; \
+		} \
     } \
 	/* ORDERBY handling. Do this anytime we have ORDERBY or aggregates, since we abuse the use of orderby file to accomodate when we have aggregates but no orderby. */ \
 	if (orderby_n > 0 || agg_n > 0) { \

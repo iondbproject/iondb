@@ -266,7 +266,7 @@ iinq_test_create_query_select_all_from_where_aggregates(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
 
-	MATERIALIZED_QUERY(SELECT_ALL, AGGREGATES(MAX(NEUTRALIZE(test.key, int))), FROM(0, test), WHERE(NEUTRALIZE(test.key, int) == 1), /* HAVING */, /* GROUPBY */, ORDERBY_NONE, , , &processor);
+	MATERIALIZED_QUERY(SELECT_ALL, AGGREGATES(MAX(NEUTRALIZE(test.key, int))), FROM(0, test), WHERE(NEUTRALIZE(test.key, int) == 1), GROUPBY_NONE, /* HAVING */, ORDERBY_NONE, , , &processor);
 
 	DROP(test);
 }
@@ -309,7 +309,7 @@ iinq_test_create_query_select_all_from_where_orderby_descending_records(
 
 void
 iinq_test_create_query_select_all_from_where_orderby_descending(
-		planck_unit_test_t *tc
+	planck_unit_test_t *tc
 ) {
 	ion_err_t					error;
 	ion_status_t				status;
@@ -348,7 +348,87 @@ iinq_test_create_query_select_all_from_where_orderby_descending(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
 
-	MATERIALIZED_QUERY(SELECT_ALL, AGGREGATES_NONE, FROM(0, test), WHERE(1), , , ORDERBY(DESCENDING(NEUTRALIZE(test.key, int))) , , , &processor);
+	MATERIALIZED_QUERY(SELECT_ALL, AGGREGATES_NONE, FROM(0, test), WHERE(1), GROUPBY_NONE, , ORDERBY(DESCENDING(NEUTRALIZE(test.key, int))) , , , &processor);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, state.count);
+
+	DROP(test);
+}
+
+void
+iinq_test_create_query_select_all_from_where_groupby_aggregate_simple_records(
+	planck_unit_test_t	*tc,
+	ion_iinq_result_t	*result,
+	uint32_t			count
+)
+{
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(int)*2, result->num_bytes);
+	ion_key_t	key		= result->data;
+	ion_value_t value	= result->data + sizeof(int);
+	switch (count) {
+		case 0:
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, NEUTRALIZE(key, int));
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, NEUTRALIZE(value, int));
+			break;
+		case 1:
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, NEUTRALIZE(key, int));
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, NEUTRALIZE(value, int));
+			break;
+	}
+}
+
+void
+iinq_test_create_query_select_all_from_where_groupby_aggregate_simple(
+	planck_unit_test_t *tc
+) {
+	ion_err_t					error;
+	ion_status_t				status;
+	ion_iinq_query_processor_t	processor;
+	iinq_test_query_state_t		state;
+	state.count					= 0;
+	state.tc					= tc;
+	state.func					= iinq_test_create_query_select_all_from_where_groupby_aggregate_simple_records;
+
+	ion_key_type_t				key_type;
+	ion_key_size_t				key_size;
+	ion_value_size_t			value_size;
+	ion_key_t					key;
+	ion_value_t					value;
+
+	processor	= IINQ_QUERY_PROCESSOR(check_results, &state);
+
+	key_type	= key_type_numeric_signed;
+	key_size	= sizeof(int);
+	value_size	= sizeof(int);
+
+	error		= CREATE_DICTIONARY(test, key_type, key_size, value_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
+
+	key			= IONIZE(1, int);
+	value		= IONIZE(1, int);
+
+	status		= INSERT(test, key, value);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	key			= IONIZE(2, int);
+	value		= IONIZE(2, int);
+
+	status		= INSERT(test, key, value);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	MATERIALIZED_QUERY(
+		SELECT_ALL,
+		AGGREGATES(MAX(NEUTRALIZE(test.key, int))),
+		FROM(0, test),
+		WHERE(1),
+		GROUPBY(ASC(NEUTRALIZE(test.key, int)))
+		,
+		/* HAVING */,
+		ORDERBY_NONE
+		, , ,
+		&processor
+	);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, state.count);
 
 	DROP(test);
@@ -366,6 +446,7 @@ iinq_get_suite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_two_dictionaries);
 //	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_aggregates);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_descending);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_groupby_aggregate_simple);
 
 	return suite;
 }

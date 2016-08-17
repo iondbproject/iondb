@@ -245,6 +245,10 @@ iinq_sort_compare(
 	k_i			= 0;
 	c			= (iinq_sort_context_t *)context;
 
+	if (NULL == c->parts) {
+		return equal;
+	}
+
 	/* Loop through each ordering part. Stop early if possible. */
 	for (i = 0; i < c->n; i++) {
 		result	= (c->parts[i].direction)*(memcmp(((uint8_t *) a) + k_i, ((uint8_t *) b) + k_i, c->parts[i].size));
