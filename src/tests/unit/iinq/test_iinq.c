@@ -266,7 +266,7 @@ iinq_test_create_query_select_all_from_where_aggregates(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
 
-	MATERIALIZED_QUERY(SELECT_ALL, AGGREGATES(MAX(NEUTRALIZE(test.key, int))), FROM(0, test), WHERE(NEUTRALIZE(test.key, int) == 1), , , , , , &processor);
+	MATERIALIZED_QUERY(SELECT_ALL, AGGREGATES(MAX(NEUTRALIZE(test.key, int))), FROM(0, test), WHERE(NEUTRALIZE(test.key, int) == 1), /* HAVING */, /* GROUPBY */, ORDERBY_NONE, , , &processor);
 
 	DROP(test);
 }
@@ -286,7 +286,7 @@ IINQ_NEW_PROCESSOR_FUNC(check_results) {
 }
 
 void
-iinq_test_create_query_select_all_from_where_orderby_records(
+iinq_test_create_query_select_all_from_where_orderby_descending_records(
 	planck_unit_test_t	*tc,
 	ion_iinq_result_t	*result,
 	uint32_t			count
@@ -308,7 +308,7 @@ iinq_test_create_query_select_all_from_where_orderby_records(
 }
 
 void
-iinq_test_create_query_select_all_from_where_orderby(
+iinq_test_create_query_select_all_from_where_orderby_descending(
 		planck_unit_test_t *tc
 ) {
 	ion_err_t					error;
@@ -317,7 +317,7 @@ iinq_test_create_query_select_all_from_where_orderby(
 	iinq_test_query_state_t		state;
 	state.count					= 0;
 	state.tc					= tc;
-	state.func					= iinq_test_create_query_select_all_from_where_orderby_records;
+	state.func					= iinq_test_create_query_select_all_from_where_orderby_descending_records;
 
 	ion_key_type_t				key_type;
 	ion_key_size_t				key_size;
@@ -348,7 +348,7 @@ iinq_test_create_query_select_all_from_where_orderby(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
 
-	MATERIALIZED_QUERY(SELECT_ALL, AGGREGATES_NONE, FROM(0, test), WHERE(1), , , ORDERBY(DESCENDING(test.key, int)) , , , &processor);
+	MATERIALIZED_QUERY(SELECT_ALL, AGGREGATES_NONE, FROM(0, test), WHERE(1), , , ORDERBY(DESCENDING(NEUTRALIZE(test.key, int))) , , , &processor);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, state.count);
 
 	DROP(test);
@@ -364,8 +364,8 @@ iinq_get_suite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_insert_update_delete_drop_dictionary_intint);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_single_dictionary);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_two_dictionaries);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_aggregates);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_aggregates);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_descending);
 
 	return suite;
 }

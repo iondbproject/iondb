@@ -696,7 +696,6 @@ do { \
 	/*iinq_order_part_t name ## _order_parts[(name ## _n)];*/
 
 #define _ORDERING_SETUP(name, n) \
-printf("IN UR ORDERBY, ORDERING YOUR ROWS\n");fflush(stdout); \
 	name ## _n		= (n);	\
 	i_ ## name		= 0;	\
 	total_ ## name ## _size = 0; \
@@ -851,26 +850,73 @@ printf("IN UR ORDERBY, ORDERING YOUR ROWS\n");fflush(stdout); \
 /*
  * We need the ability to treat expressions resulting in
  */
-#define ASCENDING(expr)		(expr, _CREATE_MEMCPY_STACK_ADDRESS_FOR_NUMERICAL_EXPRESSION(expr), sizeof((expr)), _ASCENDING_INDICATING)
+#define ASCENDING(expr)		(expr, _CREATE_MEMCPY_STACK_ADDRESS_FOR_NUMERICAL_EXPRESSION(expr), sizeof((expr)), _ASCENDING_INDICATOR)
 #define ASC(expr)			ASCENDING(expr)
-#define DESCENDING(expr)	(expr, _CREATE_MEMCPY_STACK_ADDRESS_FOR_NUMERICAL_EXPRESSION(expr), sizeof((expr)), _DESCENDING_INDICATING)
+#define DESCENDING(expr)	(expr, _CREATE_MEMCPY_STACK_ADDRESS_FOR_NUMERICAL_EXPRESSION(expr), sizeof((expr)), _DESCENDING_INDICATOR)
 #define DESC(expr)			DESCENDING(expr)
 
 #define _FIRST_MACRO_TUPLE4(_1, _2, _3, _4)		_1
+#define FIRST_MACRO_TUPLE4(t)					_FIRST_MACRO_TUPLE4 t
 #define _SECOND_MACRO_TUPLE4(_1, _2, _3, _4)	_2
+#define SECOND_MACRO_TUPLE4(t)					_SECOND_MACRO_TUPLE4 t
 #define _THIRD_MACRO_TUPLE4(_1, _2, _3, _4)		_3
+#define THIRD_MACRO_TUPLE4(t)					_THIRD_MACRO_TUPLE4 t
 #define _FOURTH_MACRO_TUPLE4(_1, _2, _3, _4)	_4
+#define FOURTH_MACRO_TUPLE4(t)					_FOURTH_MACRO_TUPLE4 t
 
-#define _SETUP_ORDERBY_SINGLE(t, n) \
-	orderby_order_parts[(n)].direction	= _FOURTH_MACRO_TUPLE4 t; \
-	orderby_order_parts[(n)].size		= _THIRD_MACRO_TUPLE4 t; \
-	total_orderby_size					+= orderby_order_parts[(n)].size;
+#define _SETUP_ORDERING_SINGLE(name, t, n) \
+	name ## _order_parts[(n)].direction	= FOURTH_MACRO_TUPLE4(t); \
+	name ## _order_parts[(n)].size		= THIRD_MACRO_TUPLE4(t); \
+	total_ ## name ## _size				+= name ## _order_parts[(n)].size;
 
-#define _PREPARE_ORDERING_KEY_ORDERBY_SINGLE(t, n) \
-	orderby_order_parts[(n)].pointer	= _SECOND_MACRO_TUPLE4 t; \
+/*
+ * The last parameter, the variable arguments, is a black whole to swallow unused macro names.
+ */
+#define _ORDERING_GET_OVERRIDE(_1, _2, _3, _4, _5, _6, _7, _8, MACRO, ...) MACRO
+#define _ORDERING_SINGLE(name, t, n)  _SETUP_ORDERING_SINGLE(name, t, n);
+/* Here we define a number of macros to facilitate up to 8 total aggregate expressions. */
+#define _ORDERING_1(name, _1) _ORDERING_SINGLE(name, _1, 0)
+#define _ORDERING_2(name, _1, _2) _ORDERING_1(name, _1) _ORDERING_SINGLE(name, _2, 1)
+#define _ORDERING_3(name, _1, _2, _3) _ORDERING_2(name, _1, _2) _ORDERING_SINGLE(name, _3, 2)
+#define _ORDERING_4(name, _1, _2, _3, _4) _ORDERING_3(name, _1, _2, _3) _ORDERING_SINGLE(name, _4, 3)
+#define _ORDERING_5(name, _1, _2, _3, _4, _5) _ORDERING_4(name, _1, _2, _3, _4) _ORDERING_SINGLE(name, _5, 4)
+#define _ORDERING_6(name, _1, _2, _3, _4, _5, _6) _ORDERING_5(name, _1, _2, _3, _4, _5) _ORDERING_SINGLE(name, _6, 5)
+#define _ORDERING_7(name, _1, _2, _3, _4, _5, _6, _7) _ORDERING_6(name, _1, _2, _3, _4, _5, _6) _ORDERING_SINGLE(name, _7, 6)
+#define _ORDERING_8(name, _1, _2, _3, _4, _5, _6, _7, _8) _ORDERING_7(name, _1, _2, _3, _4, _5, _6, _7) _ORDERING_SINGLE(name, _8, 7)
+/*
+ * Like it's cousin above, this one is also ugly. We again leverage the sliding macro trick.
+*/
+#define _ORDERING(name, ...) _ORDERING_GET_OVERRIDE(__VA_ARGS__, _ORDERING_8, _ORDERING_7, _ORDERING_6, _ORDERING_5, _ORDERING_4, _ORDERING_3, _ORDERING_2, _ORDERING_1, THEBLACKHOLE)(name, __VA_ARGS__)
+
+#define _COMPUTE_ORDERING_SINGLE(name, t, n) \
+	name ## _order_parts[(n)].pointer	= SECOND_MACRO_TUPLE4(t);
+
+/* Here we define a number of macros to facilitate up to 8 total aggregate expressions. */
+#define _COMPUTE_ORDERING_1(name, _1) _COMPUTE_ORDERING_SINGLE(name, _1, 0)
+#define _COMPUTE_ORDERING_2(name, _1, _2) _COMPUTE_ORDERING_1(name, _1) _COMPUTE_ORDERING_SINGLE(name, _2, 1)
+#define _COMPUTE_ORDERING_3(name, _1, _2, _3) _COMPUTE_ORDERING_2(name, _1, _2) _COMPUTE_ORDERING_SINGLE(name, _3, 2)
+#define _COMPUTE_ORDERING_4(name, _1, _2, _3, _4) _COMPUTE_ORDERING_3(name, _1, _2, _3) _COMPUTE_ORDERING_SINGLE(name, _4, 3)
+#define _COMPUTE_ORDERING_5(name, _1, _2, _3, _4, _5) _COMPUTE_ORDERING_4(name, _1, _2, _3, _4) _COMPUTE_ORDERING_SINGLE(name, _5, 4)
+#define _COMPUTE_ORDERING_6(name, _1, _2, _3, _4, _5, _6) _COMPUTE_ORDERING_5(name, _1, _2, _3, _4, _5) _COMPUTE_ORDERING_SINGLE(name, _6, 5)
+#define _COMPUTE_ORDERING_7(name, _1, _2, _3, _4, _5, _6, _7) _COMPUTE_ORDERING_6(name, _1, _2, _3, _4, _5, _6) _COMPUTE_ORDERING_SINGLE(name, _7, 6)
+#define _COMPUTE_ORDERING_8(name, _1, _2, _3, _4, _5, _6, _7, _8) _COMPUTE_ORDERING_7(name, _1, _2, _3, _4, _5, _6, _7) _COMPUTE_ORDERING_SINGLE(name, _8, 7)
+/*
+ * Like it's cousin above, this one is also ugly. We again leverage the sliding macro trick.
+*/
+#define _COMPUTE_ORDERING(name, ...) _ORDERING_GET_OVERRIDE(__VA_ARGS__, _COMPUTE_ORDERING_8, _COMPUTE_ORDERING_7, _COMPUTE_ORDERING_6, _COMPUTE_ORDERING_5, _ORDERING_4, _COMPUTE_ORDERING_3, _COMPUTE_ORDERING_2, _COMPUTE_ORDERING_1, THEBLACKHOLE)(name, __VA_ARGS__)
 
 #define ORDERBY(...) \
-	_ORDERING_SETUP(orderby, PP_NARG(__VAR_ARGS__)) \
+	_ORDERING_SETUP(orderby, PP_NARG(__VA_ARGS__)) \
+	_ORDERING(orderby, __VA_ARGS__) \
+	goto IINQ_SKIP_COMPUTE_ORDERBY; \
+	IINQ_COMPUTE_ORDERBY: ; \
+	_COMPUTE_ORDERING(orderby, __VA_ARGS__) \
+	goto IINQ_DONE_COMPUTE_ORDERBY; \
+	IINQ_SKIP_COMPUTE_ORDERBY: ; \
+
+#define ORDERBY_NONE \
+	IINQ_COMPUTE_ORDERBY: ; \
+	goto IINQ_DONE_COMPUTE_ORDERBY;
 
 #define _GROUPBY_SETUP(n) \
 	groupby_n	= (n);	\
@@ -923,6 +969,11 @@ do { \
 				_WRITE_ORDERING_RECORD(groupby, 0, result) \
 			} \
 			else if (orderby_n > 0) { \
+				goto IINQ_COMPUTE_ORDERBY; \
+				IINQ_DONE_COMPUTE_ORDERBY: ; \
+				if (agg_n > 0) { \
+					goto IINQ_DONE_COMPUTE_ORDERBY_2; \
+				} \
 				_WRITE_ORDERING_RECORD(orderby, 0, result) \
 			} \
 			else { \
@@ -970,10 +1021,10 @@ do { \
 		_OPEN_ORDERING_FILE_READ(groupby, 0, result.num_bytes); \
 		/* Note that if there is no orderby, then we simply will read these values off disk when we are done (no sort). */ \
 		_OPEN_ORDERING_FILE_WRITE(orderby, 1, result.num_bytes); \
-		ion_boolean_t	is_first		= boolean_true; \
+		ion_boolean_t	is_first	= boolean_true; \
 		/* We need to track two keys. We need to be able to compare the last key seen to the next
 		 * to know if the next key is equal (and is thus part of the same grouping attribute. */ \
-		char		*old_key			= alloca(total_groupby_size);/*[total_groupby_size];*/ \
+		char		*old_key		= alloca(total_groupby_size);/*[total_groupby_size];*/ \
 		char		*cur_key		= alloca(total_groupby_size);/*[total_groupby_size];*/ \
 		/* While we have more records in the sorted group by file, read them, check if keys are the same. */ \
 		read_page_remaining			= IINQ_PAGE_SIZE; \
@@ -982,6 +1033,8 @@ do { \
 			_READ_ORDERING_RECORD(groupby, total_groupby_size, NULL, cur_key, result, /* Empty on purpose. */) \
 			/* TODO: Graeme, make sure you setup all necessary error codes in above and related, as well as handle them here. */ \
 			if (total_groupby_size > 0 && !is_first && equal != iinq_sort_compare(&_IINQ_SORT_CONTEXT(groupby), cur_key, old_key)) { \
+				goto IINQ_COMPUTE_ORDERBY; \
+				IINQ_DONE_COMPUTE_ORDERBY_2: ; \
 				_WRITE_ORDERING_RECORD(orderby, 1, result) \
 				_AGGREGATES_INITIALIZE \
             } \
@@ -1003,7 +1056,7 @@ do { \
 		_OPEN_ORDERING_FILE_READ(orderby, 1, result.num_bytes); \
 		ion_external_sort_t	es; \
 		iinq_sort_context_t context = _IINQ_SORT_CONTEXT(orderby); \
-		if (err_ok != (error = ion_external_sort_init(&es, input_file, &context, iinq_sort_compare, result.num_bytes, result.num_bytes, IINQ_PAGE_SIZE, boolean_false, ION_FILE_SORT_FLASH_MINSORT))) { \
+		if (err_ok != (error = ion_external_sort_init(&es, input_file, &context, iinq_sort_compare, result.num_bytes, result.num_bytes+total_orderby_size, IINQ_PAGE_SIZE, boolean_false, ION_FILE_SORT_FLASH_MINSORT))) { \
 			_CLOSE_ORDERING_FILE(input_file); \
 			goto IINQ_QUERY_END; \
 		} \
@@ -1014,7 +1067,6 @@ do { \
 			_CLOSE_ORDERING_FILE(input_file); \
 			goto IINQ_QUERY_END; \
         } \
-		_CLOSE_ORDERING_FILE(input_file); \
 		/* TODO: Store each record in result, then the following code SHOULD work: */ \
 		/* TODO: We need to pass in the aggregates into the result, somehow. Godspeed. */ \
 		if (err_ok != (error = cursor.next(&cursor, result.data))) { \
@@ -1028,6 +1080,8 @@ do { \
 				goto IINQ_QUERY_END; \
 			} \
         } \
+		_CLOSE_ORDERING_FILE(input_file); \
+		_REMOVE_ORDERING_FILE(orderby); \
     } \
 	\
 	IINQ_QUERY_END: ; \
