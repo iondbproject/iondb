@@ -624,7 +624,7 @@ do { \
 
 #define _AGGREGATES_SETUP(n) \
 	agg_n	= (n);	\
-	int i_agg	= 0;	\
+	i_agg	= 0;	\
 	iinq_aggregate_t aggregates[agg_n]; \
 	_AGGREGATES_INITIALIZE
 
@@ -679,16 +679,28 @@ do { \
 	goto IINQ_DONE_COMPUTE_AGGREGATES; \
 	IINQ_SKIP_COMPUTE_AGGREGATES: ;
 
+#define AGGREGATES_NONE \
+	agg_n	= 0;	\
+	i_agg	= 0;	\
+	iinq_aggregate_t *aggregates	= NULL; \
+	goto IINQ_SKIP_COMPUTE_AGGREGATES; \
+	IINQ_COMPUTE_AGGREGATES: ; \
+	goto IINQ_DONE_COMPUTE_AGGREGATES; \
+	IINQ_SKIP_COMPUTE_AGGREGATES: ;
+
 #define _ORDERING_DECLARE(name) \
 	int name ## _n				= 0;	\
 	int i_ ## name				= 0;	\
 	int total_ ## name ## _size	= 0; \
-	iinq_order_part_t name ## _order_parts[(name ## _n)];
+	iinq_order_part_t * name ## _order_parts = NULL;
+	/*iinq_order_part_t name ## _order_parts[(name ## _n)];*/
 
 #define _ORDERING_SETUP(name, n) \
+printf("IN UR ORDERBY, ORDERING YOUR ROWS\n");fflush(stdout); \
 	name ## _n		= (n);	\
 	i_ ## name		= 0;	\
-	total_ ## name ## _size = 0;
+	total_ ## name ## _size = 0; \
+	name ## _order_parts = alloca(sizeof(iinq_order_part_t)*(n));
 
 #define _OPEN_ORDERING_FILE_WRITE(name, with_aggregates, record_size) \
 	output_file			= fopen(#name, "wb"); \
@@ -859,22 +871,6 @@ do { \
 
 #define ORDERBY(...) \
 	_ORDERING_SETUP(orderby, PP_NARG(__VAR_ARGS__)) \
-	/* Setup for each ordering part. */ \
-	IINQ_ORDERBY_PREPARE: \
-	do { \
-		/* Setup code. */ \
-		_PREPARE_ORDERING_KEYS(__VAR_ARGS__); \
-		_WRITE_ORDERING_RECORD(orderby, recorddata); \
-	} while(0); \
-	goto IINQ_ORDERBY_AFTER; \
-	IINQ_ORDERBY_SORT: \
-	if (0 != fseek(output_file, 0, SEEK_SET)) { \
-		goto IINQ_CLEANUP_QUERY; \
-    } \
-	input_file	= output_file; \
-	output_file	= NULL; \
-	/* Call Wade sort here. */ \
-	IINQ_ORDERBY_AFTER: ; \
 
 #define _GROUPBY_SETUP(n) \
 	groupby_n	= (n);	\
@@ -894,7 +890,8 @@ do { \
 	ion_iinq_result_t	result; \
     result.num_bytes							= 0; \
 	int agg_n									= 0; \
-	from_clause/* This includes a loop declaration with some other stuff. */ \
+	int i_agg									= 0; \
+	from_clause \
 	_ORDERING_DECLARE(groupby) \
 	_ORDERING_DECLARE(orderby) \
     aggregate_exprs \
