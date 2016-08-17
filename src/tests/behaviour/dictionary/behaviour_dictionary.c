@@ -80,10 +80,6 @@ bhdct_dictionary_initialization(
 ) {
 	ion_err_t err = ion_master_table_create_dictionary(handler, dict, key_type, key_size, value_size, dictionary_size);
 
-	if(err_ok == err) {
-		printf("Error is ok.");
-		fflush(stdout);
-	}
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, key_type, dict->instance->key_type);
@@ -845,8 +841,8 @@ test_bhdct_delete_then_insert(
 }
 
 planck_unit_suite_t *
-bhdct_getsuite(
-	void
+bhdct_getsuite_1(
+		void
 ) {
 	if (NULL == bhdct_context.init_fcn) {
 		fprintf(stderr, "Behaviour Dictionary context was not set!");
@@ -871,6 +867,20 @@ bhdct_getsuite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_single);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_multiple);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_all);
+
+	return suite;
+}
+
+planck_unit_suite_t *
+bhdct_getsuite_2(
+		void
+) {
+	if (NULL == bhdct_context.init_fcn) {
+		fprintf(stderr, "Behaviour Dictionary context was not set!");
+		return NULL;
+	}
+
+	planck_unit_suite_t *suite = planck_unit_new_suite();
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_empty);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_single);

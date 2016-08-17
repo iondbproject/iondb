@@ -14,10 +14,6 @@ iinq_test_create_open_source(
 	ion_dictionary_id_t		id;
 
 	error				= iinq_create_source(schema_file_name, key_type, key_size, value_size);
-	if(err_ok == error) {
-		printf("Error is ok.");
-		fflush(stdout);;
-	}
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
 	error				= iinq_create_source(schema_file_name, key_type, key_size, value_size);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_duplicate_dictionary_error, error);
@@ -53,10 +49,6 @@ iinq_test_create_insert_update_delete_drop_dictionary(
 
 	error				= CREATE_DICTIONARY(test, key_type, key_size, value_size);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
-	if(err_ok == error) {
-		printf("Error is ok.");
-		fflush(stdout);
-	}
 
 	error				= CREATE_DICTIONARY(test, key_type, key_size, value_size);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_duplicate_dictionary_error, error);
@@ -160,10 +152,6 @@ iinq_test_create_query_select_all_from_where_single_dictionary(
 
 	error		= CREATE_DICTIONARY(test, key_type, key_size, value_size);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
-	if(err_ok == error) {
-		printf("Error is ok.");
-		fflush(stdout);
-	}
 
 	key			= IONIZE(1, int);
 	value		= IONIZE(1, int);
@@ -216,10 +204,6 @@ iinq_test_create_query_select_all_from_where_two_dictionaries(
 
 	error		= CREATE_DICTIONARY(test1, key_type, key_size, value_size);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
-	if(err_ok == error) {
-		printf("Error is ok.");
-		fflush(stdout);
-	}
 
 	error		= CREATE_DICTIONARY(test2, key_type, key_size, value_size);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
