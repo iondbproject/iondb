@@ -80,6 +80,10 @@ bhdct_dictionary_initialization(
 ) {
 	ion_err_t err = ion_master_table_create_dictionary(handler, dict, key_type, key_size, value_size, dictionary_size);
 
+	if(err_ok == err) {
+		printf("Error is ok.");
+		fflush(stdout);
+	}
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, key_type, dict->instance->key_type);
