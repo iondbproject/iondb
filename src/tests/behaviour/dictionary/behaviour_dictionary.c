@@ -919,15 +919,6 @@ bhdct_getsuite_bpptree_1(
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_single);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_in_many);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_lots);
-
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_empty);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_single);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_many);
-
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_exist_single);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_single);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_multiple);
 
 	return suite;
 }
@@ -943,13 +934,37 @@ bhdct_getsuite_bpptree_2(
 
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_lots);
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_empty);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_many);
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_exist_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_multiple);
 
 	return suite;
 }
 
 planck_unit_suite_t *
 bhdct_getsuite_bpptree_3(
+	void
+) {
+	if (NULL == bhdct_context.init_fcn) {
+		fprintf(stderr, "Behaviour Dictionary context was not set!");
+		return NULL;
+	}
+
+	planck_unit_suite_t *suite = planck_unit_new_suite();
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_all);
+
+	return suite;
+}
+
+planck_unit_suite_t *
+bhdct_getsuite_bpptree_4(
 	void
 ) {
 	if (NULL == bhdct_context.init_fcn) {
@@ -967,7 +982,7 @@ bhdct_getsuite_bpptree_3(
 }
 
 planck_unit_suite_t *
-bhdct_getsuite_bpptree_4(
+bhdct_getsuite_bpptree_5(
 	void
 ) {
 	if (NULL == bhdct_context.init_fcn) {
@@ -985,7 +1000,7 @@ bhdct_getsuite_bpptree_4(
 }
 
 planck_unit_suite_t *
-bhdct_getsuite_bpptree_5(
+bhdct_getsuite_bpptree_6(
 	void
 ) {
 	if (NULL == bhdct_context.init_fcn) {
