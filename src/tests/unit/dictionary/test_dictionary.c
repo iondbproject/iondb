@@ -278,11 +278,20 @@ test_dictionary_master_table(
 }
 
 planck_unit_suite_t *
-dictionary_getsuite(
+dictionary_getsuite_1(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_dictionary_compare_numerics);
+
+	return suite;
+}
+
+planck_unit_suite_t *
+dictionary_getsuite_2(
+) {
+	planck_unit_suite_t *suite = planck_unit_new_suite();
+
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_dictionary_master_table);
 
 	return suite;
@@ -291,8 +300,12 @@ dictionary_getsuite(
 void
 runalltests_dictionary(
 ) {
-	planck_unit_suite_t *suite = dictionary_getsuite();
+	planck_unit_suite_t *suite_1	= dictionary_getsuite_1();
+	planck_unit_suite_t *suite_2	= dictionary_getsuite_2();
 
-	planck_unit_run_suite(suite);
-	planck_unit_destroy_suite(suite);
+	planck_unit_run_suite(suite_1);
+	planck_unit_destroy_suite(suite_1);
+
+	planck_unit_run_suite(suite_2);
+	planck_unit_destroy_suite(suite_2);
 }
