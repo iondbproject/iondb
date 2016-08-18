@@ -32,12 +32,24 @@ runalltests_behaviour_bpp_tree(
 ) {
 	bhdct_set_context(bpptree_init, -1, boolean_true);
 
-	planck_unit_suite_t *suite_1 = bhdct_getsuite_1();
-	planck_unit_suite_t *suite_2 = bhdct_getsuite_2();
+	planck_unit_suite_t *suite_1	= bhdct_getsuite_bpptree_1();
+	planck_unit_suite_t *suite_2	= bhdct_getsuite_bpptree_2();
+	planck_unit_suite_t *suite_3	= bhdct_getsuite_bpptree_3();
+	planck_unit_suite_t *suite_4	= bhdct_getsuite_bpptree_4();
+	planck_unit_suite_t *suite_5	= bhdct_getsuite_bpptree_5();
 
 	planck_unit_run_suite(suite_1);
 	planck_unit_destroy_suite(suite_1);
 
 	planck_unit_run_suite(suite_2);
 	planck_unit_destroy_suite(suite_2);
+
+	planck_unit_run_suite(suite_3);
+	planck_unit_destroy_suite(suite_3);
+
+	planck_unit_run_suite(suite_4);
+	planck_unit_destroy_suite(suite_4);
+
+	planck_unit_run_suite(suite_5);
+	planck_unit_destroy_suite(suite_5);
 }
