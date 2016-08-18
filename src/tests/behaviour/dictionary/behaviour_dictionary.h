@@ -126,6 +126,51 @@ bhdct_getsuite_bpptree_6(
 	void
 );
 
+/**
+@brief	Constructs the testing suite for the bpp tree behaviour dictionary tests.
+@return	A constructed, initialized suite.
+*/
+planck_unit_suite_t *
+bhdct_getsuite_bpptree_7(
+	void
+);
+
+/**
+@brief	Constructs the testing suite for the bpp tree behaviour dictionary tests.
+@return	A constructed, initialized suite.
+*/
+planck_unit_suite_t *
+bhdct_getsuite_bpptree_8(
+	void
+);
+
+/**
+@brief	Constructs the testing suite for the bpp tree behaviour dictionary tests.
+@return	A constructed, initialized suite.
+*/
+planck_unit_suite_t *
+bhdct_getsuite_bpptree_9(
+	void
+);
+
+/**
+@brief	Constructs the testing suite for the bpp tree behaviour dictionary tests.
+@return	A constructed, initialized suite.
+*/
+planck_unit_suite_t *
+bhdct_getsuite_bpptree_10(
+	void
+);
+
+/**
+@brief	Constructs the testing suite for the bpp tree behaviour dictionary tests.
+@return	A constructed, initialized suite.
+*/
+planck_unit_suite_t *
+bhdct_getsuite_bpptree_11(
+	void
+);
+
 #if defined(__cplusplus)
 }
 #endif

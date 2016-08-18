@@ -942,7 +942,6 @@ bhdct_getsuite_bpptree_2(
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_exist_single);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_single);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_multiple);
 
 	return suite;
 }
@@ -958,7 +957,7 @@ bhdct_getsuite_bpptree_3(
 
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_multiple);
 
 	return suite;
 }
@@ -974,9 +973,7 @@ bhdct_getsuite_bpptree_4(
 
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_empty);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_single);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_several);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_all);
 
 	return suite;
 }
@@ -992,15 +989,93 @@ bhdct_getsuite_bpptree_5(
 
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single_several);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_empty);
 
 	return suite;
 }
 
 planck_unit_suite_t *
 bhdct_getsuite_bpptree_6(
+	void
+) {
+	if (NULL == bhdct_context.init_fcn) {
+		fprintf(stderr, "Behaviour Dictionary context was not set!");
+		return NULL;
+	}
+
+	planck_unit_suite_t *suite = planck_unit_new_suite();
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_single);
+
+	return suite;
+}
+
+planck_unit_suite_t *
+bhdct_getsuite_bpptree_7(
+	void
+) {
+	if (NULL == bhdct_context.init_fcn) {
+		fprintf(stderr, "Behaviour Dictionary context was not set!");
+		return NULL;
+	}
+
+	planck_unit_suite_t *suite = planck_unit_new_suite();
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_several);
+
+	return suite;
+}
+
+planck_unit_suite_t *
+bhdct_getsuite_bpptree_8(
+	void
+) {
+	if (NULL == bhdct_context.init_fcn) {
+		fprintf(stderr, "Behaviour Dictionary context was not set!");
+		return NULL;
+	}
+
+	planck_unit_suite_t *suite = planck_unit_new_suite();
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single);
+
+	return suite;
+}
+
+planck_unit_suite_t *
+bhdct_getsuite_bpptree_9(
+	void
+) {
+	if (NULL == bhdct_context.init_fcn) {
+		fprintf(stderr, "Behaviour Dictionary context was not set!");
+		return NULL;
+	}
+
+	planck_unit_suite_t *suite = planck_unit_new_suite();
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single_several);
+
+	return suite;
+}
+
+planck_unit_suite_t *
+bhdct_getsuite_bpptree_10(
+	void
+) {
+	if (NULL == bhdct_context.init_fcn) {
+		fprintf(stderr, "Behaviour Dictionary context was not set!");
+		return NULL;
+	}
+
+	planck_unit_suite_t *suite = planck_unit_new_suite();
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_all);
+
+	return suite;
+}
+
+planck_unit_suite_t *
+bhdct_getsuite_bpptree_11(
 	void
 ) {
 	if (NULL == bhdct_context.init_fcn) {
