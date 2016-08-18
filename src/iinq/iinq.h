@@ -1106,6 +1106,7 @@ do { \
 				goto IINQ_QUERY_END; \
 			} \
         } \
+		ion_external_sort_destroy_cursor(&cursor); \
 		_CLOSE_ORDERING_FILE(input_file); \
 		_REMOVE_ORDERING_FILE(orderby); \
     } \
