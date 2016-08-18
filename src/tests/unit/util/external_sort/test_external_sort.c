@@ -1,5 +1,4 @@
 #include "test_external_sort.h"
-#include "../../../../util/sort/external_sort/external_sort_types.h"
 
 #define ION_EXTERNAL_SORT_SEED 0x8E01483F
 #define ION_EXTERNAL_SORT_PAGE_SIZE 512
@@ -11,7 +10,7 @@ typedef ion_err_t (*ion_external_sort_write_data_func_t)(FILE *unsorted_file, ui
 
 ion_comparison_e
 ion_external_sort_uint16_comparator(
-	ion_sort_comparator_context_t	*context,
+	ion_sort_comparator_context_t	context,
 	void							*value_a,
 	void							*value_b
 ) {
@@ -49,7 +48,7 @@ ion_external_sort_write_uint16_data(
 
 ion_comparison_e
 ion_external_sort_3_char_str_comparator(
-	ion_sort_comparator_context_t	*context,
+	ion_sort_comparator_context_t	context,
 	void							*value_a,
 	void							*value_b
 ) {

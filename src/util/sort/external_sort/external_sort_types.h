@@ -60,16 +60,16 @@ typedef struct {
 	uint32_t						num_pages;
 	uint16_t						num_values_last_page;
 	ion_boolean_e					sorted_pages;
-	ion_external_sort_algorithm_e		sort_algorithm;
+	ion_external_sort_algorithm_e	sort_algorithm;
 } ion_external_sort_t;
 
 struct ion_external_sort_cursor_s {
-	ion_external_sort_t			*es;
-	void						*implementation_data;
-	FILE						*output_file;
+	ion_external_sort_t					*es;
+	void								*implementation_data;
+	FILE								*output_file;
 	ion_external_sort_data_pointer_t	*buffer;
-	ion_buffer_size_t			buffer_size;
-	ion_cursor_status_t 		status;
+	ion_buffer_size_t					buffer_size;
+	ion_cursor_status_t 				status;
 
 	ion_err_t					(*next)(
 		ion_external_sort_cursor_t *cursor,

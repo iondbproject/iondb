@@ -58,13 +58,13 @@ typedef struct {
 	uint32_t	num_regions;
 	uint32_t	num_pages_per_region;
 	uint32_t	num_pages_last_region;
-	uint32_t 	num_bytes_in_page;
-	uint8_t 	num_cache_pages;
+	uint32_t	num_bytes_in_page;
+	uint8_t		num_cache_pages;
 	uint32_t	cur_region;
 	uint32_t	cur_page;
 	uint32_t	cur_page_in_region;
 	uint16_t	cur_byte_in_page;
-	uint32_t 	cur_byte_in_buffer;
+	uint32_t	cur_byte_in_buffer;
 	ion_external_sort_data_pointer_t		*cur_value;
 	ion_external_sort_data_pointer_t		*temp_value;
 	ion_external_sort_data_pointer_t		*min_index_bit_vector;

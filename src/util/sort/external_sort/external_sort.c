@@ -22,7 +22,6 @@
 /******************************************************************************/
 
 #include "external_sort.h"
-#include "external_sort_types.h"
 
 ion_err_t
 ion_external_sort_init(
@@ -34,7 +33,7 @@ ion_external_sort_init(
 	ion_value_size_t				value_size,
 	ion_page_size_t					page_size,
 	ion_boolean_e					sorted_pages,
-	ion_external_sort_algorithm_e		sort_algorithm
+	ion_external_sort_algorithm_e	sort_algorithm
 ) {
 	es->input_file			= input_file;
 	es->context				= context;
