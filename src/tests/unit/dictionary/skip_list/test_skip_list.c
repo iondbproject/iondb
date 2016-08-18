@@ -1950,7 +1950,6 @@ skiplist_getsuite_2(
 	/* Insertion Tests */
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_single_insert);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_insert_multiple);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_randomized_insert);
 
 	return suite;
 }
@@ -1961,6 +1960,20 @@ skiplist_getsuite_2(
 */
 planck_unit_suite_t *
 skiplist_getsuite_3(
+) {
+	planck_unit_suite_t *suite = planck_unit_new_suite();
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_randomized_insert);
+
+	return suite;
+}
+
+/**
+@brief	  Creates the suite to test using CuTest.
+@return	 Pointer to a CuTest suite.
+*/
+planck_unit_suite_t *
+skiplist_getsuite_4(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
@@ -1979,7 +1992,7 @@ skiplist_getsuite_3(
 @return	 Pointer to a CuTest suite.
 */
 planck_unit_suite_t *
-skiplist_getsuite_4(
+skiplist_getsuite_5(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
@@ -1999,7 +2012,7 @@ skiplist_getsuite_4(
 @return	 Pointer to a CuTest suite.
 */
 planck_unit_suite_t *
-skiplist_getsuite_5(
+skiplist_getsuite_6(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
@@ -2022,7 +2035,7 @@ skiplist_getsuite_5(
 @return	 Pointer to a CuTest suite.
 */
 planck_unit_suite_t *
-skiplist_getsuite_6(
+skiplist_getsuite_7(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
@@ -2044,7 +2057,7 @@ skiplist_getsuite_6(
 @return	 Pointer to a CuTest suite.
 */
 planck_unit_suite_t *
-skiplist_getsuite_7(
+skiplist_getsuite_8(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
@@ -2073,6 +2086,7 @@ runalltests_skiplist(
 	planck_unit_suite_t *suite_5	= skiplist_getsuite_5();
 	planck_unit_suite_t *suite_6	= skiplist_getsuite_6();
 	planck_unit_suite_t *suite_7	= skiplist_getsuite_7();
+	planck_unit_suite_t *suite_8	= skiplist_getsuite_8();
 
 	/* CuSuiteSummary(suite, output); */
 	/* CuSuiteDetails(suite, output); */
@@ -2101,4 +2115,7 @@ runalltests_skiplist(
 
 	planck_unit_run_suite(suite_7);
 	planck_unit_destroy_suite(suite_7);
+
+	planck_unit_run_suite(suite_8);
+	planck_unit_destroy_suite(suite_8);
 }
