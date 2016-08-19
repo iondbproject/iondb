@@ -1100,6 +1100,7 @@ do { \
 			goto IINQ_QUERY_END; \
 		} \
 		while (cs_cursor_active == cursor.status) { \
+			printf("%d\n", *((uint32_t *) result.data)); \
 			(p)->execute(&result, (p)->state); \
 			if (err_ok != (error = cursor.next(&cursor, result.data))) { \
 				_CLOSE_ORDERING_FILE(input_file); \
