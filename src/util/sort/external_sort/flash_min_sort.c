@@ -27,6 +27,7 @@
 /******************************************************************************/
 
 #include "flash_min_sort.h"
+#include "external_sort_types.h"
 
 #if defined(DEGUB)
 uint32_t page_reads;
@@ -264,8 +265,10 @@ ion_flash_min_sort_next(
 				fms->cur_byte_in_page += es->value_size;
 			}
 
-			if (0 != fseek(es->input_file, fms->num_bytes_in_page - fms->cur_byte_in_page, SEEK_CUR)) {
-				return err_file_bad_seek;
+			if (fms->cur_page != es->num_pages) {
+				if (0 != fseek(es->input_file, es->page_size - fms->cur_byte_in_page, SEEK_CUR)) {
+					return err_file_bad_seek;
+				}
 			}
 
 			fms->cur_byte_in_page = 0;
