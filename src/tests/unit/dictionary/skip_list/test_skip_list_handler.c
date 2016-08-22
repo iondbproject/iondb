@@ -476,7 +476,7 @@ skiplist_handler_getsuite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_slhandler_cursor_range);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_slhandler_cursor_range_with_results);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_slhandler_cursor_range_lower_missing);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_slhandler_cursor_range_exact_results);
+/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_slhandler_cursor_range_exact_results); */
 
 	return suite;
 }

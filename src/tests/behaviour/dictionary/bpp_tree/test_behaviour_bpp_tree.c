@@ -35,7 +35,7 @@ runalltests_behaviour_bpp_tree(
 	planck_unit_suite_t *suite_1	= bhdct_getsuite_bpptree_1();
 	planck_unit_suite_t *suite_2	= bhdct_getsuite_bpptree_2();
 	planck_unit_suite_t *suite_3	= bhdct_getsuite_bpptree_3();
-/*	planck_unit_suite_t *suite_4	= bhdct_getsuite_bpptree_4(); */
+	planck_unit_suite_t *suite_4	= bhdct_getsuite_bpptree_4();
 	planck_unit_suite_t *suite_5	= bhdct_getsuite_bpptree_5();
 	planck_unit_suite_t *suite_6	= bhdct_getsuite_bpptree_6();
 	planck_unit_suite_t *suite_7	= bhdct_getsuite_bpptree_7();
@@ -55,21 +55,21 @@ runalltests_behaviour_bpp_tree(
 
 /*	planck_unit_run_suite(suite_4); */
 /*	planck_unit_destroy_suite(suite_4); */
-
-	planck_unit_run_suite(suite_5);
-	planck_unit_destroy_suite(suite_5);
-
-	planck_unit_run_suite(suite_6);
-	planck_unit_destroy_suite(suite_6);
-
-	planck_unit_run_suite(suite_7);
-	planck_unit_destroy_suite(suite_7);
-
-	planck_unit_run_suite(suite_8);
-	planck_unit_destroy_suite(suite_8);
-
-	planck_unit_run_suite(suite_9);
-	planck_unit_destroy_suite(suite_9);
+/*  */
+/*	planck_unit_run_suite(suite_5); */
+/*	planck_unit_destroy_suite(suite_5); */
+/*  */
+/*	planck_unit_run_suite(suite_6); */
+/*	planck_unit_destroy_suite(suite_6); */
+/*  */
+/*	planck_unit_run_suite(suite_7); */
+/*	planck_unit_destroy_suite(suite_7); */
+/*  */
+/*	planck_unit_run_suite(suite_8); */
+/*	planck_unit_destroy_suite(suite_8); */
+/*  */
+/*	planck_unit_run_suite(suite_9); */
+/*	planck_unit_destroy_suite(suite_9); */
 
 	planck_unit_run_suite(suite_10);
 	planck_unit_destroy_suite(suite_10);
