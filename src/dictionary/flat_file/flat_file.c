@@ -224,7 +224,7 @@ flat_file_scan(
 
 		int32_t i;
 
-		for (i = scan_forwards ? 0 : num_records_to_process - 1; scan_forwards ? i < num_records_to_process : i >= 0; scan_forwards ? i++ : i--) {
+		for (i = scan_forwards ? 0 : num_records_to_process - 1; scan_forwards ? (size_t) i < num_records_to_process : i >= 0; scan_forwards ? i++ : i--) {
 			size_t cur_rec = i * flat_file->row_size;
 
 			/* This cast is done because in the future, the status could possibly be a non-byte type */
@@ -659,14 +659,14 @@ flat_file_binary_search(
 	}
 
 	/* Scan hop - first go one-before */
-	ion_fpos_t find_loc = -1;
+	ion_fpos_t find_loc			= -1;
 
-	err = flat_file_scan(flat_file, low_idx, &find_loc, &row, boolean_false, flat_file_predicate_first_less_than, target_key);
+	ion_err_t first_scan_err	= flat_file_scan(flat_file, low_idx, &find_loc, &row, boolean_false, flat_file_predicate_first_less_than, target_key);
 
-	if ((err_ok != err) && (err_file_hit_eof != err)) {
-		return err;	/* Real error condition */
+	if ((err_ok != first_scan_err) && (err_file_hit_eof != first_scan_err)) {
+		return first_scan_err;	/* Real error condition */
 	}
-	else if (err_file_hit_eof == err) {
+	else if (err_file_hit_eof == first_scan_err) {
 		/* We fell through the front, so the row key isn't valid. Pull the row key from the first record in the store. */
 		/* This should be a guaranteed cache hit, so it's pretty efficient */
 		err = flat_file_read_row(flat_file, 0, &row);
@@ -686,14 +686,16 @@ flat_file_binary_search(
 	if ((err_ok != err) && (err_file_hit_eof != err)) {
 		return err;	/* Real error condition */
 	}
-	else if (err_file_hit_eof == err) {
-		/* If find_loc wasn't good either, then we don't have anything to return */
-		if (-1 == find_loc) {
-			return err_item_not_found;
+	/* If the first greater key violates our condition of being LEQ, just return the original find key */
+	else if ((err_file_hit_eof == err) || (flat_file->super.compare(row.key, target_key, flat_file->super.record.key_size) > 0)) {
+		if (err_file_hit_eof == first_scan_err) {
+			/* If find_loc wasn't good either, then we just give back -1 */
+			*location = -1;
 		}
-
-		/* Nothing on the right - then the find loc is our guy */
-		*location = find_loc;
+		else {
+			/* Nothing on the right - then the find loc is our guy */
+			*location = find_loc;
+		}
 	}
 	else if (err_ok == err) {
 		*location = hop_loc;
