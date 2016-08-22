@@ -159,19 +159,19 @@ flat_file_scan(
 			cur_offset = flat_file->start_of_data;
 		}
 		else {
-			/* We position at the last readable record in the flat file. */
-			cur_offset = flat_file->eof_position - flat_file->row_size;
+			cur_offset = flat_file->eof_position;
 		}
 	}
 
-	if ((cur_offset >= flat_file->eof_position) || (cur_offset < flat_file->start_of_data)) {
-		return err_out_of_bounds;
+	/* If we're scanning backwards, bump the cur_offset up one record so that we read the record we're sitting on. */
+	/* We don't do this if we're positioned at the EOF, since otherwise we would read garbage. */
+	if (!scan_forwards && (cur_offset != flat_file->eof_position)) {
+		cur_offset += flat_file->row_size;
 	}
 
-/*	if(!scan_forwards) { */
-/*		// If we're scanning backwards, bump the cur_offset up one record so that we read the record we're sitting on */
-/*		cur_offset += flat_file->row_size; */
-/*	} */
+	if ((cur_offset > flat_file->eof_position) || (cur_offset < flat_file->start_of_data)) {
+		return err_out_of_bounds;
+	}
 
 	while (cur_offset != end_offset) {
 		if (0 != fseek(flat_file->data_file, cur_offset, SEEK_SET)) {
