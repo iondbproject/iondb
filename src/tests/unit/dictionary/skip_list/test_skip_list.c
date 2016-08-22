@@ -2067,7 +2067,7 @@ skiplist_getsuite_8(
 
 	/* Variation Tests */
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_different_size);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_big_keys);
+/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_big_keys); */
 
 	return suite;
 }

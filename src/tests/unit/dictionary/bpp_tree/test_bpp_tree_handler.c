@@ -127,12 +127,12 @@ bpptreehandler_get_suite(
 	return suite;
 }
 
-void
-run_all_tests_bpptreehandler(
-) {
-	planck_unit_suite_t *suite = bpptreehandler_get_suite();
-
-	planck_unit_run_suite(suite);
-
-	planck_unit_destroy_suite(suite);
-}
+/* void */
+/* run_all_tests_bpptreehandler( */
+/* ) { */
+/*	planck_unit_suite_t *suite = bpptreehandler_get_suite(); */
+/*  */
+/*	planck_unit_run_suite(suite); */
+/*  */
+/*	planck_unit_destroy_suite(suite); */
+/* } */
