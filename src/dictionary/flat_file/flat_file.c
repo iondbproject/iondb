@@ -222,12 +222,12 @@ flat_file_scan(
 		flat_file->current_loaded_region	= (prev_offset - flat_file->start_of_data) / flat_file->row_size;
 		flat_file->num_in_buffer			= num_records_to_process;
 
-		size_t i;
+		int32_t i;
 
-		for (i = 0; i < num_records_to_process; i++) {
+		for (i = scan_forwards ? 0 : num_records_to_process - 1; scan_forwards ? i < num_records_to_process : i >= 0; scan_forwards ? i++ : i--) {
 			size_t cur_rec = i * flat_file->row_size;
 
-			/* This cast is done because it's possible for the status to be a non-byte */
+			/* This cast is done because in the future, the status could possibly be a non-byte type */
 			row->row_status = *((ion_flat_file_row_status_t *) &flat_file->buffer[cur_rec]);
 			row->key		= &flat_file->buffer[cur_rec + sizeof(ion_flat_file_row_status_t)];
 			row->value		= &flat_file->buffer[cur_rec + sizeof(ion_flat_file_row_status_t) + flat_file->super.record.key_size];
