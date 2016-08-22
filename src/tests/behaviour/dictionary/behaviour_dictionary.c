@@ -857,15 +857,19 @@ bhdct_getsuite_1(
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_single);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_in_many);
+
+	/* keep commented */
 /*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_lots); */
 
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_empty);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_single);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_many);
+/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_empty); */
+/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_single); */
+/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_many); */
+/*  */
+/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_exist_single); */
+/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_single); */
+/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_multiple); */
 
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_exist_single);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_single);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_multiple);
+	/* keep commented */
 /*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_all); */
 
 	return suite;
