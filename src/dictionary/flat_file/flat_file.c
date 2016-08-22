@@ -159,18 +159,20 @@ flat_file_scan(
 			cur_offset = flat_file->start_of_data;
 		}
 		else {
-			cur_offset = flat_file->eof_position;
+			/* We position at the last readable record in the flat file. */
+			cur_offset = flat_file->eof_position - flat_file->row_size;
 		}
 	}
 
-	if ((cur_offset > flat_file->eof_position) || (cur_offset < flat_file->start_of_data)) {
+	if ((cur_offset >= flat_file->eof_position) || (cur_offset < flat_file->start_of_data)) {
 		return err_out_of_bounds;
 	}
 
-	/* This line is likely not needed, as long as we're careful to only read good data */
-	/* memset(read_buffer, 0, flat_file->row_size * flat_file->num_buffered); */
+/*	if(!scan_forwards) { */
+/*		// If we're scanning backwards, bump the cur_offset up one record so that we read the record we're sitting on */
+/*		cur_offset += flat_file->row_size; */
+/*	} */
 
-	/* Loop condition changes depending on whether we're going back or forwards. */
 	while (cur_offset != end_offset) {
 		if (0 != fseek(flat_file->data_file, cur_offset, SEEK_SET)) {
 			return err_file_bad_seek;
@@ -196,7 +198,7 @@ flat_file_scan(
 			}
 		}
 		else {
-			/* Move the offset pointer to the next read location, clamp it at start_of_file if we go too far */
+			/* Move the offset pointer to the next read location, clamp it at start_of_file if we go too far. */
 			cur_offset -= flat_file->row_size * flat_file->num_buffered;
 
 			if (cur_offset < flat_file->start_of_data) {
@@ -283,6 +285,38 @@ flat_file_predicate_within_bounds(
 	ion_key_t	upper_bound = va_arg(*args, ion_key_t);
 
 	return FLAT_FILE_STATUS_OCCUPIED == row->row_status && flat_file->super.compare(row->key, lower_bound, flat_file->super.record.key_size) >= 0 && flat_file->super.compare(row->key, upper_bound, flat_file->super.record.key_size) <= 0;
+}
+
+/**
+@brief		Predicate function to return the first row seen that is strictly less than the given @p target_key.
+@details	We expect one @p ion_key_t parameter, given as the @p target_key.
+@see		ion_flat_file_predicate_t
+*/
+ion_boolean_t
+flat_file_predicate_first_less_than(
+	ion_flat_file_t		*flat_file,
+	ion_flat_file_row_t *row,
+	va_list				*args
+) {
+	ion_key_t target_key = va_arg(*args, ion_key_t);
+
+	return FLAT_FILE_STATUS_OCCUPIED == row->row_status && flat_file->super.compare(row->key, target_key, flat_file->super.record.key_size) < 0;
+}
+
+/**
+@brief		Predicate function to return the first row seen that is strictly greater than the given @p target_key.
+@details	We expect one @p ion_key_t parameter, given as the @p target_key.
+@see		ion_flat_file_predicate_t
+*/
+ion_boolean_t
+flat_file_predicate_first_greater_than(
+	ion_flat_file_t		*flat_file,
+	ion_flat_file_row_t *row,
+	va_list				*args
+) {
+	ion_key_t target_key = va_arg(*args, ion_key_t);
+
+	return FLAT_FILE_STATUS_OCCUPIED == row->row_status && flat_file->super.compare(row->key, target_key, flat_file->super.record.key_size) > 0;
 }
 
 /**
@@ -592,9 +626,78 @@ flat_file_binary_search(
 	ion_key_t		target_key,
 	ion_fpos_t		*location
 ) {
-	if (boolean_false != flat_file->sorted_mode) {
+	if (boolean_false == flat_file->sorted_mode) {
 		return err_sorted_order_violation;
 	}
 
-	return err_not_implemented;
+	ion_err_t			err;
+	ion_flat_file_row_t row;
+	ion_fpos_t			low_idx		= 0;
+	ion_fpos_t			high_idx	= flat_file->eof_position / flat_file->row_size - 1;
+	ion_fpos_t			mid_idx;
+
+	while (low_idx < high_idx) {
+		mid_idx = low_idx + (high_idx - low_idx) / 2;
+		err		= flat_file_read_row(flat_file, mid_idx, &row);
+
+		if (err_ok != err) {
+			return err;
+		}
+
+		char comp_result = flat_file->super.compare(target_key, row.key, flat_file->super.record.key_size);
+
+		if (comp_result > 0) {
+			low_idx = mid_idx + 1;
+		}
+		else if (comp_result < 0) {
+			high_idx = mid_idx - 1;
+		}
+		else {
+			/* Match found, we can exit */
+			high_idx = low_idx = mid_idx;
+		}
+	}
+
+	/* Scan hop - first go one-before */
+	ion_fpos_t find_loc = -1;
+
+	err = flat_file_scan(flat_file, low_idx, &find_loc, &row, boolean_false, flat_file_predicate_first_less_than, target_key);
+
+	if ((err_ok != err) && (err_file_hit_eof != err)) {
+		return err;	/* Real error condition */
+	}
+	else if (err_file_hit_eof == err) {
+		/* We fell through the front, so the row key isn't valid. Pull the row key from the first record in the store. */
+		/* This should be a guaranteed cache hit, so it's pretty efficient */
+		err = flat_file_read_row(flat_file, 0, &row);
+
+		if (err_ok != err) {
+			return err;
+		}
+	}
+
+	/* And now look for the real guy */
+	ion_fpos_t	hop_loc = -1;
+	ion_key_t	hop_key = alloca(flat_file->super.record.key_size);
+
+	memcpy(hop_key, row.key, flat_file->super.record.key_size);
+	err = flat_file_scan(flat_file, find_loc, &hop_loc, &row, boolean_true, flat_file_predicate_first_greater_than, hop_key);
+
+	if ((err_ok != err) && (err_file_hit_eof != err)) {
+		return err;	/* Real error condition */
+	}
+	else if (err_file_hit_eof == err) {
+		/* If find_loc wasn't good either, then we don't have anything to return */
+		if (-1 == find_loc) {
+			return err_item_not_found;
+		}
+
+		/* Nothing on the right - then the find loc is our guy */
+		*location = find_loc;
+	}
+	else if (err_ok == err) {
+		*location = hop_loc;
+	}
+
+	return err_ok;
 }

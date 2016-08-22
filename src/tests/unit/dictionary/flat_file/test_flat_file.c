@@ -216,6 +216,7 @@ ftest_file_scan_cases(
 	ion_flat_file_t		*flat_file
 ) {
 	ftest_insert(tc, flat_file, IONIZE(1, int), IONIZE(0, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, flat_file, IONIZE(1, int), IONIZE(0, int), err_ok, 1, boolean_true);
 	ftest_insert(tc, flat_file, IONIZE(-50, int), IONIZE(0, int), err_ok, 1, boolean_true);
 	ftest_insert(tc, flat_file, IONIZE(2, int), IONIZE(0, int), err_ok, 1, boolean_true);
 	ftest_insert(tc, flat_file, IONIZE(3, int), IONIZE(0, int), err_ok, 1, boolean_true);
@@ -224,25 +225,31 @@ ftest_file_scan_cases(
 	ftest_insert(tc, flat_file, IONIZE(-150, int), IONIZE(0, int), err_ok, 1, boolean_true);
 	ftest_insert(tc, flat_file, IONIZE(5, int), IONIZE(0, int), err_ok, 1, boolean_true);
 
+	/* Test start-on-return location cases */
+	ftest_file_scan(tc, flat_file, boolean_true, 2, IONIZE(-50, int), err_ok, 2);
+	ftest_file_scan(tc, flat_file, boolean_true, 8, IONIZE(5, int), err_ok, 8);
+	ftest_file_scan(tc, flat_file, boolean_false, 4, IONIZE(3, int), err_ok, 4);
+	ftest_file_scan(tc, flat_file, boolean_false, 8, IONIZE(5, int), err_ok, 8);
+
 	/* Forwards from start | Forwards from middle | Forwards near end */
-	ftest_file_scan(tc, flat_file, boolean_true, -1, IONIZE(-150, int), err_ok, 6);
-	ftest_file_scan(tc, flat_file, boolean_true, 3, IONIZE(4, int), err_ok, 5);
-	ftest_file_scan(tc, flat_file, boolean_true, 6, IONIZE(5, int), err_ok, 7);
+	ftest_file_scan(tc, flat_file, boolean_true, -1, IONIZE(-150, int), err_ok, 7);
+	ftest_file_scan(tc, flat_file, boolean_true, 3, IONIZE(4, int), err_ok, 6);
+	ftest_file_scan(tc, flat_file, boolean_true, 6, IONIZE(5, int), err_ok, 8);
 
 	/* Backwards from end | Backwards from middle | Backwards near start */
-	ftest_file_scan(tc, flat_file, boolean_false, -1, IONIZE(-50, int), err_ok, 1);
-	ftest_file_scan(tc, flat_file, boolean_false, 4, IONIZE(2, int), err_ok, 2);
-	ftest_file_scan(tc, flat_file, boolean_false, 1, IONIZE(1, int), err_ok, 0);
+	ftest_file_scan(tc, flat_file, boolean_false, -1, IONIZE(-50, int), err_ok, 2);
+	ftest_file_scan(tc, flat_file, boolean_false, 4, IONIZE(2, int), err_ok, 3);
+	ftest_file_scan(tc, flat_file, boolean_false, 1, IONIZE(1, int), err_ok, 1);
 
 	/* Fallthrough forwards from start | Fallthrough forwards from middle | Fallthrough forwards near end */
-	ftest_file_scan(tc, flat_file, boolean_true, -1, IONIZE(333, int), err_file_hit_eof, 8);
-	ftest_file_scan(tc, flat_file, boolean_true, 3, IONIZE(333, int), err_file_hit_eof, 8);
-	ftest_file_scan(tc, flat_file, boolean_true, 6, IONIZE(333, int), err_file_hit_eof, 8);
+	ftest_file_scan(tc, flat_file, boolean_true, -1, IONIZE(333, int), err_file_hit_eof, 9);
+	ftest_file_scan(tc, flat_file, boolean_true, 3, IONIZE(333, int), err_file_hit_eof, 9);
+	ftest_file_scan(tc, flat_file, boolean_true, 6, IONIZE(333, int), err_file_hit_eof, 9);
 
 	/* Fallthrough backwards from end | Fallthrough backwards from middle | Fallthrough backwards near start */
-	ftest_file_scan(tc, flat_file, boolean_false, -1, IONIZE(333, int), err_file_hit_eof, 8);
-	ftest_file_scan(tc, flat_file, boolean_false, 4, IONIZE(333, int), err_file_hit_eof, 8);
-	ftest_file_scan(tc, flat_file, boolean_false, 1, IONIZE(333, int), err_file_hit_eof, 8);
+	ftest_file_scan(tc, flat_file, boolean_false, -1, IONIZE(333, int), err_file_hit_eof, 9);
+	ftest_file_scan(tc, flat_file, boolean_false, 4, IONIZE(333, int), err_file_hit_eof, 9);
+	ftest_file_scan(tc, flat_file, boolean_false, 1, IONIZE(333, int), err_file_hit_eof, 9);
 
 	/* Crazy start location cases */
 	ftest_file_scan(tc, flat_file, boolean_true, -100, IONIZE(333, int), err_out_of_bounds, -1);

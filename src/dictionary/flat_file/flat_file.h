@@ -281,7 +281,7 @@ flat_file_read_row(
 			of duplicates, before writing back to @p location. As a result, it is guaranteed that
 			the returned index points to the first key in a contiguous block of duplicate keys. If
 			no key in the flat file satisfies the condition of being less-than-or-equal, then @p -1
-			is returned. This function will only return records that are not deleted.
+			is written back to @p location. This function will only return records that are not deleted.
 @param[in]		flat_file
 				Which flat file instance to search within.
 @param[in]		target_key
