@@ -866,7 +866,7 @@ bhdct_getsuite_1(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_exist_single);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_single);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_multiple);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_all);
+/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_all); */
 
 	return suite;
 }
