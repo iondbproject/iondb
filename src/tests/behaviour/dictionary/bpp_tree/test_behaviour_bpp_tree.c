@@ -34,6 +34,7 @@ runalltests_behaviour_bpp_tree(
 
 	planck_unit_suite_t *suite_1	= bhdct_getsuite_bpptree_1();
 	planck_unit_suite_t *suite_2	= bhdct_getsuite_bpptree_2();
+	planck_unit_suite_t *suite_21	= bhdct_getsuite_bpptree_21();
 /*	planck_unit_suite_t *suite_3	= bhdct_getsuite_bpptree_3(); */
 /*	planck_unit_suite_t *suite_4	= bhdct_getsuite_bpptree_4(); */
 /*	planck_unit_suite_t *suite_5	= bhdct_getsuite_bpptree_5(); */
@@ -49,6 +50,9 @@ runalltests_behaviour_bpp_tree(
 
 	planck_unit_run_suite(suite_2);
 	planck_unit_destroy_suite(suite_2);
+
+	planck_unit_run_suite(suite_21);
+	planck_unit_destroy_suite(suite_21);
 
 /*	planck_unit_run_suite(suite_3); */
 /*	planck_unit_destroy_suite(suite_3); */

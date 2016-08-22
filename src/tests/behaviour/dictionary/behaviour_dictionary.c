@@ -936,6 +936,20 @@ bhdct_getsuite_bpptree_2(
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_lots);
 
+	return suite;
+}
+
+planck_unit_suite_t *
+bhdct_getsuite_bpptree_21(
+	void
+) {
+	if (NULL == bhdct_context.init_fcn) {
+		fprintf(stderr, "Behaviour Dictionary context was not set!");
+		return NULL;
+	}
+
+	planck_unit_suite_t *suite = planck_unit_new_suite();
+
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_empty);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_single);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_many);

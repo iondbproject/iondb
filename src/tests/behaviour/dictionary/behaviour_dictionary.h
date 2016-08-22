@@ -95,6 +95,15 @@ bhdct_getsuite_bpptree_2(
 @return	A constructed, initialized suite.
 */
 planck_unit_suite_t *
+bhdct_getsuite_bpptree_21(
+	void
+);
+
+/**
+@brief	Constructs the testing suite for the bpp tree behaviour dictionary tests.
+@return	A constructed, initialized suite.
+*/
+planck_unit_suite_t *
 bhdct_getsuite_bpptree_3(
 	void
 );
