@@ -1935,6 +1935,10 @@ skiplist_getsuite_1(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_initialize);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_free_all);
 
+	/* Insertion Tests */
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_single_insert);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_insert_multiple);
+
 	return suite;
 }
 
@@ -2080,7 +2084,7 @@ runalltests_skiplist(
 ) {
 	/* CuString	*output	= CuStringNew(); */
 	planck_unit_suite_t *suite_1	= skiplist_getsuite_1();
-	planck_unit_suite_t *suite_2	= skiplist_getsuite_2();
+/*	planck_unit_suite_t *suite_2	= skiplist_getsuite_2(); */
 	planck_unit_suite_t *suite_3	= skiplist_getsuite_3();
 	planck_unit_suite_t *suite_4	= skiplist_getsuite_4();
 	planck_unit_suite_t *suite_5	= skiplist_getsuite_5();
@@ -2098,8 +2102,8 @@ runalltests_skiplist(
 	planck_unit_run_suite(suite_1);
 	planck_unit_destroy_suite(suite_1);
 
-	planck_unit_run_suite(suite_2);
-	planck_unit_destroy_suite(suite_2);
+/*	planck_unit_run_suite(suite_2); */
+/*	planck_unit_destroy_suite(suite_2); */
 
 	planck_unit_run_suite(suite_3);
 	planck_unit_destroy_suite(suite_3);
