@@ -859,7 +859,7 @@ bhdct_getsuite_1(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_in_many);
 
 	/* keep commented */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_lots); */
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_lots);
 
 /*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_empty); */
 /*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_single); */
@@ -892,6 +892,52 @@ bhdct_getsuite_2(
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single_several);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_all);
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_empty_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_nonexist_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_nonexist_in_many);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_exist_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_exist_in_many);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_all);
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_then_insert);
+
+	return suite;
+}
+
+planck_unit_suite_t *
+bhdct_getsuite_21(
+	void
+) {
+	if (NULL == bhdct_context.init_fcn) {
+		fprintf(stderr, "Behaviour Dictionary context was not set!");
+		return NULL;
+	}
+
+	planck_unit_suite_t *suite = planck_unit_new_suite();
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_empty);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_several);
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single_several);
+
+	return suite;
+}
+
+planck_unit_suite_t *
+bhdct_getsuite_22(
+	void
+) {
+	if (NULL == bhdct_context.init_fcn) {
+		fprintf(stderr, "Behaviour Dictionary context was not set!");
+		return NULL;
+	}
+
+	planck_unit_suite_t *suite = planck_unit_new_suite();
+
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_all);
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_empty_single);
