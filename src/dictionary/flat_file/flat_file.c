@@ -550,7 +550,7 @@ flat_file_delete(
 			return status;
 		}
 
-		while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, boolean_true, flat_file_predicate_key_match, key))) {
+		while (-1 != loc && err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, boolean_true, flat_file_predicate_key_match, key))) {
 			/* Set last row to be empty just for sanity reasons. */
 			err = flat_file_write_row(flat_file, loc, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_EMPTY, NULL, NULL });
 
@@ -566,7 +566,7 @@ flat_file_delete(
 
 	status.error = err_ok;
 
-	if ((err == err_file_hit_eof) && (status.count == 0)) {
+	if (((err == err_file_hit_eof) || (-1 == loc)) && (status.count == 0)) {
 		status.error = err_item_not_found;
 	}
 	else if (err != err_file_hit_eof) {
