@@ -22,7 +22,6 @@
 /******************************************************************************/
 
 #include "flat_file.h"
-#include "flat_file_types.h"
 
 ion_err_t
 flat_file_initialize(
@@ -458,10 +457,6 @@ flat_file_get(
 			status.error = err;
 			return status;
 		}
-		else if (-1 == found_loc) {
-			status.error = err_item_not_found;
-			return status;
-		}
 
 		err = flat_file_read_row(flat_file, found_loc, &row);
 
@@ -554,40 +549,59 @@ flat_file_update(
 	ion_key_t		key,
 	ion_value_t		value
 ) {
-	ion_status_t status = ION_STATUS_INITIALIZE;
+	ion_status_t status		= ION_STATUS_INITIALIZE;
 
-	if (!flat_file->sorted_mode) {
-		ion_fpos_t			loc = -1;
-		ion_flat_file_row_t row;
-		ion_err_t			err;
+	ion_fpos_t			loc = -1;
+	ion_flat_file_row_t row;
+	ion_err_t			err;
 
-		while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, boolean_true, flat_file_predicate_key_match, key))) {
-			ion_err_t row_err = flat_file_write_row(flat_file, loc, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_OCCUPIED, key, value });
+	if (flat_file->sorted_mode) {
+		err = flat_file_binary_search(flat_file, key, &loc);
 
-			if (err_ok != row_err) {
-				status.error = row_err;
-				return status;
+		if (err_ok != err) {
+			if (err_item_not_found == err) {
+				/* Key didn't exist, do upsert. This may fail because it violates the sorted order. */
+				return flat_file_insert(flat_file, key, value);
 			}
 
-			status.count++;
-			/* Move one-forwards to skip the one we just updated */
-			loc++;
+			status.error = err;
+			return status;
 		}
 
-		status.error = err_ok;
+		err = flat_file_read_row(flat_file, loc, &row);
 
-		if ((err == err_file_hit_eof) && (status.count == 0)) {
-			/* If this is the case, then we had nothing to update. Do an upsert instead */
+		if (err_ok != err) {
+			status.error = err;
+			return status;
+		}
+
+		if (0 != flat_file->super.compare(row.key, key, flat_file->super.record.key_size)) {
+			/* Key didn't exist, do upsert. */
 			return flat_file_insert(flat_file, key, value);
 		}
-		else if (err != err_file_hit_eof) {
-			status.error = err;
+	}
+
+	while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, boolean_true, flat_file_predicate_key_match, key))) {
+		ion_err_t row_err = flat_file_write_row(flat_file, loc, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_OCCUPIED, key, value });
+
+		if (err_ok != row_err) {
+			status.error = row_err;
+			return status;
 		}
 
-		return status;
+		status.count++;
+		/* Move one-forwards to skip the one we just updated */
+		loc++;
 	}
-	else {
-		/* TODO: Do the thing */
+
+	status.error = err_ok;
+
+	if ((err == err_file_hit_eof) && (status.count == 0)) {
+		/* If this is the case, then we had nothing to update. Do an upsert instead */
+		return flat_file_insert(flat_file, key, value);
+	}
+	else if (err != err_file_hit_eof) {
+		status.error = err;
 	}
 
 	return status;

@@ -54,9 +54,7 @@ extern "C" {
 				as somewhere between 1 (minimum) and the page size of the device you are working on.
 @return		The status of initialization.
 @see		ffdict_create_dictionary
-@todo		See if we can try to fix the fact that eof_position is simultaneously both relative to start of data
-			and absolute at the same time.
- */
+*/
 ion_err_t
 flat_file_initialize(
 	ion_flat_file_t			*flat_file,
