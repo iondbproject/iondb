@@ -925,9 +925,6 @@ bhdct_getsuite_21(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_single);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_multiple);
 
-	/* keep commented */
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_all);
-
 	return suite;
 }
 
@@ -941,6 +938,9 @@ bhdct_getsuite_22(
 	}
 
 	planck_unit_suite_t *suite = planck_unit_new_suite();
+
+	/* keep commented */
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_all);
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_empty);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_single);

@@ -2023,6 +2023,14 @@ skiplist_getsuite_7(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_update_several_same_key);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_update_several_same_key_in_mix);
 
+	/* Hybrid Tests */
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_then_insert_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_then_insert_several);
+
+	/* Variation Tests */
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_different_size);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_big_keys);
+
 	return suite;
 }
 
@@ -2055,9 +2063,9 @@ runalltests_skiplist(
 	/* CuString	*output	= CuStringNew(); */
 	planck_unit_suite_t *suite_1	= skiplist_getsuite_1();
 	planck_unit_suite_t *suite_5	= skiplist_getsuite_5();
-/*	planck_unit_suite_t *suite_6	= skiplist_getsuite_6(); */
 	planck_unit_suite_t *suite_7	= skiplist_getsuite_7();
-	planck_unit_suite_t *suite_8	= skiplist_getsuite_8();
+
+/*	planck_unit_suite_t *suite_8	= skiplist_getsuite_8(); */
 
 	/* CuSuiteSummary(suite, output); */
 	/* CuSuiteDetails(suite, output); */
@@ -2072,12 +2080,9 @@ runalltests_skiplist(
 	planck_unit_run_suite(suite_5);
 	planck_unit_destroy_suite(suite_5);
 
-/*	planck_unit_run_suite(suite_6); */
-/*	planck_unit_destroy_suite(suite_6); */
-
 	planck_unit_run_suite(suite_7);
 	planck_unit_destroy_suite(suite_7);
 
-	planck_unit_run_suite(suite_8);
-	planck_unit_destroy_suite(suite_8);
+/*	planck_unit_run_suite(suite_8); */
+/*	planck_unit_destroy_suite(suite_8); */
 }
