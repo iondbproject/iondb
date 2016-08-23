@@ -12,14 +12,6 @@
 #include "../../file/ion_file.h"
 
 void
-oafdict_get_addr_filename(
-	ion_dictionary_id_t id,
-	char				*str
-) {
-	sprintf(str, "%d.oaf", id);
-}
-
-void
 oafdict_init(
 	ion_dictionary_handler_t *handler
 ) {

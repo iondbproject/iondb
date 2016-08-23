@@ -56,9 +56,9 @@ ion_bhdct_context_t bhdct_context = { 0 };
 */
 void
 bhdct_set_context(
-	void (					*init_fcn)(ion_dictionary_handler_t *),
-	ion_dictionary_size_t	dictionary_size,
-	ion_boolean_t			duplicate_support
+	ion_handler_initializer_t	init_fcn,
+	ion_dictionary_size_t		dictionary_size,
+	ion_boolean_t				duplicate_support
 ) {
 	bhdct_context.init_fcn			= init_fcn;
 	bhdct_context.dictionary_size	= dictionary_size;

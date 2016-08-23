@@ -374,6 +374,13 @@ typedef struct hash_bucket {
 	ion_byte_t	data[];			/**< the data in the bucket */
 } ion_hash_bucket_t;
 
+/**
+@brief		Function signature for all init functions.
+*/
+typedef void (*ion_handler_initializer_t)(
+	ion_dictionary_handler_t *
+);
+
 #if defined(__cplusplus)
 }
 #endif
