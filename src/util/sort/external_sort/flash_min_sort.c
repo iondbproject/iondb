@@ -168,6 +168,13 @@ ion_flash_min_sort_next(
 				break;
 			}
 
+//			int i;
+//			for (i = 0; i < 5; i++) {
+//				printf("%c", *((char*)fms->cur_value + i));
+//			}
+//
+//			printf("\n");
+
 			/* Seek to the beginning of the region. */
 			if (0 != fseek(es->input_file, fms->cur_page * es->page_size, SEEK_SET)) {
 				return err_file_bad_seek;
