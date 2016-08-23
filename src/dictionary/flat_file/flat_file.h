@@ -42,7 +42,7 @@ extern "C" {
 				Given instance of a flat file struct to initialize. This must be allocated **heap** memory,
 				as destruction will assume that it needs to be freed.
 @param[in]	id
-				The assigned ID of this dictionary.
+				The assigned ID of this dictionary instance.
 @param[in]	key_type
 				Key category to use for this instance.
 @param[in]	key_size
