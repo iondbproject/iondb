@@ -60,7 +60,7 @@ ion_external_sort_init(
 
 	es->num_values_last_page = (uint16_t) ((file_size_in_bytes % es->page_size) / es->value_size);
 	if (0 == es->num_values_last_page) {
-		es->num_values_last_page = es->page_size / (uint16_t) es->value_size; // TODO
+		es->num_values_last_page = es->page_size / (uint16_t) es->value_size;
 	}
 
 	es->num_pages = ION_EXTERNAL_SORT_CEILING((uint32_t) file_size_in_bytes, es->page_size);
@@ -90,6 +90,9 @@ ion_external_sort_bytes_of_memory_required(
 
 			uint32_t num_regions = ((max_number_bytes_available - 2 * es->value_size - memory_required) * 8) / (es->value_size * 8 + 1);
 			num_regions = (num_regions > es->num_pages) ? es->num_pages : num_regions;
+
+			uint32_t num_pages_per_region = ION_EXTERNAL_SORT_CEILING(((uint32_t) es->num_pages), (num_regions));
+			num_regions = ION_EXTERNAL_SORT_CEILING(es->num_pages, num_pages_per_region);
 
 			memory_required += num_regions * es->value_size + 2 * es->value_size + ION_EXTERNAL_SORT_CEILING(num_regions, 8);
 

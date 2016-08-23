@@ -57,6 +57,7 @@ ion_flash_min_sort_init(
 	fms->num_regions = (fms->num_regions > es->num_pages) ? es->num_pages : fms->num_regions;
 
 	fms->num_pages_per_region	= ION_EXTERNAL_SORT_CEILING(((uint32_t) es->num_pages), (fms->num_regions));
+	fms->num_regions = ION_EXTERNAL_SORT_CEILING(es->num_pages, fms->num_pages_per_region);
 
 	fms->num_cache_pages = ((int32_t) cursor->buffer_size - ((int32_t) fms->num_regions * es->value_size + 2 * es->value_size + ION_EXTERNAL_SORT_CEILING(fms->num_regions, 8))) / (es->page_size + 4);
 
@@ -64,8 +65,8 @@ ion_flash_min_sort_init(
 	fms->cur_value				= cursor->buffer + fms->num_regions * es->value_size;
 	fms->temp_value				= fms->cur_value + es->value_size; // TODO: Does not need to be allocated
 	fms->min_index_bit_vector	= fms->temp_value + es->value_size;
-	fms->page_statuses			= (uint32_t *) fms->min_index_bit_vector + ION_EXTERNAL_SORT_CEILING(fms->num_regions, 8);
-	fms->cache_pages			= (ion_external_sort_data_pointer_t *) fms->page_statuses + fms->num_cache_pages * 4;
+	fms->page_statuses			= (uint32_t *) (fms->min_index_bit_vector + ION_EXTERNAL_SORT_CEILING(fms->num_regions, 8));
+	fms->cache_pages			= ((uint8_t *) fms->page_statuses) + fms->num_cache_pages * 4;
 
 	/* Set the bits to 0 in the minimum index bit vector. */
 	uint32_t i;
@@ -265,7 +266,7 @@ ion_flash_min_sort_next(
 				fms->cur_byte_in_page += es->value_size;
 			}
 
-			if (fms->cur_page != es->num_pages) {
+			if (fms->cur_page != es->num_pages - 1) {
 				if (0 != fseek(es->input_file, es->page_size - fms->cur_byte_in_page, SEEK_CUR)) {
 					return err_file_bad_seek;
 				}
