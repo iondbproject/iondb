@@ -1,4 +1,5 @@
 #include "test_external_sort.h"
+#include "../../../../util/sort/external_sort/external_sort_types.h"
 
 #define ION_EXTERNAL_SORT_SEED 0x8E01483F
 #define ION_EXTERNAL_SORT_PAGE_SIZE 512
@@ -7,6 +8,7 @@ const char ion_external_sort_unsorted_fname[] = "unsorted.dat";
 const char ion_external_sort_sorted_fname[] = "sorted.dat";
 
 typedef ion_err_t (*ion_external_sort_write_data_func_t)(FILE *unsorted_file, uint32_t num_values);
+typedef void (*ion_external_sort_sorted_value_func_t)(uint32_t index, void *value);
 
 ion_comparison_e
 ion_external_sort_uint16_comparator(
@@ -27,8 +29,17 @@ ion_external_sort_uint16_comparator(
 	}
 }
 
+void
+ion_external_sort_expected_uint16_sequential_data(
+	uint32_t index,
+	void *value
+) {
+	memcpy(value, &(uint16_t){(uint16_t) index}, sizeof(uint16_t));
+	return;
+}
+
 ion_err_t
-ion_external_sort_write_uint16_data(
+ion_external_sort_write_uint16_random_data(
 	FILE *unsorted_file,
 	uint32_t num_values
 ) {
@@ -46,15 +57,30 @@ ion_external_sort_write_uint16_data(
 	return err_ok;
 }
 
+ion_err_t
+ion_external_sort_write_uint16_sequential_data(
+	FILE *unsorted_file,
+	uint32_t num_values
+) {
+	int32_t i;
+	for (i = num_values - 1; i >= 0; i--) {
+		if (0 == fwrite(&i, sizeof(uint16_t), 1, unsorted_file)) {
+			return err_file_read_error;
+		}
+	}
+
+	return err_ok;
+}
+
 ion_comparison_e
-ion_external_sort_3_char_str_comparator(
+ion_external_sort_5_char_str_comparator(
 	ion_sort_comparator_context_t	context,
 	void							*value_a,
 	void							*value_b
 ) {
 	UNUSED(context);
 
-	int comp_result = strncmp(value_a, value_b, 3);
+	int comp_result = strncmp(value_a, value_b, 5);
 
 	if (comp_result > 0) {
 		return greater_than;
@@ -67,25 +93,75 @@ ion_external_sort_3_char_str_comparator(
 	}
 }
 
+void
+ion_external_sort_expected_5_char_str_sequential_data(
+	uint32_t index,
+	void *value
+) {
+	char temp_str[6];
+	sprintf(temp_str, "%05d", index);
+	memcpy(value, temp_str, 5);
+}
+
 ion_err_t
-ion_external_sort_write_3_char_str_data(
+ion_external_sort_write_5_char_str_random_data(
 	FILE *unsorted_file,
 	uint32_t num_values
 ) {
 	srand(ION_EXTERNAL_SORT_SEED);
-	char random_str[3];
+	char random_str[5];
 
-	uint16_t values_per_page = 512 / 3;
+	uint16_t values_per_page = 512 / 5;
 	uint16_t cur_value_in_page = 0;
 
 	uint32_t i;
+
 	for (i = 0; i < num_values; i++) {
-		random_str[0] = (char) rand();
-		random_str[1] = (char) rand();
-		random_str[2] = (char) rand();
+		uint8_t j;
+		for (j = 0; j < 5; j++) {
+			random_str[j] = (char) rand();
+		}
 
 		if (cur_value_in_page == values_per_page) {
-			uint8_t num_padding_bytes = ION_EXTERNAL_SORT_PAGE_SIZE - values_per_page * 3;
+			uint8_t num_padding_bytes = ION_EXTERNAL_SORT_PAGE_SIZE - values_per_page * 5;
+
+			for (j = 0; j < num_padding_bytes; j++) {
+				if (0 == fwrite(&(uint8_t){0}, 1, 1, unsorted_file)) {
+					return err_file_read_error;
+				}
+			}
+
+			cur_value_in_page = 0;
+		}
+
+		if (0 == fwrite(random_str, 5, 1, unsorted_file)) {
+			return err_file_read_error;
+		}
+
+		cur_value_in_page++;
+	}
+
+	return err_ok;
+}
+
+ion_err_t
+ion_external_sort_write_5_char_str_sequential_data(
+	FILE *unsorted_file,
+	uint32_t num_values
+) {
+	srand(ION_EXTERNAL_SORT_SEED);
+	char temp_str[6];
+
+	uint16_t values_per_page = 512 / 5;
+	uint16_t cur_value_in_page = 0;
+
+	uint32_t i;
+
+	for (i = 0; i < num_values; i++) {
+		sprintf(temp_str, "%05d", num_values - i - 1);
+
+		if (cur_value_in_page == values_per_page) {
+			uint8_t num_padding_bytes = ION_EXTERNAL_SORT_PAGE_SIZE - values_per_page * 5;
 
 			uint8_t j;
 			for (j = 0; j < num_padding_bytes; j++) {
@@ -97,7 +173,7 @@ ion_external_sort_write_3_char_str_data(
 			cur_value_in_page = 0;
 		}
 
-		if (0 == fwrite(random_str, 3, 1, unsorted_file)) {
+		if (0 == fwrite(temp_str, 5, 1, unsorted_file)) {
 			return err_file_read_error;
 		}
 
@@ -117,6 +193,7 @@ test_sort(
 	ion_boolean_e sorted_pages,
 	ion_external_sort_algorithm_e sort_algorithm,
 	ion_external_sort_write_data_func_t write_data_func,
+	ion_external_sort_sorted_value_func_t sorted_value_func,
 	ion_sort_comparator_t comparator
 ) {
 	FILE *unsorted_file = fopen(ion_external_sort_unsorted_fname, "w+b");
@@ -148,14 +225,22 @@ test_sort(
 	}
 	else {
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, ion_external_sort_init_cursor(&es, &cursor, buffer, buffer_size));
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, cursor.next(&cursor, &value_1));
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, cursor.next(&cursor, value_1));
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, cs_cursor_active, cursor.status);
 	}
+
+	if (NULL != sorted_value_func) {
+		sorted_value_func(0, value_2);
+		ion_comparison_e comparison_return_value = comparator(NULL, value_1, value_2);
+		PLANCK_UNIT_ASSERT_TRUE(tc, less_than == comparison_return_value || equal == comparison_return_value);
+	}
+
+	uint32_t i;
 
 	uint32_t cur_value_in_page = 1;
 	uint32_t values_per_page = es.page_size / value_size;
 
-	uint32_t i;
+
 	for (i = 1; i < num_values; i++) {
 		if (boolean_true == dump_all) {
 			if (cur_value_in_page == values_per_page) {
@@ -169,18 +254,24 @@ test_sort(
 			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, fread(value_2, value_size, 1, sorted_file));
 		}
 		else {
-			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, cursor.next(&cursor, &value_2));
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, cursor.next(&cursor, value_2));
 			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, cs_cursor_active, cursor.status);
 		}
 
-		ion_comparison_e comparison_return_value = comparator(NULL, &value_1, &value_2);
-
-		PLANCK_UNIT_ASSERT_TRUE(tc, less_than == comparison_return_value || equal == comparison_return_value);
-		memcpy(value_1, value_2, value_size);
+		if (NULL == sorted_value_func) {
+			ion_comparison_e comparison_return_value = comparator(NULL, value_1, value_2);
+			PLANCK_UNIT_ASSERT_TRUE(tc, less_than == comparison_return_value || equal == comparison_return_value);
+			memcpy(value_1, value_2, value_size);
+		}
+		else {
+			sorted_value_func(i, value_1);
+			ion_comparison_e comparison_return_value = comparator(NULL, value_1, value_2);
+			PLANCK_UNIT_ASSERT_TRUE(tc, equal == comparison_return_value);
+		}
 	}
 
 	if (boolean_false == dump_all) {
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, cursor.next(&cursor, &value_2));
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, cursor.next(&cursor, value_2));
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, cs_end_of_results, cursor.status);
 		ion_external_sort_destroy_cursor(&cursor);
 	}
@@ -283,13 +374,13 @@ test_flash_min_sort_required_memory(
 	FILE *unsorted_file = fopen(ion_external_sort_unsorted_fname, "w+b");
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, unsorted_file != NULL);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, ion_external_sort_write_uint16_data(unsorted_file, 1000));
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, ion_external_sort_write_uint16_random_data(unsorted_file, 1000));
 
 	ion_external_sort_t			es;
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, ion_external_sort_init(&es, unsorted_file, NULL, ion_external_sort_uint16_comparator, sizeof(uint16_t), sizeof(uint16_t), 512, boolean_false, ION_FILE_SORT_FLASH_MINSORT));
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 516 + 7, ion_external_sort_bytes_of_memory_required(&es, 0, boolean_false));
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 516 + 11, ion_external_sort_bytes_of_memory_required(&es, 527, boolean_false));
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 516 + 9, ion_external_sort_bytes_of_memory_required(&es, 527, boolean_false));
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 516 + 13, ion_external_sort_bytes_of_memory_required(&es, 529, boolean_false));
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 516 + 13, ion_external_sort_bytes_of_memory_required(&es, 1000, boolean_false));
 
@@ -308,10 +399,14 @@ test_flash_min_sort_small_sort_record_at_a_time_with_page_aligned_data(
 	ion_value_size_t value_size = sizeof(uint16_t);
 	ion_boolean_e dump_all = boolean_false;
 	ion_boolean_e sorted_pages = boolean_false;
-	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_uint16_data;
 	ion_sort_comparator_t comparator = ion_external_sort_uint16_comparator;
 
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, comparator);
+	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_uint16_random_data;
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, NULL, comparator);
+
+	write_func = ion_external_sort_write_uint16_sequential_data;
+	ion_external_sort_sorted_value_func_t sorted_val_func = ion_external_sort_expected_uint16_sequential_data;
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
 }
 
 void
@@ -323,10 +418,14 @@ test_flash_min_sort_large_sort_record_at_a_time_with_page_aligned_data(
 	ion_value_size_t value_size = sizeof(uint16_t);
 	ion_boolean_e dump_all = boolean_false;
 	ion_boolean_e sorted_pages = boolean_false;
-	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_uint16_data;
 	ion_sort_comparator_t comparator = ion_external_sort_uint16_comparator;
 
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, comparator);
+	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_uint16_random_data;
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, NULL, comparator);
+
+	write_func = ion_external_sort_write_uint16_sequential_data;
+	ion_external_sort_sorted_value_func_t sorted_val_func = ion_external_sort_expected_uint16_sequential_data;
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
 }
 
 void
@@ -335,13 +434,17 @@ test_flash_min_sort_small_sort_record_at_a_time_with_page_unaligned_data(
 ) {
 	uint32_t num_records = 1000;
 	uint32_t max_buffer_size = 0;
-	ion_value_size_t value_size = 3;
+	ion_value_size_t value_size = 5;
 	ion_boolean_e dump_all = boolean_false;
 	ion_boolean_e sorted_pages = boolean_false;
-	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_3_char_str_data;
-	ion_sort_comparator_t comparator = ion_external_sort_3_char_str_comparator;
+	ion_sort_comparator_t comparator = ion_external_sort_5_char_str_comparator;
 
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, comparator);
+	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_5_char_str_random_data;
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, NULL, comparator);
+
+	write_func = ion_external_sort_write_5_char_str_sequential_data;
+	ion_external_sort_sorted_value_func_t sorted_val_func = ion_external_sort_expected_5_char_str_sequential_data;
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
 }
 
 void
@@ -350,13 +453,17 @@ test_flash_min_sort_large_sort_record_at_a_time_with_page_unaligned_data(
 ) {
 	uint32_t num_records = 10000;
 	uint32_t max_buffer_size = 1500;
-	ion_value_size_t value_size = 3;
+	ion_value_size_t value_size = 5;
 	ion_boolean_e dump_all = boolean_false;
 	ion_boolean_e sorted_pages = boolean_false;
-	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_3_char_str_data;
-	ion_sort_comparator_t comparator = ion_external_sort_3_char_str_comparator;
+	ion_sort_comparator_t comparator = ion_external_sort_5_char_str_comparator;
 
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, comparator);
+	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_5_char_str_random_data;
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, NULL, comparator);
+
+	write_func = ion_external_sort_write_5_char_str_sequential_data;
+	ion_external_sort_sorted_value_func_t sorted_val_func = ion_external_sort_expected_5_char_str_sequential_data;
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
 }
 
 void
@@ -368,10 +475,14 @@ test_flash_min_sort_small_sort_dump_to_file_with_page_aligned_data(
 	ion_value_size_t value_size = sizeof(uint16_t);
 	ion_boolean_e dump_all = boolean_true;
 	ion_boolean_e sorted_pages = boolean_false;
-	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_uint16_data;
 	ion_sort_comparator_t comparator = ion_external_sort_uint16_comparator;
 
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, comparator);
+	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_uint16_random_data;
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, NULL, comparator);
+
+	write_func = ion_external_sort_write_uint16_sequential_data;
+	ion_external_sort_sorted_value_func_t sorted_val_func = ion_external_sort_expected_uint16_sequential_data;
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
 }
 
 void
@@ -383,10 +494,14 @@ test_flash_min_sort_large_sort_dump_to_file_with_page_aligned_data(
 	ion_value_size_t value_size = sizeof(uint16_t);
 	ion_boolean_e dump_all = boolean_true;
 	ion_boolean_e sorted_pages = boolean_false;
-	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_uint16_data;
 	ion_sort_comparator_t comparator = ion_external_sort_uint16_comparator;
 
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, comparator);
+	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_uint16_random_data;
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, NULL, comparator);
+
+	write_func = ion_external_sort_write_uint16_sequential_data;
+	ion_external_sort_sorted_value_func_t sorted_val_func = ion_external_sort_expected_uint16_sequential_data;
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
 }
 
 void
@@ -395,13 +510,18 @@ test_flash_min_sort_small_sort_dump_to_file_with_page_unaligned_data(
 ) {
 	uint32_t num_records = 1000;
 	uint32_t max_buffer_size = 0;
-	ion_value_size_t value_size = 3;
+	ion_value_size_t value_size = 5;
 	ion_boolean_e dump_all = boolean_true;
 	ion_boolean_e sorted_pages = boolean_false;
-	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_3_char_str_data;
-	ion_sort_comparator_t comparator = ion_external_sort_3_char_str_comparator;
+	ion_sort_comparator_t comparator = ion_external_sort_5_char_str_comparator;
 
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, comparator);
+	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_5_char_str_random_data;
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, NULL, comparator);
+
+	write_func = ion_external_sort_write_5_char_str_sequential_data;
+	ion_external_sort_sorted_value_func_t sorted_val_func = ion_external_sort_expected_5_char_str_sequential_data;
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
+
 }
 
 void
@@ -410,13 +530,17 @@ test_flash_min_sort_large_sort_dump_to_file_with_page_unaligned_data(
 ) {
 	uint32_t num_records = 10000;
 	uint32_t max_buffer_size = 1500;
-	ion_value_size_t value_size = 3;
+	ion_value_size_t value_size = 5;
 	ion_boolean_e dump_all = boolean_true;
 	ion_boolean_e sorted_pages = boolean_false;
-	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_3_char_str_data;
-	ion_sort_comparator_t comparator = ion_external_sort_3_char_str_comparator;
+	ion_sort_comparator_t comparator = ion_external_sort_5_char_str_comparator;
 
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, comparator);
+	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_5_char_str_random_data;
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, NULL, comparator);
+
+	write_func = ion_external_sort_write_5_char_str_sequential_data;
+	ion_external_sort_sorted_value_func_t sorted_val_func = ion_external_sort_expected_5_char_str_sequential_data;
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
 }
 
 planck_unit_suite_t *
