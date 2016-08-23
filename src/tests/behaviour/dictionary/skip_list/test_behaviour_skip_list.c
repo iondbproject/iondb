@@ -32,12 +32,12 @@ runalltests_behaviour_skip_list(
 ) {
 	bhdct_set_context(sldict_init, 7, boolean_true);
 
-	planck_unit_suite_t *suite_1 = bhdct_getsuite_1();
-	planck_unit_suite_t *suite_2 = bhdct_getsuite_2();
+	planck_unit_suite_t *suite_1	= bhdct_getsuite();
+	planck_unit_suite_t *suite_2	= bhdct_getsuite_2();
 
 	planck_unit_run_suite(suite_1);
 	planck_unit_destroy_suite(suite_1);
 
-	planck_unit_run_suite(suite_2);
-	planck_unit_destroy_suite(suite_2);
+/*	planck_unit_run_suite(suite_2); */
+/*	planck_unit_destroy_suite(suite_2); */
 }

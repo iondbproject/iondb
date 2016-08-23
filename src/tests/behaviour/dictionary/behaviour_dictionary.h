@@ -59,6 +59,15 @@ void bhdct_set_context(ion_handler_initializer_t init_fcn, ion_dictionary_size_t
 @return	A constructed, initialized suite.
 */
 planck_unit_suite_t *
+bhdct_getsuite(
+	void
+);
+
+/**
+@brief	Constructs the testing suite for the behaviour dictionary tests.
+@return	A constructed, initialized suite.
+*/
+planck_unit_suite_t *
 bhdct_getsuite_1(
 	void
 );

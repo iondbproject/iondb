@@ -32,12 +32,13 @@ runalltests_behaviour_flat_file(
 ) {
 	bhdct_set_context(ffdict_init, 1, boolean_false);
 
-	planck_unit_suite_t *suite_1 = bhdct_getsuite_1();
-	planck_unit_suite_t *suite_2 = bhdct_getsuite_2();
+	planck_unit_suite_t *suite = bhdct_getsuite();
 
-	planck_unit_run_suite(suite_1);
-	planck_unit_destroy_suite(suite_1);
+/*	planck_unit_suite_t *suite_2 = bhdct_getsuite_2(); */
 
-	planck_unit_run_suite(suite_2);
-	planck_unit_destroy_suite(suite_2);
+	planck_unit_run_suite(suite);
+	planck_unit_destroy_suite(suite);
+
+/*	planck_unit_run_suite(suite_2); */
+/*	planck_unit_destroy_suite(suite_2); */
 }
