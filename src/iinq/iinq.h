@@ -8,6 +8,7 @@ extern "C" {
 
 #include <stdlib.h>
 #include <alloca.h>
+#include <setjmp.h>
 #include "../dictionary/dictionary_types.h"
 #include "../dictionary/ion_master_table.h"
 #include "../key_value/kv_system.h"
@@ -24,6 +25,16 @@ extern "C" {
 #define IINQ_PAGE_SIZE	512
 
 /**
+@brief		Error code for using long jumps.
+*/
+#define IINQ_JMP_ERROR	1
+
+/**
+@brief		"Everything is good" code when using long jumps.
+*/
+#define IINQ_JMP_OK		2
+
+/**
 @brief		A size type for IINQ results (row data from an IINQ query).
 */
 typedef unsigned int ion_iinq_result_size_t;
@@ -35,8 +46,13 @@ typedef unsigned int ion_iinq_result_size_t;
 typedef struct {
 	/**> The number of bytes contained of these results. */
 	ion_iinq_result_size_t	num_bytes;
-	/**> Pointer to the bytes of this result. */
+	/**> The number of bytes in raw tuple data produced by query processing
+		 after joins but before grouping/aggregation/sorting. */
+	ion_iinq_result_size_t	raw_record_size;
+	/**> Pointer to the bytes of this result. (Pre projection). */
 	unsigned char		*data;
+	/**> Pointer to the processed bytes of this result (projected). */
+	unsigned char		*processed;
 } ion_iinq_result_t;
 
 /**
@@ -440,16 +456,22 @@ iinq_delete(#schema_name ".inq", key)
 #define DROP(schema_name)\
 iinq_drop(#schema_name ".inq")
 
-#define SELECT_ALL \
-ion_iinq_result_size_t result_loc	= 0; \
-ion_iinq_cleanup_t *copyer			= first; \
-while (NULL != copyer) { \
-	memcpy(result.data+(result_loc), copyer->reference->key, copyer->reference->dictionary.instance->record.key_size); \
-	result_loc += copyer->reference->dictionary.instance->record.key_size; \
-	memcpy(result.data+(result_loc), copyer->reference->value, copyer->reference->dictionary.instance->record.value_size); \
-	result_loc += copyer->reference->dictionary.instance->record.value_size; \
-	copyer							= copyer->next; \
-}
+/**
+@brief		This copies all tuple data created after a join (but before grouping/aggregation/sorting)
+			into the result.
+*/
+#define _COPY_EARLY_RESULT_ALL \
+do { \
+    ion_iinq_result_size_t result_loc    = 0; \
+    ion_iinq_cleanup_t *copyer            = first; \
+    while (NULL != copyer) { \
+        memcpy(result.data+(result_loc), copyer->reference->key, copyer->reference->dictionary.instance->record.key_size); \
+        result_loc += copyer->reference->dictionary.instance->record.key_size; \
+        memcpy(result.data+(result_loc), copyer->reference->value, copyer->reference->dictionary.instance->record.value_size); \
+        result_loc += copyer->reference->dictionary.instance->record.value_size; \
+        copyer                            = copyer->next; \
+    } \
+} while(0);
 
 #define _FROM_SOURCE_SINGLE(source) \
 	ion_iinq_source_t source; \
@@ -469,10 +491,8 @@ while (NULL != copyer) { \
 	if (err_ok != error) { \
 		break; \
 	} \
-	source.key					= alloca(source.dictionary.instance->record.key_size); \
-	source.value				= alloca(source.dictionary.instance->record.value_size); \
-	source.ion_record.key		= source.key; \
-	source.ion_record.value		= source.value; \
+	result.raw_record_size		+= source.dictionary.instance->record.key_size; \
+	result.raw_record_size		+= source.dictionary.instance->record.value_size; \
 	result.num_bytes			+= source.dictionary.instance->record.key_size; \
 	result.num_bytes			+= source.dictionary.instance->record.value_size; \
 	error						= dictionary_build_predicate(&(source.predicate), predicate_all_records); \
@@ -484,6 +504,27 @@ while (NULL != copyer) { \
 #define _FROM_WITH_SCHEMA_SINGLE(source) \
 	struct iinq_ ## source ## _schema *source ## _tuple; \
 	source ## _tuple = source.value;
+
+/*
+ * The last parameter, the variable arguments, is a black whole to swallow unused macro names.
+ */
+#define _FROM_GET_OVERRIDE(_1, _2, _3, _4, _5, _6, _7, _8, MACRO, ...) MACRO
+/* Here we define a number of FROM macros to facilitate up to 8 sources. */
+#define _FROM_SETUP_SCHEMA_1(_1) _FROM_WITH_SCHEMA_SINGLE(_1)
+#define _FROM_SETUP_SCHEMA_2(_1, _2) _FROM_SETUP_SCHEMA_1(_1) _FROM_SETUP_SCHEMA_1(_2)
+#define _FROM_SETUP_SCHEMA_3(_1, _2, _3) _FROM_SETUP_SCHEMA_2(_1, _2) _FROM_SETUP_SCHEMA_1(_3)
+#define _FROM_SETUP_SCHEMA_4(_1, _2, _3, _4) _FROM_SETUP_SCHEMA_3(_1, _2, _3) _FROM_SETUP_SCHEMA_1(_4)
+#define _FROM_SETUP_SCHEMA_5(_1, _2, _3, _4, _5) _FROM_SETUP_SCHEMA_4(_1, _2, _3, _4) _FROM_SETUP_SCHEMA_1(_5)
+#define _FROM_SETUP_SCHEMA_6(_1, _2, _3, _4, _5, _6) _FROM_SETUP_SCHEMA_5(_1, _2, _3, _4, _5) _FROM_SETUP_SCHEMA_1(_6)
+#define _FROM_SETUP_SCHEMA_7(_1, _2, _3, _4, _5, _6, _7) _FROM_SETUP_SCHEMA_6(_1, _2, _3, _4, _5, _6) _FROM_SETUP_SCHEMA_1(_7)
+#define _FROM_SETUP_SCHEMA_8(_1, _2, _3, _4, _5, _6, _7, _8) _FROM_SETUP_SCHEMA_7(_1, _2, _3, _4, _5, _6, _7) _FROM_SETUP_SCHEMA_1(_8)
+/*
+ * So this one is pretty ugly.
+ *
+ * We "slide" the correct macro based on the number of arguments. At the end, we add a comma so that we don't get a
+ * compiler warning when only passing in only ONE argument into the variable argument list.
+*/
+#define _FROM_SETUP_SCHEMA(...) _FROM_GET_OVERRIDE(__VA_ARGS__, _FROM_SETUP_SCHEMA_8, _FROM_SETUP_SCHEMA_7, _FROM_SETUP_SCHEMA_6, _FROM_SETUP_SCHEMA_5, _FROM_SETUP_SCHEMA_4, _FROM_SETUP_SCHEMA_3, _FROM_SETUP_SCHEMA_2, _FROM_SETUP_SCHEMA_1, THEBLACKHOLE)(__VA_ARGS__)
 
 #define _FROM_CHECK_CURSOR_SINGLE(source) \
 	(cs_cursor_active == (source.cursor_status = source.cursor->next(source.cursor, &source.ion_record)) || cs_cursor_initialized == source.cursor_status)
@@ -544,6 +585,28 @@ while (NULL != copyer) { \
 */
 #define _FROM_SOURCES_WITH_SCHEMA(...) _FROM_SOURCE_GET_OVERRIDE(__VA_ARGS__, _FROM_SOURCE_WITH_SCHEMA_8, _FROM_SOURCE_WITH_SCHEMA_7, _FROM_SOURCE_WITH_SCHEMA_6, _FROM_SOURCE_WITH_SCHEMA_5, _FROM_SOURCE_WITH_SCHEMA_4, _FROM_SOURCE_WITH_SCHEMA_3, _FROM_SOURCE_WITH_SCHEMA_2, _FROM_SOURCE_WITH_SCHEMA_1, THEBLACKHOLE)(__VA_ARGS__)
 
+#define _FROM_SETUP_POINTERS_SINGLE(source) \
+	source.key					= result.processed; \
+	result.processed			+= source.dictionary.instance->record.key_size; \
+	source.value				= result.processed; \
+	result.processed			+= source.dictionary.instance->record.value_size; \
+	source.ion_record.key		= source.key; \
+	source.ion_record.value		= source.value;
+
+/* Here we define a number of FROM macros to facilitate up to 8 sources, with schemas. */
+#define _FROM_SETUP_POINTERS_1(_1) _FROM_SETUP_POINTERS_SINGLE(_1)
+#define _FROM_SETUP_POINTERS_2(_1, _2) _FROM_SETUP_POINTERS_1(_1) _FROM_SETUP_POINTERS_1(_2)
+#define _FROM_SETUP_POINTERS_3(_1, _2, _3) _FROM_SETUP_POINTERS_2(_1, _2) _FROM_SETUP_POINTERS_1(_3)
+#define _FROM_SETUP_POINTERS_4(_1, _2, _3, _4) _FROM_SETUP_POINTERS_3(_1, _2, _3) _FROM_SETUP_POINTERS_1(_4)
+#define _FROM_SETUP_POINTERS_5(_1, _2, _3, _4, _5) _FROM_SETUP_POINTERS_4(_1, _2, _3, _4) _FROM_SETUP_POINTERS_1(_5)
+#define _FROM_SETUP_POINTERS_6(_1, _2, _3, _4, _5, _6) _FROM_SETUP_POINTERS_5(_1, _2, _3, _4, _5) _FROM_SETUP_POINTERS_1(_6)
+#define _FROM_SETUP_POINTERS_7(_1, _2, _3, _4, _5, _6, _7) _FROM_SETUP_POINTERS_6(_1, _2, _3, _4, _5, _6) _FROM_SETUP_POINTERS_1(_7)
+#define _FROM_SETUP_POINTERS_8(_1, _2, _3, _4, _5, _6, _7, _8) _FROM_SETUP_POINTERS_7(_1, _2, _3, _4, _5, _6, _7) _FROM_SETUP_POINTERS_1(_8)
+/*
+ * Like it's cousin above, this one is also ugly. We again leverage the sliding macro trick.
+*/
+#define _FROM_SETUP_POINTERS(...) _FROM_GET_OVERRIDE(__VA_ARGS__, _FROM_SETUP_POINTERS_8, _FROM_SETUP_POINTERS_7, _FROM_SETUP_POINTERS_6, _FROM_SETUP_POINTERS_5, _FROM_SETUP_POINTERS_4, _FROM_SETUP_POINTERS_3, _FROM_SETUP_POINTERS_2, _FROM_SETUP_POINTERS_1, THEBLACKHOLE)(__VA_ARGS__)
+
 #define _FROM_CHECK_CURSOR(sources) \
 	_FROM_CHECK_CURSOR_SINGLE(sources)
 
@@ -558,8 +621,14 @@ while (NULL != copyer) { \
 	last_cursor	= NULL; \
 	/*IF_ELSE((with_schema))(_FROM_SOURCES_WITH_SCHEMA(__VA_ARGS__))(_FROM_SOURCES(__VA_ARGS__));*/ \
 	/*_FROM_SOURCES(__VA_ARGS__)*/; \
-	IF_ELSE(with_schema)(_FROM_SOURCES_WITH_SCHEMA(__VA_ARGS__))(_FROM_SOURCES(__VA_ARGS__)); \
-	result.data	= alloca(result.num_bytes); \
+	_FROM_SOURCES(__VA_ARGS__); \
+	result.data	= alloca(result.raw_record_size); \
+	/* We temporarily borrow member 'processed' to track key/value pointers on setup. */ \
+	result.processed \
+				= result.data; \
+	_FROM_SETUP_POINTERS(__VA_ARGS__); \
+	IF_ELSE(with_schema)(_FROM_SETUP_SCHEMA(__VA_ARGS__))(); \
+	/*IF_ELSE(with_schema)(_FROM_SOURCES_WITH_SCHEMA(__VA_ARGS__))(_FROM_SOURCES(__VA_ARGS__));*/ \
 	ref_cursor	= first; \
 	/* Initialize all cursors except the last one. */ \
 	while (ref_cursor != last) { \
@@ -577,7 +646,8 @@ while (NULL != copyer) { \
 do { \
 	ion_err_t			error; \
 	ion_iinq_result_t	result; \
-	result.num_bytes	= 0; \
+	result.num_bytes		= 0; \
+	result.raw_record_size	= 0; \
 	from/* This includes a loop declaration with some other stuff. */ \
 	while (1) { \
 		_FROM_ADVANCE_CURSORS \
@@ -599,14 +669,26 @@ do { \
 do { \
 	ion_err_t			error; \
 	ion_iinq_result_t	result; \
-	result.num_bytes	= 0; \
-	from/* This includes a loop declaration with some other stuff. */ \
+	int					jmp_r; \
+	jmp_buf				selectbuf; \
+	result.raw_record_size	= 0; \
+	result.num_bytes		= 0; \
+	from \
+	select \
 	while (1) { \
 		_FROM_ADVANCE_CURSORS \
 		if (!where) { \
 			continue; \
 		} \
-		select \
+		jmp_r	= setjmp(selectbuf); \
+		if (0 == jmp_r) { \
+			goto COMPUTE_SELECT; \
+		} \
+		else if (IINQ_JMP_ERROR == jmp_r) { \
+			goto IINQ_QUERY_CLEANUP; \
+		} \
+		/*goto COMPUTE_SELECT*/; \
+		/*DONE_COMPUTE_SELECT: ;*/ \
 		(p)->execute(&result, (p)->state); \
 	} \
 	IINQ_QUERY_CLEANUP: \
@@ -701,20 +783,20 @@ do { \
 	total_ ## name ## _size = 0; \
 	name ## _order_parts = alloca(sizeof(iinq_order_part_t)*(n));
 
-#define _OPEN_ORDERING_FILE_WRITE(name, with_aggregates, record_size) \
+#define _OPEN_ORDERING_FILE_WRITE(name, with_aggregates, with_unprocessed, with_processed, record) \
 	output_file			= fopen(#name, "wb"); \
 	if (NULL == output_file) { \
 		error			= err_file_open_error; \
 		goto IINQ_QUERY_END; \
 	} \
 	write_page_remaining	= IINQ_PAGE_SIZE; \
-	if ((int) write_page_remaining < (int) (total_ ## name ## _size + record_size IF_ELSE(with_aggregates)(+ (8*agg_n))())) { /* Record size is size of records, not including sort key. */ \
+	if ((int) write_page_remaining < (int) (total_ ## name ## _size + IF_ELSE(with_aggregates)(+ (8*agg_n))() IF_ELSE(with_unprocessed)(+ (record.raw_record_size))() IF_ELSE(with_processed)(+ (record.num_bytes))())) { /* Record size is size of records, not including sort key. */ \
 		/* In this case, there isn't enough space in a page to sort records. Fail. */ \
 		error			= err_record_size_too_large; \
 		goto IINQ_QUERY_END; \
 	}
 
-#define _OPEN_ORDERING_FILE_READ(name, with_aggregates, record_size) \
+#define _OPEN_ORDERING_FILE_READ(name, with_aggregates, with_unprocessed, with_processed, record) \
 	input_file			= fopen(#name, "rb"); \
 	if (NULL == input_file) { \
 		error			= err_file_open_error; \
@@ -722,7 +804,7 @@ do { \
 	} \
 	read_page_remaining	= IINQ_PAGE_SIZE; \
 	/* The magic number 8 comes from the fact that all aggregate values are exactly 8 bytes big. */ \
-	if ((int) read_page_remaining < (int) (total_ ## name ## _size + record_size IF_ELSE(with_aggregates)(+ (8*agg_n))())) { /* Record size is size of records, not including sort key. */ \
+	if ((int) read_page_remaining < (int) (total_ ## name ## _size + IF_ELSE(with_aggregates)(+ (8*agg_n))() IF_ELSE(with_unprocessed)(+ record.raw_record_size)() IF_ELSE(with_processed)(+ record.num_bytes)())) { /* Record size is size of records, not including sort key. */ \
 		/* In this case, there isn't enough space in a page to sort records. Fail. */ \
 		error			= err_record_size_too_large; \
 		goto IINQ_QUERY_END; \
@@ -746,10 +828,10 @@ do { \
 		goto IINQ_QUERY_END; \
 	}
 
-#define _WRITE_ORDERING_RECORD(name, write_aggregates, record) \
+#define _WRITE_ORDERING_RECORD(name, write_aggregates, write_unprocessed, write_processed, record) \
 	/* If the page runs out of room, fill the remaining space with zeroes. */ \
 	/* Magic number 8 comes from fact that all aggregate values are 8 bytes in size. */ \
-	if ((int) write_page_remaining < (int)(total_ ## name ## _size + record.num_bytes IF_ELSE(write_aggreates)(+ (8*agg_n))())) { /* Record size is size of records, not including sort key. */ \
+	if ((int) write_page_remaining < (int)(total_ ## name ## _size IF_ELSE(write_unprocessed)(+ (record.raw_record_size))() IF_ELSE(write_processed)(+ (record.num_bytes))() IF_ELSE(write_aggreates)(+ (8*agg_n))())) { /* Record size is size of records, not including sort key. */ \
 		int		i = 0; \
 		char	x = 0; \
 		for (; i < write_page_remaining; i++) { \
@@ -779,20 +861,30 @@ do { \
 			} \
     	} \
 	)() \
-	if (1 != fwrite(record.data, record.num_bytes, 1, output_file)) { \
-		break; \
-	} \
-	else { \
-		write_page_remaining	-= record.num_bytes; \
-	}
+	IF_ELSE(write_unprocessed)( \
+		if (1 != fwrite(record.data, record.raw_record_size, 1, output_file)) { \
+			break; \
+		} \
+		else { \
+			write_page_remaining	-= record.raw_record_size; \
+		} \
+	)() \
+	IF_ELSE(write_processed)( \
+		if (1 != fwrite(record.processed, record.num_bytes, 1, output_file)) { \
+			break; \
+		} \
+		else { \
+			write_page_remaining	-= record.num_bytes; \
+		} \
+	)() \
 
 /*
  * We execute this once per ordering record (ORDERBY and GROUPBY clauses).
  *
  * execute_expr can be set to something if there needs to be something executed.
  */
-#define _READ_ORDERING_RECORD(name, ordering_size, aggregate_data, key, record, execute_expr) \
-	if ((int) read_page_remaining < (int)(ordering_size + record.num_bytes + ((NULL != aggregate_data) ? 8*agg_n : 0))) { /* Record size is size of records, not including sort key. */ \
+#define _READ_ORDERING_RECORD(name, ordering_size, aggregate_data, key, read_unprocessed, read_processed, record, execute_expr) \
+	if ((int) read_page_remaining < (int)(ordering_size IF_ELSE(read_unprocessed)(+ (record.raw_record_size))() IF_ELSE(read_processed)(+ (record.num_bytes))() + ((NULL != aggregate_data) ? 8*agg_n : 0))) { /* Record size is size of records, not including sort key. */ \
 		if (0 != fseek(input_file, read_page_remaining, SEEK_CUR)) { \
 			break; \
 		} \
@@ -824,9 +916,16 @@ do { \
 			read_page_remaining -= 8*agg_n; \
         } \
 	} \
-	if (1 != fread(&record, record.num_bytes, 1, input_file)) { \
-		break; \
-	} \
+	IF_ELSE(read_unprocessed)( \
+		if (1 != fread(record.data, record.raw_record_size, 1, input_file)) { \
+			break; \
+		} \
+	)() \
+	IF_ELSE(read_processed)( \
+		if (1 != fread(record.processed, record.num_bytes, 1, input_file)) { \
+			break; \
+		} \
+	)() \
 	read_page_remaining -= record.num_bytes; \
 	/* Now record_data has the record. */ \
 	execute_expr;
@@ -935,23 +1034,110 @@ do { \
 	goto IINQ_DONE_COMPUTE_GROUPBY; \
 	IINQ_SKIP_COMPUTE_GROUPBY: ;
 
-#define SELECT_ITEM(expr) \
+/* Regardless of the type of selection we are making, we need some bytes we can point too.
+ * This is precisely the goal of SELECT_EXPR, SELECT_AGGR, and SELECT_GRBY.
+ *
+ * The first item in each list is a pointer to the bytes of the expression we are selecting.
+ * The second item in each list is the size of the expression being selected. The third is whether
+ * this item is guaranteed compatible with a GROUP BY clause (0 for no, 1 for yes).
+ */
+#define SELECT_EXPR(expr) \
+	(_CREATE_MEMCPY_STACK_ADDRESS_FOR_NUMERICAL_EXPRESSION(expr), sizeof(expr), 0)
 
+#define SELECT_AGGR(i) \
+	((void *)&(AGGREGATES(i)), sizeof(uint64_t), 1)
 
-#define SELECT(...)
+#define SELECT_GRBY(i) \
+	(groupby_order_parts[(i)].pointer, groupby_order_parts[(i)].size, 1)
+
+#define _FIRST_MACRO_TUPLE3(_1, _2, _3)		_1
+#define FIRST_MACRO_TUPLE3(t)				_FIRST_MACRO_TUPLE3 t
+#define _SECOND_MACRO_TUPLE3(_1, _2, _3)	_2
+#define SECOND_MACRO_TUPLE3(t)				_SECOND_MACRO_TUPLE3 t
+#define _THIRD_MACRO_TUPLE3(_1, _2, _3)		_3
+#define THIRD_MACRO_TUPLE3(t)				_THIRD_MACRO_TUPLE3 t
+
+#define _SELECT_GET_OVERRIDE(_1, _2, _3, _4, _5, _6, _7, _8, MACRO, ...) MACRO
+
+#define _SELECT_COMPUTE_SINGLE(t) \
+	memcpy(result->processed[select_byte_index], FIRST_MACRO_TUPLE3(t), SECOND_MACRO_TUPLE3(t)); \
+	select_byte_index	+= SECOND_MACRO_TUPLE3(t);
+
+/* We use the sliding macro trick to generate SELECT clauses. */
+#define _SELECT_COMPUTE_1(_1) _SELECT_COMPUTE_SINGLE(_1)
+#define _SELECT_COMPUTE_2(_1, _2) _SELECT_COMPUTE_1(_1) _SELECT_COMPUTE_SINGLE(_2)
+#define _SELECT_COMPUTE_3(_1, _2, _3) _SELECT_COMPUTE_2(_1, _2) _SELECT_COMPUTE_SINGLE(_3)
+#define _SELECT_COMPUTE_4(_1, _2, _3, _4) _SELECT_COMPUTE_3(_1, _2, _3) _SELECT_COMPUTE_SINGLE(_4)
+#define _SELECT_COMPUTE_5(_1, _2, _3, _4, _5) _SELECT_COMPUTE_4(_1, _2, _3, _4) _SELECT_COMPUTE_SINGLE(_5)
+#define _SELECT_COMPUTE_6(_1, _2, _3, _4, _5, _6) _SELECT_COMPUTE_5(_1, _2, _3, _4, _5) _SELECT_COMPUTE_SINGLE(_6)
+#define _SELECT_COMPUTE_7(_1, _2, _3, _4, _5, _6, _7) _SELECT_COMPUTE_6(_1, _2, _3, _4, _5, _6) _SELECT_COMPUTE_SINGLE(_7)
+#define _SELECT_COMPUTE_8(_1, _2, _3, _4, _5, _6, _7, _8) _SELECT_COMPUTE_7(_1, _2, _3, _4, _5, _6, _7) _SELECT_COMPUTE_SINGLE(_8)
+#define _SELECT_COMPUTE(...) _ORDERING_GET_OVERRIDE(__VA_ARGS__, _SELECT_COMPUTE_8, _SELECT_COMPUTE_7, _SELECT_COMPUTE_6, _SELECT_COMPUTE_5, _SELECT_COMPUTE_4, _SELECT_COMPUTE_3, _SELECT_COMPUTE_2, _SELECT_COMPUTE_1, THEBLACKHOLE)(__VA_ARGS__)
+
+#define SELECT(...) \
+	goto SKIP_COMPUTE_SELECT; \
+	COMPUTE_SELECT: ; \
+	do { \
+		ion_iinq_result_size_t select_byte_index	= 0; \
+		_SELECT_COMPUTE(__VA_ARGS__) \
+		result.num_bytes							= select_byte_index; \
+	} while(0) ; \
+	/*goto DONE_COMPUTE_SELECT;*/ \
+	longjmp(selectbuf, IINQ_JMP_OK); \
+	SKIP_COMPUTE_SELECT: ; \
+
+#define SELECT_ALL \
+	goto SKIP_COMPUTE_SELECT; \
+	COMPUTE_SELECT: ; \
+	do { \
+		ion_iinq_result_size_t result_loc	= 0; \
+		ion_iinq_cleanup_t *copyer			= first; \
+		while (NULL != copyer) { \
+			memcpy(result.processed+(result_loc), copyer->reference->key, copyer->reference->dictionary.instance->record.key_size); \
+			result_loc += copyer->reference->dictionary.instance->record.key_size; \
+			memcpy(result.processed+(result_loc), copyer->reference->value, copyer->reference->dictionary.instance->record.value_size); \
+			result_loc += copyer->reference->dictionary.instance->record.value_size; \
+			copyer							= copyer->next; \
+		} \
+	} while(0) ; \
+	longjmp(selectbuf, IINQ_JMP_OK); \
+	/*goto DONE_COMPUTE_SELECT;*/ \
+	SKIP_COMPUTE_SELECT: ; \
+
+#define _SELECT_SINGLE(t, n) \
+
+#define _SELECT_1(_1) _SELECT_SINGLE(_1, 0)
+#define _SELECT_2(_1, _2) _SELECT_1(_1) _SELECT_SINGLE(_2, 1)
+#define _SELECT_3(_1, _2, _3) _SELECT_2(_1, _2) _SELECT_SINGLE(_3, 2)
+#define _SELECT_4(_1, _2, _3, _4) _SELECT_3(_1, _2, _3) _SELECT_SINGLE(_4, 3)
+#define _SELECT_5(_1, _2, _3, _4, _5) _SELECT_4(_1, _2, _3, _4) _SELECT_SINGLE(_5, 4)
+#define _SELECT_6(_1, _2, _3, _4, _5, _6) _SELECT_5(_1, _2, _3, _4, _5) _SELECT_SINGLE(_6, 5)
+#define _SELECT_7(_1, _2, _3, _4, _5, _6, _7) _SELECT_6(_1, _2, _3, _4, _5, _6) _SELECT_SINGLE(_7, 6)
+#define _SELECT_8(_1, _2, _3, _4, _5, _6, _7, _8) _SELECT_7(_1, _2, _3, _4, _5, _6, _7) _SELECT_SINGLE(_8, 7)
+
+/* If there are aggregates, it means we have already performed projection. */
+#define _RESULT_ORDERBY_RECORD_SIZE	\
+	(agg_n > 0 ? result.num_bytes : result.raw_record_size)
+
+#define _RESULT_ORDERBY_RECORD_DATA	\
+	(agg_n > 0 ? result.processed : result.data)
 
 #define MATERIALIZED_QUERY(select_clause, aggregate_exprs, from_clause, where_clause, groupby_clause, having_clause, orderby_clause, limit, when, p) \
 do { \
 	ion_err_t			error; \
+	jmp_buf				selectbuf; \
+	int					jmp_r; \
 	int					read_page_remaining		= IINQ_PAGE_SIZE; \
 	int					write_page_remaining	= IINQ_PAGE_SIZE; \
 	FILE				*input_file; \
 	FILE				*output_file; \
 	ion_iinq_result_t	result; \
+	result.raw_record_size						= 0; \
     result.num_bytes							= 0; \
 	int agg_n									= 0; \
 	int i_agg									= 0; \
 	from_clause \
+	select_clause \
 	_ORDERING_DECLARE(groupby) \
 	_ORDERING_DECLARE(orderby) \
     aggregate_exprs \
@@ -961,7 +1147,7 @@ do { \
     do { \
 		if (agg_n > 0) { \
 			/* Write out the aggregate records to disk for sorting. */ \
-			_OPEN_ORDERING_FILE_WRITE(groupby, 0, result.num_bytes) \
+			_OPEN_ORDERING_FILE_WRITE(groupby, 0, 1, 0, result) \
 		} \
 		else if (groupby_n > 0) { \
 			/* Error case where we have GROUPBY elements but no aggregates. */ \
@@ -969,22 +1155,21 @@ do { \
 			goto IINQ_QUERY_END; \
 		} \
 		else if (orderby_n > 0) { \
-			_OPEN_ORDERING_FILE_WRITE(orderby, 0, result.num_bytes) \
+			_OPEN_ORDERING_FILE_WRITE(orderby, 0, 1, 0, result) \
 		} \
 		while (1) { \
 			_FROM_ADVANCE_CURSORS \
             if (!where_clause) { \
                 continue; \
             } \
-			/* select_clause */ \
 			/* We need to select everything in order to guarantee clauses requiring sorting work. */ \
-			SELECT_ALL \
+			_COPY_EARLY_RESULT_ALL \
 			/* If there are grouping/aggregate attributes. */ \
 			if (agg_n > 0) { \
 				/* Write out the groupby records to disk for sorting. */ \
 				goto IINQ_COMPUTE_GROUPBY; \
 				IINQ_DONE_COMPUTE_GROUPBY: ; \
-				_WRITE_ORDERING_RECORD(groupby, 0, result) \
+				_WRITE_ORDERING_RECORD(groupby, 0, 1, 0, result) \
 			} \
 			else if (orderby_n > 0) { \
 				goto IINQ_COMPUTE_ORDERBY; \
@@ -992,10 +1177,23 @@ do { \
 				if (agg_n > 0) { \
 					goto IINQ_DONE_COMPUTE_ORDERBY_2; \
 				} \
-				_WRITE_ORDERING_RECORD(orderby, 0, result) \
+				_WRITE_ORDERING_RECORD(orderby, 0, 1, 0, result) \
 			} \
 			else { \
 				/* Proceed with projection, no group by or order by. */ \
+				jmp_r	= setjmp(selectbuf); \
+				if (0 == jmp_r) { \
+					goto COMPUTE_SELECT; \
+				} \
+				else if (IINQ_JMP_ERROR == jmp_r) { \
+					error	= err_illegal_state; \
+					goto IINQ_QUERY_CLEANUP; \
+				} \
+				/*goto COMPUTE_SELECT;*/ \
+				/*DONE_COMPUTE_SELECT: ;*/ \
+				/*if (agg_n > 0 || orderby_n > 0) {*/ \
+					/*goto DONE_COMPUTE_SELECT_2;*/ \
+				/*}*/ \
 				(p)->execute(&result, (p)->state); \
 			} \
         } \
@@ -1008,16 +1206,18 @@ do { \
 			ion_close_dictionary(&first->reference->dictionary); \
 			first			= first->next; \
 		} \
+		if (err_ok != error) { \
+			goto IINQ_QUERY_END; \
+		} \
     } while (0); \
 	/* If we have both aggregates and a groupby elements, we must sort the file. */ \
 	if (agg_n > 0 && groupby_n > 0) { \
-		/* TODO: Wade sort output_file. */ \
-		_OPEN_ORDERING_FILE_READ(groupby, 0, result.num_bytes); \
+		_OPEN_ORDERING_FILE_READ(groupby, 0, 1, 0, result); \
 		int total_temp_size = total_groupby_size; \
-		_OPEN_ORDERING_FILE_WRITE(temp, 0, result.num_bytes); \
+		_OPEN_ORDERING_FILE_WRITE(temp, 0, 1, 0, result); \
 		ion_external_sort_t	es; \
 		iinq_sort_context_t context = _IINQ_SORT_CONTEXT(groupby); \
-		if (err_ok != (error = ion_external_sort_init(&es, input_file, &context, iinq_sort_compare, result.num_bytes, result.num_bytes+total_groupby_size, IINQ_PAGE_SIZE, boolean_false, ION_FILE_SORT_FLASH_MINSORT))) { /* TODO: remove key_size */ \
+		if (err_ok != (error = ion_external_sort_init(&es, input_file, &context, iinq_sort_compare, result.raw_record_size, result.raw_record_size+total_groupby_size, IINQ_PAGE_SIZE, boolean_false, ION_FILE_SORT_FLASH_MINSORT))) { /* TODO: remove key_size */ \
 			_CLOSE_ORDERING_FILE(input_file); \
 			_CLOSE_ORDERING_FILE(output_file); \
 			goto IINQ_QUERY_END; \
@@ -1037,9 +1237,9 @@ do { \
     } \
 	/* Aggregates and GROUPBY handling. */ \
 	if (agg_n > 0) { \
-		_OPEN_ORDERING_FILE_READ(groupby, 0, result.num_bytes); \
+		_OPEN_ORDERING_FILE_READ(groupby, 0, 1, 0, result); \
 		/* Note that if there is no orderby, then we simply will read these values off disk when we are done (no sort). */ \
-		_OPEN_ORDERING_FILE_WRITE(orderby, 1, result.num_bytes); \
+		_OPEN_ORDERING_FILE_WRITE(orderby, 1, 0, 1, result); \
 		ion_boolean_t	is_first	= boolean_true; \
 		/* We need to track two keys. We need to be able to compare the last key seen to the next
 		 * to know if the next key is equal (and is thus part of the same grouping attribute. */ \
@@ -1047,14 +1247,29 @@ do { \
 		char		*cur_key		= alloca(total_groupby_size);/*[total_groupby_size];*/ \
 		/* While we have more records in the sorted group by file, read them, check if keys are the same. */ \
 		read_page_remaining			= IINQ_PAGE_SIZE; \
-		result.data					= alloca(result.num_bytes); \
+		/* We will perform our projection here if we can. */ \
+		result.processed			= alloca(result.num_bytes); \
 		while (1) { \
-			_READ_ORDERING_RECORD(groupby, total_groupby_size, NULL, cur_key, result, /* Empty on purpose. */) \
+			_READ_ORDERING_RECORD(groupby, total_groupby_size, NULL, cur_key, 1, 0, result, /* Empty on purpose. */) \
 			/* TODO: Graeme, make sure you setup all necessary error codes in above and related, as well as handle them here. */ \
 			if (total_groupby_size > 0 && !is_first && equal != iinq_sort_compare(&_IINQ_SORT_CONTEXT(groupby), cur_key, old_key)) { \
 				goto IINQ_COMPUTE_ORDERBY; \
 				IINQ_DONE_COMPUTE_ORDERBY_2: ; \
-				_WRITE_ORDERING_RECORD(orderby, 1, result) \
+				jmp_r	= setjmp(selectbuf); \
+				if (0 == jmp_r) { \
+					goto COMPUTE_SELECT; \
+				} \
+				else if (IINQ_JMP_ERROR == jmp_r) { \
+					error	= err_illegal_state; \
+					goto IINQ_QUERY_END; \
+				} \
+				/*goto COMPUTE_SELECT*/; \
+				/*DONE_COMPUTE_SELECT_2: ;*/ \
+				/* We have to follow the goto chain, unfortunately. Makes for a confusing condition that seems impossible, but goto :'( */ \
+				/*if (0 == agg_n) {*/ \
+					/*goto DONE_COMPUTE_SELECT_3;*/ \
+				/*}*/ \
+				_WRITE_ORDERING_RECORD(orderby, 1, 0, 1, result) \
 				_AGGREGATES_INITIALIZE \
             } \
 			goto IINQ_COMPUTE_AGGREGATES; \
@@ -1064,7 +1279,7 @@ do { \
         } \
 		/* Condition where there were some records, meaning we set is_first to true.  */ \
 		if (boolean_false == is_first) { \
-			_WRITE_ORDERING_RECORD(orderby, 1, result) \
+			_WRITE_ORDERING_RECORD(orderby, 1, 0, 1, result) \
 		} \
 		_CLOSE_ORDERING_FILE(output_file) \
 		_CLOSE_ORDERING_FILE(input_file) \
@@ -1075,14 +1290,18 @@ do { \
     } \
 	/* ORDERBY handling. Do this anytime we have ORDERBY or aggregates, since we abuse the use of orderby file to accomodate when we have aggregates but no orderby. */ \
 	if (orderby_n > 0 || agg_n > 0) { \
-		/* TODO: Think about making this the select + the aggregates at the end. We have the values, just process them together. Might be hard? */ \
-		result.data			= alloca(result.num_bytes); \
+		result.processed	= alloca(result.num_bytes); \
 		/* We can safely ALWAYS open with aggregates, because it doesn't increase the size if no aggregates exist (0*8 == 0). */ \
-		/* TODO: Wade sort the orderby file. Using the cursor style. */ \
-		_OPEN_ORDERING_FILE_READ(orderby, 1, result.num_bytes); \
+		/* If we have aggregates, we have already projected. Otherwise, we haven't. */ \
+		if (agg_n > 0) { \
+			_OPEN_ORDERING_FILE_READ(orderby, 1, 0, 1, result); \
+        } \
+		else { \
+			_OPEN_ORDERING_FILE_READ(orderby, 1, 1, 0, result); \
+		} \
 		ion_external_sort_t	es; \
 		iinq_sort_context_t context = _IINQ_SORT_CONTEXT(orderby); \
-		if (err_ok != (error = ion_external_sort_init(&es, input_file, &context, iinq_sort_compare, result.num_bytes, result.num_bytes+total_orderby_size, IINQ_PAGE_SIZE, boolean_false, ION_FILE_SORT_FLASH_MINSORT))) { \
+		if (err_ok != (error = ion_external_sort_init(&es, input_file, &context, iinq_sort_compare, _RESULT_ORDERBY_RECORD_SIZE, _RESULT_ORDERBY_RECORD_SIZE+total_orderby_size, IINQ_PAGE_SIZE, boolean_false, ION_FILE_SORT_FLASH_MINSORT))) { \
 			_CLOSE_ORDERING_FILE(input_file); \
 			goto IINQ_QUERY_END; \
 		} \
@@ -1093,14 +1312,25 @@ do { \
 			_CLOSE_ORDERING_FILE(input_file); \
 			goto IINQ_QUERY_END; \
         } \
-		/* TODO: Store each record in result, then the following code SHOULD work: */ \
-		/* TODO: We need to pass in the aggregates into the result, somehow. Godspeed. */ \
-		if (err_ok != (error = cursor.next(&cursor, result.data))) { \
+		if (err_ok != (error = cursor.next(&cursor, _RESULT_ORDERBY_RECORD_DATA))) { \
 			_CLOSE_ORDERING_FILE(input_file); \
 			goto IINQ_QUERY_END; \
 		} \
 		while (cs_cursor_active == cursor.status) { \
-			printf("%d\n", *((uint32_t *) result.data)); \
+			printf("%d\n", *((uint32_t *) _RESULT_ORDERBY_RECORD_DATA)); \
+			/* If no aggregates, it means we haven't projected yet. */ \
+			if (0 == agg_n) { \
+				jmp_r	= setjmp(selectbuf); \
+				if (0 == jmp_r) { \
+					goto COMPUTE_SELECT; \
+				} \
+				else if (IINQ_JMP_ERROR == jmp_r) { \
+					error	= err_illegal_state; \
+					goto IINQ_QUERY_END; \
+				} \
+                /*goto COMPUTE_SELECT;*/ \
+                /*DONE_COMPUTE_SELECT_3: ;*/ \
+            } \
 			(p)->execute(&result, (p)->state); \
 			if (err_ok != (error = cursor.next(&cursor, result.data))) { \
 				_CLOSE_ORDERING_FILE(input_file); \
