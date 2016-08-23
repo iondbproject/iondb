@@ -63,51 +63,6 @@ bhdct_getsuite(
 	void
 );
 
-/**
-@brief	Constructs the testing suite for the behaviour dictionary tests.
-@return	A constructed, initialized suite.
-*/
-planck_unit_suite_t *
-bhdct_getsuite_1(
-	void
-);
-
-/**
-@brief	Constructs the testing suite for the behaviour dictionary tests.
-@return	A constructed, initialized suite.
-*/
-planck_unit_suite_t *
-bhdct_getsuite_2(
-	void
-);
-
-/**
-@brief	Constructs the testing suite for the behaviour dictionary tests.
-@return	A constructed, initialized suite.
-*/
-planck_unit_suite_t *
-bhdct_getsuite_21(
-	void
-);
-
-/**
-@brief	Constructs the testing suite for the behaviour dictionary tests.
-@return	A constructed, initialized suite.
-*/
-planck_unit_suite_t *
-bhdct_getsuite_22(
-	void
-);
-
-/**
-@brief	Constructs the testing suite for the behaviour dictionary tests.
-@return	A constructed, initialized suite.
-*/
-planck_unit_suite_t *
-bhdct_getsuite_23(
-	void
-);
-
 #if defined(__cplusplus)
 }
 #endif

@@ -34,11 +34,6 @@ runalltests_behaviour_flat_file(
 
 	planck_unit_suite_t *suite = bhdct_getsuite();
 
-/*	planck_unit_suite_t *suite_2 = bhdct_getsuite_2(); */
-
 	planck_unit_run_suite(suite);
 	planck_unit_destroy_suite(suite);
-
-/*	planck_unit_run_suite(suite_2); */
-/*	planck_unit_destroy_suite(suite_2); */
 }

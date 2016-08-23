@@ -291,8 +291,8 @@ dictionary_getsuite(
 void
 runalltests_dictionary(
 ) {
-/*	planck_unit_suite_t *suite	= dictionary_getsuite(); */
-/*  */
-/*	planck_unit_run_suite(suite); */
-/*	planck_unit_destroy_suite(suite); */
+	planck_unit_suite_t *suite = dictionary_getsuite();
+
+	planck_unit_run_suite(suite);
+	planck_unit_destroy_suite(suite);
 }
