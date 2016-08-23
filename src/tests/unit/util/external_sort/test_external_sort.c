@@ -1,4 +1,5 @@
 #include "test_external_sort.h"
+#include "../../../../util/sort/external_sort/external_sort_types.h"
 
 #define ION_EXTERNAL_SORT_SEED 0x8E01483F
 #define ION_EXTERNAL_SORT_PAGE_SIZE 512
@@ -97,7 +98,9 @@ ion_external_sort_expected_5_char_str_sequential_data(
 	uint32_t index,
 	void *value
 ) {
-	sprintf(value, "%05d", index);
+	char temp_str[6];
+	sprintf(temp_str, "%05d", index);
+	memcpy(value, temp_str, 5);
 }
 
 ion_err_t
@@ -122,7 +125,6 @@ ion_external_sort_write_5_char_str_random_data(
 		if (cur_value_in_page == values_per_page) {
 			uint8_t num_padding_bytes = ION_EXTERNAL_SORT_PAGE_SIZE - values_per_page * 5;
 
-			uint8_t j;
 			for (j = 0; j < num_padding_bytes; j++) {
 				if (0 == fwrite(&(uint8_t){0}, 1, 1, unsorted_file)) {
 					return err_file_read_error;
@@ -228,19 +230,18 @@ test_sort(
 	}
 
 	if (NULL != sorted_value_func) {
-		sorted_value_func(0, value_1);
+		sorted_value_func(0, value_2);
+		ion_comparison_e comparison_return_value = comparator(NULL, value_1, value_2);
+		PLANCK_UNIT_ASSERT_TRUE(tc, less_than == comparison_return_value || equal == comparison_return_value);
 	}
+
+	uint32_t i;
 
 	uint32_t cur_value_in_page = 1;
 	uint32_t values_per_page = es.page_size / value_size;
 
-	uint32_t i;
 
 	for (i = 1; i < num_values; i++) {
-		if (i == 9999) {
-			1;
-		}
-
 		if (boolean_true == dump_all) {
 			if (cur_value_in_page == values_per_page) {
 				PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, fseek(sorted_file, es.page_size - values_per_page * value_size, SEEK_CUR));
@@ -257,14 +258,15 @@ test_sort(
 			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, cs_cursor_active, cursor.status);
 		}
 
-		ion_comparison_e comparison_return_value = comparator(NULL, value_1, value_2);
-		PLANCK_UNIT_ASSERT_TRUE(tc, less_than == comparison_return_value || equal == comparison_return_value);
-
 		if (NULL == sorted_value_func) {
+			ion_comparison_e comparison_return_value = comparator(NULL, value_1, value_2);
+			PLANCK_UNIT_ASSERT_TRUE(tc, less_than == comparison_return_value || equal == comparison_return_value);
 			memcpy(value_1, value_2, value_size);
 		}
 		else {
 			sorted_value_func(i, value_1);
+			ion_comparison_e comparison_return_value = comparator(NULL, value_1, value_2);
+			PLANCK_UNIT_ASSERT_TRUE(tc, equal == comparison_return_value);
 		}
 	}
 
@@ -378,7 +380,7 @@ test_flash_min_sort_required_memory(
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, ion_external_sort_init(&es, unsorted_file, NULL, ion_external_sort_uint16_comparator, sizeof(uint16_t), sizeof(uint16_t), 512, boolean_false, ION_FILE_SORT_FLASH_MINSORT));
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 516 + 7, ion_external_sort_bytes_of_memory_required(&es, 0, boolean_false));
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 516 + 11, ion_external_sort_bytes_of_memory_required(&es, 527, boolean_false));
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 516 + 9, ion_external_sort_bytes_of_memory_required(&es, 527, boolean_false));
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 516 + 13, ion_external_sort_bytes_of_memory_required(&es, 529, boolean_false));
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 516 + 13, ion_external_sort_bytes_of_memory_required(&es, 1000, boolean_false));
 
@@ -457,7 +459,7 @@ test_flash_min_sort_large_sort_record_at_a_time_with_page_unaligned_data(
 	ion_sort_comparator_t comparator = ion_external_sort_5_char_str_comparator;
 
 	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_5_char_str_random_data;
-//	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, NULL, comparator);
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, NULL, comparator);
 
 	write_func = ion_external_sort_write_5_char_str_sequential_data;
 	ion_external_sort_sorted_value_func_t sorted_val_func = ion_external_sort_expected_5_char_str_sequential_data;
@@ -546,20 +548,20 @@ file_sort_getsuite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_macro_get_flag);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_macro_set_flag);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_macro_clear_flag);
-//
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_required_memory);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_small_sort_record_at_a_time_with_page_aligned_data);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_large_sort_record_at_a_time_with_page_aligned_data);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_small_sort_record_at_a_time_with_page_unaligned_data);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_macro_get_flag);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_macro_set_flag);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_macro_clear_flag);
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_required_memory);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_small_sort_record_at_a_time_with_page_aligned_data);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_large_sort_record_at_a_time_with_page_aligned_data);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_small_sort_record_at_a_time_with_page_unaligned_data);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_large_sort_record_at_a_time_with_page_unaligned_data);
-//
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_small_sort_dump_to_file_with_page_aligned_data);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_large_sort_dump_to_file_with_page_aligned_data);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_small_sort_dump_to_file_with_page_unaligned_data);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_large_sort_dump_to_file_with_page_unaligned_data);
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_small_sort_dump_to_file_with_page_aligned_data);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_large_sort_dump_to_file_with_page_aligned_data);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_small_sort_dump_to_file_with_page_unaligned_data);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_large_sort_dump_to_file_with_page_unaligned_data);
 
 	return suite;
 }
