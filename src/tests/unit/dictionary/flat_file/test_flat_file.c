@@ -22,6 +22,7 @@
 /******************************************************************************/
 
 #include "test_flat_file.h"
+#include "../../../../dictionary/flat_file/flat_file_types.h"
 
 /********* PRIVATE METHOD DECLARATIONS **********/
 
@@ -179,6 +180,33 @@ ftest_delete(
 		ion_err_t			err = flat_file_scan(flat_file, -1, &loc, &row, boolean_true, flat_file_predicate_key_match, key);
 
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_file_hit_eof, err);
+	}
+}
+
+/**
+@brief		Gets from the flatfile and asserts everything went as expected.
+*/
+void
+ftest_get(
+	planck_unit_test_t	*tc,
+	ion_flat_file_t		*flat_file,
+	ion_key_t			key,
+	ion_err_t			expected_status,
+	ion_value_t			expected_value
+) {
+	ion_value_t		value	= alloca(flat_file->super.record.value_size);
+	ion_status_t	status	= flat_file_get(flat_file, key, value);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_status, status.error);
+
+	if (err_ok == expected_status) {
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, memcmp(expected_value, value, flat_file->super.record.value_size));
+
+		ion_fpos_t			loc = -1;
+		ion_flat_file_row_t row;
+		ion_err_t			err = flat_file_scan(flat_file, -1, &loc, &row, boolean_true, flat_file_predicate_key_match, key);
+
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 	}
 }
 
@@ -560,6 +588,127 @@ test_flat_file_sort_delete_nonexist(
 	ftest_takedown(tc, &flat_file);
 }
 
+/**
+@brief		Tests a sorted get on an empty store.
+*/
+void
+test_flat_file_sort_get_empty(
+	planck_unit_test_t *tc
+) {
+	ion_flat_file_t flat_file;
+
+	ftest_setup_sorted(tc, &flat_file);
+
+	ftest_get(tc, &flat_file, IONIZE(16, int), err_item_not_found, NULL);
+
+	ftest_takedown(tc, &flat_file);
+}
+
+/**
+@brief		Tests a sorted get on a 1 element store - it doesn't exist.
+*/
+void
+test_flat_file_sort_get_single_nonexist(
+	planck_unit_test_t *tc
+) {
+	ion_flat_file_t flat_file;
+
+	ftest_setup_sorted(tc, &flat_file);
+
+	ftest_insert(tc, &flat_file, IONIZE(17, int), IONIZE(17, int), err_ok, 1, boolean_true);
+	ftest_get(tc, &flat_file, IONIZE(33, int), err_item_not_found, NULL);
+
+	ftest_takedown(tc, &flat_file);
+}
+
+/**
+@brief		Tests a sorted get on a 1 element store - it does exist.
+*/
+void
+test_flat_file_sort_get_single_exist(
+	planck_unit_test_t *tc
+) {
+	ion_flat_file_t flat_file;
+
+	ftest_setup_sorted(tc, &flat_file);
+
+	ftest_insert(tc, &flat_file, IONIZE(17, int), IONIZE(17, int), err_ok, 1, boolean_true);
+	ftest_get(tc, &flat_file, IONIZE(17, int), err_ok, IONIZE(17, int));
+
+	ftest_takedown(tc, &flat_file);
+}
+
+/**
+@brief		Tests a sorted get on a multi element store - it doesn't exist.
+*/
+void
+test_flat_file_sort_get_many_nonexist(
+	planck_unit_test_t *tc
+) {
+	ion_flat_file_t flat_file;
+
+	ftest_setup_sorted(tc, &flat_file);
+
+	ftest_insert(tc, &flat_file, IONIZE(17, int), IONIZE(17, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(45, int), IONIZE(17, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(63, int), IONIZE(17, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(64, int), IONIZE(17, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(99, int), IONIZE(17, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(103, int), IONIZE(17, int), err_ok, 1, boolean_true);
+
+	ftest_get(tc, &flat_file, IONIZE(33, int), err_item_not_found, NULL);
+
+	ftest_takedown(tc, &flat_file);
+}
+
+/**
+@brief		Tests a sorted get on a multi element store - it does exist.
+*/
+void
+test_flat_file_sort_get_many_exist(
+	planck_unit_test_t *tc
+) {
+	ion_flat_file_t flat_file;
+
+	ftest_setup_sorted(tc, &flat_file);
+
+	ftest_insert(tc, &flat_file, IONIZE(17, int), IONIZE(17, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(45, int), IONIZE(1, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(63, int), IONIZE(17, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(64, int), IONIZE(17, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(99, int), IONIZE(17, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(103, int), IONIZE(17, int), err_ok, 1, boolean_true);
+
+	ftest_get(tc, &flat_file, IONIZE(45, int), err_ok, IONIZE(1, int));
+
+	ftest_takedown(tc, &flat_file);
+}
+
+/**
+@brief		Tests a sorted get on a multi element store with duplicates. It does exist.
+*/
+void
+test_flat_file_sort_get_many_exist_duplicates(
+	planck_unit_test_t *tc
+) {
+	ion_flat_file_t flat_file;
+
+	ftest_setup_sorted(tc, &flat_file);
+
+	ftest_insert(tc, &flat_file, IONIZE(17, int), IONIZE(17, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(45, int), IONIZE(1, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(63, int), IONIZE(17, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(63, int), IONIZE(18, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(63, int), IONIZE(19, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(64, int), IONIZE(17, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(99, int), IONIZE(17, int), err_ok, 1, boolean_true);
+	ftest_insert(tc, &flat_file, IONIZE(103, int), IONIZE(17, int), err_ok, 1, boolean_true);
+
+	ftest_get(tc, &flat_file, IONIZE(63, int), err_ok, IONIZE(17, int));
+
+	ftest_takedown(tc, &flat_file);
+}
+
 planck_unit_suite_t *
 flat_file_getsuite(
 ) {
@@ -577,8 +726,16 @@ flat_file_getsuite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_sort_binary_search_cases);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_sort_invalid_sequence);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_sort_valid_sequence);
+
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_sort_delete_duplicates);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_sort_delete_nonexist);
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_sort_get_empty);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_sort_get_single_nonexist);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_sort_get_single_exist);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_sort_get_many_nonexist);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_sort_get_many_exist);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_sort_get_many_exist_duplicates);
 
 	return suite;
 }

@@ -86,7 +86,6 @@ flat_file_destroy(
 				Value portion of the record to insert.
 @return		Resulting status of insertion.
 @see		ffdict_insert
-@todo		Write tests for sorted mode insert.
 */
 ion_status_t
 flat_file_insert(
@@ -122,7 +121,6 @@ flat_file_get(
 				Specified key to find and delete.
 @return		Resulting status of the operation.
 @see		ffdict_delete
-@todo		Write tests for sorted mode delete.
 */
 ion_status_t
 flat_file_delete(
@@ -193,8 +191,6 @@ flat_file_close(
 				call. Benchmark the performance gain and decide which strategy to use.
 @todo			Consider changing to @p SEEK_CUR whenever possible. Benchmark this and see
 				if the performance gain (if any) is worth it.
-@todo			Consider doing bounds checking on the given @p location. May need to change the
-				@p -1 start flag if we do so.
 */
 ion_err_t
 flat_file_scan(

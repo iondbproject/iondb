@@ -462,32 +462,56 @@ flat_file_get(
 	ion_key_t		key,
 	ion_value_t		value
 ) {
-	ion_status_t status = ION_STATUS_INITIALIZE;
+	ion_status_t		status		= ION_STATUS_INITIALIZE;
+	ion_err_t			err;
+	ion_fpos_t			found_loc	= -1;
+	ion_flat_file_row_t row;
 
 	if (!flat_file->sorted_mode) {
-		ion_fpos_t			found_loc	= -1;
-		ion_flat_file_row_t row;
-		ion_err_t			err			= flat_file_scan(flat_file, -1, &found_loc, &row, boolean_true, flat_file_predicate_key_match, key);
+		err = flat_file_scan(flat_file, -1, &found_loc, &row, boolean_true, flat_file_predicate_key_match, key);
 
 		if (err_ok != err) {
-			status.error = err;
-
 			if (err_file_hit_eof == err) {
 				/* Alias the error since in this case, since hitting the EOF signifies */
 				/* that we didn't find what we were looking for */
 				status.error = err_item_not_found;
 			}
+			else {
+				/* This error takes priority since it is likely a file I/O issue */
+				status.error = err;
+			}
 
 			return status;
 		}
-
-		memcpy(value, row.value, flat_file->super.record.value_size);
-		status.error	= err_ok;
-		status.count	= 1;
 	}
 	else {
-		/* TODO: Do the thing */
+		err = flat_file_binary_search(flat_file, key, &found_loc);
+
+		if (err_ok != err) {
+			status.error = err;
+			return status;
+		}
+		else if (-1 == found_loc) {
+			status.error = err_item_not_found;
+			return status;
+		}
+
+		err = flat_file_read_row(flat_file, found_loc, &row);
+
+		if (err_ok != err) {
+			status.error = err;
+			return status;
+		}
+
+		if (0 != flat_file->super.compare(row.key, key, flat_file->super.record.key_size)) {
+			status.error = err_item_not_found;
+			return status;
+		}
 	}
+
+	memcpy(value, row.value, flat_file->super.record.value_size);
+	status.error	= err_ok;
+	status.count	= 1;
 
 	return status;
 }
@@ -650,6 +674,12 @@ flat_file_binary_search(
 	ion_fpos_t			low_idx		= 0;
 	ion_fpos_t			high_idx	= flat_file->eof_position / flat_file->row_size - 1;
 	ion_fpos_t			mid_idx;
+
+	if (high_idx < 0) {
+		/* We're empty, short circuit */
+		*location = -1;
+		return err_ok;
+	}
 
 	while (low_idx < high_idx) {
 		mid_idx = low_idx + (high_idx - low_idx) / 2;
