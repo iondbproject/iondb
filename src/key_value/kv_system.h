@@ -32,7 +32,11 @@ extern "C" {
 #include <stdlib.h>
 #include <string.h>
 
-#include "kv_io.h"
+/* Only on PC */
+#if !defined(ARDUINO)
+#define fremove(x)	remove(x)
+#define frewind(x)	rewind(x)
+#endif
 
 #define ION_USING_MASTER_TABLE	1
 #define USING_ECLIPSE			0

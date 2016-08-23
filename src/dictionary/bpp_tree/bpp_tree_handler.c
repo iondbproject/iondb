@@ -8,7 +8,6 @@
 
 #include "bpp_tree_handler.h"
 #include "../../key_value/kv_system.h"
-#include "../../key_value/kv_io.h"
 
 void
 bpptree_get_addr_filename(
