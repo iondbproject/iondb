@@ -34,7 +34,10 @@ extern "C" {
 @brief		Initializes the flat file implementation and creates all necessary files.
 @details	A check is done to see if this is actually an attempt to open a previously existing
 			flat file instance. This (should) only happen when this is called from an open context
-			instead of an initialize.
+			instead of an initialize. The flat file supports a special mode called "sorted mode". This
+			is an append only mode that assumes all keys come in monotonic non-decreasing order. In this
+			mode, search operations are significantly faster, but the store does not support deletions while
+			in sorted mode.
 @param[in]	flat_file
 				Given instance of a flat file struct to initialize. This must be allocated **heap** memory,
 				as destruction will assume that it needs to be freed.

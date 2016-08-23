@@ -305,7 +305,7 @@ ftest_file_binary_search(
 }
 
 /**
-@brief		Tests several cases of a binary search. TODO: write cases for binary searching after there's been deletions.
+@brief		Tests several cases of a binary search.
 */
 void
 ftest_file_binary_search_cases(
@@ -333,7 +333,7 @@ ftest_file_binary_search_cases(
 	/* Same as above but on upper end */
 	ftest_file_binary_search(tc, flat_file, IONIZE(130, int), err_ok, 8);
 	/* Fall off bottom */
-	ftest_file_binary_search(tc, flat_file, IONIZE(-5, int), err_ok, -1);
+	ftest_file_binary_search(tc, flat_file, IONIZE(-5, int), err_item_not_found, -1);
 }
 
 /**
@@ -492,103 +492,6 @@ test_flat_file_sort_binary_search_cases(
 }
 
 /**
-@brief		Tests a insert-delete-insert sequence that is invalid.
-*/
-void
-test_flat_file_sort_invalid_sequence(
-	planck_unit_test_t *tc
-) {
-	ion_flat_file_t flat_file;
-
-	ftest_setup_sorted(tc, &flat_file);
-
-	ftest_insert(tc, &flat_file, IONIZE(5, int), IONIZE(1, int), err_ok, 1, boolean_true);
-	ftest_insert(tc, &flat_file, IONIZE(7, int), IONIZE(99, int), err_ok, 1, boolean_true);
-	ftest_insert(tc, &flat_file, IONIZE(9, int), IONIZE(99, int), err_ok, 1, boolean_true);
-
-	ftest_delete(tc, &flat_file, IONIZE(9, int), err_ok, 1, boolean_true);
-
-	ftest_insert(tc, &flat_file, IONIZE(6, int), IONIZE(32, int), err_sorted_order_violation, 0, boolean_false);
-
-	ftest_takedown(tc, &flat_file);
-}
-
-/**
-@brief		Tests a insert-delete-insert sequence that is valid.
-*/
-void
-test_flat_file_sort_valid_sequence(
-	planck_unit_test_t *tc
-) {
-	ion_flat_file_t flat_file;
-
-	ftest_setup_sorted(tc, &flat_file);
-
-	ftest_insert(tc, &flat_file, IONIZE(5, int), IONIZE(1, int), err_ok, 1, boolean_true);
-	ftest_insert(tc, &flat_file, IONIZE(7, int), IONIZE(99, int), err_ok, 1, boolean_true);
-	ftest_insert(tc, &flat_file, IONIZE(9, int), IONIZE(99, int), err_ok, 1, boolean_true);
-
-	ftest_delete(tc, &flat_file, IONIZE(9, int), err_ok, 1, boolean_true);
-
-	ftest_insert(tc, &flat_file, IONIZE(8, int), IONIZE(11, int), err_ok, 1, boolean_true);
-
-	ftest_takedown(tc, &flat_file);
-}
-
-/**
-@brief		Tests a sorted deletion on a block of duplicate keys.
-*/
-void
-test_flat_file_sort_delete_duplicates(
-	planck_unit_test_t *tc
-) {
-	ion_flat_file_t flat_file;
-
-	ftest_setup_sorted(tc, &flat_file);
-
-	ftest_insert(tc, &flat_file, IONIZE(5, int), IONIZE(40, int), err_ok, 1, boolean_true);
-	ftest_insert(tc, &flat_file, IONIZE(9, int), IONIZE(-5, int), err_ok, 1, boolean_true);
-	ftest_insert(tc, &flat_file, IONIZE(13, int), IONIZE(23, int), err_ok, 1, boolean_true);
-	ftest_insert(tc, &flat_file, IONIZE(17, int), IONIZE(42, int), err_ok, 1, boolean_true);
-	ftest_insert(tc, &flat_file, IONIZE(17, int), IONIZE(17, int), err_ok, 1, boolean_true);
-	ftest_insert(tc, &flat_file, IONIZE(17, int), IONIZE(108, int), err_ok, 1, boolean_true);
-	ftest_insert(tc, &flat_file, IONIZE(21, int), IONIZE(34, int), err_ok, 1, boolean_true);
-	ftest_insert(tc, &flat_file, IONIZE(23, int), IONIZE(55, int), err_ok, 1, boolean_true);
-
-	ftest_delete(tc, &flat_file, IONIZE(17, int), err_ok, 3, boolean_true);
-
-	ftest_insert(tc, &flat_file, IONIZE(8, int), IONIZE(1492, int), err_sorted_order_violation, 0, boolean_false);
-	ftest_insert(tc, &flat_file, IONIZE(45, int), IONIZE(228, int), err_ok, 1, boolean_true);
-
-	ftest_takedown(tc, &flat_file);
-}
-
-/**
-@brief		Tests a sorted deletion on a key that doesn't exist.
-*/
-void
-test_flat_file_sort_delete_nonexist(
-	planck_unit_test_t *tc
-) {
-	ion_flat_file_t flat_file;
-
-	ftest_setup_sorted(tc, &flat_file);
-
-	ftest_insert(tc, &flat_file, IONIZE(5, int), IONIZE(40, int), err_ok, 1, boolean_true);
-	ftest_insert(tc, &flat_file, IONIZE(9, int), IONIZE(-5, int), err_ok, 1, boolean_true);
-	ftest_insert(tc, &flat_file, IONIZE(13, int), IONIZE(23, int), err_ok, 1, boolean_true);
-	ftest_insert(tc, &flat_file, IONIZE(17, int), IONIZE(42, int), err_ok, 1, boolean_true);
-	ftest_insert(tc, &flat_file, IONIZE(17, int), IONIZE(17, int), err_ok, 1, boolean_true);
-	ftest_insert(tc, &flat_file, IONIZE(17, int), IONIZE(108, int), err_ok, 1, boolean_true);
-	ftest_insert(tc, &flat_file, IONIZE(21, int), IONIZE(34, int), err_ok, 1, boolean_true);
-	ftest_insert(tc, &flat_file, IONIZE(23, int), IONIZE(55, int), err_ok, 1, boolean_true);
-
-	ftest_delete(tc, &flat_file, IONIZE(16, int), err_item_not_found, 0, boolean_true);
-
-	ftest_takedown(tc, &flat_file);
-}
-
-/**
 @brief		Tests a sorted get on an empty store.
 */
 void
@@ -724,11 +627,6 @@ flat_file_getsuite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_insert_bad_sort);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_insert_good_sort);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_sort_binary_search_cases);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_sort_invalid_sequence);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_sort_valid_sequence);
-
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_sort_delete_duplicates);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_sort_delete_nonexist);
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_sort_get_empty);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_sort_get_single_nonexist);

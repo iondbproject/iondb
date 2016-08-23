@@ -23,7 +23,6 @@
 
 #include "flat_file.h"
 #include "flat_file_types.h"
-#include "../../key_value/kv_system.h"
 
 ion_err_t
 flat_file_initialize(
@@ -289,38 +288,6 @@ flat_file_predicate_within_bounds(
 }
 
 /**
-@brief		Predicate function to return the first row seen that is strictly less than the given @p target_key.
-@details	We expect one @p ion_key_t parameter, given as the @p target_key.
-@see		ion_flat_file_predicate_t
-*/
-ion_boolean_t
-flat_file_predicate_first_less_than(
-	ion_flat_file_t		*flat_file,
-	ion_flat_file_row_t *row,
-	va_list				*args
-) {
-	ion_key_t target_key = va_arg(*args, ion_key_t);
-
-	return FLAT_FILE_STATUS_OCCUPIED == row->row_status && flat_file->super.compare(row->key, target_key, flat_file->super.record.key_size) < 0;
-}
-
-/**
-@brief		Predicate function to return the first row seen that is strictly greater than the given @p target_key.
-@details	We expect one @p ion_key_t parameter, given as the @p target_key.
-@see		ion_flat_file_predicate_t
-*/
-ion_boolean_t
-flat_file_predicate_first_greater_than(
-	ion_flat_file_t		*flat_file,
-	ion_flat_file_row_t *row,
-	va_list				*args
-) {
-	ion_key_t target_key = va_arg(*args, ion_key_t);
-
-	return FLAT_FILE_STATUS_OCCUPIED == row->row_status && flat_file->super.compare(row->key, target_key, flat_file->super.record.key_size) > 0;
-}
-
-/**
 @brief		Writes the given row out to the data file.
 @details	If the key or value is given as @p NULL, then no write will be performed
 			for that @p NULL key/value. This can be used to perform a status-only write
@@ -521,71 +488,52 @@ flat_file_delete(
 	ion_flat_file_t *flat_file,
 	ion_key_t		key
 ) {
+	if (flat_file->sorted_mode) {
+		return ION_STATUS_ERROR(err_sorted_order_violation);
+	}
+
 	ion_status_t		status	= ION_STATUS_INITIALIZE;
 	ion_flat_file_row_t row;
 	ion_err_t			err;
 	ion_fpos_t			loc		= -1;
 
-	if (!flat_file->sorted_mode) {
-		while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, boolean_true, flat_file_predicate_key_match, key))) {
-			ion_fpos_t			last_record_offset	= flat_file->eof_position - flat_file->row_size;
-			ion_flat_file_row_t last_row;
-			ion_fpos_t			last_record_index	= last_record_offset / flat_file->row_size;
-			ion_err_t			row_err;
+	while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, boolean_true, flat_file_predicate_key_match, key))) {
+		ion_fpos_t			last_record_offset	= flat_file->eof_position - flat_file->row_size;
+		ion_flat_file_row_t last_row;
+		ion_fpos_t			last_record_index	= last_record_offset / flat_file->row_size;
+		ion_err_t			row_err;
 
-			/* If the last index and the loc are the same, then we can just move the eof position. Saves a read/write. */
-			if (last_record_index != loc) {
-				row_err = flat_file_read_row(flat_file, last_record_index, &last_row);
-
-				if (err_ok != row_err) {
-					status.error = row_err;
-					return status;
-				}
-
-				row_err = flat_file_write_row(flat_file, loc, &last_row);
-
-				if (err_ok != row_err) {
-					status.error = row_err;
-					return status;
-				}
-			}
-
-			/* Set last row to be empty just for sanity reasons. */
-			row_err = flat_file_write_row(flat_file, last_record_index, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_EMPTY, NULL, NULL });
+		/* If the last index and the loc are the same, then we can just move the eof position. Saves a read/write. */
+		if (last_record_index != loc) {
+			row_err = flat_file_read_row(flat_file, last_record_index, &last_row);
 
 			if (err_ok != row_err) {
 				status.error = row_err;
 				return status;
 			}
 
-			/* Soft truncate the file by bumping the eof position back to cut off the last record. */
-			flat_file->eof_position = last_record_offset;
-			status.count++;
+			row_err = flat_file_write_row(flat_file, loc, &last_row);
 
-			/* No location movement is done here, since we need to check the row we just swapped in to see if it is
-			   also a match. */
+			if (err_ok != row_err) {
+				status.error = row_err;
+				return status;
+			}
 		}
-	}
-	else {
-		err = flat_file_binary_search(flat_file, key, &loc);
 
-		if (err_ok != err) {
-			status.error = err;
+		/* Set last row to be empty just for sanity reasons. */
+		row_err = flat_file_write_row(flat_file, last_record_index, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_EMPTY, NULL, NULL });
+
+		if (err_ok != row_err) {
+			status.error = row_err;
 			return status;
 		}
 
-		while (-1 != loc && err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, boolean_true, flat_file_predicate_key_match, key))) {
-			/* Set last row to be empty just for sanity reasons. */
-			err = flat_file_write_row(flat_file, loc, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_EMPTY, NULL, NULL });
+		/* Soft truncate the file by bumping the eof position back to cut off the last record. */
+		flat_file->eof_position = last_record_offset;
+		status.count++;
 
-			if (err_ok != err) {
-				status.error = err;
-				return status;
-			}
-
-			status.count++;
-			loc++;
-		}
+		/* No location movement is done here, since we need to check the row we just swapped in to see if it is
+		   also a match. */
 	}
 
 	status.error = err_ok;
@@ -665,7 +613,7 @@ flat_file_binary_search(
 	ion_key_t		target_key,
 	ion_fpos_t		*location
 ) {
-	if (boolean_false == flat_file->sorted_mode) {
+	if (!flat_file->sorted_mode) {
 		return err_sorted_order_violation;
 	}
 
@@ -678,7 +626,7 @@ flat_file_binary_search(
 	if (high_idx < 0) {
 		/* We're empty, short circuit */
 		*location = -1;
-		return err_ok;
+		return err_item_not_found;
 	}
 
 	while (low_idx < high_idx) {
@@ -698,53 +646,36 @@ flat_file_binary_search(
 			high_idx = mid_idx - 1;
 		}
 		else {
-			/* Match found, we can exit */
-			high_idx = low_idx = mid_idx;
+			/* Match found, scroll to beginning of (potential) duplicate block and return */
+			ion_fpos_t	last_dup_idx;
+			ion_fpos_t	dup_idx = mid_idx;
+
+			do {
+				last_dup_idx	= dup_idx;
+				dup_idx--;
+				err				= flat_file_read_row(flat_file, dup_idx, &row);
+
+				if (err_ok != err) {
+					return err;
+				}
+			} while (dup_idx >= 0 && 0 == flat_file->super.compare(row.key, target_key, flat_file->super.record.key_size));
+
+			*location = last_dup_idx;
+			return err_ok;
 		}
 	}
 
-	/* Scan hop - first go one-before */
-	ion_fpos_t find_loc			= -1;
+	/* If we reach here, then we fell through the loop - do check and adjust for LEQ as necessary */
+	err = flat_file_read_row(flat_file, low_idx, &row);
 
-	ion_err_t first_scan_err	= flat_file_scan(flat_file, low_idx, &find_loc, &row, boolean_false, flat_file_predicate_first_less_than, target_key);
-
-	if ((err_ok != first_scan_err) && (err_file_hit_eof != first_scan_err)) {
-		return first_scan_err;	/* Real error condition */
-	}
-	else if (err_file_hit_eof == first_scan_err) {
-		/* We fell through the front, so the row key isn't valid. Pull the row key from the first record in the store. */
-		/* This should be a guaranteed cache hit, so it's pretty efficient */
-		err = flat_file_read_row(flat_file, 0, &row);
-
-		if (err_ok != err) {
-			return err;
-		}
+	if (err_ok != err) {
+		return err;
 	}
 
-	/* And now look for the real guy */
-	ion_fpos_t	hop_loc = -1;
-	ion_key_t	hop_key = alloca(flat_file->super.record.key_size);
-
-	memcpy(hop_key, row.key, flat_file->super.record.key_size);
-	err = flat_file_scan(flat_file, find_loc, &hop_loc, &row, boolean_true, flat_file_predicate_first_greater_than, hop_key);
-
-	if ((err_ok != err) && (err_file_hit_eof != err)) {
-		return err;	/* Real error condition */
-	}
-	/* If the first greater key violates our condition of being LEQ, just return the original find key */
-	else if ((err_file_hit_eof == err) || (flat_file->super.compare(row.key, target_key, flat_file->super.record.key_size) > 0)) {
-		if (err_file_hit_eof == first_scan_err) {
-			/* If find_loc wasn't good either, then we just give back -1 */
-			*location = -1;
-		}
-		else {
-			/* Nothing on the right - then the find loc is our guy */
-			*location = find_loc;
-		}
-	}
-	else if (err_ok == err) {
-		*location = hop_loc;
+	if (flat_file->super.compare(row.key, target_key, flat_file->super.record.key_size) > 0) {
+		low_idx--;
 	}
 
-	return err_ok;
+	*location = low_idx;
+	return low_idx >= 0 ? err_ok : err_item_not_found;
 }
