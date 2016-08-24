@@ -143,7 +143,7 @@ oadict_create_dictionary(
 	ion_key_type_t				key_type,
 	int							key_size,
 	int							value_size,
-	int							dictionary_size,
+	unsigned int				dictionary_size,
 	ion_dictionary_compare_t	compare,
 	ion_dictionary_handler_t	*handler,
 	ion_dictionary_t			*dictionary

@@ -78,7 +78,7 @@ dictionary_create(
 	ion_key_type_t				key_type,
 	int							key_size,
 	int							value_size,
-	int							dictionary_size
+	unsigned int				dictionary_size
 ) {
 	ion_err_t					err;
 	ion_dictionary_compare_t	compare = dictionary_switch_compare(key_type);

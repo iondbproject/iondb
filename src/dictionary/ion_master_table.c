@@ -168,7 +168,7 @@ ion_err_t
 ion_master_table_get_next_id(
 	ion_dictionary_id_t *id
 ) {
-	ion_err_t error									= err_ok;
+	ion_err_t error								= err_ok;
 
 	/* Flush master row. This writes the next ID to be used, so add 1. */
 	ion_dictionary_config_info_t master_config	= { .id = ion_master_table_next_id + 1 };
@@ -262,11 +262,11 @@ ion_master_table_create_dictionary(
 	ion_dictionary_handler_t	*handler,
 	ion_dictionary_t			*dictionary,
 	ion_key_type_t				key_type,
-	int						key_size,
-	int						value_size,
-	int						dictionary_size
+	int							key_size,
+	int							value_size,
+	unsigned int				dictionary_size
 ) {
-	ion_err_t				err;
+	ion_err_t			err;
 	ion_dictionary_id_t id;
 
 	err = ion_master_table_get_next_id(&id);
@@ -289,7 +289,7 @@ ion_master_table_create_dictionary(
 ion_err_t
 ion_add_to_master_table(
 	ion_dictionary_t	*dictionary,
-	int				dictionary_size
+	unsigned int		dictionary_size
 ) {
 	ion_dictionary_config_info_t config = {
 		.id = dictionary->instance->id, .use_type = 0, .type = dictionary->instance->key_type, .key_size = dictionary->instance->record.key_size, .value_size = dictionary->instance->record.value_size, .dictionary_size = dictionary_size
@@ -323,7 +323,7 @@ ion_find_by_use_master_table(
 ) {
 	ion_dictionary_id_t				id;
 	ion_dictionary_config_info_t	tconfig;
-	ion_err_t							error;
+	ion_err_t						error;
 
 	tconfig.id	= 0;
 
@@ -360,7 +360,7 @@ ion_err_t
 ion_delete_from_master_table(
 	ion_dictionary_t *dictionary
 ) {
-	ion_err_t							error;
+	ion_err_t						error;
 	ion_dictionary_config_info_t	blank	= { 0 };
 	long							where	= (dictionary->instance->id * ION_MASTER_TABLE_RECORD_SIZE(&blank));
 
@@ -377,7 +377,7 @@ ion_err_t
 ion_open_dictionary(
 	ion_dictionary_handler_t	*handler,	/* This is already initialized. */
 	ion_dictionary_t			*dictionary,	/* Passed in empty, to be set. */
-	ion_dictionary_id_t		id
+	ion_dictionary_id_t			id
 ) {
 	ion_err_t err;
 

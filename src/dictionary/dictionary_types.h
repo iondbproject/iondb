@@ -175,7 +175,7 @@ struct dictionary_handler {
 		ion_key_type_t,
 		int,
 		int,
-		int,
+		unsigned int,
 		ion_dictionary_compare_t,
 		ion_dictionary_handler_t *,
 		ion_dictionary_t *

@@ -76,7 +76,7 @@ bhdct_dictionary_initialization(
 	ion_key_type_t				key_type,
 	int							key_size,
 	int							value_size,
-	int							dictionary_size
+	unsigned int				dictionary_size
 ) {
 	ion_err_t err = ion_master_table_create_dictionary(handler, dict, key_type, key_size, value_size, dictionary_size);
 

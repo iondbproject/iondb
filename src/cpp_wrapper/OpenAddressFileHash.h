@@ -36,7 +36,7 @@ OpenAddressFileHash(
 	ion_key_type_t	type_key,
 	int				key_size,
 	int				value_size,
-	int				dictionary_size
+	unsigned int	dictionary_size
 ) {
 	oafdict_init(&this->handler);
 

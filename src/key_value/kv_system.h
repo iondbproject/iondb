@@ -236,7 +236,7 @@ typedef int ion_value_size_t;
 			differently. It may be important to preserve the ability
 			for variables of this type to become negative.
 */
-typedef int ion_dictionary_size_t;
+typedef unsigned int ion_dictionary_size_t;
 
 /**
 @brief		A boolean type.

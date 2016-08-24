@@ -24,7 +24,7 @@ ion_dictionary_handler_t	handler;
 ion_dictionary_t			dict;
 int							size_k;
 int							size_v;
-int							dict_size;
+unsigned int				dict_size;
 ion_status_t				last_status;
 
 ~Dictionary(
@@ -37,7 +37,7 @@ initializeDictionary(
 	ion_key_type_t	type_key,
 	int				key_size,
 	int				value_size,
-	int				dictionary_size
+	unsigned int	dictionary_size
 ) {
 	ion_err_t err = dictionary_create(&handler, &dict, 0, type_key, key_size, value_size, dictionary_size);
 

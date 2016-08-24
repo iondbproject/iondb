@@ -1080,7 +1080,7 @@ test_cpp_wrapper_open_close(
 	int					key_size	= dict->dict.instance->record.key_size;
 	int					val_size	= dict->dict.instance->record.value_size;
 	ion_key_type_t		key_type	= dict->dict.instance->key_type;
-	int					dict_size	= dict->dict_size;
+	unsigned int		dict_size	= dict->dict_size;
 
 	/* Insert test record so we can check data integrity after we close/open */
 	status = dict->insert(key, value);
