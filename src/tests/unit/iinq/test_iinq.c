@@ -286,6 +286,23 @@ IINQ_NEW_PROCESSOR_FUNC(check_results) {
 }
 
 void
+iinq_test_create_query_select_all_from_where_orderby_ascending_records(
+	planck_unit_test_t	*tc,
+	ion_iinq_result_t	*result,
+	uint32_t			count,
+	uint32_t 			total
+)
+{
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(uint32_t) * 2, result->num_bytes);
+	ion_key_t	key		= result->data;
+	ion_value_t value	= result->data + sizeof(uint32_t);
+
+	int expected_key = count;
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_key, NEUTRALIZE(key, uint32_t));
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_key, NEUTRALIZE(value, uint32_t));
+}
+
+void
 iinq_test_create_query_select_all_from_where_orderby_descending_records(
 	planck_unit_test_t	*tc,
 	ion_iinq_result_t	*result,
@@ -315,7 +332,13 @@ iinq_test_create_query_select_all_from_where_orderby(
 	state.count					= 0;
 	state.tc					= tc;
 	state.total					= num_records; /* This will write past a page boundary. */
-	state.func					= iinq_test_create_query_select_all_from_where_orderby_descending_records;
+
+	if (boolean_true == ascending) {
+		state.func = iinq_test_create_query_select_all_from_where_orderby_ascending_records;
+	}
+	else {
+		state.func = iinq_test_create_query_select_all_from_where_orderby_descending_records;
+	}
 
 	ion_key_type_t				key_type;
 	ion_key_size_t				key_size;
@@ -334,15 +357,27 @@ iinq_test_create_query_select_all_from_where_orderby(
 
 	uint32_t i;
 	for (i = 0; i < state.total; i++) {
-		key			= IONIZE(i, uint32_t);
-		value		= IONIZE(1, uint32_t);
+		if (boolean_true == ascending) {
+			key	= IONIZE(state.total - i - 1, uint32_t);
+			value = IONIZE(state.total - i - 1, uint32_t);
+		}
+		else {
+			key	= IONIZE(i, uint32_t);
+			value = IONIZE(1, uint32_t);
+		}
 
 		status		= INSERT(test, key, value);
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
 	}
 
-	MATERIALIZED_QUERY(SELECT_ALL, AGGREGATES_NONE, FROM(0, test), WHERE(1), GROUPBY_NONE, , ORDERBY(DESCENDING(NEUTRALIZE(test.key, uint32_t))) , , , &processor);
+	if (boolean_true == ascending) {
+		MATERIALIZED_QUERY(SELECT_ALL, AGGREGATES_NONE, FROM(0, test), WHERE(1), GROUPBY_NONE, , ORDERBY(ASCENDING_UINT(NEUTRALIZE(test.key, uint32_t))) , , , &processor);
+	}
+	else {
+		MATERIALIZED_QUERY(SELECT_ALL, AGGREGATES_NONE, FROM(0, test), WHERE(1), GROUPBY_NONE, , ORDERBY(ASCENDING_UINT(NEUTRALIZE(test.key, uint32_t))) , , , &processor);
+	}
+
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, state.total, state.count);
 
 	DROP(test);
@@ -352,21 +387,21 @@ void
 iinq_test_create_query_select_all_from_where_orderby_ascending_small(
 	planck_unit_test_t *tc
 ) {
-
+	iinq_test_create_query_select_all_from_where_orderby(tc, 2, boolean_true);
 }
 
 void
 iinq_test_create_query_select_all_from_where_orderby_ascending_med(
 	planck_unit_test_t *tc
 ) {
-
+	iinq_test_create_query_select_all_from_where_orderby(tc, 43, boolean_true);
 }
 
 void
 iinq_test_create_query_select_all_from_where_orderby_ascending_large(
 	planck_unit_test_t *tc
 ) {
-
+	iinq_test_create_query_select_all_from_where_orderby(tc, 1000, boolean_true);
 }
 
 void
