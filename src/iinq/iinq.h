@@ -1333,14 +1333,14 @@ do { \
 		uint16_t buffer_size = ion_external_sort_bytes_of_memory_required(&es, 0, boolean_false); \
 		char buffer[buffer_size]; \
 		/* We need a place to write read all of the stuff in the orderby file. */ \
-		char record_buf[8*agg_n + (agg_n > 0 ? result.num_bytes : result.raw_record_size)]; \
+		char record_buf[total_orderby_size + 8*agg_n + (agg_n > 0 ? result.num_bytes : result.raw_record_size)]; \
 		/* Setup the processed pointer to the correct spot. */ \
 		if (agg_n > 0) { \
-        	result.processed    = (unsigned char *)(record_buf+(8*agg_n)); \
+        	result.processed    = (unsigned char *)(record_buf+total_orderby_size+(8*agg_n)); \
         } \
 		else { \
 			/* TODO: Only allocated data where we need it. Might incure multiple allocations, think about when this is worth it. */ \
-			result.data			= (unsigned char *)(record_buf+(8*agg_n)); \
+			result.data			= (unsigned char *)(record_buf+total_orderby_size+(8*agg_n)); \
 			result.processed	= alloca(result.num_bytes); \
 		} \
 		ion_external_sort_cursor_t cursor; \
