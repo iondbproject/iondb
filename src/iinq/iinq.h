@@ -631,8 +631,6 @@ do { \
 	last		= NULL; \
 	ref_cursor	= NULL; \
 	last_cursor	= NULL; \
-	/*IF_ELSE((with_schema))(_FROM_SOURCES_WITH_SCHEMA(__VA_ARGS__))(_FROM_SOURCES(__VA_ARGS__));*/ \
-	/*_FROM_SOURCES(__VA_ARGS__)*/; \
 	_FROM_SOURCES(__VA_ARGS__); \
 	result.data	= alloca(result.raw_record_size); \
 	/* We temporarily borrow member 'processed' to track key/value pointers on setup. */ \
@@ -640,7 +638,6 @@ do { \
 				= result.data; \
 	_FROM_SETUP_POINTERS(__VA_ARGS__); \
 	IF_ELSE(with_schema)(_FROM_SETUP_SCHEMA(__VA_ARGS__))(); \
-	/*IF_ELSE(with_schema)(_FROM_SOURCES_WITH_SCHEMA(__VA_ARGS__))(_FROM_SOURCES(__VA_ARGS__));*/ \
 	ref_cursor	= first; \
 	/* Initialize all cursors except the last one. */ \
 	while (ref_cursor != last) { \
@@ -651,8 +648,10 @@ do { \
 	} \
 	ref_cursor	= last;
 
-#define WHERE(condition) (condition)
-#define HAVING(condition) (condition)
+#define WHERE(condition)	(condition)
+#define HAVING(condition)	(condition)
+#define HAVING_ALL			HAVING(1)
+#define HAVING_NONE			HAVING_ALL
 
 #define QUERY_SFW(select, from, where, limit, when, p) \
 do { \
@@ -660,7 +659,7 @@ do { \
 	ion_iinq_result_t	result; \
 	result.num_bytes		= 0; \
 	result.raw_record_size	= 0; \
-	from/* This includes a loop declaration with some other stuff. */ \
+	from \
 	while (1) { \
 		_FROM_ADVANCE_CURSORS \
 		if (!where) { \
@@ -699,8 +698,6 @@ do { \
 		else if (IINQ_JMP_ERROR == jmp_r) { \
 			goto IINQ_QUERY_CLEANUP; \
 		} \
-		/*goto COMPUTE_SELECT*/; \
-		/*DONE_COMPUTE_SELECT: ;*/ \
 		(p)->execute(&result, (p)->state); \
 	} \
 	IINQ_QUERY_CLEANUP: \
@@ -787,7 +784,6 @@ do { \
 	int i_ ## name				= 0;	\
 	int total_ ## name ## _size	= 0; \
 	iinq_order_part_t * name ## _order_parts = NULL;
-	/*iinq_order_part_t name ## _order_parts[(name ## _n)];*/
 
 #define _ORDERING_SETUP(name, n) \
 	name ## _n		= (n);	\
@@ -1029,13 +1025,13 @@ do { \
 	goto IINQ_SKIP_COMPUTE_ORDERBY; \
 	IINQ_COMPUTE_ORDERBY: ; \
 	_COMPUTE_ORDERING(orderby, __VA_ARGS__) \
-	goto IINQ_DONE_COMPUTE_ORDERBY; \
+	longjmp(orderbybuf, IINQ_JMP_OK); \
 	IINQ_SKIP_COMPUTE_ORDERBY: ; \
 
 #define ORDERBY_NONE \
 	goto IINQ_SKIP_COMPUTE_ORDERBY; \
 	IINQ_COMPUTE_ORDERBY: ; \
-	goto IINQ_DONE_COMPUTE_ORDERBY; \
+	longjmp(orderbybuf, IINQ_JMP_OK); \
 	IINQ_SKIP_COMPUTE_ORDERBY: ;
 
 #define GROUPBY(...) \
@@ -1065,7 +1061,6 @@ do { \
 
 #define SELECT_AGGR(i) \
 	((IINQ_AGGREGATE_TYPE_INT == aggregates[(i)].type ? (unsigned char *)(&(aggregates[(i)].value.i64)) : (IINQ_AGGREGATE_TYPE_UINT == aggregates[(i)].type ? (unsigned char *)(&(aggregates[(i)].value.u64)) : (unsigned char *)(&(aggregates[(i)].value.f64)))), sizeof(uint64_t), 1)
-	/*((void *)(&(AGGREGATE(i))), sizeof(uint64_t), 1)*/
 
 #define SELECT_GRBY(i) \
 	(groupby_order_parts[(i)].pointer, groupby_order_parts[(i)].size, 1)
@@ -1102,26 +1097,14 @@ do { \
 		_SELECT_COMPUTE(__VA_ARGS__) \
 		result.num_bytes							= select_byte_index; \
 	} while(0) ; \
-	/*goto DONE_COMPUTE_SELECT;*/ \
 	longjmp(selectbuf, IINQ_JMP_OK); \
 	SKIP_COMPUTE_SELECT: ; \
 
 #define SELECT_ALL \
 	goto SKIP_COMPUTE_SELECT; \
 	COMPUTE_SELECT: ; \
-	do { \
-		ion_iinq_result_size_t result_loc	= 0; \
-		ion_iinq_cleanup_t *copyer			= first; \
-		while (NULL != copyer) { \
-			memcpy(result.processed+(result_loc), copyer->reference->key, copyer->reference->dictionary.instance->record.key_size); \
-			result_loc += copyer->reference->dictionary.instance->record.key_size; \
-			memcpy(result.processed+(result_loc), copyer->reference->value, copyer->reference->dictionary.instance->record.value_size); \
-			result_loc += copyer->reference->dictionary.instance->record.value_size; \
-			copyer							= copyer->next; \
-		} \
-	} while(0) ; \
+	memcpy(result.processed, result.data, result.num_bytes); \
 	longjmp(selectbuf, IINQ_JMP_OK); \
-	/*goto DONE_COMPUTE_SELECT;*/ \
 	SKIP_COMPUTE_SELECT: ; \
 
 #define _SELECT_SINGLE(t, n) \
@@ -1146,6 +1129,7 @@ do { \
 do { \
 	ion_err_t			error = err_ok; \
 	jmp_buf				selectbuf; \
+	jmp_buf				orderbybuf; \
 	int					jmp_r; \
 	int					read_page_remaining		= IINQ_PAGE_SIZE; \
 	int					write_page_remaining	= IINQ_PAGE_SIZE; \
@@ -1192,15 +1176,19 @@ do { \
 				_WRITE_ORDERING_RECORD(groupby, 0, 1, 0, result) \
 			} \
 			else if (orderby_n > 0) { \
-				goto IINQ_COMPUTE_ORDERBY; \
-				IINQ_DONE_COMPUTE_ORDERBY: ; \
-				if (agg_n > 0) { \
-					goto IINQ_DONE_COMPUTE_ORDERBY_2; \
+				jmp_r	= setjmp(orderbybuf); \
+				if (0 == jmp_r) { \
+					goto IINQ_COMPUTE_ORDERBY; \
+				} \
+				else if (IINQ_JMP_ERROR == jmp_r) { \
+					error	= err_illegal_state; \
+					goto IINQ_QUERY_END; \
 				} \
 				_WRITE_ORDERING_RECORD(orderby, 0, 1, 0, result) \
 			} \
 			else { \
 				/* Proceed with projection, no group by or order by. */ \
+				result.processed				= alloca(result.num_bytes); \
 				jmp_r	= setjmp(selectbuf); \
 				if (0 == jmp_r) { \
 					goto COMPUTE_SELECT; \
@@ -1209,11 +1197,6 @@ do { \
 					error	= err_illegal_state; \
 					goto IINQ_QUERY_CLEANUP; \
 				} \
-				/*goto COMPUTE_SELECT;*/ \
-				/*DONE_COMPUTE_SELECT: ;*/ \
-				/*if (agg_n > 0 || orderby_n > 0) {*/ \
-					/*goto DONE_COMPUTE_SELECT_2;*/ \
-				/*}*/ \
 				(p)->execute(&result, (p)->state); \
 			} \
         } \
@@ -1273,8 +1256,17 @@ do { \
 			_READ_ORDERING_RECORD(groupby, total_groupby_size, NULL, cur_key, 1, 0, result, /* Empty on purpose. */) \
 			/* TODO: Graeme, make sure you setup all necessary error codes in above and related, as well as handle them here. */ \
 			if (total_groupby_size > 0 && !is_first && equal != iinq_sort_compare(&_IINQ_SORT_CONTEXT(groupby), cur_key, old_key)) { \
-				goto IINQ_COMPUTE_ORDERBY; \
-				IINQ_DONE_COMPUTE_ORDERBY_2: ; \
+				jmp_r	= setjmp(orderbybuf); \
+				if (0 == jmp_r) { \
+					goto IINQ_COMPUTE_ORDERBY; \
+				} \
+				else if (IINQ_JMP_ERROR == jmp_r) { \
+					error	= err_illegal_state; \
+					goto IINQ_QUERY_END; \
+				} \
+				if (!having_clause) { \
+					continue; \
+				} \
 				jmp_r	= setjmp(selectbuf); \
 				if (0 == jmp_r) { \
 					goto COMPUTE_SELECT; \
@@ -1283,12 +1275,6 @@ do { \
 					error	= err_illegal_state; \
 					goto IINQ_QUERY_END; \
 				} \
-				/*goto COMPUTE_SELECT*/; \
-				/*DONE_COMPUTE_SELECT_2: ;*/ \
-				/* We have to follow the goto chain, unfortunately. Makes for a confusing condition that seems impossible, but goto :'( */ \
-				/*if (0 == agg_n) {*/ \
-					/*goto DONE_COMPUTE_SELECT_3;*/ \
-				/*}*/ \
 				_WRITE_ORDERING_RECORD(orderby, 1, 0, 1, result) \
 				_AGGREGATES_INITIALIZE \
             } \
@@ -1299,6 +1285,17 @@ do { \
         } \
 		/* Condition where there were some records, meaning we set is_first to true.  */ \
 		if (boolean_false == is_first) { \
+			jmp_r	= setjmp(orderbybuf); \
+			if (0 == jmp_r) { \
+				goto IINQ_COMPUTE_ORDERBY; \
+			} \
+			else if (IINQ_JMP_ERROR == jmp_r) { \
+				error	= err_illegal_state; \
+				goto IINQ_QUERY_END; \
+			} \
+			if (!having_clause) { \
+				goto IINQ_CLEANUP_AGGREGATION; \
+			} \
 			jmp_r	= setjmp(selectbuf); \
 			if (0 == jmp_r) { \
 				goto COMPUTE_SELECT; \
@@ -1309,6 +1306,7 @@ do { \
 			} \
 			_WRITE_ORDERING_RECORD(orderby, 1, 0, 1, result) \
 		} \
+		IINQ_CLEANUP_AGGREGATION: ; \
 		_CLOSE_ORDERING_FILE(output_file) \
 		_CLOSE_ORDERING_FILE(input_file) \
 		/* Condition where there were no records, meaning we never set is_first to false.  */ \
@@ -1318,7 +1316,6 @@ do { \
     } \
 	/* ORDERBY handling. Do this anytime we have ORDERBY or aggregates, since we abuse the use of orderby file to accomodate when we have aggregates but no orderby. */ \
 	if (orderby_n > 0 || agg_n > 0) { \
-		/*result.processed	= alloca(result.num_bytes);*/ \
 		/* We can safely ALWAYS open with aggregates, because it doesn't increase the size if no aggregates exist (0*8 == 0). */ \
 		/* If we have aggregates, we have already projected. Otherwise, we haven't. */ \
 		if (agg_n > 0) { \
@@ -1336,9 +1333,16 @@ do { \
 		uint16_t buffer_size = ion_external_sort_bytes_of_memory_required(&es, 0, boolean_false); \
 		char buffer[buffer_size]; \
 		/* We need a place to write read all of the stuff in the orderby file. */ \
-		char record_buf[8*agg_n + result.num_bytes]; \
+		char record_buf[8*agg_n + (agg_n > 0 ? result.num_bytes : result.raw_record_size)]; \
 		/* Setup the processed pointer to the correct spot. */ \
-		result.processed	= (unsigned char *)(record_buf+(8*agg_n)); \
+		if (agg_n > 0) { \
+        	result.processed    = (unsigned char *)(record_buf+(8*agg_n)); \
+        } \
+		else { \
+			/* TODO: Only allocated data where we need it. Might incure multiple allocations, think about when this is worth it. */ \
+			result.data			= (unsigned char *)(record_buf+(8*agg_n)); \
+			result.processed	= alloca(result.num_bytes); \
+		} \
 		ion_external_sort_cursor_t cursor; \
 		if (err_ok != (error = ion_external_sort_init_cursor(&es, &cursor, buffer, buffer_size))) { \
 			_CLOSE_ORDERING_FILE(input_file); \
@@ -1363,9 +1367,8 @@ do { \
 					error	= err_illegal_state; \
 					goto IINQ_QUERY_END; \
 				} \
-                /*goto COMPUTE_SELECT;*/ \
-                /*DONE_COMPUTE_SELECT_3: ;*/ \
             } \
+{ printf("result.num_bytes=%d\n", result.num_bytes);fflush(stdout); int i; for(i=0; i<(result.num_bytes); i++){ printf("%02x ", result.processed[i]);fflush(stdout); } printf("\n");fflush(stdout);} \
 			(p)->execute(&result, (p)->state); \
 			if (err_ok != (error = cursor.next(&cursor, record_buf))) { \
 				_CLOSE_ORDERING_FILE(input_file); \
