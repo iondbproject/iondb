@@ -890,7 +890,7 @@ do { \
 		} \
 	} \
 	/* If the key is a non-null pointer. */ \
-	if (NULL != key) {  \
+	if (NULL != key) { \
 		if (0 == ordering_size || 1 != fread((key), ordering_size, 1, input_file)) { \
 			break; \
 		} \
@@ -1045,7 +1045,8 @@ do { \
 	(_CREATE_MEMCPY_STACK_ADDRESS_FOR_NUMERICAL_EXPRESSION(expr), sizeof(expr), 0)
 
 #define SELECT_AGGR(i) \
-	((void *)&(AGGREGATES(i)), sizeof(uint64_t), 1)
+	((IINQ_AGGREGATE_TYPE_INT == aggregates[(i)].type ? (unsigned char *)(&(aggregates[(i)].value.i64)) : (IINQ_AGGREGATE_TYPE_UINT == aggregates[(i)].type ? (unsigned char *)(&(aggregates[(i)].value.u64)) : (unsigned char *)(&(aggregates[(i)].value.f64)))), sizeof(uint64_t), 1)
+	/*((void *)(&(AGGREGATE(i))), sizeof(uint64_t), 1)*/
 
 #define SELECT_GRBY(i) \
 	(groupby_order_parts[(i)].pointer, groupby_order_parts[(i)].size, 1)
@@ -1060,7 +1061,7 @@ do { \
 #define _SELECT_GET_OVERRIDE(_1, _2, _3, _4, _5, _6, _7, _8, MACRO, ...) MACRO
 
 #define _SELECT_COMPUTE_SINGLE(t) \
-	memcpy(result->processed[select_byte_index], FIRST_MACRO_TUPLE3(t), SECOND_MACRO_TUPLE3(t)); \
+	memcpy(result.processed+select_byte_index, FIRST_MACRO_TUPLE3(t), SECOND_MACRO_TUPLE3(t)); \
 	select_byte_index	+= SECOND_MACRO_TUPLE3(t);
 
 /* We use the sliding macro trick to generate SELECT clauses. */
@@ -1072,7 +1073,7 @@ do { \
 #define _SELECT_COMPUTE_6(_1, _2, _3, _4, _5, _6) _SELECT_COMPUTE_5(_1, _2, _3, _4, _5) _SELECT_COMPUTE_SINGLE(_6)
 #define _SELECT_COMPUTE_7(_1, _2, _3, _4, _5, _6, _7) _SELECT_COMPUTE_6(_1, _2, _3, _4, _5, _6) _SELECT_COMPUTE_SINGLE(_7)
 #define _SELECT_COMPUTE_8(_1, _2, _3, _4, _5, _6, _7, _8) _SELECT_COMPUTE_7(_1, _2, _3, _4, _5, _6, _7) _SELECT_COMPUTE_SINGLE(_8)
-#define _SELECT_COMPUTE(...) _ORDERING_GET_OVERRIDE(__VA_ARGS__, _SELECT_COMPUTE_8, _SELECT_COMPUTE_7, _SELECT_COMPUTE_6, _SELECT_COMPUTE_5, _SELECT_COMPUTE_4, _SELECT_COMPUTE_3, _SELECT_COMPUTE_2, _SELECT_COMPUTE_1, THEBLACKHOLE)(__VA_ARGS__)
+#define _SELECT_COMPUTE(...) _SELECT_GET_OVERRIDE(__VA_ARGS__, _SELECT_COMPUTE_8, _SELECT_COMPUTE_7, _SELECT_COMPUTE_6, _SELECT_COMPUTE_5, _SELECT_COMPUTE_4, _SELECT_COMPUTE_3, _SELECT_COMPUTE_2, _SELECT_COMPUTE_1, THEBLACKHOLE)(__VA_ARGS__)
 
 #define SELECT(...) \
 	goto SKIP_COMPUTE_SELECT; \
@@ -1137,10 +1138,10 @@ do { \
 	int agg_n									= 0; \
 	int i_agg									= 0; \
 	from_clause \
-	select_clause \
 	_ORDERING_DECLARE(groupby) \
 	_ORDERING_DECLARE(orderby) \
     aggregate_exprs \
+	select_clause \
     groupby_clause \
     orderby_clause \
 	/* We wrap the FROM code in a do-while(0) to limit the lifetime of the source variables. */ \
@@ -1279,6 +1280,14 @@ do { \
         } \
 		/* Condition where there were some records, meaning we set is_first to true.  */ \
 		if (boolean_false == is_first) { \
+			jmp_r	= setjmp(selectbuf); \
+			if (0 == jmp_r) { \
+				goto COMPUTE_SELECT; \
+			} \
+			else if (IINQ_JMP_ERROR == jmp_r) { \
+				error	= err_illegal_state; \
+				goto IINQ_QUERY_END; \
+			} \
 			_WRITE_ORDERING_RECORD(orderby, 1, 0, 1, result) \
 		} \
 		_CLOSE_ORDERING_FILE(output_file) \
@@ -1290,7 +1299,7 @@ do { \
     } \
 	/* ORDERBY handling. Do this anytime we have ORDERBY or aggregates, since we abuse the use of orderby file to accomodate when we have aggregates but no orderby. */ \
 	if (orderby_n > 0 || agg_n > 0) { \
-		result.processed	= alloca(result.num_bytes); \
+		/*result.processed	= alloca(result.num_bytes);*/ \
 		/* We can safely ALWAYS open with aggregates, because it doesn't increase the size if no aggregates exist (0*8 == 0). */ \
 		/* If we have aggregates, we have already projected. Otherwise, we haven't. */ \
 		if (agg_n > 0) { \
@@ -1301,23 +1310,30 @@ do { \
 		} \
 		ion_external_sort_t	es; \
 		iinq_sort_context_t context = _IINQ_SORT_CONTEXT(orderby); \
-		if (err_ok != (error = ion_external_sort_init(&es, input_file, &context, iinq_sort_compare, _RESULT_ORDERBY_RECORD_SIZE, _RESULT_ORDERBY_RECORD_SIZE+total_orderby_size, IINQ_PAGE_SIZE, boolean_false, ION_FILE_SORT_FLASH_MINSORT))) { \
+		if (err_ok != (error = ion_external_sort_init(&es, input_file, &context, iinq_sort_compare, _RESULT_ORDERBY_RECORD_SIZE, _RESULT_ORDERBY_RECORD_SIZE+total_orderby_size+(8*agg_n), IINQ_PAGE_SIZE, boolean_false, ION_FILE_SORT_FLASH_MINSORT))) { \
 			_CLOSE_ORDERING_FILE(input_file); \
 			goto IINQ_QUERY_END; \
 		} \
 		uint16_t buffer_size = ion_external_sort_bytes_of_memory_required(&es, 0, boolean_false); \
 		char buffer[buffer_size]; \
+		/* We need a place to write read all of the stuff in the orderby file. */ \
+		char record_buf[8*agg_n + result.num_bytes]; \
+		/* Setup the processed pointer to the correct spot. */ \
+		result.processed	= (unsigned char *)(record_buf+(8*agg_n)); \
 		ion_external_sort_cursor_t cursor; \
 		if (err_ok != (error = ion_external_sort_init_cursor(&es, &cursor, buffer, buffer_size))) { \
 			_CLOSE_ORDERING_FILE(input_file); \
 			goto IINQ_QUERY_END; \
         } \
-		if (err_ok != (error = cursor.next(&cursor, _RESULT_ORDERBY_RECORD_DATA))) { \
+		if (err_ok != (error = cursor.next(&cursor, record_buf))) { \
 			_CLOSE_ORDERING_FILE(input_file); \
 			goto IINQ_QUERY_END; \
 		} \
+		/* Load the aggregate values into their place. */ \
+		for (i_agg = 0; i_agg < agg_n; i_agg++) { \
+			aggregates[i_agg].value.i64	= *((int64_t *)(record_buf + (8*i_agg))); \
+		} \
 		while (cs_cursor_active == cursor.status) { \
-			printf("%d\n", *((uint32_t *) _RESULT_ORDERBY_RECORD_DATA)); \
 			/* If no aggregates, it means we haven't projected yet. */ \
 			if (0 == agg_n) { \
 				jmp_r	= setjmp(selectbuf); \
@@ -1332,9 +1348,13 @@ do { \
                 /*DONE_COMPUTE_SELECT_3: ;*/ \
             } \
 			(p)->execute(&result, (p)->state); \
-			if (err_ok != (error = cursor.next(&cursor, result.data))) { \
+			if (err_ok != (error = cursor.next(&cursor, record_buf))) { \
 				_CLOSE_ORDERING_FILE(input_file); \
 				goto IINQ_QUERY_END; \
+			} \
+			/* Load the aggregate values into their place. */ \
+			for (i_agg = 0; i_agg < agg_n; i_agg++) { \
+				aggregates[i_agg].value.i64	= *((int64_t *)(record_buf + (8*i_agg))); \
 			} \
         } \
 		ion_external_sort_destroy_cursor(&cursor); \
