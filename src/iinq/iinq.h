@@ -237,6 +237,8 @@ typedef int8_t iinq_order_direction_t;
 typedef struct {
 	/**> A pointer to a stack-allocated-and-evaluated expression result. */
 	void					*pointer;
+	/**> A type flag for distinguishing signed integers and unsigned integers from everthing else. */
+	uint8_t					type;
 	/**> The size of the exression pointed to by @ref pointer. */
 	iinq_size_t				size;
 	/**> The ordering direction of this ordering object (ASCENDING or
@@ -261,6 +263,16 @@ typedef struct {
 } iinq_sort_context_t;
 
 #define _IINQ_SORT_CONTEXT(name)	((iinq_sort_context_t){ name ## _order_parts , name ## _n })
+
+/**
+@brief		Types used by the comparator.
+*/
+typedef enum {
+	IINQ_ORDERTYPE_INT,
+	IINQ_ORDERTYPE_UINT,
+	IINQ_ORDERTYPE_FLOAT,
+	IINQ_ORDERTYPE_OTHER
+} iinq_order_type_e;
 
 /**
 @param		schema_file_name
@@ -949,10 +961,16 @@ do { \
 /*
  * We need the ability to treat expressions resulting in
  */
-#define ASCENDING(expr)		(expr, _CREATE_MEMCPY_STACK_ADDRESS_FOR_NUMERICAL_EXPRESSION(expr), sizeof((expr)), _ASCENDING_INDICATOR)
-#define ASC(expr)			ASCENDING(expr)
-#define DESCENDING(expr)	(expr, _CREATE_MEMCPY_STACK_ADDRESS_FOR_NUMERICAL_EXPRESSION(expr), sizeof((expr)), _DESCENDING_INDICATOR)
-#define DESC(expr)			DESCENDING(expr)
+#define ASCENDING_INT(expr)		(IINQ_ORDERTYPE_INT, _CREATE_MEMCPY_STACK_ADDRESS_FOR_NUMERICAL_EXPRESSION(expr), sizeof((expr)), _ASCENDING_INDICATOR)
+#define ASCENDING_UINT(expr)	(IINQ_ORDERTYPE_UINT, _CREATE_MEMCPY_STACK_ADDRESS_FOR_NUMERICAL_EXPRESSION(expr), sizeof((expr)), _ASCENDING_INDICATOR)
+#define ASCENDING_FLOAT(expr)	(IINQ_ORDERTYPE_FLOAT, _CREATE_MEMCPY_STACK_ADDRESS_FOR_NUMERICAL_EXPRESSION(expr), sizeof((expr)), _ASCENDING_INDICATOR)
+#define ASCENDING(expr)			(IINQ_ORDERTYPE_OTHER, _CREATE_MEMCPY_STACK_ADDRESS_FOR_NUMERICAL_EXPRESSION(expr), sizeof((expr)), _ASCENDING_INDICATOR)
+#define ASC(expr)				ASCENDING(expr)
+#define DESCENDING_INT(expr)	(IINQ_ORDERTYPE_INT, _CREATE_MEMCPY_STACK_ADDRESS_FOR_NUMERICAL_EXPRESSION(expr), sizeof((expr)), _DESCENDING_INDICATOR)
+#define DESCENDING_UINT(expr)	(IINQ_ORDERTYPE_UINT, _CREATE_MEMCPY_STACK_ADDRESS_FOR_NUMERICAL_EXPRESSION(expr), sizeof((expr)), _DESCENDING_INDICATOR)
+#define DESCENDING_FLOAT(expr)	(IINQ_ORDERTYPE_FLOAT, _CREATE_MEMCPY_STACK_ADDRESS_FOR_NUMERICAL_EXPRESSION(expr), sizeof((expr)), _DESCENDING_INDICATOR)
+#define DESCENDING(expr)		(IINQ_ORDERTYPE_OTHER, _CREATE_MEMCPY_STACK_ADDRESS_FOR_NUMERICAL_EXPRESSION(expr), sizeof((expr)), _DESCENDING_INDICATOR)
+#define DESC(expr)				DESCENDING(expr)
 
 #define _FIRST_MACRO_TUPLE4(_1, _2, _3, _4)		_1
 #define FIRST_MACRO_TUPLE4(t)					_FIRST_MACRO_TUPLE4 t
@@ -966,6 +984,7 @@ do { \
 #define _SETUP_ORDERING_SINGLE(name, t, n) \
 	name ## _order_parts[(n)].direction	= FOURTH_MACRO_TUPLE4(t); \
 	name ## _order_parts[(n)].size		= THIRD_MACRO_TUPLE4(t); \
+	name ## _order_parts[(n)].type		= FIRST_MACRO_TUPLE4(t); \
 	total_ ## name ## _size				+= name ## _order_parts[(n)].size;
 
 /*
@@ -1124,7 +1143,7 @@ do { \
 
 #define MATERIALIZED_QUERY(select_clause, aggregate_exprs, from_clause, where_clause, groupby_clause, having_clause, orderby_clause, limit, when, p) \
 do { \
-	ion_err_t			error; \
+	ion_err_t			error = err_ok; \
 	jmp_buf				selectbuf; \
 	int					jmp_r; \
 	int					read_page_remaining		= IINQ_PAGE_SIZE; \
@@ -1317,7 +1336,6 @@ do { \
 			goto IINQ_QUERY_END; \
 		} \
 		while (cs_cursor_active == cursor.status) { \
-			printf("%d\n", *((uint32_t *) _RESULT_ORDERBY_RECORD_DATA)); \
 			/* If no aggregates, it means we haven't projected yet. */ \
 			if (0 == agg_n) { \
 				jmp_r	= setjmp(selectbuf); \
@@ -1332,7 +1350,7 @@ do { \
                 /*DONE_COMPUTE_SELECT_3: ;*/ \
             } \
 			(p)->execute(&result, (p)->state); \
-			if (err_ok != (error = cursor.next(&cursor, result.data))) { \
+			if (err_ok != (error = cursor.next(&cursor, _RESULT_ORDERBY_RECORD_DATA))) { \
 				_CLOSE_ORDERING_FILE(input_file); \
 				goto IINQ_QUERY_END; \
 			} \

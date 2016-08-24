@@ -236,14 +236,16 @@ iinq_sort_compare(
 ) {
 #define TO_COMPARISON_RESULT(r)	((r) > 0 ? greater_than : ((r) < 0 ? less_than : equal))
 
-	iinq_size_t			k_i;
 	int					i;
 	iinq_sort_context_t	*c;
 	int 				result;
+	void 				*cur_a;
+	void 				*cur_b;
 
 	result		= 0;
-	k_i			= 0;
 	c			= (iinq_sort_context_t *)context;
+	cur_a		= a;
+	cur_b		= b;
 
 	if (NULL == c->parts) {
 		return equal;
@@ -251,14 +253,91 @@ iinq_sort_compare(
 
 	/* Loop through each ordering part. Stop early if possible. */
 	for (i = 0; i < c->n; i++) {
-		result	= (c->parts[i].direction)*(memcmp(((uint8_t *) a) + k_i, ((uint8_t *) b) + k_i, c->parts[i].size));
+		if (IINQ_ORDERTYPE_INT == c->parts->type) {
+			if (1 == c->parts[i].size) {
+				if (*((uint8_t *) cur_a) > *((uint8_t *) cur_b)) {
+					result = 1;
+				}
+				else if (*((uint8_t *) cur_a) < *((uint8_t *) cur_b)) {
+					result = -1;
+				}
+			}
+			else if (2 == c->parts[i].size) {
+				if (*((uint16_t *) cur_a) > *((uint16_t *) cur_b)) {
+					result = 1;
+				}
+				else if (*((uint16_t *) cur_a) < *((uint16_t *) cur_b)) {
+					result = -1;
+				}
+			}
+			else if (4 == c->parts[i].size) {
+				if (*((uint32_t *) cur_a) > *((uint32_t *) cur_b)) {
+					result = 1;
+				}
+				else if (*((uint32_t *) cur_a) < *((uint32_t *) cur_b)) {
+					result = -1;
+				}
+			}
+			else if (8 == c->parts[i].size) {
+				if (*((uint64_t *) cur_a) > *((uint64_t *) cur_b)) {
+					result = 1;
+				}
+				else if (*((uint64_t *) cur_a) < *((uint64_t *) cur_b)) {
+					result = -1;
+				}
+			}
+		}
+		else if (IINQ_ORDERTYPE_UINT == c->parts->type) {
+			if (1 == c->parts[i].size) {
+				if (*((int8_t *) cur_a) > *((int8_t *) cur_b)) {
+					result = 1;
+				}
+				else if (*((int8_t *) cur_a) < *((int8_t *) cur_b)) {
+					result = -1;
+				}
+			}
+			else if (2 == c->parts[i].size) {
+				if (*((int16_t *) cur_a) > *((int16_t *) cur_b)) {
+					result = 1;
+				}
+				else if (*((int16_t *) cur_a) < *((int16_t *) cur_b)) {
+					result = -1;
+				}
+			}
+			else if (4 == c->parts[i].size) {
+				if (*((int32_t *) cur_a) > *((int32_t *) cur_b)) {
+					result = 1;
+				}
+				else if (*((int32_t *) cur_a) < *((int32_t *) cur_b)) {
+					result = -1;
+				}
+			}
+			else if (8 == c->parts[i].size) {
+				if (*((int64_t *) cur_a) > *((int64_t *) cur_b)) {
+					result = 1;
+				}
+				else if (*((int64_t *) cur_a) < *((int64_t *) cur_b)) {
+					result = -1;
+				}
+			}
+		}
+		else if (IINQ_ORDERTYPE_FLOAT == c->parts->type) {
+			// TODO: Write a comparator for floats
+		}
+		else if (IINQ_ORDERTYPE_OTHER == c->parts->type) {
+			result = memcmp(cur_a, cur_b, c->parts[i].size);
+		}
+
 		if (result != 0) {
+			result *= c->parts[i].direction;
 			return TO_COMPARISON_RESULT(result);
 		}
-		k_i		+= c->parts[i].size;
+
+		cur_a = ((uint8_t *) cur_a) + c->parts[i].size;
+		cur_b = ((uint8_t *) cur_b) + c->parts[i].size;
 	}
 
-	return TO_COMPARISON_RESULT(result);
+	return equal;
 
 #undef TO_COMPARISON_RESULT
 }
