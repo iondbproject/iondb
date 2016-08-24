@@ -93,16 +93,6 @@ ion_external_sort_5_char_str_comparator(
 	}
 }
 
-void
-ion_external_sort_expected_5_char_str_sequential_data(
-	uint32_t index,
-	void *value
-) {
-	char temp_str[6];
-	sprintf(temp_str, "%05d", index);
-	memcpy(value, temp_str, 5);
-}
-
 ion_err_t
 ion_external_sort_write_5_char_str_random_data(
 	FILE *unsorted_file,
@@ -144,10 +134,21 @@ ion_external_sort_write_5_char_str_random_data(
 	return err_ok;
 }
 
+void
+ion_external_sort_expected_5_char_str_sequential_data(
+	uint32_t index,
+	void *value
+) {
+	char temp_str[6];
+	sprintf(temp_str, "%05d", index);
+	memcpy(value, temp_str, 5);
+}
+
 ion_err_t
 ion_external_sort_write_5_char_str_sequential_data(
 	FILE *unsorted_file,
-	uint32_t num_values
+	uint32_t num_values,
+	ion_boolean_e ascending
 ) {
 	srand(ION_EXTERNAL_SORT_SEED);
 	char temp_str[6];
@@ -158,7 +159,12 @@ ion_external_sort_write_5_char_str_sequential_data(
 	uint32_t i;
 
 	for (i = 0; i < num_values; i++) {
-		sprintf(temp_str, "%05d", num_values - i - 1);
+		if (boolean_true == ascending) {
+			sprintf(temp_str, "%05d", i);
+		}
+		else {
+			sprintf(temp_str, "%05d", num_values - i - 1);
+		}
 
 		if (cur_value_in_page == values_per_page) {
 			uint8_t num_padding_bytes = ION_EXTERNAL_SORT_PAGE_SIZE - values_per_page * 5;
@@ -181,6 +187,22 @@ ion_external_sort_write_5_char_str_sequential_data(
 	}
 
 	return err_ok;
+}
+
+ion_err_t
+ion_external_sort_write_5_char_str_sequential_data_ascending(
+	FILE *unsorted_file,
+	uint32_t num_values
+) {
+	return ion_external_sort_write_5_char_str_sequential_data(unsorted_file, num_values, boolean_true);
+}
+
+ion_err_t
+ion_external_sort_write_5_char_str_sequential_data_descending(
+	FILE *unsorted_file,
+	uint32_t num_values
+) {
+	return ion_external_sort_write_5_char_str_sequential_data(unsorted_file, num_values, boolean_false);
 }
 
 void
@@ -442,8 +464,11 @@ test_flash_min_sort_small_sort_record_at_a_time_with_page_unaligned_data(
 	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_5_char_str_random_data;
 	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, NULL, comparator);
 
-	write_func = ion_external_sort_write_5_char_str_sequential_data;
 	ion_external_sort_sorted_value_func_t sorted_val_func = ion_external_sort_expected_5_char_str_sequential_data;
+	write_func = ion_external_sort_write_5_char_str_sequential_data_descending;
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
+
+	write_func = ion_external_sort_write_5_char_str_sequential_data_ascending;
 	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
 }
 
@@ -461,8 +486,11 @@ test_flash_min_sort_large_sort_record_at_a_time_with_page_unaligned_data(
 	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_5_char_str_random_data;
 	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, NULL, comparator);
 
-	write_func = ion_external_sort_write_5_char_str_sequential_data;
 	ion_external_sort_sorted_value_func_t sorted_val_func = ion_external_sort_expected_5_char_str_sequential_data;
+	write_func = ion_external_sort_write_5_char_str_sequential_data_descending;
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
+
+	write_func = ion_external_sort_write_5_char_str_sequential_data_ascending;
 	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
 }
 
@@ -518,8 +546,11 @@ test_flash_min_sort_small_sort_dump_to_file_with_page_unaligned_data(
 	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_5_char_str_random_data;
 	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, NULL, comparator);
 
-	write_func = ion_external_sort_write_5_char_str_sequential_data;
 	ion_external_sort_sorted_value_func_t sorted_val_func = ion_external_sort_expected_5_char_str_sequential_data;
+	write_func = ion_external_sort_write_5_char_str_sequential_data_descending;
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
+
+	write_func = ion_external_sort_write_5_char_str_sequential_data_ascending;
 	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
 
 }
@@ -538,8 +569,11 @@ test_flash_min_sort_large_sort_dump_to_file_with_page_unaligned_data(
 	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_5_char_str_random_data;
 	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, NULL, comparator);
 
-	write_func = ion_external_sort_write_5_char_str_sequential_data;
 	ion_external_sort_sorted_value_func_t sorted_val_func = ion_external_sort_expected_5_char_str_sequential_data;
+	write_func = ion_external_sort_write_5_char_str_sequential_data_descending;
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
+
+	write_func = ion_external_sort_write_5_char_str_sequential_data_ascending;
 	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
 }
 
