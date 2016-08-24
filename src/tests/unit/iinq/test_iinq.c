@@ -394,7 +394,8 @@ void
 iinq_test_create_query_select_all_from_where_groupby_aggregate_simple_records(
 	planck_unit_test_t	*tc,
 	ion_iinq_result_t	*result,
-	uint32_t			count
+	uint32_t			count,
+	uint32_t 			total
 )
 {
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(int)*2, result->num_bytes);
@@ -422,6 +423,7 @@ iinq_test_create_query_select_all_from_where_groupby_aggregate_simple(
 	iinq_test_query_state_t		state;
 	state.count					= 0;
 	state.tc					= tc;
+	state.total					= 2;
 	state.func					= iinq_test_create_query_select_all_from_where_groupby_aggregate_simple_records;
 
 	ion_key_type_t				key_type;
