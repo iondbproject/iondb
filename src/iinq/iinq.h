@@ -1335,14 +1335,11 @@ do { \
 		/* We need a place to write read all of the stuff in the orderby file. */ \
 		char record_buf[total_orderby_size + 8*agg_n + (agg_n > 0 ? result.num_bytes : result.raw_record_size)]; \
 		/* Setup the processed pointer to the correct spot. */ \
-		if (agg_n > 0) { \
-        	result.processed    = (unsigned char *)(record_buf+total_orderby_size+(8*agg_n)); \
-        } \
-		else { \
-			/* TODO: Only allocated data where we need it. Might incure multiple allocations, think about when this is worth it. */ \
+		if (0 == agg_n) { \
+        	/* TODO: Only allocated data where we need it. Might incure multiple allocations, think about when this is worth it. */ \
 			result.data			= (unsigned char *)(record_buf+total_orderby_size+(8*agg_n)); \
-			result.processed	= alloca(result.num_bytes); \
-		} \
+        } \
+		result.processed		= (agg_n > 0 ? (unsigned char *)(record_buf+total_orderby_size+(8*agg_n)) : (unsigned char *)alloca(result.num_bytes)); \
 		ion_external_sort_cursor_t cursor; \
 		if (err_ok != (error = ion_external_sort_init_cursor(&es, &cursor, buffer, buffer_size))) { \
 			_CLOSE_ORDERING_FILE(input_file); \
