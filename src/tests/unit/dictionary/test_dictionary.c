@@ -146,30 +146,6 @@ test_dictionary_compare_numerics(
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO < dictionary_compare_signed_value(key_one, key_two, sizeof(char)));
 	}
-
-	{
-		short	*key_one;
-		short	*key_two;
-
-		short i, j;
-
-		key_one = &i;
-		key_two = &j;
-
-		for (i = SHRT_MIN / 10; i < SHRT_MAX / 10; i++) {
-			for (j = SHRT_MIN / 10; j < SHRT_MAX / 10; j++) {
-				if (i < j) {
-					PLANCK_UNIT_ASSERT_TRUE(tc, ZERO > dictionary_compare_signed_value(key_one, key_two, sizeof(short)));
-				}
-				else if (i == j) {
-					PLANCK_UNIT_ASSERT_TRUE(tc, ZERO == dictionary_compare_signed_value(key_one, key_two, sizeof(short)));
-				}
-				else {
-					PLANCK_UNIT_ASSERT_TRUE(tc, ZERO < dictionary_compare_signed_value(key_one, key_two, sizeof(short)));
-				}
-			}
-		}
-	}
 }
 
 void
@@ -283,7 +259,7 @@ dictionary_getsuite(
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_dictionary_compare_numerics);
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_dictionary_master_table); */
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_dictionary_master_table);
 
 	return suite;
 }
