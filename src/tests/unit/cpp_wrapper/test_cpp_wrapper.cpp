@@ -103,7 +103,7 @@ test_cpp_wrapper_insert_on_all_implementations(
 	test_cpp_wrapper_insert_get_edge_cases(tc, dict);
 	delete dict;
 
-	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_insert_get(tc, dict);
 	test_cpp_wrapper_insert_get_edge_cases(tc, dict);
 	delete dict;
@@ -194,7 +194,7 @@ test_cpp_wrapper_delete_on_all_implementations(
 	test_cpp_wrapper_insert_delete_edge_cases(tc, dict);
 	delete dict;
 
-	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_insert_delete(tc, dict);
 	test_cpp_wrapper_insert_delete_edge_cases(tc, dict);
 	delete dict;
@@ -283,7 +283,7 @@ test_cpp_wrapper_update_on_all_implementations(
 	test_cpp_wrapper_insert_update_edge_cases(tc, dict);
 	delete dict;
 
-	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_insert_update(tc, dict);
 	test_cpp_wrapper_insert_update_edge_cases(tc, dict);
 	delete dict;
@@ -434,7 +434,7 @@ test_cpp_wrapper_equality_on_all_implementations(
 	test_cpp_wrapper_equality_duplicates(tc, dict, 4);
 	delete dict;
 
-	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_equality_no_duplicates(tc, dict, 4);
 	delete dict;
 
@@ -464,7 +464,7 @@ test_cpp_wrapper_equality_edge_case1_on_all_implementations(
 	test_cpp_wrapper_equality_edge_case1(tc, dict);
 	delete dict;
 
-	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_equality_edge_case1(tc, dict);
 	delete dict;
 
@@ -714,7 +714,7 @@ test_cpp_wrapper_range_simple_on_all_implementations(
 	test_cpp_wrapper_range_simple(tc, dict, 1, 3);
 	delete dict;
 
-	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_range_simple(tc, dict, 4, 18);
 	delete dict;
 
@@ -744,7 +744,7 @@ test_cpp_wrapper_range_edge_case1_on_all_implementations(
 	test_cpp_wrapper_range_edge_case1(tc, dict);
 	delete dict;
 
-	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_range_edge_case1(tc, dict);
 	delete dict;
 
@@ -774,7 +774,7 @@ test_cpp_wrapper_range_edge_case2_on_all_implementations(
 	test_cpp_wrapper_range_edge_case2(tc, dict);
 	delete dict;
 
-	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_range_edge_case2(tc, dict);
 	delete dict;
 
@@ -804,7 +804,7 @@ test_cpp_wrapper_range_edge_case3_on_all_implementations(
 	test_cpp_wrapper_range_edge_case3(tc, dict);
 	delete dict;
 
-	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_range_edge_case3(tc, dict);
 	delete dict;
 
@@ -991,7 +991,7 @@ test_cpp_wrapper_all_records_simple_on_all_implementations(
 	test_cpp_wrapper_all_records_simple(tc, dict, 4);
 	delete dict;
 
-	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_all_records_simple(tc, dict, 13);
 	delete dict;
 
@@ -1021,7 +1021,7 @@ test_cpp_wrapper_all_records_edge_cases1_on_all_implementations(
 	test_cpp_wrapper_all_records_edge_cases1(tc, dict);
 	delete dict;
 
-	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_all_records_edge_cases1(tc, dict);
 	delete dict;
 
@@ -1051,7 +1051,7 @@ test_cpp_wrapper_all_records_edge_cases2_on_all_implementations(
 	test_cpp_wrapper_all_records_edge_cases2(tc, dict);
 	delete dict;
 
-	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_all_records_edge_cases2(tc, dict);
 	delete dict;
 
@@ -1127,7 +1127,7 @@ test_cpp_wrapper_open_close_on_all_implementations(
 	test_cpp_wrapper_open_close(tc, dict, 1, 13);
 	delete dict;
 
-	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_open_close(tc, dict, 45, 14);
 	delete dict;
 
@@ -1145,7 +1145,7 @@ test_cpp_wrapper_open_close_on_all_implementations(
 @return		Pointer to a test suite.
 */
 planck_unit_suite_t *
-cpp_wrapper_getsuite(
+cpp_wrapper_getsuite_1(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
@@ -1162,6 +1162,20 @@ cpp_wrapper_getsuite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_all_records_simple_on_all_implementations);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_all_records_edge_cases1_on_all_implementations);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_all_records_edge_cases2_on_all_implementations);
+/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_open_close_on_all_implementations); */
+
+	return suite;
+}
+
+/**
+@brief		Creates the suite to test.
+@return		Pointer to a test suite.
+*/
+planck_unit_suite_t *
+cpp_wrapper_getsuite_2(
+) {
+	planck_unit_suite_t *suite = planck_unit_new_suite();
+
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_open_close_on_all_implementations);
 
 	return suite;
@@ -1173,8 +1187,13 @@ cpp_wrapper_getsuite(
 void
 runalltests_cpp_wrapper(
 ) {
-	planck_unit_suite_t *suite = cpp_wrapper_getsuite();
+	planck_unit_suite_t *suite1 = cpp_wrapper_getsuite_1();
 
-	planck_unit_run_suite(suite);
-	planck_unit_destroy_suite(suite);
+	planck_unit_run_suite(suite1);
+	planck_unit_destroy_suite(suite1);
+
+	planck_unit_suite_t *suite2 = cpp_wrapper_getsuite_2();
+
+	planck_unit_run_suite(suite2);
+	planck_unit_destroy_suite(suite2);
 }

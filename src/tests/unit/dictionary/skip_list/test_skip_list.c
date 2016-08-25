@@ -1927,7 +1927,7 @@ test_skiplist_big_keys(
 @return	 Pointer to a CuTest suite.
 */
 planck_unit_suite_t *
-skiplist_getsuite(
+skiplist_getsuite_1(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
@@ -1966,6 +1966,49 @@ skiplist_getsuite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_several_same_key);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_several_same_key_in_mix);
 
+	return suite;
+}
+
+/**
+@brief	  Creates the suite to test using CuTest.
+@return	 Pointer to a CuTest suite.
+*/
+planck_unit_suite_t *
+skiplist_getsuite_2(
+) {
+	planck_unit_suite_t *suite = planck_unit_new_suite();
+
+	/* Query Tests */
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_query_nonexist_empty);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_query_nonexist_populated_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_query_nonexist_populated_several);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_query_exist_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_query_exist_populated_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_query_exist_populated_several);
+
+	/* Delete Tests */
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_empty);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_nonexist_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_nonexist_several);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_single_several);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_single_several_noncont);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_several_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_several_same_key);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_several_same_key_in_mix);
+
+	return suite;
+}
+
+/**
+@brief	  Creates the suite to test using CuTest.
+@return	 Pointer to a CuTest suite.
+*/
+planck_unit_suite_t *
+skiplist_getsuite_3(
+) {
+	planck_unit_suite_t *suite = planck_unit_new_suite();
+
 	/* Update Tests */
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_update_single_nonexist);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_update_single_nonexist_nonempty);
@@ -1994,14 +2037,25 @@ void
 runalltests_skiplist(
 ) {
 	/* CuString	*output	= CuStringNew(); */
-	planck_unit_suite_t *suite = skiplist_getsuite();
+	planck_unit_suite_t *suite_1 = skiplist_getsuite_1();
 
-	planck_unit_run_suite(suite);
+	planck_unit_run_suite(suite_1);
+	planck_unit_destroy_suite(suite_1);
+
+	planck_unit_suite_t *suite_2 = skiplist_getsuite_2();
+
+	planck_unit_run_suite(suite_2);
+	planck_unit_destroy_suite(suite_2);
+
+	planck_unit_suite_t *suite_3 = skiplist_getsuite_3();
+
+	planck_unit_run_suite(suite_3);
+	planck_unit_destroy_suite(suite_3);
+
 	/* CuSuiteSummary(suite, output); */
 	/* CuSuiteDetails(suite, output); */
 	/* printf("----\nSkiplist Tests:\n%s\n", output->buffer); */
 
-	planck_unit_destroy_suite(suite);
 	/* CuSuiteDelete(suite); */
 	/* CuStringDelete(output); */
 }

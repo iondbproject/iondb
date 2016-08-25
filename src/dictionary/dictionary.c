@@ -23,7 +23,16 @@
 
 #include "dictionary.h"
 #include "dictionary_types.h"
-#include "bpp_tree/bpp_tree_handler.h"
+#include "flat_file/flat_file_dictionary_handler.h"
+
+int
+dictionary_get_filename(
+	ion_dictionary_id_t id,
+	char				*ext,
+	char				*filename
+) {
+	return snprintf(filename, ION_MAX_FILENAME_LENGTH, "%d.%s", id, ext);
+}
 
 ion_dictionary_compare_t
 dictionary_switch_compare(
@@ -245,21 +254,21 @@ dictionary_open(
 		ion_predicate_t				predicate;
 		ion_dict_cursor_t			*cursor = NULL;
 		ion_record_t				record;
-		ion_dictionary_handler_t	bpp_tree_handler;
-		ion_dictionary_t			bpp_dict;
+		ion_dictionary_handler_t	flat_file_handler;
+		ion_dictionary_t			ff_dict;
 
-		bpptree_init(&bpp_tree_handler);
+		ffdict_init(&flat_file_handler);
 
-		ion_dictionary_config_info_t bpp_config = {
-			config->id, 0, config->type, config->key_size, config->value_size, config->dictionary_size
+		ion_dictionary_config_info_t ff_config = {
+			config->id, 0, config->type, config->key_size, config->value_size, 1
 		};
 
-		if (err_ok != dictionary_open(&bpp_tree_handler, &bpp_dict, &bpp_config)) {
+		if (err_ok != dictionary_open(&flat_file_handler, &ff_dict, &ff_config)) {
 			return err_dictionary_initialization_failed;
 		}
 
 		dictionary_build_predicate(&predicate, predicate_all_records);
-		dictionary_find(&bpp_dict, &predicate, &cursor);
+		dictionary_find(&ff_dict, &predicate, &cursor);
 		record.key		= malloc((size_t) config->key_size);
 		record.value	= malloc((size_t) config->value_size);
 
@@ -281,7 +290,7 @@ dictionary_open(
 		free(record.key);
 		free(record.value);
 
-		dictionary_delete_dictionary(&bpp_dict);
+		dictionary_delete_dictionary(&ff_dict);
 
 		error = err_ok;
 	}
@@ -317,22 +326,23 @@ dictionary_close(
 		record.key		= (ion_key_t) malloc((size_t) dictionary->instance->record.key_size);
 		record.value	= (ion_value_t) malloc((size_t) dictionary->instance->record.value_size);
 
-		int							key_size	= dictionary->instance->record.key_size;
-		int							value_size	= dictionary->instance->record.value_size;
-		ion_key_type_t				key_type	= dictionary->instance->key_type;
-		ion_dictionary_handler_t	bpp_tree_handler;
-		ion_dictionary_t			bpp_dict;
+		int				key_size	= dictionary->instance->record.key_size;
+		int				value_size	= dictionary->instance->record.value_size;
+		ion_key_type_t	key_type	= dictionary->instance->key_type;
 
-		bpptree_init(&bpp_tree_handler);
+		ion_dictionary_handler_t	flat_file_handler;
+		ion_dictionary_t			ff_dict;
 
-		if (dictionary_create(&bpp_tree_handler, &bpp_dict, dictionary->instance->id, key_type, key_size, value_size, 1) != err_ok) {
+		ffdict_init(&flat_file_handler);
+
+		if (dictionary_create(&flat_file_handler, &ff_dict, dictionary->instance->id, key_type, key_size, value_size, 1) != err_ok) {
 			return err_dictionary_initialization_failed;
 		}
 
 		ion_cursor_status_t cursor_status;
 
 		while ((cursor_status = cursor->next(cursor, &record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
-			dictionary_insert(&bpp_dict, record.key, record.value);
+			dictionary_insert(&ff_dict, record.key, record.value);
 		}
 
 		if (cursor_status != cs_end_of_results) {
@@ -343,7 +353,7 @@ dictionary_close(
 		free(record.key);
 		free(record.value);
 
-		dictionary_close(&bpp_dict);
+		dictionary_close(&ff_dict);
 		dictionary_delete_dictionary(dictionary);
 
 		error = err_ok;

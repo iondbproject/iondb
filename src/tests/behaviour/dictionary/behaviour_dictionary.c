@@ -56,9 +56,9 @@ ion_bhdct_context_t bhdct_context = { 0 };
 */
 void
 bhdct_set_context(
-	void (					*init_fcn)(ion_dictionary_handler_t *),
-	ion_dictionary_size_t	dictionary_size,
-	ion_boolean_t			duplicate_support
+	ion_handler_initializer_t	init_fcn,
+	ion_dictionary_size_t		dictionary_size,
+	ion_boolean_t				duplicate_support
 ) {
 	bhdct_context.init_fcn			= init_fcn;
 	bhdct_context.dictionary_size	= dictionary_size;
@@ -1521,6 +1521,7 @@ bhdct_getsuite(
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_single);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_in_many);
+
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_lots);
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_single_string_key);
@@ -1538,6 +1539,7 @@ bhdct_getsuite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_exist_single);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_single);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_multiple);
+
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_all);
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_exist_single_string_key);
