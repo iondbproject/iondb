@@ -1119,9 +1119,9 @@ test_cpp_wrapper_open_close_on_all_implementations(
 ) {
 	Dictionary<int, int> *dict;
 
-/*	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
-/*	test_cpp_wrapper_open_close(tc, dict, 66, 12); */
-/*	delete dict; */
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_open_close(tc, dict, 66, 12);
+	delete dict;
 
 	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_open_close(tc, dict, 1, 13);
@@ -1131,9 +1131,9 @@ test_cpp_wrapper_open_close_on_all_implementations(
 	test_cpp_wrapper_open_close(tc, dict, 45, 14);
 	delete dict;
 
-	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
-	test_cpp_wrapper_open_close(tc, dict, 3, 15);
-	delete dict;
+/*	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50); */
+/*	test_cpp_wrapper_open_close(tc, dict, 3, 15); */
+/*	delete dict; */
 
 	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_open_close(tc, dict, 5, 12);
