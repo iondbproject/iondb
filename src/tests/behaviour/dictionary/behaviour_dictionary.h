@@ -63,6 +63,78 @@ bhdct_getsuite(
 	void
 );
 
+/**
+@brief	Constructs the testing suite for the behaviour dictionary tests.
+@return	A constructed, initialized suite.
+*/
+planck_unit_suite_t *
+bhdct_getsuite_bpptree1(
+	void
+);
+
+/**
+@brief	Constructs the testing suite for the behaviour dictionary tests.
+@return	A constructed, initialized suite.
+*/
+planck_unit_suite_t *
+bhdct_getsuite_bpptree2(
+	void
+);
+
+/**
+@brief	Constructs the testing suite for the behaviour dictionary tests.
+@return	A constructed, initialized suite.
+*/
+planck_unit_suite_t *
+bhdct_getsuite_bpptree3(
+	void
+);
+
+/**
+@brief	Constructs the testing suite for the behaviour dictionary tests.
+@return	A constructed, initialized suite.
+*/
+planck_unit_suite_t *
+bhdct_getsuite_bpptree4(
+	void
+);
+
+/**
+@brief	Constructs the testing suite for the behaviour dictionary tests.
+@return	A constructed, initialized suite.
+*/
+planck_unit_suite_t *
+bhdct_getsuite_bpptree5(
+	void
+);
+
+/**
+@brief	Constructs the testing suite for the behaviour dictionary tests.
+@return	A constructed, initialized suite.
+*/
+planck_unit_suite_t *
+bhdct_getsuite_bpptree6(
+	void
+);
+
+/**
+@brief	Constructs the testing suite for the behaviour dictionary tests.
+@return	A constructed, initialized suite.
+*/
+planck_unit_suite_t *
+bhdct_getsuite_bpptree7(
+	void
+);
+
+/**
+@brief	Constructs the testing suite for the behaviour dictionary tests.
+@return	A constructed, initialized suite.
+*/
+planck_unit_suite_t *
+bhdct_getsuite_bpptree8(
+	void
+);
+
 #if defined(__cplusplus)
 }
 #endif
