@@ -160,8 +160,7 @@ flat_file_close(
 );
 
 /**
-@brief			Performs a linear scan of the flat file, going forwards
-				if @p scan_forwards is true, writing the first location
+@brief			Performs a linear scan of the flat file writing the first location
 				seen that satisfies the given @p predicate to @p location.
 @details		If the scan falls through, then the location is written as
 				the EOF position of the file. The variadic arguments accepted
@@ -173,7 +172,7 @@ flat_file_close(
 @param[in]		start_location
 					Where to begin the scan. This is given as a row index. If
 					given as -1, then it is assumed to be either the start of
-					file or end of file, depending on the state of @p scan_forwards.
+					file or end of file, depending on the state of @p scan_direction.
 @param[out]		location
 					Allocated memory location to write back the found location into.
 					Is not changed in the event of a failure or error condition. This
@@ -181,8 +180,8 @@ flat_file_close(
 @param[out]		row
 					A row struct to write back the found row into. This is allocated
 					by the user.
-@param[in]		scan_forwards
-					Scans front-to-back if @p true, else scans back-to-front.
+@param[in]		scan_direction
+					Scans in the direction provided.
 @param[in]		predicate
 					Given test function to check each row against. Once this function
 					returns true, the scan is terminated and the found location and row
@@ -199,7 +198,7 @@ flat_file_scan(
 	ion_fpos_t					start_location,
 	ion_fpos_t					*location,
 	ion_flat_file_row_t			*row,
-	ion_boolean_t				scan_forwards,
+	ion_byte_t					scan_direction,
 	ion_flat_file_predicate_t	predicate,
 	...
 );

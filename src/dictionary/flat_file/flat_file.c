@@ -99,7 +99,7 @@ flat_file_initialize(
 	/* Now move the eof to the last non-empty row in the file */
 	ion_fpos_t			loc = -1;
 	ion_flat_file_row_t row;
-	ion_err_t			err = flat_file_scan(flat_file, -1, &loc, &row, boolean_false, flat_file_predicate_not_empty);
+	ion_err_t			err = flat_file_scan(flat_file, -1, &loc, &row, FLAT_FILE_SCAN_BACKWARDS, flat_file_predicate_not_empty);
 
 	if ((err_ok != err) && (err_file_hit_eof != err)) {
 		fclose(flat_file->data_file);
@@ -146,15 +146,15 @@ flat_file_scan(
 	ion_fpos_t					start_location,
 	ion_fpos_t					*location,
 	ion_flat_file_row_t			*row,
-	ion_boolean_t				scan_forwards,
+	ion_byte_t					scan_direction,
 	ion_flat_file_predicate_t	predicate,
 	...
 ) {
 	ion_fpos_t	cur_offset	= flat_file->start_of_data + start_location * flat_file->row_size;
-	ion_fpos_t	end_offset	= scan_forwards ? flat_file->eof_position : flat_file->start_of_data;
+	ion_fpos_t	end_offset	= FLAT_FILE_SCAN_FORWARDS == scan_direction ? flat_file->eof_position : flat_file->start_of_data;
 
 	if (-1 == start_location) {
-		if (scan_forwards) {
+		if (FLAT_FILE_SCAN_FORWARDS == scan_direction) {
 			cur_offset = flat_file->start_of_data;
 		}
 		else {
@@ -164,7 +164,7 @@ flat_file_scan(
 
 	/* If we're scanning backwards, bump the cur_offset up one record so that we read the record we're sitting on. */
 	/* We don't do this if we're positioned at the EOF, since otherwise we would read garbage. */
-	if (!scan_forwards && (cur_offset != flat_file->eof_position)) {
+	if ((FLAT_FILE_SCAN_BACKWARDS == scan_direction) && (cur_offset != flat_file->eof_position)) {
 		cur_offset += flat_file->row_size;
 	}
 
@@ -182,7 +182,7 @@ flat_file_scan(
 		ion_fpos_t	prev_offset				= cur_offset;
 		size_t		num_records_to_process	= flat_file->num_buffered;
 
-		if (scan_forwards) {
+		if (FLAT_FILE_SCAN_FORWARDS == scan_direction) {
 			/* It's possible for this to do a partial read (if you're close to EOF), calculate how many we need to read */
 			size_t records_left = (end_offset - cur_offset) / flat_file->row_size;
 
@@ -223,7 +223,7 @@ flat_file_scan(
 
 		int32_t i;
 
-		for (i = scan_forwards ? 0 : num_records_to_process - 1; scan_forwards ? (size_t) i < num_records_to_process : i >= 0; scan_forwards ? i++ : i--) {
+		for (i = FLAT_FILE_SCAN_FORWARDS == scan_direction ? 0 : num_records_to_process - 1; FLAT_FILE_SCAN_FORWARDS == scan_direction ? (size_t) i < num_records_to_process : i >= 0; FLAT_FILE_SCAN_FORWARDS == scan_direction ? i++ : i--) {
 			size_t cur_rec = i * flat_file->row_size;
 
 			/* This cast is done because in the future, the status could possibly be a non-byte type */
@@ -386,7 +386,7 @@ flat_file_insert(
 		ion_fpos_t			last_record_loc = -1;
 		ion_flat_file_row_t row;
 
-		err = flat_file_scan(flat_file, -1, &last_record_loc, &row, boolean_false, flat_file_predicate_not_empty);
+		err = flat_file_scan(flat_file, -1, &last_record_loc, &row, FLAT_FILE_SCAN_BACKWARDS, flat_file_predicate_not_empty);
 
 		if ((err_ok != err) && (err_file_hit_eof != err)) {
 			status.error = err;
@@ -434,7 +434,7 @@ flat_file_get(
 	ion_flat_file_row_t row;
 
 	if (!flat_file->sorted_mode) {
-		err = flat_file_scan(flat_file, -1, &found_loc, &row, boolean_true, flat_file_predicate_key_match, key);
+		err = flat_file_scan(flat_file, -1, &found_loc, &row, FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, key);
 
 		if (err_ok != err) {
 			if (err_file_hit_eof == err) {
@@ -492,7 +492,7 @@ flat_file_delete(
 	ion_err_t			err;
 	ion_fpos_t			loc		= -1;
 
-	while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, boolean_true, flat_file_predicate_key_match, key))) {
+	while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, key))) {
 		ion_fpos_t			last_record_offset	= flat_file->eof_position - flat_file->row_size;
 		ion_flat_file_row_t last_row;
 		ion_fpos_t			last_record_index	= last_record_offset / flat_file->row_size;
@@ -581,7 +581,7 @@ flat_file_update(
 		}
 	}
 
-	while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, boolean_true, flat_file_predicate_key_match, key))) {
+	while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, key))) {
 		ion_err_t row_err = flat_file_write_row(flat_file, loc, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_OCCUPIED, key, value });
 
 		if (err_ok != row_err) {
