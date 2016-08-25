@@ -262,9 +262,9 @@ ion_master_table_create_dictionary(
 	ion_dictionary_handler_t	*handler,
 	ion_dictionary_t			*dictionary,
 	ion_key_type_t				key_type,
-	int							key_size,
-	int							value_size,
-	unsigned int				dictionary_size
+	ion_key_size_t				key_size,
+	ion_value_size_t			value_size,
+	ion_dictionary_size_t		dictionary_size
 ) {
 	ion_err_t			err;
 	ion_dictionary_id_t id;
@@ -288,8 +288,8 @@ ion_master_table_create_dictionary(
 
 ion_err_t
 ion_add_to_master_table(
-	ion_dictionary_t	*dictionary,
-	unsigned int		dictionary_size
+	ion_dictionary_t		*dictionary,
+	ion_dictionary_size_t	dictionary_size
 ) {
 	ion_dictionary_config_info_t config = {
 		.id = dictionary->instance->id, .use_type = 0, .type = dictionary->instance->key_type, .key_size = dictionary->instance->record.key_size, .value_size = dictionary->instance->record.value_size, .dictionary_size = dictionary_size

@@ -31,10 +31,10 @@ public:
 				The size desired for the dictionary.
 */
 FlatFile(
-	ion_key_type_t	type_key,
-	int				key_size,
-	int				value_size,
-	unsigned int	dictionary_size
+	ion_key_type_t			type_key,
+	ion_key_size_t			key_size,
+	ion_value_size_t		value_size,
+	ion_dictionary_size_t	dictionary_size
 ) {
 	ffdict_init(&this->handler);
 
