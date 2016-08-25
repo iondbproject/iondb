@@ -159,7 +159,11 @@ bpptree_create_dictionary(
 	info.sectorSize = 256;
 	info.comp		= compare;
 
-	if (bErrOk != bOpen(info, &(bpptree->tree))) {
+	ion_bpp_err_t bErr = bOpen(info, &(bpptree->tree));
+
+	if (bErrOk != bErr) {
+		printf("Error: %d Line: %d\n", bErr, bErrLineNo);
+		fflush(stdout);
 		return err_dictionary_initialization_failed;
 	}
 
