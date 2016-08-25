@@ -14,10 +14,6 @@ extern "C" {
 #include "./../dictionary.h"
 #include "./../../file/ion_file.h"
 
-#if defined(ARDUINO)
-#include "../../serial/serial_c_iface.h"
-#endif
-
 /****************************
  * implementation dependent *
  ****************************/

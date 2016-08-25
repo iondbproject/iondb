@@ -162,8 +162,6 @@ bpptree_create_dictionary(
 	ion_bpp_err_t bErr = bOpen(info, &(bpptree->tree));
 
 	if (bErrOk != bErr) {
-		printf("Error: %d Line: %d\n", bErr, bErrLineNo);
-		fflush(stdout);
 		return err_dictionary_initialization_failed;
 	}
 
