@@ -380,22 +380,22 @@ flat_file_insert(
 ) {
 	ion_status_t	status	= ION_STATUS_INITIALIZE;
 	ion_err_t		err;
-	/* We can assume append-only insert here because our delete operation does a swap replacement */
+	/* We can assume append-only insert here because our delete operation does a swap replacement, and
+	   in sorted mode, we don't allow deletes - so there are no holes to fill. */
 	ion_fpos_t insert_loc	= flat_file->eof_position / flat_file->row_size;
 
 	if (flat_file->sorted_mode) {
-		ion_fpos_t			last_record_loc = -1;
+		ion_fpos_t			last_record_loc = flat_file->eof_position / flat_file->row_size - 1;
 		ion_flat_file_row_t row;
 
-		err = flat_file_scan(flat_file, -1, &last_record_loc, &row, FLAT_FILE_SCAN_BACKWARDS, flat_file_predicate_not_empty);
+		if (last_record_loc >= 0) {
+			err = flat_file_read_row(flat_file, last_record_loc, &row);
 
-		if ((err_ok != err) && (err_file_hit_eof != err)) {
-			status.error = err;
-			return status;
-		}
+			if (err_ok != err) {
+				status.error = err;
+				return status;
+			}
 
-		if (err_file_hit_eof != err) {
-			/* If eof, then the flatfile is empty and there is nothing to check. */
 			if (flat_file->super.compare(key, row.key, flat_file->super.record.key_size) < 0) {
 				status.error = err_sorted_order_violation;
 				return status;
