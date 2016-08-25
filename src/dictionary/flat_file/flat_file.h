@@ -34,12 +34,15 @@ extern "C" {
 @brief		Initializes the flat file implementation and creates all necessary files.
 @details	A check is done to see if this is actually an attempt to open a previously existing
 			flat file instance. This (should) only happen when this is called from an open context
-			instead of an initialize.
+			instead of an initialize. The flat file supports a special mode called "sorted mode". This
+			is an append only mode that assumes all keys come in monotonic non-decreasing order. In this
+			mode, search operations are significantly faster, but the store does not support deletions while
+			in sorted mode.
 @param[in]	flat_file
 				Given instance of a flat file struct to initialize. This must be allocated **heap** memory,
 				as destruction will assume that it needs to be freed.
 @param[in]	id
-				The assigned ID of this dictionary.
+				The assigned ID of this dictionary instance.
 @param[in]	key_type
 				Key category to use for this instance.
 @param[in]	key_size
@@ -51,7 +54,7 @@ extern "C" {
 				as somewhere between 1 (minimum) and the page size of the device you are working on.
 @return		The status of initialization.
 @see		ffdict_create_dictionary
- */
+*/
 ion_err_t
 flat_file_initialize(
 	ion_flat_file_t			*flat_file,
@@ -84,7 +87,6 @@ flat_file_destroy(
 				Value portion of the record to insert.
 @return		Resulting status of insertion.
 @see		ffdict_insert
-@todo		Write tests for sorted mode insert.
 */
 ion_status_t
 flat_file_insert(
@@ -120,7 +122,6 @@ flat_file_get(
 				Specified key to find and delete.
 @return		Resulting status of the operation.
 @see		ffdict_delete
-@todo		Write tests for sorted mode delete.
 */
 ion_status_t
 flat_file_delete(
@@ -159,12 +160,11 @@ flat_file_close(
 );
 
 /**
-@brief			Performs a linear scan of the flat file, going forwards
-				if @p scan_forwards is true, writing the first location
+@brief			Performs a linear scan of the flat file writing the first location
 				seen that satisfies the given @p predicate to @p location.
 @details		If the scan falls through, then the location is written as
 				the EOF position of the file. The variadic arguments accepted
-				by this function are passed into the predicate additional parameters.
+				by this function are passed into the predicate's additional parameters.
 				This can be used to provide additional context to the predicate for use
 				in determining whether or not the row is a match.
 @param[in]		flat_file
@@ -172,7 +172,7 @@ flat_file_close(
 @param[in]		start_location
 					Where to begin the scan. This is given as a row index. If
 					given as -1, then it is assumed to be either the start of
-					file or end of file, depending on the state of @p scan_forwards.
+					file or end of file, depending on the state of @p scan_direction.
 @param[out]		location
 					Allocated memory location to write back the found location into.
 					Is not changed in the event of a failure or error condition. This
@@ -180,8 +180,8 @@ flat_file_close(
 @param[out]		row
 					A row struct to write back the found row into. This is allocated
 					by the user.
-@param[in]		scan_forwards
-					Scans front-to-back if @p true, else scans back-to-front.
+@param[in]		scan_direction
+					Scans in the direction provided.
 @param[in]		predicate
 					Given test function to check each row against. Once this function
 					returns true, the scan is terminated and the found location and row
@@ -191,8 +191,6 @@ flat_file_close(
 				call. Benchmark the performance gain and decide which strategy to use.
 @todo			Consider changing to @p SEEK_CUR whenever possible. Benchmark this and see
 				if the performance gain (if any) is worth it.
-@todo			Consider doing bounds checking on the given @p location. May need to change the
-				@p -1 start flag if we do so.
 */
 ion_err_t
 flat_file_scan(
@@ -200,7 +198,7 @@ flat_file_scan(
 	ion_fpos_t					start_location,
 	ion_fpos_t					*location,
 	ion_flat_file_row_t			*row,
-	ion_boolean_t				scan_forwards,
+	ion_byte_t					scan_direction,
 	ion_flat_file_predicate_t	predicate,
 	...
 );
@@ -251,7 +249,10 @@ flat_file_predicate_not_empty(
 			row does not have a lifetime beyond the scope of where you call
 			this function - any subsequent operation that mutates the read buffer
 			will cause the row to become garbage. Copy the row data out if you want
-			it to persist.
+			it to persist. If the requested row has already been loaded by a prior
+			call to @ref flat_file_scan, then it will retrieve it as a cache hit
+			directly from the buffer. Otherwise, it will do a seek and read to fetch
+			the row.
 @param[in]	flat_file
 				Which flat file instance to read from.
 @param[in]	location
@@ -266,6 +267,30 @@ flat_file_read_row(
 	ion_flat_file_t		*flat_file,
 	ion_fpos_t			location,
 	ion_flat_file_row_t *row
+);
+
+/**
+@brief		Performs a binary search for the given @p target_key, returning to @p location
+			the first-less-than-or-equal key within the flat file. This can only be used if
+			@p sorted_mode is enabled within the flat file.
+@details	In the case of duplicates, this function will scroll to the beginning of the block
+			of duplicates, before writing back to @p location. As a result, it is guaranteed that
+			the returned index points to the first key in a contiguous block of duplicate keys. If
+			no key in the flat file satisfies the condition of being less-than-or-equal, then @p -1
+			is written back to @p location. This function will only return records that are not deleted.
+@param[in]		flat_file
+				Which flat file instance to search within.
+@param[in]		target_key
+				Desired key to search for.
+@param[out]		location
+				Found location to write back into. Must be allocated by caller.
+@return		Resulting status of the binary search operation.
+*/
+ion_err_t
+flat_file_binary_search(
+	ion_flat_file_t *flat_file,
+	ion_key_t		target_key,
+	ion_fpos_t		*location
 );
 
 #if defined(__cplusplus)
