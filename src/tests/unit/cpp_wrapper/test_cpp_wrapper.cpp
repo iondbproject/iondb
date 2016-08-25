@@ -1105,8 +1105,8 @@ test_cpp_wrapper_open_close(
 	/* Check the test record */
 	int ret_val = dict->get(key);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
-	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == dict->last_status.count);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, dict->last_status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, value, ret_val);
 }
 
