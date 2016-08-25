@@ -75,7 +75,7 @@ create_test_dictionary_std_conditions(
 	ion_record_info_t	record			= { sizeof(int), 10 };
 	ion_key_type_t		key_type		= key_type_numeric_signed;
 	int					size			= 7;
-	int					num_elements	= 50;
+	int					num_elements	= 25;
 
 	create_test_dictionary(dictionary, handler, &record, key_type, size, num_elements);
 }
@@ -197,7 +197,7 @@ test_slhandler_cursor_equality_with_results(
 	ion_dict_cursor_t	*cursor;
 	ion_predicate_t		predicate;
 
-	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(26, int));
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(24, int));
 
 	ion_err_t status = dictionary_find(&dict, &predicate, &cursor);
 
@@ -212,11 +212,11 @@ test_slhandler_cursor_equality_with_results(
 	ion_cursor_status_t c_status = cursor->next(cursor, &record);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
-	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(26, int), dict.instance->record.key_size) == 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(24, int), dict.instance->record.key_size) == 0);
 	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 
 	while (c_status != cs_end_of_results) {
-		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(26, int), dict.instance->record.key_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(24, int), dict.instance->record.key_size) == 0);
 		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 		c_status = cursor->next(cursor, &record);
 	}
@@ -409,8 +409,8 @@ test_slhandler_cursor_range_exact_results(
 	for (i = 0; i < num_extra; i++) {
 		ion_status_t status = dictionary_insert(&dict, &extra_keys[i], "test");
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
-		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
 	}
 
 	ion_dict_cursor_t	*cursor;
