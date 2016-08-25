@@ -1286,11 +1286,11 @@ do { \
 		IINQ_CLEANUP_AGGREGATION: ; \
 		_CLOSE_ORDERING_FILE(output_file) \
 		_CLOSE_ORDERING_FILE(input_file) \
+		_REMOVE_ORDERING_FILE(groupby); \
 		/* Condition where there were no records, meaning we never set is_first to false.  */ \
 		if (boolean_true == is_first) { \
 			goto IINQ_QUERY_END; \
 		} \
-		_REMOVE_ORDERING_FILE(orderby); \
     } \
 	/* ORDERBY handling. Do this anytime we have ORDERBY or aggregates, since we abuse the use of orderby file to accomodate when we have aggregates but no orderby. */ \
 	if (orderby_n > 0 || agg_n > 0) { \
