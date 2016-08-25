@@ -194,7 +194,7 @@ test_dictionary_master_table(
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dictionary;
 
-	bpptree_init(&handler);
+	ffdict_init(&handler);
 	err = ion_master_table_create_dictionary(&handler, &dictionary, key_type_numeric_signed, sizeof(int), 10, 20);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
@@ -235,7 +235,7 @@ test_dictionary_master_table(
 	ion_dictionary_handler_t	handler2;
 	ion_dictionary_t			dictionary2;
 
-	bpptree_init(&handler2);
+	ffdict_init(&handler2);
 	err = ion_master_table_create_dictionary(&handler2, &dictionary2, key_type_numeric_signed, sizeof(short), 7, 14);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
@@ -282,7 +282,7 @@ dictionary_getsuite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_dictionary_compare_numerics);
+/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_dictionary_compare_numerics); */
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_dictionary_master_table);
 
 	return suite;
