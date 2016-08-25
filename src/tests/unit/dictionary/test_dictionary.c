@@ -155,6 +155,8 @@ test_dictionary_master_table(
 	ion_err_t err;
 
 	/* Cleanup, just in case */
+	err = ion_close_master_table();
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 	fremove(ION_MASTER_TABLE_FILENAME);
 
 	/* Test init */
@@ -162,7 +164,7 @@ test_dictionary_master_table(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
 	PLANCK_UNIT_ASSERT_TRUE(tc, NULL != ion_master_table_file);
-	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == ion_master_table_next_id);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, ion_master_table_next_id);
 
 	/*************/
 
