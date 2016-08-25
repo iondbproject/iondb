@@ -6,13 +6,14 @@
 extern "C" {
 #endif
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <alloca.h>
-#include <setjmp.h>
 #include "../dictionary/dictionary_types.h"
 #include "../dictionary/ion_master_table.h"
 #include "../key_value/kv_system.h"
 #include "../util/sort/external_sort/external_sort.h"
+#include "../dictionary/flat_file/flat_file_dictionary_handler.h"
 
 #if defined(ARDUINO)
 #include "../file/kv_stdio_intercept.h"
@@ -706,7 +707,8 @@ do { \
 
 #define _AGGREGATES_INITIALIZE \
 	for (i_agg = 0; i_agg < agg_n; i_agg++) { \
-		aggregates[i_agg].status	= 0; /* TODO: Was .initialized */ \
+		aggregates[i_agg].status	= 0; \
+		aggregates[i_agg].value.i64	= 0; \
     }
 
 #define _AGGREGATES_SETUP(n) \
@@ -729,16 +731,26 @@ do { \
 	i_agg = n
 
 #define MAX(expr) \
+	aggregates[i_agg].type = IINQ_AGGREGATE_TYPE_DOUBLE; \
 	if (0 == aggregates[i_agg].status || ((double)(expr)) > aggregates[i_agg].value.f64) { \
 		aggregates[i_agg].value.f64 = ((double)(expr)); \
 		aggregates[i_agg].status = 1; \
 	}
 
 #define MIN(expr) \
+	aggregates[i_agg].type = IINQ_AGGREGATE_TYPE_DOUBLE; \
 	if (0 == aggregates[i_agg].status || ((double)(expr)) < aggregates[i_agg].value.f64) { \
 		aggregates[i_agg].value.f64 = ((double)(expr)); \
 		aggregates[i_agg].status = 1; \
 	}
+
+#define COUNT(expr) \
+	aggregates[i_agg].type = IINQ_AGGREGATE_TYPE_UINT; \
+	if (0 == aggregates[i_agg].status) { \
+		aggregates[i_agg].value.u64 = 0; \
+	} \
+	aggregates[i_agg].value.u64++; \
+	aggregates[i_agg].status = 1; \
 
 /*
  * The last parameter, the variable arguments, is a black whole to swallow unused macro names.
@@ -794,7 +806,7 @@ do { \
 		goto IINQ_QUERY_END; \
 	} \
 	write_page_remaining	= IINQ_PAGE_SIZE; \
-	if ((int) write_page_remaining < (int) (total_ ## name ## _size + IF_ELSE(with_aggregates)(+ (8*agg_n))() IF_ELSE(with_unprocessed)(+ (record.raw_record_size))() IF_ELSE(with_processed)(+ (record.num_bytes))())) { /* Record size is size of records, not including sort key. */ \
+	if ((int) write_page_remaining < (int) (total_ ## name ## _size IF_ELSE(with_aggregates)(+ (8*agg_n))() IF_ELSE(with_unprocessed)(+ (record.raw_record_size))() IF_ELSE(with_processed)(+ (record.num_bytes))())) { /* Record size is size of records, not including sort key. */ \
 		/* In this case, there isn't enough space in a page to sort records. Fail. */ \
 		error			= err_record_size_too_large; \
 		goto IINQ_QUERY_END; \
@@ -1252,7 +1264,7 @@ do { \
 		while (1) { \
 			_READ_ORDERING_RECORD(groupby, total_groupby_size, NULL, cur_key, 1, 0, result, /* Empty on purpose. */) \
 			/* TODO: Graeme, make sure you setup all necessary error codes in above and related, as well as handle them here. */ \
-			if (total_groupby_size > 0 && !is_first && equal != iinq_sort_compare(&_IINQ_SORT_CONTEXT(groupby), cur_key, old_key)) { \
+			if (total_groupby_size > 0 && boolean_false == is_first && equal != iinq_sort_compare(&_IINQ_SORT_CONTEXT(groupby), cur_key, old_key)) { \
 				jmp_r				= 1; \
 				goto IINQ_COMPUTE_ORDERBY; \
 				IINQ_DONE_COMPUTE_ORDERBY_1: ; \
