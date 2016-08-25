@@ -22,6 +22,7 @@
 /******************************************************************************/
 
 #include "flat_file.h"
+#include "flat_file_types.h"
 
 ion_err_t
 flat_file_initialize(
@@ -341,7 +342,7 @@ flat_file_read_row(
 ) {
 	ion_fpos_t read_index = 0;
 
-	if ((flat_file->current_loaded_region != -1) && (location >= flat_file->current_loaded_region) && ((unsigned) location < flat_file->num_in_buffer)) {
+	if ((flat_file->current_loaded_region != -1) && (location >= flat_file->current_loaded_region) && ((unsigned) location < flat_file->current_loaded_region + flat_file->num_in_buffer)) {
 		/* Cache hit, return directly from buffer */
 		read_index = location - flat_file->current_loaded_region;
 	}
