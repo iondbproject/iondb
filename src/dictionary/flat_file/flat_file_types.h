@@ -46,6 +46,15 @@ typedef ion_byte_t ion_flat_file_row_status_t;
 #define FLAT_FILE_STATUS_EMPTY		0
 
 /**
+@brief		Signals to @ref flat_file_scan to scan in a forward direction.
+*/
+#define FLAT_FILE_SCAN_FORWARDS		1
+/**
+@brief		Signals to @ref flat_file_scan to scan in a backward direction.
+*/
+#define FLAT_FILE_SCAN_BACKWARDS	0
+
+/**
 @brief		Metadata container that holds flat file specific information.
 */
 typedef struct {
@@ -56,6 +65,8 @@ typedef struct {
 	/**> This signifies where the actual record data starts, in case we want to
 		 write some metadata at the beginning of the flat file's file. */
 	ion_fpos_t				start_of_data;
+	/**> This marks the eof position within the file, so that we can efficiently find it. */
+	ion_fpos_t				eof_position;
 	/**> This comes from the given dictionary size, and signifies how many
 		 records we want to buffer at a time. This is a trade-off between
 		 better performance and increased memory usage. */
@@ -68,6 +79,13 @@ typedef struct {
 	/**> This value expresses the size of one row inside the @p data_file. A row is defined
 		 as a record + metadata. Change this if @ref ion_flat_file_row_t changes!*/
 	size_t					row_size;
+	/**> When a scan is performed, a region (defined as @p num_in_buffer number of records) is loaded into
+		 memory. We can utilize this fact to do efficient cached reads as long as the buffer is intact.
+		 This is expressed as an index that points to the first record in the region. @p num_in_buffer-1 would
+		 be the last index in the region. */
+	ion_fpos_t	current_loaded_region;
+	/**> Expresses how many valid records are currently in the buffer. */
+	size_t		num_in_buffer;
 } ion_flat_file_t;
 
 /**
