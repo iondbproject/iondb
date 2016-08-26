@@ -16,10 +16,6 @@
 #include "../../../cpp_wrapper/SkipList.h"
 #include "test_cpp_wrapper.h"
 
-#if defined(ARDUINO)
-#include "../../../serial/serial_c_iface.h"
-#endif
-
 /**
 @brief	Tests the creation of a B+ Tree (arbitrarily chosen) dictionary and asserts
 		the validity of some dictionary parameters.
@@ -1088,9 +1084,8 @@ test_cpp_wrapper_open_close(
 
 	/* Insert test record so we can check data integrity after we close/open */
 	status = dict->insert(key, value);
-
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
-	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
 
 	/* Check the test record */
 	int ret_val = dict->get(key);
@@ -1101,15 +1096,14 @@ test_cpp_wrapper_open_close(
 
 	error = dict->close();
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
 
 	ion_dictionary_config_info_t config = {
 		gdict_id, 0, key_type, key_size, val_size, dict_size
 	};
 
 	error = dict->open(config);
-
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, dict->dict.instance->record.key_size, key_size);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, dict->dict.instance->record.value_size, val_size);
 
@@ -1129,27 +1123,21 @@ test_cpp_wrapper_open_close_on_all_implementations(
 	planck_unit_test_t *tc
 ) {
 	Dictionary<int, int> *dict;
-	printf("@*@*@ Begin open/close\n");
-	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_open_close(tc, dict, 66, 12);
 	delete dict;
-	printf("@*@*@ B+ Tree finished\n");
-	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 15);
 	test_cpp_wrapper_open_close(tc, dict, 45, 14);
 	delete dict;
-	printf("@*@*@ Flatfile finished\n");
-	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_open_close(tc, dict, 3, 15);
 	delete dict;
-	printf("@*@*@ OA Hash finished\n");
-	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_open_close(tc, dict, 5, 12);
 	delete dict;
-	printf("@*@*@ OAFHash finished\n");
-	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_open_close(tc, dict, 1, 13);
 	delete dict;
-	printf("@*@*@ Skiplist finished\n");
 }
 
 /**
@@ -1174,7 +1162,6 @@ cpp_wrapper_getsuite_1(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_all_records_simple_on_all_implementations);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_all_records_edge_cases1_on_all_implementations);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_all_records_edge_cases2_on_all_implementations);
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_open_close_on_all_implementations); */
 
 	return suite;
 }

@@ -98,7 +98,8 @@ sd_fopen(
 	char	*filename,
 	char	*mode
 ) {
-	uint8_t operation;
+	uint8_t			operation;
+	ion_boolean_t	seek_start = boolean_false;
 
 	if ((strcmp(mode, "r") == 0) || (strcmp(mode, "rb") == 0)) {
 		/*	Open a file for reading. The file must exist. */
@@ -128,7 +129,8 @@ sd_fopen(
 			return NULL;
 		}
 
-		operation = FILE_WRITE;
+		operation	= FILE_WRITE;
+		seek_start	= boolean_true;
 	}
 	/* Create an empty file for both reading and writing. */
 	else if (strstr(mode, "w+") != NULL) {
@@ -151,6 +153,10 @@ sd_fopen(
 
 	if (!((file)->f)) {
 		return 0;
+	}
+
+	if (seek_start) {
+		file->f.seek(0);
 	}
 
 	return file;

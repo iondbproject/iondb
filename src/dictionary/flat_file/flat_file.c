@@ -381,10 +381,10 @@ flat_file_insert(
 	ion_err_t		err;
 	/* We can assume append-only insert here because our delete operation does a swap replacement, and
 	   in sorted mode, we don't allow deletes - so there are no holes to fill. */
-	ion_fpos_t insert_loc	= flat_file->eof_position / flat_file->row_size;
+	ion_fpos_t insert_loc	= (flat_file->eof_position - flat_file->start_of_data) / flat_file->row_size;
 
 	if (flat_file->sorted_mode) {
-		ion_fpos_t			last_record_loc = flat_file->eof_position / flat_file->row_size - 1;
+		ion_fpos_t			last_record_loc = (flat_file->eof_position - flat_file->start_of_data) / flat_file->row_size - 1;
 		ion_flat_file_row_t row;
 
 		if (last_record_loc >= 0) {
@@ -495,7 +495,7 @@ flat_file_delete(
 	while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, key))) {
 		ion_fpos_t			last_record_offset	= flat_file->eof_position - flat_file->row_size;
 		ion_flat_file_row_t last_row;
-		ion_fpos_t			last_record_index	= last_record_offset / flat_file->row_size;
+		ion_fpos_t			last_record_index	= (last_record_offset - flat_file->start_of_data) / flat_file->row_size;
 		ion_err_t			row_err;
 
 		/* If the last index and the loc are the same, then we can just move the eof position. Saves a read/write. */
@@ -634,7 +634,7 @@ flat_file_binary_search(
 	ion_err_t			err;
 	ion_flat_file_row_t row;
 	ion_fpos_t			low_idx		= 0;
-	ion_fpos_t			high_idx	= flat_file->eof_position / flat_file->row_size - 1;
+	ion_fpos_t			high_idx	= (flat_file->eof_position - flat_file->start_of_data) / flat_file->row_size - 1;
 	ion_fpos_t			mid_idx;
 
 	if (high_idx < 0) {

@@ -375,7 +375,7 @@ ffdict_close_dictionary(
 	dictionary->instance = NULL;
 
 	if (err_ok != err) {
-		return err_dictionary_destruction_error;
+		return err;
 	}
 
 	return err_ok;
