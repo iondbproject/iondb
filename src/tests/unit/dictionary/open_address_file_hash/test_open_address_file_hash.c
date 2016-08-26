@@ -79,7 +79,7 @@ initialize_file_hash_map_std_conditions(
 @brief	  Tests for creation and deletion of open address hash.
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_initialize(
@@ -113,7 +113,7 @@ test_open_address_file_hashmap_initialize(
 @brief		Tests the computation of a simple hash value
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_compute_simple_hash(
@@ -136,7 +136,7 @@ test_open_address_file_hashmap_compute_simple_hash(
 			location of the item.
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_get_location(
@@ -158,7 +158,7 @@ test_open_address_file_hashmap_get_location(
 			current occupancy of hashmap
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_find_item_location(
@@ -239,7 +239,7 @@ test_open_address_file_hashmap_find_item_location(
 @brief	  Tests a simple insert into map and reads results directly from map
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_simple_insert(
@@ -307,7 +307,7 @@ test_open_address_file_hashmap_simple_insert(
 @details	Tests a simple insert into dictionary and simple query with the
 			write_concern set to insert only
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_simple_insert_and_query(
@@ -359,7 +359,7 @@ test_open_address_file_hashmap_simple_insert_and_query(
 			been perturbed.
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_simple_delete(
@@ -429,7 +429,7 @@ test_open_address_file_hashmap_simple_delete(
 			is set for wc_insert_unique.   Will generate error.
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_duplicate_insert_1(
@@ -478,7 +478,7 @@ test_open_address_file_hashmap_duplicate_insert_1(
 			is set for wc_update but will update the value.
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_duplicate_insert_2(
@@ -569,7 +569,7 @@ test_open_address_file_hashmap_duplicate_insert_2(
 @brief		Tests that values can be updated.
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_update_1(
@@ -661,7 +661,7 @@ test_open_address_file_hashmap_update_1(
 			in dictionary already.
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_update_2(
@@ -802,7 +802,7 @@ test_open_address_file_hashmap_delete_1(
 			undisturbed.
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_delete_2(
@@ -911,7 +911,7 @@ test_open_address_file_hashmap_delete_2(
 @brief		Tests that values can be inserted until capacity has been reached.
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_capacity(
