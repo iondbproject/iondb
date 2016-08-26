@@ -74,7 +74,7 @@ initialize_skiplist_std_conditions(
 @brief	  Tests creation of the skiplist.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_initialize(
@@ -119,7 +119,7 @@ test_skiplist_initialize(
 @brief	  Tests if the Skiplist is properly destroyed.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_free_all(
@@ -140,7 +140,7 @@ test_skiplist_free_all(
 @brief	  Tests a single insert into the skiplist.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_single_insert(
@@ -177,7 +177,7 @@ test_skiplist_single_insert(
 			occurred.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_insert_multiple(
@@ -237,7 +237,7 @@ test_skiplist_insert_multiple(
 			of the current node.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_randomized_insert(
@@ -290,7 +290,7 @@ test_skiplist_randomized_insert(
 			skiplist. The test passes if they are the same.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_get_node_single(
@@ -332,7 +332,7 @@ test_skiplist_get_node_single(
 			the same.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_get_node_single_high(
@@ -378,7 +378,7 @@ test_skiplist_get_node_single_high(
 			the only node that can be smaller than the one insert is the head
 			node.)
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_get_node_single_low(
@@ -422,7 +422,7 @@ test_skiplist_get_node_single_low(
 			skiplist. The test passes if they are the same.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_get_node_single_many(
@@ -481,7 +481,7 @@ test_skiplist_get_node_single_many(
 			are compared to the original inserted ones for accuracy.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_get_node_several(
@@ -531,7 +531,7 @@ test_skiplist_get_node_several(
 			should not be allocated and will be set to null.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_query_nonexist_empty(
@@ -566,7 +566,7 @@ test_skiplist_query_nonexist_empty(
 			be initialized to null.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_query_nonexist_populated_single(
@@ -611,7 +611,7 @@ test_skiplist_query_nonexist_populated_single(
 			pointer be initialized to null.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_query_nonexist_populated_several(
@@ -661,7 +661,7 @@ test_skiplist_query_nonexist_populated_several(
 			value as stored at the specified key.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_query_exist_single(
@@ -706,7 +706,7 @@ test_skiplist_query_exist_single(
 			value stored at the specified key.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_query_exist_populated_single(
@@ -754,7 +754,7 @@ test_skiplist_query_exist_populated_single(
 			value stored at the specified key.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_query_exist_populated_several(
@@ -805,7 +805,7 @@ test_skiplist_query_exist_populated_several(
 			modifications should be made to the structure.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_delete_empty(
@@ -837,7 +837,7 @@ test_skiplist_delete_empty(
 			modification is to be made to the data structure.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_delete_nonexist_single(
@@ -880,7 +880,7 @@ test_skiplist_delete_nonexist_single(
 			modification is to be made to the data structure.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_delete_nonexist_several(
@@ -928,7 +928,7 @@ test_skiplist_delete_nonexist_several(
 			deleted is no longer within the skiplist.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_delete_single(
@@ -976,7 +976,7 @@ test_skiplist_delete_single(
 			is no longer within the skiplist.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_delete_single_several(
@@ -1048,7 +1048,7 @@ test_skiplist_delete_single_several(
 			longer within the skiplist.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_delete_single_several_noncont(
@@ -1118,7 +1118,7 @@ test_skiplist_delete_single_several_noncont(
 			and that at the end of the operations the skiplist must be empty.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_delete_several_all(
@@ -1175,7 +1175,7 @@ test_skiplist_delete_several_all(
 			that the update will instead insert the node.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_update_single_nonexist(
@@ -1207,7 +1207,7 @@ test_skiplist_update_single_nonexist(
 			that the update will instead insert the node.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_update_single_nonexist_nonempty(
@@ -1250,7 +1250,7 @@ test_skiplist_update_single_nonexist_nonempty(
 			that the update will instead insert the node.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_update_many_nonexist_nonempty(
@@ -1300,7 +1300,7 @@ test_skiplist_update_many_nonexist_nonempty(
 			will be reflected within the node.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_update_single_exist(
@@ -1344,7 +1344,7 @@ test_skiplist_update_single_exist(
 			will be reflected within the targeted node.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_update_single_many_exist(
@@ -1394,7 +1394,7 @@ test_skiplist_update_single_many_exist(
 			reflected within all nodes.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_update_several_many_exist(
@@ -1445,7 +1445,7 @@ test_skiplist_update_several_many_exist(
 			with none of the original values remaining in the skiplist.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_update_several_same_key(
@@ -1497,7 +1497,7 @@ test_skiplist_update_several_same_key(
 			specific key be updated, with none of the original values remaining.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_update_several_same_key_in_mix(
@@ -1553,7 +1553,7 @@ test_skiplist_update_several_same_key_in_mix(
 			The assertion is that the insertion should work OK with no errors.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_delete_then_insert_single(
@@ -1608,7 +1608,7 @@ test_skiplist_delete_then_insert_single(
 			no errors.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_delete_then_insert_several(
@@ -1674,7 +1674,7 @@ test_skiplist_delete_then_insert_several(
 			with nothing remaining in the skiplist.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_delete_several_same_key(
@@ -1725,7 +1725,7 @@ test_skiplist_delete_several_same_key(
 			specific key be deleted, with only the other elements remaining.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_delete_several_same_key_in_mix(
@@ -1778,7 +1778,7 @@ test_skiplist_delete_several_same_key_in_mix(
 			on the non-standard structure.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_different_size(
@@ -1868,7 +1868,7 @@ test_skiplist_different_size(
 			when keys were greater than 256.
 
 @param	  tc
-				Cutest dependency
+				Test case.
 */
 void
 test_skiplist_big_keys(
@@ -1923,8 +1923,8 @@ test_skiplist_big_keys(
 }
 
 /**
-@brief	  Creates the suite to test using CuTest.
-@return	 Pointer to a CuTest suite.
+@brief	  Creates the suite to test using PlanckUnit test cases.
+@return	 Pointer to a PlanckUnit test suite.
 */
 planck_unit_suite_t *
 skiplist_getsuite_1(
@@ -1970,8 +1970,8 @@ skiplist_getsuite_1(
 }
 
 /**
-@brief	  Creates the suite to test using CuTest.
-@return	 Pointer to a CuTest suite.
+@brief	  Creates the suite to test using PlanckUnit test cases.
+@return	 Pointer to a PlanckUnit test suite.
 */
 planck_unit_suite_t *
 skiplist_getsuite_2(
@@ -2001,8 +2001,8 @@ skiplist_getsuite_2(
 }
 
 /**
-@brief	  Creates the suite to test using CuTest.
-@return	 Pointer to a CuTest suite.
+@brief	  Creates the suite to test using PlanckUnit test cases.
+@return	 Pointer to a PlanckUnit test suite.
 */
 planck_unit_suite_t *
 skiplist_getsuite_3(

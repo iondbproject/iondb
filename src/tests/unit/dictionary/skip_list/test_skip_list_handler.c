@@ -85,7 +85,7 @@ create_test_dictionary_std_conditions(
 			have been correctly bound.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_dictionary_handler_binding(
@@ -109,7 +109,7 @@ test_dictionary_handler_binding(
 			have been correctly initialized.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_dictionary_creation(
@@ -147,7 +147,7 @@ test_dictionary_creation(
 			is that the cursor will return err_ok.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_slhandler_cursor_equality(
@@ -181,7 +181,7 @@ test_slhandler_cursor_equality(
 			assertion is that the values returned will satisfy the predicate.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_slhandler_cursor_equality_with_results(
@@ -236,7 +236,7 @@ test_slhandler_cursor_equality_with_results(
 			is that the cursor will return err_ok.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_slhandler_cursor_range(
@@ -270,7 +270,7 @@ test_slhandler_cursor_range(
 			assertion is that the values returned will satisfy the predicate.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_slhandler_cursor_range_with_results(
@@ -331,7 +331,7 @@ test_slhandler_cursor_range_with_results(
 			as the result of the query.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_slhandler_cursor_range_lower_missing(
@@ -388,7 +388,7 @@ test_slhandler_cursor_range_lower_missing(
 			and then assert that we saw everything that was expected to be seen. This is the final
 			line of defense against a broken range query.
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_slhandler_cursor_range_exact_results(
@@ -456,8 +456,8 @@ test_slhandler_cursor_range_exact_results(
 }
 
 /**
-@brief	  Creates the suite to test using CuTest.
-@return	 Pointer to a CuTest suite.
+@brief	  Creates the suite to test using PlanckUnit test cases.
+@return	 Pointer to a PlanckUnit test suite.
 */
 planck_unit_suite_t *
 skiplist_handler_getsuite(
