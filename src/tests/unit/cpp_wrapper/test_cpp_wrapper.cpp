@@ -1092,6 +1092,13 @@ test_cpp_wrapper_open_close(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
+	/* Check the test record */
+	int ret_val = dict->get(key);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, dict->last_status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, value, ret_val);
+
 	error = dict->close();
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == error);
@@ -1107,7 +1114,7 @@ test_cpp_wrapper_open_close(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, dict->dict.instance->record.value_size, val_size);
 
 	/* Check the test record */
-	int ret_val = dict->get(key);
+	ret_val = dict->get(key);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, dict->last_status.error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
@@ -1122,27 +1129,27 @@ test_cpp_wrapper_open_close_on_all_implementations(
 	planck_unit_test_t *tc
 ) {
 	Dictionary<int, int> *dict;
-printf("@*@*@ Begin open/close\n");
+	printf("@*@*@ Begin open/close\n");
 	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_open_close(tc, dict, 66, 12);
 	delete dict;
-printf("@*@*@ B+ Tree finished\n");
+	printf("@*@*@ B+ Tree finished\n");
 	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_open_close(tc, dict, 45, 14);
 	delete dict;
-printf("@*@*@ Flatfile finished\n");
+	printf("@*@*@ Flatfile finished\n");
 	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_open_close(tc, dict, 3, 15);
 	delete dict;
-printf("@*@*@ OA Hash finished\n");
+	printf("@*@*@ OA Hash finished\n");
 	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_open_close(tc, dict, 5, 12);
 	delete dict;
-printf("@*@*@ OAFHash finished\n");
+	printf("@*@*@ OAFHash finished\n");
 	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_open_close(tc, dict, 1, 13);
 	delete dict;
-printf("@*@*@ Skiplist finished\n");
+	printf("@*@*@ Skiplist finished\n");
 }
 
 /**

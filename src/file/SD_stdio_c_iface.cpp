@@ -77,7 +77,7 @@ sd_fflush(
 
 int
 sd_fsetpos(
-	SD_FILE *stream,
+	SD_FILE		*stream,
 	ion_fpos_t	*pos
 ) {
 	return (stream) ? !(stream->f.seek(*pos)) : 1;
@@ -85,7 +85,7 @@ sd_fsetpos(
 
 int
 sd_fgetpos(
-	SD_FILE *stream,
+	SD_FILE		*stream,
 	ion_fpos_t	*pos
 ) {
 	*pos = (stream) ? stream->f.position() : 0;
@@ -100,29 +100,14 @@ sd_fopen(
 ) {
 	uint8_t operation;
 
-#if DEBUG
-	Serial.print("Target mode: ");
-	Serial.write((uint8_t *) mode, 2);
-	Serial.println();
-#endif
-
 	if ((strcmp(mode, "r") == 0) || (strcmp(mode, "rb") == 0)) {
 		/*	Open a file for reading. The file must exist. */
 		/* check to see if file exists */
-#if DEBUG
-		Serial.println("checking for file");
-#endif
 
-		if (SD.exists(filename) == false) {
-#if DEBUG
-			Serial.println("File does not exist");
-#endif
+		if (!SD.exists(filename)) {
 			return NULL;
 		}
 
-#if DEBUG
-		Serial.println("file exists");
-#endif
 		operation = FILE_READ;
 	}
 	else if ((strcmp(mode, "w") == 0) || (strcmp(mode, "wb") == 0)) {
@@ -130,9 +115,6 @@ sd_fopen(
 		/* If a file with the same name already exists */
 		/* its content is erased and the file is */
 		/* considered as a new empty file. */
-#if DEBUG
-		Serial.println("opening file");
-#endif
 
 		if (SD.exists(filename)) {
 			SD.remove(filename);
@@ -150,14 +132,7 @@ sd_fopen(
 	}
 	/* Create an empty file for both reading and writing. */
 	else if (strstr(mode, "w+") != NULL) {
-#if DEBUG
-		Serial.println("opening file");
-#endif
-
-		if (SD.exists(filename) == true) {
-#if DEBUG
-			Serial.println("removing file");
-#endif
+		if (SD.exists(filename)) {
 			SD.remove(filename);
 		}
 
@@ -169,11 +144,6 @@ sd_fopen(
 	else {
 		return 0;	/*incorrect args */
 	}
-
-#if DEBUG
-	Serial.print("attempting file open - ");
-	Serial.println(filename);
-#endif
 
 	_SD_File *file = new struct _SD_File ();
 

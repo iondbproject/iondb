@@ -22,7 +22,6 @@
 /******************************************************************************/
 
 #include "flat_file.h"
-#include "flat_file_types.h"
 
 ion_err_t
 flat_file_initialize(
