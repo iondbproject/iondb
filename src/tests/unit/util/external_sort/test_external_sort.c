@@ -1,5 +1,4 @@
 #include "test_external_sort.h"
-#include "../../../../util/sort/external_sort/external_sort_types.h"
 
 #define ION_EXTERNAL_SORT_SEED 0x8E01483F
 #define ION_EXTERNAL_SORT_PAGE_SIZE 512
@@ -400,7 +399,7 @@ test_flash_min_sort_required_memory(
 
 	ion_external_sort_t			es;
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, ion_external_sort_init(&es, unsorted_file, NULL, ion_external_sort_uint16_comparator, sizeof(uint16_t), sizeof(uint16_t), 512, boolean_false, ION_FILE_SORT_FLASH_MINSORT));
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, ion_external_sort_init(&es, unsorted_file, NULL, ion_external_sort_uint16_comparator, sizeof(uint16_t), sizeof(uint16_t), 512, boolean_false, ION_FLASH_MINSORT));
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 516 + 7, ion_external_sort_bytes_of_memory_required(&es, 0, boolean_false));
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 516 + 9, ion_external_sort_bytes_of_memory_required(&es, 527, boolean_false));
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 516 + 13, ion_external_sort_bytes_of_memory_required(&es, 529, boolean_false));
@@ -413,8 +412,16 @@ test_flash_min_sort_required_memory(
 }
 
 void
-test_flash_min_sort_small_sort_record_at_a_time_with_page_aligned_data(
+test_external_merge_sort_required_memory(
 	planck_unit_test_t *tc
+) {
+
+}
+
+void
+test_external_sort_small_record_at_a_time_with_page_aligned_data(
+	planck_unit_test_t *tc,
+	ion_external_sort_algorithm_e sort_algorithm
 ) {
 	uint32_t num_records = 1000;
 	uint32_t max_buffer_size = 0;
@@ -424,35 +431,37 @@ test_flash_min_sort_small_sort_record_at_a_time_with_page_aligned_data(
 	ion_sort_comparator_t comparator = ion_external_sort_uint16_comparator;
 
 	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_uint16_random_data;
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, NULL, comparator);
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, sort_algorithm, write_func, NULL, comparator);
 
 	write_func = ion_external_sort_write_uint16_sequential_data;
 	ion_external_sort_sorted_value_func_t sorted_val_func = ion_external_sort_expected_uint16_sequential_data;
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, sort_algorithm, write_func, sorted_val_func, comparator);
 }
 
 void
-test_flash_min_sort_large_sort_record_at_a_time_with_page_aligned_data(
-	planck_unit_test_t *tc
+test_external_sort_large_record_at_a_time_with_page_aligned_data(
+	planck_unit_test_t *tc,
+	ion_external_sort_algorithm_e sort_algorithm
 ) {
 	uint32_t num_records = 10000;
-	uint32_t max_buffer_size = 1500;
+	uint32_t max_buffer_size = 2000;
 	ion_value_size_t value_size = sizeof(uint16_t);
 	ion_boolean_e dump_all = boolean_false;
 	ion_boolean_e sorted_pages = boolean_false;
 	ion_sort_comparator_t comparator = ion_external_sort_uint16_comparator;
 
 	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_uint16_random_data;
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, NULL, comparator);
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, sort_algorithm, write_func, NULL, comparator);
 
 	write_func = ion_external_sort_write_uint16_sequential_data;
 	ion_external_sort_sorted_value_func_t sorted_val_func = ion_external_sort_expected_uint16_sequential_data;
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, sort_algorithm, write_func, sorted_val_func, comparator);
 }
 
 void
-test_flash_min_sort_small_sort_record_at_a_time_with_page_unaligned_data(
-	planck_unit_test_t *tc
+test_external_sort_small_record_at_a_time_with_page_unaligned_data(
+	planck_unit_test_t *tc,
+	ion_external_sort_algorithm_e sort_algorithm
 ) {
 	uint32_t num_records = 1000;
 	uint32_t max_buffer_size = 0;
@@ -462,41 +471,43 @@ test_flash_min_sort_small_sort_record_at_a_time_with_page_unaligned_data(
 	ion_sort_comparator_t comparator = ion_external_sort_5_char_str_comparator;
 
 	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_5_char_str_random_data;
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, NULL, comparator);
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, sort_algorithm, write_func, NULL, comparator);
 
 	ion_external_sort_sorted_value_func_t sorted_val_func = ion_external_sort_expected_5_char_str_sequential_data;
 	write_func = ion_external_sort_write_5_char_str_sequential_data_descending;
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, sort_algorithm, write_func, sorted_val_func, comparator);
 
 	write_func = ion_external_sort_write_5_char_str_sequential_data_ascending;
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, sort_algorithm, write_func, sorted_val_func, comparator);
 }
 
 void
-test_flash_min_sort_large_sort_record_at_a_time_with_page_unaligned_data(
-	planck_unit_test_t *tc
+test_external_sort_large_record_at_a_time_with_page_unaligned_data(
+	planck_unit_test_t *tc,
+	ion_external_sort_algorithm_e sort_algorithm
 ) {
 	uint32_t num_records = 10000;
-	uint32_t max_buffer_size = 1500;
+	uint32_t max_buffer_size = 2000;
 	ion_value_size_t value_size = 5;
 	ion_boolean_e dump_all = boolean_false;
 	ion_boolean_e sorted_pages = boolean_false;
 	ion_sort_comparator_t comparator = ion_external_sort_5_char_str_comparator;
 
 	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_5_char_str_random_data;
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, NULL, comparator);
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, sort_algorithm, write_func, NULL, comparator);
 
 	ion_external_sort_sorted_value_func_t sorted_val_func = ion_external_sort_expected_5_char_str_sequential_data;
 	write_func = ion_external_sort_write_5_char_str_sequential_data_descending;
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, sort_algorithm, write_func, sorted_val_func, comparator);
 
 	write_func = ion_external_sort_write_5_char_str_sequential_data_ascending;
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, sort_algorithm, write_func, sorted_val_func, comparator);
 }
 
 void
-test_flash_min_sort_small_sort_dump_to_file_with_page_aligned_data(
-	planck_unit_test_t *tc
+test_external_sort_small_dump_to_file_with_page_aligned_data(
+	planck_unit_test_t *tc,
+	ion_external_sort_algorithm_e sort_algorithm
 ) {
 	uint32_t num_records = 1000;
 	uint32_t max_buffer_size = 0;
@@ -506,35 +517,37 @@ test_flash_min_sort_small_sort_dump_to_file_with_page_aligned_data(
 	ion_sort_comparator_t comparator = ion_external_sort_uint16_comparator;
 
 	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_uint16_random_data;
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, NULL, comparator);
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, sort_algorithm, write_func, NULL, comparator);
 
 	write_func = ion_external_sort_write_uint16_sequential_data;
 	ion_external_sort_sorted_value_func_t sorted_val_func = ion_external_sort_expected_uint16_sequential_data;
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, sort_algorithm, write_func, sorted_val_func, comparator);
 }
 
 void
-test_flash_min_sort_large_sort_dump_to_file_with_page_aligned_data(
-	planck_unit_test_t *tc
+test_external_sort_large_dump_to_file_with_page_aligned_data(
+	planck_unit_test_t *tc,
+	ion_external_sort_algorithm_e sort_algorithm
 ) {
 	uint32_t num_records = 10000;
-	uint32_t max_buffer_size = 1500;
+	uint32_t max_buffer_size = 2000;
 	ion_value_size_t value_size = sizeof(uint16_t);
 	ion_boolean_e dump_all = boolean_true;
 	ion_boolean_e sorted_pages = boolean_false;
 	ion_sort_comparator_t comparator = ion_external_sort_uint16_comparator;
 
 	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_uint16_random_data;
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, NULL, comparator);
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, sort_algorithm, write_func, NULL, comparator);
 
 	write_func = ion_external_sort_write_uint16_sequential_data;
 	ion_external_sort_sorted_value_func_t sorted_val_func = ion_external_sort_expected_uint16_sequential_data;
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, sort_algorithm, write_func, sorted_val_func, comparator);
 }
 
 void
-test_flash_min_sort_small_sort_dump_to_file_with_page_unaligned_data(
-	planck_unit_test_t *tc
+test_external_sort_small_dump_to_file_with_page_unaligned_data(
+	planck_unit_test_t *tc,
+	ion_external_sort_algorithm_e sort_algorithm
 ) {
 	uint32_t num_records = 1000;
 	uint32_t max_buffer_size = 0;
@@ -544,37 +557,149 @@ test_flash_min_sort_small_sort_dump_to_file_with_page_unaligned_data(
 	ion_sort_comparator_t comparator = ion_external_sort_5_char_str_comparator;
 
 	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_5_char_str_random_data;
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, NULL, comparator);
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, sort_algorithm, write_func, NULL, comparator);
 
 	ion_external_sort_sorted_value_func_t sorted_val_func = ion_external_sort_expected_5_char_str_sequential_data;
 	write_func = ion_external_sort_write_5_char_str_sequential_data_descending;
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, sort_algorithm, write_func, sorted_val_func, comparator);
 
 	write_func = ion_external_sort_write_5_char_str_sequential_data_ascending;
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
-
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, sort_algorithm, write_func, sorted_val_func, comparator);
 }
 
 void
-test_flash_min_sort_large_sort_dump_to_file_with_page_unaligned_data(
-	planck_unit_test_t *tc
+test_external_sort_large_dump_to_file_with_page_unaligned_data(
+	planck_unit_test_t *tc,
+	ion_external_sort_algorithm_e sort_algorithm
 ) {
 	uint32_t num_records = 10000;
-	uint32_t max_buffer_size = 1500;
+	uint32_t max_buffer_size = 2000;
 	ion_value_size_t value_size = 5;
 	ion_boolean_e dump_all = boolean_true;
 	ion_boolean_e sorted_pages = boolean_false;
 	ion_sort_comparator_t comparator = ion_external_sort_5_char_str_comparator;
 
 	ion_external_sort_write_data_func_t write_func = ion_external_sort_write_5_char_str_random_data;
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, NULL, comparator);
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, sort_algorithm, write_func, NULL, comparator);
 
 	ion_external_sort_sorted_value_func_t sorted_val_func = ion_external_sort_expected_5_char_str_sequential_data;
 	write_func = ion_external_sort_write_5_char_str_sequential_data_descending;
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, sort_algorithm, write_func, sorted_val_func, comparator);
 
 	write_func = ion_external_sort_write_5_char_str_sequential_data_ascending;
-	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, ION_FILE_SORT_FLASH_MINSORT, write_func, sorted_val_func, comparator);
+	test_sort(tc, num_records, max_buffer_size, value_size, dump_all, sorted_pages, sort_algorithm, write_func, sorted_val_func, comparator);
+}
+
+void
+test_flash_min_sort_small_record_at_a_time_with_page_aligned_data(
+	planck_unit_test_t *tc
+) {
+	test_external_sort_small_record_at_a_time_with_page_aligned_data(tc, ION_FLASH_MINSORT);
+}
+
+void
+test_external_merge_sort_small_record_at_a_time_with_page_aligned_data(
+	planck_unit_test_t *tc
+) {
+	test_external_sort_small_record_at_a_time_with_page_aligned_data(tc, ION_EXTERNAL_MERGE_SORT);
+}
+
+void
+test_flash_min_sort_large_record_at_a_time_with_page_aligned_data(
+	planck_unit_test_t *tc
+) {
+	test_external_sort_large_record_at_a_time_with_page_aligned_data(tc, ION_FLASH_MINSORT);
+}
+
+void
+test_external_merge_sort_large_record_at_a_time_with_page_aligned_data(
+	planck_unit_test_t *tc
+) {
+	test_external_sort_large_record_at_a_time_with_page_aligned_data(tc, ION_EXTERNAL_MERGE_SORT);
+}
+
+void
+test_flash_min_sort_small_record_at_a_time_with_page_unaligned_data(
+	planck_unit_test_t *tc
+) {
+	test_external_sort_small_record_at_a_time_with_page_unaligned_data(tc, ION_FLASH_MINSORT);
+}
+
+void
+test_external_merge_sort_small_record_at_a_time_with_page_unaligned_data(
+	planck_unit_test_t *tc
+) {
+	test_external_sort_small_record_at_a_time_with_page_unaligned_data(tc, ION_EXTERNAL_MERGE_SORT);
+}
+
+void
+test_flash_min_sort_large_record_at_a_time_with_page_unaligned_data(
+	planck_unit_test_t *tc
+) {
+	test_external_sort_large_record_at_a_time_with_page_unaligned_data(tc, ION_FLASH_MINSORT);
+}
+
+void
+test_external_merge_sort_large_record_at_a_time_with_page_unaligned_data(
+	planck_unit_test_t *tc
+) {
+	test_external_sort_large_record_at_a_time_with_page_unaligned_data(tc, ION_EXTERNAL_MERGE_SORT);
+}
+
+void
+test_flash_min_sort_small_dump_to_file_with_page_aligned_data(
+	planck_unit_test_t *tc
+) {
+	test_external_sort_small_dump_to_file_with_page_aligned_data(tc, ION_FLASH_MINSORT);
+}
+
+void
+test_external_merge_sort_small_dump_to_file_with_page_aligned_data(
+	planck_unit_test_t *tc
+) {
+	test_external_sort_small_dump_to_file_with_page_aligned_data(tc, ION_EXTERNAL_MERGE_SORT);
+}
+
+void
+test_flash_min_sort_large_dump_to_file_with_page_aligned_data(
+	planck_unit_test_t *tc
+) {
+	test_external_sort_large_dump_to_file_with_page_aligned_data(tc, ION_FLASH_MINSORT);
+}
+
+void
+test_external_merge_sort_large_dump_to_file_with_page_aligned_data(
+	planck_unit_test_t *tc
+) {
+	test_external_sort_large_dump_to_file_with_page_aligned_data(tc, ION_EXTERNAL_MERGE_SORT);
+}
+
+void
+test_flash_min_sort_small_dump_to_file_with_page_unaligned_data(
+	planck_unit_test_t *tc
+) {
+	test_external_sort_small_dump_to_file_with_page_unaligned_data(tc, ION_FLASH_MINSORT);
+}
+
+void
+test_external_merge_sort_small_dump_to_file_with_page_unaligned_data(
+	planck_unit_test_t *tc
+) {
+	test_external_sort_small_dump_to_file_with_page_unaligned_data(tc, ION_EXTERNAL_MERGE_SORT);
+}
+
+void
+test_flash_min_sort_large_dump_to_file_with_page_unaligned_data(
+	planck_unit_test_t *tc
+) {
+	test_external_sort_large_dump_to_file_with_page_unaligned_data(tc, ION_FLASH_MINSORT);
+}
+
+void
+test_external_merge_sort_large_dump_to_file_with_page_unaligned_data(
+	planck_unit_test_t *tc
+) {
+	test_external_sort_large_dump_to_file_with_page_unaligned_data(tc, ION_EXTERNAL_MERGE_SORT);
 }
 
 planck_unit_suite_t *
@@ -587,15 +712,24 @@ file_sort_getsuite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_macro_clear_flag);
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_required_memory);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_small_sort_record_at_a_time_with_page_aligned_data);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_large_sort_record_at_a_time_with_page_aligned_data);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_small_sort_record_at_a_time_with_page_unaligned_data);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_large_sort_record_at_a_time_with_page_unaligned_data);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_small_record_at_a_time_with_page_aligned_data);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_large_record_at_a_time_with_page_aligned_data);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_small_record_at_a_time_with_page_unaligned_data);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_large_record_at_a_time_with_page_unaligned_data);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_small_dump_to_file_with_page_aligned_data);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_large_dump_to_file_with_page_aligned_data);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_small_dump_to_file_with_page_unaligned_data);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_large_dump_to_file_with_page_unaligned_data);
 
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_small_sort_dump_to_file_with_page_aligned_data);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_large_sort_dump_to_file_with_page_aligned_data);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_small_sort_dump_to_file_with_page_unaligned_data);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flash_min_sort_large_sort_dump_to_file_with_page_unaligned_data);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_external_merge_sort_required_memory);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_external_merge_sort_small_record_at_a_time_with_page_aligned_data);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_external_merge_sort_large_record_at_a_time_with_page_aligned_data);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_external_merge_sort_small_record_at_a_time_with_page_unaligned_data);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_external_merge_sort_large_record_at_a_time_with_page_unaligned_data);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_external_merge_sort_small_dump_to_file_with_page_aligned_data);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_external_merge_sort_large_dump_to_file_with_page_aligned_data);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_external_merge_sort_small_dump_to_file_with_page_unaligned_data);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_external_merge_sort_large_dump_to_file_with_page_unaligned_data);
 
 	return suite;
 }

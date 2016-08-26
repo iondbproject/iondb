@@ -77,7 +77,7 @@ ion_external_sort_bytes_of_memory_required(
 	uint32_t memory_required = 0;
 
 	switch (es->sort_algorithm) {
-		case ION_FILE_SORT_FLASH_MINSORT: {
+		case ION_FLASH_MINSORT: {
 			memory_required += es->page_size + 4;
 
 			if (boolean_true == dump_all) {
@@ -103,6 +103,11 @@ ion_external_sort_bytes_of_memory_required(
 
 			break;
 		}
+		case ION_EXTERNAL_MERGE_SORT: {
+			// TODO
+
+			break;
+		}
 	}
 
 	return memory_required;
@@ -121,7 +126,7 @@ ion_external_sort_init_cursor(
 	cursor->buffer_size = buffer_size;
 
 	switch (es->sort_algorithm) {
-		case ION_FILE_SORT_FLASH_MINSORT: {
+		case ION_FLASH_MINSORT: {
 			cursor->implementation_data = malloc(sizeof(ion_flash_min_sort_t));
 
 			if (NULL == cursor->implementation_data) {
@@ -131,10 +136,19 @@ ion_external_sort_init_cursor(
 			cursor->next = ion_flash_min_sort_next;
 			return ion_flash_min_sort_init(es, cursor);
 		}
-		default: {
-			return err_ok;
+		case ION_EXTERNAL_MERGE_SORT: {
+			cursor->implementation_data = malloc(sizeof(ion_external_merge_sort_t));
+
+			if (NULL == cursor->implementation_data) {
+				return err_out_of_memory;
+			}
+
+			cursor->next = ion_external_merge_sort_next;
+			return ion_external_merge_sort_init(es, cursor);
 		}
 	}
+
+	return err_ok;
 }
 
 void
@@ -161,7 +175,7 @@ ion_external_sort_dump_all(
 	ion_err_t error = err_ok;
 
 	switch (es->sort_algorithm) {
-		case ION_FILE_SORT_FLASH_MINSORT: {
+		case ION_FLASH_MINSORT: {
 			cursor.next = ion_flash_min_sort_next;
 
 			ion_flash_min_sort_t flash_min_sort_data;
@@ -174,7 +188,17 @@ ion_external_sort_dump_all(
 			error = cursor.next(&cursor, NULL);
 			break;
 		}
-		default: {
+		case ION_EXTERNAL_MERGE_SORT: {
+			cursor.next = ion_external_merge_sort_next;
+
+			ion_external_merge_sort_t external_merge_sort_data;
+			cursor.implementation_data = &external_merge_sort_data;
+
+			if (err_ok != (error = ion_external_merge_sort_init(es, &cursor))) {
+				break;
+			}
+
+			error = cursor.next(&cursor, NULL);
 			break;
 		}
 	}

@@ -22,7 +22,6 @@
             License.
 
 @todo		Caching pages
-@todo		Code for sorted regions
 */
 /******************************************************************************/
 
@@ -135,7 +134,7 @@ ion_flash_min_sort_init(
 	return err_ok;
 }
 
-ion_cursor_status_t
+ion_err_t
 ion_flash_min_sort_next(
 	ion_external_sort_cursor_t	*cursor,
 	void						*output_value

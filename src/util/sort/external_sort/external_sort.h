@@ -35,6 +35,7 @@ extern "C" {
 #include "../sort.h"
 #include "external_sort_types.h"
 #include "flash_min_sort.h"
+#include "external_merge_sort.h"
 #include "../../../key_value/kv_system.h"
 
 #if defined(ARDUINO)

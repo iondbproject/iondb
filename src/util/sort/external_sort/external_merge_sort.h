@@ -2,7 +2,8 @@
 /**
 @file
 @author		Wade Penson
-@brief		Interface for the implementation of the flash minsort algorithm.
+@brief		Interface for the implementation of the external merge sort
+			algorithm.
 @copyright	Copyright 2016
 				The University of British Columbia,
 				IonDB Project Contributors (see AUTHORS.md)
@@ -21,8 +22,8 @@
 */
 /******************************************************************************/
 
-#if !defined(ION_FLASH_MIN_SORT_H_)
-#define ION_FLASH_MIN_SORT_H_
+#if !defined(ION_EXTERNAL_MERGE_SORT_H_)
+#define ION_EXTERNAL_MERGE_SORT_H_
 
 #include <stdio.h>
 #include <string.h>
@@ -38,45 +39,12 @@
 #include "../../../file/SD_stdio_c_iface.h"
 #endif
 
-#if defined(DEGUB)
-extern uint32_t page_reads;
-#endif
-
-#define ION_FMS_GET_FLAG(bit_vector_arr, flag_index) \
-	((((uint8_t *)bit_vector_arr)[(flag_index) >> 3] >> ((flag_index) & 7)) & 1)
-
-#define ION_FMS_SET_FLAG(bit_vector_arr, flag_index) \
-	(((uint8_t *)bit_vector_arr)[(flag_index) >> 3] |= (1 << ((flag_index) & 7)))
-
-#define ION_FMS_CLEAR_FLAG(bit_vector_arr, flag_index) \
-	(((uint8_t *)bit_vector_arr)[(flag_index) >> 3] &= ~(1 << ((flag_index) & 7)))
-
-#define ION_FMS_DIV_BY_POW_2_EXP(number, pow_2_exponent) \
-	((number) >> (pow_2_exponent))
-
 typedef struct {
-	uint32_t	num_regions;
-	uint32_t	num_pages_per_region;
-	uint32_t	num_pages_last_region;
-	uint32_t	num_bytes_in_page;
-	uint8_t		num_cache_pages;
-	uint32_t	cur_region;
-	uint32_t	cur_page;
-	uint32_t	cur_page_in_region;
-	uint16_t	cur_byte_in_page;
-	uint32_t	cur_byte_in_buffer;
-	ion_external_sort_data_pointer_t		*cur_value;
-	ion_external_sort_data_pointer_t		*temp_value;
-	ion_external_sort_data_pointer_t		*min_index_bit_vector;
-	uint32_t 								*page_statuses;
-	ion_external_sort_data_pointer_t 		*cache_pages;
-	ion_boolean_e	is_cur_null;
-} ion_flash_min_sort_t;
+
+} ion_external_merge_sort_t;
 
 /**
-@brief		Initializes the minsort algorithm. This calculates the number of regions
-			and size of the minimum index based on the number of values. It does a
-			one pass scan through the file to initialize the minimum index.
+@brief		Initializes the external merge sort algorithm.
 
 @param[in]	es
  				An initialized external sort structure.
@@ -85,7 +53,7 @@ typedef struct {
 @return		An error defined in @ref ion_err_t.
 */
 ion_err_t
-ion_flash_min_sort_init(
+ion_external_merge_sort_init(
 	ion_external_sort_t			*es,
 	ion_external_sort_cursor_t	*cursor
 );
@@ -100,9 +68,9 @@ ion_flash_min_sort_init(
 @return		An error defined in @ref ion_err_t.
 */
 ion_err_t
-ion_flash_min_sort_next(
+ion_external_merge_sort_next(
 	ion_external_sort_cursor_t *cursor,
 	void *output_value
 );
 
-#endif /* ION_FLASH_MIN_SORT_H_ */
+#endif /* ION_EXTERNAL_MERGE_SORT_H_ */

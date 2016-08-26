@@ -7,6 +7,8 @@ set(SOURCE_FILES
         external_sort_types.h
         flash_min_sort.h
         flash_min_sort.c
+        external_merge_sort.h
+        external_merge_sort.c
         ../sort.h
         ../../../key_value/kv_system.h)
 
