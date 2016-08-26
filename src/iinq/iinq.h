@@ -452,22 +452,28 @@ iinq_sort_compare(
 @brief		Define a schema for a source.
 */
 #define DEFINE_SCHEMA(source_name, struct_def) \
-struct iinq_ ## source_name ## _schema struct_def
+	struct iinq_ ## source_name ## _schema struct_def
+
+#define SCHEMA_SIZE(source_name) \
+	sizeof(struct iinq_ ## source_name ## _schema)
+
+#define DECLARE_SCHEMA_VAR(source_name, var_name) \
+	struct iinq_ ## source_name ## _schema var_name
 
 #define CREATE_DICTIONARY(schema_name, key_type, key_size, value_size) \
-iinq_create_source(#schema_name ".inq", key_type, key_size, value_size)
+	iinq_create_source(#schema_name ".inq", key_type, key_size, value_size)
 
 #define INSERT(schema_name, key, value) \
-iinq_insert(#schema_name ".inq", key, value)
+	iinq_insert(#schema_name ".inq", key, value)
 
 #define UPDATE(schema_name, key, value) \
-iinq_insert(#schema_name ".inq", key, value)
+	iinq_update(#schema_name ".inq", key, value)
 
 #define DELETE(schema_name, key) \
-iinq_delete(#schema_name ".inq", key)
+	iinq_delete(#schema_name ".inq", key)
 
 #define DROP(schema_name)\
-iinq_drop(#schema_name ".inq")
+	iinq_drop(#schema_name ".inq")
 
 /**
 @brief		This copies all tuple data created after a join (but before grouping/aggregation/sorting)
@@ -714,7 +720,7 @@ do { \
 #define _AGGREGATES_SETUP(n) \
 	agg_n	= (n);	\
 	i_agg	= 0;	\
-	iinq_aggregate_t *aggregates = alloca(agg_n); \
+	iinq_aggregate_t *aggregates = alloca(sizeof(iinq_aggregate_t) * agg_n); \
 	_AGGREGATES_INITIALIZE
 
 /**
@@ -936,13 +942,14 @@ do { \
 		if (1 != fread(record.data, record.raw_record_size, 1, input_file)) { \
 			break; \
 		} \
+		read_page_remaining -= record.raw_record_size; \
 	)() \
 	IF_ELSE(read_processed)( \
 		if (1 != fread(record.processed, record.num_bytes, 1, input_file)) { \
 			break; \
 		} \
+		read_page_remaining -= record.num_bytes; \
 	)() \
-	read_page_remaining -= record.num_bytes; \
 	/* Now record_data has the record. */ \
 	execute_expr;
 
@@ -1084,7 +1091,7 @@ do { \
 
 #define _SELECT_COMPUTE_SINGLE(t) \
 	memcpy(result.processed+select_byte_index, FIRST_MACRO_TUPLE3(t), SECOND_MACRO_TUPLE3(t)); \
-	select_byte_index	+= SECOND_MACRO_TUPLE3(t);
+	select_byte_index	+= SECOND_MACRO_TUPLE3(t); \
 
 /* We use the sliding macro trick to generate SELECT clauses. */
 #define _SELECT_COMPUTE_1(_1) _SELECT_COMPUTE_SINGLE(_1)
