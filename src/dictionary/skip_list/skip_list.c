@@ -37,7 +37,7 @@ sl_initialize(
 	DUMP(skip_list->maxheight, "%d");
 	DUMP(skip_list->pnum, "%d");
 	DUMP(skip_list->pden, "%d");
-	io_printf("%s", "\n");
+	printf("%s", "\n");
 #endif
 
 	skiplist->head = malloc(sizeof(ion_sl_node_t));

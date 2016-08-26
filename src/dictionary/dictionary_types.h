@@ -173,9 +173,9 @@ struct dictionary_handler {
 	ion_err_t (*create_dictionary)(
 		ion_dictionary_id_t,
 		ion_key_type_t,
-		int,
-		int,
-		int,
+		ion_key_size_t,
+		ion_value_size_t,
+		ion_dictionary_size_t,
 		ion_dictionary_compare_t,
 		ion_dictionary_handler_t *,
 		ion_dictionary_t *

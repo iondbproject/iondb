@@ -10,8 +10,6 @@ set(SOURCE_FILES
     ../dictionary.h
     ../dictionary.c
     ../dictionary_types.h
-        ../../key_value/kv_io.h
-        ../../key_value/kv_io.c
         ../../key_value/kv_system.h)
 
 if(USE_ARDUINO)

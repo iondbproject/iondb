@@ -22,9 +22,9 @@ public:
 
 ion_dictionary_handler_t	handler;
 ion_dictionary_t			dict;
-int							size_k;
-int							size_v;
-int							dict_size;
+ion_key_size_t				size_k;
+ion_value_size_t			size_v;
+ion_dictionary_size_t		dict_size;
 ion_status_t				last_status;
 
 ~Dictionary(
@@ -34,10 +34,10 @@ ion_status_t				last_status;
 
 ion_err_t
 initializeDictionary(
-	ion_key_type_t	type_key,
-	int				key_size,
-	int				value_size,
-	int				dictionary_size
+	ion_key_type_t			type_key,
+	ion_key_size_t			key_size,
+	ion_value_size_t		value_size,
+	ion_dictionary_size_t	dictionary_size
 ) {
 	ion_err_t err = dictionary_create(&handler, &dict, 0, type_key, key_size, value_size, dictionary_size);
 

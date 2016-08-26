@@ -25,7 +25,6 @@ extern "C" {
 #endif
 
 #include "../../key_value/kv_system.h"
-#include "../../key_value/kv_io.h"
 
 #define EMPTY	-1
 #define DELETED -2
