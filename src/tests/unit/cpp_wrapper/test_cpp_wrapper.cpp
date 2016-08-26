@@ -1127,10 +1127,6 @@ printf("@*@*@ Begin open/close\n");
 	test_cpp_wrapper_open_close(tc, dict, 66, 12);
 	delete dict;
 printf("@*@*@ B+ Tree finished\n");
-	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
-	test_cpp_wrapper_open_close(tc, dict, 1, 13);
-	delete dict;
-printf("@*@*@ Skiplist finished\n");
 	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_open_close(tc, dict, 45, 14);
 	delete dict;
@@ -1143,6 +1139,10 @@ printf("@*@*@ OA Hash finished\n");
 	test_cpp_wrapper_open_close(tc, dict, 5, 12);
 	delete dict;
 printf("@*@*@ OAFHash finished\n");
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_open_close(tc, dict, 1, 13);
+	delete dict;
+printf("@*@*@ Skiplist finished\n");
 }
 
 /**

@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file
-@author		Dana Klamut
+@author		Dana Klamut, Kris Wallperington
 @brief		Interface describing how user interacts with general dictionaries
 			using C++.
 */
