@@ -28,6 +28,8 @@ ion_external_merge_sort_init(
 	ion_external_sort_t			*es,
 	ion_external_sort_cursor_t	*cursor
 ) {
+	UNUSED(es);
+	UNUSED(cursor);
 	return err_ok;
 }
 
@@ -36,5 +38,7 @@ ion_external_merge_sort_next(
 	ion_external_sort_cursor_t *cursor,
 	void *output_value
 ) {
+	UNUSED(cursor);
+	UNUSED(output_value);
 	return err_ok;
 }

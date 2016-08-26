@@ -1,5 +1,5 @@
-#if !defined(PLANCK_UNIT_TEST_FILE_SORT_H_)
-#define PLANCK_UNIT_TEST_FILE_SORT_H_
+#if !defined(ION_TEST_EXTERNAL_SORT_H_)
+#define ION_TEST_EXTERNAL_SORT_H_
 
 #include <stdio.h>
 #include <stdint.h>
@@ -26,4 +26,4 @@ runalltests_file_sort(
 }
 #endif
 
-#endif /* PLANCK_UNIT_TEST_FILE_SORT_H_ */
+#endif /* ION_TEST_EXTERNAL_SORT_H_ */

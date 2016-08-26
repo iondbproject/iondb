@@ -23,8 +23,8 @@
 */
 /******************************************************************************/
 
-#if !defined(ION_FILE_SORT_H_)
-#define ION_FILE_SORT_H_
+#if !defined(ION_EXTERNAL_SORT_H_)
+#define ION_EXTERNAL_SORT_H_
 
 #if defined(__cplusplus)
 extern "C" {
@@ -90,4 +90,4 @@ ion_external_sort_dump_all(
 }
 #endif
 
-#endif /* ION_FILE_SORT_H_ */
+#endif /* ION_EXTERNAL_SORT_H_ */

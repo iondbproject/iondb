@@ -40,7 +40,7 @@
 #endif
 
 typedef struct {
-
+	void *nothing; /* TODO: Remove this */
 } ion_external_merge_sort_t;
 
 /**

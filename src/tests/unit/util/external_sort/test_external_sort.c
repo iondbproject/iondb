@@ -415,7 +415,7 @@ void
 test_external_merge_sort_required_memory(
 	planck_unit_test_t *tc
 ) {
-
+	UNUSED(tc);
 }
 
 void
