@@ -323,7 +323,7 @@ iinq_sort_compare(
 			// TODO: Write a comparator for floats
 		}
 		else if (IINQ_ORDERTYPE_OTHER == c->parts->type) {
-			result = memcmp(cur_a, cur_b, c->parts[i].size);
+			result = strncmp(cur_a, cur_b, c->parts[i].size);
 		}
 
 		if (result != 0) {

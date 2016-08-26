@@ -140,11 +140,32 @@ iinq_test_create_insert_update_delete_drop_dictionary_intint(
 	iinq_test_create_insert_update_delete_drop_dictionary(tc, key_type, key_size, value_size, insert_key, insert_value, update_value);
 }
 
-IINQ_NEW_PROCESSOR_FUNC(print_hello) {
-	UNUSED(result);
-	UNUSED(state);
-	printf("In here, hello!\n");
-	fflush(stdout);
+void
+iinq_test_create_query_select_all_from_where_single_dictionary_records(
+	planck_unit_test_t	*tc,
+	ion_iinq_result_t	*result,
+	uint32_t			count,
+	uint32_t 			total
+)
+{
+	UNUSED(total);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(uint32_t) * 2, result->num_bytes);
+	ion_key_t	key		= result->processed;
+	ion_value_t value	= result->processed + sizeof(uint32_t);
+
+	switch (count) {
+		case 0:
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, NEUTRALIZE(key, uint32_t));
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, NEUTRALIZE(value, uint32_t));
+			break;
+		case 1:
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, NEUTRALIZE(key, uint32_t));
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, NEUTRALIZE(value, uint32_t));
+			break;
+		default:
+			PLANCK_UNIT_SET_FAIL(tc);
+			break;
+	}
 }
 
 void
@@ -154,6 +175,10 @@ iinq_test_create_query_select_all_from_where_single_dictionary(
 	ion_err_t					error;
 	ion_status_t				status;
 	ion_iinq_query_processor_t	processor;
+	iinq_test_query_state_t		state;
+	state.count					= 0;
+	state.tc					= tc;
+	state.func					= iinq_test_create_query_select_all_from_where_single_dictionary_records;
 
 	ion_key_type_t		key_type;
 	ion_key_size_t		key_size;
@@ -161,7 +186,7 @@ iinq_test_create_query_select_all_from_where_single_dictionary(
 	ion_key_t			key;
 	ion_value_t			value;
 
-	processor	= IINQ_QUERY_PROCESSOR(print_hello, NULL);
+	processor	= IINQ_QUERY_PROCESSOR(check_results, &state);
 
 	key_type	= key_type_numeric_signed;
 	key_size	= sizeof(int);
@@ -184,9 +209,121 @@ iinq_test_create_query_select_all_from_where_single_dictionary(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
 
-	QUERY(SELECT_ALL, FROM(0, test), WHERE(NEUTRALIZE(test.key, int) == 1), , , , , , &processor);
+	QUERY(
+		SELECT_ALL,
+		FROM(0, test),
+		WHERE(NEUTRALIZE(test.key, int) == 1),
+		, , , , ,
+		&processor
+	);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, state.count);
 
 	DROP(test);
+}
+
+void
+iinq_test_create_query_select_expression_all_from_where_single_dictionary_records(
+	planck_unit_test_t	*tc,
+	ion_iinq_result_t	*result,
+	uint32_t			count,
+	uint32_t 			total
+)
+{
+	UNUSED(total);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(uint32_t), result->num_bytes);
+	ion_key_t	value		= result->processed;
+
+	switch (count) {
+		case 0:
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 4, NEUTRALIZE(value, uint32_t));
+			break;
+		default:
+			PLANCK_UNIT_SET_FAIL(tc);
+			break;
+	}
+}
+
+void
+iinq_test_create_query_select_expression_all_from_where_single_dictionary(
+	planck_unit_test_t *tc
+) {
+	ion_err_t					error;
+	ion_status_t				status;
+	ion_iinq_query_processor_t	processor;
+	iinq_test_query_state_t		state;
+	state.count					= 0;
+	state.tc					= tc;
+	state.func					= iinq_test_create_query_select_expression_all_from_where_single_dictionary_records;
+
+	ion_key_type_t		key_type;
+	ion_key_size_t		key_size;
+	ion_value_size_t	value_size;
+	ion_key_t			key;
+	ion_value_t			value;
+
+	processor	= IINQ_QUERY_PROCESSOR(check_results, &state);
+
+	key_type	= key_type_numeric_signed;
+	key_size	= sizeof(int);
+	value_size	= sizeof(int);
+
+	error		= CREATE_DICTIONARY(test, key_type, key_size, value_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
+
+	key			= IONIZE(1, int);
+	value		= IONIZE(1, int);
+
+	status		= INSERT(test, key, value);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	key		= IONIZE(2, int);
+	value	= IONIZE(2, int);
+
+	status	= INSERT(test, key, value);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	QUERY(
+		SELECT(SELECT_EXPR(NEUTRALIZE(test.value, int) * 2)),
+		FROM(0, test),
+		WHERE(NEUTRALIZE(test.key, int) == 2),
+	, , , , ,
+		&processor
+	);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, state.count);
+
+	DROP(test);
+}
+
+void
+iinq_test_create_query_select_all_from_where_two_dictionaries_records(
+	planck_unit_test_t	*tc,
+	ion_iinq_result_t	*result,
+	uint32_t			count,
+	uint32_t 			total
+)
+{
+	UNUSED(total);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(uint32_t) * 4, result->num_bytes);
+	ion_key_t	key_1		= result->processed;
+	ion_value_t value_1		= result->processed + sizeof(uint32_t);
+	ion_key_t	key_2		= result->processed + sizeof(uint32_t) * 2;
+	ion_value_t value_2		= result->processed + sizeof(uint32_t) * 3;
+
+	switch (count) {
+		case 0:
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, NEUTRALIZE(key_1, uint32_t));
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, NEUTRALIZE(value_1, uint32_t));
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, NEUTRALIZE(key_2, uint32_t));
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, NEUTRALIZE(value_2, uint32_t));
+			break;
+		default:
+			PLANCK_UNIT_SET_FAIL(tc);
+			break;
+	}
 }
 
 void
@@ -196,6 +333,10 @@ iinq_test_create_query_select_all_from_where_two_dictionaries(
 	ion_err_t					error;
 	ion_status_t				status;
 	ion_iinq_query_processor_t	processor;
+	iinq_test_query_state_t		state;
+	state.count					= 0;
+	state.tc					= tc;
+	state.func					= iinq_test_create_query_select_all_from_where_two_dictionaries_records;
 
 	ion_key_type_t		key_type;
 	ion_key_size_t		key_size;
@@ -203,7 +344,7 @@ iinq_test_create_query_select_all_from_where_two_dictionaries(
 	ion_key_t			key;
 	ion_value_t			value;
 
-	processor	= IINQ_QUERY_PROCESSOR(print_hello, NULL);
+	processor	= IINQ_QUERY_PROCESSOR(check_results, &state);
 
 	key_type	= key_type_numeric_signed;
 	key_size	= sizeof(int);
@@ -237,10 +378,42 @@ iinq_test_create_query_select_all_from_where_two_dictionaries(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
 
-	QUERY(SELECT_ALL, FROM(0, test1, test2), WHERE(NEUTRALIZE(test1.key, int) == 1), , , , , , &processor);
+	QUERY(
+		SELECT_ALL,
+		FROM(0, test1, test2),
+		WHERE(NEUTRALIZE(test1.key, int) == 1),
+		, , , , ,
+		&processor
+	);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, state.count);
 
 	DROP(test1);
 	DROP(test2);
+}
+
+void
+iinq_test_create_query_select_all_from_where_aggregates_records(
+	planck_unit_test_t	*tc,
+	ion_iinq_result_t	*result,
+	uint32_t			count,
+	uint32_t 			total
+)
+{
+	UNUSED(total);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(uint32_t) * 2, result->num_bytes);
+	ion_key_t	key		= result->processed;
+	ion_value_t value	= result->processed + sizeof(uint32_t);
+
+	switch (count) {
+		case 0:
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, NEUTRALIZE(key, uint32_t));
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, NEUTRALIZE(value, uint32_t));
+			break;
+		default:
+			PLANCK_UNIT_SET_FAIL(tc);
+			break;
+	}
 }
 
 void
@@ -250,6 +423,10 @@ iinq_test_create_query_select_all_from_where_aggregates(
 	ion_err_t					error;
 	ion_status_t				status;
 	ion_iinq_query_processor_t	processor;
+	iinq_test_query_state_t		state;
+	state.count					= 0;
+	state.tc					= tc;
+	state.func					= iinq_test_create_query_select_all_from_where_aggregates_records;
 
 	ion_key_type_t		key_type;
 	ion_key_size_t		key_size;
@@ -257,7 +434,7 @@ iinq_test_create_query_select_all_from_where_aggregates(
 	ion_key_t			key;
 	ion_value_t			value;
 
-	processor	= IINQ_QUERY_PROCESSOR(print_hello, NULL);
+	processor	= IINQ_QUERY_PROCESSOR(check_results, &state);
 
 	key_type	= key_type_numeric_signed;
 	key_size	= sizeof(int);
@@ -280,7 +457,182 @@ iinq_test_create_query_select_all_from_where_aggregates(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
 
-	MATERIALIZED_QUERY(SELECT_ALL, AGGREGATES(MAX(NEUTRALIZE(test.key, int))), FROM(0, test), WHERE(NEUTRALIZE(test.key, int) == 1), GROUPBY_NONE, HAVING_NONE, ORDERBY_NONE, , , &processor);
+	MATERIALIZED_QUERY(
+		SELECT(SELECT_AGGR(0)),
+		AGGREGATES(MAX(NEUTRALIZE(test.key, int))),
+		FROM(0, test),
+		WHERE(NEUTRALIZE(test.key, int) == 1),
+		GROUPBY_NONE,
+		HAVING_NONE,
+		ORDERBY_NONE,
+		, ,
+		&processor
+	);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, state.count);
+
+	DROP(test);
+}
+
+void
+iinq_test_create_query_select_expression_from_where_aggregates_records(
+	planck_unit_test_t	*tc,
+	ion_iinq_result_t	*result,
+	uint32_t			count,
+	uint32_t 			total
+)
+{
+	UNUSED(total);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(uint32_t) * 2, result->num_bytes);
+	ion_key_t	key		= result->processed;
+	ion_value_t value	= result->processed + sizeof(uint32_t);
+
+	switch (count) {
+		case 0:
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, NEUTRALIZE(key, uint32_t));
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, NEUTRALIZE(value, uint32_t));
+			break;
+		default:
+			PLANCK_UNIT_SET_FAIL(tc);
+			break;
+	}
+}
+
+void
+iinq_test_create_query_select_expression_from_where_aggregates(
+	planck_unit_test_t *tc
+) {
+	ion_err_t					error;
+	ion_status_t				status;
+	ion_iinq_query_processor_t	processor;
+	iinq_test_query_state_t		state;
+	state.count					= 0;
+	state.tc					= tc;
+	state.func					= iinq_test_create_query_select_expression_from_where_aggregates_records;
+
+	ion_key_type_t		key_type;
+	ion_key_size_t		key_size;
+	ion_value_size_t	value_size;
+	ion_key_t			key;
+	ion_value_t			value;
+
+	processor	= IINQ_QUERY_PROCESSOR(check_results, &state);
+
+	key_type	= key_type_numeric_signed;
+	key_size	= sizeof(int);
+	value_size	= sizeof(int);
+
+	error		= CREATE_DICTIONARY(test, key_type, key_size, value_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
+
+	key			= IONIZE(1, int);
+	value		= IONIZE(1, int);
+
+	status		= INSERT(test, key, value);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	key		= IONIZE(2, int);
+	value	= IONIZE(2, int);
+
+	status	= INSERT(test, key, value);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	MATERIALIZED_QUERY(
+		SELECT(SELECT_EXPR(SELECT_AGGR(0) * 2)),
+		AGGREGATES(MAX(NEUTRALIZE(test.key, int))),
+		FROM(0, test),
+		WHERE(NEUTRALIZE(test.key, int) == 2),
+		GROUPBY_NONE,
+		HAVING_NONE,
+		ORDERBY_NONE,
+		, ,
+		&processor
+	);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, state.count);
+
+	DROP(test);
+}
+
+void
+iinq_test_create_query_select_complex_expression_from_where_aggregates_records(
+	planck_unit_test_t	*tc,
+	ion_iinq_result_t	*result,
+	uint32_t			count,
+	uint32_t 			total
+)
+{
+	UNUSED(total);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(uint32_t), result->num_bytes);
+	ion_key_t	expr		= result->processed;
+
+	switch (count) {
+		case 0:
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, NEUTRALIZE(expr, uint32_t));
+			break;
+		default:
+			PLANCK_UNIT_SET_FAIL(tc);
+			break;
+	}
+}
+
+void
+iinq_test_create_query_select_complex_expression_from_where_aggregates(
+	planck_unit_test_t *tc
+) {
+	ion_err_t					error;
+	ion_status_t				status;
+	ion_iinq_query_processor_t	processor;
+	iinq_test_query_state_t		state;
+	state.count					= 0;
+	state.tc					= tc;
+	state.total					= NULL;
+	state.func					= iinq_test_create_query_select_complex_expression_from_where_aggregates_records;
+
+	ion_key_type_t		key_type;
+	ion_key_size_t		key_size;
+	ion_value_size_t	value_size;
+	ion_key_t			key;
+	ion_value_t			value;
+
+	processor	= IINQ_QUERY_PROCESSOR(check_results, &state);
+
+	key_type	= key_type_numeric_signed;
+	key_size	= sizeof(int);
+	value_size	= sizeof(int);
+
+	error		= CREATE_DICTIONARY(test, key_type, key_size, value_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
+
+	key			= IONIZE(1, int);
+	value		= IONIZE(8, int);
+
+	status		= INSERT(test, key, value);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	key		= IONIZE(2, int);
+	value	= IONIZE(4, int);
+
+	status	= INSERT(test, key, value);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	MATERIALIZED_QUERY(
+		SELECT(SELECT_EXPR(SELECT_AGGR(0) * NEUTRALIZE(test.value, int) / 4)),
+		AGGREGATES(MAX(NEUTRALIZE(test.key, int))),
+		FROM(0, test),
+		WHERE(1),
+		GROUPBY_NONE,
+		HAVING_NONE,
+		ORDERBY_NONE,
+		, ,
+		&processor
+	);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, state.count);
 
 	DROP(test);
 }
@@ -324,14 +676,34 @@ void
 iinq_test_orderby_general_ascending(
 		ion_iinq_query_processor_t	*processor
 ) {
-	MATERIALIZED_QUERY(SELECT_ALL, AGGREGATES_NONE, FROM(0, test), WHERE(1), GROUPBY_NONE, HAVING_NONE, ORDERBY(ASCENDING_UINT(NEUTRALIZE(test.key, uint32_t))), , , processor);
+	MATERIALIZED_QUERY(
+		SELECT_ALL,
+		AGGREGATES_NONE,
+		FROM(0, test),
+		WHERE(1),
+		GROUPBY_NONE,
+		HAVING_NONE,
+		ORDERBY(ASCENDING_UINT(NEUTRALIZE(test.key, uint32_t))),
+		, ,
+		processor
+	);
 }
 
 void
 iinq_test_orderby_general_descending(
 		ion_iinq_query_processor_t	*processor
 ) {
-	MATERIALIZED_QUERY(SELECT_ALL, AGGREGATES_NONE, FROM(0, test), WHERE(1), GROUPBY_NONE, HAVING_NONE, ORDERBY(DESCENDING_UINT(NEUTRALIZE(test.key, uint32_t))) , , , processor);
+	MATERIALIZED_QUERY(
+		SELECT_ALL,
+		AGGREGATES_NONE,
+		FROM(0, test),
+		WHERE(1),
+		GROUPBY_NONE,
+		HAVING_NONE,
+		ORDERBY(DESCENDING_UINT(NEUTRALIZE(test.key, uint32_t))),
+		, ,
+		processor
+	);
 }
 
 void
@@ -506,6 +878,7 @@ iinq_test_create_query_select_max_from_where_groupby_aggregate_simple(
 		, , ,
 		&processor
 	);
+
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, state.count);
 
 	DROP(test);
@@ -596,6 +969,186 @@ iinq_test_create_query_select_count_from_where_groupby_aggregate_simple(
 		, , ,
 		&processor
 	);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, state.count);
+
+	DROP(test);
+}
+
+void
+iinq_test_create_query_select_sum_from_where_groupby_aggregate_simple_records(
+	planck_unit_test_t	*tc,
+	ion_iinq_result_t	*result,
+	uint32_t			count,
+	uint32_t 			total
+)
+{
+	UNUSED(total);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(double), result->num_bytes);
+	double groupby_sum = *((double *)(result->processed));
+	switch (count) {
+		case 0:
+			PLANCK_UNIT_ASSERT_TRUE(tc, 17.0 == groupby_sum);
+			break;
+		case 1:
+			PLANCK_UNIT_ASSERT_TRUE(tc, 5.0 == groupby_sum);
+			break;
+		default:
+			PLANCK_UNIT_SET_FAIL(tc);
+			break;
+	}
+}
+
+void
+iinq_test_create_query_select_sum_from_where_groupby_aggregate_simple(
+	planck_unit_test_t *tc
+) {
+	ion_err_t					error;
+	ion_status_t				status;
+	ion_iinq_query_processor_t	processor;
+	iinq_test_query_state_t		state;
+	state.count					= 0;
+	state.tc					= tc;
+	state.total					= 2;
+	state.func					= iinq_test_create_query_select_sum_from_where_groupby_aggregate_simple_records;
+
+	ion_key_type_t				key_type;
+	ion_key_size_t				key_size;
+	ion_value_size_t			value_size;
+	ion_key_t					key;
+	ion_value_t					value;
+
+	processor	= IINQ_QUERY_PROCESSOR(check_results, &state);
+
+	key_type	= key_type_numeric_signed;
+	key_size	= sizeof(int);
+	value_size	= sizeof(int);
+
+	error		= CREATE_DICTIONARY(test, key_type, key_size, value_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
+
+	key			= IONIZE(13, int);
+	value		= IONIZE(13, int);
+
+	status		= INSERT(test, key, value);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	key			= IONIZE(13, int);
+	value		= IONIZE(4, int);
+
+	status		= INSERT(test, key, value);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	key			= IONIZE(7, int);
+	value		= IONIZE(5, int);
+
+	status		= INSERT(test, key, value);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	MATERIALIZED_QUERY(
+		SELECT(SELECT_AGGR(0)),
+		AGGREGATES(SUM(NEUTRALIZE(test.value, int))),
+		FROM(0, test),
+		WHERE(1),
+		GROUPBY(DESCENDING_INT(NEUTRALIZE(test.key, int)))
+		,
+		HAVING_ALL,
+		ORDERBY_NONE
+		, , ,
+		&processor
+	);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, state.count);
+
+	DROP(test);
+}
+
+void
+iinq_test_create_query_select_count_from_where_groupby_having_aggregate_simple_records(
+	planck_unit_test_t	*tc,
+	ion_iinq_result_t	*result,
+	uint32_t			count,
+	uint32_t 			total
+)
+{
+	UNUSED(total);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(uint32_t), result->num_bytes);
+	ion_key_t	key		= result->processed;
+
+	switch (count) {
+		case 0:
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, NEUTRALIZE(key, uint32_t));
+			break;
+		default:
+			PLANCK_UNIT_SET_FAIL(tc);
+			break;
+	}
+}
+
+void
+iinq_test_create_query_select_count_from_where_groupby_having_aggregate_simple(
+	planck_unit_test_t *tc
+) {
+	ion_err_t					error;
+	ion_status_t				status;
+	ion_iinq_query_processor_t	processor;
+	iinq_test_query_state_t		state;
+	state.count					= 0;
+	state.tc					= tc;
+	state.total					= 2;
+	state.func					= iinq_test_create_query_select_count_from_where_groupby_having_aggregate_simple_records;
+
+	ion_key_type_t				key_type;
+	ion_key_size_t				key_size;
+	ion_value_size_t			value_size;
+	ion_key_t					key;
+	ion_value_t					value;
+
+	processor	= IINQ_QUERY_PROCESSOR(check_results, &state);
+
+	key_type	= key_type_numeric_signed;
+	key_size	= sizeof(int);
+	value_size	= sizeof(int);
+
+	error		= CREATE_DICTIONARY(test, key_type, key_size, value_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
+
+	key			= IONIZE(15, int);
+	value		= IONIZE(3, int);
+
+	status		= INSERT(test, key, value);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	key			= IONIZE(3, int);
+	value		= IONIZE(2, int);
+
+	status		= INSERT(test, key, value);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	key			= IONIZE(3, int);
+	value		= IONIZE(1, int);
+
+	status		= INSERT(test, key, value);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+
+	MATERIALIZED_QUERY(
+		SELECT(SELECT_AGGR(0)),
+		AGGREGATES(COUNT(NEUTRALIZE(test.key, int))),
+		FROM(0, test),
+		WHERE(1),
+		GROUPBY(ASCENDING_INT(NEUTRALIZE(test.key, int))),
+		HAVING(SELECT_AGGR(0) == 2),
+		ORDERBY_NONE
+		, , ,
+		&processor
+	);
+
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, state.count);
 
 	DROP(test);
@@ -705,6 +1258,7 @@ iinq_test_create_query_select_count_from_where_groupby_aggregate_schema(
 		, , ,
 		&processor
 	);
+
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, state.count);
 
 	DROP(test);
@@ -719,14 +1273,19 @@ iinq_get_suite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_open_source_string10string20);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_insert_update_delete_drop_dictionary_intint);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_single_dictionary);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_two_dictionaries);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_aggregates);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_expression_all_from_where_single_dictionary);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_two_dictionaries);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_aggregates);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_expression_from_where_aggregates);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_complex_expression_from_where_aggregates);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_ascending_small);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_ascending_large);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_descending_small);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_descending_large);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_simple);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_aggregate_simple);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_sum_from_where_groupby_aggregate_simple);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_having_aggregate_simple);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_aggregate_schema);
 
 	return suite;

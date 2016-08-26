@@ -752,11 +752,13 @@ do { \
 
 #define COUNT(expr) \
 	aggregates[i_agg].type = IINQ_AGGREGATE_TYPE_UINT; \
-	if (0 == aggregates[i_agg].status) { \
-		aggregates[i_agg].value.u64 = 0; \
-	} \
 	aggregates[i_agg].value.u64++; \
-	aggregates[i_agg].status = 1; \
+	aggregates[i_agg].status = 1;
+
+#define SUM(expr) \
+	aggregates[i_agg].type = IINQ_AGGREGATE_TYPE_DOUBLE; \
+	aggregates[i_agg].value.f64 += ((double)(expr)); \
+	aggregates[i_agg].status = 1;
 
 /*
  * The last parameter, the variable arguments, is a black whole to swallow unused macro names.
@@ -805,20 +807,20 @@ do { \
 	total_ ## name ## _size = 0; \
 	name ## _order_parts = alloca(sizeof(iinq_order_part_t)*(n));
 
-#define _OPEN_ORDERING_FILE_WRITE(name, with_aggregates, with_unprocessed, with_processed, record) \
+#define _OPEN_ORDERING_FILE_WRITE(name, with_aggregates, with_unprocessed, with_processed, record, type) \
 	output_file			= fopen(#name, "wb"); \
 	if (NULL == output_file) { \
 		error			= err_file_open_error; \
 		goto IINQ_QUERY_END; \
 	} \
 	write_page_remaining	= IINQ_PAGE_SIZE; \
-	if ((int) write_page_remaining < (int) (total_ ## name ## _size IF_ELSE(with_aggregates)(+ (8*agg_n))() IF_ELSE(with_unprocessed)(+ (record.raw_record_size))() IF_ELSE(with_processed)(+ (record.num_bytes))())) { /* Record size is size of records, not including sort key. */ \
+	if ((int) write_page_remaining < (int) (total_ ## type ## _size IF_ELSE(with_aggregates)(+ (8*agg_n))() IF_ELSE(with_unprocessed)(+ (record.raw_record_size))() IF_ELSE(with_processed)(+ (record.num_bytes))())) { /* Record size is size of records, not including sort key. */ \
 		/* In this case, there isn't enough space in a page to sort records. Fail. */ \
 		error			= err_record_size_too_large; \
 		goto IINQ_QUERY_END; \
 	}
 
-#define _OPEN_ORDERING_FILE_READ(name, with_aggregates, with_unprocessed, with_processed, record) \
+#define _OPEN_ORDERING_FILE_READ(name, with_aggregates, with_unprocessed, with_processed, record, type) \
 	input_file			= fopen(#name, "rb"); \
 	if (NULL == input_file) { \
 		error			= err_file_open_error; \
@@ -826,7 +828,7 @@ do { \
 	} \
 	read_page_remaining	= IINQ_PAGE_SIZE; \
 	/* The magic number 8 comes from the fact that all aggregate values are exactly 8 bytes big. */ \
-	if ((int) read_page_remaining < (int) (total_ ## name ## _size + IF_ELSE(with_aggregates)(+ (8*agg_n))() IF_ELSE(with_unprocessed)(+ record.raw_record_size)() IF_ELSE(with_processed)(+ record.num_bytes)())) { /* Record size is size of records, not including sort key. */ \
+	if ((int) read_page_remaining < (int) (total_ ## type ## _size + IF_ELSE(with_aggregates)(+ (8*agg_n))() IF_ELSE(with_unprocessed)(+ record.raw_record_size)() IF_ELSE(with_processed)(+ record.num_bytes)())) { /* Record size is size of records, not including sort key. */ \
 		/* In this case, there isn't enough space in a page to sort records. Fail. */ \
 		error			= err_record_size_too_large; \
 		goto IINQ_QUERY_END; \
@@ -844,16 +846,10 @@ do { \
 		goto IINQ_QUERY_END; \
 	}
 
-#define _RENAME_ORDERING_FILE(old_name, new_name) \
-	if (0 != rename(#old_name, #new_name)) { \
-		error			= err_file_rename_error; \
-		goto IINQ_QUERY_END; \
-	}
-
-#define _WRITE_ORDERING_RECORD(name, write_aggregates, write_unprocessed, write_processed, record) \
+#define _WRITE_ORDERING_RECORD(name, write_aggregates, write_unprocessed, write_processed, record, type) \
 	/* If the page runs out of room, fill the remaining space with zeroes. */ \
 	/* Magic number 8 comes from fact that all aggregate values are 8 bytes in size. */ \
-	if ((int) write_page_remaining < (int)(total_ ## name ## _size IF_ELSE(write_unprocessed)(+ (record.raw_record_size))() IF_ELSE(write_processed)(+ (record.num_bytes))() IF_ELSE(write_aggreates)(+ (8*agg_n))())) { /* Record size is size of records, not including sort key. */ \
+	if ((int) write_page_remaining < (int)(total_ ## type ## _size IF_ELSE(write_unprocessed)(+ (record.raw_record_size))() IF_ELSE(write_processed)(+ (record.num_bytes))() IF_ELSE(write_aggreates)(+ (8*agg_n))())) { /* Record size is size of records, not including sort key. */ \
 		int		i = 0; \
 		char	x = 0; \
 		for (; i < write_page_remaining; i++) { \
@@ -864,12 +860,12 @@ do { \
 		write_page_remaining	= IINQ_PAGE_SIZE; \
 	}; \
 	/* Walk through each item in the order parts, write out data. */ \
-	for (i_ ## name = 0; i_ ## name < name ## _n; i_ ## name ++) { \
-		if (1 != fwrite(name ## _order_parts[ i_ ## name ].pointer, name ## _order_parts[ i_ ## name ].size, 1, output_file)) { \
+	for (i_ ## type = 0; i_ ## type < type ## _n; i_ ## type ++) { \
+		if (1 != fwrite(type ## _order_parts[ i_ ## type ].pointer, type ## _order_parts[ i_ ## type ].size, 1, output_file)) { \
 			break; \
         } \
 		else { \
-			write_page_remaining	-= name ## _order_parts[ i_ ## name ].size; \
+			write_page_remaining	-= type ## _order_parts[ i_ ## type ].size; \
 		} \
     } \
 	/* If we require writing aggregates, do so. */ \
@@ -1164,7 +1160,7 @@ do { \
     do { \
 		if (agg_n > 0) { \
 			/* Write out the aggregate records to disk for sorting. */ \
-			_OPEN_ORDERING_FILE_WRITE(groupby, 0, 1, 0, result) \
+			_OPEN_ORDERING_FILE_WRITE(unsorted, 0, 1, 0, result, groupby) \
 		} \
 		else if (groupby_n > 0) { \
 			/* Error case where we have GROUPBY elements but no aggregates. */ \
@@ -1172,7 +1168,7 @@ do { \
 			goto IINQ_QUERY_END; \
 		} \
 		else if (orderby_n > 0) { \
-			_OPEN_ORDERING_FILE_WRITE(orderby, 0, 1, 0, result) \
+			_OPEN_ORDERING_FILE_WRITE(unsorted, 0, 1, 0, result, orderby) \
 		} \
 		while (1) { \
 			_FROM_ADVANCE_CURSORS \
@@ -1186,7 +1182,7 @@ do { \
 				/* Write out the groupby records to disk for sorting. */ \
 				goto IINQ_COMPUTE_GROUPBY; \
 				IINQ_DONE_COMPUTE_GROUPBY: ; \
-				_WRITE_ORDERING_RECORD(groupby, 0, 1, 0, result) \
+				_WRITE_ORDERING_RECORD(unsorted, 0, 1, 0, result, groupby) \
 			} \
 			else if (orderby_n > 0) { \
 				goto IINQ_COMPUTE_ORDERBY; \
@@ -1197,7 +1193,7 @@ do { \
 				else if (2 == jmp_r) { \
 					goto IINQ_DONE_COMPUTE_ORDERBY_2; \
 				} \
-				_WRITE_ORDERING_RECORD(orderby, 0, 1, 0, result) \
+				_WRITE_ORDERING_RECORD(unsorted, 0, 1, 0, result, orderby) \
 			} \
 			else { \
 				/* Proceed with projection, no group by or order by. */ \
@@ -1231,9 +1227,9 @@ do { \
     } while (0); \
 	/* If we have both aggregates and a groupby elements, we must sort the file. */ \
 	if (agg_n > 0 && groupby_n > 0) { \
-		_OPEN_ORDERING_FILE_READ(groupby, 0, 1, 0, result); \
-		int total_temp_size = total_groupby_size; \
-		_OPEN_ORDERING_FILE_WRITE(temp, 0, 1, 0, result); \
+		_OPEN_ORDERING_FILE_READ(unsorted, 0, 1, 0, result, groupby); \
+		/*int total_sorted_size = total_groupby_size;*/ \
+		_OPEN_ORDERING_FILE_WRITE(sorted, 0, 1, 0, result, groupby); \
 		ion_external_sort_t	es; \
 		iinq_sort_context_t context = _IINQ_SORT_CONTEXT(groupby); \
 		if (err_ok != (error = ion_external_sort_init(&es, input_file, &context, iinq_sort_compare, result.raw_record_size, result.raw_record_size+total_groupby_size, IINQ_PAGE_SIZE, boolean_false, ION_FILE_SORT_FLASH_MINSORT))) { /* TODO: remove key_size */ \
@@ -1250,15 +1246,13 @@ do { \
         } \
 		_CLOSE_ORDERING_FILE(input_file); \
 		_CLOSE_ORDERING_FILE(output_file); \
-		/* TODO: HEY THIS IS A BAD SOLUTION SINCE DEVICES DON'T REALLY SUPPORT RENAMING FILES. */ \
-		_REMOVE_ORDERING_FILE(groupby); \
-		_RENAME_ORDERING_FILE(temp, groupby); \
+		_REMOVE_ORDERING_FILE(unsorted); \
     } \
 	/* Aggregates and GROUPBY handling. */ \
 	if (agg_n > 0) { \
-		_OPEN_ORDERING_FILE_READ(groupby, 0, 1, 0, result); \
+		_OPEN_ORDERING_FILE_READ(sorted, 0, 1, 0, result, groupby); \
 		/* Note that if there is no orderby, then we simply will read these values off disk when we are done (no sort). */ \
-		_OPEN_ORDERING_FILE_WRITE(orderby, 1, 0, 1, result); \
+		_OPEN_ORDERING_FILE_WRITE(unsorted, 1, 0, 1, result, orderby); \
 		ion_boolean_t	is_first	= boolean_true; \
 		/* We need to track two keys. We need to be able to compare the last key seen to the next
 		 * to know if the next key is equal (and is thus part of the same grouping attribute. */ \
@@ -1269,19 +1263,19 @@ do { \
 		/* We will perform our projection here if we can. */ \
 		result.processed			= alloca(result.num_bytes); \
 		while (1) { \
-			_READ_ORDERING_RECORD(groupby, total_groupby_size, NULL, cur_key, 1, 0, result, /* Empty on purpose. */) \
+			_READ_ORDERING_RECORD(sorted, total_groupby_size, NULL, cur_key, 1, 0, result,/* Empty on purpose. */) \
 			/* TODO: Graeme, make sure you setup all necessary error codes in above and related, as well as handle them here. */ \
 			if (total_groupby_size > 0 && boolean_false == is_first && equal != iinq_sort_compare(&_IINQ_SORT_CONTEXT(groupby), cur_key, old_key)) { \
 				jmp_r				= 1; \
 				goto IINQ_COMPUTE_ORDERBY; \
 				IINQ_DONE_COMPUTE_ORDERBY_1: ; \
-				if (!having_clause) { \
+				if (!(having_clause)) { \
 					continue; \
 				} \
 				jmp_r				= 1; \
 				goto COMPUTE_SELECT; \
 				DONE_COMPUTE_SELECT_1: ; \
-				_WRITE_ORDERING_RECORD(orderby, 1, 0, 1, result) \
+				_WRITE_ORDERING_RECORD(unsorted, 1, 0, 1, result, orderby) \
 				_AGGREGATES_INITIALIZE \
             } \
 			goto IINQ_COMPUTE_AGGREGATES; \
@@ -1294,18 +1288,18 @@ do { \
 			jmp_r				= 2; \
 			goto IINQ_COMPUTE_ORDERBY; \
 			IINQ_DONE_COMPUTE_ORDERBY_2: ; \
-			if (!having_clause) { \
+			if (!(having_clause)) { \
 				goto IINQ_CLEANUP_AGGREGATION; \
 			} \
 			jmp_r		= 2; \
 			goto COMPUTE_SELECT; \
 			DONE_COMPUTE_SELECT_2: ; \
-			_WRITE_ORDERING_RECORD(orderby, 1, 0, 1, result) \
+			_WRITE_ORDERING_RECORD(unsorted, 1, 0, 1, result, orderby) \
 		} \
 		IINQ_CLEANUP_AGGREGATION: ; \
 		_CLOSE_ORDERING_FILE(output_file) \
 		_CLOSE_ORDERING_FILE(input_file) \
-		_REMOVE_ORDERING_FILE(groupby); \
+		_REMOVE_ORDERING_FILE(sorted); \
 		/* Condition where there were no records, meaning we never set is_first to false.  */ \
 		if (boolean_true == is_first) { \
 			goto IINQ_QUERY_END; \
@@ -1316,10 +1310,10 @@ do { \
 		/* We can safely ALWAYS open with aggregates, because it doesn't increase the size if no aggregates exist (0*8 == 0). */ \
 		/* If we have aggregates, we have already projected. Otherwise, we haven't. */ \
 		if (agg_n > 0) { \
-			_OPEN_ORDERING_FILE_READ(orderby, 1, 0, 1, result); \
+			_OPEN_ORDERING_FILE_READ(unsorted, 1, 0, 1, result, orderby); \
         } \
 		else { \
-			_OPEN_ORDERING_FILE_READ(orderby, 1, 1, 0, result); \
+			_OPEN_ORDERING_FILE_READ(unsorted, 1, 1, 0, result, orderby); \
 		} \
 		ion_external_sort_t	es; \
 		iinq_sort_context_t context = _IINQ_SORT_CONTEXT(orderby); \
@@ -1369,7 +1363,7 @@ do { \
         } \
 		ion_external_sort_destroy_cursor(&cursor); \
 		_CLOSE_ORDERING_FILE(input_file); \
-		_REMOVE_ORDERING_FILE(orderby); \
+		_REMOVE_ORDERING_FILE(unsorted); \
     } \
 	\
 	IINQ_QUERY_END: ; \
