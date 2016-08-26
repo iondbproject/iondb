@@ -7,15 +7,6 @@
 /******************************************************************************/
 
 #include "bpp_tree_handler.h"
-#include "../../key_value/kv_system.h"
-
-void
-bpptree_get_addr_filename(
-	ion_dictionary_id_t id,
-	char				*str
-) {
-	sprintf(str, "%d.bpt", id);
-}
 
 void
 bpptree_get_value_filename(

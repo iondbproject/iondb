@@ -310,7 +310,9 @@ readDisk(
 			len *= 3;	/* root */
 		}
 
-		if (err_ok != ion_fread_at(h->fp, adr, len, (ion_byte_t *) buf->p)) {
+		ion_err_t err = ion_fread_at(h->fp, adr, len, (ion_byte_t *) buf->p);
+
+		if (err_ok != err) {
 			return error(bErrIO);
 		}
 
