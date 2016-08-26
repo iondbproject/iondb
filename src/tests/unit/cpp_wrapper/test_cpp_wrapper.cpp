@@ -1074,13 +1074,13 @@ test_cpp_wrapper_open_close(
 	int key,
 	int value
 ) {
-	ion_status_t		status;
-	ion_err_t			error;
-	ion_dictionary_id_t gdict_id	= dict->dict.instance->id;
-	int					key_size	= dict->dict.instance->record.key_size;
-	int					val_size	= dict->dict.instance->record.value_size;
-	ion_key_type_t		key_type	= dict->dict.instance->key_type;
-	int					dict_size	= dict->dict_size;
+	ion_status_t			status;
+	ion_err_t				error;
+	ion_dictionary_id_t		gdict_id	= dict->dict.instance->id;
+	ion_key_size_t			key_size	= dict->dict.instance->record.key_size;
+	ion_value_size_t		val_size	= dict->dict.instance->record.value_size;
+	ion_key_type_t			key_type	= dict->dict.instance->key_type;
+	ion_dictionary_size_t	dict_size	= dict->dict_size;
 
 	/* Insert test record so we can check data integrity after we close/open */
 	status = dict->insert(key, value);

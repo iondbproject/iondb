@@ -44,7 +44,7 @@ oah_initialize(
 	}
 
 #if DEBUG
-	io_printf("Initializing hash table\n");
+	printf("Initializing hash table\n");
 #endif
 
 	/* Initialize hash table */
@@ -152,13 +152,13 @@ oah_insert(
 		}
 
 #if DEBUG
-		io_printf("checking location %i\n", loc);
+		printf("checking location %i\n", loc);
 #endif
 		count++;
 	}
 
 #if DEBUG
-	io_printf("Hash table full.  Insert not done");
+	printf("Hash table full.  Insert not done");
 #endif
 
 	return ION_STATUS_ERROR(err_max_capacity);
@@ -224,7 +224,7 @@ oah_delete(
 
 	if (oah_find_item_loc(hash_map, key, &loc) == err_item_not_found) {
 #if DEBUG
-		io_printf("Item not found when trying to oah_delete.\n");
+		printf("Item not found when trying to oah_delete.\n");
 #endif
 		return ION_STATUS_ERROR(err_item_not_found);
 	}
@@ -235,7 +235,7 @@ oah_delete(
 		item->status = DELETED;	/* delete item */
 
 #if DEBUG
-		io_printf("Item deleted at location %d\n", loc);
+		printf("Item deleted at location %d\n", loc);
 #endif
 		return ION_STATUS_OK(1);
 	}
@@ -251,7 +251,7 @@ oah_query(
 
 	if (oah_find_item_loc(hash_map, key, &loc) == err_ok) {
 #if DEBUG
-		io_printf("Item found at location %d\n", loc);
+		printf("Item found at location %d\n", loc);
 #endif
 
 		int					data_length = hash_map->super.record.key_size + hash_map->super.record.value_size;
@@ -263,7 +263,7 @@ oah_query(
 	}
 	else {
 #if DEBUG
-		io_printf("Item not found in hash table.\n");
+		printf("Item not found in hash table.\n");
 #endif
 		return ION_STATUS_ERROR(err_item_not_found);
 	}
@@ -277,23 +277,23 @@ oah_print(
 ) {
 	int i;
 
-	io_printf("Printing map\n");
+	printf("Printing map\n");
 
 	for (i = 0; i < size; i++) {
-		io_printf("%d -- %i ", i, ((ion_hash_bucket_t *) ((hash_map->entry + (record->key_size + record->value_size + SIZEOF(STATUS)) * i)))->status);
+		printf("%d -- %i ", i, ((ion_hash_bucket_t *) ((hash_map->entry + (record->key_size + record->value_size + SIZEOF(STATUS)) * i)))->status);
 		{
 			if (((ion_hash_bucket_t *) ((hash_map->entry + (record->key_size + record->value_size + SIZEOF(STATUS)) * i)))->status == (EMPTY | DELETED)) {
-				io_printf("(null)");
+				printf("(null)");
 			}
 			else {
 				int j;
 
 				for (j = 0; j < (record->key_size + record->value_size); j++) {
-					io_printf("%X ", *(ion_byte_t *) (((ion_hash_bucket_t *) ((hash_map->entry + (record->key_size + record->value_size + SIZEOF(STATUS)) * i)))->data + j));
+					printf("%X ", *(ion_byte_t *) (((ion_hash_bucket_t *) ((hash_map->entry + (record->key_size + record->value_size + SIZEOF(STATUS)) * i)))->data + j));
 				}
 			}
 
-			io_printf("\n");
+			printf("\n");
 		}
 	}
 }
