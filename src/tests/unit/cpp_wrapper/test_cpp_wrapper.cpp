@@ -16,6 +16,10 @@
 #include "../../../cpp_wrapper/SkipList.h"
 #include "test_cpp_wrapper.h"
 
+#if defined(ARDUINO)
+#include "../../../serial/serial_c_iface.h"
+#endif
+
 /**
 @brief	Tests the creation of a B+ Tree (arbitrarily chosen) dictionary and asserts
 		the validity of some dictionary parameters.
@@ -1118,26 +1122,27 @@ test_cpp_wrapper_open_close_on_all_implementations(
 	planck_unit_test_t *tc
 ) {
 	Dictionary<int, int> *dict;
-
+printf("@*@*@ Begin open/close\n");
 	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_open_close(tc, dict, 66, 12);
 	delete dict;
-
+printf("@*@*@ B+ Tree finished\n");
 	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_open_close(tc, dict, 1, 13);
 	delete dict;
-
+printf("@*@*@ Skiplist finished\n");
 	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_open_close(tc, dict, 45, 14);
 	delete dict;
-
+printf("@*@*@ Flatfile finished\n");
 	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_open_close(tc, dict, 3, 15);
 	delete dict;
-
+printf("@*@*@ OA Hash finished\n");
 	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_open_close(tc, dict, 5, 12);
 	delete dict;
+printf("@*@*@ OAFHash finished\n");
 }
 
 /**
