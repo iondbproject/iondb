@@ -22,9 +22,7 @@
 /******************************************************************************/
 
 #include "dictionary.h"
-#include "dictionary_types.h"
 #include "flat_file/flat_file_dictionary_handler.h"
-#include "../key_value/kv_system.h"
 
 int
 dictionary_get_filename(
@@ -97,8 +95,6 @@ dictionary_create(
 	return err;
 }
 
-/* inserts a record into the dictionary */
-/* each dictionary will have a specific handler? */
 ion_status_t
 dictionary_insert(
 	ion_dictionary_t	*dictionary,
@@ -257,7 +253,7 @@ dictionary_open(
 		ion_record_t				record;
 		ion_dictionary_handler_t	fallback_handler;
 		ion_dictionary_t			fallback_dict;
-		ion_err_t 					err;
+		ion_err_t					err;
 
 		ffdict_init(&fallback_handler);
 
@@ -266,19 +262,23 @@ dictionary_open(
 		};
 
 		err = dictionary_open(&fallback_handler, &fallback_dict, &fallback_config);
+
 		if (err_ok != err) {
 			return err;
 		}
 
 		dictionary_build_predicate(&predicate, predicate_all_records);
 		err = dictionary_find(&fallback_dict, &predicate, &cursor);
-		if(err_ok != err) {
+
+		if (err_ok != err) {
 			return err;
 		}
+
 		record.key		= alloca(config->key_size);
 		record.value	= alloca(config->value_size);
 
-		err = dictionary_create(handler, dictionary, config->id, config->type, config->key_size, config->value_size, config->dictionary_size);
+		err				= dictionary_create(handler, dictionary, config->id, config->type, config->key_size, config->value_size, config->dictionary_size);
+
 		if (err_ok != err) {
 			return err;
 		}
@@ -287,7 +287,8 @@ dictionary_open(
 
 		while (cs_cursor_active == (cursor_status = cursor->next(cursor, &record)) || cs_cursor_initialized == cursor_status) {
 			ion_status_t status = dictionary_insert(dictionary, record.key, record.value);
-			if(err_ok != status.error) {
+
+			if (err_ok != status.error) {
 				cursor->destroy(&cursor);
 				dictionary_close(&fallback_dict);
 				dictionary_delete_dictionary(dictionary);
@@ -302,7 +303,8 @@ dictionary_open(
 		cursor->destroy(&cursor);
 
 		err = dictionary_delete_dictionary(&fallback_dict);
-		if(err_ok != err) {
+
+		if (err_ok != err) {
 			return err;
 		}
 
@@ -334,19 +336,21 @@ dictionary_close(
 		ion_predicate_t		predicate;
 		ion_dict_cursor_t	*cursor = NULL;
 		ion_record_t		record;
-		ion_err_t 			err;
+		ion_err_t			err;
 
 		dictionary_build_predicate(&predicate, predicate_all_records);
 		err = dictionary_find(dictionary, &predicate, &cursor);
-		if(err_ok != err) {
+
+		if (err_ok != err) {
 			return err;
 		}
- 		int				key_size	= dictionary->instance->record.key_size;
+
+		int				key_size	= dictionary->instance->record.key_size;
 		int				value_size	= dictionary->instance->record.value_size;
 		ion_key_type_t	key_type	= dictionary->instance->key_type;
+
 		record.key		= alloca(key_size);
 		record.value	= alloca(value_size);
-
 
 		ion_dictionary_handler_t	fallback_handler;
 		ion_dictionary_t			fallback_dict;
@@ -354,6 +358,7 @@ dictionary_close(
 		ffdict_init(&fallback_handler);
 
 		err = dictionary_create(&fallback_handler, &fallback_dict, dictionary->instance->id, key_type, key_size, value_size, 1);
+
 		if (err_ok != err) {
 			return err;
 		}
@@ -362,7 +367,8 @@ dictionary_close(
 
 		while (cs_cursor_active == (cursor_status = cursor->next(cursor, &record)) || cs_cursor_initialized == cursor_status) {
 			ion_status_t status = dictionary_insert(&fallback_dict, record.key, record.value);
-			if(err_ok != status.error) {
+
+			if (err_ok != status.error) {
 				cursor->destroy(&cursor);
 				dictionary_delete_dictionary(&fallback_dict);
 				return status.error;
@@ -376,11 +382,14 @@ dictionary_close(
 		cursor->destroy(&cursor);
 
 		err = dictionary_close(&fallback_dict);
-		if(err_ok != err) {
+
+		if (err_ok != err) {
 			return err;
 		}
+
 		err = dictionary_delete_dictionary(dictionary);
-		if(err_ok != err) {
+
+		if (err_ok != err) {
 			return err;
 		}
 

@@ -314,7 +314,7 @@ bhdct_setup_string_key(
 	/* Note most of these are fixed except the dictionary size */
 	bhdct_dictionary_initialization(tc, handler, dict, key_type_null_terminated_string, (int) (strlen("key:") + 6), sizeof(int), bhdct_context.dictionary_size);
 
-	char key[12];
+	char key[12] = { 0 };
 
 	/* This switch statement intentionally doesn't have breaks - we want it to fall through. */
 	int i;
@@ -425,7 +425,7 @@ test_bhdct_insert_single_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
@@ -465,7 +465,7 @@ test_bhdct_insert_multiple_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
@@ -505,7 +505,7 @@ test_bhdct_get_single_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
@@ -544,7 +544,7 @@ test_bhdct_get_in_many_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
@@ -597,7 +597,7 @@ test_bhdct_get_lots_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
@@ -642,7 +642,7 @@ test_bhdct_get_nonexist_empty_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
@@ -678,7 +678,7 @@ test_bhdct_get_nonexist_single_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_low);
 
@@ -715,7 +715,7 @@ test_bhdct_get_nonexist_many_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_edge_cases);
 
@@ -757,7 +757,7 @@ test_bhdct_get_exist_single_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
@@ -797,7 +797,7 @@ test_bhdct_get_populated_single_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_low);
 
@@ -840,7 +840,7 @@ test_bhdct_get_populated_multiple_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_low);
 
@@ -893,7 +893,7 @@ test_bhdct_get_all_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_edge_cases);
 
@@ -947,7 +947,7 @@ test_bhdct_delete_empty_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
@@ -988,7 +988,7 @@ test_bhdct_delete_nonexist_single_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
@@ -1031,7 +1031,7 @@ test_bhdct_delete_nonexist_several_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_medium);
 
@@ -1070,7 +1070,7 @@ test_bhdct_delete_single_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
@@ -1109,7 +1109,7 @@ test_bhdct_delete_single_several_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_high);
 
@@ -1158,7 +1158,7 @@ test_bhdct_delete_all_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_edge_cases);
 
@@ -1210,7 +1210,7 @@ test_bhdct_update_empty_single_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
@@ -1249,7 +1249,7 @@ test_bhdct_update_nonexist_single_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
@@ -1290,7 +1290,7 @@ test_bhdct_update_nonexist_in_many_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_medium);
 
@@ -1329,7 +1329,7 @@ test_bhdct_update_exist_single_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
@@ -1368,7 +1368,7 @@ test_bhdct_update_exist_in_many_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_medium);
 
@@ -1417,7 +1417,7 @@ test_bhdct_update_all_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_edge_cases);
 
@@ -1475,7 +1475,7 @@ test_bhdct_delete_then_insert_string_key(
 ) {
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
-	char						key[12];
+	char						key[12] = { 0 };
 
 	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_edge_cases);
 
