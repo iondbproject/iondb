@@ -1075,7 +1075,7 @@ iinq_test_create_query_select_count_from_where_groupby_having_aggregate_simple_r
 )
 {
 	UNUSED(total);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(uint32_t), result->num_bytes);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(uint64_t), result->num_bytes);
 	ion_key_t	key		= result->processed;
 
 	switch (count) {
@@ -1143,13 +1143,13 @@ iinq_test_create_query_select_count_from_where_groupby_having_aggregate_simple(
 		FROM(0, test),
 		WHERE(1),
 		GROUPBY(ASCENDING_INT(NEUTRALIZE(test.key, int))),
-		HAVING(SELECT_AGGR(0) == 2),
+		HAVING(AGGREGATE(0) == 2),
 		ORDERBY_NONE
 		, , ,
 		&processor
 	);
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, state.count);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, state.count);
 
 	DROP(test);
 }
@@ -1269,24 +1269,28 @@ iinq_get_suite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_open_source_intint);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_open_source_string10string20);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_insert_update_delete_drop_dictionary_intint);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_single_dictionary);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_expression_all_from_where_single_dictionary);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_open_source_intint);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_open_source_string10string20);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_insert_update_delete_drop_dictionary_intint);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_single_dictionary);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_expression_all_from_where_single_dictionary);
+
 //	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_two_dictionaries);
 //	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_aggregates);
 //	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_expression_from_where_aggregates);
 //	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_complex_expression_from_where_aggregates);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_ascending_small);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_ascending_large);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_descending_small);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_descending_large);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_simple);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_aggregate_simple);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_sum_from_where_groupby_aggregate_simple);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_having_aggregate_simple);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_aggregate_schema);
+
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_ascending_small);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_ascending_large);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_descending_small);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_descending_large);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_simple);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_aggregate_simple);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_sum_from_where_groupby_aggregate_simple);
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_having_aggregate_simple);
+
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_aggregate_schema);
 
 	return suite;
 }

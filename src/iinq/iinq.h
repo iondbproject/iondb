@@ -828,7 +828,7 @@ do { \
 	} \
 	read_page_remaining	= IINQ_PAGE_SIZE; \
 	/* The magic number 8 comes from the fact that all aggregate values are exactly 8 bytes big. */ \
-	if ((int) read_page_remaining < (int) (total_ ## type ## _size + IF_ELSE(with_aggregates)(+ (8*agg_n))() IF_ELSE(with_unprocessed)(+ record.raw_record_size)() IF_ELSE(with_processed)(+ record.num_bytes)())) { /* Record size is size of records, not including sort key. */ \
+	if ((int) read_page_remaining < (int) (total_ ## type ## _size IF_ELSE(with_aggregates)(+ (8*agg_n))() IF_ELSE(with_unprocessed)(+ record.raw_record_size)() IF_ELSE(with_processed)(+ record.num_bytes)())) { /* Record size is size of records, not including sort key. */ \
 		/* In this case, there isn't enough space in a page to sort records. Fail. */ \
 		error			= err_record_size_too_large; \
 		goto IINQ_QUERY_END; \
