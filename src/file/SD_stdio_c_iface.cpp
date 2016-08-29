@@ -193,68 +193,93 @@ sd_fseek(
 	long int	offset,
 	int			whence
 ) {
+	if (NULL == stream) {
+		return -1;
+	}
+
 	unsigned long	cur_pos = stream->f.position();
 	unsigned long	cur_end = stream->f.size();
 
-#if DEBUG
-	Serial.print("Current pos ");
-	Serial.println(cur_pos);
-	Serial.print("Current end ");
-	Serial.println(cur_end);
-	Serial.print("Offset ");
-	Serial.println(offset);
-#endif
 	stream->eof = 0;
 
 	switch (whence) {
 		case SEEK_SET:	/* seek from current position */
 		{
-#if DEBUG
-			Serial.println("Seek from start");
-#endif
-
 			if (offset < 0) {
 				return -1;	/* can't seek before file */
 			}
 
-			return (stream) ? !(stream->f.seek(offset)) : 1;
+			if (offset > cur_end) {
+				if (!stream->f.seek(cur_end)) {
+					return -1;
+				}
+
+				unsigned long	bytes_to_pad	= offset - cur_end;
+				char			payload			= 0x0;
+				size_t			num_written		= sd_fwrite(&payload, sizeof(payload), bytes_to_pad, stream);
+
+				if (num_written != bytes_to_pad) {
+					return -1;
+				}
+
+				/* The file-position indicator has been implicitly moved by the write - no seek needed to be done now */
+				return 0;
+			}
+
+			return stream->f.seek(offset) ? 0 : -1;
 			break;
 		}
 
 		case SEEK_CUR: {
-#if DEBUG
-			Serial.println("Seek from cur");
-#endif
-
 			if (offset + cur_pos > cur_end) {
-				stream->eof = 1;
-				return -1;
+				if (!stream->f.seek(cur_end)) {
+					return -1;
+				}
+
+				unsigned long	bytes_to_pad	= (offset + cur_pos) - cur_end;
+				char			payload			= 0x0;
+				size_t			num_written		= sd_fwrite(&payload, sizeof(payload), bytes_to_pad, stream);
+
+				if (num_written != bytes_to_pad) {
+					return -1;
+				}
+
+				/* The file-position indicator has been implicitly moved by the write - no seek needed to be done now */
+				return 0;
 			}
 
 			if (offset - cur_pos < 0) {
-				return -1;	/* too far */
+				return -1;	/* too far past beginning of the file - assumes that offset is negative */
 			}
 
-			return (stream) ? !(stream->f.seek(cur_pos + offset)) : 1;
+			return stream->f.seek(cur_pos + offset) ? 0 : -1;
 			break;
 		}
 
 		case SEEK_END: {
-#if DEBUG
-			Serial.println("Seek from end");
-#endif
-
 			if (offset > 0) {
-				stream->eof = 1;
-				return -1;
-			}	/* can't seek past end of tile */
+				if (!stream->f.seek(cur_end)) {
+					return -1;
+				}
 
-			return (stream) ? !(stream->f.seek(cur_end + offset)) : 1;
+				unsigned long	bytes_to_pad	= offset;
+				char			payload			= 0x0;
+				size_t			num_written		= sd_fwrite(&payload, sizeof(payload), bytes_to_pad, stream);
+
+				if (num_written != bytes_to_pad) {
+					return -1;
+				}
+
+				/* The file-position indicator has been implicitly moved by the write - no seek needed to be done now */
+				return 0;
+			}
+
+			return stream->f.seek(cur_end + offset) ? 0 : -1;
 			break;
 		}
 
 		default:
-			return 1;
+			return -1;
 	}
 }
 

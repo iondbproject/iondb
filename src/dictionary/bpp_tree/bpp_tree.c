@@ -136,6 +136,7 @@ flush(
 ) {
 	ion_bpp_h_node_t	*h = handle;
 	int					len;/* number of bytes to write */
+	ion_err_t			err;
 
 	/* flush buffer to disk */
 	len = h->sectorSize;
@@ -144,7 +145,9 @@ flush(
 		len *= 3;	/* root */
 	}
 
-	if (err_ok != ion_fwrite_at(h->fp, buf->adr, len, (ion_byte_t *) buf->p)) {
+	err = ion_fwrite_at(h->fp, buf->adr, len, (ion_byte_t *) buf->p);
+
+	if (err_ok != err) {
 		return error(bErrIO);
 	}
 
@@ -869,15 +872,10 @@ bOpen(
 	}
 
 	/* copy parms to ion_bpp_h_node_t */
-	if ((h = malloc(sizeof(ion_bpp_h_node_t))) == NULL) {
+	if ((h = calloc(1, sizeof(ion_bpp_h_node_t))) == NULL) {
 		return error(bErrMemory);
 	}
 
-	for (i = 0; ((unsigned int) i) < sizeof(ion_bpp_h_node_t); i++) {
-		((char *) h)[i] = 0;
-	}
-
-	memset(h, 0, sizeof(ion_bpp_h_node_t));
 	h->keySize		= info.keySize;
 	h->dupKeys		= info.dupKeys;
 	h->sectorSize	= info.sectorSize;
@@ -896,12 +894,8 @@ bOpen(
 	*/
 	bufCt			= 7;
 
-	if ((h->malloc1 = malloc(bufCt * sizeof(ion_bpp_buffer_t))) == NULL) {
+	if ((h->malloc1 = calloc(bufCt, sizeof(ion_bpp_buffer_t))) == NULL) {
 		return error(bErrMemory);
-	}
-
-	for (i = 0; ((unsigned int) i) < bufCt * sizeof(ion_bpp_buffer_t); i++) {
-		((char *) h->malloc1)[i] = 0;
 	}
 
 	buf = h->malloc1;
