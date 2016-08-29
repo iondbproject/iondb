@@ -7,15 +7,6 @@
 /******************************************************************************/
 
 #include "bpp_tree_handler.h"
-#include "../../key_value/kv_system.h"
-
-void
-bpptree_get_addr_filename(
-	ion_dictionary_id_t id,
-	char				*str
-) {
-	sprintf(str, "%d.bpt", id);
-}
 
 void
 bpptree_get_value_filename(
@@ -158,7 +149,9 @@ bpptree_create_dictionary(
 	info.sectorSize = 256;
 	info.comp		= compare;
 
-	if (bErrOk != bOpen(info, &(bpptree->tree))) {
+	ion_bpp_err_t bErr = bOpen(info, &(bpptree->tree));
+
+	if (bErrOk != bErr) {
 		return err_dictionary_initialization_failed;
 	}
 
