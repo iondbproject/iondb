@@ -73,10 +73,14 @@ ion_err_t
 ion_fseek(
 	ion_file_handle_t	file,
 	ion_file_offset_t	seek_to,
-	int				origin
+	int					origin
 ) {
 #if defined(ARDUINO)
-	fseek(file.file, seek_to, origin);
+
+	if (0 != fseek(file.file, seek_to, origin)) {
+		return err_file_bad_seek;
+	}
+
 	return err_ok;
 #else
 
@@ -117,8 +121,8 @@ ion_fend(
 ion_err_t
 ion_fwrite(
 	ion_file_handle_t	file,
-	unsigned int	num_bytes,
-	ion_byte_t		*to_write
+	unsigned int		num_bytes,
+	ion_byte_t			*to_write
 ) {
 #if defined(ARDUINO)
 
@@ -137,8 +141,8 @@ ion_err_t
 ion_fwrite_at(
 	ion_file_handle_t	file,
 	ion_file_offset_t	offset,
-	unsigned int	num_bytes,
-	ion_byte_t		*to_write
+	unsigned int		num_bytes,
+	ion_byte_t			*to_write
 ) {
 	ion_err_t error;
 
@@ -155,8 +159,8 @@ ion_fwrite_at(
 ion_err_t
 ion_fappend(
 	ion_file_handle_t	file,
-	unsigned int	num_bytes,
-	ion_byte_t		*to_write
+	unsigned int		num_bytes,
+	ion_byte_t			*to_write
 ) {
 	ion_err_t error;
 
@@ -173,8 +177,8 @@ ion_fappend(
 ion_err_t
 ion_fread(
 	ion_file_handle_t	file,
-	unsigned int	num_bytes,
-	ion_byte_t		*write_to
+	unsigned int		num_bytes,
+	ion_byte_t			*write_to
 ) {
 #if defined(ARDUINO)
 
@@ -197,8 +201,8 @@ ion_err_t
 ion_fread_at(
 	ion_file_handle_t	file,
 	ion_file_offset_t	offset,
-	unsigned int	num_bytes,
-	ion_byte_t		*write_to
+	unsigned int		num_bytes,
+	ion_byte_t			*write_to
 ) {
 	ion_err_t error;
 

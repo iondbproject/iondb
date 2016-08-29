@@ -21,7 +21,6 @@ extern "C" {
 #include "open_address_file_hash_dictionary.h"
 
 #include "../../key_value/kv_system.h"
-#include "../../key_value/kv_io.h"
 
 /*edefines file operations for arduino */
 #include "./../../file/SD_stdio_c_iface.h"

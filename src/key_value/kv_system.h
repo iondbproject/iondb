@@ -33,7 +33,11 @@ extern "C" {
 #include <stdint.h>
 #include <alloca.h>
 
-#include "kv_io.h"
+/* Only on PC */
+#if !defined(ARDUINO)
+#define fremove(x)	remove(x)
+#define frewind(x)	rewind(x)
+#endif
 
 #define ION_USING_MASTER_TABLE	1
 #define USING_ECLIPSE			0
@@ -236,7 +240,7 @@ typedef int ion_value_size_t;
 			differently. It may be important to preserve the ability
 			for variables of this type to become negative.
 */
-typedef int ion_dictionary_size_t;
+typedef unsigned int ion_dictionary_size_t;
 
 /**
 @brief		A boolean type.

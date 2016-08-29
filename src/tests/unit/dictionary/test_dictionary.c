@@ -146,30 +146,6 @@ test_dictionary_compare_numerics(
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO < dictionary_compare_signed_value(key_one, key_two, sizeof(char)));
 	}
-
-	{
-		short	*key_one;
-		short	*key_two;
-
-		short i, j;
-
-		key_one = &i;
-		key_two = &j;
-
-		for (i = SHRT_MIN / 10; i < SHRT_MAX / 10; i++) {
-			for (j = SHRT_MIN / 10; j < SHRT_MAX / 10; j++) {
-				if (i < j) {
-					PLANCK_UNIT_ASSERT_TRUE(tc, ZERO > dictionary_compare_signed_value(key_one, key_two, sizeof(short)));
-				}
-				else if (i == j) {
-					PLANCK_UNIT_ASSERT_TRUE(tc, ZERO == dictionary_compare_signed_value(key_one, key_two, sizeof(short)));
-				}
-				else {
-					PLANCK_UNIT_ASSERT_TRUE(tc, ZERO < dictionary_compare_signed_value(key_one, key_two, sizeof(short)));
-				}
-			}
-		}
-	}
 }
 
 void
@@ -179,6 +155,8 @@ test_dictionary_master_table(
 	ion_err_t err;
 
 	/* Cleanup, just in case */
+	err = ion_close_master_table();
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 	fremove(ION_MASTER_TABLE_FILENAME);
 
 	/* Test init */
@@ -186,7 +164,7 @@ test_dictionary_master_table(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
 	PLANCK_UNIT_ASSERT_TRUE(tc, NULL != ion_master_table_file);
-	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == ion_master_table_next_id);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, ion_master_table_next_id);
 
 	/*************/
 
@@ -194,7 +172,7 @@ test_dictionary_master_table(
 	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dictionary;
 
-	bpptree_init(&handler);
+	ffdict_init(&handler);
 	err = ion_master_table_create_dictionary(&handler, &dictionary, key_type_numeric_signed, sizeof(int), 10, 20);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
@@ -235,7 +213,7 @@ test_dictionary_master_table(
 	ion_dictionary_handler_t	handler2;
 	ion_dictionary_t			dictionary2;
 
-	bpptree_init(&handler2);
+	ffdict_init(&handler2);
 	err = ion_master_table_create_dictionary(&handler2, &dictionary2, key_type_numeric_signed, sizeof(short), 7, 14);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);

@@ -128,9 +128,9 @@ ion_master_table_create_dictionary(
 	ion_dictionary_handler_t	*handler,
 	ion_dictionary_t			*dictionary,
 	ion_key_type_t				key_type,
-	int						key_size,
-	int						value_size,
-	int						dictionary_size
+	ion_key_size_t				key_size,
+	ion_value_size_t			value_size,
+	ion_dictionary_size_t		dictionary_size
 );
 
 /**
@@ -145,8 +145,8 @@ ion_master_table_create_dictionary(
 */
 ion_err_t
 ion_add_to_master_table(
-	ion_dictionary_t	*dictionary,
-	int				dictionary_size
+	ion_dictionary_t		*dictionary,
+	ion_dictionary_size_t	dictionary_size
 );
 
 /**
@@ -217,7 +217,7 @@ ion_err_t
 ion_open_dictionary(
 	ion_dictionary_handler_t	*handler,
 	ion_dictionary_t			*dictionary,
-	ion_dictionary_id_t		id
+	ion_dictionary_id_t			id
 );
 
 /**

@@ -52,7 +52,7 @@ createFileTestDictionary(
 			for open address dictionary structure.
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_handler_function_registration(
@@ -74,7 +74,7 @@ test_open_address_file_hashmap_handler_function_registration(
 @brief	  Tests for creatation and deletion of open address hash.
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_handler_create_destroy(

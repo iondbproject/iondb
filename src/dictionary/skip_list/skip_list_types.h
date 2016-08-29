@@ -16,7 +16,6 @@ extern "C" {
 #include "../dictionary_types.h"
 #include "./../dictionary.h"
 
-#include "../../key_value/kv_io.h"
 #include "../../key_value/kv_system.h"
 
 typedef int ion_sl_level_t;	/**< Height of a skiplist */

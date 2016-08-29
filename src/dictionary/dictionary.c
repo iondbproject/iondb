@@ -24,6 +24,7 @@
 #include "dictionary.h"
 #include "dictionary_types.h"
 #include "flat_file/flat_file_dictionary_handler.h"
+#include "../key_value/kv_system.h"
 
 int
 dictionary_get_filename(
@@ -76,9 +77,9 @@ dictionary_create(
 	ion_dictionary_t			*dictionary,
 	ion_dictionary_id_t			id,
 	ion_key_type_t				key_type,
-	int							key_size,
-	int							value_size,
-	int							dictionary_size
+	ion_key_size_t				key_size,
+	ion_value_size_t			value_size,
+	ion_dictionary_size_t		dictionary_size
 ) {
 	ion_err_t					err;
 	ion_dictionary_compare_t	compare = dictionary_switch_compare(key_type);
@@ -254,32 +255,44 @@ dictionary_open(
 		ion_predicate_t				predicate;
 		ion_dict_cursor_t			*cursor = NULL;
 		ion_record_t				record;
-		ion_dictionary_handler_t	flat_file_handler;
-		ion_dictionary_t			ff_dict;
+		ion_dictionary_handler_t	fallback_handler;
+		ion_dictionary_t			fallback_dict;
+		ion_err_t 					err;
 
-		ffdict_init(&flat_file_handler);
+		ffdict_init(&fallback_handler);
 
-		ion_dictionary_config_info_t ff_config = {
+		ion_dictionary_config_info_t fallback_config = {
 			config->id, 0, config->type, config->key_size, config->value_size, 1
 		};
 
-		if (err_ok != dictionary_open(&flat_file_handler, &ff_dict, &ff_config)) {
-			return err_dictionary_initialization_failed;
+		err = dictionary_open(&fallback_handler, &fallback_dict, &fallback_config);
+		if (err_ok != err) {
+			return err;
 		}
 
 		dictionary_build_predicate(&predicate, predicate_all_records);
-		dictionary_find(&ff_dict, &predicate, &cursor);
-		record.key		= malloc((size_t) config->key_size);
-		record.value	= malloc((size_t) config->value_size);
+		err = dictionary_find(&fallback_dict, &predicate, &cursor);
+		if(err_ok != err) {
+			return err;
+		}
+		record.key		= alloca(config->key_size);
+		record.value	= alloca(config->value_size);
 
-		if (dictionary_create(handler, dictionary, config->id, config->type, config->key_size, config->value_size, config->dictionary_size) != err_ok) {
-			return err_dictionary_initialization_failed;
+		err = dictionary_create(handler, dictionary, config->id, config->type, config->key_size, config->value_size, config->dictionary_size);
+		if (err_ok != err) {
+			return err;
 		}
 
 		ion_cursor_status_t cursor_status;
 
-		while ((cursor_status = cursor->next(cursor, &record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
-			dictionary_insert(dictionary, record.key, record.value);
+		while (cs_cursor_active == (cursor_status = cursor->next(cursor, &record)) || cs_cursor_initialized == cursor_status) {
+			ion_status_t status = dictionary_insert(dictionary, record.key, record.value);
+			if(err_ok != status.error) {
+				cursor->destroy(&cursor);
+				dictionary_close(&fallback_dict);
+				dictionary_delete_dictionary(dictionary);
+				return status.error;
+			}
 		}
 
 		if (cursor_status != cs_end_of_results) {
@@ -287,10 +300,11 @@ dictionary_open(
 		}
 
 		cursor->destroy(&cursor);
-		free(record.key);
-		free(record.value);
 
-		dictionary_delete_dictionary(&ff_dict);
+		err = dictionary_delete_dictionary(&fallback_dict);
+		if(err_ok != err) {
+			return err;
+		}
 
 		error = err_ok;
 	}
@@ -320,41 +334,55 @@ dictionary_close(
 		ion_predicate_t		predicate;
 		ion_dict_cursor_t	*cursor = NULL;
 		ion_record_t		record;
+		ion_err_t 			err;
 
 		dictionary_build_predicate(&predicate, predicate_all_records);
-		dictionary_find(dictionary, &predicate, &cursor);
-		record.key		= (ion_key_t) malloc((size_t) dictionary->instance->record.key_size);
-		record.value	= (ion_value_t) malloc((size_t) dictionary->instance->record.value_size);
-
-		int				key_size	= dictionary->instance->record.key_size;
+		err = dictionary_find(dictionary, &predicate, &cursor);
+		if(err_ok != err) {
+			return err;
+		}
+ 		int				key_size	= dictionary->instance->record.key_size;
 		int				value_size	= dictionary->instance->record.value_size;
 		ion_key_type_t	key_type	= dictionary->instance->key_type;
+		record.key		= alloca(key_size);
+		record.value	= alloca(value_size);
 
-		ion_dictionary_handler_t	flat_file_handler;
-		ion_dictionary_t			ff_dict;
 
-		ffdict_init(&flat_file_handler);
+		ion_dictionary_handler_t	fallback_handler;
+		ion_dictionary_t			fallback_dict;
 
-		if (dictionary_create(&flat_file_handler, &ff_dict, dictionary->instance->id, key_type, key_size, value_size, 1) != err_ok) {
-			return err_dictionary_initialization_failed;
+		ffdict_init(&fallback_handler);
+
+		err = dictionary_create(&fallback_handler, &fallback_dict, dictionary->instance->id, key_type, key_size, value_size, 1);
+		if (err_ok != err) {
+			return err;
 		}
 
 		ion_cursor_status_t cursor_status;
 
-		while ((cursor_status = cursor->next(cursor, &record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
-			dictionary_insert(&ff_dict, record.key, record.value);
+		while (cs_cursor_active == (cursor_status = cursor->next(cursor, &record)) || cs_cursor_initialized == cursor_status) {
+			ion_status_t status = dictionary_insert(&fallback_dict, record.key, record.value);
+			if(err_ok != status.error) {
+				cursor->destroy(&cursor);
+				dictionary_delete_dictionary(&fallback_dict);
+				return status.error;
+			}
 		}
 
-		if (cursor_status != cs_end_of_results) {
+		if (cs_end_of_results != cursor_status) {
 			return err_dictionary_initialization_failed;
 		}
 
 		cursor->destroy(&cursor);
-		free(record.key);
-		free(record.value);
 
-		dictionary_close(&ff_dict);
-		dictionary_delete_dictionary(dictionary);
+		err = dictionary_close(&fallback_dict);
+		if(err_ok != err) {
+			return err;
+		}
+		err = dictionary_delete_dictionary(dictionary);
+		if(err_ok != err) {
+			return err;
+		}
 
 		error = err_ok;
 	}
