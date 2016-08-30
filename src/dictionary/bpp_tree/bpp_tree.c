@@ -857,7 +857,7 @@ bOpen(
 	int					i;
 	ion_bpp_node_t		*p;
 
-	if ((info.sectorSize < sizeof(ion_bpp_h_node_t)) || (info.sectorSize % 4)) {
+	if ((info.sectorSize < sizeof(ion_bpp_h_node_t)) || (0 != info.sectorSize % 4)) {
 		return bErrSectorSize;
 	}
 
