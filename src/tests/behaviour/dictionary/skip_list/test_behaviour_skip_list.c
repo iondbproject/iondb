@@ -30,10 +30,5 @@ void
 runalltests_behaviour_skip_list(
 	void
 ) {
-	bhdct_set_context(sldict_init, 7, BHDCT_ALL_TESTS);
-
-	planck_unit_suite_t *suite = bhdct_getsuite();
-
-	planck_unit_run_suite(suite);
-	planck_unit_destroy_suite(suite);
+	bhdct_run_tests(sldict_init, 7, BHDCT_ALL_TESTS);
 }

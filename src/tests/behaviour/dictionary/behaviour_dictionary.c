@@ -51,21 +51,6 @@ typedef enum {
 ion_bhdct_context_t bhdct_context = { 0 };
 
 /**
-@brief	This function binds the context properly. The context dictates what type of dictionary
-		we're testing, so that these tests may be re-used across several implementations.
-*/
-void
-bhdct_set_context(
-	ion_handler_initializer_t	init_fcn,
-	ion_dictionary_size_t		dictionary_size,
-	uint32_t					test_classes
-) {
-	bhdct_context.init_fcn			= init_fcn;
-	bhdct_context.dictionary_size	= dictionary_size;
-	bhdct_context.test_classes		= test_classes;
-}
-
-/**
 @brief	This function performs the dictionary initialization.
 */
 void
@@ -1500,18 +1485,19 @@ test_bhdct_delete_then_insert_string_key(
 	bhdct_takedown(tc, &dict);
 }
 
-planck_unit_suite_t *
-bhdct_getsuite(
-	void
+void
+bhdct_run_tests(
+	ion_handler_initializer_t	init_fcn,
+	ion_dictionary_size_t		dictionary_size,
+	uint32_t					test_classes
 ) {
-	if (NULL == bhdct_context.init_fcn) {
-		fprintf(stderr, "Behaviour Dictionary context was not set!");
-		return NULL;
-	}
-
-	planck_unit_suite_t *suite = planck_unit_new_suite();
+	bhdct_context.init_fcn			= init_fcn;
+	bhdct_context.dictionary_size	= dictionary_size;
+	bhdct_context.test_classes		= test_classes;
 
 	if (bhdct_context.test_classes & BHDCT_INT_INT) {
+		planck_unit_suite_t *suite = planck_unit_new_suite();
+
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_setup);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_single);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_multiple);
@@ -1547,9 +1533,14 @@ bhdct_getsuite(
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_all);
 
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_then_insert);
+
+		planck_unit_run_suite(suite);
+		planck_unit_destroy_suite(suite);
 	}
 
 	if (bhdct_context.test_classes & BHDCT_STRING_INT) {
+		planck_unit_suite_t *suite = planck_unit_new_suite();
+
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_setup_string_key);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_single_string_key);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_multiple_string_key);
@@ -1582,7 +1573,8 @@ bhdct_getsuite(
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_exist_in_many_string_key);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_all_string_key);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_then_insert_string_key);
-	}
 
-	return suite;
+		planck_unit_run_suite(suite);
+		planck_unit_destroy_suite(suite);
+	}
 }

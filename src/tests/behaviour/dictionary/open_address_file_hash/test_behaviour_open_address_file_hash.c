@@ -30,10 +30,5 @@ void
 runalltests_behaviour_open_address_file_hash(
 	void
 ) {
-	bhdct_set_context(oafdict_init, 200, BHDCT_ALL_TESTS & ~BHDCT_DUPLICATES);
-
-	planck_unit_suite_t *suite = bhdct_getsuite();
-
-	planck_unit_run_suite(suite);
-	planck_unit_destroy_suite(suite);
+	bhdct_run_tests(oafdict_init, 200, BHDCT_ALL_TESTS & ~BHDCT_DUPLICATES);
 }

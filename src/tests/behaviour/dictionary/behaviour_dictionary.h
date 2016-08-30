@@ -50,22 +50,23 @@ typedef struct {
 
 	ion_dictionary_size_t		dictionary_size;/**< Some configuration for the dictionary, so that we can change parameters
 												   on a per-implementation basis. */
-	uint32_t					test_classes;	/**< A bit vector that determines which sets of tests to run. */
+	uint32_t					test_classes;	/**< A bit mask that determines which sets of tests to run. */
 } ion_bhdct_context_t;
 
 /**
-@brief	This function specifies an information context. Used by the concrete test runners
-		in order to properly designate which implementation we're specifically testing.
+@brief		Executes the behaviour test suite, given the testing parameters.
+@param		init_fcn
+				A function pointer that designates the initializer for a specific dictionary implementation.
+@param		dictionary_size
+				The specified dictionary size to use for tests.
+@param		test_classes
+				A supplied bit mask used to determine which tests to run.
 */
-void bhdct_set_context(ion_handler_initializer_t init_fcn, ion_dictionary_size_t, uint32_t);
-
-/**
-@brief	Constructs the testing suite for the behaviour dictionary tests.
-@return	A constructed, initialized suite.
-*/
-planck_unit_suite_t *
-bhdct_getsuite(
-	void
+void
+bhdct_run_tests(
+	ion_handler_initializer_t	init_fcn,
+	ion_dictionary_size_t		dictionary_size,
+	uint32_t					test_classes
 );
 
 #if defined(__cplusplus)
