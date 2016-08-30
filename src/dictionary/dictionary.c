@@ -225,7 +225,7 @@ dictionary_compare_char_array(
 	ion_key_t		second_key,
 	ion_key_size_t	key_size
 ) {
-	return memcmp((char *) first_key, (char *) second_key, key_size);
+	return strncmp((char *) first_key, (char *) second_key, key_size);
 }
 
 char
