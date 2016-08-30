@@ -30,5 +30,9 @@ void
 runalltests_behaviour_skip_list(
 	void
 ) {
+#if defined(ARDUINO)
+	bhdct_run_tests(sldict_init, 7, BHDCT_ALL_TESTS & ~BHDCT_STRING_INT);
+#else
 	bhdct_run_tests(sldict_init, 7, BHDCT_ALL_TESTS);
+#endif
 }
