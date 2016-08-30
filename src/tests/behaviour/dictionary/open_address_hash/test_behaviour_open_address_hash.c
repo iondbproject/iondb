@@ -30,7 +30,7 @@ void
 runalltests_behaviour_open_address_hash(
 	void
 ) {
-	bhdct_set_context(oadict_init, 200, boolean_false);
+	bhdct_set_context(oadict_init, 200, BHDCT_ALL_TESTS & ~BHDCT_DUPLICATES);
 
 	planck_unit_suite_t *suite = bhdct_getsuite();
 

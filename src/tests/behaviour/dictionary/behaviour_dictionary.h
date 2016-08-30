@@ -40,19 +40,24 @@ extern "C" {
 #include "../../../dictionary/dictionary.h"
 #include "../../../dictionary/ion_master_table.h"
 
+#define BHDCT_INT_INT		(1 << 0)
+#define BHDCT_STRING_INT	(1 << 1)
+#define BHDCT_DUPLICATES	(1 << 2)
+#define BHDCT_ALL_TESTS		(0xFFFFFFFF)
+
 typedef struct {
-	ion_handler_initializer_t	init_fcn;										/**< A pointer to a handler initialization function. */
+	ion_handler_initializer_t	init_fcn;		/**< A pointer to a handler initialization function. */
 
 	ion_dictionary_size_t		dictionary_size;/**< Some configuration for the dictionary, so that we can change parameters
 												   on a per-implementation basis. */
-	ion_boolean_t				duplicate_support;	/**< Tells whether or not the implementation being tested supports duplicates. */
+	uint32_t					test_classes;	/**< A bit vector that determines which sets of tests to run. */
 } ion_bhdct_context_t;
 
 /**
 @brief	This function specifies an information context. Used by the concrete test runners
 		in order to properly designate which implementation we're specifically testing.
 */
-void bhdct_set_context(ion_handler_initializer_t init_fcn, ion_dictionary_size_t, ion_boolean_t);
+void bhdct_set_context(ion_handler_initializer_t init_fcn, ion_dictionary_size_t, uint32_t);
 
 /**
 @brief	Constructs the testing suite for the behaviour dictionary tests.
@@ -60,78 +65,6 @@ void bhdct_set_context(ion_handler_initializer_t init_fcn, ion_dictionary_size_t
 */
 planck_unit_suite_t *
 bhdct_getsuite(
-	void
-);
-
-/**
-@brief	Constructs the testing suite for the behaviour dictionary tests.
-@return	A constructed, initialized suite.
-*/
-planck_unit_suite_t *
-bhdct_getsuite_bpptree1(
-	void
-);
-
-/**
-@brief	Constructs the testing suite for the behaviour dictionary tests.
-@return	A constructed, initialized suite.
-*/
-planck_unit_suite_t *
-bhdct_getsuite_bpptree2(
-	void
-);
-
-/**
-@brief	Constructs the testing suite for the behaviour dictionary tests.
-@return	A constructed, initialized suite.
-*/
-planck_unit_suite_t *
-bhdct_getsuite_bpptree3(
-	void
-);
-
-/**
-@brief	Constructs the testing suite for the behaviour dictionary tests.
-@return	A constructed, initialized suite.
-*/
-planck_unit_suite_t *
-bhdct_getsuite_bpptree4(
-	void
-);
-
-/**
-@brief	Constructs the testing suite for the behaviour dictionary tests.
-@return	A constructed, initialized suite.
-*/
-planck_unit_suite_t *
-bhdct_getsuite_bpptree5(
-	void
-);
-
-/**
-@brief	Constructs the testing suite for the behaviour dictionary tests.
-@return	A constructed, initialized suite.
-*/
-planck_unit_suite_t *
-bhdct_getsuite_bpptree6(
-	void
-);
-
-/**
-@brief	Constructs the testing suite for the behaviour dictionary tests.
-@return	A constructed, initialized suite.
-*/
-planck_unit_suite_t *
-bhdct_getsuite_bpptree7(
-	void
-);
-
-/**
-@brief	Constructs the testing suite for the behaviour dictionary tests.
-@return	A constructed, initialized suite.
-*/
-planck_unit_suite_t *
-bhdct_getsuite_bpptree8(
 	void
 );
 
