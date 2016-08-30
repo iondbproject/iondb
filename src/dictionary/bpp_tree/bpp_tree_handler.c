@@ -115,9 +115,10 @@ bpptree_create_dictionary(
 ) {
 	UNUSED(dictionary_size);
 
-	if (key_size != sizeof(int)) {
+	/* TODO: Uncomment this when IINQ has been merged into development */
+/*	if (key_size != sizeof(int)) {
 		return err_invalid_initial_size;
-	}
+	}*/
 
 	ion_bpptree_t	*bpptree;
 	ion_bpp_open_t	info;
