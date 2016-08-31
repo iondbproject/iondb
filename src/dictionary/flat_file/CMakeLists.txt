@@ -4,15 +4,12 @@ project(flat_file)
 set(SOURCE_FILES
     flat_file.h
     flat_file.c
-    file_handler.h
-    flat_file_dictionary.h
-    flat_file_dictionary_handler.h
+		flat_file_types.h
+        flat_file_dictionary_handler.h
     flat_file_dictionary_handler.c
     ../dictionary.h
     ../dictionary.c
     ../dictionary_types.h
-        ../../key_value/kv_io.h
-        ../../key_value/kv_io.c
         ../../key_value/kv_system.h)
 
 if(USE_ARDUINO)

@@ -22,15 +22,15 @@
 				Type of key used
 @param	  size
 				Size of dictionary
- */
+*/
 void
-create_test_collection(
-	dictionary_t			*dictionary,
-	dictionary_handler_t	*handler,
-	record_info_t			*record,
-	key_type_t				key_type,
-	int						size,
-	int						num_elements
+create_test_dictionary(
+	ion_dictionary_t			*dictionary,
+	ion_dictionary_handler_t	*handler,
+	ion_record_info_t			*record,
+	ion_key_type_t				key_type,
+	int							size,
+	int							num_elements
 ) {
 	sldict_init(handler);
 
@@ -43,13 +43,13 @@ create_test_collection(
 
 	/* First insert one of each element, up to half... */
 	for (i = 0; i < half_elements; i++) {
-		dictionary_insert(dictionary, (ion_key_t) &i, (ion_value_t) value);
+		dictionary_insert(dictionary, &i, value);
 	}
 
 	/* Continue inserting, this time with an increasing amount of duplicates */
 	for (; i < num_elements; i++) {
 		for (j = 0; j < num_duplicates; j++) {
-			dictionary_insert(dictionary, (ion_key_t) &i, (ion_value_t) value);
+			dictionary_insert(dictionary, &i, value);
 		}
 
 		/* Each time we increment the key, add one more duplicate */
@@ -58,26 +58,26 @@ create_test_collection(
 }
 
 /**
-@brief	  Helper function to create a collection using standard condition
+@brief	  Helper function to create a dictionary instance using standard condition
 			variables.
 
 @param	  dictionary
 				Dictionary to initialize
 @param	  handler
 				Handler to bind
- */
+*/
 void
-create_test_collection_std_conditions(
-	dictionary_t			*dictionary,
-	dictionary_handler_t	*handler
+create_test_dictionary_std_conditions(
+	ion_dictionary_t			*dictionary,
+	ion_dictionary_handler_t	*handler
 ) {
 	/* This means keysize 4 (on a desktop platform) and valuesize 10 */
-	record_info_t	record			= { sizeof(int), 10 };
-	key_type_t		key_type		= key_type_numeric_signed;
-	int				size			= 7;
-	int				num_elements	= 50;
+	ion_record_info_t	record			= { sizeof(int), 10 };
+	ion_key_type_t		key_type		= key_type_numeric_signed;
+	int					size			= 7;
+	int					num_elements	= 25;
 
-	create_test_collection(dictionary, handler, &record, key_type, size, num_elements);
+	create_test_dictionary(dictionary, handler, &record, key_type, size, num_elements);
 }
 
 /**
@@ -85,15 +85,15 @@ create_test_collection_std_conditions(
 			have been correctly bound.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
-test_collection_handler_binding(
+test_dictionary_handler_binding(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	dictionary_handler_t handler;
+	ion_dictionary_handler_t handler;
 
 	sldict_init(&handler);
 
@@ -105,28 +105,28 @@ test_collection_handler_binding(
 }
 
 /**
-@brief	  Tests the creation of a collection and verifies all properties
+@brief	  Tests the creation of a dictionary instance and verifies all properties
 			have been correctly initialized.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
-test_collection_creation(
+test_dictionary_creation(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	dictionary_t			dict;
-	dictionary_handler_t	handler;
-	record_info_t			record			= { sizeof(int), 10 };
-	key_type_t				key_type		= key_type_numeric_signed;
-	int						size			= 50;
-	int						num_elements	= 25;
+	ion_dictionary_t			dict;
+	ion_dictionary_handler_t	handler;
+	ion_record_info_t			record			= { sizeof(int), 10 };
+	ion_key_type_t				key_type		= key_type_numeric_signed;
+	int							size			= 50;
+	int							num_elements	= 25;
 
-	create_test_collection(&dict, &handler, &record, key_type, size, num_elements);
+	create_test_dictionary(&dict, &handler, &record, key_type, size, num_elements);
 
-	skiplist_t *skiplist = (skiplist_t *) dict.instance;
+	ion_skiplist_t *skiplist = (ion_skiplist_t *) dict.instance;
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->key_type == key_type_numeric_signed);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare == dictionary_compare_signed_value);
@@ -147,7 +147,7 @@ test_collection_creation(
 			is that the cursor will return err_ok.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_slhandler_cursor_equality(
@@ -155,17 +155,17 @@ test_slhandler_cursor_equality(
 ) {
 	PRINT_HEADER();
 
-	dictionary_t			dict;
-	dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+	ion_dictionary_handler_t	handler;
 
-	create_test_collection_std_conditions(&dict, &handler);
+	create_test_dictionary_std_conditions(&dict, &handler);
 
-	dict_cursor_t	*cursor;
-	predicate_t		predicate;
+	ion_dict_cursor_t	*cursor;
+	ion_predicate_t		predicate;
 
 	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(33, int));
 
-	err_t status = dictionary_find(&dict, &predicate, &cursor);
+	ion_err_t status = dictionary_find(&dict, &predicate, &cursor);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status);
 
@@ -181,7 +181,7 @@ test_slhandler_cursor_equality(
 			assertion is that the values returned will satisfy the predicate.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_slhandler_cursor_equality_with_results(
@@ -189,17 +189,17 @@ test_slhandler_cursor_equality_with_results(
 ) {
 	PRINT_HEADER();
 
-	dictionary_t			dict;
-	dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+	ion_dictionary_handler_t	handler;
 
-	create_test_collection_std_conditions(&dict, &handler);
+	create_test_dictionary_std_conditions(&dict, &handler);
 
-	dict_cursor_t	*cursor;
-	predicate_t		predicate;
+	ion_dict_cursor_t	*cursor;
+	ion_predicate_t		predicate;
 
-	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(26, int));
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(24, int));
 
-	err_t status = dictionary_find(&dict, &predicate, &cursor);
+	ion_err_t status = dictionary_find(&dict, &predicate, &cursor);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status);
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized == cursor->status);
@@ -209,15 +209,15 @@ test_slhandler_cursor_equality_with_results(
 	record.key		= malloc(dict.instance->record.key_size);
 	record.value	= malloc(dict.instance->record.value_size);
 
-	cursor_status_t c_status = cursor->next(cursor, &record);
+	ion_cursor_status_t c_status = cursor->next(cursor, &record);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
-	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(26, int), dict.instance->record.key_size) == 0);
-	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(24, int), dict.instance->record.key_size) == 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 
 	while (c_status != cs_end_of_results) {
-		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(26, int), dict.instance->record.key_size) == 0);
-		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(24, int), dict.instance->record.key_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 		c_status = cursor->next(cursor, &record);
 	}
 
@@ -236,7 +236,7 @@ test_slhandler_cursor_equality_with_results(
 			is that the cursor will return err_ok.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_slhandler_cursor_range(
@@ -244,17 +244,17 @@ test_slhandler_cursor_range(
 ) {
 	PRINT_HEADER();
 
-	dictionary_t			dict;
-	dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+	ion_dictionary_handler_t	handler;
 
-	create_test_collection_std_conditions(&dict, &handler);
+	create_test_dictionary_std_conditions(&dict, &handler);
 
-	dict_cursor_t	*cursor;
-	predicate_t		predicate;
+	ion_dict_cursor_t	*cursor;
+	ion_predicate_t		predicate;
 
 	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(15, int), IONIZE(60, int));
 
-	err_t status = dictionary_find(&dict, &predicate, &cursor);
+	ion_err_t status = dictionary_find(&dict, &predicate, &cursor);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status);
 
@@ -270,7 +270,7 @@ test_slhandler_cursor_range(
 			assertion is that the values returned will satisfy the predicate.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_slhandler_cursor_range_with_results(
@@ -278,17 +278,17 @@ test_slhandler_cursor_range_with_results(
 ) {
 	PRINT_HEADER();
 
-	dictionary_t			dict;
-	dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+	ion_dictionary_handler_t	handler;
 
-	create_test_collection_std_conditions(&dict, &handler);
+	create_test_dictionary_std_conditions(&dict, &handler);
 
-	dict_cursor_t	*cursor;
-	predicate_t		predicate;
+	ion_dict_cursor_t	*cursor;
+	ion_predicate_t		predicate;
 
 	dictionary_build_predicate(&predicate, predicate_range, IONIZE(5, int), IONIZE(78, int));
 
-	err_t status = dictionary_find(&dict, &predicate, &cursor);
+	ion_err_t status = dictionary_find(&dict, &predicate, &cursor);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status);
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized == cursor->status);
@@ -298,17 +298,17 @@ test_slhandler_cursor_range_with_results(
 	record.key		= malloc(dict.instance->record.key_size);
 	record.value	= malloc(dict.instance->record.value_size);
 
-	cursor_status_t c_status = cursor->next(cursor, &record);
+	ion_cursor_status_t c_status = cursor->next(cursor, &record);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(5, int), dict.instance->record.key_size) >= 0);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(78, int), dict.instance->record.key_size) <= 0);
-	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 
 	while (c_status != cs_end_of_results) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(5, int), dict.instance->record.key_size) >= 0);
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(78, int), dict.instance->record.key_size) <= 0);
-		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 		c_status = cursor->next(cursor, &record);
 	}
 
@@ -331,7 +331,7 @@ test_slhandler_cursor_range_with_results(
 			as the result of the query.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_slhandler_cursor_range_lower_missing(
@@ -339,17 +339,17 @@ test_slhandler_cursor_range_lower_missing(
 ) {
 	PRINT_HEADER();
 
-	dictionary_t			dict;
-	dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+	ion_dictionary_handler_t	handler;
 
-	create_test_collection_std_conditions(&dict, &handler);
+	create_test_dictionary_std_conditions(&dict, &handler);
 
-	dict_cursor_t	*cursor;
-	predicate_t		predicate;
+	ion_dict_cursor_t	*cursor;
+	ion_predicate_t		predicate;
 
 	dictionary_build_predicate(&predicate, predicate_range, IONIZE(-50, int), IONIZE(50, int));
 
-	err_t status = dictionary_find(&dict, &predicate, &cursor);
+	ion_err_t status = dictionary_find(&dict, &predicate, &cursor);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status);
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized == cursor->status);
@@ -359,17 +359,17 @@ test_slhandler_cursor_range_lower_missing(
 	record.key		= malloc(dict.instance->record.key_size);
 	record.value	= malloc(dict.instance->record.value_size);
 
-	cursor_status_t c_status = cursor->next(cursor, &record);
+	ion_cursor_status_t c_status = cursor->next(cursor, &record);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(-50, int), dict.instance->record.key_size) >= 0);
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(50, int), dict.instance->record.key_size) <= 0);
-	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 
 	while (c_status != cs_end_of_results) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(-50, int), dict.instance->record.key_size) >= 0);
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(50, int), dict.instance->record.key_size) <= 0);
-		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "DATA" }, dict.instance->record.value_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 		c_status = cursor->next(cursor, &record);
 	}
 
@@ -388,7 +388,7 @@ test_slhandler_cursor_range_lower_missing(
 			and then assert that we saw everything that was expected to be seen. This is the final
 			line of defense against a broken range query.
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_slhandler_cursor_range_exact_results(
@@ -396,10 +396,10 @@ test_slhandler_cursor_range_exact_results(
 ) {
 	PRINT_HEADER();
 
-	dictionary_t			dict;
-	dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+	ion_dictionary_handler_t	handler;
 
-	create_test_collection_std_conditions(&dict, &handler);
+	create_test_dictionary_std_conditions(&dict, &handler);
 
 	int extra_keys[]	= { 503, 504, 504, 504, 509, 542 };
 	int num_extra		= sizeof(extra_keys) / sizeof(int);
@@ -409,16 +409,16 @@ test_slhandler_cursor_range_exact_results(
 	for (i = 0; i < num_extra; i++) {
 		ion_status_t status = dictionary_insert(&dict, &extra_keys[i], "test");
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
-		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
 	}
 
-	dict_cursor_t	*cursor;
-	predicate_t		predicate;
+	ion_dict_cursor_t	*cursor;
+	ion_predicate_t		predicate;
 
 	dictionary_build_predicate(&predicate, predicate_range, IONIZE(500, int), IONIZE(600, int));
 
-	err_t status = dictionary_find(&dict, &predicate, &cursor);
+	ion_err_t status = dictionary_find(&dict, &predicate, &cursor);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status);
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_initialized == cursor->status);
@@ -428,7 +428,7 @@ test_slhandler_cursor_range_exact_results(
 	record.key		= malloc(dict.instance->record.key_size);
 	record.value	= malloc(dict.instance->record.value_size);
 
-	cursor_status_t c_status = cursor->next(cursor, &record);
+	ion_cursor_status_t c_status = cursor->next(cursor, &record);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
 
@@ -438,7 +438,7 @@ test_slhandler_cursor_range_exact_results(
 		int expected_key = extra_keys[key_idx];
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, &expected_key, dict.instance->record.key_size) == 0);
-		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (ion_value_t) (char *) { "test" }, dict.instance->record.value_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "test" }, dict.instance->record.value_size) == 0);
 		c_status = cursor->next(cursor, &record);
 		key_idx++;
 	}
@@ -456,17 +456,17 @@ test_slhandler_cursor_range_exact_results(
 }
 
 /**
-@brief	  Creates the suite to test using CuTest.
-@return	 Pointer to a CuTest suite.
- */
+@brief	  Creates the suite to test using PlanckUnit test cases.
+@return	 Pointer to a PlanckUnit test suite.
+*/
 planck_unit_suite_t *
 skiplist_handler_getsuite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
 	/* Creation test */
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_collection_handler_binding);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_collection_creation);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_dictionary_handler_binding);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_dictionary_creation);
 
 	/* Cursor Equality test */
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_slhandler_cursor_equality);
@@ -483,7 +483,7 @@ skiplist_handler_getsuite(
 
 /**
 @brief	  Runs all skiplist related test and outputs the result.
- */
+*/
 void
 runalltests_skiplist_handler(
 ) {

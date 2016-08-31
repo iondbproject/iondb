@@ -1,8 +1,8 @@
 /******************************************************************************/
 /**
 @file
-@author		Scott Fazackerley
-@brief		Key-Value Input/Output functionality.
+@author		Kris Wallperington
+@brief		Entry point for Open Address File Hash behaviour tests.
 @copyright	Copyright 2016
 				The University of British Columbia,
 				IonDB Project Contributors (see AUTHORS.md)
@@ -21,42 +21,20 @@
 */
 /******************************************************************************/
 
-#if !defined(KV_IO_H_)
-#define KV_IO_H_
+#if !defined(TEST_BEHAVIOUR_OPEN_ADDRESS_FILE_HASH_H)
+#define TEST_BEHAVIOUR_OPEN_ADDRESS_FILE_HASH_H
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "kv_system.h"
-
-/* Only on PC */
-#if !defined(ARDUINO)
-#define fremove(x)	remove(x)
-#define frewind(x)	rewind(x)
-#endif
-
-/**
-@brief		The function outputs a string in a tidy format, according to the
-			format string.
-@details	Used as an alternate printf to deal with device specific issues.
-@param		format
-				Format string to specify print output.
-@return		If successful, the total number of characters written is returned.
-			Otherwise, a negative number is returned.
-*/
-int
-io_printf(
-	const char *format,
-	...
+void
+runalltests_behaviour_open_address_file_hash(
+	void
 );
 
 #if defined(__cplusplus)
 }
 #endif
 
-#endif /* KV_IO_H_ */
+#endif

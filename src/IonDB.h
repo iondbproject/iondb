@@ -25,7 +25,6 @@
 #define IONDB_H
 
 #include "key_value/kv_system.h"
-#include "key_value/kv_io.h"
 #include "cpp_wrapper/Dictionary.h"
 #include "cpp_wrapper/FlatFile.h"
 #include "cpp_wrapper/OpenAddressFileHash.h"

@@ -41,10 +41,10 @@ extern "C" {
 */
 typedef struct linkedfilebag {
 	/**> The file handle for the file where the data is stored. */
-	file_handle_t	file_handle;
+	ion_file_handle_t	file_handle;
 	/**> The offset for the next empty slot to write to. */
-	file_offset_t	next_empty;
-} lfb_t;
+	ion_file_offset_t	next_empty;
+} ion_lfb_t;
 
 /**
 @brief		Add an item to the linked file bag.
@@ -64,13 +64,13 @@ typedef struct linkedfilebag {
 				if the calling function needs to use this information.
 @returns	An error code describing the result of the call.
 */
-err_t
+ion_err_t
 lfb_put(
-	lfb_t			*bag,
+	ion_lfb_t			*bag,
 	ion_byte_t		*to_write,
 	unsigned int	num_bytes,
-	file_offset_t	next,
-	file_offset_t	*wrote_at
+	ion_file_offset_t	next,
+	ion_file_offset_t	*wrote_at
 );
 
 /**
@@ -95,13 +95,13 @@ lfb_put(
 				count towards the @p num_bytes parameter specified.
 @returns	An error code describing the result of the call.
 */
-err_t
+ion_err_t
 lfb_get(
-	lfb_t			*bag,
-	file_offset_t	offset,
+	ion_lfb_t			*bag,
+	ion_file_offset_t	offset,
 	unsigned int	num_bytes,
 	ion_byte_t		*write_to,
-	file_offset_t	*next
+	ion_file_offset_t	*next
 );
 
 /**
@@ -116,11 +116,11 @@ lfb_get(
 				stored starting at @p offset.
 @returns	An error code describing the result of the call.
 */
-err_t
+ion_err_t
 lfb_update_next(
-	lfb_t			*bag,
-	file_offset_t	offset,
-	file_offset_t	next
+	ion_lfb_t			*bag,
+	ion_file_offset_t	offset,
+	ion_file_offset_t	next
 );
 
 /**
@@ -132,10 +132,10 @@ lfb_update_next(
 				The offset of the record to remove from its bag.
 @returns	An error code describing the result of the call.
 */
-err_t
+ion_err_t
 lfb_delete(
-	lfb_t			*bag,
-	file_offset_t	offset
+	ion_lfb_t			*bag,
+	ion_file_offset_t	offset
 );
 
 /**
@@ -154,10 +154,10 @@ lfb_delete(
 				then no data will be written.
 @returns	An error code describing the result of the call.
 */
-err_t
+ion_err_t
 lfb_delete_all(
-	lfb_t				*bag,
-	file_offset_t		offset,
+	ion_lfb_t				*bag,
+	ion_file_offset_t		offset,
 	ion_result_count_t	*count
 );
 
@@ -184,13 +184,13 @@ lfb_delete_all(
 				purposes.
 @returns	An error code describing the result of the call.
 */
-err_t
+ion_err_t
 lfb_update(
-	lfb_t			*bag,
-	file_offset_t	offset,
+	ion_lfb_t			*bag,
+	ion_file_offset_t	offset,
 	unsigned int	num_bytes,
 	ion_byte_t		*to_write,
-	file_offset_t	*next
+	ion_file_offset_t	*next
 );
 
 /**
@@ -212,10 +212,10 @@ lfb_update(
 				then no data will be written.
 @returns	An error code describing the result of the call.
 */
-err_t
+ion_err_t
 lfb_update_all(
-	lfb_t				*bag,
-	file_offset_t		offset,
+	ion_lfb_t				*bag,
+	ion_file_offset_t		offset,
 	unsigned int		num_bytes,
 	ion_byte_t			*to_write,
 	ion_result_count_t	*count

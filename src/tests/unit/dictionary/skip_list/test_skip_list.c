@@ -28,11 +28,11 @@
 				Probability numerator
 @param	  pden
 				Probability denominator
- */
+*/
 void
 initialize_skiplist(
-	skiplist_t					*skiplist,
-	key_type_t					key_type,
+	ion_skiplist_t				*skiplist,
+	ion_key_type_t				key_type,
 	ion_dictionary_compare_t	compare,
 	int							maxheight,
 	int							key_size,
@@ -50,13 +50,13 @@ initialize_skiplist(
 
 @param	  skiplist
 				Skiplist to initialize
- */
+*/
 void
 initialize_skiplist_std_conditions(
-	skiplist_t *skiplist
+	ion_skiplist_t *skiplist
 ) {
 	int							key_size, value_size, pden, pnum, maxheight;
-	key_type_t					key_type;
+	ion_key_type_t				key_type;
 	ion_dictionary_compare_t	compare;
 
 	key_type	= key_type_numeric_signed;
@@ -74,8 +74,8 @@ initialize_skiplist_std_conditions(
 @brief	  Tests creation of the skiplist.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_initialize(
 	planck_unit_test_t *tc
@@ -83,13 +83,13 @@ test_skiplist_initialize(
 	PRINT_HEADER();
 
 	int							key_size, value_size, pden, pnum, maxheight;
-	key_type_t					key_type;
+	ion_key_type_t				key_type;
 	ion_dictionary_compare_t	compare;
-	skiplist_t					skiplist;
+	ion_skiplist_t				skiplist;
 
 	key_type	= key_type_numeric_signed;
 	compare		= dictionary_compare_signed_value;
-	key_size	= 4;
+	key_size	= sizeof(int);
 	value_size	= 10;
 	pnum		= 1;
 	pden		= 4;
@@ -119,15 +119,15 @@ test_skiplist_initialize(
 @brief	  Tests if the Skiplist is properly destroyed.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_free_all(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -140,15 +140,15 @@ test_skiplist_free_all(
 @brief	  Tests a single insert into the skiplist.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_single_insert(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -177,15 +177,15 @@ test_skiplist_single_insert(
 			occurred.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_insert_multiple(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -206,7 +206,7 @@ test_skiplist_insert_multiple(
 	print_skiplist(&skip_list);
 #endif
 
-	sl_node_t *cursor;
+	ion_sl_node_t *cursor;
 
 	cursor = skiplist.head->next[0];
 	PLANCK_UNIT_ASSERT_TRUE(tc, *((int *) cursor->key) == 1);
@@ -237,15 +237,15 @@ test_skiplist_insert_multiple(
 			of the current node.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_randomized_insert(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -268,7 +268,7 @@ test_skiplist_randomized_insert(
 	print_skiplist(&skip_list);
 #endif
 
-	sl_node_t *cursor = skiplist.head;
+	ion_sl_node_t *cursor = skiplist.head;
 
 	while (cursor->next[0]->next[0] != NULL) {
 		int now		= *((int *) cursor->next[0]->key);
@@ -285,21 +285,20 @@ test_skiplist_randomized_insert(
 /**
 @brief	  Tests node search on a single node in a skiplist with only one node.
 
-@details	Tests node search on a single node in a skiplist with only one node.
-			The key searched for is exact. The test compares the given node key
+@details	The key searched for is exact. The test compares the given node key
 			and value information with the information inserted into the
 			skiplist. The test passes if they are the same.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_get_node_single(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -314,8 +313,8 @@ test_skiplist_get_node_single(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
-	int			search	= 3;
-	sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &search);
+	int				search	= 3;
+	ion_sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &search);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, node != NULL);
 	PLANCK_UNIT_ASSERT_TRUE(tc, *((int *) node->key) == key);
@@ -327,22 +326,21 @@ test_skiplist_get_node_single(
 /**
 @brief	  Tests node search on a single node in a skiplist with only one node.
 
-@details	Tests node search on a single node in a skiplist with only one node.
-			The key searched for is higher than the inserted key. The test
+@details	The key searched for is higher than the inserted key. The test
 			compares the given node key and value information with the
 			information inserted into the skiplist. The test passes if they are
 			the same.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_get_node_single_high(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -361,8 +359,8 @@ test_skiplist_get_node_single_high(
 	print_skiplist(&skip_list);
 #endif
 
-	int			search	= 10;
-	sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &search);
+	int				search	= 10;
+	ion_sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &search);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, *((int *) node->key) == key);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) str, (char *) node->value);
@@ -373,23 +371,22 @@ test_skiplist_get_node_single_high(
 /**
 @brief	  Tests node search on a single node in a skiplist with only one node.
 
-@details	Tests node search on a single node in a skiplist with only one node.
-			The key searched for is lower than the inserted key. The test
+@details	The key searched for is lower than the inserted key. The test
 			compares the given node key and value information with the
 			information inserted into the skiplist. The test passes if the node
 			returned is the same as the head node. (Since there's only one node,
 			the only node that can be smaller than the one insert is the head
 			node.)
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_get_node_single_low(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -408,8 +405,8 @@ test_skiplist_get_node_single_low(
 	print_skiplist(&skip_list);
 #endif
 
-	int			search	= 2;
-	sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &search);
+	int				search	= 2;
+	ion_sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &search);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, node == skiplist.head);
 
@@ -425,15 +422,15 @@ test_skiplist_get_node_single_low(
 			skiplist. The test passes if they are the same.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_get_node_single_many(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -469,8 +466,8 @@ test_skiplist_get_node_single_many(
 	print_skiplist(&skip_list);
 #endif
 
-	int			search	= 25;
-	sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &search);
+	int				search	= 25;
+	ion_sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &search);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, *((int *) node->key) == key);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) str, (char *) node->value);
@@ -484,22 +481,17 @@ test_skiplist_get_node_single_many(
 			are compared to the original inserted ones for accuracy.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_get_node_several(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
-
-#if DEBUG
-	/* If debugging, use a static seed */
-	srand(0xDEADBEEF);
-#endif
 
 	int			targets[50];
 	ion_byte_t	buffer[10];
@@ -522,8 +514,8 @@ test_skiplist_get_node_several(
 #endif
 
 	for (i = 0; i < 50; i++) {
-		int			key		= targets[i];
-		sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &key);
+		int				key		= targets[i];
+		ion_sl_node_t	*node	= sl_find_node(&skiplist, (ion_key_t) &key);
 
 		sprintf((char *) buffer, "TEST %d", key);
 		PLANCK_UNIT_ASSERT_TRUE(tc, *((int *) node->key) == key);
@@ -539,15 +531,15 @@ test_skiplist_get_node_several(
 			should not be allocated and will be set to null.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_query_nonexist_empty(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -574,15 +566,15 @@ test_skiplist_query_nonexist_empty(
 			be initialized to null.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_query_nonexist_populated_single(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -619,15 +611,15 @@ test_skiplist_query_nonexist_populated_single(
 			pointer be initialized to null.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_query_nonexist_populated_several(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -669,15 +661,15 @@ test_skiplist_query_nonexist_populated_several(
 			value as stored at the specified key.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_query_exist_single(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -714,15 +706,15 @@ test_skiplist_query_exist_single(
 			value stored at the specified key.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_query_exist_populated_single(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -762,15 +754,15 @@ test_skiplist_query_exist_populated_single(
 			value stored at the specified key.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_query_exist_populated_several(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -813,15 +805,15 @@ test_skiplist_query_exist_populated_several(
 			modifications should be made to the structure.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_delete_empty(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -845,15 +837,15 @@ test_skiplist_delete_empty(
 			modification is to be made to the data structure.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_delete_nonexist_single(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -888,15 +880,15 @@ test_skiplist_delete_nonexist_single(
 			modification is to be made to the data structure.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_delete_nonexist_several(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -936,15 +928,15 @@ test_skiplist_delete_nonexist_several(
 			deleted is no longer within the skiplist.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_delete_single(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -984,15 +976,15 @@ test_skiplist_delete_single(
 			is no longer within the skiplist.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_delete_single_several(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1014,15 +1006,15 @@ test_skiplist_delete_single_several(
 	print_skiplist(&skip_list);
 #endif
 
-	sl_node_t	*onebefore	= sl_find_node(&skiplist, IONIZE(111, int));
-	sl_node_t	*theone		= sl_find_node(&skiplist, IONIZE(112, int));
-	sl_level_t	theone_h	= theone->height + 1;
-	sl_level_t	onebefore_h = onebefore->height + 1;
+	ion_sl_node_t	*onebefore	= sl_find_node(&skiplist, IONIZE(111, int));
+	ion_sl_node_t	*theone		= sl_find_node(&skiplist, IONIZE(112, int));
+	ion_sl_level_t	theone_h	= theone->height + 1;
+	ion_sl_level_t	onebefore_h = onebefore->height + 1;
 
 	/* This copies all the pointers that the target linked to before for assert
 	 * testing.
-	 */
-	sl_node_t *oldnextarr[theone_h];
+	*/
+	ion_sl_node_t *oldnextarr[theone_h];
 
 	for (i = 0; i < theone_h; i++) {
 		oldnextarr[i] = theone->next[i];
@@ -1056,15 +1048,15 @@ test_skiplist_delete_single_several(
 			longer within the skiplist.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_delete_single_several_noncont(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1086,15 +1078,15 @@ test_skiplist_delete_single_several_noncont(
 	print_skiplist(&skip_list);
 #endif
 
-	sl_node_t	*onebefore	= sl_find_node(&skiplist, IONIZE(235, int));
-	sl_node_t	*theone		= sl_find_node(&skiplist, IONIZE(240, int));
-	sl_level_t	theone_h	= theone->height + 1;
-	sl_level_t	onebefore_h = onebefore->height + 1;
+	ion_sl_node_t	*onebefore	= sl_find_node(&skiplist, IONIZE(235, int));
+	ion_sl_node_t	*theone		= sl_find_node(&skiplist, IONIZE(240, int));
+	ion_sl_level_t	theone_h	= theone->height + 1;
+	ion_sl_level_t	onebefore_h = onebefore->height + 1;
 
 	/* This copies all the pointers that the target linked to before for assert
 	 * testing.
-	 */
-	sl_node_t *oldnextarr[theone_h];
+	*/
+	ion_sl_node_t *oldnextarr[theone_h];
 
 	for (i = 0; i < theone_h; i++) {
 		oldnextarr[i] = theone->next[i];
@@ -1126,15 +1118,15 @@ test_skiplist_delete_single_several_noncont(
 			and that at the end of the operations the skiplist must be empty.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_delete_several_all(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1168,8 +1160,8 @@ test_skiplist_delete_several_all(
 	print_skiplist(&skip_list);
 #endif
 
-	sl_node_t	*cursor = skiplist.head;
-	sl_level_t	h;
+	ion_sl_node_t	*cursor = skiplist.head;
+	ion_sl_level_t	h;
 
 	for (h = cursor->height; h >= 0; h--) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, cursor->next[h] == NULL);
@@ -1183,15 +1175,15 @@ test_skiplist_delete_several_all(
 			that the update will instead insert the node.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_update_single_nonexist(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1215,15 +1207,15 @@ test_skiplist_update_single_nonexist(
 			that the update will instead insert the node.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_update_single_nonexist_nonempty(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1258,15 +1250,15 @@ test_skiplist_update_single_nonexist_nonempty(
 			that the update will instead insert the node.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_update_many_nonexist_nonempty(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1291,7 +1283,7 @@ test_skiplist_update_many_nonexist_nonempty(
 	print_skiplist(&skip_list);
 #endif
 
-	sl_node_t *cursor = sl_find_node(&skiplist, IONIZE(38, int));
+	ion_sl_node_t *cursor = sl_find_node(&skiplist, IONIZE(38, int));
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
@@ -1308,15 +1300,15 @@ test_skiplist_update_many_nonexist_nonempty(
 			will be reflected within the node.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_update_single_exist(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1352,15 +1344,15 @@ test_skiplist_update_single_exist(
 			will be reflected within the targeted node.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_update_single_many_exist(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1385,7 +1377,7 @@ test_skiplist_update_single_many_exist(
 	print_skiplist(&skip_list);
 #endif
 
-	sl_node_t *cursor = sl_find_node(&skiplist, IONIZE(30, int));
+	ion_sl_node_t *cursor = sl_find_node(&skiplist, IONIZE(30, int));
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
@@ -1402,15 +1394,15 @@ test_skiplist_update_single_many_exist(
 			reflected within all nodes.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_update_several_many_exist(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1429,9 +1421,9 @@ test_skiplist_update_several_many_exist(
 #endif
 
 	for (i = 60; i < 99; i += 3) {
-		ion_status_t status = sl_update(&skiplist, (ion_key_t) &i, (ion_value_t) (char *) { "VALUE" });
+		ion_status_t status		= sl_update(&skiplist, (ion_key_t) &i, (ion_value_t) (char *) { "VALUE" });
 
-		sl_node_t *cursor	= sl_find_node(&skiplist, (ion_key_t) &i);
+		ion_sl_node_t *cursor	= sl_find_node(&skiplist, (ion_key_t) &i);
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
@@ -1453,15 +1445,15 @@ test_skiplist_update_several_many_exist(
 			with none of the original values remaining in the skiplist.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_update_several_same_key(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1489,7 +1481,7 @@ test_skiplist_update_several_same_key(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 100 == status.count);
 
-	sl_node_t *cursor = skiplist.head;
+	ion_sl_node_t *cursor = skiplist.head;
 
 	for (i = 0; i < 100; i++) {
 		cursor = cursor->next[0];
@@ -1505,15 +1497,15 @@ test_skiplist_update_several_same_key(
 			specific key be updated, with none of the original values remaining.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_update_several_same_key_in_mix(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1545,7 +1537,7 @@ test_skiplist_update_several_same_key_in_mix(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 100 == status.count);
 
-	sl_node_t *find = sl_find_node(&skiplist, IONIZE(55, int));
+	ion_sl_node_t *find = sl_find_node(&skiplist, IONIZE(55, int));
 
 	for (i = 0; i < 100; i++) {
 		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) find->value, (char *) { "new same" });
@@ -1561,15 +1553,15 @@ test_skiplist_update_several_same_key_in_mix(
 			The assertion is that the insertion should work OK with no errors.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_delete_then_insert_single(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1616,15 +1608,15 @@ test_skiplist_delete_then_insert_single(
 			no errors.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_delete_then_insert_several(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1666,7 +1658,7 @@ test_skiplist_delete_then_insert_several(
 	print_skiplist(&skip_list);
 #endif
 
-	sl_node_t *cursor = skiplist.head;
+	ion_sl_node_t *cursor = skiplist.head;
 
 	for (i = 50; i < 100; i++) {
 		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) cursor->next[0]->value, "pie");
@@ -1682,15 +1674,15 @@ test_skiplist_delete_then_insert_several(
 			with nothing remaining in the skiplist.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_delete_several_same_key(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1733,15 +1725,15 @@ test_skiplist_delete_several_same_key(
 			specific key be deleted, with only the other elements remaining.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_delete_several_same_key_in_mix(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1773,7 +1765,7 @@ test_skiplist_delete_several_same_key_in_mix(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 100 == status.count);
 
-	sl_node_t *find = sl_find_node(&skiplist, IONIZE(55, int));
+	ion_sl_node_t *find = sl_find_node(&skiplist, IONIZE(55, int));
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, skiplist.super.compare(find->key, IONIZE(55, int), skiplist.super.record.key_size) != 0);
 
@@ -1786,17 +1778,17 @@ test_skiplist_delete_several_same_key_in_mix(
 			on the non-standard structure.
 
 @param	  tc
-				CuTest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_different_size(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t					skiplist;
+	ion_skiplist_t				skiplist;
 	int							key_size, value_size, pden, pnum, maxheight;
-	key_type_t					key_type;
+	ion_key_type_t				key_type;
 	ion_dictionary_compare_t	compare;
 
 	key_type	= key_type_numeric_unsigned;
@@ -1818,7 +1810,7 @@ test_skiplist_different_size(
 	print_skiplist(&skip_list);
 #endif
 
-	sl_node_t *cursor;
+	ion_sl_node_t *cursor;
 
 	cursor = skiplist.head->next[0];
 	PLANCK_UNIT_ASSERT_TRUE(tc, *(long long *) cursor->key == 16);
@@ -1876,15 +1868,15 @@ test_skiplist_different_size(
 			when keys were greater than 256.
 
 @param	  tc
-				Cutest dependency
- */
+				Test case.
+*/
 void
 test_skiplist_big_keys(
 	planck_unit_test_t *tc
 ) {
 	PRINT_HEADER();
 
-	skiplist_t skiplist;
+	ion_skiplist_t skiplist;
 
 	initialize_skiplist_std_conditions(&skiplist);
 
@@ -1898,7 +1890,7 @@ test_skiplist_big_keys(
 	}
 
 	for (i = 900; i < 999; i++) {
-		sl_node_t *cursor = sl_find_node(&skiplist, (ion_key_t) &i);
+		ion_sl_node_t *cursor = sl_find_node(&skiplist, (ion_key_t) &i);
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, *(int *) cursor->key == i);
 		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) cursor->value, "BIG!");
@@ -1931,11 +1923,11 @@ test_skiplist_big_keys(
 }
 
 /**
-@brief	  Creates the suite to test using CuTest.
-@return	 Pointer to a CuTest suite.
+@brief	  Creates the suite to test using PlanckUnit test cases.
+@return	 Pointer to a PlanckUnit test suite.
 */
 planck_unit_suite_t *
-skiplist_getsuite(
+skiplist_getsuite_1(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
@@ -1974,6 +1966,49 @@ skiplist_getsuite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_several_same_key);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_several_same_key_in_mix);
 
+	return suite;
+}
+
+/**
+@brief	  Creates the suite to test using PlanckUnit test cases.
+@return	 Pointer to a PlanckUnit test suite.
+*/
+planck_unit_suite_t *
+skiplist_getsuite_2(
+) {
+	planck_unit_suite_t *suite = planck_unit_new_suite();
+
+	/* Query Tests */
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_query_nonexist_empty);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_query_nonexist_populated_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_query_nonexist_populated_several);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_query_exist_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_query_exist_populated_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_query_exist_populated_several);
+
+	/* Delete Tests */
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_empty);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_nonexist_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_nonexist_several);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_single);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_single_several);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_single_several_noncont);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_several_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_several_same_key);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_delete_several_same_key_in_mix);
+
+	return suite;
+}
+
+/**
+@brief	  Creates the suite to test using PlanckUnit test cases.
+@return	 Pointer to a PlanckUnit test suite.
+*/
+planck_unit_suite_t *
+skiplist_getsuite_3(
+) {
+	planck_unit_suite_t *suite = planck_unit_new_suite();
+
 	/* Update Tests */
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_update_single_nonexist);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_skiplist_update_single_nonexist_nonempty);
@@ -1997,19 +2032,30 @@ skiplist_getsuite(
 
 /**
 @brief	  Runs all skiplist related test and outputs the result.
- */
+*/
 void
 runalltests_skiplist(
 ) {
 	/* CuString	*output	= CuStringNew(); */
-	planck_unit_suite_t *suite = skiplist_getsuite();
+	planck_unit_suite_t *suite_1 = skiplist_getsuite_1();
 
-	planck_unit_run_suite(suite);
+	planck_unit_run_suite(suite_1);
+	planck_unit_destroy_suite(suite_1);
+
+	planck_unit_suite_t *suite_2 = skiplist_getsuite_2();
+
+	planck_unit_run_suite(suite_2);
+	planck_unit_destroy_suite(suite_2);
+
+	planck_unit_suite_t *suite_3 = skiplist_getsuite_3();
+
+	planck_unit_run_suite(suite_3);
+	planck_unit_destroy_suite(suite_3);
+
 	/* CuSuiteSummary(suite, output); */
 	/* CuSuiteDetails(suite, output); */
 	/* printf("----\nSkiplist Tests:\n%s\n", output->buffer); */
 
-	planck_unit_destroy_suite(suite);
 	/* CuSuiteDelete(suite); */
 	/* CuStringDelete(output); */
 }

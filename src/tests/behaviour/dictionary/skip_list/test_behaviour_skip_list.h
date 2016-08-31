@@ -1,7 +1,8 @@
 /******************************************************************************/
 /**
-@author		Scott Fazackerley
-@brief		Key-Value I/O functionality.
+@file
+@author		Kris Wallperington
+@brief		Entry point for skip list behaviour tests.
 @copyright	Copyright 2016
 				The University of British Columbia,
 				IonDB Project Contributors (see AUTHORS.md)
@@ -20,23 +21,20 @@
 */
 /******************************************************************************/
 
-#include "kv_io.h"
+#if !defined(TEST_BEHAVIOUR_SKIP_LIST_H)
+#define TEST_BEHAVIOUR_SKIP_LIST_H
 
-int
-io_printf(
-	const char *format,
-	...
-) {
-	int		result;
-	va_list args;
-
-	va_start(args, format);
-	result = vprintf(format, args);
-	va_end(args);
-
-#if defined(USING_ECLIPSE)
-	fflush(stdout);
+#if defined(__cplusplus)
+extern "C" {
 #endif
 
-	return result;
+void
+runalltests_behaviour_skip_list(
+	void
+);
+
+#if defined(__cplusplus)
 }
+#endif
+
+#endif

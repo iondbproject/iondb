@@ -1,192 +1,300 @@
-/*
- * flat_file.h
- *
- *  Created on: Aug 14, 2014
- *	  Author: workstation
- */
+/******************************************************************************/
+/**
+@file
+@author		Kris Wallperington
+@brief		Implementation specific declarations for the flat file store.
+@copyright	Copyright 2016
+				The University of British Columbia,
+				IonDB Project Contributors (see AUTHORS.md)
+@par
+			Licensed under the Apache License, Version 2.0 (the "License");
+			you may not use this file except in compliance with the License.
+			You may obtain a copy of the License at
+					http://www.apache.org/licenses/LICENSE-2.0
+@par
+			Unless required by applicable law or agreed to in writing,
+			software distributed under the License is distributed on an
+			"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+			either express or implied. See the License for the specific
+			language governing permissions and limitations under the
+			License.
+*/
+/******************************************************************************/
 
-#if !defined(FLAT_FILE_H_)
-#define FLAT_FILE_H_
+#if !defined(FLAT_FILE_H)
+#define FLAT_FILE_H
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-#include <stdio.h>
-#include <string.h>
-
-#include "../dictionary_types.h"
-#include "./../dictionary.h"
-#include "file_handler.h"
-
-#include "../../key_value/kv_system.h"
-#include "../../key_value/kv_io.h"
-
-/* redefines file operations for arduino */
-#include "./../../file/SD_stdio_c_iface.h"
-
-typedef long int ion_fpos_t;/**< Flatfile file position type */
+#include "flat_file_types.h"
 
 /**
-@brief		Struct used to maintain an instance of a flat file store.
+@brief		Initializes the flat file implementation and creates all necessary files.
+@details	A check is done to see if this is actually an attempt to open a previously existing
+			flat file instance. This (should) only happen when this is called from an open context
+			instead of an initialize. The flat file supports a special mode called "sorted mode". This
+			is an append only mode that assumes all keys come in monotonic non-decreasing order. In this
+			mode, search operations are significantly faster, but the store does not support deletions while
+			in sorted mode.
+@param[in]	flat_file
+				Given instance of a flat file struct to initialize. This must be allocated **heap** memory,
+				as destruction will assume that it needs to be freed.
+@param[in]	id
+				The assigned ID of this dictionary instance.
+@param[in]	key_type
+				Key category to use for this instance.
+@param[in]	key_size
+				Key size, in bytes used for this instance.
+@param[in]	value_size
+				Value size, in bytes used for this instance.
+@param[in]	dictionary_size
+				Dictionary size is interpreted as how many records (key value pairs) are buffered. This should be given
+				as somewhere between 1 (minimum) and the page size of the device you are working on.
+@return		The status of initialization.
+@see		ffdict_create_dictionary
 */
-typedef struct ff_file {
-	dictionary_parent_t super;
-	FILE				*file_ptr;		/**< Pointer to file store */
-	ion_fpos_t			start_of_data;		/**< indicates start of data block */
-	write_concern_t		write_concern;		/**< The current @p write_concern level
-											 of the file*/
-} ff_file_t;
-
-/**
-@brief		This function initializes a flat file.
-
-@details	This initialises the file and assumes that the file
-			does not exist.  If the file exists, it will not init.
-
-@param		file
-				Pointer to the file instance to initialize.
-@param		key_type
-				The type of key that is being stored in the collection.
-@param		key_size
-				The size of the key in bytes.
-@param		value_size
-				The size of the value in bytes.
-@return		The status describing the result of the initialization.
- */
-err_t
-ff_initialize(
-	ff_file_t			*file,
-	key_type_t			key_type,
-	ion_key_size_t		key_size,
-	ion_value_size_t	value_size
+ion_err_t
+flat_file_initialize(
+	ion_flat_file_t			*flat_file,
+	ion_dictionary_id_t		id,
+	ion_key_type_t			key_type,
+	ion_key_size_t			key_size,
+	ion_value_size_t		value_size,
+	ion_dictionary_size_t	dictionary_size
 );
 
 /**
-@brief		Destroys the file
-
-@details	Destroys the map file and frees the underlying memory.
-
-@param		file
-				The file to be destroyed.
-@return		The status describing the result of the destruction
+@brief		Destroys and cleans up any implementation specific memory or files.
+@param[in]	flat_file
+				Given flat file instance to destroy.
+@return		The resulting status of destruction.
+@see		ffdict_delete_dictionary
 */
-err_t
-ff_destroy(
-	ff_file_t *file
+ion_err_t
+flat_file_destroy(
+	ion_flat_file_t *flat_file
 );
 
 /**
-@brief		Insert record into file
-
-@todo update comment - THIS COMMENT REFERS TO A HASH STRUCTURE WHICH IS COMPLETELY INCORRECT!
-@details	Attempts to insert data of a given structure as dictated by record
-			into the provided hashmap.  The record is used to determine the
-			structure of the data <K,V> so that the key can be extracted.  The
-			function will return the status of the insert.  If the record has
-			been successfully inserted, the status will reflect success.  If
-			the record can not be successfully inserted the error code will
-			reflect failure.  Will only allow for insertion of unique records.
-
-@param	  file
-				The flatfile into which the data is going to be inserted.
-@param		key
-				The key that is being used to locate the position of the data.
-@param		value
-				The value that is being inserted.
-@return	 The status of the insert.
+@brief		Inserts the given record into the flat file store.
+@param[in]	flat_file
+				Which flat file to insert into.
+@param[in]	key
+				Key portion of the record to insert.
+@param[in]	value
+				Value portion of the record to insert.
+@return		Resulting status of insertion.
+@see		ffdict_insert
 */
 ion_status_t
-ff_insert(
-	ff_file_t	*file,
-	ion_key_t	key,
-	ion_value_t value
+flat_file_insert(
+	ion_flat_file_t *flat_file,
+	ion_key_t		key,
+	ion_value_t		value
 );
 
 /**
-@brief		Updates a value in the map.
-
-FIXME THIS DOCUMENTATION IS ALL WRONG!
-
-@details	Updates a value in the map.  If the value does not exist, it will
-			insert the value.
-
-@param		file
-				The flatfile into which the data is going to be inserted.
-@param		key
-				The key that is being used to locate the position of the data.
-@param		value
-				The value that is being inserted.
-@return		The status of the update
+@brief		Fetches the record stored with the given @p key.
+@param[in]	flat_file
+				Which flat file to look in.
+@param[in]	key
+				Specified key to look for.
+@param[out]	value
+				Value portion of the record to insert.
+@return		Resulting status of the operation.
+@see		ffdict_get
+@todo		Write tests for sorted mode get.
 */
 ion_status_t
-ff_update(
-	ff_file_t	*file,
-	ion_key_t	key,
-	ion_value_t value
+flat_file_get(
+	ion_flat_file_t *flat_file,
+	ion_key_t		key,
+	ion_value_t		value
 );
 
 /**
-@brief	  Locates item in map.
-
-@details	Based on a key, function locates the record in the map.
-
-@param		file
-				The map into which the data is going to be inserted.
-@param		key
-				The key for the record that is being searched for.
-@param		location
-				Pointer to the location variable
-@return		The status of the find
- */
-err_t
-ff_find_item_loc(
-	ff_file_t	*file,
-	ion_key_t	key,
-	ion_fpos_t	*location
-);
-
-/**
-@brief		Deletes item from map.
-
-@details	Deletes item from map based on key.  If key does not exist
-			error is returned
-
-@param		file
-				The flatfile into which the data is going to be inserted.
-@param		key
-				The key for the record that is being searched for.
+@brief		Deletes all records stored with the given @p key.
+@param[in]	flat_file
+				Which flat file to delete in.
+@param[in]	key
+				Specified key to find and delete.
+@return		Resulting status of the operation.
+@see		ffdict_delete
 */
 ion_status_t
-ff_delete(
-	ff_file_t	*file,
-	ion_key_t	key
+flat_file_delete(
+	ion_flat_file_t *flat_file,
+	ion_key_t		key
 );
 
 /**
-@brief		Locates the record if it exists.
-
-@details	Locates the record based on key match is it exists and returns a
-			pointer to the record that has been materialized in memory.
-			This presents a significant issue as both the key and value could
-			be modified, causing issues with map.
-
-@param		file
-				The flatfile into which the data is going to be inserted.
-@param		key
-				The key for the record that is being searched for.
-@param		value
-				The value associated in the map.
+@brief		Updates all records stored with the given @p key to have @p value.
+@param[in]	flat_file
+				Which flat file to update in.
+@param[in]	key
+				Specified key to find and update.
+@param[in]	value
+				New value to replace old values with.
+@return		Resulting status of the operation.
+@see		ffdict_update
+@todo		Write tests for sorted mode update.
 */
 ion_status_t
-ff_query(
-	ff_file_t	*file,
-	ion_key_t	key,
-	ion_value_t value
+flat_file_update(
+	ion_flat_file_t *flat_file,
+	ion_key_t		key,
+	ion_value_t		value
+);
+
+/**
+@brief		Closes and frees any memory associated with the flat file.
+@param		flat_file
+				Which flat file to close.
+@return		Status of closure.
+*/
+ion_err_t
+flat_file_close(
+	ion_flat_file_t *flat_file
+);
+
+/**
+@brief			Performs a linear scan of the flat file writing the first location
+				seen that satisfies the given @p predicate to @p location.
+@details		If the scan falls through, then the location is written as
+				the EOF position of the file. The variadic arguments accepted
+				by this function are passed into the predicate's additional parameters.
+				This can be used to provide additional context to the predicate for use
+				in determining whether or not the row is a match.
+@param[in]		flat_file
+					Which flat file instance to scan.
+@param[in]		start_location
+					Where to begin the scan. This is given as a row index. If
+					given as -1, then it is assumed to be either the start of
+					file or end of file, depending on the state of @p scan_direction.
+@param[out]		location
+					Allocated memory location to write back the found location into.
+					Is not changed in the event of a failure or error condition. This
+					location is given back as a row index.
+@param[out]		row
+					A row struct to write back the found row into. This is allocated
+					by the user.
+@param[in]		scan_direction
+					Scans in the direction provided.
+@param[in]		predicate
+					Given test function to check each row against. Once this function
+					returns true, the scan is terminated and the found location and row
+					are written back to their respective output parameters.
+@return			Resulting status of scan.
+@todo			Try changing the predicate to be an enum-and-switch to eliminate the function
+				call. Benchmark the performance gain and decide which strategy to use.
+@todo			Consider changing to @p SEEK_CUR whenever possible. Benchmark this and see
+				if the performance gain (if any) is worth it.
+*/
+ion_err_t
+flat_file_scan(
+	ion_flat_file_t				*flat_file,
+	ion_fpos_t					start_location,
+	ion_fpos_t					*location,
+	ion_flat_file_row_t			*row,
+	ion_byte_t					scan_direction,
+	ion_flat_file_predicate_t	predicate,
+	...
+);
+
+/**
+@brief		Predicate function to return any row that has an exact match to the given target key.
+@details	We expect one @ref ion_key_t to be in @p args.
+@see		ion_flat_file_predicate_t
+*/
+ion_boolean_t
+flat_file_predicate_key_match(
+	ion_flat_file_t		*flat_file,
+	ion_flat_file_row_t *row,
+	va_list				*args
+);
+
+/**
+@brief		Predicate function to return any row that has a key such that
+			`lower_bound <= key <= upper_bound` holds true.
+@details	We expect two @ref ion_key_t parameters to be in @p args - the first
+			to represent the lower bound of the key, and the second to represent the
+			upper bound.
+@see		ion_flat_file_predicate_t
+*/
+ion_boolean_t
+flat_file_predicate_within_bounds(
+	ion_flat_file_t		*flat_file,
+	ion_flat_file_row_t *row,
+	va_list				*args
+);
+
+/**
+@brief		Predicate function to return any row that is **not** empty or deleted.
+@see		ion_flat_file_predicate_t
+*/
+ion_boolean_t
+flat_file_predicate_not_empty(
+	ion_flat_file_t		*flat_file,
+	ion_flat_file_row_t *row,
+	va_list				*args
+);
+
+/**
+@brief		Reads the row specified by the given location into the buffer.
+@details	The returned row is given by attaching pointers correctly from
+			the given row parameter. These pointers are associated with the
+			internal read buffer of the flat file. You should assume that the
+			row does not have a lifetime beyond the scope of where you call
+			this function - any subsequent operation that mutates the read buffer
+			will cause the row to become garbage. Copy the row data out if you want
+			it to persist. If the requested row has already been loaded by a prior
+			call to @ref flat_file_scan, then it will retrieve it as a cache hit
+			directly from the buffer. Otherwise, it will do a seek and read to fetch
+			the row.
+@param[in]	flat_file
+				Which flat file instance to read from.
+@param[in]	location
+				Which row index to read. This function will compute
+				the file offset of the row index.
+@param[in]	row
+				Write back row to place read data from the desired @p location.
+@return		Resulting status of the several file operations used to perform the read.
+*/
+ion_err_t
+flat_file_read_row(
+	ion_flat_file_t		*flat_file,
+	ion_fpos_t			location,
+	ion_flat_file_row_t *row
+);
+
+/**
+@brief		Performs a binary search for the given @p target_key, returning to @p location
+			the first-less-than-or-equal key within the flat file. This can only be used if
+			@p sorted_mode is enabled within the flat file.
+@details	In the case of duplicates, this function will scroll to the beginning of the block
+			of duplicates, before writing back to @p location. As a result, it is guaranteed that
+			the returned index points to the first key in a contiguous block of duplicate keys. If
+			no key in the flat file satisfies the condition of being less-than-or-equal, then @p -1
+			is written back to @p location. This function will only return records that are not deleted.
+@param[in]		flat_file
+				Which flat file instance to search within.
+@param[in]		target_key
+				Desired key to search for.
+@param[out]		location
+				Found location to write back into. Must be allocated by caller.
+@return		Resulting status of the binary search operation.
+*/
+ion_err_t
+flat_file_binary_search(
+	ion_flat_file_t *flat_file,
+	ion_key_t		target_key,
+	ion_fpos_t		*location
 );
 
 #if defined(__cplusplus)
 }
 #endif
 
-#endif /* FLAT_FILE_H_ */
+#endif

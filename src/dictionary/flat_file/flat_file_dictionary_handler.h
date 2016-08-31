@@ -1,8 +1,27 @@
 /******************************************************************************/
 /**
 @file
-@author		Scott Ronald Fazackerley
-@brief		The handler for a flat file to store data.
+@author		Kris Wallperington
+@brief		Function declarations at the dictionary interface level for the
+			flat file store.
+@details	These functions are not intended to be used directly. The entry
+			point here is the initialization function, which is used to bind
+			these functions to a dictionary.
+@copyright	Copyright 2016
+				The University of British Columbia,
+				IonDB Project Contributors (see AUTHORS.md)
+@par
+			Licensed under the Apache License, Version 2.0 (the "License");
+			you may not use this file except in compliance with the License.
+			You may obtain a copy of the License at
+					http://www.apache.org/licenses/LICENSE-2.0
+@par
+			Unless required by applicable law or agreed to in writing,
+			software distributed under the License is distributed on an
+			"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+			either express or implied. See the License for the specific
+			language governing permissions and limitations under the
+			License.
 */
 /******************************************************************************/
 
@@ -13,373 +32,232 @@
 extern "C" {
 #endif
 
-#include "../dictionary_types.h"
-#include "./../dictionary.h"
-#include "../../key_value/kv_system.h"
+#include "flat_file_types.h"
 #include "flat_file.h"
-#include "flat_file_dictionary.h"
-
-/* redefines file operations for arduino */
-#include "./../../file/SD_stdio_c_iface.h"
-
-typedef int record_idx_t;
 
 /**
-@brief Struct used to for instance of a given dictionary.
- */
-typedef struct ff_dictionary {
-	/* what needs to go in here? */
-	char		*dictionary_name;	/**<The name of the dictionary*/
-	ff_file_t	*file;			/**<The map that the operations
-										will operate upon*/
-} ff_dictionary_t;
-
-/**
- @brief Cursor for dictionary specific implementations
- @todo What happens to the cursor if the collection is modified during traversal?
- */
-/*typedef struct ffdict_cursor
-{
-	record_idx_t		first;		*<First visited spot
-	record_idx_t		current;	*<Currently visited spot
-	char				status;		*@todo what is this for again as there are two status
-} ffdict_cursor_t;*/
-
-/*
-typedef struct equality_cursor
-{
-	dict_cursor_t   super;
-		*< Cursor supertype this type inherits from.
-
-}equality_cursor_t;
+@brief		Given the @p handler instance, bind the appropriate flat file functions.
+@param[in]	handler
+				The handler is assumed to be memory that is allocated and initialized
+				by the user.
 */
-
-/**
-@brief		Dictionary cursor for equality queries.
-@details	Used when a dictionary supports multiple values for a given key.
-
-			This subtype should be extended when supported for a given
-			dictionary.
-*/
-typedef struct ffdict_equality_cursor {
-	dict_cursor_t	super;					/**<Super type this cursor inherits from*/
-	ffdict_cursor_t cursor_info;/**<Super type to dict implementation*/
-	ion_key_t		value;
-
-	boolean_t (*equal)(
-		dictionary_t *,
-		ion_key_t,
-		ion_key_t
-	);
-	/**< A pointer to an equality function. */
-} ffdict_equality_cursor_t;
-
-/**
-@brief		Registers a specific handler for a  dictionary instance.
-
-@details	Registers functions for handlers.  This only needs to be called
-			once for each type of dictionary that is present.
-
-@param	  handler
-				The handler for the dictionary instance that is to be
-				initialized.
- */
 void
 ffdict_init(
-	dictionary_handler_t *handler
+	ion_dictionary_handler_t *handler
 );
 
 /**
-@brief		Inserts a @p key and @p value into the dictionary.
-
-@param	  dictionary
-				The dictionary instance to insert the value into.
-@param	  key
-				The key to use.
-@param	  value
-				The value to use.
-@return		The status on the insertion of the record.
- */
+@brief		Given a record ( @p key, @p value ), insert it into the dictionary.
+@param[in]	dictionary
+				The initialized dictionary instance we want to insert into.
+@param[in]	key
+				The key portion of the record to be inserted.
+@param[in]	value
+				The value portion of the record to be inserted.
+@return		The resulting status of the operation.
+*/
 ion_status_t
 ffdict_insert(
-	dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_dictionary_t	*dictionary,
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
-@brief	  Queries a dictionary instance for the given @p key and returns
-			the associated @p value.
-
-@details	Queries a dictionary instance for the given @p key and returns
-			the associated @p value.  If the @p write_concern is set to
-			wc_insert_unique then if the @p key exists already, an error will
-			be generated as duplicate keys are prevented.  If the
-			@p write_concern is set to wc_update, the updates are allowed.
-			In this case, if the @p key exists in the hashmap, the @p value
-			will be updated.  If the @p key does not exist, then a new item
-			will be inserted to hashmap.
-
-@param	  dictionary
-				The instance of the dictionary to query.
-@param	  key
-				The key to search for.
-@param	  value
-				A pointer that is used to return the value associated with
-				the provided key.  The function will malloc memory for the
-				value and it is up to the consumer the free the associated
-				memory.
-@return		The status of the query.
- */
+@brief		Performs a "get" operation on the dictionary to retrieve a single record.
+@details	Given a @p key, returns the associated value stored under
+			that key. If there are duplicate records all with the same
+			@p key, the exact one that is returned is undefined. If you need
+			to get all records stored under a specific key, use a cursor query.
+@param[in]	dictionary
+				Which dictionary to perform the operation on.
+@param[in]	key
+				The desired search key.
+@param[out]	value
+				The output location in which to write the returned value. This space
+				must be allocated by the user to at least @p value_size bytes, as
+				originally defined on dictionary creation.
+@return		The resulting status of the operation.
+*/
 ion_status_t
-ffdict_query(
-	dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+ffdict_get(
+	ion_dictionary_t	*dictionary,
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
-@brief		Creates an instance of a dictionary.
-
-@details	Creates as instance of a dictionary given a @p key_size and
-			@p value_size, in bytes as well as the @p dictionary size
-			which is the number of buckets available in the hashmap.
-
-@param		id
-@param		key_type
-@param	  key_size
-				The size of the key in bytes.
-@param	  value_size
-				The size of the value in bytes.
-@param	  dictionary_size
-				The size of the hashmap in discrete units
-@param		compare
-				Function pointer for the comparison function for the collection.
-@param	  handler
-				 THe handler for the specific dictionary being created.
-@param	  dictionary
-				 The pointer declared by the caller that will reference
-				 the instance of the dictionary created.
-@return		The status of the creation of the dictionary.
- */
-err_t
+@brief		Creates an instance of a flat file backed dictionary.
+@param[in]	id
+				The ID to assign to the dictionary. This is either user defined or is given
+				by the master table.
+@param[in]	key_type
+				The category of key used by the dictionary. See @ref key_type for more information.
+@param[in]	key_size
+				The size of the keys used for this dictionary, specified in bytes. It is strongly
+				recommended to use a @p sizeof() directive to specify this size to avoid painful problems.
+@param[in]	value_size
+				Same as above, for values.
+@param[in]	dictionary_size
+				Designates how many records we buffer in memory. Higher means better overall performance at
+				the cost of increased memory usage.
+@param[in]	compare
+				The function pointer that designates how to compare two keys. This is given by the upper
+				dictionary layers.
+@param[in]	handler
+				The allocated, initialized handler that will be bound to the dictionary instance.
+@param[in]	dictionary
+				The allocated dictionary instance that we are going to initialize.
+@return		The resulting status of the operation.
+*/
+ion_err_t
 ffdict_create_dictionary(
 	ion_dictionary_id_t			id,
-	key_type_t					key_type,
+	ion_key_type_t				key_type,
 	ion_key_size_t				key_size,
 	ion_value_size_t			value_size,
-	int							dictionary_size,	/* @todo this needs to be fixed or defined */
+	ion_dictionary_size_t		dictionary_size,
 	ion_dictionary_compare_t	compare,
-	dictionary_handler_t		*handler,
-	dictionary_t				*dictionary
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dictionary
 );
 
 /**
-@brief		Deletes the @p key and assoicated value from the dictionary
-			instance.
-
-@param	  dictionary
-				The instance of the dictionary to delete from.
-@param	  key
-				The key that is to be deleted.
-@return		The status of the deletion
- */
+@brief		Removes all instances of any record with key equal to @p key.
+@param[in]	dictionary
+				Which dictionary to delete from.
+@param[in]	key
+				Designated key to look for and remove.
+@return		The resulting status of the operation.
+*/
 ion_status_t
 ffdict_delete(
-	dictionary_t	*dictionary,
-	ion_key_t		key
+	ion_dictionary_t	*dictionary,
+	ion_key_t			key
 );
 
 /**
-@brief	  Deletes an instance of the dictionary and associated data.
-
-@param	  dictionary
-				The instance of the dictionary to delete.
-@return		The status of the dictionary deletion.
- */
-err_t
+@brief		Cleans up all files created by the dictionary, and frees any allocated memory.
+@param[in]	dictionary
+				Which dictionary instance to delete.
+@return		The resulting status of the operation.
+*/
+ion_err_t
 ffdict_delete_dictionary(
-	dictionary_t *dictionary
+	ion_dictionary_t *dictionary
 );
 
 /**
-@brief		Updates the value for a given key.
-
-@details	Updates the value for a given @p key.  If the key does not currently
-			exist in the hashmap, it will be created and the value sorted.
-
-@param	  dictionary
-				The instance of the dictionary to be updated.
-@param	  key
-				The key that is to be updated.
-@param	  value
-				The value that is to be updated.
-@return		The status of the update.
- */
+@brief		Updates all records stored at @p key to have value equal to @p value.
+@details	If no records are stored at @p key, then an "upsert" (insert instead of update)
+			is performed.
+@param[in]	dictionary
+				Which dictionary to update.
+@param[in]	key
+				Target key to update.
+@param[in]	value
+				New value to update to.
+@return		The resulting status of the operation.
+*/
 ion_status_t
 ffdict_update(
-	dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_dictionary_t	*dictionary,
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
-@brief	  Finds multiple instances of a keys that satisfy the provided
-			 predicate in the dictionary.
-
-@details	Generates a cursor that allows the traversal of items where
-			the items key satisfies the @p predicate (if the underlying
-			implementation allows it).
-
-@param	  dictionary
-				The instance of the dictionary to search.
-@param	  predicate
-				The predicate to be used as the condition for matching.
-@param	  cursor
-				The pointer to a cursor which is caller declared but callee
-				is responsible for populating.
-@return		The status of the operation.
- */
-err_t
+@brief			Initializes a cursor query and returns an allocated cursor object.
+@details		Given a @p predicate that was previously initialized by @ref dictionary_build_predicate,
+				Build a cursor object that acts as the iterator for the desired query through the dictionary.
+@param[in]		dictionary
+					Which dictionary to query on.
+@param[in]		predicate
+					An allocated, initialized predicate object that defines the parameters of the query.
+@param[out]		cursor
+					A cursor pointer should be initialized to @p NULL, and then given to this function.
+					This function shall allocate appropriate memory and redirect @p cursor to point to
+					the allocated memory. **NOTE:** Anything originally pointed to by this cursor will
+					effectively be lost, if there is no other reference to said thing.
+@return			The resulting status of the operation.
+*/
+ion_err_t
 ffdict_find(
-	dictionary_t	*dictionary,
-	predicate_t		*predicate,
-	dict_cursor_t	**cursor
+	ion_dictionary_t	*dictionary,
+	ion_predicate_t		*predicate,
+	ion_dict_cursor_t	**cursor
 );
 
 /**
-@brief		Compares two key and returns the difference
-
-@details	Compares two key and returns the difference depending on the type
-			of the key defined for the collection.  If the keys are of numeric
-			type, the return value is the difference between the keys.  If the
-			value is negative, @p first_key is smaller than @p second_key.  If
-			return value is positive, then @p first_key is larger than
-			@p second_key.  If the return value is 0 then @p first_key is
-			equal to @p second_key.
-
-			If the key type is @p key_type_char_array then
-			@todo fix this commemt!
-			The function memcmp compares the size bytes of memory beginning at
-			a1 against the size bytes of memory beginning at a2. The value
-			returned has the same sign as the difference between the first
-			differing pair of bytes (interpreted as unsigned char objects,
-			then promoted to int).
-
-@param	  first_key
-				The first key in the comparison.
-@param	  second_key
-				The second key in the comparison.
-@return		The difference between the keys.
- */
-int
-ffdict_compare(
-	ion_key_t	first_key,
-	ion_key_t	second_key
-);
-
-/**
-@brief		Next function to query and retrieve the next
-			<K,V> that stratifies the predicate of the cursor.
-
-@param	  cursor
-				The cursor to iterate over the results.
-@return		The status of the cursor.
- */
-/*err_t
-oadict_next(
-	dict_cursor_t   *cursor,
-	ion_value_t		*value
-);*/
-
-/**
-@brief		Next function to query and retrieve the next
-			<K,V> that stratifies the predicate of the cursor.
-
-@param	  cursor
-				The cursor to iterate over the results.
-@param		record
-@return		The status of the cursor.
- */
-cursor_status_t
+@brief			Fetches the next record to be returned from a cursor that has already been initialized.
+@details		The returned record is written back to @p record, and then the cursor is advanced to the next
+				record. The returned status code signifies whether or not there are more results to traverse.
+				This function should not be called directly, but instead will be bound to the cursor like a method.
+@param[in]		cursor
+					Which cursor to fetch results from.
+@param[out]		record
+					An initialized record struct with the @p key and @p value appropriately allocated to fit
+					the returned key and value. This function will write back data to the struct.
+@return			The resulting status of the operation.
+*/
+ion_cursor_status_t
 ffdict_next(
-	dict_cursor_t	*cursor,
-	ion_record_t	*record
+	ion_dict_cursor_t	*cursor,
+	ion_record_t		*record
 );
 
 /**
-@brief		Compares two keys and determines if they are equal assuming
-			that they are equal is length (in size).
-
-@param	  dict
-					 The map the keys are associated with.
-@param	  key1
-					 The first key for comparison.
-@param	  key2
-					 The second key for comparison.
-@return		If the keys are equal.
- */
-boolean_t
-/*TODO Fix name of function */
-ff_is_equal(
-	dictionary_t	*dict,
-	ion_key_t		key1,
-	ion_key_t		key2
-);
-
-/**
-@brief		Destroys the cursor.
-
-@details	Destroys the cursor when the user is finished with it.  The
-			destroy function will free up internally allocated memory as well
-			as freeing up any reference to the cursor itself.  Cursor pointers
-			will be set to NULL as per ION_DB specification for de-allocated
-			pointers.
-
-@param	  cursor
-				** pointer to cursor.
- */
+@brief		Destroys and frees the given cursor.
+@details	This function should not be called directly, but instead accessed through the interface
+			the cursor object.
+@param[in]	cursor
+				Which cursor to destroy.
+*/
 void
 ffdict_destroy_cursor(
-	dict_cursor_t **cursor
+	ion_dict_cursor_t **cursor
 );
 
 /**
-@brief		Tests the supplied @p key against the predicate registered in the
-			cursor.
-
-@param	  cursor
-				The cursor and predicate being used to test @p key against.
-@param	  key
-				The key to test.
-@return		The result is the key passes or fails the predicate test.
- */
-boolean_t
-ffdict_test_predicate(
-	dict_cursor_t	*cursor,
-	ion_key_t		key
+@brief		Re-instances a previously created flat file store instance
+			and prepares it to be used again.
+@param[in]	handler
+				A handler that must be bound with the flat file's functions.
+@param[in]	dictionary
+				A dictionary that is allocated but not initialized. We will
+				store the details of the re-instanced flat file store in here.
+@param[in]	config
+				The configuration parameters previously used by the flat file store
+				we are opening. This must either be provided directly if dictionaries
+				are being managed manually, or will be provided by the dictionary manager
+				that is currently in use.
+@param[in]	compare
+				The comparison function that will be given by higher layers, based on the
+				destined key type.
+@return		The resulting status of the operation.
+*/
+ion_err_t
+ffdict_open_dictionary(
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary,
+	ion_dictionary_config_info_t	*config,
+	ion_dictionary_compare_t		compare
 );
 
 /**
-
-@brief			Starts scanning map looking for conditions that match
-				predicate and returns result.
-
-@details		Scans that map looking for the next value that satisfies the predicate.
-				The next valid index is returned through the cursor
-
-@param			cursor
-					A pointer to the cursor that is operating on the map.
-
-@return			The status of the scan.
- */
-err_t
-ffdict_scan(
-	ffdict_cursor_t *cursor	/* don't need to pass in the cursor */
+@brief		Closes this flat file store and persists everything to disk
+			to be brought back later using @ref dictionary_open.
+@param[in]	dictionary
+				Which instance of a flat file store to close.
+@return		The resuling status of the operation.
+*/
+ion_err_t
+ffdict_close_dictionary(
+	ion_dictionary_t *dictionary
 );
 
 #if defined(__cplusplus)
 }
 #endif
 
-#endif /* FLAT_FILE_DICTIONARY_HANDLER_H_ */
+#endif

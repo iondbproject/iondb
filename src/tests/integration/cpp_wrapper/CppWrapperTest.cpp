@@ -11,17 +11,17 @@
 using namespace std;
 
 #include "../../../cpp_wrapper/Dictionary.h"
-#include "../../../cpp_wrapper/BppTree.h"
+/*#include "../../../cpp_wrapper/BppTree.h"*/
+/*#include "../../../cpp_wrapper/SkipList.h"*/
 #include "../../../cpp_wrapper/FlatFile.h"
 /* #include "../../../cpp_wrapper/OpenAddressFileHash.h" */
-#include "../../../cpp_wrapper/OpenAddressHash.h"
-#include "../../../cpp_wrapper/SkipList.h"
+/*#include "../../../cpp_wrapper/OpenAddressHash.h"*/
 
 int
 main(
 ) {
 	/* The following is example test code using int keys and string values */
-	Dictionary<int, string> *dict = new BppTree<int, string>(key_type_numeric_signed, sizeof(int), 10);
+	Dictionary<int, string> *dict = new FlatFile<int, string>(key_type_numeric_signed, sizeof(int), 10, 30);
 
 	printf("Insert %d [%s]\n", 3, "hello!");
 

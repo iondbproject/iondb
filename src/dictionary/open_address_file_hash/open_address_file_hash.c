@@ -10,21 +10,40 @@
 @todo   When creating the hash-map, need to know something about what is going in it.
 		What we need to know if the the size of the key and the size of the data.
 		That is all.  Nothing else.
- */
+*/
 /******************************************************************************/
 
 #include "open_address_file_hash.h"
+#include "open_address_file_hash_dictionary_handler.c"
+#include "../../file/ion_file.h"
+#include "../dictionary_types.h"
 
 #define TEST_FILE "file.bin"
 
-err_t
+ion_err_t
+oafh_close(
+	ion_file_hashmap_t *hash_map
+) {
+	if (NULL != hash_map->file) {
+		/* check to ensure that you are not freeing something already free */
+		fclose(hash_map->file);
+		free(hash_map);
+		return err_ok;
+	}
+	else {
+		return err_file_close_error;
+	}
+}
+
+ion_err_t
 oafh_initialize(
-	file_hashmap_t *hashmap,
-	hash_t (*hashing_function)(file_hashmap_t *, ion_key_t, int),
-	key_type_t key_type,
+	ion_file_hashmap_t *hashmap,
+	ion_hash_t (*hashing_function)(ion_file_hashmap_t *, ion_key_t, int),
+	ion_key_type_t key_type,
 	ion_key_size_t key_size,
 	ion_value_size_t value_size,
-	int size
+	int size,
+	ion_dictionary_id_t id
 ) {
 	hashmap->write_concern				= wc_insert_unique;			/* By default allow unique inserts only */
 	hashmap->super.record.key_size		= key_size;
@@ -34,19 +53,37 @@ oafh_initialize(
 	/* The hash map is allocated as a single contiguous file*/
 	hashmap->map_size					= size;
 
-	/* open the file */
-	hashmap->file						= fopen(TEST_FILE, "w+b");
+	hashmap->compute_hash				= (*hashing_function);	/* Allows for binding of different hash functions
+																depending on requirements */
 
-	hash_bucket_t *file_record;
+	char addr_filename[ION_MAX_FILENAME_LENGTH];
+
+	/* open the file */
+	int actual_filename_length = dictionary_get_filename(id, "oaf", addr_filename);
+
+	if (actual_filename_length >= ION_MAX_FILENAME_LENGTH) {
+		return err_dictionary_initialization_failed;
+	}
+
+	hashmap->file = fopen(addr_filename, "r+b");
+
+	if (NULL != hashmap->file) {
+		return err_ok;
+	}
+
+	/* open the file */
+	hashmap->file = fopen(addr_filename, "w+b");
+
+	ion_hash_bucket_t *file_record;
 
 	int record_size = SIZEOF(STATUS) + hashmap->super.record.key_size + hashmap->super.record.value_size;
 
-	file_record			= (hash_bucket_t *) calloc(record_size, 1);
+	file_record			= calloc(record_size, 1);
 	file_record->status = EMPTY;
 
 	/* write out the records to disk to prep */
 #if DEBUG
-	io_printf("Initializing hash table\n");
+	printf("Initializing hash table\n");
 #endif
 
 	int i, writes = 0;
@@ -63,9 +100,6 @@ oafh_initialize(
 		return err_file_write_error;
 	}
 
-	hashmap->compute_hash = (*hashing_function);/* Allows for binding of different hash functions
-																depending on requirements */
-
 	free(file_record);
 
 	return err_ok;
@@ -73,41 +107,49 @@ oafh_initialize(
 
 int
 oafh_get_location(
-	hash_t	num,
-	int		size
+	ion_hash_t	num,
+	int			size
 ) {
 	return num % size;
 }
 
-err_t
+ion_err_t
 oafh_destroy(
-	file_hashmap_t *hash_map
+	ion_file_hashmap_t *hash_map
 ) {
 	hash_map->compute_hash				= NULL;
 	hash_map->map_size					= 0;
 	hash_map->super.record.key_size		= 0;
 	hash_map->super.record.value_size	= 0;
 
+	char addr_filename[ION_MAX_FILENAME_LENGTH];
+
+	int actual_filename_length = dictionary_get_filename(hash_map->super.id, "oaf", addr_filename);
+
+	if (actual_filename_length >= ION_MAX_FILENAME_LENGTH) {
+		return err_dictionary_destruction_error;
+	}
+
 	if (hash_map->file != NULL) {
 		/* check to ensure that you are not freeing something already free */
 		fclose(hash_map->file);
-		fremove(TEST_FILE);
+		fremove(addr_filename);
 		hash_map->file = NULL;
 		return err_ok;
 	}
 	else {
-		return err_colllection_destruction_error;
+		return err_dictionary_destruction_error;
 	}
 }
 
 ion_status_t
 oafh_update(
-	file_hashmap_t	*hash_map,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_file_hashmap_t	*hash_map,
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	/* TODO: lock potentially required */
-	write_concern_t current_write_concern = hash_map->write_concern;
+	ion_write_concern_t current_write_concern = hash_map->write_concern;
 
 	hash_map->write_concern = wc_update;/* change write concern to allow update */
 
@@ -119,22 +161,22 @@ oafh_update(
 
 ion_status_t
 oafh_insert(
-	file_hashmap_t	*hash_map,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_file_hashmap_t	*hash_map,
+	ion_key_t			key,
+	ion_value_t			value
 ) {
-	hash_t hash = hash_map->compute_hash(hash_map, key, hash_map->super.record.key_size);	/* compute hash value for given key */
+	ion_hash_t hash = hash_map->compute_hash(hash_map, key, hash_map->super.record.key_size);	/* compute hash value for given key */
 
-	int loc		= oafh_get_location(hash, hash_map->map_size);
+	int loc			= oafh_get_location(hash, hash_map->map_size);
 
 	/* Scan until find an empty location - oah_insert if found */
-	int count	= 0;
+	int count		= 0;
 
-	hash_bucket_t *item;
+	ion_hash_bucket_t *item;
 
 	int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS);
 
-	item = (hash_bucket_t *) malloc(record_size);
+	item = malloc(record_size);
 
 	/* set file position */
 	fseek(hash_map->file, loc * record_size, SEEK_SET);
@@ -198,37 +240,37 @@ oafh_insert(
 		}
 
 #if DEBUG
-		io_printf("checking location %i\n", loc);
+		printf("checking location %i\n", loc);
 #endif
 		count++;
 	}
 
 #if DEBUG
-	io_printf("Hash table full.  Insert not done");
+	printf("Hash table full.  Insert not done");
 #endif
 	free(item);
 	return ION_STATUS_ERROR(err_max_capacity);
 }
 
-err_t
+ion_err_t
 oafh_find_item_loc(
-	file_hashmap_t	*hash_map,
-	ion_key_t		key,
-	int				*location
+	ion_file_hashmap_t	*hash_map,
+	ion_key_t			key,
+	int					*location
 ) {
-	hash_t hash = hash_map->compute_hash(hash_map, key, hash_map->super.record.key_size);
+	ion_hash_t hash = hash_map->compute_hash(hash_map, key, hash_map->super.record.key_size);
 	/* compute hash value for given key */
 
-	int loc		= oafh_get_location(hash, hash_map->map_size);
+	int loc			= oafh_get_location(hash, hash_map->map_size);
 	/* determine bucket based on hash */
 
-	int count	= 0;
+	int count		= 0;
 
-	hash_bucket_t *item;
+	ion_hash_bucket_t *item;
 
 	int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS);
 
-	item = (hash_bucket_t *) malloc(record_size);
+	item = malloc(record_size);
 
 	/* set file position */
 	fseek(hash_map->file, loc * record_size, SEEK_SET);
@@ -273,24 +315,24 @@ oafh_find_item_loc(
 
 ion_status_t
 oafh_delete(
-	file_hashmap_t	*hash_map,
-	ion_key_t		key
+	ion_file_hashmap_t	*hash_map,
+	ion_key_t			key
 ) {
 	int loc;
 
 	if (oafh_find_item_loc(hash_map, key, &loc) == err_item_not_found) {
 #if DEBUG
-		io_printf("Item not found when trying to oah_delete.\n");
+		printf("Item not found when trying to oah_delete.\n");
 #endif
 		return ION_STATUS_ERROR(err_item_not_found);
 	}
 	else {
 		/* locate item */
-		hash_bucket_t *item;
+		ion_hash_bucket_t *item;
 
 		int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS);
 
-		item = (hash_bucket_t *) malloc(record_size);
+		item = malloc(record_size);
 
 		/* set file position */
 		fseek(hash_map->file, loc * record_size, SEEK_SET);
@@ -307,7 +349,7 @@ oafh_delete(
 
 		free(item);
 #if DEBUG
-		io_printf("Item deleted at location %d\n", loc);
+		printf("Item deleted at location %d\n", loc);
 #endif
 		return ION_STATUS_OK(1);
 	}
@@ -315,15 +357,15 @@ oafh_delete(
 
 ion_status_t
 oafh_query(
-	file_hashmap_t	*hash_map,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_file_hashmap_t	*hash_map,
+	ion_key_t			key,
+	ion_value_t			value
 ) {
 	int loc;
 
 	if (oafh_find_item_loc(hash_map, key, &loc) == err_ok) {
 #if DEBUG
-		io_printf("Item found at location %d\n", loc);
+		printf("Item found at location %d\n", loc);
 #endif
 
 		int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS);
@@ -339,23 +381,23 @@ oafh_query(
 	}
 	else {
 #if DEBUG
-		io_printf("Item not found in hash table.\n");
+		printf("Item not found in hash table.\n");
 #endif
 		value = NULL;	/*et the number of bytes to 0 */
 		return ION_STATUS_ERROR(err_item_not_found);
 	}
 }
 
-hash_t
+ion_hash_t
 oafh_compute_simple_hash(
-	file_hashmap_t	*hashmap,
-	ion_key_t		key,
-	int				size_of_key
+	ion_file_hashmap_t	*hashmap,
+	ion_key_t			key,
+	int					size_of_key
 ) {
 	UNUSED(size_of_key);
 
 	/* convert to a hashable value */
-	hash_t hash = (hash_t) ((*(int *) key) + hashmap->map_size) % hashmap->map_size;
+	ion_hash_t hash = (ion_hash_t) (((*(int *) key) % hashmap->map_size) + hashmap->map_size) % hashmap->map_size;
 
 	return hash;
 }

@@ -3,7 +3,7 @@
 @author		Scott Ronald Fazackerley
 
 @details	Tests base operations for open address hash map
- */
+*/
 
 #include "test_open_address_hash.h"
 #include "../../../../key_value/kv_system.h"
@@ -16,10 +16,10 @@
 
 @param		  map
 					The hashmap to visualize.
- */
+*/
 void
 check_map(
-	hashmap_t *map
+	ion_hashmap_t *map
 ) {
 	int i;
 	int bucket_size = map->super.record.key_size + map->super.record.value_size + sizeof(char);
@@ -39,9 +39,9 @@ check_map(
 
 void
 initialize_hash_map(
-	int				size,
-	record_info_t	*record,
-	hashmap_t		*map
+	int					size,
+	ion_record_info_t	*record,
+	ion_hashmap_t		*map
 ) {
 	map->super.compare = dictionary_compare_signed_value;
 	oah_initialize(map, oah_compute_simple_hash, /*dictionary_compare_signed_value,*/ map->super.key_type, record->key_size, record->value_size, size);
@@ -49,9 +49,9 @@ initialize_hash_map(
 
 void
 initialize_hash_map_std_conditions(
-	hashmap_t *map
+	ion_hashmap_t *map
 ) {
-	record_info_t record;
+	ion_record_info_t record;
 
 	record.key_size		= sizeof(int);
 	record.value_size	= 10;
@@ -63,21 +63,21 @@ initialize_hash_map_std_conditions(
 @brief	  Tests for creation and deletion of open address hash.
 
 @param	  tc
-				CuTest
- */
+				Test case.
+*/
 void
 test_open_address_hashmap_initialize(
 	planck_unit_test_t *tc
 ) {
 	/* this is required for initializing the hash map and should come from the dictionary */
-	int				size;
-	record_info_t	record;
+	int					size;
+	ion_record_info_t	record;
 
 	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 	size				= 10;
 
-	hashmap_t map;
+	ion_hashmap_t map;
 
 	map.super.key_type = key_type_numeric_signed;	/* default to use int key type */
 
@@ -97,19 +97,19 @@ test_open_address_hashmap_initialize(
 @brief		Tests the computation of a simple hash value
 
 @param	  tc
-				CuTest
- */
+				Test case.
+*/
 void
 test_open_address_hashmap_compute_simple_hash(
 	planck_unit_test_t *tc
 ) {
-	hashmap_t	map;		/* create handler for hashmap */
-	int			i;
+	ion_hashmap_t	map;		/* create handler for hashmap */
+	int				i;
 
 	initialize_hash_map_std_conditions(&map);
 
 	for (i = 0; i < MAX_HASH_TEST; i++) {
-		PLANCK_UNIT_ASSERT_TRUE(tc, (i % map.map_size) == oah_compute_simple_hash(&map, (ion_key_t) ((int *) &i), sizeof(i)));
+		PLANCK_UNIT_ASSERT_TRUE(tc, (i % map.map_size) == oah_compute_simple_hash(&map, ((int *) &i), sizeof(i)));
 	}
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oah_destroy(&map));
@@ -120,8 +120,8 @@ test_open_address_hashmap_compute_simple_hash(
 			location of the item.
 
 @param	  tc
-				CuTest
- */
+				Test case.
+*/
 void
 test_open_address_hashmap_get_location(
 	planck_unit_test_t *tc
@@ -129,7 +129,7 @@ test_open_address_hashmap_get_location(
 	int i;
 
 	for (i = 0; i < MAX_HASH_TEST; i++) {
-		PLANCK_UNIT_ASSERT_TRUE(tc, (i % STD_MAP_SIZE) == oah_get_location((hash_t) i, STD_MAP_SIZE));
+		PLANCK_UNIT_ASSERT_TRUE(tc, (i % STD_MAP_SIZE) == oah_get_location((ion_hash_t) i, STD_MAP_SIZE));
 	}
 }
 
@@ -142,32 +142,32 @@ test_open_address_hashmap_get_location(
 			current occupancy of hashmap
 
 @param	  tc
-				CuTest
- */
+				Test case.
+*/
 void
 test_open_address_hashmap_find_item_location(
 	planck_unit_test_t *tc
 ) {
-	hashmap_t	map;		/* create handler for hashmap */
-	int			i;
-	int			offset;
+	ion_hashmap_t	map;		/* create handler for hashmap */
+	int				i;
+	int				offset;
 
 	initialize_hash_map_std_conditions(&map);
 
 	/*Manually populate records */
-	record_info_t record = map.super.record;
+	ion_record_info_t record = map.super.record;
 
 	char *item;
 
 	/* manually map out item stucture */
-	item = (char *) malloc(sizeof(char) * (record.key_size + record.value_size + sizeof(char)));
+	item = malloc(sizeof(char) * (record.key_size + record.value_size + sizeof(char)));
 
 	/* manually populate array */
-	hash_bucket_t	*item_ptr	= (hash_bucket_t *) item;
-	char			*pos_ptr	= map.entry;
+	ion_hash_bucket_t	*item_ptr	= (ion_hash_bucket_t *) item;
+	char				*pos_ptr	= map.entry;
 
 	/* Bucket size includes flags, data, value */
-	int bucket_size				= sizeof(char) + record.key_size + record.value_size;
+	int bucket_size					= sizeof(char) + record.key_size + record.value_size;
 
 	for (offset = 0; offset < map.map_size; offset++) {
 		/* apply continual offsets to traverse map */
@@ -179,7 +179,7 @@ test_open_address_hashmap_find_item_location(
 		for (i = 0; i < map.map_size; i++) {
 			item_ptr->status = IN_USE;
 			/* Ensure to use key_size */
-			memcpy(item_ptr->data, (ion_key_t) &i, record.key_size);
+			memcpy(item_ptr->data, &i, record.key_size);
 
 			/* build up the value */
 			char str[10];
@@ -195,7 +195,7 @@ test_open_address_hashmap_find_item_location(
 		for (i = 0; i < map.map_size; i++) {
 			int location;
 
-			PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oah_find_item_loc(&map, (ion_key_t) (&i), &location));
+			PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == oah_find_item_loc(&map, (&i), &location));
 			PLANCK_UNIT_ASSERT_TRUE(tc, (i + offset) % map.map_size == location);
 		}
 	}
@@ -208,21 +208,21 @@ test_open_address_hashmap_find_item_location(
 @brief	  Tests a simple insert into map and reads results directly from map.
 
 @param	  tc
-				CuTest
- */
+				Test case.
+*/
 void
 test_open_address_hashmap_simple_insert(
 	planck_unit_test_t *tc
 ) {
 	/* create handler for hashmap */
-	hashmap_t	map;
-	int			i;
-	int			offset;
+	ion_hashmap_t	map;
+	int				i;
+	int				offset;
 
 	initialize_hash_map_std_conditions(&map);
 
 	/*Manually populate records */
-	record_info_t record = map.super.record;
+	ion_record_info_t record = map.super.record;
 
 	/* manually populate array */
 #if DEBUG
@@ -246,7 +246,7 @@ test_open_address_hashmap_simple_insert(
 
 			sprintf((char *) str, "%02i is key", i);
 
-			ion_status_t status = oah_insert(&map, (ion_key_t) (&i), (ion_value_t) str);/* this is will wrap */
+			ion_status_t status = oah_insert(&map, (&i), str);	/* this is will wrap */
 
 			/* FIXME: Why are we inserting inside two loops?!? */
 			if ((offset == 0) || (wc_duplicate == map.write_concern)) {
@@ -256,9 +256,9 @@ test_open_address_hashmap_simple_insert(
 		}
 
 		for (i = 0; i < map.map_size; i++) {
-			ion_record_status_t status	= ((hash_bucket_t *) (map.entry + ((((i + offset) % map.map_size) * bucket_size) % (map.map_size * bucket_size))))->status;
-			ion_key_t			key		= (ion_key_t) (((hash_bucket_t *) (map.entry + ((((i + offset) % map.map_size) * bucket_size) % (map.map_size * bucket_size))))->data);
-			ion_value_t			value	= (ion_value_t) (((hash_bucket_t *) (map.entry + ((((i + offset) % map.map_size) * bucket_size) % (map.map_size * bucket_size))))->data + record.key_size);
+			ion_record_status_t status	= ((ion_hash_bucket_t *) (map.entry + ((((i + offset) % map.map_size) * bucket_size) % (map.map_size * bucket_size))))->status;
+			ion_key_t			key		= (((ion_hash_bucket_t *) (map.entry + ((((i + offset) % map.map_size) * bucket_size) % (map.map_size * bucket_size))))->data);
+			ion_value_t			value	= (((ion_hash_bucket_t *) (map.entry + ((((i + offset) % map.map_size) * bucket_size) % (map.map_size * bucket_size))))->data + record.key_size);
 
 			/* build up expected value */
 			ion_byte_t str[10];
@@ -281,14 +281,14 @@ test_open_address_hashmap_simple_insert(
 @details	Tests a simple insert into dictionary and simple query with the
 			write_concern set to insert only
 @param	  tc
-				CuTest
- */
+				Test case.
+*/
 void
 test_open_address_hashmap_simple_insert_and_query(
 	planck_unit_test_t *tc
 ) {
 	/* create handler for hashmap */
-	hashmap_t		map;
+	ion_hashmap_t	map;
 	int				i;
 	ion_status_t	status;
 
@@ -300,17 +300,17 @@ test_open_address_hashmap_simple_insert_and_query(
 
 		sprintf(str, "%02i is key", i);
 		/* this is will wrap the map */
-		status = oah_insert(&map, (ion_key_t) (&i), (ion_value_t) str);
+		status = oah_insert(&map, (&i), str);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 	ion_value_t value;
 
-	value = (ion_value_t) malloc(10);
+	value = malloc(10);
 
 	for (i = 0; i < map.map_size; i++) {
-		status = oah_query(&map, (ion_key_t) &i, value);
+		status = oah_query(&map, &i, value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -332,20 +332,20 @@ test_open_address_hashmap_simple_insert_and_query(
 /**
 @brief	  Tests a simple delete from dictionary
 
-@details	Tests a simple delete from dictionary.  Builds a test collection
+@details	Tests a simple delete from dictionary.  builds a test dictionary instance
 			and then deletes records one by one, checking that each record has
 			been successfully deleted and that the rest of the map has not
 			been perturbed.
 
 @param	  tc
-				CuTest
- */
+				Test case.
+*/
 void
 test_open_address_hashmap_simple_delete(
 	planck_unit_test_t *tc
 ) {
 	/* create handler for hashmap */
-	hashmap_t		map;
+	ion_hashmap_t	map;
 	int				i, j;
 	ion_status_t	status;
 
@@ -353,7 +353,7 @@ test_open_address_hashmap_simple_delete(
 
 	ion_value_t value;
 
-	value = (ion_value_t) malloc(10);
+	value = malloc(10);
 
 	for (i = 0; i < map.map_size; i++) {
 		/* build up the value */
@@ -361,28 +361,28 @@ test_open_address_hashmap_simple_delete(
 
 		sprintf((char *) str, "%02i is key", i);
 		/* this is will wrap the map*/
-		status = oah_insert(&map, (ion_key_t) (&i), (ion_value_t) str);
+		status = oah_insert(&map, (&i), str);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
-		status = oah_query(&map, (ion_key_t) (&i), value);
+		status = oah_query(&map, (&i), value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 	i		= 0;
-	status	= oah_query(&map, (ion_key_t) (&i), value);
+	status	= oah_query(&map, (&i), value);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 	for (j = 0; j < map.map_size; j++) {
 		/* delete the record */
-		status = oah_delete(&map, (ion_key_t) (&j));
+		status = oah_delete(&map, (&j));
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 		/* check to make sure that the record has been deleted */
-		status = oah_query(&map, (ion_key_t) (&j), value);
+		status = oah_query(&map, (&j), value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
 
@@ -391,9 +391,9 @@ test_open_address_hashmap_simple_delete(
 /*
 			ion_value_t value;
 */
-			/*value	 = (ion_value_t)malloc(10);*/
+			/*value	 = malloc(10);*/
 
-			status = oah_query(&map, (ion_key_t) &i, value);
+			status = oah_query(&map, &i, value);
 			PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 			PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -425,13 +425,13 @@ test_open_address_hashmap_simple_delete(
 			is set for wc_insert_unique.   Will generate error.
 
 @param	  tc
-				CuTest
- */
+				Test case.
+*/
 void
 test_open_address_hashmap_duplicate_insert_1(
 	planck_unit_test_t *tc
 ) {
-	hashmap_t		map;						/* create handler for hashmap */
+	ion_hashmap_t	map;							/* create handler for hashmap */
 	int				i;
 	ion_status_t	status;
 
@@ -446,7 +446,7 @@ test_open_address_hashmap_duplicate_insert_1(
 		char str[10];
 
 		sprintf(str, "%02i is key", i);
-		status = oah_insert(&map, (ion_key_t) (&i), (ion_value_t) str);
+		status = oah_insert(&map, (&i), str);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
@@ -458,7 +458,7 @@ test_open_address_hashmap_duplicate_insert_1(
 		char str[10];
 
 		sprintf(str, "%02i is key", i);
-		status = oah_insert(&map, (ion_key_t) (&i), (ion_value_t) str);
+		status = oah_insert(&map, (&i), str);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_duplicate_key == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
 	}
@@ -474,13 +474,13 @@ test_open_address_hashmap_duplicate_insert_1(
 			is set for wc_update but will update the value.
 
 @param	  tc
-				CuTest
- */
+				Test case.
+*/
 void
 test_open_address_hashmap_duplicate_insert_2(
 	planck_unit_test_t *tc
 ) {
-	hashmap_t		map;						/* create handler for hashmap */
+	ion_hashmap_t	map;							/* create handler for hashmap */
 	int				i;
 	ion_status_t	status;
 
@@ -498,7 +498,7 @@ test_open_address_hashmap_duplicate_insert_2(
 		char str[10];
 
 		sprintf(str, "%02i is key", i);
-		status = oah_insert(&map, (ion_key_t) (&i), (ion_value_t) str);
+		status = oah_insert(&map, (&i), str);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
@@ -507,8 +507,8 @@ test_open_address_hashmap_duplicate_insert_2(
 	for (i = 0; i < map.map_size; i++) {
 		ion_value_t value;
 
-		value	= (ion_value_t) malloc(10);
-		status	= oah_query(&map, (ion_key_t) &i, value);
+		value	= malloc(10);
+		status	= oah_query(&map, &i, value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -531,7 +531,7 @@ test_open_address_hashmap_duplicate_insert_2(
 		char str[10];
 
 		sprintf(str, "%02i is new", i);
-		status = oah_insert(&map, (ion_key_t) (&i), (ion_value_t) str);
+		status = oah_insert(&map, (&i), str);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
@@ -540,8 +540,8 @@ test_open_address_hashmap_duplicate_insert_2(
 	for (i = 0; i < map.map_size; i++) {
 		ion_value_t value;
 
-		value	= (ion_value_t) malloc(10);
-		status	= oah_query(&map, (ion_key_t) &i, value);
+		value	= malloc(10);
+		status	= oah_query(&map, &i, value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -564,13 +564,13 @@ test_open_address_hashmap_duplicate_insert_2(
 @brief		Tests that values can be updated.
 
 @param	  tc
-				CuTest
- */
+				Test case.
+*/
 void
 test_open_address_hashmap_update_1(
 	planck_unit_test_t *tc
 ) {
-	hashmap_t		map;						/* create handler for hashmap */
+	ion_hashmap_t	map;							/* create handler for hashmap */
 	int				i;
 	ion_status_t	status;
 
@@ -588,7 +588,7 @@ test_open_address_hashmap_update_1(
 		char str[10];
 
 		sprintf(str, "%02i is key", i);
-		status = oah_insert(&map, (ion_key_t) (&i), (ion_value_t) str);
+		status = oah_insert(&map, (&i), str);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
@@ -597,8 +597,8 @@ test_open_address_hashmap_update_1(
 	for (i = 0; i < map.map_size; i++) {
 		ion_value_t value;
 
-		value	= (ion_value_t) malloc(10);
-		status	= oah_query(&map, (ion_key_t) &i, value);
+		value	= malloc(10);
+		status	= oah_query(&map, &i, value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -620,7 +620,7 @@ test_open_address_hashmap_update_1(
 		char str[10];
 
 		sprintf(str, "%02i is new", i);
-		status = oah_update(&map, (ion_key_t) (&i), (ion_value_t) str);
+		status = oah_update(&map, (&i), str);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
@@ -629,8 +629,8 @@ test_open_address_hashmap_update_1(
 	for (i = 0; i < map.map_size; i++) {
 		ion_value_t value;
 
-		value	= (ion_value_t) malloc(10);
-		status	= oah_query(&map, (ion_key_t) &i, value);
+		value	= malloc(10);
+		status	= oah_query(&map, &i, value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -654,13 +654,13 @@ test_open_address_hashmap_update_1(
 			in dictionary already.
 
 @param	  tc
-				CuTest
- */
+				Test case.
+*/
 void
 test_open_address_hashmap_update_2(
 	planck_unit_test_t *tc
 ) {
-	hashmap_t		map;						/* create handler for hashmap */
+	ion_hashmap_t	map;							/* create handler for hashmap */
 	int				i;
 	ion_status_t	status;
 
@@ -678,7 +678,7 @@ test_open_address_hashmap_update_2(
 		char str[10];
 
 		sprintf(str, "%02i is key", i);
-		status = oah_insert(&map, (ion_key_t) (&i), (ion_value_t) str);
+		status = oah_insert(&map, (&i), str);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
@@ -687,8 +687,8 @@ test_open_address_hashmap_update_2(
 	for (i = 0; i < map.map_size / 2; i++) {
 		ion_value_t value;
 
-		value	= (ion_value_t) malloc(10);
-		status	= oah_query(&map, (ion_key_t) &i, value);
+		value	= malloc(10);
+		status	= oah_query(&map, &i, value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -710,7 +710,7 @@ test_open_address_hashmap_update_2(
 		char str[10];
 
 		sprintf(str, "%02i is new", i);
-		status = oah_update(&map, (ion_key_t) (&i), (ion_value_t) str);
+		status = oah_update(&map, (&i), str);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
@@ -719,8 +719,8 @@ test_open_address_hashmap_update_2(
 	for (i = 0; i < map.map_size; i++) {
 		ion_value_t value;
 
-		value	= (ion_value_t) malloc(10);
-		status	= oah_query(&map, (ion_key_t) &i, value);
+		value	= malloc(10);
+		status	= oah_query(&map, &i, value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -743,12 +743,12 @@ test_open_address_hashmap_update_2(
 
 @param	  tc
 				CuTeest
- */
+*/
 void
 test_open_address_hashmap_delete_1(
 	planck_unit_test_t *tc
 ) {
-	hashmap_t		map;						/* create handler for hashmap */
+	ion_hashmap_t	map;							/* create handler for hashmap */
 	int				i = 2;
 	ion_status_t	status;
 
@@ -757,19 +757,19 @@ test_open_address_hashmap_delete_1(
 	char str[10];
 
 	sprintf(str, "%02i is key", i);
-	status = oah_insert(&map, (ion_key_t) (&i), (ion_value_t) str);
+	status = oah_insert(&map, (&i), str);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
-	status = oah_delete(&map, (ion_key_t) (&i));
+	status = oah_delete(&map, (&i));
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 	/* Check that value is not there */
 	ion_value_t value;
 
-	value	= (ion_value_t) malloc(10);
-	status	= oah_query(&map, (ion_key_t) (&i), value);
+	value	= malloc(10);
+	status	= oah_query(&map, (&i), value);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
 
@@ -778,7 +778,7 @@ test_open_address_hashmap_delete_1(
 	}
 
 	/* Check that value can not be deleted if it is not there already */
-	status = oah_delete(&map, (ion_key_t) (&i));
+	status = oah_delete(&map, (&i));
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
 
@@ -795,13 +795,13 @@ test_open_address_hashmap_delete_1(
 			undisturbed.
 
 @param	  tc
-				CuTest
- */
+				Test case.
+*/
 void
 test_open_address_hashmap_delete_2(
 	planck_unit_test_t *tc
 ) {
-	hashmap_t		map;						/* create handler for hashmap */
+	ion_hashmap_t	map;							/* create handler for hashmap */
 	int				i, j;
 	ion_status_t	status;
 
@@ -813,7 +813,7 @@ test_open_address_hashmap_delete_2(
 		char str[10];
 
 		sprintf(str, "%02i is key", i);
-		status = oah_insert(&map, (ion_key_t) (&i), (ion_value_t) str);
+		status = oah_insert(&map, (&i), str);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
@@ -822,8 +822,8 @@ test_open_address_hashmap_delete_2(
 	for (i = 0; i < map.map_size; i++) {
 		ion_value_t value;
 
-		value	= (ion_value_t) malloc(10);
-		status	= oah_query(&map, (ion_key_t) &i, value);
+		value	= malloc(10);
+		status	= oah_query(&map, &i, value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -844,15 +844,15 @@ test_open_address_hashmap_delete_2(
 #if DEBUG
 		printf("Deleting key: %i \n", i);
 #endif
-		status = oah_delete(&map, (ion_key_t) (&i));
+		status = oah_delete(&map, (&i));
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 		/* Check that value is not there */
 		ion_value_t value;
 
-		value	= (ion_value_t) malloc(10);
-		status	= oah_query(&map, (ion_key_t) (&i), value);
+		value	= malloc(10);
+		status	= oah_query(&map, (&i), value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
 
@@ -864,8 +864,8 @@ test_open_address_hashmap_delete_2(
 		for (j = 0; j < i; j++) {
 			ion_value_t value;
 
-			value	= (ion_value_t) malloc(10);
-			status	= oah_query(&map, (ion_key_t) &j, value);
+			value	= malloc(10);
+			status	= oah_query(&map, &j, value);
 			PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 			PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -886,8 +886,8 @@ test_open_address_hashmap_delete_2(
 	for (i = 0; i < map.map_size; i++) {
 		ion_value_t value;
 
-		value	= (ion_value_t) malloc(10);
-		status	= oah_query(&map, (ion_key_t) &i, value);
+		value	= malloc(10);
+		status	= oah_query(&map, &i, value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
 
@@ -904,13 +904,13 @@ test_open_address_hashmap_delete_2(
 @brief		Tests that values can be inserted until capacity has been reached.
 
 @param	  tc
-				CuTest
- */
+				Test case.
+*/
 void
 test_open_address_hashmap_capacity(
 	planck_unit_test_t *tc
 ) {
-	hashmap_t		map;						/* create handler for hashmap */
+	ion_hashmap_t	map;							/* create handler for hashmap */
 	int				i;
 	ion_status_t	status;
 
@@ -922,7 +922,7 @@ test_open_address_hashmap_capacity(
 		char str[10];
 
 		sprintf(str, "%02i is key", i);
-		status = oah_insert(&map, (ion_key_t) (&i), (ion_value_t) str);
+		status = oah_insert(&map, (&i), str);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
@@ -930,10 +930,10 @@ test_open_address_hashmap_capacity(
 	/* check status of <K,V> */
 	ion_value_t value;
 
-	value = (ion_value_t) malloc(10);
+	value = malloc(10);
 
 	for (i = 0; i < map.map_size; i++) {
-		status = oah_query(&map, (ion_key_t) &i, value);
+		status = oah_query(&map, &i, value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -950,7 +950,7 @@ test_open_address_hashmap_capacity(
 
 	i		= 11;
 	sprintf(str, "%02i is key", i);
-	status	= oah_insert(&map, (ion_key_t) (&i), (ion_value_t) str);
+	status	= oah_insert(&map, (&i), str);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_max_capacity == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
 
@@ -958,7 +958,7 @@ test_open_address_hashmap_capacity(
 	/* check status of <K,V> */
 
 	for (i = 0; i < map.map_size; i++) {
-		status = oah_query(&map, (ion_key_t) &i, value);
+		status = oah_query(&map, &i, value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 

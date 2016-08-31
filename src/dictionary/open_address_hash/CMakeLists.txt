@@ -10,8 +10,6 @@ set(SOURCE_FILES
     ../dictionary.h
     ../dictionary.c
     ../dictionary_types.h
-        ../../key_value/kv_io.h
-        ../../key_value/kv_io.c
         ../../key_value/kv_system.h)
 
 if(USE_ARDUINO)
@@ -28,9 +26,13 @@ if(USE_ARDUINO)
             ../../serial/serial_c_iface.cpp")
     endif()
 
+    set(${PROJECT_NAME}_LIBS bpp_tree)
+
     generate_arduino_library(${PROJECT_NAME})
 else()
     add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
+
+    target_link_libraries(${PROJECT_NAME} bpp_tree)
 
     # Required on Unix OS family to be able to be linked into shared libraries.
     set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)

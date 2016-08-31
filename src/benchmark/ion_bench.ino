@@ -16,7 +16,7 @@
 
 #define SHOW()				printf("%s: ", __func__)
 /**< MAKE_ION_KEY :: int -> ion_key_t (byte*) */
-#define MAKE_ION_KEY(x)		(_keyswap = x, (ion_key_t) &_keyswap)
+#define MAKE_ION_KEY(x)		(_keyswap = x, &_keyswap)
 /**< ION_KEY_TO_INT :: ion_key_t (byte*) -> int */
 #define ION_KEY_TO_INT(key) *((int *) key)
 
@@ -25,14 +25,14 @@ static int _keyswap;
 /* CONFIG PARAMS */
 
 /**< Handler of dict to test. */
-/* void			  (*handler_fptr)(dictionary_handler_t*)  = sldict_init; */
-/* void			  (*handler_fptr)(dictionary_handler_t*)  = oadict_init; */
-/* void			  (*handler_fptr)(dictionary_handler_t*)  = oafdict_init; */
-/* void			  (*handler_fptr)(dictionary_handler_t*)  = ffdict_init; */
-/* void			  (*handler_fptr)(dictionary_handler_t*)  = bpptree_init; */
+/* void			  (*handler_fptr)(ion_dictionary_handler_t*)  = sldict_init; */
+/* void			  (*handler_fptr)(ion_dictionary_handler_t*)  = oadict_init; */
+/* void			  (*handler_fptr)(ion_dictionary_handler_t*)  = oafdict_init; */
+/* void			  (*handler_fptr)(ion_dictionary_handler_t*)  = ffdict_init; */
+/* void			  (*handler_fptr)(ion_dictionary_handler_t*)  = bpptree_init; */
 
 /**< Type of key to test. */
-key_type_t key_type			= key_type_numeric_signed;
+ion_key_type_t key_type			= key_type_numeric_signed;
 /**< Size of key to test. (Default = 2) */
 ion_key_size_t key_size		= 2;
 /**< Size of value to test. (Default = 8) */
@@ -41,10 +41,10 @@ ion_value_size_t value_size = 8;
 int dict_size				= 10;
 
 /**< Dictionary instances. */
-dictionary_t			dict;
-dictionary_handler_t	handler;
+ion_dictionary_t			dict;
+ion_dictionary_handler_t	handler;
 /**< Value payload. */
-ion_value_t test_value = (ion_value_t) (char *) {
+ion_value_t test_value = (char *) {
 	"IonDB Test String"
 };
 /**< Number sequence */
@@ -167,7 +167,7 @@ bench_get(
 		ion_key_t	key = MAKE_ION_KEY(lfsr_get_next(&keygen));
 		char		value[value_size];
 
-		dictionary_get(&dict, key, (ion_value_t) value);
+		dictionary_get(&dict, key, value);
 	}
 
 	benchmark_stop();
@@ -226,16 +226,16 @@ bench_equality(
 
 	for (i = 0; i < count; i++) {
 		ion_key_t		key		= MAKE_ION_KEY(lfsr_get_next(&keygen));
-		dict_cursor_t	*cursor = NULL;
-		predicate_t		predicate;
+		ion_dict_cursor_t	*cursor = NULL;
+		ion_predicate_t		predicate;
 
 		dictionary_build_predicate(&predicate, predicate_equality, key);
 
-		err_t			status = dictionary_find(&dict, &predicate, &cursor);
+		ion_err_t			status = dictionary_find(&dict, &predicate, &cursor);
 		ion_record_t	record;
 
-		record.key		= (ion_key_t) malloc(dict.instance->record.key_size);
-		record.value	= (ion_value_t) malloc(dict.instance->record.value_size);
+		record.key		= malloc(dict.instance->record.key_size);
+		record.value	= malloc(dict.instance->record.value_size);
 
 		while (cursor->next(cursor, &record) != cs_end_of_results) {
 			;
@@ -297,21 +297,21 @@ bench_range(
 		int_upper_bound = max;
 	}
 
-	ion_key_t	lower_bound = (ion_key_t) &int_lower_bound;
-	ion_key_t	upper_bound = (ion_key_t) &int_upper_bound;
+	ion_key_t	lower_bound = &int_lower_bound;
+	ion_key_t	upper_bound = &int_upper_bound;
 
 	benchmark_start();
 
-	dict_cursor_t	*cursor = NULL;
-	predicate_t		predicate;
+	ion_dict_cursor_t	*cursor = NULL;
+	ion_predicate_t		predicate;
 
 	dictionary_build_predicate(&predicate, predicate_range, lower_bound, upper_bound);
 
-	err_t			status = dictionary_find(&dict, &predicate, &cursor);
+	ion_err_t			status = dictionary_find(&dict, &predicate, &cursor);
 	ion_record_t	record;
 
-	record.key		= (ion_key_t) malloc(dict.instance->record.key_size);
-	record.value	= (ion_value_t) malloc(dict.instance->record.value_size);
+	record.key		= malloc(dict.instance->record.key_size);
+	record.value	= malloc(dict.instance->record.value_size);
 
 	while (cursor->next(cursor, &record) != cs_end_of_results) {
 		;

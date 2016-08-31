@@ -33,16 +33,16 @@ extern "C" {
 @param	  pden
 				The denominator portion of the p value.
 @return Status of initialization.
- */
-err_t
+*/
+ion_err_t
 sl_initialize(
-	skiplist_t	*skiplist,
-	key_type_t	key_type,
-	int			key_size,
-	int			value_size,
-	int			maxheight,
-	int			pnum,
-	int			pden
+	ion_skiplist_t	*skiplist,
+	ion_key_type_t	key_type,
+	int				key_size,
+	int				value_size,
+	int				maxheight,
+	int				pnum,
+	int				pden
 );
 
 /**
@@ -53,10 +53,10 @@ sl_initialize(
 @param	  skiplist
 				The skiplist to be destroyed
 @return	 Status of destruction.
- */
-err_t
+*/
+ion_err_t
 sl_destroy(
-	skiplist_t *skiplist
+	ion_skiplist_t *skiplist
 );
 
 /**
@@ -73,12 +73,12 @@ sl_destroy(
 @param	  value
 				The value to be insert
 @return	 Status of insertion.
- */
+*/
 ion_status_t
 sl_insert(
-	skiplist_t	*skiplist,
-	ion_key_t	key,
-	ion_value_t value
+	ion_skiplist_t	*skiplist,
+	ion_key_t		key,
+	ion_value_t		value
 );
 
 /**
@@ -94,12 +94,12 @@ sl_insert(
 @param	  value
 				The container in which to put the resultant data
 @return	 Status of query.
- */
+*/
 ion_status_t
 sl_query(
-	skiplist_t	*skiplist,
-	ion_key_t	key,
-	ion_value_t value
+	ion_skiplist_t	*skiplist,
+	ion_key_t		key,
+	ion_value_t		value
 );
 
 /**
@@ -117,12 +117,12 @@ sl_query(
 @param	  value
 				The new value to be updated to
 @return	 Status of updating.
- */
+*/
 ion_status_t
 sl_update(
-	skiplist_t	*skiplist,
-	ion_key_t	key,
-	ion_value_t value
+	ion_skiplist_t	*skiplist,
+	ion_key_t		key,
+	ion_value_t		value
 );
 
 /**
@@ -138,11 +138,11 @@ sl_update(
 @param	  key
 				The key to delete
 @return	 Status of deletion.
- */
+*/
 ion_status_t
 sl_delete(
-	skiplist_t	*skiplist,
-	ion_key_t	key
+	ion_skiplist_t	*skiplist,
+	ion_key_t		key
 );
 
 /**
@@ -153,11 +153,11 @@ sl_delete(
 			sl_query to perform key lookups. Returns the first node containing
 			the target key (if it exists), or the closest node less than the
 			target key if it does not exist.
- */
-sl_node_t *
+*/
+ion_sl_node_t *
 sl_find_node(
-	skiplist_t	*skiplist,
-	ion_key_t	key
+	ion_skiplist_t	*skiplist,
+	ion_key_t		key
 );
 
 /**
@@ -168,10 +168,10 @@ sl_find_node(
 @param	  skiplist
 				The skiplist to read level generation parameters from
 @return	 A height.
- */
-sl_level_t
+*/
+ion_sl_level_t
 sl_gen_level(
-	skiplist_t *skiplist
+	ion_skiplist_t *skiplist
 );
 
 /**
@@ -180,10 +180,10 @@ sl_gen_level(
 
 @param	  skiplist
 				The skiplist to print
- */
+*/
 void
 print_skiplist(
-	skiplist_t *skiplist
+	ion_skiplist_t *skiplist
 );
 
 #if defined(__cplusplus)

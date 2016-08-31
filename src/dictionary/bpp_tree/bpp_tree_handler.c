@@ -3,20 +3,10 @@
 @file
 @author		Graeme Douglas
 @brief		The handler for a disk-backed B+ Tree.
- */
+*/
 /******************************************************************************/
 
 #include "bpp_tree_handler.h"
-#include "../../key_value/kv_system.h"
-#include "../../key_value/kv_io.h"
-
-void
-bpptree_get_addr_filename(
-	ion_dictionary_id_t id,
-	char				*str
-) {
-	sprintf(str, "%d.bpt", id);
-}
 
 void
 bpptree_get_value_filename(
@@ -28,7 +18,7 @@ bpptree_get_value_filename(
 
 void
 bpptree_init(
-	dictionary_handler_t *handler
+	ion_dictionary_handler_t *handler
 ) {
 	handler->insert				= bpptree_insert;
 	handler->create_dictionary	= bpptree_create_dictionary;
@@ -43,16 +33,16 @@ bpptree_init(
 
 ion_status_t
 bpptree_insert(
-	dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_dictionary_t	*dictionary,
+	ion_key_t			key,
+	ion_value_t			value
 ) {
-	bpptree_t		*bpptree;
-	bErrType		bErr;
-	err_t			err;
-	file_offset_t	offset;
+	ion_bpptree_t		*bpptree;
+	ion_bpp_err_t		bErr;
+	ion_err_t			err;
+	ion_file_offset_t	offset;
 
-	bpptree = (bpptree_t *) dictionary->instance;
+	bpptree = (ion_bpptree_t *) dictionary->instance;
 
 	offset	= FILE_NULL;
 	bErr	= bFindKey(bpptree->tree, key, &offset);
@@ -85,17 +75,17 @@ bpptree_insert(
 
 ion_status_t
 bpptree_query(
-	dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_dictionary_t	*dictionary,
+	ion_key_t			key,
+	ion_value_t			value
 ) {
-	bpptree_t		*bpptree;
-	file_offset_t	offset;
-	file_offset_t	next;
-	bErrType		bErr;
-	err_t			err;
+	ion_bpptree_t		*bpptree;
+	ion_file_offset_t	offset;
+	ion_file_offset_t	next;
+	ion_bpp_err_t		bErr;
+	ion_err_t			err;
 
-	bpptree = (bpptree_t *) dictionary->instance;
+	bpptree = (ion_bpptree_t *) dictionary->instance;
 
 	bErr	= bFindKey(bpptree->tree, key, &offset);
 
@@ -112,23 +102,28 @@ bpptree_query(
 	return ION_STATUS_ERROR(err);
 }
 
-err_t
+ion_err_t
 bpptree_create_dictionary(
 	ion_dictionary_id_t			id,
-	key_type_t					key_type,
-	int							key_size,
-	int							value_size,
-	int							dictionary_size,
+	ion_key_type_t				key_type,
+	ion_key_size_t				key_size,
+	ion_value_size_t			value_size,
+	ion_dictionary_size_t		dictionary_size,
 	ion_dictionary_compare_t	compare,
-	dictionary_handler_t		*handler,
-	dictionary_t				*dictionary
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dictionary
 ) {
 	UNUSED(dictionary_size);
 
-	bpptree_t	*bpptree;
-	bOpenType	info;
+	/* TODO: Uncomment this when IINQ has been merged into development */
+/*	if (key_size != sizeof(int)) {
+		return err_invalid_initial_size;
+	}*/
 
-	bpptree = malloc(sizeof(bpptree_t));
+	ion_bpptree_t	*bpptree;
+	ion_bpp_open_t	info;
+
+	bpptree = malloc(sizeof(ion_bpptree_t));
 
 	if (NULL == bpptree) {
 		return err_out_of_memory;
@@ -144,9 +139,14 @@ bpptree_create_dictionary(
 	/* FIXME: read this from a property bag. */
 
 	/* FIXME: VARIABLE NAMES! */
-	char addr_filename[20];
+	char addr_filename[ION_MAX_FILENAME_LENGTH];
 
-	bpptree_get_addr_filename(id, addr_filename);
+	int actual_filename_length = dictionary_get_filename(id, "bpt", addr_filename);
+
+	if (actual_filename_length >= ION_MAX_FILENAME_LENGTH) {
+		return err_dictionary_initialization_failed;
+	}
+
 	info.iName		= addr_filename;
 	info.keySize	= key_size;
 	info.dupKeys	= boolean_false;
@@ -154,11 +154,13 @@ bpptree_create_dictionary(
 	info.sectorSize = 256;
 	info.comp		= compare;
 
-	if (bErrOk != bOpen(info, &(bpptree->tree))) {
+	ion_bpp_err_t bErr = bOpen(info, &(bpptree->tree));
+
+	if (bErrOk != bErr) {
 		return err_dictionary_initialization_failed;
 	}
 
-	dictionary->instance					= (dictionary_parent_t *) bpptree;
+	dictionary->instance					= (ion_dictionary_parent_t *) bpptree;
 	dictionary->instance->compare			= compare;
 	dictionary->instance->key_type			= key_type;
 	dictionary->instance->record.key_size	= key_size;
@@ -171,44 +173,45 @@ bpptree_create_dictionary(
 
 ion_status_t
 bpptree_delete(
-	dictionary_t	*dictionary,
-	ion_key_t		key
+	ion_dictionary_t	*dictionary,
+	ion_key_t			key
 ) {
-	bpptree_t		*bpptree;
-	bErrType		bErr;
-	file_offset_t	offset;
-	ion_status_t	status;
+	ion_bpptree_t		*bpptree;
+	ion_bpp_err_t		bErr;
+	ion_file_offset_t	offset;
+	ion_status_t		status;
 
 	status	= ION_STATUS_INITIALIZE;
 
-	bpptree = (bpptree_t *) dictionary->instance;
+	bpptree = (ion_bpptree_t *) dictionary->instance;
 
 	bErr	= bDeleteKey(bpptree->tree, key, &offset);
 
 	if (bErrKeyNotFound != bErr) {
 		status.error = lfb_delete_all(&(bpptree->values), offset, &(status.count));
 	}
+	else {
+		status.error = err_item_not_found;
+	}
 
 	return status;
 }
 
-err_t
+ion_err_t
 bpptree_delete_dictionary(
-	dictionary_t *dictionary
+	ion_dictionary_t *dictionary
 ) {
-	err_t error;
+	ion_err_t error;
 
-	char	addr_filename[20];
-	char	value_filename[20];
-	int		i;
+	char	addr_filename[ION_MAX_FILENAME_LENGTH];
+	char	value_filename[ION_MAX_FILENAME_LENGTH];
 
-	for (i = 0; i < 20; i++) {
-		addr_filename[i]	= '\0';
-		value_filename[i]	= '\0';
+	int actual_addr_filename_length		= dictionary_get_filename(dictionary->instance->id, "bpt", addr_filename);
+	int actual_value_filename_length	= dictionary_get_filename(dictionary->instance->id, "val", value_filename);
+
+	if ((actual_addr_filename_length >= ION_MAX_FILENAME_LENGTH) || (actual_value_filename_length >= ION_MAX_FILENAME_LENGTH)) {
+		return err_dictionary_destruction_error;
 	}
-
-	bpptree_get_addr_filename(dictionary->instance->id, addr_filename);
-	bpptree_get_value_filename(dictionary->instance->id, value_filename);
 
 	error = bpptree_close_dictionary(dictionary);
 
@@ -224,17 +227,17 @@ bpptree_delete_dictionary(
 
 ion_status_t
 bpptree_update(
-	dictionary_t	*dictionary,
-	ion_key_t		key,
-	ion_value_t		value
+	ion_dictionary_t	*dictionary,
+	ion_key_t			key,
+	ion_value_t			value
 ) {
-	bpptree_t			*bpptree;
-	bErrType			bErr;
-	file_offset_t		offset;
+	ion_bpptree_t		*bpptree;
+	ion_bpp_err_t		bErr;
+	ion_file_offset_t	offset;
 	ion_result_count_t	count;
 
 	count	= 0;
-	bpptree = (bpptree_t *) dictionary->instance;
+	bpptree = (ion_bpptree_t *) dictionary->instance;
 
 	bErr	= bFindKey(bpptree->tree, key, &offset);
 
@@ -248,22 +251,22 @@ bpptree_update(
 	return ION_STATUS_OK(count);
 }
 
-err_t
+ion_err_t
 bpptree_find(
-	dictionary_t	*dictionary,
-	predicate_t		*predicate,
-	dict_cursor_t	**cursor
+	ion_dictionary_t	*dictionary,
+	ion_predicate_t		*predicate,
+	ion_dict_cursor_t	**cursor
 ) {
-	bpptree_t		*bpptree	= (bpptree_t *) dictionary->instance;
+	ion_bpptree_t	*bpptree	= (ion_bpptree_t *) dictionary->instance;
 	ion_key_size_t	key_size	= dictionary->instance->record.key_size;
 
-	*cursor = malloc(sizeof(bCursorType));
+	*cursor = malloc(sizeof(ion_bpp_cursor_t));
 
 	if (NULL == *cursor) {
 		return err_out_of_memory;
 	}
 
-	bCursorType *bCursor = (bCursorType *) (*cursor);
+	ion_bpp_cursor_t *bCursor = (ion_bpp_cursor_t *) (*cursor);
 
 	bCursor->cur_key = malloc(key_size);
 
@@ -278,7 +281,7 @@ bpptree_find(
 	(*cursor)->destroy		= bpptree_destroy_cursor;
 	(*cursor)->next			= bpptree_next;
 
-	(*cursor)->predicate	= malloc(sizeof(predicate_t));
+	(*cursor)->predicate	= malloc(sizeof(ion_predicate_t));
 
 	if (NULL == (*cursor)->predicate) {
 		free(bCursor->cur_key);
@@ -307,7 +310,7 @@ bpptree_find(
 
 			memcpy(bCursor->cur_key, target_key, key_size);
 
-			bErrType err = bFindKey(bpptree->tree, target_key, &bCursor->offset);
+			ion_bpp_err_t err = bFindKey(bpptree->tree, target_key, &bCursor->offset);
 
 			if (bErrOk != err) {
 				/* If this happens, that means the target key doesn't exist */
@@ -363,7 +366,7 @@ bpptree_find(
 		}
 
 		case predicate_all_records: {
-			bErrType err;
+			ion_bpp_err_t err;
 
 			/* We search for first key in B++ tree. */
 			err					= bFindFirstKey(bpptree->tree, bCursor->cur_key, &bCursor->offset);
@@ -392,13 +395,13 @@ bpptree_find(
 	return err_ok;
 }
 
-cursor_status_t
+ion_cursor_status_t
 bpptree_next(
-	dict_cursor_t	*cursor,
-	ion_record_t	*record
+	ion_dict_cursor_t	*cursor,
+	ion_record_t		*record
 ) {
-	bCursorType *bCursor	= (bCursorType *) cursor;
-	bpptree_t	*bpptree	= (bpptree_t *) cursor->dictionary->instance;
+	ion_bpp_cursor_t	*bCursor	= (ion_bpp_cursor_t *) cursor;
+	ion_bpptree_t		*bpptree	= (ion_bpptree_t *) cursor->dictionary->instance;
 
 	if (cursor->status == cs_cursor_uninitialized) {
 		return cursor->status;
@@ -408,7 +411,7 @@ bpptree_next(
 	}
 	else if ((cursor->status == cs_cursor_initialized) || (cursor->status == cs_cursor_active)) {
 		if (cursor->status == cs_cursor_active) {
-			boolean_t is_valid = boolean_true;
+			ion_boolean_t is_valid = boolean_true;
 
 			switch (cursor->predicate->type) {
 				case predicate_equality: {
@@ -423,7 +426,7 @@ bpptree_next(
 				case predicate_range: {
 					/*do bFindNextKey then test_predicate */
 					if (-1 == bCursor->offset) {
-						bErrType bErr = bFindNextKey(bpptree->tree, bCursor->cur_key, &bCursor->offset);
+						ion_bpp_err_t bErr = bFindNextKey(bpptree->tree, bCursor->cur_key, &bCursor->offset);
 
 						if ((bErrOk != bErr) || (boolean_false == bpptree_test_predicate(cursor, bCursor->cur_key))) {
 							is_valid = boolean_false;
@@ -435,7 +438,7 @@ bpptree_next(
 
 				case predicate_all_records: {
 					if (-1 == bCursor->offset) {
-						bErrType bErr = bFindNextKey(bpptree->tree, bCursor->cur_key, &bCursor->offset);
+						ion_bpp_err_t bErr = bFindNextKey(bpptree->tree, bCursor->cur_key, &bCursor->offset);
 
 						if (bErrOk != bErr) {
 							is_valid = boolean_false;
@@ -475,22 +478,22 @@ bpptree_next(
 
 void
 bpptree_destroy_cursor(
-	dict_cursor_t **cursor
+	ion_dict_cursor_t **cursor
 ) {
 	(*cursor)->predicate->destroy(&(*cursor)->predicate);
-	free(((bCursorType *) (*cursor))->cur_key);
+	free(((ion_bpp_cursor_t *) (*cursor))->cur_key);
 	free((*cursor));
 	*cursor = NULL;
 }
 
-boolean_t
+ion_boolean_t
 bpptree_test_predicate(
-	dict_cursor_t	*cursor,
-	ion_key_t		key
+	ion_dict_cursor_t	*cursor,
+	ion_key_t			key
 ) {
-	bpptree_t		*bpptree	= (bpptree_t *) cursor->dictionary->instance;
+	ion_bpptree_t	*bpptree	= (ion_bpptree_t *) cursor->dictionary->instance;
 	ion_key_size_t	key_size	= cursor->dictionary->instance->record.key_size;
-	boolean_t		result		= boolean_false;
+	ion_boolean_t	result		= boolean_false;
 
 	switch (cursor->predicate->type) {
 		case predicate_equality: {
@@ -502,14 +505,14 @@ bpptree_test_predicate(
 		}
 
 		case predicate_range: {
-			ion_key_t	lower_b		= cursor->predicate->statement.range.lower_bound;
-			ion_key_t	upper_b		= cursor->predicate->statement.range.upper_bound;
+			ion_key_t	lower_b			= cursor->predicate->statement.range.lower_bound;
+			ion_key_t	upper_b			= cursor->predicate->statement.range.upper_bound;
 
 			/* Check if key >= lower bound */
-			boolean_t comp_lower	= bpptree->super.compare(key, lower_b, key_size) >= 0;
+			ion_boolean_t comp_lower	= bpptree->super.compare(key, lower_b, key_size) >= 0;
 
 			/* Check if key <= upper bound */
-			boolean_t comp_upper	= bpptree->super.compare(key, upper_b, key_size) <= 0;
+			ion_boolean_t comp_upper	= bpptree->super.compare(key, upper_b, key_size) <= 0;
 
 			result = comp_lower && comp_upper;
 			break;
@@ -519,39 +522,31 @@ bpptree_test_predicate(
 	return result;
 }
 
-err_t
+ion_err_t
 bpptree_open_dictionary(
-	dictionary_handler_t			*handler,
-	dictionary_t					*dictionary,
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary,
 	ion_dictionary_config_info_t	*config,
 	ion_dictionary_compare_t		compare
 ) {
-	err_t error;
-
-	error = bpptree_create_dictionary(config->id, config->type, config->key_size, config->value_size, config->dictionary_size, compare, handler, dictionary);
-
-	if (err_ok != error) {
-		return error;
-	}
-
-	return err_ok;
+	return bpptree_create_dictionary(config->id, config->type, config->key_size, config->value_size, config->dictionary_size, compare, handler, dictionary);
 }
 
-err_t
+ion_err_t
 bpptree_close_dictionary(
-	dictionary_t *dictionary
+	ion_dictionary_t *dictionary
 ) {
-	bpptree_t	*bpptree;
-	bErrType	bErr;
+	ion_bpptree_t	*bpptree;
+	ion_bpp_err_t	bErr;
 
-	bpptree					= (bpptree_t *) dictionary->instance;
+	bpptree					= (ion_bpptree_t *) dictionary->instance;
 	bErr					= bClose(bpptree->tree);
 	ion_fclose(bpptree->values.file_handle);
 	free(dictionary->instance);
 	dictionary->instance	= NULL;
 
 	if (bErrOk != bErr) {
-		return err_colllection_destruction_error;
+		return err_dictionary_destruction_error;
 	}
 
 	return err_ok;
