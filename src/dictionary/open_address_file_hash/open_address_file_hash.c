@@ -14,9 +14,6 @@
 /******************************************************************************/
 
 #include "open_address_file_hash.h"
-#include "open_address_file_hash_dictionary_handler.c"
-#include "../../file/ion_file.h"
-#include "../dictionary_types.h"
 
 #define TEST_FILE "file.bin"
 
