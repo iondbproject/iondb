@@ -17,8 +17,8 @@ extern "C" {
 /****************************
  * implementation dependent *
  ****************************/
-typedef long	eAdrType;		/* record address for external record */
-typedef long	bAdrType;		/* record address for btree node */
+typedef long	ion_bpp_external_address_t;		/* record address for external record */
+typedef long	ion_bpp_address_t;		/* record address for btree node */
 
 #define CC_EQ	0
 #define CC_GT	1
@@ -28,14 +28,14 @@ typedef long	bAdrType;		/* record address for btree node */
  *	CC_LT	 key1 < key2
  *	CC_GT	 key1 > key2
  *	CC_EQ	 key1 = key2
- */
-typedef char (*bCompType)(
+*/
+typedef char (*ion_bpp_comparison_t)(
 	ion_key_t		key1,
 	ion_key_t		key2,
 	ion_key_size_t	size
 );
 
-/* typedef int (*bCompType)(const void *key1, const void *key2, unsigned int size); */
+/* typedef int (*ion_bpp_comparison_t)(const void *key1, const void *key2, unsigned int size); */
 
 /******************************
  * implementation independent *
@@ -53,31 +53,31 @@ int nDiskWrites;/* number of disk writes */
 /* line number for last IO or memory error */
 int bErrLineNo;
 
-typedef boolean_e bpp_bool_t;
+typedef ion_boolean_e ion_bpp_bool_t;
 
 /* typedef enum {false, true} bool; */
 typedef enum {
 	bErrOk, bErrKeyNotFound, bErrDupKeys, bErrSectorSize, bErrFileNotOpen, bErrFileExists, bErrIO, bErrMemory
-} bErrType;
+} ion_bpp_err_t;
 
-typedef void *bHandleType;
+typedef void *ion_bpp_handle_t;
 
 typedef struct {
 	/* info for bOpen() */
-	char		*iName;			/* name of index file */
-	int			keySize;		/* length, in bytes, of key */
-	bpp_bool_t	dupKeys;				/* true if duplicate keys allowed */
-	size_t		sectorSize;		/* size of sector on disk */
-	bCompType	comp;			/* pointer to compare function */
-} bOpenType;
+	char					*iName;	/* name of index file */
+	int						keySize;/* length, in bytes, of key */
+	ion_bpp_bool_t			dupKeys;		/* true if duplicate keys allowed */
+	size_t					sectorSize;	/* size of sector on disk */
+	ion_bpp_comparison_t	comp;			/* pointer to compare function */
+} ion_bpp_open_t;
 
 /***********************
  * function prototypes *
  ***********************/
-bErrType
+ion_bpp_err_t
 bOpen(
-	bOpenType	info,
-	bHandleType *handle
+	ion_bpp_open_t		info,
+	ion_bpp_handle_t	*handle
 );
 
 /*
@@ -90,11 +90,11 @@ bOpen(
  *   bErrMemory			 insufficient memory
  *   bErrSectorSize		 sector size too small or not 0 mod 4
  *   bErrFileNotOpen		unable to open index file
- */
+*/
 
-bErrType
+ion_bpp_err_t
 bClose(
-	bHandleType handle
+	ion_bpp_handle_t handle
 );
 
 /*
@@ -102,13 +102,13 @@ bClose(
  *   handle				 handle returned by bOpen
  * returns:
  *   bErrOk				 file closed, resources deleted
- */
+*/
 
-bErrType
+ion_bpp_err_t
 bInsertKey(
-	bHandleType handle,
-	void		*key,
-	eAdrType	rec
+	ion_bpp_handle_t			handle,
+	void						*key,
+	ion_bpp_external_address_t	rec
 );
 
 /*
@@ -125,13 +125,13 @@ bInsertKey(
  *   allowed, but they must all have unique record addresses.
  *   In this case, record addresses are included in internal
  *   nodes to generate a "unique" key.
- */
+*/
 
-bErrType
+ion_bpp_err_t
 bUpdateKey(
-	bHandleType handle,
-	void		*key,
-	eAdrType	rec
+	ion_bpp_handle_t			handle,
+	void						*key,
+	ion_bpp_external_address_t	rec
 );
 
 /*
@@ -148,13 +148,13 @@ bUpdateKey(
  *   allowed, but they must all have unique record addresses.
  *   In this case, record addresses are included in internal
  *   nodes to generate a "unique" key.
- */
+*/
 
-bErrType
+ion_bpp_err_t
 bDeleteKey(
-	bHandleType handle,
-	void		*key,
-	eAdrType	*rec
+	ion_bpp_handle_t			handle,
+	void						*key,
+	ion_bpp_external_address_t	*rec
 );
 
 /*
@@ -171,13 +171,13 @@ bDeleteKey(
  *   If dupKeys is false, all keys are unique, and rec is not used
  *   to determine which key to delete.  If dupKeys is true, then
  *   rec is used to determine which key to delete.
- */
+*/
 
-bErrType
+ion_bpp_err_t
 bFindKey(
-	bHandleType handle,
-	void		*key,
-	eAdrType	*rec
+	ion_bpp_handle_t			handle,
+	void						*key,
+	ion_bpp_external_address_t	*rec
 );
 
 /*
@@ -189,14 +189,14 @@ bFindKey(
  * returns:
  *   bErrOk				 operation successful
  *   bErrKeyNotFound		key not found
- */
+*/
 
-bErrType
+ion_bpp_err_t
 bFindFirstGreaterOrEqual(
-	bHandleType handle,
-	void		*key,
-	void		*mkey,
-	eAdrType	*rec
+	ion_bpp_handle_t			handle,
+	void						*key,
+	void						*mkey,
+	ion_bpp_external_address_t	*rec
 );
 
 /*
@@ -208,13 +208,13 @@ bFindFirstGreaterOrEqual(
  *   rec					record address of least element greater than or equal to
  * returns:
  *   bErrOk				 operation successful
- */
+*/
 
-bErrType
+ion_bpp_err_t
 bFindFirstKey(
-	bHandleType handle,
-	void		*key,
-	eAdrType	*rec
+	ion_bpp_handle_t			handle,
+	void						*key,
+	ion_bpp_external_address_t	*rec
 );
 
 /*
@@ -226,13 +226,13 @@ bFindFirstKey(
  * returns:
  *   bErrOk				 operation successful
  *   bErrKeyNotFound		key not found
- */
+*/
 
-bErrType
+ion_bpp_err_t
 bFindLastKey(
-	bHandleType handle,
-	void		*key,
-	eAdrType	*rec
+	ion_bpp_handle_t			handle,
+	void						*key,
+	ion_bpp_external_address_t	*rec
 );
 
 /*
@@ -244,13 +244,13 @@ bFindLastKey(
  * returns:
  *   bErrOk				 operation successful
  *   bErrKeyNotFound		key not found
- */
+*/
 
-bErrType
+ion_bpp_err_t
 bFindNextKey(
-	bHandleType handle,
-	void		*key,
-	eAdrType	*rec
+	ion_bpp_handle_t			handle,
+	void						*key,
+	ion_bpp_external_address_t	*rec
 );
 
 /*
@@ -262,13 +262,13 @@ bFindNextKey(
  * returns:
  *   bErrOk				 operation successful
  *   bErrKeyNotFound		key not found
- */
+*/
 
-bErrType
+ion_bpp_err_t
 bFindPrevKey(
-	bHandleType handle,
-	void		*key,
-	eAdrType	*rec
+	ion_bpp_handle_t			handle,
+	void						*key,
+	ion_bpp_external_address_t	*rec
 );
 
 /*
@@ -280,7 +280,7 @@ bFindPrevKey(
  * returns:
  *   bErrOk				 operation successful
  *   bErrKeyNotFound		key not found
- */
+*/
 
 #if defined(__cplusplus)
 }

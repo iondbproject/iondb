@@ -31,12 +31,12 @@ public:
 				The size of the values to be stored in the dictionary.
 @param	  dictionary_size
 				The size desired for the dictionary.
- */
+*/
 OpenAddressFileHash(
-	key_type_t	type_key,
-	int			key_size,
-	int			value_size,
-	int			dictionary_size
+	ion_key_type_t			type_key,
+	ion_key_size_t			key_size,
+	ion_value_size_t		value_size,
+	ion_dictionary_size_t	dictionary_size
 ) {
 	oafdict_init(&this->handler);
 

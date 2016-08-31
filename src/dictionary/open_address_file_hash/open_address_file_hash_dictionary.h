@@ -1,7 +1,6 @@
 /**
 
 @details		This file includes common components for oadictionary and oahash.
-
 */
 
 #if !defined(OPEN_ADDRESS_FILE_DICTIONARY_H_)
@@ -18,15 +17,15 @@ extern "C" {
 
 /**
 @brief		The position in the hashmap.
- */
-typedef int hash_t;
+*/
+typedef int ion_hash_t;
 
 typedef struct oafdict_cursor {
-	dict_cursor_t	super;			/**< Cursor supertype this type inherits from */
-	hash_t			first;			/**<First visited spot*/
-	hash_t			current;		/**<Currently visited spot*/
-	char			status;			/*todo what is this for again as there are two status */
-} oafdict_cursor_t;
+	ion_dict_cursor_t	super;			/**< Cursor supertype this type inherits from */
+	ion_hash_t			first;			/**<First visited spot*/
+	ion_hash_t			current;		/**<Currently visited spot*/
+	char				status;		/*todo what is this for again as there are two status */
+} ion_oafdict_cursor_t;
 
 #if defined(__cplusplus)
 }
