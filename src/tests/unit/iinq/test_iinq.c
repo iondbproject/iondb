@@ -767,11 +767,11 @@ iinq_test_create_query_select_max_from_where_groupby_aggregate_records(
 	switch (count) {
 		case 0:
 			/* TODO: Make this an assert double macro. */
-			PLANCK_UNIT_ASSERT_TRUE(tc, 1.0 == maxval);
+			PLANCK_UNIT_ASSERT_TRUE(tc, 14.0 == maxval);
 			break;
 		case 1:
 			/* TODO: Make this an assert double macro. */
-			PLANCK_UNIT_ASSERT_TRUE(tc, 2.0 == maxval);
+			PLANCK_UNIT_ASSERT_TRUE(tc, 2951.0 == maxval);
 			break;
 		default:
 			PLANCK_UNIT_SET_FAIL(tc);
@@ -780,7 +780,7 @@ iinq_test_create_query_select_max_from_where_groupby_aggregate_records(
 }
 
 void
-iinq_test_create_query_select_max_from_where_groupby_aggregate(
+iinq_test_create_query_select_max_from_where_groupby_aggregate_small(
 	planck_unit_test_t *tc
 ) {
 	ion_err_t					error;
@@ -804,19 +804,80 @@ iinq_test_create_query_select_max_from_where_groupby_aggregate(
 	error		= CREATE_DICTIONARY(test, key_type, key_size, value_size);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
 
-	iinq_test_insert_into_test(tc, IONIZE(1, uint32_t), IONIZE(1, uint32_t));
-	iinq_test_insert_into_test(tc, IONIZE(2, uint32_t), IONIZE(2, uint32_t));
+	iinq_test_insert_into_test(tc, IONIZE(1, uint32_t), IONIZE(14, uint32_t));
+	iinq_test_insert_into_test(tc, IONIZE(2, uint32_t), IONIZE(2951, uint32_t));
 
 	MATERIALIZED_QUERY(
 		SELECT(SELECT_AGGR(0)),
-		AGGREGATES(MAX(NEUTRALIZE(test.key, uint32_t))),
+		AGGREGATES(MAX(NEUTRALIZE(test.value, uint32_t))),
 		FROM(0, test),
 		WHERE(1),
-		GROUPBY(ASCENDING_INT(NEUTRALIZE(test.key, uint32_t)))
-		,
+		GROUPBY(ASCENDING_INT(NEUTRALIZE(test.key, uint32_t))),
 		HAVING_ALL,
-		ORDERBY_NONE
-		, , ,
+		ORDERBY_NONE,
+		, ,
+		&processor
+	);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, state.count);
+
+	DROP(test);
+}
+
+void
+iinq_test_create_query_select_max_from_where_groupby_aggregate_large(
+	planck_unit_test_t *tc
+) {
+	ion_err_t					error;
+	ion_iinq_query_processor_t	processor;
+	iinq_test_query_state_t		state;
+	state.count					= 0;
+	state.tc					= tc;
+	state.total					= 2;
+	state.func					= iinq_test_create_query_select_max_from_where_groupby_aggregate_records;
+
+	ion_key_type_t				key_type;
+	ion_key_size_t				key_size;
+	ion_value_size_t			value_size;
+
+	processor	= IINQ_QUERY_PROCESSOR(check_results, &state);
+
+	key_type	= key_type_numeric_signed;
+	key_size	= sizeof(uint32_t);
+	value_size	= sizeof(uint32_t);
+
+	error		= CREATE_DICTIONARY(test, key_type, key_size, value_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
+
+	srand(1125123);
+
+	/* Insert values [0, 2951) for key 2 and values [0, 14) for key 1. */
+	int i;
+	for (i = 0; i < 100; i++) {
+		iinq_test_insert_into_test(tc, IONIZE(2, uint32_t), IONIZE((uint32_t) rand() % 2951, uint32_t));
+		iinq_test_insert_into_test(tc, IONIZE(1, uint32_t), IONIZE((uint32_t) rand() % 14, uint32_t));
+	}
+
+	/* This is the max value to be inserted for key 2. */
+	iinq_test_insert_into_test(tc, IONIZE(2, uint32_t), IONIZE(2951, uint32_t));
+
+	/* Insert values [0, 2951) for key 2. */
+	for (i = 0; i < 100; i++) {
+		iinq_test_insert_into_test(tc, IONIZE(2, uint32_t), IONIZE((uint32_t) rand() % 2951, uint32_t));
+	}
+
+	/* This is the max value to be inserted for key 1. */
+	iinq_test_insert_into_test(tc, IONIZE(1, uint32_t), IONIZE(14, uint32_t));
+
+	MATERIALIZED_QUERY(
+		SELECT(SELECT_AGGR(0)),
+		AGGREGATES(MAX(NEUTRALIZE(test.value, uint32_t))),
+		FROM(0, test),
+		WHERE(1),
+		GROUPBY(ASCENDING_INT(NEUTRALIZE(test.key, uint32_t))),
+		HAVING_ALL,
+		ORDERBY_NONE,
+		, ,
 		&processor
 	);
 
@@ -883,11 +944,10 @@ iinq_test_create_query_select_count_from_where_groupby_aggregate(
 		AGGREGATES(COUNT(NEUTRALIZE(test.key, uint32_t))),
 		FROM(0, test),
 		WHERE(1),
-		GROUPBY(ASCENDING_INT(NEUTRALIZE(test.key, uint32_t)))
-		,
+		GROUPBY(ASCENDING_INT(NEUTRALIZE(test.key, uint32_t))),
 		HAVING_ALL,
-		ORDERBY_NONE
-		, , ,
+		ORDERBY_NONE,
+		, ,
 		&processor
 	);
 
@@ -954,11 +1014,10 @@ iinq_test_create_query_select_sum_from_where_groupby_aggregate(
 		AGGREGATES(SUM(NEUTRALIZE(test.value, uint32_t))),
 		FROM(0, test),
 		WHERE(1),
-		GROUPBY(DESCENDING_INT(NEUTRALIZE(test.key, uint32_t)))
-		,
+		GROUPBY(DESCENDING_INT(NEUTRALIZE(test.key, uint32_t))),
 		HAVING_ALL,
-		ORDERBY_NONE
-		, , ,
+		ORDERBY_NONE,
+		, ,
 		&processor
 	);
 
@@ -1025,8 +1084,8 @@ iinq_test_create_query_select_count_from_where_groupby_having_aggregate(
 		WHERE(1),
 		GROUPBY(ASCENDING_INT(NEUTRALIZE(test.key, uint32_t))),
 		HAVING(AGGREGATE(0) == 2),
-		ORDERBY_NONE
-		, , ,
+		ORDERBY_NONE,
+		, ,
 		&processor
 	);
 
@@ -1107,7 +1166,7 @@ iinq_test_create_query_select_key_from_where_groupby(
 }
 
 void
-iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby_records(
+iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby_small_records(
 	planck_unit_test_t	*tc,
 	ion_iinq_result_t	*result,
 	uint32_t			count,
@@ -1133,7 +1192,7 @@ iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby_records(
 }
 
 void
-iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby(
+iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby_small(
 	planck_unit_test_t *tc
 ) {
 	ion_err_t					error;
@@ -1142,7 +1201,7 @@ iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby(
 	state.count					= 0;
 	state.tc					= tc;
 	state.total					= 2;
-	state.func					= iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby_records;
+	state.func					= iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby_small_records;
 
 	ion_key_type_t				key_type;
 	ion_key_size_t				key_size;
@@ -1173,6 +1232,82 @@ iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby(
 	);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, state.count);
+
+	DROP(test);
+}
+
+void
+iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby_large_records(
+	planck_unit_test_t	*tc,
+	ion_iinq_result_t	*result,
+	uint32_t			count,
+	uint32_t 			total
+)
+{
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(double), result->num_bytes);
+	double	maxval	= *((double *)(result->processed));
+
+	if (count == 0) {
+		PLANCK_UNIT_ASSERT_TRUE(tc, 1842.0 == maxval);
+	}
+	else if (count == 1) {
+		PLANCK_UNIT_ASSERT_TRUE(tc, 238.0 == maxval);
+	}
+	else if (count > 200) {
+		PLANCK_UNIT_SET_FAIL(tc);
+	}
+	else {
+		PLANCK_UNIT_ASSERT_TRUE(tc, total - count == maxval);
+	}
+}
+
+void
+iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby_large(
+	planck_unit_test_t *tc
+) {
+	ion_err_t					error;
+	ion_iinq_query_processor_t	processor;
+	iinq_test_query_state_t		state;
+	state.count					= 0;
+	state.tc					= tc;
+	state.total					= 200;
+	state.func					= iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby_large_records;
+
+	ion_key_type_t				key_type;
+	ion_key_size_t				key_size;
+	ion_value_size_t			value_size;
+
+	processor	= IINQ_QUERY_PROCESSOR(check_results, &state);
+
+	key_type	= key_type_numeric_signed;
+	key_size	= sizeof(uint32_t);
+	value_size	= sizeof(uint32_t);
+
+	error		= CREATE_DICTIONARY(test, key_type, key_size, value_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
+
+	iinq_test_insert_into_test(tc, IONIZE(198, uint32_t), IONIZE(238, uint32_t));
+
+	uint32_t i;
+	for (i = 0; i < 200; i++) {
+		iinq_test_insert_into_test(tc, IONIZE(i, uint32_t), IONIZE(i, uint32_t));
+	}
+
+	iinq_test_insert_into_test(tc, IONIZE(199, uint32_t), IONIZE(1842, uint32_t));
+
+	MATERIALIZED_QUERY(
+		SELECT(SELECT_AGGR(0)),
+		AGGREGATES(MAX(NEUTRALIZE(test.value, uint32_t))),
+		FROM(0, test),
+		WHERE(1),
+		GROUPBY(ASCENDING_INT(NEUTRALIZE(test.key, uint32_t))),
+		HAVING_ALL,
+		ORDERBY(DESCENDING_INT(AGGREGATE(0))),
+		, ,
+		&processor
+	);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 200, state.count);
 
 	DROP(test);
 }
@@ -1256,11 +1391,10 @@ iinq_test_create_query_select_count_from_where_groupby_aggregate_schema(
 		AGGREGATES(MIN(test_tuple->x), MAX(test_tuple->y)),
 		FROM(1, test),
 		WHERE(1),
-		GROUPBY(ASCENDING_INT(NEUTRALIZE(test.key, uint32_t)))
-		,
+		GROUPBY(ASCENDING_INT(NEUTRALIZE(test.key, uint32_t))),
 		HAVING_ALL,
-		ORDERBY_NONE
-		, , ,
+		ORDERBY_NONE,
+		, ,
 		&processor
 	);
 
@@ -1553,8 +1687,8 @@ iinq_test_the_ultimate_query(
 		WHERE(test1_tuple->a == test2_tuple->c && 0 == strncmp(test2.key, test3_tuple->f, 5) && test3_tuple->e > 1000),
 		GROUPBY(ASCENDING_UINT(test1_tuple->b), ASCENDING(test3_tuple->f)),
 		HAVING((int16_t) AGGREGATE(2) % 2 == 0),
-		ORDERBY(DESCENDING_UINT(test1_tuple->b), ASC(AGGREGATE(3)))
-		, , ,
+		ORDERBY(DESCENDING_UINT(test1_tuple->b), ASC(AGGREGATE(3))),
+		, ,
 		&processor
 	);
 
@@ -1578,29 +1712,37 @@ iinq_get_suite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_two_dictionaries);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_aggregates);
 
-	/* TODO: Failing :( fix me plz */
+	/* TODO: Failing :( fix me */
 //	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_expression_from_where_aggregates);
 
-	/* TODO: Failing :( fix me plz */
+	/* TODO: Failing :( fix me */
 //	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_complex_expression_from_where_aggregates);
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_ascending_small);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_ascending_large);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_descending_small);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_descending_large);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_small);
+
+	/* TODO: Failing :( fix me */
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_large);
+
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_aggregate);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_sum_from_where_groupby_aggregate);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_having_aggregate);
 
-	/* TODO: Failing :( fix me plz */
+	/* TODO: Failing :( fix me */
 //	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_key_from_where_groupby);
 
-	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby_small);
+
+	/* TODO: Failing :( fix me */
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby_large);
+
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_aggregate_schema);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_string_from_join_where_schema);
 
-	/* TODO: Failing :( fix me plz */
+	/* TODO: Failing :( fix me */
 //	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_the_ultimate_query);
 
 	return suite;
