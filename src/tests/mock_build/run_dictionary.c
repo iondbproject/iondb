@@ -1,8 +1,8 @@
-#include "test_dictionary.h"
+#include "test_dictionary.c"
 
 int
 main(
 ) {
-	runalltests_dictionary();
+	runalltests_mock();
 	return 0;
 }

@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.5)
-project(test_dictionary)
+project(mock_build)
 
 set(SOURCE_FILES
-    ../../../dictionary/ion_master_table.h
-    ../../../dictionary/ion_master_table.c
-    test_dictionary.h
-    test_dictionary.c
-    generic_dictionary_test.h
-    generic_dictionary_test.c)
+        SOURCE_FILES
+        ../../dictionary/ion_master_table.h
+        ../../dictionary/ion_master_table.c
+        test_dictionary.h
+        test_dictionary.c
+    )
 
 if(USE_ARDUINO)
     set(${PROJECT_NAME}_BOARD       ${BOARD})
@@ -20,17 +20,13 @@ if(USE_ARDUINO)
 
     set(${PROJECT_NAME}_SRCS
         ${SOURCE_FILES}
-        ../../../file/kv_stdio_intercept.h
-        ../../../file/SD_stdio_c_iface.h
-        ../../../file/SD_stdio_c_iface.cpp)
-
-    set(${PROJECT_NAME}_LIBS        planck_unit skip_list flat_file)
-
+        ../../file/kv_stdio_intercept.h
+        ../../file/SD_stdio_c_iface.h
+        ../../file/SD_stdio_c_iface.cpp)
+        
     generate_arduino_firmware(${PROJECT_NAME})
 else()
     add_executable(${PROJECT_NAME}          ${SOURCE_FILES} run_dictionary.c)
-
-    target_link_libraries(${PROJECT_NAME}   planck_unit skip_list flat_file)
 
     # Use cmake -DCOVERAGE_TESTING=ON to include coverage testing information.
     if (CMAKE_COMPILER_IS_GNUCC AND COVERAGE_TESTING)

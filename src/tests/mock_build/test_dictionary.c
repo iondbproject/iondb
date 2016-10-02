@@ -6,11 +6,15 @@
 */
 
 #include "test_dictionary.h"
+#include "../../dictionary/dictionary.h"
 
 void
 test_mock(
 	planck_unit_test_t *tc
 ) {
+	ion_key_t	key_one;
+	ion_key_t	key_two;
+
 	key_one = &(int) {
 		1
 	};
@@ -18,11 +22,11 @@ test_mock(
 		1
 	};
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL == dictionary_compare_unsigned_value(1));
+	PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL == dictionary_compare_unsigned_value(key_one, key_two, sizeof(int)));
 }
 
 planck_unit_suite_t *
-dictionary_getsuite(
+mock_getsuite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
@@ -32,9 +36,9 @@ dictionary_getsuite(
 }
 
 void
-runalltests_dictionary(
+runalltests_mock(
 ) {
-	planck_unit_suite_t *suite = dictionary_getsuite();
+	planck_unit_suite_t *suite = mock_getsuite();
 
 	planck_unit_run_suite(suite);
 	planck_unit_destroy_suite(suite);
