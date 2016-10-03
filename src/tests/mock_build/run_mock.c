@@ -1,4 +1,4 @@
-#include "test_dictionary.h"
+#include "test_mock.h"
 
 int
 main(

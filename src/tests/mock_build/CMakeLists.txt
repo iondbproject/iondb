@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 project(mock_build)
 
 set(SOURCE_FILES
-        test_dictionary.h
-        test_dictionary.c
+        test_mock.h
+        test_mock.c
     )
 
 if(USE_ARDUINO)
@@ -13,17 +13,16 @@ if(USE_ARDUINO)
     set(${PROJECT_NAME}_PORT        ${PORT})
     set(${PROJECT_NAME}_SERIAL      ${SERIAL})
 
-    set(${PROJECT_NAME}_SKETCH      dictionary.ino)
+    set(${PROJECT_NAME}_SKETCH mock.ino)
 
     set(${PROJECT_NAME}_SRCS
         ${SOURCE_FILES}
         ../../file/kv_stdio_intercept.h
-        ../../file/SD_stdio_c_iface.h
-        ../../file/SD_stdio_c_iface.cpp)
+        )
 
     generate_arduino_firmware(${PROJECT_NAME})
 else()
-    add_executable(${PROJECT_NAME}          ${SOURCE_FILES} run_dictionary.c)
+    add_executable(${PROJECT_NAME}          ${SOURCE_FILES} run_mock.c)
 
     # Use cmake -DCOVERAGE_TESTING=ON to include coverage testing information.
     if (CMAKE_COMPILER_IS_GNUCC AND COVERAGE_TESTING)

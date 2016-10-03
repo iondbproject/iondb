@@ -5,7 +5,7 @@
  *	  Author: workstation
 */
 
-#include "test_dictionary.h"
+#include "test_mock.h"
 #include "../../dictionary/dictionary.c"
 #include "../planckunit/src/planck_unit.c"
 
