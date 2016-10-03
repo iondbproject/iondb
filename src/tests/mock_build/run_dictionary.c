@@ -1,4 +1,4 @@
-#include "test_dictionary.c"
+#include "test_dictionary.h"
 
 int
 main(

@@ -6,7 +6,8 @@
 */
 
 #include "test_dictionary.h"
-#include "../../dictionary/dictionary.h"
+#include "../../dictionary/dictionary.c"
+#include "../planckunit/src/planck_unit.c"
 
 void
 test_mock(

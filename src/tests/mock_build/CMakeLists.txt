@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 3.5)
 project(mock_build)
 
 set(SOURCE_FILES
-        SOURCE_FILES
-        ../../dictionary/ion_master_table.h
-        ../../dictionary/ion_master_table.c
         test_dictionary.h
         test_dictionary.c
     )
@@ -23,7 +20,7 @@ if(USE_ARDUINO)
         ../../file/kv_stdio_intercept.h
         ../../file/SD_stdio_c_iface.h
         ../../file/SD_stdio_c_iface.cpp)
-        
+
     generate_arduino_firmware(${PROJECT_NAME})
 else()
     add_executable(${PROJECT_NAME}          ${SOURCE_FILES} run_dictionary.c)

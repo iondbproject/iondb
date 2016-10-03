@@ -13,9 +13,6 @@
 #ifdef  __cplusplus
 extern "C" {
 #endif
-void
-test_mock(
-);
 
 planck_unit_suite_t *
 mock_getsuite(
