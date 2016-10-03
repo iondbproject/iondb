@@ -20,6 +20,7 @@
 			License.
 */
 /******************************************************************************/
+
 #include "dictionary.h"
 #include "flat_file/flat_file_dictionary_handler.h"
 

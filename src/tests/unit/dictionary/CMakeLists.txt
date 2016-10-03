@@ -5,7 +5,6 @@ set(SOURCE_FILES
     ../../../dictionary/ion_master_table.h
     ../../../dictionary/ion_master_table.c
     test_dictionary.h
-        test_mock.c
     generic_dictionary_test.h
     generic_dictionary_test.c)
 
