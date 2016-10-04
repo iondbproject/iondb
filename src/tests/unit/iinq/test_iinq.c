@@ -317,6 +317,12 @@ iinq_test_create_query_select_all_from_where_two_dictionaries_records(
 		case 0:
 			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, NEUTRALIZE(key_1, uint32_t));
 			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, NEUTRALIZE(value_1, uint32_t));
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, NEUTRALIZE(key_2, uint32_t));
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, NEUTRALIZE(value_2, uint32_t));
+			break;
+		case 1:
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, NEUTRALIZE(key_1, uint32_t));
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, NEUTRALIZE(value_1, uint32_t));
 			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, NEUTRALIZE(key_2, uint32_t));
 			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, NEUTRALIZE(value_2, uint32_t));
 			break;
@@ -363,18 +369,18 @@ iinq_test_create_query_select_all_from_where_two_dictionaries(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
 
-	status = INSERT(test2, key, value);
+	status		= INSERT(test2, key, value);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
 
-	key		= IONIZE(2, int);
-	value	= IONIZE(2, int);
+	key			= IONIZE(2, int);
+	value		= IONIZE(2, int);
 
-	status	= INSERT(test1, key, value);
+	status		= INSERT(test1, key, value);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
 
-	status = INSERT(test2, key, value);
+	status		= INSERT(test2, key, value);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
 
@@ -386,7 +392,7 @@ iinq_test_create_query_select_all_from_where_two_dictionaries(
 		&processor
 	);
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, state.count);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, state.count);
 
 	DROP(test1);
 	DROP(test2);
@@ -1274,7 +1280,7 @@ iinq_get_suite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_insert_update_delete_drop_dictionary_intint);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_single_dictionary);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_expression_all_from_where_single_dictionary);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_two_dictionaries);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_two_dictionaries);
 //	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_aggregates);
 //	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_expression_from_where_aggregates);
 //	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_complex_expression_from_where_aggregates);
