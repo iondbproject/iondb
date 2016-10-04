@@ -1102,17 +1102,14 @@ iinq_test_create_query_select_key_from_where_aggregates_records(
 )
 {
 	UNUSED(total);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(uint32_t) * 2, result->num_bytes);
-	ion_key_t	key		= result->processed;
-	ion_value_t value	= result->processed + sizeof(uint32_t);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(uint32_t), result->num_bytes);
+	ion_key_t	expr	= result->processed;
 	switch (count) {
 		case 0:
-			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, NEUTRALIZE(key, uint32_t));
-			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, NEUTRALIZE(value, uint32_t));
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, NEUTRALIZE(expr, uint32_t));
 			break;
 		case 1:
-			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, NEUTRALIZE(key, uint32_t));
-			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, NEUTRALIZE(value, uint32_t));
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, NEUTRALIZE(expr, uint32_t));
 			break;
 		default:
 			PLANCK_UNIT_SET_FAIL(tc);
@@ -1718,16 +1715,13 @@ iinq_get_suite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_descending_large);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_small);
 
-	/* TODO: Failing :( fix me */
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_large);
+	//TODO: Failing :( fix me
+	//PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_large);
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_aggregate);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_sum_from_where_groupby_aggregate);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_having_aggregate);
-
-	/* TODO: Failing :( fix me */
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_key_from_where_groupby);
-
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_key_from_where_groupby);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby_small);
 
 	/* TODO: Failing :( fix me */

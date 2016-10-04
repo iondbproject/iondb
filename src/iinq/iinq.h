@@ -1158,7 +1158,7 @@ do { \
     orderby_clause \
 	/* We wrap the FROM code in a do-while(0) to limit the lifetime of the source variables. */ \
     do { \
-		if (agg_n > 0) { \
+		if (agg_n > 0 || groupby_n > 0) { \
 			/* Write out the aggregate records to disk for sorting. */ \
 			_OPEN_ORDERING_FILE_WRITE(groupby, 0, 1, 0, result, groupby) \
 		} \
@@ -1178,7 +1178,7 @@ do { \
 			/* We need to select everything in order to guarantee clauses requiring sorting work. */ \
 			_COPY_EARLY_RESULT_ALL \
 			/* If there are grouping/aggregate attributes. */ \
-			if (agg_n > 0) { \
+			if (agg_n > 0 || groupby_n > 0) { \
 				/* Write out the groupby records to disk for sorting. */ \
 				goto IINQ_COMPUTE_GROUPBY; \
 				IINQ_DONE_COMPUTE_GROUPBY: ; \
@@ -1216,7 +1216,7 @@ do { \
 			} \
         } \
 		IINQ_QUERY_CLEANUP: \
-		if (agg_n > 0 || orderby_n > 0) { \
+		if (agg_n > 0 || groupby_n > 0 || orderby_n > 0) { \
             _CLOSE_ORDERING_FILE(output_file); \
         } \
 		while (NULL != first) { \
@@ -1228,8 +1228,8 @@ do { \
 			goto IINQ_QUERY_END; \
 		} \
     } while (0); \
-	/* If we have both aggregates and a groupby elements, we must sort the file. */ \
-	if (agg_n > 0 && groupby_n > 0) { \
+	/* If we have groupby elements, we must sort the file. */ \
+	if (groupby_n > 0) { \
 		_OPEN_ORDERING_FILE_READ(groupby, 0, 1, 0, result, groupby); \
 		/*int total_sorted_size = total_groupby_size;*/ \
 		_OPEN_ORDERING_FILE_WRITE(sortedgb, 0, 1, 0, result, groupby); \
@@ -1252,7 +1252,7 @@ do { \
 		_REMOVE_ORDERING_FILE(groupby); \
     } \
 	/* Aggregates and GROUPBY handling. */ \
-	if (agg_n > 0) { \
+	if (agg_n > 0 || groupby_n > 0) { \
 		if (groupby_n > 0) { \
 			_OPEN_ORDERING_FILE_READ(sortedgb, 0, 1, 0, result, groupby); \
 		} \
@@ -1260,7 +1260,9 @@ do { \
 			_OPEN_ORDERING_FILE_READ(groupby, 0, 1, 0, result, groupby); \
         } \
 		/* Note that if there is no orderby, then we simply will read these values off disk when we are done (no sort). */ \
-		_OPEN_ORDERING_FILE_WRITE(orderby, 1, 0, 1, result, orderby); \
+		if (orderby_n > 0) { \
+            _OPEN_ORDERING_FILE_WRITE(orderby, 1, 0, 1, result, orderby); \
+        } \
 		ion_boolean_t	is_first	= boolean_true; \
 		/* We need to track two keys. We need to be able to compare the last key seen to the next
 		 * to know if the next key is equal (and is thus part of the same grouping attribute. */ \
@@ -1272,7 +1274,7 @@ do { \
 		result.processed			= alloca(result.num_bytes); \
 		while (1) { \
 			_READ_ORDERING_RECORD(total_groupby_size, NULL, cur_key, 1, 0, result,/* Empty on purpose. */) \
-			/* TODO: Graeme, make sure you setup all necessary error codes in above and related, as well as handle them here. */ \
+			/* If this is the first row evaluated, or if this is key is different from a previous key, re-init the aggregate computations. */ \
 			if (total_groupby_size > 0 && boolean_false == is_first && equal != iinq_sort_compare(&_IINQ_SORT_CONTEXT(groupby), cur_key, old_key)) { \
 				jmp_r				= 1; \
 				goto IINQ_COMPUTE_ORDERBY; \
@@ -1283,9 +1285,17 @@ do { \
 				jmp_r				= 1; \
 				goto COMPUTE_SELECT; \
 				DONE_COMPUTE_SELECT_1: ; \
-				_WRITE_ORDERING_RECORD(orderby, 1, 0, 1, result) \
+				if (orderby_n > 0) { \
+					_WRITE_ORDERING_RECORD(orderby, 1, 0, 1, result) \
+				} \
+				else { \
+					(p)->execute(&result, (p)->state); \
+				} \
 				_AGGREGATES_INITIALIZE \
             } \
+			for (i_groupby = 0; i_groupby < groupby_n; i_groupby++) { \
+				memcpy(groupby_order_parts[i_groupby].pointer, cur_key, groupby_order_parts[i_groupby].size); \
+			} \
 			goto IINQ_COMPUTE_AGGREGATES; \
 			IINQ_DONE_COMPUTE_AGGREGATES:; \
 			if (total_groupby_size > 0) { \
@@ -1293,7 +1303,7 @@ do { \
 			} \
 			is_first				= boolean_false; \
         } \
-		/* Condition where there were some records, meaning we set is_first to true.  */ \
+		/* Condition where there were some records but only one group-by key, meaning we set is_first to true.  */ \
 		if (boolean_false == is_first) { \
 			jmp_r				= 2; \
 			goto IINQ_COMPUTE_ORDERBY; \
@@ -1304,7 +1314,12 @@ do { \
 			jmp_r		= 2; \
 			goto COMPUTE_SELECT; \
 			DONE_COMPUTE_SELECT_2: ; \
-			_WRITE_ORDERING_RECORD(orderby, 1, 0, 1, result) \
+			if (orderby_n > 0) { \
+                _WRITE_ORDERING_RECORD(orderby, 1, 0, 1, result) \
+            } \
+			else { \
+				(p)->execute(&result, (p)->state); \
+			} \
 		} \
 		IINQ_CLEANUP_AGGREGATION: ; \
 		_CLOSE_ORDERING_FILE(output_file) \
@@ -1324,7 +1339,7 @@ do { \
 	if (orderby_n > 0 || agg_n > 0) { \
 		/* We can safely ALWAYS open with aggregates, because it doesn't increase the size if no aggregates exist (0*8 == 0). */ \
 		/* If we have aggregates, we have already projected. Otherwise, we haven't. */ \
-		if (agg_n > 0) { \
+		if (agg_n > 0 || orderby_n > 0) { \
 			_OPEN_ORDERING_FILE_READ(orderby, 1, 0, 1, result, orderby); \
         } \
 		else { \
