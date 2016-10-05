@@ -6,6 +6,7 @@
 extern "C" {
 #endif
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <alloca.h>
@@ -906,6 +907,7 @@ do { \
 		if (0 != fseek(input_file, read_page_remaining, SEEK_CUR)) { \
 			break; \
 		} \
+		read_page_remaining	= IINQ_PAGE_SIZE; \
 	} \
 	/* If the key is a non-null pointer. */ \
 	if (NULL != key) { \
@@ -1303,7 +1305,7 @@ do { \
 			} \
 			is_first				= boolean_false; \
         } \
-		/* Condition where there were some records but only one group-by key, meaning we set is_first to true.  */ \
+		/* Condition where there was at least one record, meaning we set is_first to false.  */ \
 		if (boolean_false == is_first) { \
 			jmp_r				= 2; \
 			goto IINQ_COMPUTE_ORDERBY; \
@@ -1322,7 +1324,9 @@ do { \
 			} \
 		} \
 		IINQ_CLEANUP_AGGREGATION: ; \
-		_CLOSE_ORDERING_FILE(output_file) \
+		if (orderby_n > 0) { \
+			_CLOSE_ORDERING_FILE(output_file) \
+        } \
 		_CLOSE_ORDERING_FILE(input_file) \
 		if (groupby_n > 0) { \
             _REMOVE_ORDERING_FILE(sortedgb); \

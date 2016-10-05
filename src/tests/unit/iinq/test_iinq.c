@@ -838,6 +838,8 @@ iinq_test_create_query_select_max_from_where_groupby_aggregate_large(
 	ion_key_type_t				key_type;
 	ion_key_size_t				key_size;
 	ion_value_size_t			value_size;
+	uint32_t 					key_data;
+	uint32_t 					value_data;
 
 	processor	= IINQ_QUERY_PROCESSOR(check_results, &state);
 
@@ -853,8 +855,12 @@ iinq_test_create_query_select_max_from_where_groupby_aggregate_large(
 	/* Insert values [0, 2951) for key 2 and values [0, 14) for key 1. */
 	int i;
 	for (i = 0; i < 100; i++) {
-		iinq_test_insert_into_test(tc, IONIZE(2, uint32_t), IONIZE((uint32_t) rand() % 2951, uint32_t));
-		iinq_test_insert_into_test(tc, IONIZE(1, uint32_t), IONIZE((uint32_t) rand() % 14, uint32_t));
+		key_data	= 2;
+		value_data	= (uint32_t) rand() % 2951;
+		iinq_test_insert_into_test(tc, &key_data, &value_data);
+		key_data	= 1;
+		value_data	= (uint32_t) rand() % 14;
+		iinq_test_insert_into_test(tc, &key_data, &value_data);
 	}
 
 	/* This is the max value to be inserted for key 2. */
@@ -1244,6 +1250,7 @@ iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby_large_rec
 	double	maxval	= *((double *)(result->processed));
 
 	if (count == 0) {
+		printf("%f\n:", maxval);fflush(stdout);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1842.0 == maxval);
 	}
 	else if (count == 1) {
@@ -1714,24 +1721,21 @@ iinq_get_suite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_descending_small);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_descending_large);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_small);
-
-	//TODO: Failing :( fix me
-	//PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_large);
-
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_large);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_aggregate);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_sum_from_where_groupby_aggregate);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_having_aggregate);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_key_from_where_groupby);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby_small);
 
-	/* TODO: Failing :( fix me */
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby_large);
+	// TODO: Failing :( fix me
+	//PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby_large);
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_aggregate_schema);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_string_from_join_where_schema);
 
-	/* TODO: Failing :( fix me */
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_the_ultimate_query);
+	// TODO: Failing :( fix me */
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_the_ultimate_query);*/
 
 	return suite;
 }
