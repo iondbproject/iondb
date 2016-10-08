@@ -56,7 +56,7 @@ int bErrLineNo;
 typedef ion_boolean_e ion_bpp_bool_t;
 
 /* typedef enum {false, true} bool; */
-typedef enum {
+typedef enum ION_BPP_ERR {
 	bErrOk, bErrKeyNotFound, bErrDupKeys, bErrSectorSize, bErrFileNotOpen, bErrFileExists, bErrIO, bErrMemory
 } ion_bpp_err_t;
 
