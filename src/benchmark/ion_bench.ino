@@ -14,9 +14,9 @@
 
 #include "lfsr.h"
 
-#define SHOW()				printf("%s: ", __func__)
+#define ION_SHOW()				printf("%s: ", __func__)
 /**< MAKE_ION_KEY :: int -> ion_key_t (byte*) */
-#define MAKE_ION_KEY(x)		(_keyswap = x, &_keyswap)
+#define ION_MAKE_ION_KEY(x)		(_keyswap = x, &_keyswap)
 /**< ION_KEY_TO_INT :: ion_key_t (byte*) -> int */
 #define ION_KEY_TO_INT(key) *((int *) key)
 

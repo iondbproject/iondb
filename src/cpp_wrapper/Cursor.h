@@ -22,8 +22,8 @@
 */
 /******************************************************************************/
 
-#if !defined(CURSOR_H)
-#define CURSOR_H
+#if !defined(ION_CURSOR_H)
+#define ION_CURSOR_H
 
 template<typename K, typename V>
 class Cursor {

@@ -6,8 +6,8 @@
 */
 /******************************************************************************/
 
-#ifndef PROJECT_OPENADDRESSHASH_H
-#define PROJECT_OPENADDRESSHASH_H
+#ifndef ION_PROJECT_OPENADDRESSHASH_H
+#define ION_PROJECT_OPENADDRESSHASH_H
 
 #include "Dictionary.h"
 #include "../key_value/kv_system.h"

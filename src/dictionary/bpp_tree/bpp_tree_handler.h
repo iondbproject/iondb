@@ -7,7 +7,7 @@
 /******************************************************************************/
 
 #if !defined(BPP_TREE_HANDLER_H_)
-#define BPP_TREE_HANDLER_H_
+#define ION_BPP_TREE_HANDLER_H_
 
 #if defined(__cplusplus)
 extern "C" {

@@ -6,8 +6,8 @@
 */
 /******************************************************************************/
 
-#ifndef PROJECT_SKIPLIST_H
-#define PROJECT_SKIPLIST_H
+#ifndef ION_PROJECT_SKIPLIST_H
+#define ION_PROJECT_SKIPLIST_H
 
 #include "Dictionary.h"
 #include "../key_value/kv_system.h"

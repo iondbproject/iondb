@@ -32,26 +32,26 @@
 /* macros for addressing fields */
 
 /* primitives */
-#define bAdr(p)		*(ion_bpp_address_t *) (p)
-#define eAdr(p)		*(ion_bpp_external_address_t *) (p)
+#define ION_BADR(p)		*(ion_bpp_address_t *) (p)
+#define ION_EADR(p)		*(ion_bpp_external_address_t *) (p)
 
 /* based on k = &[key,rec,childGE] */
-#define childLT(k)	bAdr((char *) k - sizeof(ion_bpp_address_t))
-#define key(k)		(k)
-#define rec(k)		eAdr((char *) (k) + h->keySize)
-#define childGE(k)	bAdr((char *) (k) + h->keySize + sizeof(ion_bpp_external_address_t))
+#define ION_CHILDLT(k)	ION_BADR((char *) k - sizeof(ion_bpp_address_t))
+#define ION_KEY(k)		(k)
+#define ION_REC(k)		ION_EADR((char *) (k) + h->keySize)
+#define ION_CHILDGE(k)	ION_BADR((char *) (k) + h->keySize + sizeof(ion_bpp_external_address_t))
 
 /* based on b = &ion_bpp_buffer_t */
-#define leaf(b)		b->p->leaf
-#define ct(b)		b->p->ct
-#define next(b)		b->p->next
-#define prev(b)		b->p->prev
-#define fkey(b)		& b->p->fkey
-#define lkey(b)		(fkey(b) + ks((ct(b) - 1)))
-#define p(b)		(char *) (b->p)
+#define ION_LEAF(b)		b->p->leaf
+#define ION_CT(b)		b->p->ct
+#define ION_NEXT(b)		b->p->next
+#define ION_PREV(b)		b->p->prev
+#define ION_FKEY(b)		& b->p->fkey
+#define ION_LKEY(b)		(ION_FKEY(b) + ks((ION_CT(b) - 1)))
+#define ION_P(b)		(char *) (b->p)
 
 /* shortcuts */
-#define ks(ct)		((ct) * h->ks)
+#define ION_KS(ct)		((ct) * h->ks)
 
 typedef char ion_bpp_key_t;	/* keys entries are treated as char arrays */
 
@@ -67,7 +67,7 @@ typedef struct {
 	unsigned int		ct : 15;
 	ion_bpp_address_t	prev;			/* prev node in sequence (leaf) */
 	ion_bpp_address_t	next;			/* next node in sequence (leaf) */
-	ion_bpp_address_t	childLT;		/* child LT first key */
+	ion_bpp_address_t	ION_CHILDLT;		/* child LT first key */
 	/* ct occurrences of [key,rec,childGE] */
 	ion_bpp_key_t		fkey;			/* first occurrence */
 } ion_bpp_node_t;
@@ -101,7 +101,7 @@ typedef struct ion_bpp_h_node_tag {
 	ion_bpp_address_t		nextFreeAdr;/* next free b-tree record address */
 } ion_bpp_h_node_t;
 
-#define error(rc) lineError(__LINE__, rc)
+#define ION_ERROR(rc) lineError(__LINE__, rc)
 
 static ion_bpp_err_t
 lineError(
@@ -148,7 +148,7 @@ flush(
 	err = ion_fwrite_at(h->fp, buf->adr, len, (ion_byte_t *) buf->p);
 
 	if (err_ok != err) {
-		return error(bErrIO);
+		return ION_ERROR(bErrIO);
 	}
 
 #if 0
@@ -160,32 +160,32 @@ flush(
 	}
 
 	if (0 != fseek(h->fp, buf->adr, SEEK_SET)) {
-		return error(bErrIO);
+		return ION_ERROR(bErrIO);
 	}
 
 	for (i = 0; i < len; i++) {
 		if (1 != fwrite(&buf[i].p->leaf, sizeof(buf->p->leaf), 1, h->fp)) {
-			return error(bErrIO);
+			return ION_ERROR(bErrIO);
 		}
 
 		if (1 != fwrite(&buf[i].p->ct, sizeof(buf->p->ct), 1, h->fp)) {
-			return error(bErrIO);
+			return ION_ERROR(bErrIO);
 		}
 
 		if (1 != fwrite(&buf[i].p->prev, sizeof(buf->p->prev), 1, h->fp)) {
-			return error(bErrIO);
+			return ION_ERROR(bErrIO);
 		}
 
 		if (1 != fwrite(&buf[i].p->next, sizeof(buf->p->next), 1, h->fp)) {
-			return error(bErrIO);
+			return ION_ERROR(bErrIO);
 		}
 
-		if (1 != fwrite(&buf[i].p->childLT, sizeof(buf->p->childLT), 1, h->fp)) {
-			return error(bErrIO);
+		if (1 != fwrite(&buf[i].p->ION_CHILDLT, sizeof(buf->p->ION_CHILDLT), 1, h->fp)) {
+			return ION_ERROR(bErrIO);
 		}
 
 		if (1 != fwrite(&buf[i].p->fkey, sizeof(buf->p->fkey), 1, h->fp)) {
-			return error(bErrIO);
+			return ION_ERROR(bErrIO);
 		}
 	}
 
@@ -316,7 +316,7 @@ readDisk(
 		ion_err_t err = ion_fread_at(h->fp, adr, len, (ion_byte_t *) buf->p);
 
 		if (err_ok != err) {
-			return error(bErrIO);
+			return ION_ERROR(bErrIO);
 		}
 
 		buf->modified	= boolean_false;
@@ -331,32 +331,32 @@ readDisk(
 		}
 
 		if (0 != fseek(h->fp, buf->adr, SEEK_SET)) {
-			return error(bErrIO);
+			return ION_ERROR(bErrIO);
 		}
 
 		for (i = 0; i < len; i++) {
 			if (1 != fread(&buf[i].p->leaf, sizeof(buf->p->leaf), 1, h->fp)) {
-				return error(bErrIO);
+				return ION_ERROR(bErrIO);
 			}
 
 			if (1 != fread(&buf[i].p->ct, sizeof(buf->p->ct), 1, h->fp)) {
-				return error(bErrIO);
+				return ION_ERROR(bErrIO);
 			}
 
 			if (1 != fread(&buf[i].p->prev, sizeof(buf->p->prev), 1, h->fp)) {
-				return error(bErrIO);
+				return ION_ERROR(bErrIO);
 			}
 
 			if (1 != fread(&buf[i].p->next, sizeof(buf->p->next), 1, h->fp)) {
-				return error(bErrIO);
+				return ION_ERROR(bErrIO);
 			}
 
-			if (1 != fread(&buf[i].p->childLT, sizeof(buf->p->childLT), 1, h->fp)) {
-				return error(bErrIO);
+			if (1 != fread(&buf[i].p->ION_CHILDLT, sizeof(buf->p->ION_CHILDLT), 1, h->fp)) {
+				return ION_ERROR(bErrIO);
 			}
 
 			if (1 != fread(&buf[i].p->fkey, sizeof(buf->p->fkey), 1, h->fp)) {
-				return error(bErrIO);
+				return ION_ERROR(bErrIO);
 			}
 		}
 
@@ -371,7 +371,7 @@ readDisk(
 	return bErrOk;
 }
 
-typedef enum ION_BPP_MODE { MODE_FIRST, MODE_MATCH, MODE_FGEQ, MODE_LLEQ } ion_bpp_mode_e;
+typedef enum { MODE_FIRST, MODE_MATCH, MODE_FGEQ, MODE_LLEQ } ion_bpp_mode_e;
 
 static int
 search(
@@ -404,12 +404,12 @@ search(
 	/* scan current node for key using binary search */
 	foundDup	= boolean_false;
 	lb			= 0;
-	ub			= ct(buf) - 1;
+	ub			= ION_CT(buf) - 1;
 
 	while (lb <= ub) {
 		m		= (lb + ub) / 2;
-		*mkey	= fkey(buf) + ks(m);
-		cc		= h->comp(key, key(*mkey), (ion_key_size_t) (h->keySize));
+		*mkey	= ION_FKEY(buf) + ION_KS(m);
+		cc		= h->comp(key, ION_KEY(*mkey), (ion_key_size_t) (h->keySize));
 
 		if ((cc < 0) || ((cc == 0) && (MODE_FGEQ == mode))) {
 			/* key less than key[m] */
@@ -432,16 +432,16 @@ search(
 					case MODE_MATCH:
 
 						/* rec's must also match */
-						if (rec < rec(*mkey)) {
+						if (rec < ION_REC(*mkey)) {
 							ub	= m - 1;
-							cc	= CC_LT;
+							cc	= ION_CC_LT;
 						}
-						else if (rec > rec(*mkey)) {
+						else if (rec > ION_REC(*mkey)) {
 							lb	= m + 1;
-							cc	= CC_GT;
+							cc	= ION_CC_GT;
 						}
 						else {
-							return CC_EQ;
+							return ION_CC_EQ;
 						}
 
 						break;
@@ -457,37 +457,37 @@ search(
 		}
 	}
 
-	if (ct(buf) == 0) {
+	if (ION_CT(buf) == 0) {
 		/* empty list */
-		*mkey = fkey(buf);
-		return CC_LT;
+		*mkey = ION_FKEY(buf);
+		return ION_CC_LT;
 	}
 
 	if (h->dupKeys && (mode == MODE_FIRST) && foundDup) {
 		/* next key is first key in set of duplicates */
-		*mkey += ks(1);
-		return CC_EQ;
+		*mkey += ION_KS(1);
+		return ION_CC_EQ;
 	}
 
 	if (MODE_LLEQ == mode) {
-		*mkey	= fkey(buf) + ks(ub + 1);
-		cc		= h->comp(key, key(*mkey), (ion_key_size_t) (h->keySize));
+		*mkey	= ION_FKEY(buf) + ION_KS(ub + 1);
+		cc		= h->comp(key, ION_KEY(*mkey), (ion_key_size_t) (h->keySize));
 
-		if ((ub == ct(buf) - 1) || ((ub != -1) && (cc <= 0))) {
-			*mkey	= fkey(buf) + ks(ub);
-			cc		= h->comp(key, key(*mkey), (ion_key_size_t) (h->keySize));
+		if ((ub == ION_CT(buf) - 1) || ((ub != -1) && (cc <= 0))) {
+			*mkey	= ION_FKEY(buf) + ION_KS(ub);
+			cc		= h->comp(key, ION_KEY(*mkey), (ion_key_size_t) (h->keySize));
 		}
 
 		return cc;
 	}
 
 	if (MODE_FGEQ == mode) {
-		*mkey	= fkey(buf) + ks(lb);
-		cc		= h->comp(key, key(*mkey), (ion_key_size_t) (h->keySize));
+		*mkey	= ION_FKEY(buf) + ION_KS(lb);
+		cc		= h->comp(key, ION_KEY(*mkey), (ion_key_size_t) (h->keySize));
 
-		if ((lb < ct(buf) - 1) && (cc < 0)) {
-			*mkey	= fkey(buf) + ks(lb + 1);
-			cc		= h->comp(key, key(*mkey), (ion_key_size_t) (h->keySize));
+		if ((lb < ION_CT(buf) - 1) && (cc < 0)) {
+			*mkey	= ION_FKEY(buf) + ION_KS(lb + 1);
+			cc		= h->comp(key, ION_KEY(*mkey), (ion_key_size_t) (h->keySize));
 		}
 
 		return cc;
@@ -507,12 +507,12 @@ scatterRoot(
 
 	/* scatter gbuf to root */
 
-	root				= &h->root;
-	gbuf				= &h->gbuf;
-	memcpy(fkey(root), fkey(gbuf), ks(ct(gbuf)));
-	childLT(fkey(root)) = childLT(fkey(gbuf));
-	ct(root)			= ct(gbuf);
-	leaf(root)			= leaf(gbuf);
+	root						= &h->root;
+	gbuf						= &h->gbuf;
+	memcpy(ION_FKEY(root), ION_FKEY(gbuf), ION_KS(ION_CT(gbuf)));
+	ION_CHILDLT(ION_FKEY(root)) = ION_CHILDLT(ION_FKEY(gbuf));
+	ION_CT(root)				= ION_CT(gbuf);
+	ION_LEAF(root)				= ION_LEAF(gbuf);
 	return bErrOk;
 }
 
@@ -553,8 +553,8 @@ scatter(
 	/* scatter gbuf to tmps, placing 3/4 max in each tmp */
 
 	gbuf	= &h->gbuf;
-	gkey	= fkey(gbuf);
-	ct		= ct(gbuf);
+	gkey	= ION_FKEY(gbuf);
+	ct		= ION_CT(gbuf);
 
 	/****************************************
 	 * determine number of tmps to use (iu) *
@@ -562,7 +562,7 @@ scatter(
 	iu		= is;
 
 	/* determine limits */
-	if (leaf(gbuf)) {
+	if (ION_LEAF(gbuf)) {
 		/* minus 1 to allow for insertion */
 		k0Max	= h->maxCt - 1;
 		knMax	= h->maxCt - 1;
@@ -587,17 +587,17 @@ scatter(
 			}
 
 			/* update sequential links */
-			if (leaf(gbuf)) {
+			if (ION_LEAF(gbuf)) {
 				/* adjust sequential links */
 				if (iu == 0) {
 					/* no tmps supplied when splitting root for first time */
-					prev(tmp[0])	= 0;
-					next(tmp[0])	= 0;
+					ION_PREV(tmp[0])	= 0;
+					ION_NEXT(tmp[0])	= 0;
 				}
 				else {
-					prev(tmp[iu])		= tmp[iu - 1]->adr;
-					next(tmp[iu])		= next(tmp[iu - 1]);
-					next(tmp[iu - 1])	= tmp[iu]->adr;
+					ION_PREV(tmp[iu])		= tmp[iu - 1]->adr;
+					ION_NEXT(tmp[iu])		= ION_NEXT(tmp[iu - 1]);
+					ION_NEXT(tmp[iu - 1])	= tmp[iu]->adr;
 				}
 			}
 
@@ -609,11 +609,11 @@ scatter(
 			iu--;
 
 			/* adjust sequential links */
-			if (leaf(gbuf) && tmp[iu - 1]->adr) {
-				next(tmp[iu - 1]) = next(tmp[iu]);
+			if (ION_LEAF(gbuf) && tmp[iu - 1]->adr) {
+				ION_NEXT(tmp[iu - 1]) = ION_NEXT(tmp[iu]);
 			}
 
-			next(tmp[iu - 1]) = next(tmp[iu]);
+			ION_NEXT(tmp[iu - 1]) = ION_NEXT(tmp[iu]);
 			nNodesDel++;
 		}
 		else {
@@ -637,7 +637,7 @@ scatter(
 			extra--;
 		}
 
-		ct(tmp[i]) = n;
+		ION_CT(tmp[i]) = n;
 	}
 
 	/**************************************
@@ -645,14 +645,14 @@ scatter(
 	 **************************************/
 	if (iu != is) {
 		/* link last node to next */
-		if (leaf(gbuf) && next(tmp[iu - 1])) {
+		if (ION_LEAF(gbuf) && ION_NEXT(tmp[iu - 1])) {
 			ion_bpp_buffer_t *buf;
 
-			if ((rc = readDisk(handle, next(tmp[iu - 1]), &buf)) != 0) {
+			if ((rc = readDisk(handle, ION_NEXT(tmp[iu - 1]), &buf)) != 0) {
 				return rc;
 			}
 
-			prev(buf) = tmp[iu - 1]->adr;
+			ION_PREV(buf) = tmp[iu - 1]->adr;
 
 			if ((rc = writeDisk(buf)) != 0) {
 				return rc;
@@ -660,23 +660,23 @@ scatter(
 		}
 
 		/* shift keys in parent */
-		sw = ks(iu - is);
+		sw = ION_KS(iu - is);
 
 		if (sw < 0) {
-			len = ks(ct(pbuf)) - (pkey - fkey(pbuf)) + sw;
+			len = ION_KS(ION_CT(pbuf)) - (pkey - ION_FKEY(pbuf)) + sw;
 			memmove(pkey, pkey - sw, len);
 		}
 		else {
-			len = ks(ct(pbuf)) - (pkey - fkey(pbuf));
+			len = ION_KS(ION_CT(pbuf)) - (pkey - ION_FKEY(pbuf));
 			memmove(pkey + sw, pkey, len);
 		}
 
 		/* don't count LT buffer for empty parent */
-		if (ct(pbuf)) {
-			ct(pbuf) += iu - is;
+		if (ION_CT(pbuf)) {
+			ION_CT(pbuf) += iu - is;
 		}
 		else {
-			ct(pbuf) += iu - is - 1;
+			ION_CT(pbuf) += iu - is - 1;
 		}
 	}
 
@@ -685,47 +685,47 @@ scatter(
 	 *******************************/
 	for (i = 0; i < iu; i++) {
 		/* update LT pointer and parent nodes */
-		if (leaf(gbuf)) {
+		if (ION_LEAF(gbuf)) {
 			/* update LT, tmp[i] */
-			childLT(fkey(tmp[i])) = 0;
+			ION_CHILDLT(ION_FKEY(tmp[i])) = 0;
 
 			/* update parent */
 			if (i == 0) {
-				childLT(pkey) = tmp[i]->adr;
+				ION_CHILDLT(pkey) = tmp[i]->adr;
 			}
 			else {
-				memcpy(pkey, gkey, ks(1));
-				childGE(pkey)	= tmp[i]->adr;
-				pkey			+= ks(1);
+				memcpy(pkey, gkey, ION_KS(1));
+				ION_CHILDGE(pkey)	= tmp[i]->adr;
+				pkey				+= ION_KS(1);
 			}
 		}
 		else {
 			if (i == 0) {
 				/* update LT, tmp[0] */
-				childLT(fkey(tmp[i]))	= childLT(gkey);
+				ION_CHILDLT(ION_FKEY(tmp[i]))	= ION_CHILDLT(gkey);
 				/* update LT, parent */
-				childLT(pkey)			= tmp[i]->adr;
+				ION_CHILDLT(pkey)				= tmp[i]->adr;
 			}
 			else {
 				/* update LT, tmp[i] */
-				childLT(fkey(tmp[i]))	= childGE(gkey);
+				ION_CHILDLT(ION_FKEY(tmp[i]))	= ION_CHILDGE(gkey);
 				/* update parent key */
-				memcpy(pkey, gkey, ks(1));
-				childGE(pkey)			= tmp[i]->adr;
-				gkey					+= ks(1);
-				pkey					+= ks(1);
-				ct(tmp[i])--;
+				memcpy(pkey, gkey, ION_KS(1));
+				ION_CHILDGE(pkey)				= tmp[i]->adr;
+				gkey							+= ION_KS(1);
+				pkey							+= ION_KS(1);
+				ION_CT(tmp[i])--;
 			}
 		}
 
 		/* install keys, tmp[i] */
-		memcpy(fkey(tmp[i]), gkey, ks(ct(tmp[i])));
-		leaf(tmp[i])	= leaf(gbuf);
+		memcpy(ION_FKEY(tmp[i]), gkey, ION_KS(ION_CT(tmp[i])));
+		ION_LEAF(tmp[i])	= ION_LEAF(gbuf);
 
-		gkey			+= ks(ct(tmp[i]));
+		gkey				+= ION_KS(ION_CT(tmp[i]));
 	}
 
-	leaf(pbuf) = boolean_false;
+	ION_LEAF(pbuf) = boolean_false;
 
 	/************************
 	 * write modified nodes *
@@ -752,11 +752,11 @@ gatherRoot(
 	ion_bpp_buffer_t	*root;
 
 	/* gather root to gbuf */
-	root		= &h->root;
-	gbuf		= &h->gbuf;
-	memcpy(p(gbuf), root->p, 3 * h->sectorSize);
-	leaf(gbuf)	= leaf(root);
-	ct(root)	= 0;
+	root			= &h->root;
+	gbuf			= &h->gbuf;
+	memcpy(ION_P(gbuf), root->p, 3 * h->sectorSize);
+	ION_LEAF(gbuf)	= ION_LEAF(root);
+	ION_CT(root)	= 0;
 	return bErrOk;
 }
 
@@ -789,56 +789,56 @@ gather(
 	*/
 
 	/* find 3 adjacent buffers */
-	if (*pkey == lkey(pbuf)) {
-		*pkey -= ks(1);
+	if (*pkey == ION_LKEY(pbuf)) {
+		*pkey -= ION_KS(1);
 	}
 
-	if ((rc = readDisk(handle, childLT(*pkey), &tmp[0])) != 0) {
+	if ((rc = readDisk(handle, ION_CHILDLT(*pkey), &tmp[0])) != 0) {
 		return rc;
 	}
 
-	if ((rc = readDisk(handle, childGE(*pkey), &tmp[1])) != 0) {
+	if ((rc = readDisk(handle, ION_CHILDGE(*pkey), &tmp[1])) != 0) {
 		return rc;
 	}
 
-	if ((rc = readDisk(handle, childGE(*pkey + ks(1)), &tmp[2])) != 0) {
+	if ((rc = readDisk(handle, ION_CHILDGE(*pkey + ION_KS(1)), &tmp[2])) != 0) {
 		return rc;
 	}
 
 	/* gather nodes to gbuf */
-	gbuf			= &h->gbuf;
-	gkey			= fkey(gbuf);
+	gbuf				= &h->gbuf;
+	gkey				= ION_FKEY(gbuf);
 
 	/* tmp[0] */
-	childLT(gkey)	= childLT(fkey(tmp[0]));
-	memcpy(gkey, fkey(tmp[0]), ks(ct(tmp[0])));
-	gkey			+= ks(ct(tmp[0]));
-	ct(gbuf)		= ct(tmp[0]);
+	ION_CHILDLT(gkey)	= ION_CHILDLT(ION_FKEY(tmp[0]));
+	memcpy(gkey, ION_FKEY(tmp[0]), ION_KS(ION_CT(tmp[0])));
+	gkey				+= ION_KS(ION_CT(tmp[0]));
+	ION_CT(gbuf)		= ION_CT(tmp[0]);
 
 	/* tmp[1] */
-	if (!leaf(tmp[1])) {
-		memcpy(gkey, *pkey, ks(1));
-		childGE(gkey)	= childLT(fkey(tmp[1]));
-		ct(gbuf)++;
-		gkey			+= ks(1);
+	if (!ION_LEAF(tmp[1])) {
+		memcpy(gkey, *pkey, ION_KS(1));
+		ION_CHILDGE(gkey)	= ION_CHILDLT(ION_FKEY(tmp[1]));
+		ION_CT(gbuf)++;
+		gkey				+= ION_KS(1);
 	}
 
-	memcpy(gkey, fkey(tmp[1]), ks(ct(tmp[1])));
-	gkey		+= ks(ct(tmp[1]));
-	ct(gbuf)	+= ct(tmp[1]);
+	memcpy(gkey, ION_FKEY(tmp[1]), ION_KS(ION_CT(tmp[1])));
+	gkey			+= ION_KS(ION_CT(tmp[1]));
+	ION_CT(gbuf)	+= ION_CT(tmp[1]);
 
 	/* tmp[2] */
-	if (!leaf(tmp[2])) {
-		memcpy(gkey, *pkey + ks(1), ks(1));
-		childGE(gkey)	= childLT(fkey(tmp[2]));
-		ct(gbuf)++;
-		gkey			+= ks(1);
+	if (!ION_LEAF(tmp[2])) {
+		memcpy(gkey, *pkey + ION_KS(1), ION_KS(1));
+		ION_CHILDGE(gkey)	= ION_CHILDLT(ION_FKEY(tmp[2]));
+		ION_CT(gbuf)++;
+		gkey				+= ION_KS(1);
 	}
 
-	memcpy(gkey, fkey(tmp[2]), ks(ct(tmp[2])));
-	ct(gbuf)	+= ct(tmp[2]);
+	memcpy(gkey, ION_FKEY(tmp[2]), ION_KS(ION_CT(tmp[2])));
+	ION_CT(gbuf)	+= ION_CT(tmp[2]);
 
-	leaf(gbuf)	= leaf(tmp[0]);
+	ION_LEAF(gbuf)	= ION_LEAF(tmp[0]);
 
 	return bErrOk;
 }
@@ -862,7 +862,7 @@ bOpen(
 	}
 
 	/* determine sizes and offsets */
-	/* leaf/n, prev, next, [childLT,key,rec]... childGE */
+	/* leaf/n, prev, next, [ION_CHILDLT,key,rec]... childGE */
 	/* ensure that there are at least 3 children/parent for gather/scatter */
 	maxCt	= info.sectorSize - (sizeof(ion_bpp_node_t) - sizeof(ion_bpp_key_t));
 	maxCt	/= sizeof(ion_bpp_address_t) + info.keySize + sizeof(ion_bpp_external_address_t);
@@ -873,7 +873,7 @@ bOpen(
 
 	/* copy parms to ion_bpp_h_node_t */
 	if ((h = calloc(1, sizeof(ion_bpp_h_node_t))) == NULL) {
-		return error(bErrMemory);
+		return ION_ERROR(bErrMemory);
 	}
 
 	h->keySize		= info.keySize;
@@ -881,7 +881,7 @@ bOpen(
 	h->sectorSize	= info.sectorSize;
 	h->comp			= info.comp;
 
-	/* childLT, key, rec */
+	/* ION_CHILDLT, key, rec */
 	h->ks			= sizeof(ion_bpp_address_t) + h->keySize + sizeof(ion_bpp_external_address_t);
 	h->maxCt		= maxCt;
 
@@ -895,7 +895,7 @@ bOpen(
 	bufCt			= 7;
 
 	if ((h->malloc1 = calloc(bufCt, sizeof(ion_bpp_buffer_t))) == NULL) {
-		return error(bErrMemory);
+		return ION_ERROR(bErrMemory);
 	}
 
 	buf = h->malloc1;
@@ -909,7 +909,7 @@ bOpen(
 	 *	to allow for LT pointers in last 2 nodes when gathering 3 full nodes
 	*/
 	if ((h->malloc2 = malloc((bufCt + 6) * h->sectorSize + 2 * h->ks)) == NULL) {
-		return error(bErrMemory);
+		return ION_ERROR(bErrMemory);
 	}
 
 	for (i = 0; i < (bufCt + 6) * h->sectorSize + 2 * h->ks; i++) {
@@ -954,11 +954,11 @@ bOpen(
 		}
 
 		if (ion_fseek(h->fp, 0, ION_FILE_END)) {
-			return error(bErrIO);
+			return ION_ERROR(bErrIO);
 		}
 
 		if ((h->nextFreeAdr = ion_ftell(h->fp)) == -1) {
-			return error(bErrIO);
+			return ION_ERROR(bErrIO);
 		}
 	}
 
@@ -970,7 +970,7 @@ bOpen(
 #endif
 		/* initialize root */
 		memset(root->p, 0, 3 * h->sectorSize);
-		leaf(root)		= 1;
+		ION_LEAF(root)	= 1;
 		h->nextFreeAdr	= 3 * h->sectorSize;
 		root->modified	= 1;
 		flushAll(h);
@@ -1036,9 +1036,9 @@ bFindKey(
 
 	/* find key, and return address */
 	while (1) {
-		if (leaf(buf)) {
+		if (ION_LEAF(buf)) {
 			if (search(handle, buf, key, 0, &mkey, MODE_FIRST) == 0) {
-				*rec		= rec(mkey);
+				*rec		= ION_REC(mkey);
 				h->curBuf	= buf;
 				h->curKey	= mkey;
 				return bErrOk;
@@ -1049,12 +1049,12 @@ bFindKey(
 		}
 		else {
 			if (search(handle, buf, key, 0, &mkey, MODE_FIRST) < 0) {
-				if ((rc = readDisk(handle, childLT(mkey), &buf)) != 0) {
+				if ((rc = readDisk(handle, ION_CHILDLT(mkey), &buf)) != 0) {
 					return rc;
 				}
 			}
 			else {
-				if ((rc = readDisk(handle, childGE(mkey), &buf)) != 0) {
+				if ((rc = readDisk(handle, ION_CHILDGE(mkey), &buf)) != 0) {
 					return rc;
 				}
 			}
@@ -1080,19 +1080,19 @@ bFindFirstGreaterOrEqual(
 
 	/* find key, and return address */
 	while (1) {
-		if (leaf(buf)) {
+		if (ION_LEAF(buf)) {
 			if ((cc = search(handle, buf, key, 0, &lgeqkey, MODE_LLEQ)) > 0) {
-				if ((lgeqkey - fkey(buf)) / (h->ks) == (ct(buf))) {
+				if ((lgeqkey - ION_FKEY(buf)) / (h->ks) == (ION_CT(buf))) {
 					return bErrKeyNotFound;
 				}
 
-				lgeqkey += ks(1);
+				lgeqkey += ION_KS(1);
 			}
 
 			h->curBuf	= buf;
 			h->curKey	= lgeqkey;
 			memcpy(mkey, key(lgeqkey), h->keySize);
-			*rec		= rec(lgeqkey);
+			*rec		= ION_REC(lgeqkey);
 
 			return bErrOk;
 		}
@@ -1100,12 +1100,12 @@ bFindFirstGreaterOrEqual(
 			cc = search(handle, buf, key, 0, &lgeqkey, MODE_LLEQ);
 
 			if (cc < 0) {
-				if ((rc = readDisk(handle, childLT(lgeqkey), &buf)) != 0) {
+				if ((rc = readDisk(handle, ION_CHILDLT(lgeqkey), &buf)) != 0) {
 					return rc;
 				}
 			}
 			else {
-				if ((rc = readDisk(handle, childGE(lgeqkey), &buf)) != 0) {
+				if ((rc = readDisk(handle, ION_CHILDGE(lgeqkey), &buf)) != 0) {
 					return rc;
 				}
 			}
@@ -1139,14 +1139,14 @@ bInsertKey(
 	lastLTvalid = boolean_false;
 
 	/* check for full root */
-	if (ct(root) == 3 * h->maxCt) {
+	if (ION_CT(root) == 3 * h->maxCt) {
 		/* gather root and scatter to 4 bufs */
 		/* this increases b-tree height by 1 */
 		if ((rc = gatherRoot(handle)) != 0) {
 			return rc;
 		}
 
-		if ((rc = scatter(handle, root, fkey(root), 0, tmp)) != 0) {
+		if ((rc = scatter(handle, root, ION_FKEY(root), 0, tmp)) != 0) {
 			return rc;
 		}
 	}
@@ -1155,7 +1155,7 @@ bInsertKey(
 	height	= 0;
 
 	while (1) {
-		if (leaf(buf)) {
+		if (ION_LEAF(buf)) {
 			/* in leaf, and there' room guaranteed */
 
 			if (height > maxHeight) {
@@ -1164,41 +1164,41 @@ bInsertKey(
 
 			/* set mkey to point to insertion point */
 			switch (search(handle, buf, key, rec, &mkey, MODE_MATCH)) {
-				case CC_LT:	/* key < mkey */
+				case ION_CC_LT:	/* key < mkey */
 
-					if (!h->dupKeys && (0 != ct(buf)) && (h->comp(key, mkey, (ion_key_size_t) (h->keySize)) == CC_EQ)) {
+					if (!h->dupKeys && (0 != ION_CT(buf)) && (h->comp(key, mkey, (ion_key_size_t) (h->keySize)) == ION_CC_EQ)) {
 						return bErrDupKeys;
 					}
 
 					break;
 
-				case CC_EQ:	/* key = mkey */
+				case ION_CC_EQ:	/* key = mkey */
 					return bErrDupKeys;
 					break;
 
-				case CC_GT:	/* key > mkey */
+				case ION_CC_GT:	/* key > mkey */
 
-					if (!h->dupKeys && (h->comp(key, mkey, (ion_key_size_t) (h->keySize)) == CC_EQ)) {
+					if (!h->dupKeys && (h->comp(key, mkey, (ion_key_size_t) (h->keySize)) == ION_CC_EQ)) {
 						return bErrDupKeys;
 					}
 
-					mkey += ks(1);
+					mkey += ION_KS(1);
 					break;
 			}
 
 			/* shift items GE key to right */
-			keyOff	= mkey - fkey(buf);
-			len		= ks(ct(buf)) - keyOff;
+			keyOff	= mkey - ION_FKEY(buf);
+			len		= ION_KS(ION_CT(buf)) - keyOff;
 
 			if (len) {
-				memmove(mkey + ks(1), mkey, len);
+				memmove(mkey + ION_KS(1), mkey, len);
 			}
 
 			/* insert new key */
 			memcpy(key(mkey), key, h->keySize);
-			rec(mkey)		= rec;
-			childGE(mkey)	= 0;
-			ct(buf)++;
+			ION_REC(mkey)		= rec;
+			ION_CHILDGE(mkey)	= 0;
+			ION_CT(buf)++;
 
 			if ((rc = writeDisk(buf)) != 0) {
 				return rc;
@@ -1213,10 +1213,10 @@ bInsertKey(
 					return rc;
 				}
 
-				/* tkey = fkey(tbuf) + lastGEkey; */
-				tkey		= fkey(tbuf);
+				/* tkey = ION_FKEY(tbuf) + lastGEkey; */
+				tkey			= ION_FKEY(tbuf);
 				memcpy(key(tkey), key, h->keySize);
-				rec(tkey)	= rec;
+				ION_REC(tkey)	= rec;
 
 				if ((rc = writeDisk(tbuf)) != 0) {
 					return rc;
@@ -1234,18 +1234,18 @@ bInsertKey(
 
 			/* read child */
 			if ((cc = search(handle, buf, key, rec, &mkey, MODE_MATCH)) < 0) {
-				if ((rc = readDisk(handle, childLT(mkey), &cbuf)) != 0) {
+				if ((rc = readDisk(handle, ION_CHILDLT(mkey), &cbuf)) != 0) {
 					return rc;
 				}
 			}
 			else {
-				if ((rc = readDisk(handle, childGE(mkey), &cbuf)) != 0) {
+				if ((rc = readDisk(handle, ION_CHILDGE(mkey), &cbuf)) != 0) {
 					return rc;
 				}
 			}
 
 			/* check for room in child */
-			if (ct(cbuf) == h->maxCt) {
+			if (ION_CT(cbuf) == h->maxCt) {
 				/* gather 3 bufs and scatter */
 				if ((rc = gather(handle, buf, &mkey, tmp)) != 0) {
 					return rc;
@@ -1257,25 +1257,25 @@ bInsertKey(
 
 				/* read child */
 				if ((cc = search(handle, buf, key, rec, &mkey, MODE_MATCH)) < 0) {
-					if ((rc = readDisk(handle, childLT(mkey), &cbuf)) != 0) {
+					if ((rc = readDisk(handle, ION_CHILDLT(mkey), &cbuf)) != 0) {
 						return rc;
 					}
 				}
 				else {
-					if ((rc = readDisk(handle, childGE(mkey), &cbuf)) != 0) {
+					if ((rc = readDisk(handle, ION_CHILDGE(mkey), &cbuf)) != 0) {
 						return rc;
 					}
 				}
 			}
 
-			if ((cc >= 0) || (mkey != fkey(buf))) {
+			if ((cc >= 0) || (mkey != ION_FKEY(buf))) {
 				lastGEvalid = boolean_true;
 				lastLTvalid = boolean_false;
 				lastGE		= buf->adr;
-				lastGEkey	= mkey - fkey(buf);
+				lastGEkey	= mkey - ION_FKEY(buf);
 
 				if (cc < 0) {
-					lastGEkey -= ks(1);
+					lastGEkey -= ION_KS(1);
 				}
 			}
 			else {
@@ -1309,14 +1309,14 @@ bUpdateKey(
 	root = &h->root;
 
 	/* check for full root */
-	if (ct(root) == 3 * h->maxCt) {
+	if (ION_CT(root) == 3 * h->maxCt) {
 		/* gather root and scatter to 4 bufs */
 		/* this increases b-tree height by 1 */
 		if ((rc = gatherRoot(handle)) != 0) {
 			return rc;
 		}
 
-		if ((rc = scatter(handle, root, fkey(root), 0, tmp)) != 0) {
+		if ((rc = scatter(handle, root, ION_FKEY(root), 0, tmp)) != 0) {
 			return rc;
 		}
 	}
@@ -1325,7 +1325,7 @@ bUpdateKey(
 	height	= 0;
 
 	while (1) {
-		if (leaf(buf)) {
+		if (ION_LEAF(buf)) {
 			/* in leaf, and there' room guaranteed */
 
 			if (height > maxHeight) {
@@ -1334,20 +1334,20 @@ bUpdateKey(
 
 			/* set mkey to point to update point */
 			switch (search(handle, buf, key, rec, &mkey, MODE_MATCH)) {
-				case CC_LT:	/* key < mkey */
+				case ION_CC_LT:	/* key < mkey */
 					return bErrKeyNotFound;
 					break;
 
-				case CC_EQ:	/* key = mkey */
+				case ION_CC_EQ:	/* key = mkey */
 					break;
 
-				case CC_GT:	/* key > mkey */
+				case ION_CC_GT:	/* key > mkey */
 					return bErrKeyNotFound;
 					break;
 			}
 
 			/* update key */
-			rec(mkey) = rec;
+			ION_REC(mkey) = rec;
 			break;
 		}
 		else {
@@ -1358,18 +1358,18 @@ bUpdateKey(
 
 			/* read child */
 			if ((cc = search(handle, buf, key, rec, &mkey, MODE_MATCH)) < 0) {
-				if ((rc = readDisk(handle, childLT(mkey), &cbuf)) != 0) {
+				if ((rc = readDisk(handle, ION_CHILDLT(mkey), &cbuf)) != 0) {
 					return rc;
 				}
 			}
 			else {
-				if ((rc = readDisk(handle, childGE(mkey), &cbuf)) != 0) {
+				if ((rc = readDisk(handle, ION_CHILDGE(mkey), &cbuf)) != 0) {
 					return rc;
 				}
 			}
 
 			/* check for room in child */
-			if (ct(cbuf) == h->maxCt) {
+			if (ION_CT(cbuf) == h->maxCt) {
 				/* gather 3 bufs and scatter */
 				if ((rc = gather(handle, buf, &mkey, tmp)) != 0) {
 					return rc;
@@ -1381,12 +1381,12 @@ bUpdateKey(
 
 				/* read child */
 				if ((cc = search(handle, buf, key, rec, &mkey, MODE_MATCH)) < 0) {
-					if ((rc = readDisk(handle, childLT(mkey), &cbuf)) != 0) {
+					if ((rc = readDisk(handle, ION_CHILDLT(mkey), &cbuf)) != 0) {
 						return rc;
 					}
 				}
 				else {
-					if ((rc = readDisk(handle, childGE(mkey), &cbuf)) != 0) {
+					if ((rc = readDisk(handle, ION_CHILDGE(mkey), &cbuf)) != 0) {
 						return rc;
 					}
 				}
@@ -1429,24 +1429,24 @@ bDeleteKey(
 	buf			= root;
 
 	while (1) {
-		if (leaf(buf)) {
+		if (ION_LEAF(buf)) {
 			/* set mkey to point to deletion point */
 			if (search(handle, buf, key, *rec, &mkey, MODE_MATCH) == 0) {
-				*rec = rec(mkey);
+				*rec = ION_REC(mkey);
 			}
 			else {
 				return bErrKeyNotFound;
 			}
 
 			/* shift items GT key to left */
-			keyOff	= mkey - fkey(buf);
-			len		= ks(ct(buf) - 1) - keyOff;
+			keyOff	= mkey - ION_FKEY(buf);
+			len		= ION_KS(ION_CT(buf) - 1) - keyOff;
 
 			if (len) {
-				memmove(mkey, mkey + ks(1), len);
+				memmove(mkey, mkey + ION_KS(1), len);
 			}
 
-			ct(buf)--;
+			ION_CT(buf)--;
 
 			if ((rc = writeDisk(buf)) != 0) {
 				return rc;
@@ -1461,9 +1461,9 @@ bDeleteKey(
 					return rc;
 				}
 
-				tkey		= fkey(tbuf) + lastGEkey;
+				tkey			= ION_FKEY(tbuf) + lastGEkey;
 				memcpy(key(tkey), mkey, h->keySize);
-				rec(tkey)	= rec(mkey);
+				ION_REC(tkey)	= ION_REC(mkey);
 
 				if ((rc = writeDisk(tbuf)) != 0) {
 					return rc;
@@ -1479,25 +1479,25 @@ bDeleteKey(
 
 			/* read child */
 			if ((cc = search(handle, buf, key, *rec, &mkey, MODE_MATCH)) < 0) {
-				if ((rc = readDisk(handle, childLT(mkey), &cbuf)) != 0) {
+				if ((rc = readDisk(handle, ION_CHILDLT(mkey), &cbuf)) != 0) {
 					return rc;
 				}
 			}
 			else {
-				if ((rc = readDisk(handle, childGE(mkey), &cbuf)) != 0) {
+				if ((rc = readDisk(handle, ION_CHILDGE(mkey), &cbuf)) != 0) {
 					return rc;
 				}
 			}
 
 			/* check for room to delete */
-			if (ct(cbuf) == h->maxCt / 2) {
+			if (ION_CT(cbuf) == h->maxCt / 2) {
 				/* gather 3 bufs and scatter */
 				if ((rc = gather(handle, buf, &mkey, tmp)) != 0) {
 					return rc;
 				}
 
 				/* if last 3 bufs in root, and count is low enough... */
-				if ((buf == root) && (ct(root) == 2) && (ct(gbuf) < (3 * (3 * h->maxCt)) / 4)) {
+				if ((buf == root) && (ION_CT(root) == 2) && (ION_CT(gbuf) < (3 * (3 * h->maxCt)) / 4)) {
 					/* collapse tree by one level */
 					scatterRoot(handle);
 					nNodesDel += 3;
@@ -1510,25 +1510,25 @@ bDeleteKey(
 
 				/* read child */
 				if ((cc = search(handle, buf, key, *rec, &mkey, MODE_MATCH)) < 0) {
-					if ((rc = readDisk(handle, childLT(mkey), &cbuf)) != 0) {
+					if ((rc = readDisk(handle, ION_CHILDLT(mkey), &cbuf)) != 0) {
 						return rc;
 					}
 				}
 				else {
-					if ((rc = readDisk(handle, childGE(mkey), &cbuf)) != 0) {
+					if ((rc = readDisk(handle, ION_CHILDGE(mkey), &cbuf)) != 0) {
 						return rc;
 					}
 				}
 			}
 
-			if ((cc >= 0) || (mkey != fkey(buf))) {
+			if ((cc >= 0) || (mkey != ION_FKEY(buf))) {
 				lastGEvalid = boolean_true;
 				lastLTvalid = boolean_false;
 				lastGE		= buf->adr;
-				lastGEkey	= mkey - fkey(buf);
+				lastGEkey	= mkey - ION_FKEY(buf);
 
 				if (cc < 0) {
-					lastGEkey -= ks(1);
+					lastGEkey -= ION_KS(1);
 				}
 			}
 			else {
@@ -1557,20 +1557,20 @@ bFindFirstKey(
 
 	buf = &h->root;
 
-	while (!leaf(buf)) {
-		if ((rc = readDisk(handle, childLT(fkey(buf)), &buf)) != 0) {
+	while (!ION_LEAF(buf)) {
+		if ((rc = readDisk(handle, ION_CHILDLT(ION_FKEY(buf)), &buf)) != 0) {
 			return rc;
 		}
 	}
 
-	if (ct(buf) == 0) {
+	if (ION_CT(buf) == 0) {
 		return bErrKeyNotFound;
 	}
 
-	memcpy(key, key(fkey(buf)), h->keySize);
-	*rec		= rec(fkey(buf));
+	memcpy(key, key(ION_FKEY(buf)), h->keySize);
+	*rec		= ION_REC(ION_FKEY(buf));
 	h->curBuf	= buf;
-	h->curKey	= fkey(buf);
+	h->curKey	= ION_FKEY(buf);
 	return bErrOk;
 }
 
@@ -1587,20 +1587,20 @@ bFindLastKey(
 
 	buf = &h->root;
 
-	while (!leaf(buf)) {
-		if ((rc = readDisk(handle, childGE(lkey(buf)), &buf)) != 0) {
+	while (!ION_LEAF(buf)) {
+		if ((rc = readDisk(handle, ION_CHILDGE(ION_LKEY(buf)), &buf)) != 0) {
 			return rc;
 		}
 	}
 
-	if (ct(buf) == 0) {
+	if (ION_CT(buf) == 0) {
 		return bErrKeyNotFound;
 	}
 
-	memcpy(key, key(lkey(buf)), h->keySize);
-	*rec		= rec(lkey(buf));
+	memcpy(key, key(ION_LKEY(buf)), h->keySize);
+	*rec		= ION_REC(ION_LKEY(buf));
 	h->curBuf	= buf;
-	h->curKey	= lkey(buf);
+	h->curKey	= ION_LKEY(buf);
 	return bErrOk;
 }
 
@@ -1620,15 +1620,15 @@ bFindNextKey(
 		return bErrKeyNotFound;
 	}
 
-	if (h->curKey == lkey(buf)) {
+	if (h->curKey == ION_LKEY(buf)) {
 		/* current key is last key in leaf node */
-		if (next(buf)) {
+		if (ION_NEXT(buf)) {
 			/* fetch next set */
-			if ((rc = readDisk(handle, next(buf), &buf)) != 0) {
+			if ((rc = readDisk(handle, ION_NEXT(buf), &buf)) != 0) {
 				return rc;
 			}
 
-			nkey = fkey(buf);
+			nkey = ION_FKEY(buf);
 		}
 		else {
 			/* no more sets */
@@ -1637,11 +1637,11 @@ bFindNextKey(
 	}
 	else {
 		/* bump to next key */
-		nkey = h->curKey + ks(1);
+		nkey = h->curKey + ION_KS(1);
 	}
 
 	memcpy(key, key(nkey), h->keySize);
-	*rec		= rec(nkey);
+	*rec		= ION_REC(nkey);
 	h->curBuf	= buf;
 	h->curKey	= nkey;
 	return bErrOk;
@@ -1664,17 +1664,17 @@ bFindPrevKey(
 		return bErrKeyNotFound;
 	}
 
-	fkey = fkey(buf);
+	fkey = ION_FKEY(buf);
 
 	if (h->curKey == fkey) {
 		/* current key is first key in leaf node */
-		if (prev(buf)) {
+		if (ION_PREV(buf)) {
 			/* fetch previous set */
-			if ((rc = readDisk(handle, prev(buf), &buf)) != 0) {
+			if ((rc = readDisk(handle, ION_PREV(buf), &buf)) != 0) {
 				return rc;
 			}
 
-			pkey = fkey(buf) + ks((ct(buf) - 1));
+			pkey = ION_FKEY(buf) + ION_KS((ION_CT(buf) - 1));
 		}
 		else {
 			/* no more sets */
@@ -1683,11 +1683,11 @@ bFindPrevKey(
 	}
 	else {
 		/* bump to previous key */
-		pkey = h->curKey - ks(1);
+		pkey = h->curKey - ION_KS(1);
 	}
 
 	memcpy(key, key(pkey), h->keySize);
-	*rec		= rec(pkey);
+	*rec		= ION_REC(pkey);
 	h->curBuf	= buf;
 	h->curKey	= pkey;
 	return bErrOk;

@@ -6,8 +6,8 @@
 */
 /******************************************************************************/
 
-#if !defined(PROJECT_BPPTREE_H)
-#define PROJECT_BPPTREE_H
+#if !defined(ION_PROJECT_BPPTREE_H)
+#define ION_PROJECT_BPPTREE_H
 
 #include "Dictionary.h"
 #include "../key_value/kv_system.h"

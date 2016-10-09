@@ -7,8 +7,8 @@
 */
 /******************************************************************************/
 
-#ifndef PROJECT_OPENADDRESSFILEHASH_H
-#define PROJECT_OPENADDRESSFILEHASH_H
+#ifndef ION_PROJECT_OPENADDRESSFILEHASH_H
+#define ION_PROJECT_OPENADDRESSFILEHASH_H
 
 #include "Dictionary.h"
 #include "../key_value/kv_system.h"

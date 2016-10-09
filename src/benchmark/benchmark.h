@@ -4,8 +4,8 @@
 * Date: Feb. 4th 2015
 */
 
-#if !defined(BENCHMARK_H_)
-#define BENCHMARK_H_
+#if !defined(ION_BENCHMARK_H_)
+#define ION_BENCHMARK_H_
 
 #if defined(__cplusplus)
 extern "C" {

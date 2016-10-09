@@ -5,8 +5,8 @@
 @brief		Utility function to check how many bytes of available RAM remains.
 */
 /******************************************************************************/
-#if !defined(RAMUTIL_H_)
-#define RAMUTIL_H_
+#if !defined(ION_RAMUTIL_H_)
+#define ION_RAMUTIL_H_
 
 int
 free_ram(
