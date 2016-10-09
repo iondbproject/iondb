@@ -5,8 +5,8 @@
 @brief		Implementation of a Skiplist data store
 */
 /******************************************************************************/
-#if !defined(SKIP_LIST_STORE_H_)
-#define SKIP_LIST_STORE_H_
+#if !defined(ION_SKIP_LIST_STORE_H_)
+#define ION_SKIP_LIST_STORE_H_
 
 #if defined(__cplusplus)
 extern "C" {
