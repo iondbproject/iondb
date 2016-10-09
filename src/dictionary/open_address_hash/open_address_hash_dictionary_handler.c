@@ -293,7 +293,7 @@ oadict_next(
 		}
 
 		/* the results are now ready //reference item at given position */
-		ion_hash_bucket_t *item = (((ion_hash_bucket_t *) ((hash_map->entry + (data_length + SIZEOF(STATUS)) * oadict_cursor->current /*idx*/))));
+		ion_hash_bucket_t *item = (((ion_hash_bucket_t *) ((hash_map->entry + (data_length + ION_SIZEOF(STATUS)) * oadict_cursor->current /*idx*/))));
 
 		/*@todo A discussion needs to be had regarding ion_record_t and its format in memory etc */
 		/* and copy key and value in */
@@ -391,9 +391,9 @@ oadict_scan(
 	while (loc != cursor->first) {
 		/* check to see if current item is a match based on key */
 		/* locate first item */
-		ion_hash_bucket_t *item = (((ion_hash_bucket_t *) ((hash_map->entry + (hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS)) * loc))));
+		ion_hash_bucket_t *item = (((ion_hash_bucket_t *) ((hash_map->entry + (hash_map->super.record.key_size + hash_map->super.record.value_size + ION_SIZEOF(STATUS)) * loc))));
 
-		if ((item->status == EMPTY) || (item->status == DELETED)) {
+		if ((item->status == ION_EMPTY) || (item->status == ION_DELETED)) {
 			/* if empty, just skip to next cell */
 			loc++;
 		}

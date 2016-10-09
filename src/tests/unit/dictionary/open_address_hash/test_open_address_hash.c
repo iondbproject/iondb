@@ -56,7 +56,7 @@ initialize_hash_map_std_conditions(
 	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 	map->super.key_type = key_type_numeric_signed;
-	initialize_hash_map(STD_MAP_SIZE, &record, map);
+	initialize_hash_map(ION_STD_MAP_SIZE, &record, map);
 }
 
 /**
@@ -108,7 +108,7 @@ test_open_address_hashmap_compute_simple_hash(
 
 	initialize_hash_map_std_conditions(&map);
 
-	for (i = 0; i < MAX_HASH_TEST; i++) {
+	for (i = 0; i < ION_MAX_HASH_TEST; i++) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, (i % map.map_size) == oah_compute_simple_hash(&map, ((int *) &i), sizeof(i)));
 	}
 
@@ -128,8 +128,8 @@ test_open_address_hashmap_get_location(
 ) {
 	int i;
 
-	for (i = 0; i < MAX_HASH_TEST; i++) {
-		PLANCK_UNIT_ASSERT_TRUE(tc, (i % STD_MAP_SIZE) == oah_get_location((ion_hash_t) i, STD_MAP_SIZE));
+	for (i = 0; i < ION_MAX_HASH_TEST; i++) {
+		PLANCK_UNIT_ASSERT_TRUE(tc, (i % ION_STD_MAP_SIZE) == oah_get_location((ion_hash_t) i, ION_STD_MAP_SIZE));
 	}
 }
 
@@ -177,7 +177,7 @@ test_open_address_hashmap_find_item_location(
 		pos_ptr = (map.entry + (offset * bucket_size) % (map.map_size * bucket_size));
 
 		for (i = 0; i < map.map_size; i++) {
-			item_ptr->status = IN_USE;
+			item_ptr->status = ION_IN_USE;
 			/* Ensure to use key_size */
 			memcpy(item_ptr->data, &i, record.key_size);
 
@@ -264,7 +264,7 @@ test_open_address_hashmap_simple_insert(
 			ion_byte_t str[10];
 
 			sprintf((char *) str, "%02i is key", (i + offset) % map.map_size);
-			PLANCK_UNIT_ASSERT_TRUE(tc, status == IN_USE);
+			PLANCK_UNIT_ASSERT_TRUE(tc, status == ION_IN_USE);
 			/* check to ensure key is pointing at correct location */
 			PLANCK_UNIT_ASSERT_TRUE(tc, *(int *) key == (i + offset) % map.map_size);
 			/* While str and value are unsigned, equality test is signed, so casting required */
