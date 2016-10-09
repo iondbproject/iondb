@@ -22,8 +22,8 @@
 */
 /******************************************************************************/
 
-#if !defined(DICTIONARY_TYPES_H_)
-#define DICTIONARY_TYPES_H_
+#if !defined(ION_DICTIONARY_TYPES_H_)
+#define ION_DICTIONARY_TYPES_H_
 
 #if defined(__cplusplus)
 extern "C" {
