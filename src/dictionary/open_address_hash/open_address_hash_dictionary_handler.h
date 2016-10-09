@@ -6,8 +6,8 @@
 */
 /******************************************************************************/
 
-#if !defined(OPEN_ADDRESS_DICTIONARY_HANDLER_H_)
-#define OPEN_ADDRESS_DICTIONARY_HANDLER_H_
+#if !defined(ION_OPEN_ADDRESS_DICTIONARY_HANDLER_H_)
+#define ION_OPEN_ADDRESS_DICTIONARY_HANDLER_H_
 
 #if defined(__cplusplus)
 extern "C" {
