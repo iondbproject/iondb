@@ -371,7 +371,7 @@ readDisk(
 	return bErrOk;
 }
 
-typedef enum { MODE_FIRST, MODE_MATCH, MODE_FGEQ, MODE_LLEQ } ion_bpp_mode_e;
+typedef enum ION_BPP_MODE { MODE_FIRST, MODE_MATCH, MODE_FGEQ, MODE_LLEQ } ion_bpp_mode_e;
 
 static int
 search(
