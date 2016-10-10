@@ -51,7 +51,7 @@ ion_value_t test_value = (char *) {
 lfsr_t keygen;
 
 /**< LFSR Seed */
-#define KEY_SEED 0xACE1u
+#define ION_KEY_SEED 0xACE1u
 
 void
 setup(
@@ -75,7 +75,7 @@ setup(
 	/* fremove("FILE.BIN"); */
 
 	/* LFSR stuff */
-	lfsr_init_start_state(KEY_SEED, &keygen);
+	lfsr_init_start_state(ION_KEY_SEED, &keygen);
 
 	fremove("FIXME.val");
 	fremove("FIXME.bpt");

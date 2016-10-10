@@ -162,7 +162,7 @@ dictionary_compare_unsigned_value(
 		ion_byte_t	firstbyte	= *((ion_byte_t *) first_key + idx);
 		ion_byte_t	secondbyte	= *((ion_byte_t *) second_key + idx);
 
-		if ((return_value = (firstbyte > secondbyte) - (firstbyte < secondbyte)) != ZERO) {
+		if ((return_value = (firstbyte > secondbyte) - (firstbyte < secondbyte)) != ION_ZERO) {
 			return return_value;
 		}
 	}
@@ -195,7 +195,7 @@ dictionary_compare_signed_value(
 	ion_byte_t	secondbyte	= *((ion_byte_t *) second_key + idx);
 
 	/* Do bit comparison on the sign bit to do positive/negative comparison. Lets us exit early in many cases */
-	if ((return_value = (secondbyte >> 7) - (firstbyte >> 7)) != ZERO) {
+	if ((return_value = (secondbyte >> 7) - (firstbyte >> 7)) != ION_ZERO) {
 		return return_value;
 	}
 
@@ -211,7 +211,7 @@ dictionary_compare_signed_value(
 		firstbyte	= *((ion_byte_t *) first_key + idx);
 		secondbyte	= *((ion_byte_t *) second_key + idx);
 
-		if ((return_value = (firstbyte > secondbyte) - (firstbyte < secondbyte)) != ZERO) {
+		if ((return_value = (firstbyte > secondbyte) - (firstbyte < secondbyte)) != ION_ZERO) {
 			return return_value;
 		}
 	}

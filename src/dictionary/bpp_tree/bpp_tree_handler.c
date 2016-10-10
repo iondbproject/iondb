@@ -44,11 +44,11 @@ bpptree_insert(
 
 	bpptree = (ion_bpptree_t *) dictionary->instance;
 
-	offset	= FILE_NULL;
+	offset	= ION_FILE_NULL;
 	bErr	= bFindKey(bpptree->tree, key, &offset);
 
 	if (bErrKeyNotFound == bErr) {
-		offset = FILE_NULL;
+		offset = ION_FILE_NULL;
 	}
 
 	err = lfb_put(&(bpptree->values), (ion_byte_t *) value, bpptree->super.record.value_size, offset, &offset);
@@ -134,7 +134,7 @@ bpptree_create_dictionary(
 	bpptree_get_value_filename(id, value_filename);
 	bpptree->values.file_handle = ion_fopen(value_filename);
 
-	bpptree->values.next_empty	= FILE_NULL;
+	bpptree->values.next_empty	= ION_FILE_NULL;
 
 	/* FIXME: read this from a property bag. */
 

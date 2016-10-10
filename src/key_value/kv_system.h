@@ -40,12 +40,12 @@ extern "C" {
 #endif
 
 #define ION_USING_MASTER_TABLE	1
-#define USING_ECLIPSE			0
-#define DEBUG					0
-#define IS_EQUAL				0
-#define IS_GREATER				1
-#define IS_LESS					-1
-#define ZERO					0
+#define ION_USING_ECLIPSE		0
+#define ION_DEBUG				0
+#define ION_IS_EQUAL			0
+#define ION_IS_GREATER			1
+#define ION_IS_LESS				-1
+#define ION_ZERO				0
 /**
 @brief		Since the arduino conforms to 8.3 syntax, that's 8 + 3 = 11 + 1 (null terminator) characters.
 */

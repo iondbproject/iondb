@@ -24,8 +24,8 @@
 */
 /******************************************************************************/
 
-#if !defined(LINKED_FILE_BAG_H_)
-#define LINKED_FILE_BAG_H_
+#if !defined(ION_LINKED_FILE_BAG_H_)
+#define ION_LINKED_FILE_BAG_H_
 
 #if defined(__cplusplus)
 extern "C" {
@@ -34,7 +34,7 @@ extern "C" {
 #include "../key_value/kv_system.h"
 #include "ion_file.h"
 
-#define LFB_NULL FILE_NULL
+#define ION_LFB_NULL FILE_NULL
 
 /**
 @brief		A handler struct for a linked file bag instance.
@@ -67,8 +67,8 @@ typedef struct linkedfilebag {
 ion_err_t
 lfb_put(
 	ion_lfb_t			*bag,
-	ion_byte_t		*to_write,
-	unsigned int	num_bytes,
+	ion_byte_t			*to_write,
+	unsigned int		num_bytes,
 	ion_file_offset_t	next,
 	ion_file_offset_t	*wrote_at
 );
@@ -99,8 +99,8 @@ ion_err_t
 lfb_get(
 	ion_lfb_t			*bag,
 	ion_file_offset_t	offset,
-	unsigned int	num_bytes,
-	ion_byte_t		*write_to,
+	unsigned int		num_bytes,
+	ion_byte_t			*write_to,
 	ion_file_offset_t	*next
 );
 
@@ -156,8 +156,8 @@ lfb_delete(
 */
 ion_err_t
 lfb_delete_all(
-	ion_lfb_t				*bag,
-	ion_file_offset_t		offset,
+	ion_lfb_t			*bag,
+	ion_file_offset_t	offset,
 	ion_result_count_t	*count
 );
 
@@ -188,8 +188,8 @@ ion_err_t
 lfb_update(
 	ion_lfb_t			*bag,
 	ion_file_offset_t	offset,
-	unsigned int	num_bytes,
-	ion_byte_t		*to_write,
+	unsigned int		num_bytes,
+	ion_byte_t			*to_write,
 	ion_file_offset_t	*next
 );
 
@@ -214,8 +214,8 @@ lfb_update(
 */
 ion_err_t
 lfb_update_all(
-	ion_lfb_t				*bag,
-	ion_file_offset_t		offset,
+	ion_lfb_t			*bag,
+	ion_file_offset_t	offset,
 	unsigned int		num_bytes,
 	ion_byte_t			*to_write,
 	ion_result_count_t	*count

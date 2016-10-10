@@ -20,9 +20,9 @@ extern "C" {
 typedef long	ion_bpp_external_address_t;		/* record address for external record */
 typedef long	ion_bpp_address_t;		/* record address for btree node */
 
-#define CC_EQ	0
-#define CC_GT	1
-#define CC_LT	-1
+#define ION_CC_EQ	0
+#define ION_CC_GT	1
+#define ION_CC_LT	-1
 
 /* compare two keys and return:
  *	CC_LT	 key1 < key2

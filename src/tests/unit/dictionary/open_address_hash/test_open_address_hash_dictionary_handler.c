@@ -10,7 +10,7 @@ extern "C" {
 
 #include "test_open_address_hash_dictionary_handler.h"
 
-#define MAX_HASH_TEST 100
+#define ION_MAX_HASH_TEST 100
 
 /**
 @brief		A helper function to build a test dictionary instance
@@ -193,7 +193,7 @@ test_open_address_dictionary_handler_query_with_results(
 	str = malloc(record_info.value_size);
 	sprintf((char *) str, "value : %i", *(int *) predicate.statement.equality.equality_value);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL == memcmp(record.value, str, record_info.value_size));
+	PLANCK_UNIT_ASSERT_TRUE(tc, ION_IS_EQUAL == memcmp(record.value, str, record_info.value_size));
 
 	free(str);
 
@@ -485,7 +485,7 @@ test_open_address_dictionary_cursor_range(
 		str = malloc(record_info.value_size);
 		sprintf((char *) str, "value : %i", (*(int *) predicate.statement.range.lower_bound) + result_count);
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL == memcmp(record.value, str, record_info.value_size));
+		PLANCK_UNIT_ASSERT_TRUE(tc, ION_IS_EQUAL == memcmp(record.value, str, record_info.value_size));
 		PLANCK_UNIT_ASSERT_TRUE(tc, *(int *) (record.key) >= *(int *) (cursor->predicate->statement.range.lower_bound));
 		PLANCK_UNIT_ASSERT_TRUE(tc, *(int *) (record.key) <= *(int *) (cursor->predicate->statement.range.upper_bound));
 		result_count++;

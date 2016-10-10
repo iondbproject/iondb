@@ -31,7 +31,7 @@ sl_initialize(
 	skiplist->pden						= pden;
 	skiplist->pnum						= pnum;
 
-#if DEBUG
+#if ION_DEBUG
 	DUMP(skip_list->super.record.key_size, "%d");
 	DUMP(skip_list->super.record.value_size, "%d");
 	DUMP(skip_list->maxheight, "%d");
