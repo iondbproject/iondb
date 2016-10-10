@@ -7,8 +7,8 @@
 */
 /******************************************************************************/
 
-#if !defined(PROJECT_CPP_DICTIONARY_H)
-#define PROJECT_CPP_DICTIONARY_H
+#if !defined(ION_PROJECT_CPP_DICTIONARY_H)
+#define ION_PROJECT_CPP_DICTIONARY_H
 
 #include "../dictionary/dictionary.h"
 #include "../dictionary/dictionary_types.h"

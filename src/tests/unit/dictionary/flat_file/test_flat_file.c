@@ -122,7 +122,7 @@ ftest_insert(
 		/* TODO: This makes a big assumption on the layout of the data file. Is there a way to eliminate this? */
 		ion_byte_t expected_result[flat_file->row_size];
 
-		memset(expected_result, FLAT_FILE_STATUS_OCCUPIED, sizeof(ion_flat_file_row_status_t));
+		memset(expected_result, ION_FLAT_FILE_STATUS_OCCUPIED, sizeof(ion_flat_file_row_status_t));
 		memcpy(expected_result + sizeof(ion_flat_file_row_status_t), key, flat_file->super.record.key_size);
 		memcpy(expected_result + sizeof(ion_flat_file_row_status_t) + flat_file->super.record.key_size, value, flat_file->super.record.value_size);
 
@@ -142,7 +142,7 @@ ftest_insert(
 				ion_err_t			err = flat_file_read_row(flat_file, cur_index, &test_row);
 
 				PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
-				PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, FLAT_FILE_STATUS_OCCUPIED, test_row.row_status);
+				PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ION_FLAT_FILE_STATUS_OCCUPIED, test_row.row_status);
 				PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, memcmp(test_row.key, key, flat_file->super.record.key_size));
 				PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, memcmp(test_row.value, value, flat_file->super.record.value_size));
 				return;
@@ -176,7 +176,7 @@ ftest_delete(
 	if (check_result) {
 		ion_fpos_t			loc = -1;
 		ion_flat_file_row_t row;
-		ion_err_t			err = flat_file_scan(flat_file, -1, &loc, &row, FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, key);
+		ion_err_t			err = flat_file_scan(flat_file, -1, &loc, &row, ION_FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, key);
 
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_file_hit_eof, err);
 	}
@@ -203,7 +203,7 @@ ftest_get(
 
 		ion_fpos_t			loc = -1;
 		ion_flat_file_row_t row;
-		ion_err_t			err = flat_file_scan(flat_file, -1, &loc, &row, FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, key);
+		ion_err_t			err = flat_file_scan(flat_file, -1, &loc, &row, ION_FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, key);
 
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 	}
@@ -231,7 +231,7 @@ ftest_update(
 		ion_flat_file_row_t row;
 		ion_err_t			err;
 
-		while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, key))) {
+		while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, ION_FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, key))) {
 			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, memcmp(row.value, value, flat_file->super.record.value_size));
 			loc++;
 		}

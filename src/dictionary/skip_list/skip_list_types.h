@@ -6,8 +6,8 @@
 */
 /******************************************************************************/
 
-#if !defined(SKIP_LIST_TYPES_H_)
-#define SKIP_LIST_TYPES_H_
+#if !defined(ION_SKIP_LIST_TYPES_H_)
+#define ION_SKIP_LIST_TYPES_H_
 
 #if defined(__cplusplus)
 extern "C" {

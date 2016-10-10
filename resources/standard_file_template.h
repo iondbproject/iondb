@@ -21,8 +21,8 @@
 */
 /******************************************************************************/
 
-#if !defined(CHANGE_ME_H)
-#define CHANGE_ME_H
+#if !defined(ION_CHANGE_ME_H)
+#define ION_CHANGE_ME_H
 
 #if defined(__cplusplus)
 extern "C" {

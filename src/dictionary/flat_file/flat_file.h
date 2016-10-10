@@ -21,8 +21,8 @@
 */
 /******************************************************************************/
 
-#if !defined(FLAT_FILE_H)
-#define FLAT_FILE_H
+#if !defined(ION_FLAT_FILE_H)
+#define ION_FLAT_FILE_H
 
 #if defined(__cplusplus)
 extern "C" {

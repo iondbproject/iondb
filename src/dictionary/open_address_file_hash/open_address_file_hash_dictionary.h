@@ -3,8 +3,8 @@
 @details		This file includes common components for oadictionary and oahash.
 */
 
-#if !defined(OPEN_ADDRESS_FILE_DICTIONARY_H_)
-#define OPEN_ADDRESS_FILE_DICTIONARY_H_
+#if !defined(ION_OPEN_ADDRESS_FILE_DICTIONARY_H_)
+#define ION_OPEN_ADDRESS_FILE_DICTIONARY_H_
 
 #if defined(__cplusplus)
 extern "C" {

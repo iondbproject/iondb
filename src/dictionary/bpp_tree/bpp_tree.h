@@ -1,5 +1,5 @@
 #if !defined(BPP_TREE_H_)
-#define BPP_TREE_H_
+#define ION_BPP_TREE_H_
 
 #if defined(__cplusplus)
 extern "C" {
@@ -20,14 +20,14 @@ extern "C" {
 typedef long	ion_bpp_external_address_t;		/* record address for external record */
 typedef long	ion_bpp_address_t;		/* record address for btree node */
 
-#define CC_EQ	0
-#define CC_GT	1
-#define CC_LT	-1
+#define ION_CC_EQ	0
+#define ION_CC_GT	1
+#define ION_CC_LT	-1
 
 /* compare two keys and return:
- *	CC_LT	 key1 < key2
- *	CC_GT	 key1 > key2
- *	CC_EQ	 key1 = key2
+ *	ION_CC_LT	 key1 < key2
+ *	ION_CC_GT	 key1 > key2
+ *	ION_CC_EQ	 key1 = key2
 */
 typedef char (*ion_bpp_comparison_t)(
 	ion_key_t		key1,
@@ -56,7 +56,7 @@ int bErrLineNo;
 typedef ion_boolean_e ion_bpp_bool_t;
 
 /* typedef enum {false, true} bool; */
-typedef enum {
+typedef enum ION_BPP_ERR {
 	bErrOk, bErrKeyNotFound, bErrDupKeys, bErrSectorSize, bErrFileNotOpen, bErrFileExists, bErrIO, bErrMemory
 } ion_bpp_err_t;
 

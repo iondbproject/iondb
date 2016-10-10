@@ -29,7 +29,7 @@
 #include "behaviour_dictionary.h"
 
 /* This is used to define how complicated to pre-fill a dictionary for testing. */
-typedef enum {
+typedef enum ION_BEHAVIOUR_FILL_LEVEL {
 	ion_fill_none, ion_fill_low, ion_fill_medium, ion_fill_high, ion_fill_edge_cases
 } ion_behaviour_fill_level_e;
 

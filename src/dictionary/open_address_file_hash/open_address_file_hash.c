@@ -15,7 +15,7 @@
 
 #include "open_address_file_hash.h"
 
-#define TEST_FILE "file.bin"
+#define ION_TEST_FILE "file.bin"
 
 ion_err_t
 oafh_close(
@@ -73,10 +73,10 @@ oafh_initialize(
 
 	ion_hash_bucket_t *file_record;
 
-	int record_size = SIZEOF(STATUS) + hashmap->super.record.key_size + hashmap->super.record.value_size;
+	int record_size = ION_SIZEOF(STATUS) + hashmap->super.record.key_size + hashmap->super.record.value_size;
 
 	file_record			= calloc(record_size, 1);
-	file_record->status = EMPTY;
+	file_record->status = ION_EMPTY;
 
 	/* write out the records to disk to prep */
 #if DEBUG
@@ -86,8 +86,8 @@ oafh_initialize(
 	int i, writes = 0;
 
 	for (i = 0; i < hashmap->map_size; i++) {
-		writes	+= fwrite(&file_record->status, SIZEOF(STATUS), 1, hashmap->file);
-		writes	+= fwrite(file_record->data, record_size - SIZEOF(STATUS), 1, hashmap->file);
+		writes	+= fwrite(&file_record->status, ION_SIZEOF(STATUS), 1, hashmap->file);
+		writes	+= fwrite(file_record->data, record_size - ION_SIZEOF(STATUS), 1, hashmap->file);
 	}
 
 	fflush(hashmap->file);
@@ -171,7 +171,7 @@ oafh_insert(
 
 	ion_hash_bucket_t *item;
 
-	int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS);
+	int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size + ION_SIZEOF(STATUS);
 
 	item = malloc(record_size);
 
@@ -184,7 +184,7 @@ oafh_insert(
 		DUMP((int) ftell(hash_map->file), "%i");
 #endif
 
-		if (item->status == IN_USE) {
+		if (item->status == ION_IN_USE) {
 			/* if a cell is in use, need to key to */
 
 			if (hash_map->super.compare(item->data, key, hash_map->super.record.key_size) == IS_EQUAL) {
@@ -196,7 +196,7 @@ oafh_insert(
 				else if (hash_map->write_concern == wc_update) {
 					/* allows for values to be updated											// */
 					/* backup and write */
-					fseek(hash_map->file, SIZEOF(STATUS) + hash_map->super.record.key_size - record_size, SEEK_CUR);
+					fseek(hash_map->file, ION_SIZEOF(STATUS) + hash_map->super.record.key_size - record_size, SEEK_CUR);
 #if DEBUG
 					DUMP((int) ftell(hash_map->file), "%i");
 					DUMP(value, "%s");
@@ -211,14 +211,14 @@ oafh_insert(
 				}
 			}
 		}
-		else if ((item->status == EMPTY) || (item->status == DELETED)) {
+		else if ((item->status == ION_EMPTY) || (item->status == ION_DELETED)) {
 			/* problem is here with base types as it is just an array of data.  Need better way */
 			/* printf("empty\n"); */
 			fseek(hash_map->file, -record_size, SEEK_CUR);
 #if DEBUG
 			DUMP((int) ftell(hash_map->file), "%i");
 #endif
-			item->status = IN_USE;
+			item->status = ION_IN_USE;
 			memcpy(item->data, key, (hash_map->super.record.key_size));
 			memcpy(item->data + hash_map->super.record.key_size, value, (hash_map->super.record.value_size));
 			fwrite(item, record_size, 1, hash_map->file);
@@ -265,7 +265,7 @@ oafh_find_item_loc(
 
 	ion_hash_bucket_t *item;
 
-	int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS);
+	int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size + ION_SIZEOF(STATUS);
 
 	item = malloc(record_size);
 
@@ -274,17 +274,17 @@ oafh_find_item_loc(
 
 	/* needs to traverse file again */
 	while (count != hash_map->map_size) {
-		fread(&item->status, SIZEOF(STATUS), 1, hash_map->file);
-		fread(item->data, record_size - SIZEOF(STATUS), 1, hash_map->file);
+		fread(&item->status, ION_SIZEOF(STATUS), 1, hash_map->file);
+		fread(item->data, record_size - ION_SIZEOF(STATUS), 1, hash_map->file);
 
-		if (item->status == EMPTY) {
+		if (item->status == ION_EMPTY) {
 			free(item);
 			return err_item_not_found;	/* if you hit an empty cell, exit */
 		}
 		else {
 			/* calculate if there is a match */
 
-			if (item->status != DELETED) {
+			if (item->status != ION_DELETED) {
 				/*@todo correct compare to use proper return type*/
 				int key_is_equal = hash_map->super.compare(item->data, key, hash_map->super.record.key_size);
 
@@ -327,22 +327,22 @@ oafh_delete(
 		/* locate item */
 		ion_hash_bucket_t *item;
 
-		int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS);
+		int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size + ION_SIZEOF(STATUS);
 
 		item = malloc(record_size);
 
 		/* set file position */
 		fseek(hash_map->file, loc * record_size, SEEK_SET);
 
-		fread(&item->status, SIZEOF(STATUS), 1, hash_map->file);
-		fread(item->data, record_size - SIZEOF(STATUS), 1, hash_map->file);
+		fread(&item->status, ION_SIZEOF(STATUS), 1, hash_map->file);
+		fread(item->data, record_size - ION_SIZEOF(STATUS), 1, hash_map->file);
 
-		item->status = DELETED;	/* delete item */
+		item->status = ION_DELETED;	/* delete item */
 
 		/* backup */
 		fseek(hash_map->file, -record_size, SEEK_CUR);
-		fwrite(&item->status, SIZEOF(STATUS), 1, hash_map->file);
-		fwrite(item->data, record_size - SIZEOF(STATUS), 1, hash_map->file);
+		fwrite(&item->status, ION_SIZEOF(STATUS), 1, hash_map->file);
+		fwrite(item->data, record_size - ION_SIZEOF(STATUS), 1, hash_map->file);
 
 		free(item);
 #if DEBUG
@@ -365,10 +365,10 @@ oafh_query(
 		printf("Item found at location %d\n", loc);
 #endif
 
-		int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS);
+		int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size + ION_SIZEOF(STATUS);
 
 		/* set file position */
-		fseek(hash_map->file, (loc * record_size) + SIZEOF(STATUS) + hash_map->super.record.key_size, SEEK_SET);
+		fseek(hash_map->file, (loc * record_size) + ION_SIZEOF(STATUS) + hash_map->super.record.key_size, SEEK_SET);
 #if DEBUG
 		printf("seeking %i\n", (loc * record_size) + SIZEOF(STATUS) + hash_map->super.record.key_size);
 #endif

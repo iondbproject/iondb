@@ -6,8 +6,8 @@
 */
 /******************************************************************************/
 
-#if !defined(OPEN_ADDRESS_H_)
-#define OPEN_ADDRESS_H_
+#if !defined(ION_OPEN_ADDRESS_H_)
+#define ION_OPEN_ADDRESS_H_
 
 #if defined(__cplusplus)
 extern "C" {
@@ -26,10 +26,10 @@ extern "C" {
 
 #include "../../key_value/kv_system.h"
 
-#define EMPTY	-1
-#define DELETED -2
-#define IN_USE	-3
-#define SIZEOF(STATUS) 1
+#define ION_EMPTY	-1
+#define ION_DELETED -2
+#define ION_IN_USE	-3
+#define ION_SIZEOF(STATUS) 1
 
 /**
 @brief		Prototype declaration for hashmap

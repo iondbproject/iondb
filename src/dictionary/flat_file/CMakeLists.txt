@@ -2,15 +2,15 @@ cmake_minimum_required(VERSION 3.5)
 project(flat_file)
 
 set(SOURCE_FILES
-    flat_file.h
-    flat_file.c
-		flat_file_types.h
+        flat_file.h
+        flat_file.c
+        flat_file_types.h
         flat_file_dictionary_handler.h
-    flat_file_dictionary_handler.c
-    ../dictionary.h
-    ../dictionary.c
-    ../dictionary_types.h
-        ../../key_value/kv_system.h)
+        flat_file_dictionary_handler.c
+        ../../../../../../../Downloads/iondb-development/src/dictionary/dictionary.h
+        ../../../../../../../Downloads/iondb-development/src/dictionary/dictionary.c
+        ../../../../../../../Downloads/iondb-development/src/dictionary/dictionary_types.h
+        ../../../../../../../Downloads/iondb-development/src/key_value/kv_system.h)
 
 if(USE_ARDUINO)
     set(${PROJECT_NAME}_BOARD       ${BOARD})
@@ -19,16 +19,16 @@ if(USE_ARDUINO)
 
     set(${PROJECT_NAME}_SRCS
         ${SOURCE_FILES}
-        ../../file/kv_stdio_intercept.h
-        ../../file/SD_stdio_c_iface.h
-        ../../file/SD_stdio_c_iface.cpp)
+            ../../../../../../../Downloads/iondb-development/src/file/kv_stdio_intercept.h
+            ../../../../../../../Downloads/iondb-development/src/file/SD_stdio_c_iface.h
+            ../../../../../../../Downloads/iondb-development/src/file/SD_stdio_c_iface.cpp)
 
 #    if(DEBUG)
         set(${PROJECT_NAME}_SRCS
             "${${PROJECT_NAME}_SRCS}"
-            ../../serial/printf_redirect.h
-            ../../serial/serial_c_iface.h
-            ../../serial/serial_c_iface.cpp)
+                ../../../../../../../Downloads/iondb-development/src/serial/printf_redirect.h
+                ../../../../../../../Downloads/iondb-development/src/serial/serial_c_iface.h
+                ../../../../../../../Downloads/iondb-development/src/serial/serial_c_iface.cpp)
 #    endif()
 
     generate_arduino_library(${PROJECT_NAME})

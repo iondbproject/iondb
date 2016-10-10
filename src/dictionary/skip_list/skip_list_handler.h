@@ -5,8 +5,8 @@
 @brief		Handler liaison between dictionary API and skiplist implementation
 */
 /******************************************************************************/
-#if !defined(SKIP_LIST_HANDLER_H_)
-#define SKIP_LIST_HANDLER_H_
+#if !defined(ION_SKIP_LIST_HANDLER_H_)
+#define ION_SKIP_LIST_HANDLER_H_
 
 #if defined(__cplusplus)
 extern "C" {

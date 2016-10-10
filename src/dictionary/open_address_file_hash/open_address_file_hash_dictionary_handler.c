@@ -263,8 +263,8 @@ oafdict_next(
 		/* the results are now ready //reference item at given position */
 
 		/* set position in file to read value */
-		fseek(hash_map->file, (SIZEOF(STATUS) + data_length) * oafdict_cursor->current	/* position is based on indexes (not abs file pos) */
-			+ SIZEOF(STATUS), SEEK_SET);
+		fseek(hash_map->file, (ION_SIZEOF(STATUS) + data_length) * oafdict_cursor->current	/* position is based on indexes (not abs file pos) */
+			+ ION_SIZEOF(STATUS), SEEK_SET);
 
 /*@todo this needs to be addressed in terms of return type
 */
@@ -359,7 +359,7 @@ oafdict_scan(
 	/* this is the current position of the cursor */
 	/* and start scanning 1 ahead */
 
-	int record_size = SIZEOF(STATUS) + hash_map->super.record.key_size + hash_map->super.record.value_size;
+	int record_size = ION_SIZEOF(STATUS) + hash_map->super.record.key_size + hash_map->super.record.value_size;
 
 	/* move to the correct position in the fie */
 	fseek(hash_map->file, loc * record_size, SEEK_SET);
@@ -372,7 +372,7 @@ oafdict_scan(
 	while (loc != cursor->first) {
 		fread(item, record_size, 1, hash_map->file);
 
-		if ((item->status == EMPTY) || (item->status == DELETED)) {
+		if ((item->status == ION_EMPTY) || (item->status == DELETED)) {
 			/* if empty, just skip to next cell */
 			loc++;
 		}

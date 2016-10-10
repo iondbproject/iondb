@@ -21,15 +21,15 @@
 */
 /******************************************************************************/
 
-#if !defined(FLAT_FILE_TYPES_H)
-#define FLAT_FILE_TYPES_H
+#if !defined(ION_FLAT_FILE_TYPES_H)
+#define ION_FLAT_FILE_TYPES_H
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-#include "../dictionary.h"
-#include "../../file/SD_stdio_c_iface.h"
+#include "../../../../../../../Downloads/iondb-development/src/dictionary/dictionary.h"
+#include "../../../../../../../Downloads/iondb-development/src/file/SD_stdio_c_iface.h"
 
 /**
 @brief		This type describes the status flag within a flat file row.
@@ -39,20 +39,20 @@ typedef ion_byte_t ion_flat_file_row_status_t;
 /**
 @brief		Signifies that this row in the flat file is currently occupied and should not be overwritten.
 */
-#define FLAT_FILE_STATUS_OCCUPIED	1
+#define ION_FLAT_FILE_STATUS_OCCUPIED	1
 /**
 @brief		Signifies that this row in the flat file is currently empty and is okay to be overwritten.
 */
-#define FLAT_FILE_STATUS_EMPTY		0
+#define ION_FLAT_FILE_STATUS_EMPTY		0
 
 /**
 @brief		Signals to @ref flat_file_scan to scan in a forward direction.
 */
-#define FLAT_FILE_SCAN_FORWARDS		1
+#define ION_FLAT_FILE_SCAN_FORWARDS		1
 /**
 @brief		Signals to @ref flat_file_scan to scan in a backward direction.
 */
-#define FLAT_FILE_SCAN_BACKWARDS	0
+#define ION_FLAT_FILE_SCAN_BACKWARDS	0
 
 /**
 @brief		Metadata container that holds flat file specific information.

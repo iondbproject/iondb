@@ -6,8 +6,8 @@
 */
 /******************************************************************************/
 
-#if !defined(PROJECT_FLATFILE_H)
-#define PROJECT_FLATFILE_H
+#if !defined(ION_PROJECT_FLATFILE_H)
+#define ION_PROJECT_FLATFILE_H
 
 #include "Dictionary.h"
 #include "../key_value/kv_system.h"
