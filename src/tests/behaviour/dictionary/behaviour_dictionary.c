@@ -307,7 +307,7 @@ bhdct_setup_string_key(
 	switch (fill_level) {
 		case ion_fill_edge_cases: {
 			ION_FILL_EDGE_LOOP(i) {
-				sprintf(key, ION_ION_BHDCT_STRING_KEY_PAYLOAD, i);
+				sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
 				bhdct_insert(tc, dict, key, ION_EDGE_VALUE(i), boolean_true);
 			}
 		}

@@ -34,7 +34,7 @@ extern "C" {
 #include "../key_value/kv_system.h"
 #include "ion_file.h"
 
-#define ION_LFB_NULL FILE_NULL
+#define ION_LFB_NULL ION_FILE_NULL
 
 /**
 @brief		A handler struct for a linked file bag instance.
