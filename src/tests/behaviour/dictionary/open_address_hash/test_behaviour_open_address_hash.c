@@ -30,5 +30,5 @@ void
 runalltests_behaviour_open_address_hash(
 	void
 ) {
-	bhdct_run_tests(oadict_init, 200, BHDCT_ALL_TESTS & ~BHDCT_DUPLICATES);
+	bhdct_run_tests(oadict_init, 200, ION_BHDCT_ALL_TESTS & ~ION_BHDCT_DUPLICATES);
 }

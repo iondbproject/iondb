@@ -162,7 +162,7 @@ ffdict_find(
 
 			ion_fpos_t			loc			= -1;
 			ion_flat_file_row_t row;
-			ion_err_t			scan_result = flat_file_scan(flat_file, -1, &loc, &row, FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, target_key);
+			ion_err_t			scan_result = flat_file_scan(flat_file, -1, &loc, &row, ION_FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, target_key);
 
 			if (err_file_hit_eof == scan_result) {
 				/* If this happens, that means the target key doesn't exist */
@@ -210,7 +210,7 @@ ffdict_find(
 			/* Find the first satisfactory key. */
 			ion_fpos_t			loc			= -1;
 			ion_flat_file_row_t row;
-			ion_err_t			scan_result = flat_file_scan(flat_file, -1, &loc, &row, FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_within_bounds, (*cursor)->predicate->statement.range.lower_bound, (*cursor)->predicate->statement.range.upper_bound);
+			ion_err_t			scan_result = flat_file_scan(flat_file, -1, &loc, &row, ION_FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_within_bounds, (*cursor)->predicate->statement.range.lower_bound, (*cursor)->predicate->statement.range.upper_bound);
 
 			if (err_file_hit_eof == scan_result) {
 				/* This means the returned node is smaller than the lower bound, which means that there are no valid records to return */
@@ -238,7 +238,7 @@ ffdict_find(
 
 			ion_fpos_t			loc						= -1;
 			ion_flat_file_row_t row;
-			ion_err_t			scan_result				= flat_file_scan(flat_file, -1, &loc, &row, FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_not_empty);
+			ion_err_t			scan_result				= flat_file_scan(flat_file, -1, &loc, &row, ION_FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_not_empty);
 
 			if (err_file_hit_eof == scan_result) {
 				(*cursor)->status = cs_end_of_results;
@@ -292,19 +292,19 @@ ffdict_next(
 			/* TODO: Implement sorted mode search */
 			switch (cursor->predicate->type) {
 				case predicate_equality: {
-					err = flat_file_scan(flat_file, flat_file_cursor->current_location + 1, &flat_file_cursor->current_location, &throwaway_row, FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, cursor->predicate->statement.equality.equality_value);
+					err = flat_file_scan(flat_file, flat_file_cursor->current_location + 1, &flat_file_cursor->current_location, &throwaway_row, ION_FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, cursor->predicate->statement.equality.equality_value);
 
 					break;
 				}
 
 				case predicate_range: {
-					err = flat_file_scan(flat_file, flat_file_cursor->current_location + 1, &flat_file_cursor->current_location, &throwaway_row, FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_within_bounds, cursor->predicate->statement.range.lower_bound, cursor->predicate->statement.range.upper_bound);
+					err = flat_file_scan(flat_file, flat_file_cursor->current_location + 1, &flat_file_cursor->current_location, &throwaway_row, ION_FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_within_bounds, cursor->predicate->statement.range.lower_bound, cursor->predicate->statement.range.upper_bound);
 
 					break;
 				}
 
 				case predicate_all_records: {
-					err = flat_file_scan(flat_file, flat_file_cursor->current_location + 1, &flat_file_cursor->current_location, &throwaway_row, FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_not_empty);
+					err = flat_file_scan(flat_file, flat_file_cursor->current_location + 1, &flat_file_cursor->current_location, &throwaway_row, ION_FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_not_empty);
 
 					break;
 				}

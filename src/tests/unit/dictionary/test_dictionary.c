@@ -21,7 +21,7 @@ test_dictionary_compare_numerics(
 		1
 	};
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL == dictionary_compare_signed_value(key_one, key_two, sizeof(int)));
+	PLANCK_UNIT_ASSERT_TRUE(tc, ION_IS_EQUAL == dictionary_compare_signed_value(key_one, key_two, sizeof(int)));
 
 	key_one = &(int) {
 		1
@@ -30,7 +30,7 @@ test_dictionary_compare_numerics(
 		2
 	};
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, ZERO > dictionary_compare_signed_value(key_one, key_two, sizeof(int)));
+	PLANCK_UNIT_ASSERT_TRUE(tc, ION_ZERO > dictionary_compare_signed_value(key_one, key_two, sizeof(int)));
 
 	key_one = &(int) {
 		2
@@ -39,12 +39,12 @@ test_dictionary_compare_numerics(
 		0
 	};
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, ZERO < dictionary_compare_signed_value(key_one, key_two, sizeof(int)));
+	PLANCK_UNIT_ASSERT_TRUE(tc, ION_ZERO < dictionary_compare_signed_value(key_one, key_two, sizeof(int)));
 
 	int i;
 
 	for (i = 1; i < 10; i++) {
-		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO < dictionary_compare_signed_value(&i, key_two, sizeof(int)));
+		PLANCK_UNIT_ASSERT_TRUE(tc, ION_ZERO < dictionary_compare_signed_value(&i, key_two, sizeof(int)));
 	}
 
 	/* case for unsigned signed char */
@@ -61,7 +61,7 @@ test_dictionary_compare_numerics(
 
 		char result = dictionary_compare_unsigned_value(key_one, key_two, sizeof(ion_byte_t));
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO < result);
+		PLANCK_UNIT_ASSERT_TRUE(tc, ION_ZERO < result);
 	}
 
 	{
@@ -75,7 +75,7 @@ test_dictionary_compare_numerics(
 			0
 		};
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO < dictionary_compare_unsigned_value(key_one, key_two, sizeof(unsigned short)));
+		PLANCK_UNIT_ASSERT_TRUE(tc, ION_ZERO < dictionary_compare_unsigned_value(key_one, key_two, sizeof(unsigned short)));
 	}
 
 	{
@@ -89,7 +89,7 @@ test_dictionary_compare_numerics(
 			0
 		};
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO < dictionary_compare_unsigned_value(key_one, key_two, sizeof(unsigned int)));
+		PLANCK_UNIT_ASSERT_TRUE(tc, ION_ZERO < dictionary_compare_unsigned_value(key_one, key_two, sizeof(unsigned int)));
 	}
 
 	{
@@ -103,7 +103,7 @@ test_dictionary_compare_numerics(
 			0
 		};
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO < dictionary_compare_unsigned_value(key_one, key_two, sizeof(unsigned long)));
+		PLANCK_UNIT_ASSERT_TRUE(tc, ION_ZERO < dictionary_compare_unsigned_value(key_one, key_two, sizeof(unsigned long)));
 	}
 
 	{
@@ -117,7 +117,7 @@ test_dictionary_compare_numerics(
 			0
 		};
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO < dictionary_compare_signed_value(key_one, key_two, sizeof(long)));
+		PLANCK_UNIT_ASSERT_TRUE(tc, ION_ZERO < dictionary_compare_signed_value(key_one, key_two, sizeof(long)));
 	}
 	{
 		char	*key_one;
@@ -130,7 +130,7 @@ test_dictionary_compare_numerics(
 			0
 		};
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO < dictionary_compare_signed_value(key_one, key_two, sizeof(char)));
+		PLANCK_UNIT_ASSERT_TRUE(tc, ION_ZERO < dictionary_compare_signed_value(key_one, key_two, sizeof(char)));
 	}
 
 	{
@@ -144,7 +144,7 @@ test_dictionary_compare_numerics(
 			-1
 		};
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, ZERO < dictionary_compare_signed_value(key_one, key_two, sizeof(char)));
+		PLANCK_UNIT_ASSERT_TRUE(tc, ION_ZERO < dictionary_compare_signed_value(key_one, key_two, sizeof(char)));
 	}
 }
 

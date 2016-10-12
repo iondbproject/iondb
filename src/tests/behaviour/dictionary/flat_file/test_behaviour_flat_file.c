@@ -30,5 +30,5 @@ void
 runalltests_behaviour_flat_file(
 	void
 ) {
-	bhdct_run_tests(ffdict_init, 15, BHDCT_ALL_TESTS);
+	bhdct_run_tests(ffdict_init, 15, ION_BHDCT_ALL_TESTS);
 }

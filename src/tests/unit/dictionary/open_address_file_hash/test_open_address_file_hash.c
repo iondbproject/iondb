@@ -8,9 +8,9 @@
 #include "test_open_address_file_hash.h"
 #include "../../../../key_value/kv_system.h"
 
-#define MAX_HASH_TEST	100
-#define STD_MAP_SIZE	10
-#define TEST_FILE		"file.bin"
+#define ION_MAX_HASH_TEST	100
+#define ION_STD_MAP_SIZE	10
+#define ION_TEST_FILE		"file.bin"
 
 /**
 @brief			Helper function to visualize hashmap contents
@@ -72,7 +72,7 @@ initialize_file_hash_map_std_conditions(
 	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 	map->super.key_type = key_type_numeric_signed;
-	initialize_file_hash_map(STD_MAP_SIZE, &record, map);
+	initialize_file_hash_map(ION_STD_MAP_SIZE, &record, map);
 }
 
 /**
@@ -124,7 +124,7 @@ test_open_address_file_hashmap_compute_simple_hash(
 
 	initialize_file_hash_map_std_conditions(&map);
 
-	for (i = 0; i < MAX_HASH_TEST; i++) {
+	for (i = 0; i < ION_MAX_HASH_TEST; i++) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, (i % map.map_size) == oafh_compute_simple_hash(&map, ((int *) &i), sizeof(i)));
 	}
 
@@ -144,8 +144,8 @@ test_open_address_file_hashmap_get_location(
 ) {
 	int i;
 
-	for (i = 0; i < MAX_HASH_TEST; i++) {
-		PLANCK_UNIT_ASSERT_TRUE(tc, (i % STD_MAP_SIZE) == oafh_get_location((ion_hash_t) i, STD_MAP_SIZE));
+	for (i = 0; i < ION_MAX_HASH_TEST; i++) {
+		PLANCK_UNIT_ASSERT_TRUE(tc, (i % ION_STD_MAP_SIZE) == oafh_get_location((ion_hash_t) i, ION_STD_MAP_SIZE));
 	}
 }
 
@@ -191,7 +191,7 @@ test_open_address_file_hashmap_find_item_location(
 
 	for (offset = 0; offset < map.map_size; offset++) {
 		/* apply continual offsets */
-#if DEBUG
+#if ION_DEBUG
 		printf("entry loc: %p %p \n", map.entry, pos_ptr);
 #endif
 		/* pos_ptr			  = (map.entry */
@@ -202,7 +202,7 @@ test_open_address_file_hashmap_find_item_location(
 		fseek(map.file, (offset * bucket_size) % (map.map_size * bucket_size), SEEK_SET);
 
 		for (i = 0; i < map.map_size; i++) {
-			item_ptr->status = IN_USE;
+			item_ptr->status = ION_IN_USE;
 			memcpy(item_ptr->data, (int *) &i, sizeof(int));
 
 			char str[10];
@@ -292,7 +292,7 @@ test_open_address_file_hashmap_simple_insert(
 			char str[10];
 
 			sprintf(str, "%02i is key", (i + offset) % map.map_size);
-			PLANCK_UNIT_ASSERT_TRUE(tc, record_status == IN_USE);
+			PLANCK_UNIT_ASSERT_TRUE(tc, record_status == ION_IN_USE);
 			PLANCK_UNIT_ASSERT_TRUE(tc, key == (i + offset) % map.map_size);
 			PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) value, (char *) str);
 		}
@@ -848,7 +848,7 @@ test_open_address_file_hashmap_delete_2(
 
 	/*and update the values for the known keys */
 	for (i = (map.map_size - 1); i >= 0; i--) {
-#if DEBUG
+#if ION_DEBUG
 		printf("Deleting key: %i \n", i);
 #endif
 		status = oafh_delete(&map, (&i));

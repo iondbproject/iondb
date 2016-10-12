@@ -43,13 +43,13 @@ oah_initialize(
 		return 1;
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	printf("Initializing hash table\n");
 #endif
 
 	/* Initialize hash table */
 	for (i = 0; i < size; i++) {
-		((ion_hash_bucket_t *) (hashmap->entry + ((hashmap->super.record.key_size + hashmap->super.record.value_size + SIZEOF(STATUS)) * i)))->status = EMPTY;
+		((ion_hash_bucket_t *) (hashmap->entry + ((hashmap->super.record.key_size + hashmap->super.record.value_size + SIZEOF(STATUS)) * i)))->status = ION_EMPTY;
 	}
 
 	return 0;
@@ -118,10 +118,10 @@ oah_insert(
 	while (count != hash_map->map_size) {
 		item = ((ion_hash_bucket_t *) ((hash_map->entry + (hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS)) * loc)));
 
-		if (item->status == IN_USE) {
+		if (item->status == ION_IN_USE) {
 			/* if a cell is in use, need to key to */
 
-			if (hash_map->super.compare(item->data, key, hash_map->super.record.key_size) == IS_EQUAL) {
+			if (hash_map->super.compare(item->data, key, hash_map->super.record.key_size) == ION_IS_EQUAL) {
 				if (hash_map->write_concern == wc_insert_unique) {
 					/* allow unique entries only */
 					return ION_STATUS_ERROR(err_duplicate_key);
@@ -136,9 +136,9 @@ oah_insert(
 				}
 			}
 		}
-		else if ((item->status == EMPTY) || (item->status == DELETED)) {
+		else if ((item->status == ION_EMPTY) || (item->status == ION_DELETED)) {
 			/* problem is here with base types as it is just an array of data.  Need better way */
-			item->status = IN_USE;
+			item->status = ION_IN_USE;
 			memcpy(item->data, key, (hash_map->super.record.key_size));
 			memcpy(item->data + hash_map->super.record.key_size, value, (hash_map->super.record.value_size));
 			return ION_STATUS_OK(1);
@@ -151,13 +151,13 @@ oah_insert(
 			loc = 0;
 		}
 
-#if DEBUG
+#if ION_DEBUG
 		printf("checking location %i\n", loc);
 #endif
 		count++;
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	printf("Hash table full.  Insert not done");
 #endif
 
@@ -183,20 +183,20 @@ oah_find_item_loc(
 		/* locate first item */
 		ion_hash_bucket_t *item = (((ion_hash_bucket_t *) ((hash_map->entry + (hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS)) * loc))));
 
-		if (item->status == EMPTY) {
+		if (item->status == ION_EMPTY) {
 			return err_item_not_found;	/* if you hit an empty cell, exit */
 		}
 		else {
 			/* calculate if there is a match */
 
-			if (item->status != DELETED) {
+			if (item->status != ION_DELETED) {
 				/*@todo correct compare to use proper returen type*/
 				/*@todo An error exisits with the comparitor from the dictionary and will need to be
 				 * revisitied onced fixed */
 
 				int key_is_equal = hash_map->super.compare(item->data, key, hash_map->super.record.key_size);
 
-				if (IS_EQUAL == key_is_equal) {
+				if (ION_IS_EQUAL == key_is_equal) {
 					(*location) = loc;
 					return err_ok;
 				}
@@ -223,7 +223,7 @@ oah_delete(
 	int loc = -1;
 
 	if (oah_find_item_loc(hash_map, key, &loc) == err_item_not_found) {
-#if DEBUG
+#if ION_DEBUG
 		printf("Item not found when trying to oah_delete.\n");
 #endif
 		return ION_STATUS_ERROR(err_item_not_found);
@@ -232,9 +232,9 @@ oah_delete(
 		/* locate item */
 		ion_hash_bucket_t *item = (((ion_hash_bucket_t *) ((hash_map->entry + (hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS)) * loc))));
 
-		item->status = DELETED;	/* delete item */
+		item->status = ION_DELETED;	/* delete item */
 
-#if DEBUG
+#if ION_DEBUG
 		printf("Item deleted at location %d\n", loc);
 #endif
 		return ION_STATUS_OK(1);
@@ -250,7 +250,7 @@ oah_query(
 	int loc;
 
 	if (oah_find_item_loc(hash_map, key, &loc) == err_ok) {
-#if DEBUG
+#if ION_DEBUG
 		printf("Item found at location %d\n", loc);
 #endif
 
@@ -262,7 +262,7 @@ oah_query(
 		return ION_STATUS_OK(1);
 	}
 	else {
-#if DEBUG
+#if ION_DEBUG
 		printf("Item not found in hash table.\n");
 #endif
 		return ION_STATUS_ERROR(err_item_not_found);
@@ -282,7 +282,7 @@ oah_print(
 	for (i = 0; i < size; i++) {
 		printf("%d -- %i ", i, ((ion_hash_bucket_t *) ((hash_map->entry + (record->key_size + record->value_size + SIZEOF(STATUS)) * i)))->status);
 		{
-			if (((ion_hash_bucket_t *) ((hash_map->entry + (record->key_size + record->value_size + SIZEOF(STATUS)) * i)))->status == (EMPTY | DELETED)) {
+			if (((ion_hash_bucket_t *) ((hash_map->entry + (record->key_size + record->value_size + SIZEOF(STATUS)) * i)))->status == (ION_EMPTY | ION_DELETED)) {
 				printf("(null)");
 			}
 			else {

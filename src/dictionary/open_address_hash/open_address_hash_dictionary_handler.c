@@ -316,7 +316,7 @@ is_equal(
 	ion_key_t			key1,
 	ion_key_t			key2
 ) {
-	if (memcmp(key1, key2, (((ion_hashmap_t *) dict->instance)->super.record.key_size)) == IS_EQUAL) {
+	if (memcmp(key1, key2, (((ion_hashmap_t *) dict->instance)->super.record.key_size)) == ION_IS_EQUAL) {
 		return boolean_true;
 	}
 	else {
@@ -349,7 +349,7 @@ oadict_test_predicate(
 	switch (cursor->predicate->type) {
 		case predicate_equality:/* equality scan check */
 		{
-			if (IS_EQUAL == hash_map->super.compare(cursor->predicate->statement.equality.equality_value, key, hash_map->super.record.key_size)) {
+			if (ION_IS_EQUAL == hash_map->super.compare(cursor->predicate->statement.equality.equality_value, key, hash_map->super.record.key_size)) {
 				key_satisfies_predicate = boolean_true;
 			}
 
@@ -393,7 +393,7 @@ oadict_scan(
 		/* locate first item */
 		ion_hash_bucket_t *item = (((ion_hash_bucket_t *) ((hash_map->entry + (hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS)) * loc))));
 
-		if ((item->status == EMPTY) || (item->status == DELETED)) {
+		if ((item->status == ION_EMPTY) || (item->status == ION_DELETED)) {
 			/* if empty, just skip to next cell */
 			loc++;
 		}

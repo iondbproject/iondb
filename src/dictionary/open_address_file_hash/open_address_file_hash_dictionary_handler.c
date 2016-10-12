@@ -285,7 +285,7 @@ oafdict_is_equal(
 	ion_key_t			key1,
 	ion_key_t			key2
 ) {
-	if (memcmp(key1, key2, (((ion_file_hashmap_t *) dict->instance)->super.record.key_size)) == IS_EQUAL) {
+	if (memcmp(key1, key2, (((ion_file_hashmap_t *) dict->instance)->super.record.key_size)) == ION_IS_EQUAL) {
 		return boolean_true;
 	}
 	else {
@@ -321,7 +321,7 @@ oafdict_test_predicate(
 	switch (cursor->predicate->type) {
 		case predicate_equality:/* equality scan check */
 		{
-			if (IS_EQUAL == hash_map->super.compare(cursor->predicate->statement.equality.equality_value, key, hash_map->super.record.key_size)) {
+			if (ION_IS_EQUAL == hash_map->super.compare(cursor->predicate->statement.equality.equality_value, key, hash_map->super.record.key_size)) {
 				key_satisfies_predicate = boolean_true;
 			}
 
@@ -372,7 +372,7 @@ oafdict_scan(
 	while (loc != cursor->first) {
 		fread(item, record_size, 1, hash_map->file);
 
-		if ((item->status == EMPTY) || (item->status == DELETED)) {
+		if ((item->status == ION_EMPTY) || (item->status == ION_DELETED)) {
 			/* if empty, just skip to next cell */
 			loc++;
 		}

@@ -40,13 +40,13 @@ extern "C" {
 #include "../../../dictionary/dictionary.h"
 #include "../../../dictionary/ion_master_table.h"
 
-#define BHDCT_INT_INT					(1 << 0)
-#define BHDCT_STRING_INT				(1 << 1)
-#define BHDCT_DUPLICATES				(1 << 2)
-#define BHDCT_ALL_TESTS					(0xFFFFFFFF)
+#define ION_BHDCT_INT_INT					(1 << 0)
+#define ION_BHDCT_STRING_INT				(1 << 1)
+#define ION_BHDCT_DUPLICATES				(1 << 2)
+#define ION_BHDCT_ALL_TESTS					(0xFFFFFFFF)
 
-#define BHDCT_STRING_KEY_BUFFER_SIZE	9
-#define BHDCT_STRING_KEY_PAYLOAD		"k%d"
+#define ION_BHDCT_STRING_KEY_BUFFER_SIZE	9
+#define ION_BHDCT_STRING_KEY_PAYLOAD		"k%d"
 
 typedef struct {
 	ion_handler_initializer_t	init_fcn;		/**< A pointer to a handler initialization function. */

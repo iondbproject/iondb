@@ -44,7 +44,7 @@ typedef FILE *ion_file_handle_t;
 
 #endif /* Clause ARDUINO */
 
-#define FILE_NULL -1
+#define ION_FILE_NULL -1
 
 ion_boolean_t
 ion_fexists(
@@ -70,7 +70,7 @@ ion_err_t
 ion_fseek(
 	ion_file_handle_t	file,
 	ion_file_offset_t	seek_to,
-	int				origin
+	int					origin
 );
 
 ion_file_offset_t
@@ -86,38 +86,38 @@ ion_fend(
 ion_err_t
 ion_fwrite(
 	ion_file_handle_t	file,
-	unsigned int	num_bytes,
-	ion_byte_t		*to_write
+	unsigned int		num_bytes,
+	ion_byte_t			*to_write
 );
 
 ion_err_t
 ion_fwrite_at(
 	ion_file_handle_t	file,
 	ion_file_offset_t	offset,
-	unsigned int	num_bytes,
-	ion_byte_t		*to_write
+	unsigned int		num_bytes,
+	ion_byte_t			*to_write
 );
 
 ion_err_t
 ion_fappend(
 	ion_file_handle_t	file,
-	unsigned int	num_bytes,
-	ion_byte_t		*to_write
+	unsigned int		num_bytes,
+	ion_byte_t			*to_write
 );
 
 ion_err_t
 ion_fread(
 	ion_file_handle_t	file,
-	unsigned int	num_bytes,
-	ion_byte_t		*write_to
+	unsigned int		num_bytes,
+	ion_byte_t			*write_to
 );
 
 ion_err_t
 ion_fread_at(
 	ion_file_handle_t	file,
 	ion_file_offset_t	offset,
-	unsigned int	num_bytes,
-	ion_byte_t		*write_to
+	unsigned int		num_bytes,
+	ion_byte_t			*write_to
 );
 
 #if defined(__cplusplus)
