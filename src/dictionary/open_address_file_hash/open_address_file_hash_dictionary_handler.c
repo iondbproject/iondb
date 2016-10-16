@@ -315,37 +315,7 @@ oafdict_test_predicate(
 	int					key_satisfies_predicate;
 	ion_file_hashmap_t	*hash_map = (ion_file_hashmap_t *) (cursor->dictionary->instance);
 
-	/* pre-prime value for faster exit */
-	key_satisfies_predicate = boolean_false;
-
-	switch (cursor->predicate->type) {
-		case predicate_equality:/* equality scan check */
-		{
-			if (IS_EQUAL == hash_map->super.compare(cursor->predicate->statement.equality.equality_value, key, hash_map->super.record.key_size)) {
-				key_satisfies_predicate = boolean_true;
-			}
-
-			break;
-		}
-
-		case predicate_range:	/* range check */
-		{
-			if (/* lower_bound <= key <==> !(lower_bound > key) */
-				(!(A_gt_B == hash_map->super.compare(cursor->predicate->statement.range.lower_bound, key, hash_map->super.record.key_size))) &&	/* key <= upper_bound <==> !(key > upper_bound) */
-				(!(A_gt_B == hash_map->super.compare(key, cursor->predicate->statement.range.upper_bound, hash_map->super.record.key_size)))) {
-				key_satisfies_predicate = boolean_true;
-			}
-
-			break;
-		}
-
-		case predicate_all_records: {
-			key_satisfies_predicate = boolean_true;
-			break;
-		}
-	}
-
-	return key_satisfies_predicate;
+	return test_predicate(cursor, key, hash_map->super);
 }
 
 ion_err_t

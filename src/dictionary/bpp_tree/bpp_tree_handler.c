@@ -7,6 +7,7 @@
 /******************************************************************************/
 
 #include "bpp_tree_handler.h"
+/* #include "../dictionary.c" */
 
 void
 bpptree_get_value_filename(
@@ -491,35 +492,9 @@ bpptree_test_predicate(
 	ion_dict_cursor_t	*cursor,
 	ion_key_t			key
 ) {
-	ion_bpptree_t	*bpptree	= (ion_bpptree_t *) cursor->dictionary->instance;
-	ion_key_size_t	key_size	= cursor->dictionary->instance->record.key_size;
-	ion_boolean_t	result		= boolean_false;
+	ion_bpptree_t *bpptree = (ion_bpptree_t *) cursor->dictionary->instance;
 
-	switch (cursor->predicate->type) {
-		case predicate_equality: {
-			if (bpptree->super.compare(key, cursor->predicate->statement.equality.equality_value, cursor->dictionary->instance->record.key_size) == 0) {
-				result = boolean_true;
-			}
-
-			break;
-		}
-
-		case predicate_range: {
-			ion_key_t	lower_b			= cursor->predicate->statement.range.lower_bound;
-			ion_key_t	upper_b			= cursor->predicate->statement.range.upper_bound;
-
-			/* Check if key >= lower bound */
-			ion_boolean_t comp_lower	= bpptree->super.compare(key, lower_b, key_size) >= 0;
-
-			/* Check if key <= upper bound */
-			ion_boolean_t comp_upper	= bpptree->super.compare(key, upper_b, key_size) <= 0;
-
-			result = comp_lower && comp_upper;
-			break;
-		}
-	}
-
-	return result;
+	return test_predicate(cursor, key, bpptree->super);
 }
 
 ion_err_t

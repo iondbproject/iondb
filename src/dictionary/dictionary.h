@@ -372,6 +372,13 @@ dictionary_find(
 	ion_dict_cursor_t	**cursor
 );
 
+ion_boolean_t
+test_predicate(
+	ion_dict_cursor_t		*cursor,
+	ion_key_t				key,
+	ion_dictionary_parent_t dictionaryParent
+);
+
 #if defined(__cplusplus)
 }
 #endif
