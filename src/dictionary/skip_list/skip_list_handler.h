@@ -220,21 +220,6 @@ sldict_destroy_cursor(
 );
 
 /**
-@brief	  Tests a given @p key against the predicate of a cursor.
-
-@param	  cursor
-				Cursor in which to test against the @p key.
-@param	  key
-				Key to test.
-@return	 Result of predicate comparison.
-*/
-ion_boolean_t
-sldict_test_predicate(
-	ion_dict_cursor_t	*cursor,
-	ion_key_t			key
-);
-
-/**
 @brief			Opens a specific skiplist instance of a dictionary.
 
 @param			handler

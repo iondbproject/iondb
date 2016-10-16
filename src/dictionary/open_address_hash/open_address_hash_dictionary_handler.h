@@ -320,22 +320,6 @@ oadict_destroy_cursor(
 );
 
 /**
-@brief	  Tests the supplied @p key against the predicate registered in the
-			cursor.
-
-@param	  cursor
-				The cursor and predicate being used to test @p key against.
-@param	  key
-				The key to test.
-@return	 The result is the key passes or fails the predicate test.
-*/
-ion_boolean_t
-oadict_test_predicate(
-	ion_dict_cursor_t	*cursor,
-	ion_key_t			key
-);
-
-/**
 
 @brief		  Starts scanning map looking for conditions that match
 				predicate and returns result.

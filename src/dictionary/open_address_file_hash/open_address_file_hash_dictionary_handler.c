@@ -302,21 +302,6 @@ oafdict_destroy_cursor(
 	*cursor = NULL;
 }
 
-ion_boolean_t
-oafdict_test_predicate(
-	ion_dict_cursor_t	*cursor,
-	ion_key_t			key
-) {
-	/* TODO need to check key match; what's the most efficient way? */
-
-	/**
-	 * Compares value == key
-	*/
-	ion_file_hashmap_t *hash_map = (ion_file_hashmap_t *) (cursor->dictionary->instance);
-
-	return test_predicate(hash_map->super, cursor, key);
-}
-
 ion_err_t
 oafdict_scan(
 	ion_oafdict_cursor_t *cursor/* know exactly what implementation of cursor is */
@@ -350,7 +335,7 @@ oafdict_scan(
 
 			/* TODO need to check key match; what's the most efficient way? */
 
-			ion_boolean_t key_satisfies_predicate = oafdict_test_predicate(&(cursor->super), item->data);	/* assumes that the key is first */
+			ion_boolean_t key_satisfies_predicate = test_predicate(&(cursor->super), item->data);	/* assumes that the key is first */
 
 			if (key_satisfies_predicate == boolean_true) {
 				cursor->current = loc;	/* this is the next index for value */

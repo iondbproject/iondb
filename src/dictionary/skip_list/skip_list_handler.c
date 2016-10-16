@@ -299,7 +299,7 @@ sldict_next(
 	}
 	else if ((cursor->status == cs_cursor_initialized) || (cursor->status == cs_cursor_active)) {
 		if (cursor->status == cs_cursor_active) {
-			if ((NULL == sl_cursor->current) || (sldict_test_predicate(cursor, sl_cursor->current->key) == boolean_false)) {
+			if ((NULL == sl_cursor->current) || (test_predicate(cursor, sl_cursor->current->key) == boolean_false)) {
 				cursor->status = cs_end_of_results;
 				return cursor->status;
 			}
@@ -327,14 +327,4 @@ sldict_destroy_cursor(
 	(*cursor)->predicate->destroy(&(*cursor)->predicate);
 	free(*cursor);
 	*cursor = NULL;
-}
-
-ion_boolean_t
-sldict_test_predicate(
-	ion_dict_cursor_t	*cursor,
-	ion_key_t			key
-) {
-	ion_skiplist_t *skiplist = (ion_skiplist_t *) cursor->dictionary->instance;
-
-	return test_predicate(skiplist->super, cursor, key);
 }
