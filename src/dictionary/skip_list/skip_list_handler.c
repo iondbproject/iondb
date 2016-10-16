@@ -299,7 +299,7 @@ sldict_next(
 	}
 	else if ((cursor->status == cs_cursor_initialized) || (cursor->status == cs_cursor_active)) {
 		if (cursor->status == cs_cursor_active) {
-			if ((NULL == sl_cursor->current) || (sldict_test_predicate(cursor, sl_cursor->current->key) == boolean_false)) {
+			if ((NULL == sl_cursor->current) || (test_predicate(cursor, sl_cursor->current->key) == boolean_false)) {
 				cursor->status = cs_end_of_results;
 				return cursor->status;
 			}
@@ -327,44 +327,4 @@ sldict_destroy_cursor(
 	(*cursor)->predicate->destroy(&(*cursor)->predicate);
 	free(*cursor);
 	*cursor = NULL;
-}
-
-ion_boolean_t
-sldict_test_predicate(
-	ion_dict_cursor_t	*cursor,
-	ion_key_t			key
-) {
-	ion_skiplist_t	*skiplist	= (ion_skiplist_t *) cursor->dictionary->instance;
-	ion_key_size_t	key_size	= cursor->dictionary->instance->record.key_size;
-	ion_boolean_t	result		= boolean_false;
-
-	switch (cursor->predicate->type) {
-		case predicate_equality: {
-			if (skiplist->super.compare(key, cursor->predicate->statement.equality.equality_value, cursor->dictionary->instance->record.key_size) == 0) {
-				result = boolean_true;
-			}
-
-			break;
-		}
-
-		case predicate_range: {
-			ion_key_t	lower_b			= cursor->predicate->statement.range.lower_bound;
-			ion_key_t	upper_b			= cursor->predicate->statement.range.upper_bound;
-
-			/* Check if key >= lower bound */
-			ion_boolean_t comp_lower	= skiplist->super.compare(key, lower_b, key_size) >= 0;
-
-			/* Check if key <= upper bound */
-			ion_boolean_t comp_upper	= skiplist->super.compare(key, upper_b, key_size) <= 0;
-
-			result = comp_lower && comp_upper;
-			break;
-		}
-
-		case predicate_all_records: {
-			return boolean_true;
-		}
-	}
-
-	return result;
 }

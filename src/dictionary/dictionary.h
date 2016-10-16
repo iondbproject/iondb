@@ -372,6 +372,27 @@ dictionary_find(
 	ion_dict_cursor_t	**cursor
 );
 
+/**
+@brief		Tests the supplied @p key against the predicate registered in the
+			@p cursor. If the supplied @p cursor if of the type equality, the key is tested for equality with that
+			cursor's equality value and returns boolean_true if the test passes. If the supplied @p cursor is
+			of the type predicate_range, the key is tested for whether it falls in the range
+			of that cursor's registered upper_bound and lower_bound and returns boolean_true if it does.
+			In the case that the supplied @p cursor is of the type predicate_all_records, boolean_true is returned. If
+			any of the above tests fail, or if the type of the @p cursor is not mentioned above, boolean_false is
+			returned
+@param	  cursor
+				The cursor and predicate being used to test @p key against.
+@param	  key
+				The key to test.
+@return		The result is the key passes or fails the predicate test.
+*/
+ion_boolean_t
+test_predicate(
+	ion_dict_cursor_t	*cursor,
+	ion_key_t			key
+);
+
 #if defined(__cplusplus)
 }
 #endif

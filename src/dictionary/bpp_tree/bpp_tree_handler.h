@@ -240,22 +240,6 @@ bpptree_destroy_cursor(
 	ion_dict_cursor_t **cursor
 );
 
-/**
-@brief		Tests the supplied @p key against the predicate registered in the
-			cursor.
-
-@param	  cursor
-				The cursor and predicate being used to test @p key against.
-@param	  key
-				The key to test.
-@return		The result is the key passes or fails the predicate test.
-*/
-ion_boolean_t
-bpptree_test_predicate(
-	ion_dict_cursor_t	*cursor,
-	ion_key_t			key
-);
-
 /* TODO Write me doc! */
 ion_err_t
 bpptree_open_dictionary(
