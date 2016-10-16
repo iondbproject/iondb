@@ -374,10 +374,8 @@ dictionary_find(
 
 /**
 @brief		Tests the supplied @p key against the predicate registered in the
-			cursor for the given @p parent type.
+			cursor for equality or to see if it is in the specified upper and lower bounds for the supplied @p cursor.
 
-@param parent
-				The type of the super field in the struct used in the invoking method
 @param	  cursor
 				The cursor and predicate being used to test @p key against.
 @param	  key
