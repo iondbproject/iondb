@@ -500,7 +500,7 @@ ion_boolean_t
 test_predicate(
 	ion_dict_cursor_t		*cursor,
 	ion_key_t				key,
-	ion_dictionary_parent_t dictionaryParent
+	ion_dictionary_parent_t parent
 ) {
 	int				key_satisfies_predicate;
 	ion_key_size_t	key_size	= cursor->dictionary->instance->record.key_size;
@@ -508,7 +508,7 @@ test_predicate(
 
 	switch (cursor->predicate->type) {
 		case predicate_equality: {
-			if (dictionaryParent.compare(key, cursor->predicate->statement.equality.equality_value, cursor->dictionary->instance->record.key_size) == 0) {
+			if (parent.compare(key, cursor->predicate->statement.equality.equality_value, cursor->dictionary->instance->record.key_size) == 0) {
 				result = boolean_true;
 			}
 
@@ -520,10 +520,10 @@ test_predicate(
 			ion_key_t	upper_b			= cursor->predicate->statement.range.upper_bound;
 
 			/* Check if key >= lower bound */
-			ion_boolean_t comp_lower	= dictionaryParent.compare(key, lower_b, key_size) >= 0;
+			ion_boolean_t comp_lower	= parent.compare(key, lower_b, key_size) >= 0;
 
 			/* Check if key <= upper bound */
-			ion_boolean_t comp_upper	= dictionaryParent.compare(key, upper_b, key_size) <= 0;
+			ion_boolean_t comp_upper	= parent.compare(key, upper_b, key_size) <= 0;
 
 			result = comp_lower && comp_upper;
 			break;

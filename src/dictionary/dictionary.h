@@ -372,11 +372,23 @@ dictionary_find(
 	ion_dict_cursor_t	**cursor
 );
 
+/**
+@brief		Tests the supplied @p key against the predicate registered in the
+			cursor for the given @p parent type.
+
+@param parent
+				The type of the super field in the struct used in the invoking method
+@param	  cursor
+				The cursor and predicate being used to test @p key against.
+@param	  key
+				The key to test.
+@return		The result is the key passes or fails the predicate test.
+*/
 ion_boolean_t
 test_predicate(
 	ion_dict_cursor_t		*cursor,
 	ion_key_t				key,
-	ion_dictionary_parent_t dictionaryParent
+	ion_dictionary_parent_t parent
 );
 
 #if defined(__cplusplus)
