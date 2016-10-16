@@ -334,8 +334,7 @@ sldict_test_predicate(
 	ion_dict_cursor_t	*cursor,
 	ion_key_t			key
 ) {
-	ion_skiplist_t	*skiplist	= (ion_skiplist_t *) cursor->dictionary->instance;
-	ion_key_size_t	key_size	= cursor->dictionary->instance->record.key_size;
+	ion_skiplist_t *skiplist = (ion_skiplist_t *) cursor->dictionary->instance;
 
 	return test_predicate(cursor, key, skiplist->super);
 }
