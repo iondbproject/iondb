@@ -316,7 +316,7 @@ is_equal(
 	ion_key_t			key1,
 	ion_key_t			key2
 ) {
-	if (memcmp(key1, key2, (((ion_hashmap_t *) dict->instance)->super.record.key_size)) == IS_EQUAL) {
+	if (memcmp(key1, key2, (((ion_hashmap_t *) dict->instance)->super.record.key_size)) == ION_IS_EQUAL) {
 		return boolean_true;
 	}
 	else {
@@ -339,9 +339,40 @@ oadict_test_predicate(
 	ion_key_t			key
 ) {
 	/* TODO need to check key match; what's the most efficient way? */
-	ion_hashmap_t *hash_map = (ion_hashmap_t *) (cursor->dictionary->instance);
 
-	return test_predicate(cursor, key, hash_map->super);
+	int				key_satisfies_predicate;
+	ion_hashmap_t	*hash_map = (ion_hashmap_t *) (cursor->dictionary->instance);
+
+	/* pre-prime value for faster exit */
+	key_satisfies_predicate = boolean_false;
+
+	switch (cursor->predicate->type) {
+		case predicate_equality:/* equality scan check */
+		{
+			if (ION_IS_EQUAL == hash_map->super.compare(cursor->predicate->statement.equality.equality_value, key, hash_map->super.record.key_size)) {
+				key_satisfies_predicate = boolean_true;
+			}
+
+			break;
+		}
+
+		case predicate_range:	/* range check */
+		{
+			if ((!(A_gt_B	/* lower_bound <= key <==> !(lower_bound > key) */
+				   == hash_map->super.compare(cursor->predicate->statement.range.lower_bound, key, hash_map->super.record.key_size))) &&/* key <= upper_bound <==> !(key > upper_bound) */
+				(!(A_gt_B == hash_map->super.compare(key, cursor->predicate->statement.range.upper_bound, hash_map->super.record.key_size)))) {
+				key_satisfies_predicate = boolean_true;
+			}
+
+			break;
+		}
+
+		case predicate_all_records: {
+			key_satisfies_predicate = boolean_true;
+		}
+	}
+
+	return key_satisfies_predicate;
 }
 
 ion_err_t
@@ -362,7 +393,7 @@ oadict_scan(
 		/* locate first item */
 		ion_hash_bucket_t *item = (((ion_hash_bucket_t *) ((hash_map->entry + (hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS)) * loc))));
 
-		if ((item->status == EMPTY) || (item->status == DELETED)) {
+		if ((item->status == ION_EMPTY) || (item->status == ION_DELETED)) {
 			/* if empty, just skip to next cell */
 			loc++;
 		}

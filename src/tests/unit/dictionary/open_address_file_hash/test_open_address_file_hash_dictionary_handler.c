@@ -10,7 +10,7 @@ extern "C" {
 
 #include "test_open_address_file_hash_dictionary_handler.h"
 
-#define MAX_HASH_TEST 100
+#define ION_MAX_HASH_TEST 100
 
 /**
 @brief		A helper function to build a test dictionary instance
@@ -191,7 +191,7 @@ test_open_address_file_dictionary_handler_query_with_results(
 	str = malloc(record_info.value_size);
 	sprintf((char *) str, "value : %i", *(int *) predicate.statement.equality.equality_value);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL == memcmp(record.value, str, record_info.value_size));
+	PLANCK_UNIT_ASSERT_TRUE(tc, ION_IS_EQUAL == memcmp(record.value, str, record_info.value_size));
 
 	free(str);
 
@@ -496,7 +496,7 @@ test_open_address_file_dictionary_cursor_range(
 		str = malloc(record_info.value_size);
 		sprintf((char *) str, "value : %i", (*(int *) predicate.statement.range.lower_bound) + result_count);
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL == memcmp(record.value, str, record_info.value_size));
+		PLANCK_UNIT_ASSERT_TRUE(tc, ION_IS_EQUAL == memcmp(record.value, str, record_info.value_size));
 		result_count++;
 		free(str);
 	}

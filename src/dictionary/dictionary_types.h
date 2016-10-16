@@ -114,7 +114,7 @@ typedef struct dictionary_parent ion_dictionary_parent_t;
 /**
 @brief		A comparison result type that describes the result of a comparison.
 */
-typedef enum comparison {
+typedef enum ION_COMPARISON {
 	A_lt_B	= -1,	/**< The result for the comparison operation is A <= B. */
 	A_equ_B = 0,/**< The result for the comparison operation is A == B. */
 	A_gt_B	= 1		/**< The result for the comparison operation is A >= B. */
@@ -123,7 +123,7 @@ typedef enum comparison {
 /**
 @brief		A status type describing the current state of an initialized cursor.
 */
-enum cursor_status {
+enum ION_CURSOR_STATUS {
 	cs_invalid_index = -1,	/**< A cursor status stating that
 											 the cursor has an invalid index. */
 	cs_invalid_cursor,	/**< A cursor status stating that the
@@ -225,7 +225,7 @@ struct dictionary_handler {
 @brief		The status codes describing various states a dictionary can be
 			in.
 */
-enum ion_dictionary_status {
+enum ION_DICTIONARY_STATUS {
 	/**> A status describing the situation when a dictionary is ready to be used. */
 	ion_dictionary_status_ok,
 	/**> A status describing the situation when a dictionary has been closed. */
@@ -275,7 +275,7 @@ typedef char ion_predicate_type_t;
 @details	These type flags tell internal code what type of predicate is
 			being described.
 */
-enum predicate_type {
+enum ION_PREDICATE_TYPE {
 	predicate_equality,	/**< Predicate type for equality cursors. */
 	predicate_range,/**< Predicate tyoe for range cursors. */
 	predicate_all_records,	/**< Predicate type for cursors over all records. */
@@ -397,7 +397,7 @@ struct dictionary_cursor {
 			values are inserted with the same key. Not all implementations are
 			required to support different write concern levels.
 */
-enum write_concern {
+enum ION_WRITE_CONCERN {
 	wc_update,	/**< Write concern which allows for values to be
 								 overwritten if their associated key
 								 already exists in the dictionary. */

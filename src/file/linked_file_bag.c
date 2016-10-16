@@ -24,24 +24,24 @@
 
 #include "linked_file_bag.h"
 
-#if !defined(NULL)
-#define NULL ((void *) 0)
+#if !defined(ION_NULL)
+#define ION_NULL ((void *) 0)
 #endif
 
 ion_err_t
 lfb_put(
 	ion_lfb_t			*bag,
-	ion_byte_t		*to_write,
-	unsigned int	num_bytes,
+	ion_byte_t			*to_write,
+	unsigned int		num_bytes,
 	ion_file_offset_t	next,
 	ion_file_offset_t	*wrote_at
 ) {
 	ion_file_offset_t	next_empty;
 	ion_err_t			error;
 
-	next_empty = LFB_NULL;
+	next_empty = ION_LFB_NULL;
 
-	if (LFB_NULL != bag->next_empty) {
+	if (ION_LFB_NULL != bag->next_empty) {
 		error = ion_fread_at(bag->file_handle, bag->next_empty, sizeof(ion_file_offset_t), (ion_byte_t *) &next_empty);
 
 		if (err_ok != error) {
@@ -75,8 +75,8 @@ ion_err_t
 lfb_get(
 	ion_lfb_t			*bag,
 	ion_file_offset_t	offset,
-	unsigned int	num_bytes,
-	ion_byte_t		*write_to,
+	unsigned int		num_bytes,
+	ion_byte_t			*write_to,
 	ion_file_offset_t	*next
 ) {
 	ion_err_t error;
@@ -119,14 +119,14 @@ lfb_delete(
 
 ion_err_t
 lfb_delete_all(
-	ion_lfb_t				*bag,
-	ion_file_offset_t		offset,
+	ion_lfb_t			*bag,
+	ion_file_offset_t	offset,
 	ion_result_count_t	*count
 ) {
 	ion_err_t			error;
 	ion_file_offset_t	next;
 
-	while (LFB_NULL != offset) {
+	while (ION_LFB_NULL != offset) {
 		error = ion_fread_at(bag->file_handle, offset, sizeof(ion_file_offset_t), (ion_byte_t *) &next);
 
 		if (err_ok != error) {
@@ -153,8 +153,8 @@ ion_err_t
 lfb_update(
 	ion_lfb_t			*bag,
 	ion_file_offset_t	offset,
-	unsigned int	num_bytes,
-	ion_byte_t		*to_write,
+	unsigned int		num_bytes,
+	ion_byte_t			*to_write,
 	ion_file_offset_t	*next
 ) {
 	ion_err_t error;
@@ -174,8 +174,8 @@ lfb_update(
 
 ion_err_t
 lfb_update_all(
-	ion_lfb_t				*bag,
-	ion_file_offset_t		offset,
+	ion_lfb_t			*bag,
+	ion_file_offset_t	offset,
 	unsigned int		num_bytes,
 	ion_byte_t			*to_write,
 	ion_result_count_t	*count
@@ -183,7 +183,7 @@ lfb_update_all(
 	ion_err_t			error;
 	ion_file_offset_t	next;
 
-	while (LFB_NULL != offset) {
+	while (ION_LFB_NULL != offset) {
 		error = ion_fread_at(bag->file_handle, offset, sizeof(ion_file_offset_t), (ion_byte_t *) &next);
 
 		if (err_ok != error) {

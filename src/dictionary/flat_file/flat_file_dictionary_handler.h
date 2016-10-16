@@ -92,7 +92,7 @@ ffdict_get(
 				The ID to assign to the dictionary. This is either user defined or is given
 				by the master table.
 @param[in]	key_type
-				The category of key used by the dictionary. See @ref key_type for more information.
+				The category of key used by the dictionary. See @ref ION_KEY_TYPE for more information.
 @param[in]	key_size
 				The size of the keys used for this dictionary, specified in bytes. It is strongly
 				recommended to use a @p sizeof() directive to specify this size to avoid painful problems.

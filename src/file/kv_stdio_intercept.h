@@ -32,8 +32,8 @@
 */
 /******************************************************************************/
 
-#if !defined(KV_STDIO_INTERCEPT_H_)
-#define KV_STDIO_INTERCEPT_H_
+#if !defined(ION_KV_STDIO_INTERCEPT_H_)
+#define ION_KV_STDIO_INTERCEPT_H_
 
 #if defined(ARDUINO)
 
@@ -41,7 +41,7 @@
 extern "C" {
 #endif
 
-#define  FILE SD_FILE
+#define  ION_FILE SD_FILE
 #define  fopen(x, y)		sd_fopen(x, y)
 #define  fclose(x)			sd_fclose(x)
 #define  fwrite(w, x, y, z) sd_fwrite(w, x, y, z)

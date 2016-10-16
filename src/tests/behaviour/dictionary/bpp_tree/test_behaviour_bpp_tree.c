@@ -30,5 +30,5 @@ void
 runalltests_behaviour_bpp_tree(
 	void
 ) {
-	bhdct_run_tests(bpptree_init, -1, BHDCT_ALL_TESTS & ~BHDCT_STRING_INT);
+	bhdct_run_tests(bpptree_init, -1, ION_BHDCT_ALL_TESTS & ~ION_BHDCT_STRING_INT);
 }
