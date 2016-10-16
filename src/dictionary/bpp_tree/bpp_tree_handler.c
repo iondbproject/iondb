@@ -7,7 +7,6 @@
 /******************************************************************************/
 
 #include "bpp_tree_handler.h"
-/* #include "../dictionary.c" */
 
 void
 bpptree_get_value_filename(
