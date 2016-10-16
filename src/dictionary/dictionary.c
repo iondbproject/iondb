@@ -502,7 +502,6 @@ test_predicate(
 	ion_key_t				key,
 	ion_dictionary_parent_t parent
 ) {
-	int				key_satisfies_predicate;
 	ion_key_size_t	key_size	= cursor->dictionary->instance->record.key_size;
 	ion_boolean_t	result		= boolean_false;
 
@@ -530,7 +529,7 @@ test_predicate(
 		}
 
 		case predicate_all_records: {
-			key_satisfies_predicate = boolean_true;
+			result = boolean_true;
 			break;
 		}
 	}
