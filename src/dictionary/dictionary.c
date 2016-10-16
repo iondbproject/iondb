@@ -498,9 +498,9 @@ dictionary_find(
 
 ion_boolean_t
 test_predicate(
+	ion_dictionary_parent_t parent,
 	ion_dict_cursor_t		*cursor,
-	ion_key_t				key,
-	ion_dictionary_parent_t parent
+	ion_key_t				key
 ) {
 	ion_key_size_t	key_size	= cursor->dictionary->instance->record.key_size;
 	ion_boolean_t	result		= boolean_false;

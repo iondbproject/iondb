@@ -339,40 +339,9 @@ oadict_test_predicate(
 	ion_key_t			key
 ) {
 	/* TODO need to check key match; what's the most efficient way? */
+	ion_hashmap_t *hash_map = (ion_hashmap_t *) (cursor->dictionary->instance);
 
-	int				key_satisfies_predicate;
-	ion_hashmap_t	*hash_map = (ion_hashmap_t *) (cursor->dictionary->instance);
-
-	/* pre-prime value for faster exit */
-	key_satisfies_predicate = boolean_false;
-
-	switch (cursor->predicate->type) {
-		case predicate_equality:/* equality scan check */
-		{
-			if (ION_IS_EQUAL == hash_map->super.compare(cursor->predicate->statement.equality.equality_value, key, hash_map->super.record.key_size)) {
-				key_satisfies_predicate = boolean_true;
-			}
-
-			break;
-		}
-
-		case predicate_range:	/* range check */
-		{
-			if ((!(A_gt_B	/* lower_bound <= key <==> !(lower_bound > key) */
-				   == hash_map->super.compare(cursor->predicate->statement.range.lower_bound, key, hash_map->super.record.key_size))) &&/* key <= upper_bound <==> !(key > upper_bound) */
-				(!(A_gt_B == hash_map->super.compare(key, cursor->predicate->statement.range.upper_bound, hash_map->super.record.key_size)))) {
-				key_satisfies_predicate = boolean_true;
-			}
-
-			break;
-		}
-
-		case predicate_all_records: {
-			key_satisfies_predicate = boolean_true;
-		}
-	}
-
-	return key_satisfies_predicate;
+	return test_predicate(hash_map->super, cursor, key);
 }
 
 ion_err_t

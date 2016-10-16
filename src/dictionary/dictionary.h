@@ -386,9 +386,9 @@ dictionary_find(
 */
 ion_boolean_t
 test_predicate(
+	ion_dictionary_parent_t parent,
 	ion_dict_cursor_t		*cursor,
-	ion_key_t				key,
-	ion_dictionary_parent_t parent
+	ion_key_t				key
 );
 
 #if defined(__cplusplus)

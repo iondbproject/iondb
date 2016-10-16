@@ -336,5 +336,5 @@ sldict_test_predicate(
 ) {
 	ion_skiplist_t *skiplist = (ion_skiplist_t *) cursor->dictionary->instance;
 
-	return test_predicate(cursor, key, skiplist->super);
+	return test_predicate(skiplist->super, cursor, key);
 }

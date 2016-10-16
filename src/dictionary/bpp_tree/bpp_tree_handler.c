@@ -493,7 +493,7 @@ bpptree_test_predicate(
 ) {
 	ion_bpptree_t *bpptree = (ion_bpptree_t *) cursor->dictionary->instance;
 
-	return test_predicate(cursor, key, bpptree->super);
+	return test_predicate(bpptree->super, cursor, key);
 }
 
 ion_err_t
