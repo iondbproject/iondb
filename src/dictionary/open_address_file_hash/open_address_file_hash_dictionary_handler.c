@@ -312,9 +312,7 @@ oafdict_test_predicate(
 	/**
 	 * Compares value == key
 	*/
-	int					key_satisfies_predicate;
 	ion_file_hashmap_t	*hash_map = (ion_file_hashmap_t *) (cursor->dictionary->instance);
-
 	return test_predicate(cursor, key, hash_map->super);
 }
 

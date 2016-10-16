@@ -339,10 +339,7 @@ oadict_test_predicate(
 	ion_key_t			key
 ) {
 	/* TODO need to check key match; what's the most efficient way? */
-
-	int				key_satisfies_predicate;
 	ion_hashmap_t	*hash_map = (ion_hashmap_t *) (cursor->dictionary->instance);
-
 	return test_predicate(cursor, key, hash_map->super);
 }
 
