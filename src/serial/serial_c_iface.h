@@ -41,6 +41,24 @@ extern "C" {
 */
 #define ION_USE_INLINEPRINTF 0
 
+/**
+@brief		A version of printf that limits the number of characters
+			printed per call.
+@details	When additional characters are requested for printing, the
+			print fails.
+@param		format
+				 The string that contains the text to be written to serial.
+@param		...
+				Variable arguments of data used by the format.
+@return	 The number of characters written. Returns a negative value on
+			failure.
+*/
+int
+serial_printf_c(
+	const char *format,
+	...
+);
+
 /* DO NOT CHANGE INCLUSION ORDER. */
 #if USE_INLINE_PRINTF == 1
 #include "printf_redirect.h"
@@ -57,6 +75,25 @@ extern "C" {
 extern int
 serial_print(
 	const char *buffer
+);
+
+/**
+@brief		Initializes serial port 0 for communications.
+@details	By default the port is set up at N-8-1.
+@param	  baud_rate
+				The buad rate to be used.
+*/
+void
+serial_init(
+	int baud_rate
+);
+
+/**
+@brief		Closes the communication port so that the pins can be used as
+			general I/O.
+*/
+void
+serial_close(
 );
 
 #if defined(__cplusplus)

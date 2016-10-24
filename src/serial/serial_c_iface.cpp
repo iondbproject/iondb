@@ -24,18 +24,6 @@
 
 #include "serial_c_iface.h"
 
-/**
-@brief		A version of printf that limits the number of characters
-			printed per call.
-@details	When additional characters are requested for printing, the
-			print fails.
-@param		format
-				 The string that contains the text to be written to serial.
-@param		...
-				Variable arguments of data used by the format.
-@return	 The number of characters written. Returns a negative value on
-			failure.
-*/
 int
 serial_printf_c(
 	const char *format,
@@ -71,12 +59,6 @@ serial_print(
 	return num;
 }
 
-/**
-@brief		Initializes serial port 0 for communications.
-@details	By default the port is set up at N-8-1.
-@param	  baud_rate
-				The buad rate to be used.
-*/
 void
 serial_init(
 	int baud_rate
@@ -84,10 +66,6 @@ serial_init(
 	Serial.begin(baud_rate);
 }
 
-/**
-@brief		Closes the communication port so that the pins can be used as
-			general I/O.
-*/
 void
 serial_close(
 ) {
