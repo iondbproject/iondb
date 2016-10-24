@@ -223,41 +223,6 @@ dictionary_compare_signed_value(
 );
 
 /**
-@brief		Compare any two character (byte) arrays. These are not assumed
-			to be null-terminated.
-@param		first_key
-				The first (left) key being compared.
-@param		second_key
-				The second (right) key being compared.
-@param		key_size
-				The size of the keys being compared.
-@return		The resulting comparison value.
-*/
-char
-dictionary_compare_char_array(
-	ion_key_t		first_key,
-	ion_key_t		second_key,
-	ion_key_size_t	key_size
-);
-
-/**
-@brief		Compare any two null-terminated strings.
-@param		first_key
-				The first (left) key being compared.
-@param		second_key
-				The second (right) key being compared.
-@param		key_size
-				The (maximum) size of the keys being compared.
-@return		The resulting comparison value.
-*/
-char
-dictionary_compare_null_terminated_string(
-	ion_key_t		first_key,
-	ion_key_t		second_key,
-	ion_key_size_t	key_size
-);
-
-/**
 @brief		Opens a dictionary, given the desired config.
 @param		handler
 				A pointer to the dictionary handler object to be used.
@@ -309,45 +274,6 @@ dictionary_build_predicate(
 	ion_predicate_t			*predicate,
 	ion_predicate_type_t	type,
 	...
-);
-
-/**
-@brief		Destroys an equality predicate.
-@details	This function should not be called directly. Instead, it is set
-			while building the predicate.
-@param		predicate
-				A pointer to the pointer to the predicate object being
-				destroyed.
-*/
-void
-dictionary_destroy_predicate_equality(
-	ion_predicate_t **predicate
-);
-
-/**
-@brief		Destroys a range predicate.
-@details	This function should not be called directly. Instead, it is set
-			while building the predicate.
-@param		predicate
-				A pointer to the pointer to the predicate object being
-				destroyed.
-*/
-void
-dictionary_destroy_predicate_range(
-	ion_predicate_t **predicate
-);
-
-/**
-@brief		Destroys an all records predicate.
-@details	This function should not be called directly. Instead, it is set
-			while building the predicate.
-@param		predicate
-				A pointer to the pointer to the predicate object being
-				destroyed.
-*/
-void
-dictionary_destroy_predicate_all_records(
-	ion_predicate_t **predicate
 );
 
 /**

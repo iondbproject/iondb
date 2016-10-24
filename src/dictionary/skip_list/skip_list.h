@@ -161,6 +161,18 @@ sl_find_node(
 );
 
 /**
+@brief	  Iterates through each level of a skiplist and prints out the content
+			of each node in a meaningful way. Intended for debug use only.
+
+@param	  skiplist
+				The skiplist to print
+*/
+void
+print_skiplist(
+	ion_skiplist_t *skiplist
+);
+
+/**
 @brief	  Generates a psuedo-random height, bounded within [0, maxheight). The
 			generator is seeded using the current epoch time when the skiplist
 			is initialized.
@@ -171,18 +183,6 @@ sl_find_node(
 */
 ion_sl_level_t
 sl_gen_level(
-	ion_skiplist_t *skiplist
-);
-
-/**
-@brief	  Iterates through each level of a skiplist and prints out the content
-			of each node in a meaningful way. Intended for debug use only.
-
-@param	  skiplist
-				The skiplist to print
-*/
-void
-print_skiplist(
 	ion_skiplist_t *skiplist
 );
 
