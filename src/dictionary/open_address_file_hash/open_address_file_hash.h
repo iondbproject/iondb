@@ -175,6 +175,24 @@ oafh_update(
 );
 
 /**
+@brief		Returns the theoretical location of item in hashmap
+
+@details	Determines which bucket a record is to be placed based on the
+			hash function used.
+
+@param		num
+				The key.
+@param		size
+				The possible number of buckets in the map.
+@return		The index position to start probing at.
+*/
+int
+oafh_get_location(
+	ion_hash_t	num,
+	int			size
+);
+
+/**
 @brief	  Locates item in map.
 
 @details	Based on a key, function locates the record in the map.

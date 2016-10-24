@@ -92,6 +92,18 @@ lfb_get(
 	return error;
 }
 
+/**
+@brief		Update the next offset for the record stored at @p offset.
+@param		bag
+				A pointer to the initialized handler for the linked file
+				bag we wish to update.
+@param		offset
+				The offset of the record to set the next offset of.
+@param		next
+				The offset of the record to be referenced in the record
+				stored starting at @p offset.
+@returns	An error code describing the result of the call.
+*/
 ion_err_t
 lfb_update_next(
 	ion_lfb_t			*bag,
