@@ -146,7 +146,6 @@ test_bhdct_find(
 	ion_cursor_status_t cursor_status;
 
 	while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
-		/* Show the record retrieved */
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, NEUTRALIZE(ion_record.key, int) * 2, NEUTRALIZE(ion_record.value, int));
 		result_count++;
 	}
