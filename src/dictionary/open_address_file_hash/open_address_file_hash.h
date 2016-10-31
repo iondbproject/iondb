@@ -128,24 +128,6 @@ oafh_destroy(
 );
 
 /**
-@brief		Returns the theoretical location of item in hashmap
-
-@details	Determines which bucket a record is to be placed based on the
-			hash function used.
-
-@param		num
-				The key.
-@param		size
-				The possible number of buckets in the map.
-@return		The index position to start probing at.
-*/
-int
-oafh_get_location(
-	ion_hash_t	num,
-	int			size
-);
-
-/**
 @brief		Insert record into hashmap
 
 @details	Attempts to insert data of a given structure as dictated by record
@@ -190,6 +172,24 @@ oafh_update(
 	ion_file_hashmap_t	*hash_map,
 	ion_key_t			key,
 	ion_value_t			value
+);
+
+/**
+@brief		Returns the theoretical location of item in hashmap
+
+@details	Determines which bucket a record is to be placed based on the
+			hash function used.
+
+@param		num
+				The key.
+@param		size
+				The possible number of buckets in the map.
+@return		The index position to start probing at.
+*/
+int
+oafh_get_location(
+	ion_hash_t	num,
+	int			size
 );
 
 /**

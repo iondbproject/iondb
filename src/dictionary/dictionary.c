@@ -33,6 +33,45 @@ dictionary_get_filename(
 	return snprintf(filename, ION_MAX_FILENAME_LENGTH, "%d.%s", id, ext);
 }
 
+/**
+@brief		Compare any two character (byte) arrays. These are not assumed
+			to be null-terminated.
+@param		first_key
+				The first (left) key being compared.
+@param		second_key
+				The second (right) key being compared.
+@param		key_size
+				The size of the keys being compared.
+@return		The resulting comparison value.
+*/
+char
+dictionary_compare_char_array(
+	ion_key_t		first_key,
+	ion_key_t		second_key,
+	ion_key_size_t	key_size
+) {
+	return strncmp((char *) first_key, (char *) second_key, key_size);
+}
+
+/**
+@brief		Compare any two null-terminated strings.
+@param		first_key
+				The first (left) key being compared.
+@param		second_key
+				The second (right) key being compared.
+@param		key_size
+				The (maximum) size of the keys being compared.
+@return		The resulting comparison value.
+*/
+char
+dictionary_compare_null_terminated_string(
+	ion_key_t		first_key,
+	ion_key_t		second_key,
+	ion_key_size_t	key_size
+) {
+	return strncmp((char *) first_key, (char *) second_key, key_size);
+}
+
 ion_dictionary_compare_t
 dictionary_switch_compare(
 	ion_key_type_t key_type
@@ -219,24 +258,6 @@ dictionary_compare_signed_value(
 	return return_value;
 }
 
-char
-dictionary_compare_char_array(
-	ion_key_t		first_key,
-	ion_key_t		second_key,
-	ion_key_size_t	key_size
-) {
-	return strncmp((char *) first_key, (char *) second_key, key_size);
-}
-
-char
-dictionary_compare_null_terminated_string(
-	ion_key_t		first_key,
-	ion_key_t		second_key,
-	ion_key_size_t	key_size
-) {
-	return strncmp((char *) first_key, (char *) second_key, key_size);
-}
-
 ion_err_t
 dictionary_open(
 	ion_dictionary_handler_t		*handler,
@@ -403,6 +424,63 @@ dictionary_close(
 	return error;
 }
 
+/**
+@brief		Destroys an equality predicate.
+@details	This function should not be called directly. Instead, it is set
+			while building the predicate.
+@param		predicate
+				A pointer to the pointer to the predicate object being
+				destroyed.
+*/
+void
+dictionary_destroy_predicate_equality(
+	ion_predicate_t **predicate
+) {
+	if (*predicate != NULL) {
+		free((*predicate)->statement.equality.equality_value);
+		free(*predicate);
+		*predicate = NULL;
+	}
+}
+
+/**
+@brief		Destroys a range predicate.
+@details	This function should not be called directly. Instead, it is set
+			while building the predicate.
+@param		predicate
+				A pointer to the pointer to the predicate object being
+				destroyed.
+*/
+void
+dictionary_destroy_predicate_range(
+	ion_predicate_t **predicate
+) {
+	if (*predicate != NULL) {
+		free((*predicate)->statement.range.upper_bound);
+		free((*predicate)->statement.range.lower_bound);
+		free(*predicate);
+		*predicate = NULL;
+	}
+}
+
+/**
+@brief		Destroys an all records predicate.
+@details	This function should not be called directly. Instead, it is set
+			while building the predicate.
+@param		predicate
+				A pointer to the pointer to the predicate object being
+				destroyed.
+*/
+void
+dictionary_destroy_predicate_all_records(
+	ion_predicate_t **predicate
+) {
+	if (*predicate != NULL) {
+		free(*predicate);
+		*predicate = NULL;
+	}
+}
+
 ion_err_t
 dictionary_build_predicate(
 	ion_predicate_t			*predicate,
@@ -452,39 +530,6 @@ dictionary_build_predicate(
 
 	va_end(arg_list);
 	return err_ok;
-}
-
-void
-dictionary_destroy_predicate_equality(
-	ion_predicate_t **predicate
-) {
-	if (*predicate != NULL) {
-		free((*predicate)->statement.equality.equality_value);
-		free(*predicate);
-		*predicate = NULL;
-	}
-}
-
-void
-dictionary_destroy_predicate_range(
-	ion_predicate_t **predicate
-) {
-	if (*predicate != NULL) {
-		free((*predicate)->statement.range.upper_bound);
-		free((*predicate)->statement.range.lower_bound);
-		free(*predicate);
-		*predicate = NULL;
-	}
-}
-
-void
-dictionary_destroy_predicate_all_records(
-	ion_predicate_t **predicate
-) {
-	if (*predicate != NULL) {
-		free(*predicate);
-		*predicate = NULL;
-	}
 }
 
 ion_err_t

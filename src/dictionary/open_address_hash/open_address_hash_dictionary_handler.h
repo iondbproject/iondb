@@ -83,37 +83,6 @@ oadict_insert(
 );
 
 /**
-@brief	  Queries a dictionary instance for the given @p key and returns
-			the associated @p value.
-
-@details	Queries a dictionary instance for the given @p key and returns
-			the associated @p value.  If the @p write_concern is set to
-			wc_insert_unique then if the @p key exists already, an error will
-			be generated as duplicate keys are prevented.  If the
-			@p write_concern is set to wc_update, the updates are allowed.
-			In this case, if the @p key exists in the hashmap, the @p value
-			will be updated.  If the @p key does not exist, then a new item
-			will be inserted to hashmap.
-
-@param	  dictionary
-				The instance of the dictionary to query.
-@param	  key
-				The key to search for.
-@param	  value
-				A pointer that is used to return the value associated with
-				the provided key.  The function will malloc memory for the
-				value and it is up to the consumer the free the associated
-				memory.
-@return	 The status of the query.
-*/
-ion_status_t
-oadict_query(
-	ion_dictionary_t	*dictionary,
-	ion_key_t			key,
-	ion_value_t			value
-);
-
-/**
 @brief	  Creates an instance of a dictionary.
 
 @details	Creates as instance of a dictionary given a @p key_size and
@@ -196,30 +165,6 @@ oadict_update(
 	ion_dictionary_t	*dictionary,
 	ion_key_t			key,
 	ion_value_t			value
-);
-
-/**
-@brief	  Finds multiple instances of a keys that satisfy the provided
-			 predicate in the dictionary.
-
-@details	Generates a cursor that allows the traversal of items where
-			the items key satisfies the @p predicate (if the underlying
-			implementation allows it).
-
-@param	  dictionary
-				The instance of the dictionary to search.
-@param	  predicate
-				The predicate to be used as the condition for matching.
-@param	  cursor
-				The pointer to a cursor which is caller declared but callee
-				is responsible for populating.
-@return	 The status of the operation.
-*/
-ion_err_t
-oadict_find(
-	ion_dictionary_t	*dictionary,
-	ion_predicate_t		*predicate,
-	ion_dict_cursor_t	**cursor
 );
 
 /**
@@ -317,60 +262,6 @@ is_equal(
 void
 oadict_destroy_cursor(
 	ion_dict_cursor_t **cursor
-);
-
-/**
-
-@brief		  Starts scanning map looking for conditions that match
-				predicate and returns result.
-
-@details		Scans that map looking for the next value that satisfies the predicate.
-				The next valid index is returned through the cursor
-
-@param		  cursor
-					A pointer to the cursor that is operating on the map.
-
-@return		 The status of the scan.
-*/
-ion_err_t
-oadict_scan(
-	ion_oadict_cursor_t *cursor	/* don't need to pass in the cursor */
-);
-
-/**
-@brief			Opens a specific open address hash instance of a dictionary.
-
-@param			handler
-					A pointer to the handler for the specific dictionary being opened.
-@param			dictionary
-					The pointer declared by the caller that will reference
-					the instance of the dictionary opened.
-@param			config
-					The configuration info of the specific dictionary to be opened.
-@param			compare
-					Function pointer for the comparison function for the dictionary.
-
-@return			The status of opening the dictionary.
- */
-ion_err_t
-oadict_open_dictionary(
-	ion_dictionary_handler_t		*handler,
-	ion_dictionary_t				*dictionary,
-	ion_dictionary_config_info_t	*config,
-	ion_dictionary_compare_t		compare
-);
-
-/**
-@brief			Closes an open address hash instance of a dictionary.
-
-@param			dictionary
-					A pointer to the specific dictionary instance to be closed.
-
-@return			The status of closing the dictionary.
- */
-ion_err_t
-oadict_close_dictionary(
-	ion_dictionary_t *dictionary
 );
 
 #if defined(__cplusplus)

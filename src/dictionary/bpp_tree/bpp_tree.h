@@ -264,24 +264,6 @@ bFindNextKey(
  *   bErrKeyNotFound		key not found
 */
 
-ion_bpp_err_t
-bFindPrevKey(
-	ion_bpp_handle_t			handle,
-	void						*key,
-	ion_bpp_external_address_t	*rec
-);
-
-/*
- * input:
- *   handle				 handle returned by bOpen
- * output:
- *   key					key found
- *   rec					record address
- * returns:
- *   bErrOk				 operation successful
- *   bErrKeyNotFound		key not found
-*/
-
 #if defined(__cplusplus)
 }
 #endif

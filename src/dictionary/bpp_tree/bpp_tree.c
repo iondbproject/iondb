@@ -1574,6 +1574,17 @@ bFindFirstKey(
 	return bErrOk;
 }
 
+/*
+ * input:
+ *   handle				 handle returned by bOpen
+ * output:
+ *   key					last key in sequential set
+ *   rec					record address
+ * returns:
+ *   bErrOk				 operation successful
+ *   bErrKeyNotFound		key not found
+*/
+
 ion_bpp_err_t
 bFindLastKey(
 	ion_bpp_handle_t			handle,
@@ -1647,6 +1658,16 @@ bFindNextKey(
 	return bErrOk;
 }
 
+/*
+ * input:
+ *   handle				 handle returned by bOpen
+ * output:
+ *   key					key found
+ *   rec					record address
+ * returns:
+ *   bErrOk				 operation successful
+ *   bErrKeyNotFound		key not found
+*/
 ion_bpp_err_t
 bFindPrevKey(
 	ion_bpp_handle_t			handle,

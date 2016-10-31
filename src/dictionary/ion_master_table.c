@@ -257,6 +257,28 @@ ion_delete_master_table(
 	return err_ok;
 }
 
+/**
+@brief		Adds the given dictionary to the master table.
+@param		dictionary
+				A pointer to the dictionary object to add to the master table.
+@param		dictionary_size
+				The implementation specific size parameter used when
+				creating the dictionary. This parameter must be passed
+				to this function by @ref ion_master_table_create_dictionary,
+				since not all implementations track the dictionary size.
+*/
+ion_err_t
+ion_add_to_master_table(
+	ion_dictionary_t		*dictionary,
+	ion_dictionary_size_t	dictionary_size
+) {
+	ion_dictionary_config_info_t config = {
+		.id = dictionary->instance->id, .use_type = 0, .type = dictionary->instance->key_type, .key_size = dictionary->instance->record.key_size, .value_size = dictionary->instance->record.value_size, .dictionary_size = dictionary_size
+	};
+
+	return ion_master_table_write(&config, ION_MASTER_TABLE_WRITE_FROM_END);
+}
+
 ion_err_t
 ion_master_table_create_dictionary(
 	ion_dictionary_handler_t	*handler,
@@ -284,18 +306,6 @@ ion_master_table_create_dictionary(
 	err = ion_add_to_master_table(dictionary, dictionary_size);
 
 	return err;
-}
-
-ion_err_t
-ion_add_to_master_table(
-	ion_dictionary_t		*dictionary,
-	ion_dictionary_size_t	dictionary_size
-) {
-	ion_dictionary_config_info_t config = {
-		.id = dictionary->instance->id, .use_type = 0, .type = dictionary->instance->key_type, .key_size = dictionary->instance->record.key_size, .value_size = dictionary->instance->record.value_size, .dictionary_size = dictionary_size
-	};
-
-	return ion_master_table_write(&config, ION_MASTER_TABLE_WRITE_FROM_END);
 }
 
 ion_err_t

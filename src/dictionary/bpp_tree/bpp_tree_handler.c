@@ -16,92 +16,31 @@ bpptree_get_value_filename(
 	sprintf(str, "%d.val", id);
 }
 
-void
-bpptree_init(
-	ion_dictionary_handler_t *handler
-) {
-	handler->insert				= bpptree_insert;
-	handler->create_dictionary	= bpptree_create_dictionary;
-	handler->get				= bpptree_query;
-	handler->update				= bpptree_update;
-	handler->find				= bpptree_find;
-	handler->remove				= bpptree_delete;
-	handler->delete_dictionary	= bpptree_delete_dictionary;
-	handler->open_dictionary	= bpptree_open_dictionary;
-	handler->close_dictionary	= bpptree_close_dictionary;
-}
+/**
+@brief		Creates an instance of a dictionary.
 
-ion_status_t
-bpptree_insert(
-	ion_dictionary_t	*dictionary,
-	ion_key_t			key,
-	ion_value_t			value
-) {
-	ion_bpptree_t		*bpptree;
-	ion_bpp_err_t		bErr;
-	ion_err_t			err;
-	ion_file_offset_t	offset;
-
-	bpptree = (ion_bpptree_t *) dictionary->instance;
-
-	offset	= ION_FILE_NULL;
-	bErr	= bFindKey(bpptree->tree, key, &offset);
-
-	if (bErrKeyNotFound == bErr) {
-		offset = ION_FILE_NULL;
-	}
-
-	err = lfb_put(&(bpptree->values), (ion_byte_t *) value, bpptree->super.record.value_size, offset, &offset);
-
-	if (err_ok == err) {
-		if (bErrKeyNotFound == bErr) {
-			bErr = bInsertKey(bpptree->tree, key, offset);
-		}
-		else {
-			bErr = bUpdateKey(bpptree->tree, key, offset);
-		}
-
-		if (bErrOk != bErr) {
-			/* TODO: lfb_delete from values */
-			return ION_STATUS_ERROR(err_unable_to_insert);
-		}
-
-		return ION_STATUS_OK(1);
-	}
-	else {
-		return ION_STATUS_ERROR(err_unable_to_insert);
-	}
-}
-
-ion_status_t
-bpptree_query(
-	ion_dictionary_t	*dictionary,
-	ion_key_t			key,
-	ion_value_t			value
-) {
-	ion_bpptree_t		*bpptree;
-	ion_file_offset_t	offset;
-	ion_file_offset_t	next;
-	ion_bpp_err_t		bErr;
-	ion_err_t			err;
-
-	bpptree = (ion_bpptree_t *) dictionary->instance;
-
-	bErr	= bFindKey(bpptree->tree, key, &offset);
-
-	if (bErrOk != bErr) {
-		return ION_STATUS_ERROR(err_item_not_found);
-	}
-
-	err = lfb_get(&(bpptree->values), offset, bpptree->super.record.value_size, (ion_byte_t *) value, &next);
-
-	if (err_ok == err) {
-		return ION_STATUS_OK(1);
-	}
-
-	return ION_STATUS_ERROR(err);
-}
-
+@details	Creates as instance of a dictionary given a @p key_size and
+			@p value_size, in bytes. The @p dictionary_size parameter is
+			not used for this implementation, as there is no size bound.
+@param		id
+				ID of a dictionary that's given to us.
+@param		key_type
+				The key category given to us.
+@param		key_size
+				The size of the key in bytes.
+@param		value_size
+				The size of the value in bytes.
+@param		dictionary_size
+				The size of the hashmap in discrete units
+@param		compare
+				Function pointer for the comparison function for the dictionary.
+@param		handler
+				 THe handler for the specific dictionary being created.
+@param		dictionary
+				 The pointer declared by the caller that will reference
+				 the instance of the dictionary created.
+@return		The status of the creation of the dictionary.
+*/
 ion_err_t
 bpptree_create_dictionary(
 	ion_dictionary_id_t			id,
@@ -171,6 +110,122 @@ bpptree_create_dictionary(
 	return err_ok;
 }
 
+/**
+@brief		Inserts a @p key and @p value into the dictionary.
+
+@param	  dictionary
+				The dictionary instance to insert the value into.
+@param	  key
+				The key to use.
+@param	  value
+				The value to use.
+@return		The status on the insertion of the record.
+*/
+ion_status_t
+bpptree_insert(
+	ion_dictionary_t	*dictionary,
+	ion_key_t			key,
+	ion_value_t			value
+) {
+	ion_bpptree_t		*bpptree;
+	ion_bpp_err_t		bErr;
+	ion_err_t			err;
+	ion_file_offset_t	offset;
+
+	bpptree = (ion_bpptree_t *) dictionary->instance;
+
+	offset	= ION_FILE_NULL;
+	bErr	= bFindKey(bpptree->tree, key, &offset);
+
+	if (bErrKeyNotFound == bErr) {
+		offset = ION_FILE_NULL;
+	}
+
+	err = lfb_put(&(bpptree->values), (ion_byte_t *) value, bpptree->super.record.value_size, offset, &offset);
+
+	if (err_ok == err) {
+		if (bErrKeyNotFound == bErr) {
+			bErr = bInsertKey(bpptree->tree, key, offset);
+		}
+		else {
+			bErr = bUpdateKey(bpptree->tree, key, offset);
+		}
+
+		if (bErrOk != bErr) {
+			/* TODO: lfb_delete from values */
+			return ION_STATUS_ERROR(err_unable_to_insert);
+		}
+
+		return ION_STATUS_OK(1);
+	}
+	else {
+		return ION_STATUS_ERROR(err_unable_to_insert);
+	}
+}
+
+/**
+@brief	  Queries a dictionary instance for the given @p key and returns
+			the associated @p value.
+
+@details	Queries a dictionary instance for the given @p key and returns
+			the associated @p value.  If the @p write_concern is set to
+			wc_insert_unique then if the @p key exists already, an error will
+			be generated as duplicate keys are prevented.  If the
+			@p write_concern is set to wc_update, the updates are allowed.
+			In this case, if the @p key exists in the hashmap, the @p value
+			will be updated.  If the @p key does not exist, then a new item
+			will be inserted to hashmap.
+
+@param	  dictionary
+				The instance of the dictionary to query.
+@param	  key
+				The key to search for.
+@param	  value
+				A pointer that is used to return the value associated with
+				the provided key.  The function will malloc memory for the
+				value and it is up to the consumer the free the associated
+				memory.
+@return		The status of the query.
+*/
+ion_status_t
+bpptree_query(
+	ion_dictionary_t	*dictionary,
+	ion_key_t			key,
+	ion_value_t			value
+) {
+	ion_bpptree_t		*bpptree;
+	ion_file_offset_t	offset;
+	ion_file_offset_t	next;
+	ion_bpp_err_t		bErr;
+	ion_err_t			err;
+
+	bpptree = (ion_bpptree_t *) dictionary->instance;
+
+	bErr	= bFindKey(bpptree->tree, key, &offset);
+
+	if (bErrOk != bErr) {
+		return ION_STATUS_ERROR(err_item_not_found);
+	}
+
+	err = lfb_get(&(bpptree->values), offset, bpptree->super.record.value_size, (ion_byte_t *) value, &next);
+
+	if (err_ok == err) {
+		return ION_STATUS_OK(1);
+	}
+
+	return ION_STATUS_ERROR(err);
+}
+
+/**
+@brief		Deletes the @p key and assoicated value from the dictionary
+			instance.
+
+@param	  dictionary
+				The instance of the dictionary to delete from.
+@param	  key
+				The key that is to be deleted.
+@return		The status of the deletion
+*/
 ion_status_t
 bpptree_delete(
 	ion_dictionary_t	*dictionary,
@@ -197,6 +252,34 @@ bpptree_delete(
 	return status;
 }
 
+/* TODO Write me doc! */
+ion_err_t
+bpptree_close_dictionary(
+	ion_dictionary_t *dictionary
+) {
+	ion_bpptree_t	*bpptree;
+	ion_bpp_err_t	bErr;
+
+	bpptree					= (ion_bpptree_t *) dictionary->instance;
+	bErr					= bClose(bpptree->tree);
+	ion_fclose(bpptree->values.file_handle);
+	free(dictionary->instance);
+	dictionary->instance	= NULL;
+
+	if (bErrOk != bErr) {
+		return err_dictionary_destruction_error;
+	}
+
+	return err_ok;
+}
+
+/**
+@brief	  Deletes an instance of the dictionary and associated data.
+
+@param	  dictionary
+				The instance of the dictionary to delete.
+@return		The status of the dictionary deletion.
+*/
 ion_err_t
 bpptree_delete_dictionary(
 	ion_dictionary_t *dictionary
@@ -225,6 +308,20 @@ bpptree_delete_dictionary(
 	return err_ok;
 }
 
+/**
+@brief		Updates the value for a given key.
+
+@details	Updates the value for a given @p key.  If the key does not currently
+			exist in the hashmap, it will be created and the value sorted.
+
+@param	  dictionary
+				The instance of the dictionary to be updated.
+@param	  key
+				The key that is to be updated.
+@param	  value
+				The value that is to be updated.
+@return		The status of the update.
+*/
 ion_status_t
 bpptree_update(
 	ion_dictionary_t	*dictionary,
@@ -250,6 +347,139 @@ bpptree_update(
 
 	return ION_STATUS_OK(count);
 }
+
+/**
+@brief		Next function to query and retrieve the next
+			<K,V> that stratifies the predicate of the cursor.
+
+@param		cursor
+				The cursor to iterate over the results.
+@param		record
+				The structure used to hold the returned key value
+				pair. This must be properly initialized and allocated
+				by the user.
+@return		The status of the cursor.
+*/
+ion_cursor_status_t
+bpptree_next(
+	ion_dict_cursor_t	*cursor,
+	ion_record_t		*record
+) {
+	ion_bpp_cursor_t	*bCursor	= (ion_bpp_cursor_t *) cursor;
+	ion_bpptree_t		*bpptree	= (ion_bpptree_t *) cursor->dictionary->instance;
+
+	if (cursor->status == cs_cursor_uninitialized) {
+		return cursor->status;
+	}
+	else if (cursor->status == cs_end_of_results) {
+		return cursor->status;
+	}
+	else if ((cursor->status == cs_cursor_initialized) || (cursor->status == cs_cursor_active)) {
+		if (cursor->status == cs_cursor_active) {
+			ion_boolean_t is_valid = boolean_true;
+
+			switch (cursor->predicate->type) {
+				case predicate_equality: {
+					if (-1 == bCursor->offset) {
+						/* End of results, we can quit */
+						is_valid = boolean_false;
+					}
+
+					break;
+				}
+
+				case predicate_range: {
+					/*do bFindNextKey then test_predicate */
+					if (-1 == bCursor->offset) {
+						ion_bpp_err_t bErr = bFindNextKey(bpptree->tree, bCursor->cur_key, &bCursor->offset);
+
+						if ((bErrOk != bErr) || (boolean_false == test_predicate(cursor, bCursor->cur_key))) {
+							is_valid = boolean_false;
+						}
+					}
+
+					break;
+				}
+
+				case predicate_all_records: {
+					if (-1 == bCursor->offset) {
+						ion_bpp_err_t bErr = bFindNextKey(bpptree->tree, bCursor->cur_key, &bCursor->offset);
+
+						if (bErrOk != bErr) {
+							is_valid = boolean_false;
+						}
+					}
+
+					break;
+				}
+
+				case predicate_predicate: {
+					/*TODO Not implemented */
+					break;
+				}
+					/*No default since we can assume the predicate is valid. */
+			}
+
+			if (boolean_false == is_valid) {
+				cursor->status = cs_end_of_results;
+				return cursor->status;
+			}
+		}
+		else {
+			/* The status is cs_cursor_initialized */
+			cursor->status = cs_cursor_active;
+		}
+
+		/* Get key */
+		memcpy(record->key, bCursor->cur_key, cursor->dictionary->instance->record.key_size);
+
+		/* Get value */
+		lfb_get(&(bpptree->values), bCursor->offset, cursor->dictionary->instance->record.value_size, record->value, &bCursor->offset);
+		return cursor->status;
+	}
+
+	return cs_invalid_cursor;
+}
+
+/**
+@brief		Destroys the cursor.
+
+@details	Destroys the cursor when the user is finished with it.  The
+			destroy function will free up internally allocated memory as well
+			as freeing up any reference to the cursor itself.  Cursor pointers
+			will be set to NULL as per ION_DB specification for de-allocated
+			pointers.
+
+@param	  cursor
+				** pointer to cursor.
+*/
+void
+bpptree_destroy_cursor(
+	ion_dict_cursor_t **cursor
+) {
+	(*cursor)->predicate->destroy(&(*cursor)->predicate);
+	free(((ion_bpp_cursor_t *) (*cursor))->cur_key);
+	free((*cursor));
+	*cursor = NULL;
+}
+
+/**
+@brief	  Finds multiple instances of a keys that satisfy the provided
+			 predicate in the dictionary.
+
+@details	Generates a cursor that allows the traversal of items where
+			the items key satisfies the @p predicate (if the underlying
+			implementation allows it).
+
+@param	  dictionary
+				The instance of the dictionary to search.
+@param	  predicate
+				The predicate to be used as the condition for matching.
+@param	  cursor
+				The pointer to a cursor which is caller declared but callee
+				is responsible for populating.
+@return		The status of the operation.
+*/
 
 ion_err_t
 bpptree_find(
@@ -395,97 +625,7 @@ bpptree_find(
 	return err_ok;
 }
 
-ion_cursor_status_t
-bpptree_next(
-	ion_dict_cursor_t	*cursor,
-	ion_record_t		*record
-) {
-	ion_bpp_cursor_t	*bCursor	= (ion_bpp_cursor_t *) cursor;
-	ion_bpptree_t		*bpptree	= (ion_bpptree_t *) cursor->dictionary->instance;
-
-	if (cursor->status == cs_cursor_uninitialized) {
-		return cursor->status;
-	}
-	else if (cursor->status == cs_end_of_results) {
-		return cursor->status;
-	}
-	else if ((cursor->status == cs_cursor_initialized) || (cursor->status == cs_cursor_active)) {
-		if (cursor->status == cs_cursor_active) {
-			ion_boolean_t is_valid = boolean_true;
-
-			switch (cursor->predicate->type) {
-				case predicate_equality: {
-					if (-1 == bCursor->offset) {
-						/* End of results, we can quit */
-						is_valid = boolean_false;
-					}
-
-					break;
-				}
-
-				case predicate_range: {
-					/*do bFindNextKey then test_predicate */
-					if (-1 == bCursor->offset) {
-						ion_bpp_err_t bErr = bFindNextKey(bpptree->tree, bCursor->cur_key, &bCursor->offset);
-
-						if ((bErrOk != bErr) || (boolean_false == test_predicate(cursor, bCursor->cur_key))) {
-							is_valid = boolean_false;
-						}
-					}
-
-					break;
-				}
-
-				case predicate_all_records: {
-					if (-1 == bCursor->offset) {
-						ion_bpp_err_t bErr = bFindNextKey(bpptree->tree, bCursor->cur_key, &bCursor->offset);
-
-						if (bErrOk != bErr) {
-							is_valid = boolean_false;
-						}
-					}
-
-					break;
-				}
-
-				case predicate_predicate: {
-					/*TODO Not implemented */
-					break;
-				}
-					/*No default since we can assume the predicate is valid. */
-			}
-
-			if (boolean_false == is_valid) {
-				cursor->status = cs_end_of_results;
-				return cursor->status;
-			}
-		}
-		else {
-			/* The status is cs_cursor_initialized */
-			cursor->status = cs_cursor_active;
-		}
-
-		/* Get key */
-		memcpy(record->key, bCursor->cur_key, cursor->dictionary->instance->record.key_size);
-
-		/* Get value */
-		lfb_get(&(bpptree->values), bCursor->offset, cursor->dictionary->instance->record.value_size, record->value, &bCursor->offset);
-		return cursor->status;
-	}
-
-	return cs_invalid_cursor;
-}
-
-void
-bpptree_destroy_cursor(
-	ion_dict_cursor_t **cursor
-) {
-	(*cursor)->predicate->destroy(&(*cursor)->predicate);
-	free(((ion_bpp_cursor_t *) (*cursor))->cur_key);
-	free((*cursor));
-	*cursor = NULL;
-}
-
+/* TODO Write me doc! */
 ion_err_t
 bpptree_open_dictionary(
 	ion_dictionary_handler_t		*handler,
@@ -496,22 +636,17 @@ bpptree_open_dictionary(
 	return bpptree_create_dictionary(config->id, config->type, config->key_size, config->value_size, config->dictionary_size, compare, handler, dictionary);
 }
 
-ion_err_t
-bpptree_close_dictionary(
-	ion_dictionary_t *dictionary
+void
+bpptree_init(
+	ion_dictionary_handler_t *handler
 ) {
-	ion_bpptree_t	*bpptree;
-	ion_bpp_err_t	bErr;
-
-	bpptree					= (ion_bpptree_t *) dictionary->instance;
-	bErr					= bClose(bpptree->tree);
-	ion_fclose(bpptree->values.file_handle);
-	free(dictionary->instance);
-	dictionary->instance	= NULL;
-
-	if (bErrOk != bErr) {
-		return err_dictionary_destruction_error;
-	}
-
-	return err_ok;
+	handler->insert				= bpptree_insert;
+	handler->create_dictionary	= bpptree_create_dictionary;
+	handler->get				= bpptree_query;
+	handler->update				= bpptree_update;
+	handler->find				= bpptree_find;
+	handler->remove				= bpptree_delete;
+	handler->delete_dictionary	= bpptree_delete_dictionary;
+	handler->open_dictionary	= bpptree_open_dictionary;
+	handler->close_dictionary	= bpptree_close_dictionary;
 }

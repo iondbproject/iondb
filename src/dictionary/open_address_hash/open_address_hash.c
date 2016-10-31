@@ -269,6 +269,19 @@ oah_query(
 	}
 }
 
+/**
+@brief		Helper function to print out map.
+
+@details	Helper function that displays the contents of the map including
+			both key and value.
+
+@param		hash_map
+				The map into which the data is going to be inserted.
+@param		size
+				The number of buckets available in the map.
+@param		record
+				The structure of the record being inserted.
+*/
 void
 oah_print(
 	ion_hashmap_t		*hash_map,
