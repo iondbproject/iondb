@@ -1609,8 +1609,6 @@ test_bhdct_find_equality_no_result(
 	bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
 	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
-	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
-	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
 	bhdct_insert(tc, &dict, IONIZE(1002, int), IONIZE(1002 * 2, int), boolean_true);
 	bhdct_insert(tc, &dict, IONIZE(55, int), IONIZE(55 * 2, int), boolean_true);
 	bhdct_insert(tc, &dict, IONIZE(-5, int), IONIZE(-5 * 2, int), boolean_true);
@@ -1736,8 +1734,6 @@ test_bhdct_find_range_no_result(
 	bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
 	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
-	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
-	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
 	bhdct_insert(tc, &dict, IONIZE(1002, int), IONIZE(1002 * 2, int), boolean_true);
 	bhdct_insert(tc, &dict, IONIZE(55, int), IONIZE(55 * 2, int), boolean_true);
 	bhdct_insert(tc, &dict, IONIZE(-5, int), IONIZE(-5 * 2, int), boolean_true);
@@ -1820,13 +1816,11 @@ bhdct_run_tests(
 
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_single);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_in_many);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_duplicate_key);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_no_result);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_empty_dict);
 
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_single);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_in_many);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_duplicate_key);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_no_result);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_empty_dict);
 
@@ -1872,15 +1866,23 @@ bhdct_run_tests(
 
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_single);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_in_many);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_duplicate_key);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_no_result);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_empty_dict);
 
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_single);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_in_many);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_duplicate_key);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_no_result);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_empty_dict);
+
+		planck_unit_run_suite(suite);
+		planck_unit_destroy_suite(suite);
+	}
+
+	if (bhdct_context.test_classes & ION_BHDCT_DUPLICATES) {
+		planck_unit_suite_t *suite = planck_unit_new_suite();
+
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_duplicate_key);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_duplicate_key);
 
 		planck_unit_run_suite(suite);
 		planck_unit_destroy_suite(suite);
