@@ -842,7 +842,7 @@ do { \
 	}
 
 #define _REMOVE_ORDERING_FILE(name) \
-	if (0 != remove(#name)) { \
+	if (0 != fremove(#name)) { \
 		error			= err_file_delete_error; \
 		goto IINQ_QUERY_END; \
 	}
