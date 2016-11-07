@@ -106,7 +106,7 @@ typedef struct iinq_source ion_iinq_source_t;
 			an array, and should be considered to reduce memory requirements.
 */
 typedef struct iinq_cleanup {
-	/**> A pointer to a eference struct of an IonDB dictionary. */
+	/**> A pointer to a reference struct of an IonDB dictionary. */
 	ion_iinq_source_t	*reference;
 	/**> A pointer to the next item in the list. */
 	struct iinq_cleanup *next;

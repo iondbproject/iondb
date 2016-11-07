@@ -1,4 +1,5 @@
 #include "test_iinq.h"
+#include "../../../iinq/iinq.h"
 
 typedef void (*iinq_test_results_func_t) (planck_unit_test_t *, ion_iinq_result_t*, uint32_t, uint32_t);
 
@@ -1702,11 +1703,192 @@ iinq_test_the_ultimate_query(
 	DROP(test3);
 }
 
+IINQ_NEW_PROCESSOR_FUNC(benchmark_test) {
+	printf("key\t\tattr0\t\tattr1\t\tattr2\t\tattr3\n");
+	int *dataptr = (int*) result->processed;
+	int i = 0;
+	for(i = 0; i < (result->num_bytes / sizeof(uint32_t)); i++) {
+		printf("%d\t\t\t", *dataptr);
+		dataptr++;
+	}
+	printf("\n");
+}
+
+void iinq_benchmark_query_1(ion_iinq_query_processor_t *processor) {
+	QUERY(
+			SELECT_ALL,
+			FROM(1, test),
+			WHERE(1), , , , , ,
+			processor
+	);
+}
+
+void iinq_benchmark_query_2(ion_iinq_query_processor_t *processor) {
+	DEFINE_SCHEMA(
+			test,
+			{
+				int attr0;
+				int attr1;
+				int attr2;
+				int attr3;
+			}
+	);
+
+	QUERY(
+			SELECT(SELECT_EXPR(test_tuple->attr0)),
+			FROM(1, test),
+			WHERE(1),
+	, , , , ,
+			processor
+	);
+}
+
+void iinq_benchmark_query_3(ion_iinq_query_processor_t *processor) {
+	DEFINE_SCHEMA(
+			test,
+			{
+				int attr0;
+				int attr1;
+				int attr2;
+				int attr3;
+			}
+	);
+
+	QUERY(
+			SELECT(SELECT_EXPR(test_tuple->attr0), SELECT_EXPR(test_tuple->attr1)),
+			FROM(1, test),
+			WHERE(1),
+	, , , , ,
+			processor
+	);
+}
+void iinq_benchmark_query_4(ion_iinq_query_processor_t *processor) {
+	DEFINE_SCHEMA(
+			test,
+			{
+				int attr0;
+				int attr1;
+				int attr2;
+				int attr3;
+			}
+	);
+
+	QUERY(
+			SELECT(SELECT_EXPR(test_tuple->attr0), SELECT_EXPR(test_tuple->attr1), SELECT_EXPR(test_tuple->attr2), SELECT_EXPR(test_tuple->attr3)),
+			FROM(1, test),
+			WHERE(1),
+	, , , , ,
+			processor
+	);
+}
+void iinq_benchmark_query_5(ion_iinq_query_processor_t *processor) {
+	DEFINE_SCHEMA(
+			test,
+			{
+				int attr0;
+				int attr1;
+				int attr2;
+				int attr3;
+			}
+	);
+
+	QUERY(
+			SELECT(SELECT_EXPR(test_tuple->attr0 * 3), SELECT_EXPR(test_tuple->attr1 * 2), SELECT_EXPR(test_tuple->attr2 % 13), SELECT_EXPR(test_tuple->attr3 * 2 + 14)),
+			FROM(1, test),
+			WHERE(1),
+	, , , , ,
+			processor
+	);
+}
+void iinq_benchmark_query_6(ion_iinq_query_processor_t *processor) {
+	DEFINE_SCHEMA(
+			test,
+			{
+				int attr0;
+				int attr1;
+				int attr2;
+				int attr3;
+			}
+	);
+
+	QUERY(
+			SELECT(SELECT_EXPR(test_tuple->attr0 * 3), SELECT_EXPR(test_tuple->attr1 * 2), SELECT_EXPR(test_tuple->attr2 % 13), SELECT_EXPR(test_tuple->attr3 * 2 + 14)),
+			FROM(1, test),
+			WHERE(test_tuple->attr0 >= 0 && (2 * test_tuple->attr1) != -1 ),
+	, , , , ,
+			processor
+	);
+}
+
+void iinq_benchmark_time(
+		char *query_name,
+		void (*query_func)(ion_iinq_query_processor_t*),
+		ion_iinq_query_processor_t *processor
+) {
+	printf("==================== %s ======================\n", query_name);
+	unsigned long start;
+	start = ion_time();
+	query_func(processor);
+	printf("%s time: %lums\n===\n\n", query_name, ion_time() - start);
+}
+
+void iinq_benchmark_set_1(
+	planck_unit_test_t *tc
+) {
+	DEFINE_SCHEMA(
+			test,
+			{
+				int attr0;
+				int attr1;
+				int attr2;
+				int attr3;
+			}
+	);
+
+	ion_err_t					error;
+	ion_iinq_query_processor_t	processor;
+
+	ion_key_type_t				key_type;
+	ion_key_size_t				key_size;
+	ion_value_size_t			value_size;
+
+	DECLARE_SCHEMA_VAR(test, test_val);
+
+	processor	= IINQ_QUERY_PROCESSOR(benchmark_test, NULL);
+
+	key_type	= key_type_numeric_signed;
+	key_size	= sizeof(uint32_t);
+	value_size	= SCHEMA_SIZE(test);
+
+	error		= CREATE_DICTIONARY(test, key_type, key_size, value_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
+
+	uint32_t i;
+	for(i = 0; i < 100; i++) {
+		test_val.attr0 = i * 2;
+		test_val.attr1 = i * 3;
+		test_val.attr2 = i * 4;
+		test_val.attr3 = i * 5;
+		iinq_test_insert_into_test(tc, IONIZE(i, uint32_t), &test_val);
+	}
+
+	iinq_benchmark_time("query_1", iinq_benchmark_query_1, &processor);
+	iinq_benchmark_time("query_2", iinq_benchmark_query_2, &processor);
+	iinq_benchmark_time("query_3", iinq_benchmark_query_3, &processor);
+	iinq_benchmark_time("query_4", iinq_benchmark_query_4, &processor);
+	iinq_benchmark_time("query_5", iinq_benchmark_query_5, &processor);
+	iinq_benchmark_time("query_6", iinq_benchmark_query_6, &processor);
+
+	DROP(test);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == 1);
+}
+
+
 planck_unit_suite_t *
 iinq_get_suite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
-
+	/*
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_open_source_intint);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_open_source_string10string20);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_insert_update_delete_drop_dictionary_intint);
@@ -1736,6 +1918,8 @@ iinq_get_suite(
 
 	// TODO: Failing :( fix me */
 //	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_the_ultimate_query);*/
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_benchmark_set_1);
 
 	return suite;
 }
