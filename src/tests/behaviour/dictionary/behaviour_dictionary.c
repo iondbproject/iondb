@@ -1605,7 +1605,6 @@ test_bhdct_find_equality_no_result(
 
 	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(60, int));
 
-	/* setup */
 	bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
 	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
@@ -1631,7 +1630,6 @@ test_bhdct_find_equality_empty_dict(
 
 	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(60, int));
 
-	/* setup */
 	bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
 	test_bhdct_find(tc, &dict, &predicate, 0);
@@ -1651,7 +1649,6 @@ test_bhdct_find_range_single(
 
 	dictionary_build_predicate(&predicate, predicate_range, IONIZE(25, int), IONIZE(100, int));
 
-	/* setup */
 	bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
 	bhdct_insert(tc, &dict, IONIZE(55, int), IONIZE(55 * 2, int), boolean_true);
@@ -1673,7 +1670,6 @@ test_bhdct_find_range_in_many(
 
 	dictionary_build_predicate(&predicate, predicate_range, IONIZE(25, int), IONIZE(100, int));
 
-	/* setup */
 	bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
 	bhdct_insert(tc, &dict, IONIZE(55, int), IONIZE(55 * 2, int), boolean_true);
@@ -1699,7 +1695,6 @@ test_bhdct_find_range_duplicate_key(
 
 	dictionary_build_predicate(&predicate, predicate_range, IONIZE(25, int), IONIZE(100, int));
 
-	/* setup */
 	bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
 	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
@@ -1722,15 +1717,12 @@ void
 test_bhdct_find_range_no_result(
 	planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;/* handler binds functions of the dictionary to correct implemention */
+	ion_dictionary_handler_t	handler;
 	ion_dictionary_t			dict;
 	ion_predicate_t				predicate;
 
-	/* First step to a cursor query is to initialize the predicate. How this is done depends on the type of query. */
-	/* For the equality query, we're asking for all records with an exact match to the given key to be returned. */
 	dictionary_build_predicate(&predicate, predicate_range, IONIZE(0, int), IONIZE(10, int));
 
-	/* setup */
 	bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
 	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
@@ -1754,13 +1746,9 @@ test_bhdct_find_range_empty_dict(
 	ion_dictionary_t			dict;
 	ion_predicate_t				predicate;
 
-	/* First step to a cursor query is to initialize the predicate. How this is done depends on the type of query. */
-	/* For the equality query, we're asking for all records with an exact match to the given key to be returned. */
 	dictionary_build_predicate(&predicate, predicate_range, IONIZE(0, int), IONIZE(10, int));
 
-	/* setup */
 	bhdct_setup(tc, &handler, &dict, ion_fill_none);
-
 	test_bhdct_find(tc, &dict, &predicate, 0);
 	bhdct_takedown(tc, &dict);
 }
