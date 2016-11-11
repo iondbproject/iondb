@@ -1557,7 +1557,6 @@ test_bhdct_find_equality_in_many(
 
 	bhdct_insert(tc, &dict, IONIZE(55, int), IONIZE(55 * 2, int), boolean_true);
 	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
-	bhdct_insert(tc, &dict, IONIZE(500, int), IONIZE(500 * 2, int), boolean_true);
 	bhdct_insert(tc, &dict, IONIZE(-5, int), IONIZE(-5 * 2, int), boolean_true);
 	bhdct_insert(tc, &dict, IONIZE(99, int), IONIZE(99 * 2, int), boolean_true);
 
@@ -1583,7 +1582,6 @@ test_bhdct_find_equality_duplicate_key(
 	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
 	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
 	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
-	bhdct_insert(tc, &dict, IONIZE(55, int), IONIZE(55 * 2, int), boolean_true);
 	bhdct_insert(tc, &dict, IONIZE(-5, int), IONIZE(-5 * 2, int), boolean_true);
 
 	test_bhdct_find(tc, &dict, &predicate, 3);
@@ -1606,9 +1604,7 @@ test_bhdct_find_equality_no_result(
 	bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
 	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
-	bhdct_insert(tc, &dict, IONIZE(55, int), IONIZE(55 * 2, int), boolean_true);
 	bhdct_insert(tc, &dict, IONIZE(-5, int), IONIZE(-5 * 2, int), boolean_true);
-	bhdct_insert(tc, &dict, IONIZE(99, int), IONIZE(99 * 2, int), boolean_true);
 
 	test_bhdct_find(tc, &dict, &predicate, 0);
 	bhdct_takedown(tc, &dict);
@@ -1694,14 +1690,11 @@ test_bhdct_find_range_duplicate_key(
 	bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
 	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
-	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
-	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
 	bhdct_insert(tc, &dict, IONIZE(55, int), IONIZE(55 * 2, int), boolean_true);
 	bhdct_insert(tc, &dict, IONIZE(55, int), IONIZE(55 * 2, int), boolean_true);
 	bhdct_insert(tc, &dict, IONIZE(-5, int), IONIZE(-5 * 2, int), boolean_true);
-	bhdct_insert(tc, &dict, IONIZE(99, int), IONIZE(99 * 2, int), boolean_true);
 
-	test_bhdct_find(tc, &dict, &predicate, 6);
+	test_bhdct_find(tc, &dict, &predicate, 3);
 	bhdct_takedown(tc, &dict);
 }
 
@@ -1721,9 +1714,7 @@ test_bhdct_find_range_no_result(
 	bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
 	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
-	bhdct_insert(tc, &dict, IONIZE(55, int), IONIZE(55 * 2, int), boolean_true);
 	bhdct_insert(tc, &dict, IONIZE(-5, int), IONIZE(-5 * 2, int), boolean_true);
-	bhdct_insert(tc, &dict, IONIZE(99, int), IONIZE(99 * 2, int), boolean_true);
 
 	test_bhdct_find(tc, &dict, &predicate, 0);
 	bhdct_takedown(tc, &dict);
