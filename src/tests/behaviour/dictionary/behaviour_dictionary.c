@@ -1786,10 +1786,18 @@ bhdct_run_tests(
 
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_then_insert);
 
+		planck_unit_run_suite(suite);
+		planck_unit_destroy_suite(suite);
+	}
+
+	if (bhdct_context.test_classes & ION_BHDCT_INT_INT) {
+		planck_unit_suite_t *suite = planck_unit_new_suite();
+
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_single);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_in_many);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_no_result);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_empty_dict);
+
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_single);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_in_many);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_no_result);
@@ -1835,16 +1843,6 @@ bhdct_run_tests(
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_all_string_key);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_then_insert_string_key);
 
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_single);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_in_many);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_no_result);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_empty_dict);
-
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_single);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_in_many);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_no_result);
-		/*PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_empty_dict);*/
-
 		planck_unit_run_suite(suite);
 		planck_unit_destroy_suite(suite);
 	}
@@ -1866,7 +1864,7 @@ bhdct_run_tests(
 		planck_unit_destroy_suite(suite);
 	}
 
-	if ((bhdct_context.test_classes & ION_BHDCT_DUPLICATES) || (bhdct_context.test_classes & ION_BHDCT_INT_INT)) {
+	if (bhdct_context.test_classes & ION_BHDCT_DUPLICATES) {
 		planck_unit_suite_t *suite = planck_unit_new_suite();
 
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_duplicate_key);
