@@ -1750,7 +1750,7 @@ bhdct_run_tests(
 	if (bhdct_context.test_classes & ION_BHDCT_INT_INT) {
 		planck_unit_suite_t *suite = planck_unit_new_suite();
 
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_setup);
+		/*PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_setup);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_single);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_multiple);
 
@@ -1782,18 +1782,18 @@ bhdct_run_tests(
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_nonexist_in_many);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_exist_single);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_exist_in_many);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_all);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_all);*/
 
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_then_insert);
 
-		/*PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_single);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_single);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_in_many);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_no_result);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_empty_dict);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_single);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_in_many);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_no_result);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_empty_dict);*/
+		/*PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_empty_dict);*/
 
 		planck_unit_run_suite(suite);
 		planck_unit_destroy_suite(suite);
