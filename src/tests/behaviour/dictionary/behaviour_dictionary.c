@@ -1775,14 +1775,14 @@ bhdct_run_tests(
 
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single_several);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_all);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_all);*/
 
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_empty_single);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_nonexist_single);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_nonexist_in_many);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_exist_single);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_exist_in_many);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_all);*/
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_all);
 
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_then_insert);
 
