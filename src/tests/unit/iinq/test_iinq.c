@@ -1578,17 +1578,17 @@ iinq_test_the_ultimate_query(
 }
 
 IINQ_NEW_PROCESSOR_FUNC(benchmark_test) {
-	printf("key\t\tattr0\t\tattr1\t\tattr2\t\tattr3\n");
+//	printf("key\t\tattr0\t\tattr1\t\tattr2\t\tattr3\n");
 
 	uint32_t	*dataptr	= (uint32_t *) result->processed;
 	int			i			= 0;
 
 	for (i = 0; i < (result->num_bytes / sizeof(uint32_t)); i++) {
-		printf("%d\t\t\t", *dataptr);
+//		printf("%d\t\t\t", *dataptr);
 		dataptr++;
 	}
 
-	printf("\n");
+//	printf("\n");
 }
 
 void
@@ -1679,7 +1679,7 @@ iinq_benchmark_time(
 	void (						*query_func)(ion_iinq_query_processor_t *),
 	ion_iinq_query_processor_t	*processor
 ) {
-	printf("==================== %s ======================\n", query_name);
+//	printf("==================== %s ======================\n", query_name);
 
 	unsigned long start;
 
