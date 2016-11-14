@@ -20,12 +20,12 @@
 			License.
 */
 /******************************************************************************/
-#include "test_behaviour_flat_file.h"
+#include "test_cursor_behaviour_bpp_tree.h"
 
 int
 main(
 	void
 ) {
-	runalltests_behaviour_flat_file();
+	runalltests_cursor_behaviour_bpp_tree();
 	return 0;
 }

@@ -21,13 +21,13 @@
 */
 /******************************************************************************/
 
-#include "../../../planckunit/src/planck_unit.h"
-#include "../behaviour_dictionary_cursor.h"
-#include "../../../../dictionary/flat_file/flat_file_dictionary_handler.h"
-#include "test_behaviour_flat_file.h"
+#include "../../../../planckunit/src/planck_unit.h"
+#include "../../../../../dictionary/flat_file/flat_file_dictionary_handler.h"
+#include "test_cursor_behaviour_open_address_file_hash.h"
+#include "../../behaviour_dictionary.h"
 
 void
-runalltests_cursor_behaviour_flat_file(
+runalltests_cursor_behaviour_open_address_file_hash(
 	void
 ) {
 	bhdct_run_cursor_tests(ffdict_init, 15, ION_BHDCT_ALL_TESTS);

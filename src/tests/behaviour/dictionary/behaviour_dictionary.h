@@ -40,6 +40,25 @@ extern "C" {
 #include "../../../dictionary/dictionary.h"
 #include "../../../dictionary/ion_master_table.h"
 
+/* This is used to define how complicated to pre-fill a dictionary for testing. */
+typedef enum ION_BEHAVIOUR_FILL_LEVEL {
+	ion_fill_none, ion_fill_low, ion_fill_medium, ion_fill_high, ion_fill_edge_cases
+} ion_behaviour_fill_level_e;
+
+#define ION_FILL_LOW_LOOP(var) \
+	for (var = 0; var<10;var++)
+#define ION_FILL_MEDIUM_LOOP(var) \
+	for (var = 50; var<100;var += 2)
+#define ION_FILL_HIGH_LOOP(var) \
+	for (var = 500; var<1000;var += 5)
+#define ION_FILL_EDGE_LOOP(var) \
+	for (var = -100; var<-50;var += 2)
+
+#define ION_LOW_VALUE(var)		IONIZE((var) * 2, int)
+#define ION_MEDIUM_VALUE(var)	IONIZE((var) * 5, int)
+#define ION_HIGH_VALUE(var)		IONIZE((var) * 10, int)
+#define ION_EDGE_VALUE(var)		IONIZE((var) * 3, int)
+
 #define ION_BHDCT_INT_INT					(1 << 0)
 #define ION_BHDCT_STRING_INT				(1 << 1)
 #define ION_BHDCT_DUPLICATES				(1 << 2)
@@ -100,6 +119,26 @@ bhdct_run_tests(
 	ion_dictionary_size_t		dictionary_size,
 	uint32_t					test_classes
 );
+
+/**
+@brief		Executes the behaviour test suite for cursor behaviour, given the testing parameters.
+@param		init_fcn
+				A function pointer that designates the initializer for a specific dictionary implementation.
+@param		dictionary_size
+				The specified dictionary size to use for tests.
+@param		test_classes
+				A supplied bit mask used to determine which tests to run.
+*/
+void
+bhdct_run_cursor_tests(
+	ion_handler_initializer_t	init_fcn,
+	ion_dictionary_size_t		dictionary_size,
+	uint32_t					test_classes
+);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #if defined(__cplusplus)
 }

@@ -2,7 +2,7 @@
 /**
 @file
 @author		Kris Wallperington
-@brief		Main file for flat file behaviour tests.
+@brief		Behaviour tests for the flat file implementation.
 @copyright	Copyright 2016
 				The University of British Columbia,
 				IonDB Project Contributors (see AUTHORS.md)
@@ -20,12 +20,15 @@
 			License.
 */
 /******************************************************************************/
-#include "test_behaviour_flat_file.h"
 
-int
-main(
+#include "../../../../planckunit/src/planck_unit.h"
+#include "../../../../../dictionary/flat_file/flat_file_dictionary_handler.h"
+#include "test_cursor_behaviour_skip_list.h"
+#include "../../behaviour_dictionary.h"
+
+void
+runalltests_cursor_behaviour_skip_list(
 	void
 ) {
-	runalltests_behaviour_flat_file();
-	return 0;
+	bhdct_run_cursor_tests(ffdict_init, 15, ION_BHDCT_ALL_TESTS);
 }

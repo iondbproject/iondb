@@ -20,12 +20,12 @@
 			License.
 */
 /******************************************************************************/
-#include "test_behaviour_flat_file.h"
+#include "test_cursor_behaviour_flat_file.h"
 
 int
 main(
 	void
 ) {
-	runalltests_behaviour_flat_file();
+	runalltests_cursor_behaviour_flat_file();
 	return 0;
 }
