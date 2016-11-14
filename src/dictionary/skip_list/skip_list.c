@@ -31,13 +31,13 @@ sl_initialize(
 	skiplist->pden						= pden;
 	skiplist->pnum						= pnum;
 
-#if DEBUG
+#if ION_DEBUG
 	DUMP(skip_list->super.record.key_size, "%d");
 	DUMP(skip_list->super.record.value_size, "%d");
 	DUMP(skip_list->maxheight, "%d");
 	DUMP(skip_list->pnum, "%d");
 	DUMP(skip_list->pden, "%d");
-	io_printf("%s", "\n");
+	printf("%s", "\n");
 #endif
 
 	skiplist->head = malloc(sizeof(ion_sl_node_t));
@@ -337,11 +337,21 @@ print_skiplist(
 	ion_sl_node_t *cursor = skiplist->head;
 
 	while (NULL != cursor->next[0]) {
-		int				key		= *((int *) cursor->next[0]->key);
-		char			*value	= (char *) cursor->next[0]->value;
-		ion_sl_level_t	level	= cursor->next[0]->height + 1;
+		ion_sl_level_t level = cursor->next[0]->height + 1;
 
-		printf("k: %d (v: %s) [l: %d] -- ", key, value, level);
+		if (key_type_numeric_signed == skiplist->super.key_type) {
+			int key		= *((int *) cursor->next[0]->key);
+			int value	= *(int *) cursor->next[0]->value;
+
+			printf("k: '%d' (v: '%d') [l: %d] -- ", key, value, level);
+		}
+		else if (key_type_null_terminated_string == skiplist->super.key_type) {
+			char	*key	= cursor->next[0]->key;
+			int		value	= *(int *) cursor->next[0]->value;
+
+			printf("k: '%s' (v: '%d') [l: %d] -- ", key, value, level);
+		}
+
 		cursor = cursor->next[0];
 	}
 

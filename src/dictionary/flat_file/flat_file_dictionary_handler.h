@@ -92,7 +92,7 @@ ffdict_get(
 				The ID to assign to the dictionary. This is either user defined or is given
 				by the master table.
 @param[in]	key_type
-				The category of key used by the dictionary. See @ref key_type for more information.
+				The category of key used by the dictionary. See @ref ION_KEY_TYPE for more information.
 @param[in]	key_size
 				The size of the keys used for this dictionary, specified in bytes. It is strongly
 				recommended to use a @p sizeof() directive to specify this size to avoid painful problems.
@@ -164,96 +164,6 @@ ffdict_update(
 	ion_dictionary_t	*dictionary,
 	ion_key_t			key,
 	ion_value_t			value
-);
-
-/**
-@brief			Initializes a cursor query and returns an allocated cursor object.
-@details		Given a @p predicate that was previously initialized by @ref dictionary_build_predicate,
-				Build a cursor object that acts as the iterator for the desired query through the dictionary.
-@param[in]		dictionary
-					Which dictionary to query on.
-@param[in]		predicate
-					An allocated, initialized predicate object that defines the parameters of the query.
-@param[out]		cursor
-					A cursor pointer should be initialized to @p NULL, and then given to this function.
-					This function shall allocate appropriate memory and redirect @p cursor to point to
-					the allocated memory. **NOTE:** Anything originally pointed to by this cursor will
-					effectively be lost, if there is no other reference to said thing.
-@return			The resulting status of the operation.
-*/
-ion_err_t
-ffdict_find(
-	ion_dictionary_t	*dictionary,
-	ion_predicate_t		*predicate,
-	ion_dict_cursor_t	**cursor
-);
-
-/**
-@brief			Fetches the next record to be returned from a cursor that has already been initialized.
-@details		The returned record is written back to @p record, and then the cursor is advanced to the next
-				record. The returned status code signifies whether or not there are more results to traverse.
-				This function should not be called directly, but instead will be bound to the cursor like a method.
-@param[in]		cursor
-					Which cursor to fetch results from.
-@param[out]		record
-					An initialized record struct with the @p key and @p value appropriately allocated to fit
-					the returned key and value. This function will write back data to the struct.
-@return			The resulting status of the operation.
-*/
-ion_cursor_status_t
-ffdict_next(
-	ion_dict_cursor_t	*cursor,
-	ion_record_t		*record
-);
-
-/**
-@brief		Destroys and frees the given cursor.
-@details	This function should not be called directly, but instead accessed through the interface
-			the cursor object.
-@param[in]	cursor
-				Which cursor to destroy.
-*/
-void
-ffdict_destroy_cursor(
-	ion_dict_cursor_t **cursor
-);
-
-/**
-@brief		Re-instances a previously created flat file store instance
-			and prepares it to be used again.
-@param[in]	handler
-				A handler that must be bound with the flat file's functions.
-@param[in]	dictionary
-				A dictionary that is allocated but not initialized. We will
-				store the details of the re-instanced flat file store in here.
-@param[in]	config
-				The configuration parameters previously used by the flat file store
-				we are opening. This must either be provided directly if dictionaries
-				are being managed manually, or will be provided by the dictionary manager
-				that is currently in use.
-@param[in]	compare
-				The comparison function that will be given by higher layers, based on the
-				destined key type.
-@return		The resulting status of the operation.
-*/
-ion_err_t
-ffdict_open_dictionary(
-	ion_dictionary_handler_t		*handler,
-	ion_dictionary_t				*dictionary,
-	ion_dictionary_config_info_t	*config,
-	ion_dictionary_compare_t		compare
-);
-
-/**
-@brief		Closes this flat file store and persists everything to disk
-			to be brought back later using @ref dictionary_open.
-@param[in]	dictionary
-				Which instance of a flat file store to close.
-@return		The resuling status of the operation.
-*/
-ion_err_t
-ffdict_close_dictionary(
-	ion_dictionary_t *dictionary
 );
 
 #if defined(__cplusplus)

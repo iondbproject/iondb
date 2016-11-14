@@ -10,7 +10,7 @@ extern "C" {
 
 #include "test_open_address_hash_dictionary_handler.h"
 
-#define MAX_HASH_TEST 100
+#define ION_MAX_HASH_TEST 100
 
 /**
 @brief		A helper function to build a test dictionary instance
@@ -52,7 +52,7 @@ createTestDictionary(
 			for open address dictionary structure.
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_hashmap_handler_function_registration(
@@ -74,7 +74,7 @@ test_open_address_hashmap_handler_function_registration(
 @brief	  Tests for creatation and deletion of open address hash.
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_hashmap_handler_create_destroy(
@@ -193,7 +193,7 @@ test_open_address_dictionary_handler_query_with_results(
 	str = malloc(record_info.value_size);
 	sprintf((char *) str, "value : %i", *(int *) predicate.statement.equality.equality_value);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL == memcmp(record.value, str, record_info.value_size));
+	PLANCK_UNIT_ASSERT_TRUE(tc, ION_IS_EQUAL == memcmp(record.value, str, record_info.value_size));
 
 	free(str);
 
@@ -294,15 +294,15 @@ test_open_address_dictionary_predicate_equality(
 
 	/* printf("key %i\n",*(int *)key_under_test); */
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == oadict_test_predicate(&cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == test_predicate(&cursor, key_under_test));
 
 	memcpy(key_under_test, &(int) { 2 }, sizeof(int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == oadict_test_predicate(&cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == test_predicate(&cursor, key_under_test));
 
 	memcpy(key_under_test, &(int) { -1 }, sizeof(int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == oadict_test_predicate(&cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == test_predicate(&cursor, key_under_test));
 
 	free(key_under_test);
 
@@ -349,23 +349,23 @@ test_open_address_dictionary_predicate_range_signed(
 
 	/* printf("key %i\n",*(int *)key_under_test); */
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == oadict_test_predicate(&cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == test_predicate(&cursor, key_under_test));
 
 	memcpy(key_under_test, &(int) { -1 }, sizeof(int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == oadict_test_predicate(&cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == test_predicate(&cursor, key_under_test));
 
 	memcpy(key_under_test, &(int) { 1 }, sizeof(int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == oadict_test_predicate(&cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == test_predicate(&cursor, key_under_test));
 
 	memcpy(key_under_test, &(int) { 2 }, sizeof(int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == oadict_test_predicate(&cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == test_predicate(&cursor, key_under_test));
 
 	memcpy(key_under_test, &(int) { -2 }, sizeof(int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == oadict_test_predicate(&cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == test_predicate(&cursor, key_under_test));
 
 	free(key_under_test);
 
@@ -412,23 +412,23 @@ test_open_address_dictionary_predicate_range_unsigned(
 
 	/* printf("key %i\n",*(unsigned int *)key_under_test); */
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == oadict_test_predicate(&cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == test_predicate(&cursor, key_under_test));
 
 	memcpy(key_under_test, &(unsigned int) { 1 }, sizeof(unsigned int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == oadict_test_predicate(&cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == test_predicate(&cursor, key_under_test));
 
 	memcpy(key_under_test, &(unsigned int) { 2 }, sizeof(unsigned int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == oadict_test_predicate(&cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == test_predicate(&cursor, key_under_test));
 
 	memcpy(key_under_test, &(unsigned int) { 3 }, sizeof(unsigned int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == oadict_test_predicate(&cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == test_predicate(&cursor, key_under_test));
 
 	memcpy(key_under_test, &(unsigned int) { 4 }, sizeof(unsigned int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == oadict_test_predicate(&cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == test_predicate(&cursor, key_under_test));
 
 	free(key_under_test);
 
@@ -485,7 +485,7 @@ test_open_address_dictionary_cursor_range(
 		str = malloc(record_info.value_size);
 		sprintf((char *) str, "value : %i", (*(int *) predicate.statement.range.lower_bound) + result_count);
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL == memcmp(record.value, str, record_info.value_size));
+		PLANCK_UNIT_ASSERT_TRUE(tc, ION_IS_EQUAL == memcmp(record.value, str, record_info.value_size));
 		PLANCK_UNIT_ASSERT_TRUE(tc, *(int *) (record.key) >= *(int *) (cursor->predicate->statement.range.lower_bound));
 		PLANCK_UNIT_ASSERT_TRUE(tc, *(int *) (record.key) <= *(int *) (cursor->predicate->statement.range.upper_bound));
 		result_count++;

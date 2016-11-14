@@ -74,7 +74,7 @@ initialize_skiplist_std_conditions(
 @brief	  Tests creation of the skiplist.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_initialize(
@@ -97,7 +97,7 @@ test_skiplist_initialize(
 
 	initialize_skiplist(&skiplist, key_type, compare, maxheight, key_size, value_size, pnum, pden);
 
-#if DEBUG
+#if ION_DEBUG
 	print_skiplist(&skip_list);
 #endif
 
@@ -119,7 +119,7 @@ test_skiplist_initialize(
 @brief	  Tests if the Skiplist is properly destroyed.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_free_all(
@@ -140,7 +140,7 @@ test_skiplist_free_all(
 @brief	  Tests a single insert into the skiplist.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_single_insert(
@@ -159,7 +159,7 @@ test_skiplist_single_insert(
 
 	ion_status_t status = sl_insert(&skiplist, (ion_key_t) &key, value);
 
-#if DEBUG
+#if ION_DEBUG
 	print_skiplist(&skip_list);
 #endif
 
@@ -177,7 +177,7 @@ test_skiplist_single_insert(
 			occurred.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_insert_multiple(
@@ -202,7 +202,7 @@ test_skiplist_insert_multiple(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	print_skiplist(&skip_list);
 #endif
 
@@ -237,7 +237,7 @@ test_skiplist_insert_multiple(
 			of the current node.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_randomized_insert(
@@ -264,7 +264,7 @@ test_skiplist_randomized_insert(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	print_skiplist(&skip_list);
 #endif
 
@@ -290,7 +290,7 @@ test_skiplist_randomized_insert(
 			skiplist. The test passes if they are the same.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_get_node_single(
@@ -332,7 +332,7 @@ test_skiplist_get_node_single(
 			the same.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_get_node_single_high(
@@ -355,7 +355,7 @@ test_skiplist_get_node_single_high(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
-#if DEBUG
+#if ION_DEBUG
 	print_skiplist(&skip_list);
 #endif
 
@@ -378,7 +378,7 @@ test_skiplist_get_node_single_high(
 			the only node that can be smaller than the one insert is the head
 			node.)
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_get_node_single_low(
@@ -401,7 +401,7 @@ test_skiplist_get_node_single_low(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
-#if DEBUG
+#if ION_DEBUG
 	print_skiplist(&skip_list);
 #endif
 
@@ -422,7 +422,7 @@ test_skiplist_get_node_single_low(
 			skiplist. The test passes if they are the same.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_get_node_single_many(
@@ -462,7 +462,7 @@ test_skiplist_get_node_single_many(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	print_skiplist(&skip_list);
 #endif
 
@@ -481,7 +481,7 @@ test_skiplist_get_node_single_many(
 			are compared to the original inserted ones for accuracy.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_get_node_several(
@@ -509,7 +509,7 @@ test_skiplist_get_node_several(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	print_skiplist(&skip_list);
 #endif
 
@@ -531,7 +531,7 @@ test_skiplist_get_node_several(
 			should not be allocated and will be set to null.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_query_nonexist_empty(
@@ -548,7 +548,7 @@ test_skiplist_query_nonexist_empty(
 
 	ion_status_t status		= sl_query(&skiplist, (ion_key_t) &key, value);
 
-#if DEBUG
+#if ION_DEBUG
 	print_skiplist(&skip_list);
 #endif
 
@@ -566,7 +566,7 @@ test_skiplist_query_nonexist_empty(
 			be initialized to null.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_query_nonexist_populated_single(
@@ -588,7 +588,7 @@ test_skiplist_query_nonexist_populated_single(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
-#if DEBUG
+#if ION_DEBUG
 	print_skiplist(&skip_list);
 #endif
 
@@ -611,7 +611,7 @@ test_skiplist_query_nonexist_populated_single(
 			pointer be initialized to null.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_query_nonexist_populated_several(
@@ -638,7 +638,7 @@ test_skiplist_query_nonexist_populated_several(
 		test_key--;
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	print_skiplist(&skip_list);
 #endif
 
@@ -661,7 +661,7 @@ test_skiplist_query_nonexist_populated_several(
 			value as stored at the specified key.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_query_exist_single(
@@ -683,7 +683,7 @@ test_skiplist_query_exist_single(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
-#if DEBUG
+#if ION_DEBUG
 	print_skiplist(&skip_list);
 #endif
 
@@ -706,7 +706,7 @@ test_skiplist_query_exist_single(
 			value stored at the specified key.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_query_exist_populated_single(
@@ -731,7 +731,7 @@ test_skiplist_query_exist_populated_single(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	print_skiplist(&skip_list);
 #endif
 
@@ -754,7 +754,7 @@ test_skiplist_query_exist_populated_single(
 			value stored at the specified key.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_query_exist_populated_several(
@@ -779,7 +779,7 @@ test_skiplist_query_exist_populated_several(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	print_skiplist(&skip_list);
 #endif
 
@@ -805,7 +805,7 @@ test_skiplist_query_exist_populated_several(
 			modifications should be made to the structure.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_delete_empty(
@@ -820,7 +820,7 @@ test_skiplist_delete_empty(
 	int				key		= 3;
 	ion_status_t	status	= sl_delete(&skiplist, (ion_key_t) &key);
 
-#if DEBUG
+#if ION_DEBUG
 	print_skiplist(&skip_list);
 #endif
 
@@ -837,7 +837,7 @@ test_skiplist_delete_empty(
 			modification is to be made to the data structure.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_delete_nonexist_single(
@@ -863,7 +863,7 @@ test_skiplist_delete_nonexist_single(
 
 	status = sl_delete(&skiplist, (ion_key_t) &fake_key);
 
-#if DEBUG
+#if ION_DEBUG
 	print_skiplist(&skip_list);
 #endif
 
@@ -880,7 +880,7 @@ test_skiplist_delete_nonexist_single(
 			modification is to be made to the data structure.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_delete_nonexist_several(
@@ -911,7 +911,7 @@ test_skiplist_delete_nonexist_several(
 	int				fake_key	= 20;
 	ion_status_t	status		= sl_delete(&skiplist, (ion_key_t) &fake_key);
 
-#if DEBUG
+#if ION_DEBUG
 	print_skiplist(&skip_list);
 #endif
 
@@ -928,7 +928,7 @@ test_skiplist_delete_nonexist_several(
 			deleted is no longer within the skiplist.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_delete_single(
@@ -950,14 +950,14 @@ test_skiplist_delete_single(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** BEFORE **");
 	print_skiplist(&skip_list);
 #endif
 
 	status = sl_delete(&skiplist, (ion_key_t) &key);
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** AFTER **");
 	print_skiplist(&skip_list);
 #endif
@@ -976,7 +976,7 @@ test_skiplist_delete_single(
 			is no longer within the skiplist.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_delete_single_several(
@@ -1001,7 +1001,7 @@ test_skiplist_delete_single_several(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** BEFORE **");
 	print_skiplist(&skip_list);
 #endif
@@ -1025,7 +1025,7 @@ test_skiplist_delete_single_several(
 	int				key		= 112;
 	ion_status_t	status	= sl_delete(&skiplist, (ion_key_t) &key);
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** AFTER **");
 	print_skiplist(&skip_list);
 #endif
@@ -1048,7 +1048,7 @@ test_skiplist_delete_single_several(
 			longer within the skiplist.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_delete_single_several_noncont(
@@ -1073,7 +1073,7 @@ test_skiplist_delete_single_several_noncont(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** BEFORE **");
 	print_skiplist(&skip_list);
 #endif
@@ -1097,7 +1097,7 @@ test_skiplist_delete_single_several_noncont(
 	int				key		= 240;
 	ion_status_t	status	= sl_delete(&skiplist, (ion_key_t) &key);
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** AFTER **");
 	print_skiplist(&skip_list);
 #endif
@@ -1118,7 +1118,7 @@ test_skiplist_delete_single_several_noncont(
 			and that at the end of the operations the skiplist must be empty.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_delete_several_all(
@@ -1143,7 +1143,7 @@ test_skiplist_delete_several_all(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** BEFORE **");
 	print_skiplist(&skip_list);
 #endif
@@ -1155,7 +1155,7 @@ test_skiplist_delete_several_all(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** AFTER **");
 	print_skiplist(&skip_list);
 #endif
@@ -1175,7 +1175,7 @@ test_skiplist_delete_several_all(
 			that the update will instead insert the node.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_update_single_nonexist(
@@ -1189,7 +1189,7 @@ test_skiplist_update_single_nonexist(
 
 	ion_status_t status = sl_update(&skiplist, IONIZE(72, int), (ion_value_t) (char *) { "test val" });
 
-#if DEBUG
+#if ION_DEBUG
 	print_skiplist(&skip_list);
 #endif
 
@@ -1207,7 +1207,7 @@ test_skiplist_update_single_nonexist(
 			that the update will instead insert the node.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_update_single_nonexist_nonempty(
@@ -1224,14 +1224,14 @@ test_skiplist_update_single_nonexist_nonempty(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** BEFORE **");
 	print_skiplist(&skip_list);
 #endif
 
 	status = sl_update(&skiplist, IONIZE(13, int), (ion_value_t) (char *) { "test val" });
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** AFTER **");
 	print_skiplist(&skip_list);
 #endif
@@ -1250,7 +1250,7 @@ test_skiplist_update_single_nonexist_nonempty(
 			that the update will instead insert the node.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_update_many_nonexist_nonempty(
@@ -1271,14 +1271,14 @@ test_skiplist_update_many_nonexist_nonempty(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** BEFORE **");
 	print_skiplist(&skip_list);
 #endif
 
 	ion_status_t status = sl_update(&skiplist, IONIZE(45, int), (ion_value_t) (char *) { "test val" });
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** AFTER **");
 	print_skiplist(&skip_list);
 #endif
@@ -1300,7 +1300,7 @@ test_skiplist_update_many_nonexist_nonempty(
 			will be reflected within the node.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_update_single_exist(
@@ -1317,14 +1317,14 @@ test_skiplist_update_single_exist(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** BEFORE **");
 	print_skiplist(&skip_list);
 #endif
 
 	status = sl_update(&skiplist, IONIZE(45, int), (ion_value_t) (char *) { "new val" });
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** AFTER **");
 	print_skiplist(&skip_list);
 #endif
@@ -1344,7 +1344,7 @@ test_skiplist_update_single_exist(
 			will be reflected within the targeted node.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_update_single_many_exist(
@@ -1365,14 +1365,14 @@ test_skiplist_update_single_many_exist(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** BEFORE **");
 	print_skiplist(&skip_list);
 #endif
 
 	ion_status_t status = sl_update(&skiplist, IONIZE(30, int), (ion_value_t) (char *) { "COSC" });
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** AFTER **");
 	print_skiplist(&skip_list);
 #endif
@@ -1394,7 +1394,7 @@ test_skiplist_update_single_many_exist(
 			reflected within all nodes.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_update_several_many_exist(
@@ -1415,7 +1415,7 @@ test_skiplist_update_several_many_exist(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** BEFORE **");
 	print_skiplist(&skip_list);
 #endif
@@ -1431,7 +1431,7 @@ test_skiplist_update_several_many_exist(
 		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) cursor->value, "VALUE");
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** AFTER **");
 	print_skiplist(&skip_list);
 #endif
@@ -1445,7 +1445,7 @@ test_skiplist_update_several_many_exist(
 			with none of the original values remaining in the skiplist.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_update_several_same_key(
@@ -1466,14 +1466,14 @@ test_skiplist_update_several_same_key(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** INSERT **");
 	print_skiplist(&skip_list);
 #endif
 
 	ion_status_t status = sl_update(&skiplist, IONIZE(64, int), (ion_value_t) (char *) { "new same" });
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** UPDATE **");
 	print_skiplist(&skip_list);
 #endif
@@ -1497,7 +1497,7 @@ test_skiplist_update_several_same_key(
 			specific key be updated, with none of the original values remaining.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_update_several_same_key_in_mix(
@@ -1522,14 +1522,14 @@ test_skiplist_update_several_same_key_in_mix(
 	sl_insert(&skiplist, IONIZE(100, int), (ion_value_t) (char *) { "samez U" });
 	sl_insert(&skiplist, IONIZE(101, int), (ion_value_t) (char *) { "samez U" });
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** INSERT **");
 	print_skiplist(&skip_list);
 #endif
 
 	ion_status_t status = sl_update(&skiplist, IONIZE(55, int), (ion_value_t) (char *) { "new same" });
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** UPDATE **");
 	print_skiplist(&skip_list);
 #endif
@@ -1553,7 +1553,7 @@ test_skiplist_update_several_same_key_in_mix(
 			The assertion is that the insertion should work OK with no errors.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_delete_then_insert_single(
@@ -1570,7 +1570,7 @@ test_skiplist_delete_then_insert_single(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** INSERT **");
 	print_skiplist(&skip_list);
 #endif
@@ -1580,14 +1580,14 @@ test_skiplist_delete_then_insert_single(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** DELETE **");
 	print_skiplist(&skip_list);
 #endif
 
 	status = sl_insert(&skiplist, IONIZE(365, int), (ion_value_t) (char *) { "potato" });
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** REINSERT **");
 	print_skiplist(&skip_list);
 #endif
@@ -1608,7 +1608,7 @@ test_skiplist_delete_then_insert_single(
 			no errors.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_delete_then_insert_several(
@@ -1629,7 +1629,7 @@ test_skiplist_delete_then_insert_several(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** INSERT **");
 	print_skiplist(&skip_list);
 #endif
@@ -1641,7 +1641,7 @@ test_skiplist_delete_then_insert_several(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** DELETE **");
 	print_skiplist(&skip_list);
 #endif
@@ -1653,7 +1653,7 @@ test_skiplist_delete_then_insert_several(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** REINSERT **");
 	print_skiplist(&skip_list);
 #endif
@@ -1674,7 +1674,7 @@ test_skiplist_delete_then_insert_several(
 			with nothing remaining in the skiplist.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_delete_several_same_key(
@@ -1695,14 +1695,14 @@ test_skiplist_delete_several_same_key(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** INSERT **");
 	print_skiplist(&skip_list);
 #endif
 
 	ion_status_t status = sl_delete(&skiplist, IONIZE(64, int));
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** DELETE **");
 	print_skiplist(&skip_list);
 #endif
@@ -1725,7 +1725,7 @@ test_skiplist_delete_several_same_key(
 			specific key be deleted, with only the other elements remaining.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_delete_several_same_key_in_mix(
@@ -1750,14 +1750,14 @@ test_skiplist_delete_several_same_key_in_mix(
 	sl_insert(&skiplist, IONIZE(100, int), (ion_value_t) (char *) { "samez" });
 	sl_insert(&skiplist, IONIZE(101, int), (ion_value_t) (char *) { "samez" });
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** INSERT **");
 	print_skiplist(&skip_list);
 #endif
 
 	ion_status_t status = sl_delete(&skiplist, IONIZE(55, int));
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** DELETE **");
 	print_skiplist(&skip_list);
 #endif
@@ -1778,7 +1778,7 @@ test_skiplist_delete_several_same_key_in_mix(
 			on the non-standard structure.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_skiplist_different_size(
@@ -1805,7 +1805,7 @@ test_skiplist_different_size(
 	sl_insert(&skiplist, (ion_key_t) &(long long) { 32 }, (ion_value_t) (char *) { "bep" });
 	sl_insert(&skiplist, (ion_key_t) &(long long) { 16 }, (ion_value_t) (char *) { "tot" });
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** INSERT **");
 	print_skiplist(&skip_list);
 #endif
@@ -1854,7 +1854,7 @@ test_skiplist_different_size(
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** DELETE **");
 	print_skiplist(&skip_list);
 #endif
@@ -1868,7 +1868,7 @@ test_skiplist_different_size(
 			when keys were greater than 256.
 
 @param	  tc
-				Cutest dependency
+				Test case.
 */
 void
 test_skiplist_big_keys(
@@ -1896,7 +1896,7 @@ test_skiplist_big_keys(
 		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) cursor->value, "BIG!");
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** INSERT **");
 	print_skiplist(&skip_list);
 #endif
@@ -1908,7 +1908,7 @@ test_skiplist_big_keys(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	printf("%s\n", "** DELETE **");
 	print_skiplist(&skip_list);
 #endif
@@ -1923,8 +1923,8 @@ test_skiplist_big_keys(
 }
 
 /**
-@brief	  Creates the suite to test using CuTest.
-@return	 Pointer to a CuTest suite.
+@brief	  Creates the suite to test using PlanckUnit test cases.
+@return	 Pointer to a PlanckUnit test suite.
 */
 planck_unit_suite_t *
 skiplist_getsuite_1(
@@ -1970,8 +1970,8 @@ skiplist_getsuite_1(
 }
 
 /**
-@brief	  Creates the suite to test using CuTest.
-@return	 Pointer to a CuTest suite.
+@brief	  Creates the suite to test using PlanckUnit test cases.
+@return	 Pointer to a PlanckUnit test suite.
 */
 planck_unit_suite_t *
 skiplist_getsuite_2(
@@ -2001,8 +2001,8 @@ skiplist_getsuite_2(
 }
 
 /**
-@brief	  Creates the suite to test using CuTest.
-@return	 Pointer to a CuTest suite.
+@brief	  Creates the suite to test using PlanckUnit test cases.
+@return	 Pointer to a PlanckUnit test suite.
 */
 planck_unit_suite_t *
 skiplist_getsuite_3(

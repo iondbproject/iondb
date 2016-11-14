@@ -75,7 +75,7 @@ create_test_dictionary_std_conditions(
 	ion_record_info_t	record			= { sizeof(int), 10 };
 	ion_key_type_t		key_type		= key_type_numeric_signed;
 	int					size			= 7;
-	int					num_elements	= 50;
+	int					num_elements	= 25;
 
 	create_test_dictionary(dictionary, handler, &record, key_type, size, num_elements);
 }
@@ -85,7 +85,7 @@ create_test_dictionary_std_conditions(
 			have been correctly bound.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_dictionary_handler_binding(
@@ -109,7 +109,7 @@ test_dictionary_handler_binding(
 			have been correctly initialized.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_dictionary_creation(
@@ -147,7 +147,7 @@ test_dictionary_creation(
 			is that the cursor will return err_ok.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_slhandler_cursor_equality(
@@ -181,7 +181,7 @@ test_slhandler_cursor_equality(
 			assertion is that the values returned will satisfy the predicate.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_slhandler_cursor_equality_with_results(
@@ -197,7 +197,7 @@ test_slhandler_cursor_equality_with_results(
 	ion_dict_cursor_t	*cursor;
 	ion_predicate_t		predicate;
 
-	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(26, int));
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(24, int));
 
 	ion_err_t status = dictionary_find(&dict, &predicate, &cursor);
 
@@ -212,11 +212,11 @@ test_slhandler_cursor_equality_with_results(
 	ion_cursor_status_t c_status = cursor->next(cursor, &record);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, cs_cursor_active == c_status);
-	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(26, int), dict.instance->record.key_size) == 0);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(24, int), dict.instance->record.key_size) == 0);
 	PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 
 	while (c_status != cs_end_of_results) {
-		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(26, int), dict.instance->record.key_size) == 0);
+		PLANCK_UNIT_ASSERT_TRUE(tc, dict.instance->compare(record.key, IONIZE(24, int), dict.instance->record.key_size) == 0);
 		PLANCK_UNIT_ASSERT_TRUE(tc, memcmp(record.value, (char *) { "DATA" }, dict.instance->record.value_size) == 0);
 		c_status = cursor->next(cursor, &record);
 	}
@@ -236,7 +236,7 @@ test_slhandler_cursor_equality_with_results(
 			is that the cursor will return err_ok.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_slhandler_cursor_range(
@@ -270,7 +270,7 @@ test_slhandler_cursor_range(
 			assertion is that the values returned will satisfy the predicate.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_slhandler_cursor_range_with_results(
@@ -331,7 +331,7 @@ test_slhandler_cursor_range_with_results(
 			as the result of the query.
 
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_slhandler_cursor_range_lower_missing(
@@ -388,7 +388,7 @@ test_slhandler_cursor_range_lower_missing(
 			and then assert that we saw everything that was expected to be seen. This is the final
 			line of defense against a broken range query.
 @param	  tc
-				CuTest dependency
+				Test case.
 */
 void
 test_slhandler_cursor_range_exact_results(
@@ -409,8 +409,8 @@ test_slhandler_cursor_range_exact_results(
 	for (i = 0; i < num_extra; i++) {
 		ion_status_t status = dictionary_insert(&dict, &extra_keys[i], "test");
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
-		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
 	}
 
 	ion_dict_cursor_t	*cursor;
@@ -456,8 +456,8 @@ test_slhandler_cursor_range_exact_results(
 }
 
 /**
-@brief	  Creates the suite to test using CuTest.
-@return	 Pointer to a CuTest suite.
+@brief	  Creates the suite to test using PlanckUnit test cases.
+@return	 Pointer to a PlanckUnit test suite.
 */
 planck_unit_suite_t *
 skiplist_handler_getsuite(

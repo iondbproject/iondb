@@ -22,7 +22,6 @@
 /******************************************************************************/
 
 #include "flat_file.h"
-#include "flat_file_types.h"
 
 ion_err_t
 flat_file_initialize(
@@ -100,7 +99,7 @@ flat_file_initialize(
 	/* Now move the eof to the last non-empty row in the file */
 	ion_fpos_t			loc = -1;
 	ion_flat_file_row_t row;
-	ion_err_t			err = flat_file_scan(flat_file, -1, &loc, &row, FLAT_FILE_SCAN_BACKWARDS, flat_file_predicate_not_empty);
+	ion_err_t			err = flat_file_scan(flat_file, -1, &loc, &row, ION_FLAT_FILE_SCAN_BACKWARDS, flat_file_predicate_not_empty);
 
 	if ((err_ok != err) && (err_file_hit_eof != err)) {
 		fclose(flat_file->data_file);
@@ -152,10 +151,10 @@ flat_file_scan(
 	...
 ) {
 	ion_fpos_t	cur_offset	= flat_file->start_of_data + start_location * flat_file->row_size;
-	ion_fpos_t	end_offset	= FLAT_FILE_SCAN_FORWARDS == scan_direction ? flat_file->eof_position : flat_file->start_of_data;
+	ion_fpos_t	end_offset	= ION_FLAT_FILE_SCAN_FORWARDS == scan_direction ? flat_file->eof_position : flat_file->start_of_data;
 
 	if (-1 == start_location) {
-		if (FLAT_FILE_SCAN_FORWARDS == scan_direction) {
+		if (ION_FLAT_FILE_SCAN_FORWARDS == scan_direction) {
 			cur_offset = flat_file->start_of_data;
 		}
 		else {
@@ -165,7 +164,7 @@ flat_file_scan(
 
 	/* If we're scanning backwards, bump the cur_offset up one record so that we read the record we're sitting on. */
 	/* We don't do this if we're positioned at the EOF, since otherwise we would read garbage. */
-	if ((FLAT_FILE_SCAN_BACKWARDS == scan_direction) && (cur_offset != flat_file->eof_position)) {
+	if ((ION_FLAT_FILE_SCAN_BACKWARDS == scan_direction) && (cur_offset != flat_file->eof_position)) {
 		cur_offset += flat_file->row_size;
 	}
 
@@ -183,7 +182,7 @@ flat_file_scan(
 		ion_fpos_t	prev_offset				= cur_offset;
 		size_t		num_records_to_process	= flat_file->num_buffered;
 
-		if (FLAT_FILE_SCAN_FORWARDS == scan_direction) {
+		if (ION_FLAT_FILE_SCAN_FORWARDS == scan_direction) {
 			/* It's possible for this to do a partial read (if you're close to EOF), calculate how many we need to read */
 			size_t records_left = (end_offset - cur_offset) / flat_file->row_size;
 
@@ -224,7 +223,7 @@ flat_file_scan(
 
 		int32_t i;
 
-		for (i = FLAT_FILE_SCAN_FORWARDS == scan_direction ? 0 : num_records_to_process - 1; FLAT_FILE_SCAN_FORWARDS == scan_direction ? (size_t) i < num_records_to_process : i >= 0; FLAT_FILE_SCAN_FORWARDS == scan_direction ? i++ : i--) {
+		for (i = ION_FLAT_FILE_SCAN_FORWARDS == scan_direction ? 0 : num_records_to_process - 1; ION_FLAT_FILE_SCAN_FORWARDS == scan_direction ? (size_t) i < num_records_to_process : i >= 0; ION_FLAT_FILE_SCAN_FORWARDS == scan_direction ? i++ : i--) {
 			size_t cur_rec = i * flat_file->row_size;
 
 			/* This cast is done because in the future, the status could possibly be a non-byte type */
@@ -261,7 +260,7 @@ flat_file_predicate_not_empty(
 	UNUSED(flat_file);
 	UNUSED(args);
 
-	return FLAT_FILE_STATUS_OCCUPIED == row->row_status;
+	return ION_FLAT_FILE_STATUS_OCCUPIED == row->row_status;
 }
 
 ion_boolean_t
@@ -272,7 +271,7 @@ flat_file_predicate_key_match(
 ) {
 	ion_key_t target_key = va_arg(*args, ion_key_t);
 
-	return FLAT_FILE_STATUS_OCCUPIED == row->row_status && 0 == flat_file->super.compare(target_key, row->key, flat_file->super.record.key_size);
+	return ION_FLAT_FILE_STATUS_OCCUPIED == row->row_status && 0 == flat_file->super.compare(target_key, row->key, flat_file->super.record.key_size);
 }
 
 ion_boolean_t
@@ -284,7 +283,7 @@ flat_file_predicate_within_bounds(
 	ion_key_t	lower_bound = va_arg(*args, ion_key_t);
 	ion_key_t	upper_bound = va_arg(*args, ion_key_t);
 
-	return FLAT_FILE_STATUS_OCCUPIED == row->row_status && flat_file->super.compare(row->key, lower_bound, flat_file->super.record.key_size) >= 0 && flat_file->super.compare(row->key, upper_bound, flat_file->super.record.key_size) <= 0;
+	return ION_FLAT_FILE_STATUS_OCCUPIED == row->row_status && flat_file->super.compare(row->key, lower_bound, flat_file->super.record.key_size) >= 0 && flat_file->super.compare(row->key, upper_bound, flat_file->super.record.key_size) <= 0;
 }
 
 /**
@@ -382,10 +381,10 @@ flat_file_insert(
 	ion_err_t		err;
 	/* We can assume append-only insert here because our delete operation does a swap replacement, and
 	   in sorted mode, we don't allow deletes - so there are no holes to fill. */
-	ion_fpos_t insert_loc	= flat_file->eof_position / flat_file->row_size;
+	ion_fpos_t insert_loc	= (flat_file->eof_position - flat_file->start_of_data) / flat_file->row_size;
 
 	if (flat_file->sorted_mode) {
-		ion_fpos_t			last_record_loc = flat_file->eof_position / flat_file->row_size - 1;
+		ion_fpos_t			last_record_loc = (flat_file->eof_position - flat_file->start_of_data) / flat_file->row_size - 1;
 		ion_flat_file_row_t row;
 
 		if (last_record_loc >= 0) {
@@ -403,7 +402,7 @@ flat_file_insert(
 		}
 	}
 
-	err = flat_file_write_row(flat_file, insert_loc, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_OCCUPIED, key, value });
+	err = flat_file_write_row(flat_file, insert_loc, &(ion_flat_file_row_t) { ION_FLAT_FILE_STATUS_OCCUPIED, key, value });
 
 	if (err_ok != err) {
 		status.error = err;
@@ -435,7 +434,7 @@ flat_file_get(
 	ion_flat_file_row_t row;
 
 	if (!flat_file->sorted_mode) {
-		err = flat_file_scan(flat_file, -1, &found_loc, &row, FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, key);
+		err = flat_file_scan(flat_file, -1, &found_loc, &row, ION_FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, key);
 
 		if (err_ok != err) {
 			if (err_file_hit_eof == err) {
@@ -493,10 +492,10 @@ flat_file_delete(
 	ion_err_t			err;
 	ion_fpos_t			loc		= -1;
 
-	while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, key))) {
+	while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, ION_FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, key))) {
 		ion_fpos_t			last_record_offset	= flat_file->eof_position - flat_file->row_size;
 		ion_flat_file_row_t last_row;
-		ion_fpos_t			last_record_index	= last_record_offset / flat_file->row_size;
+		ion_fpos_t			last_record_index	= (last_record_offset - flat_file->start_of_data) / flat_file->row_size;
 		ion_err_t			row_err;
 
 		/* If the last index and the loc are the same, then we can just move the eof position. Saves a read/write. */
@@ -517,7 +516,7 @@ flat_file_delete(
 		}
 
 		/* Set last row to be empty just for sanity reasons. */
-		row_err = flat_file_write_row(flat_file, last_record_index, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_EMPTY, NULL, NULL });
+		row_err = flat_file_write_row(flat_file, last_record_index, &(ion_flat_file_row_t) { ION_FLAT_FILE_STATUS_EMPTY, NULL, NULL });
 
 		if (err_ok != row_err) {
 			status.error = row_err;
@@ -582,8 +581,8 @@ flat_file_update(
 		}
 	}
 
-	while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, key))) {
-		ion_err_t row_err = flat_file_write_row(flat_file, loc, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_OCCUPIED, key, value });
+	while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, ION_FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, key))) {
+		ion_err_t row_err = flat_file_write_row(flat_file, loc, &(ion_flat_file_row_t) { ION_FLAT_FILE_STATUS_OCCUPIED, key, value });
 
 		if (err_ok != row_err) {
 			status.error = row_err;
@@ -635,7 +634,7 @@ flat_file_binary_search(
 	ion_err_t			err;
 	ion_flat_file_row_t row;
 	ion_fpos_t			low_idx		= 0;
-	ion_fpos_t			high_idx	= flat_file->eof_position / flat_file->row_size - 1;
+	ion_fpos_t			high_idx	= (flat_file->eof_position - flat_file->start_of_data) / flat_file->row_size - 1;
 	ion_fpos_t			mid_idx;
 
 	if (high_idx < 0) {

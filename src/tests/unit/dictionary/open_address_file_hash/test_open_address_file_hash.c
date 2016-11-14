@@ -8,9 +8,9 @@
 #include "test_open_address_file_hash.h"
 #include "../../../../key_value/kv_system.h"
 
-#define MAX_HASH_TEST	100
-#define STD_MAP_SIZE	10
-#define TEST_FILE		"file.bin"
+#define ION_MAX_HASH_TEST	100
+#define ION_STD_MAP_SIZE	10
+#define ION_TEST_FILE		"file.bin"
 
 /**
 @brief			Helper function to visualize hashmap contents
@@ -72,14 +72,14 @@ initialize_file_hash_map_std_conditions(
 	record.key_size		= sizeof(int);
 	record.value_size	= 10;
 	map->super.key_type = key_type_numeric_signed;
-	initialize_file_hash_map(STD_MAP_SIZE, &record, map);
+	initialize_file_hash_map(ION_STD_MAP_SIZE, &record, map);
 }
 
 /**
 @brief	  Tests for creation and deletion of open address hash.
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_initialize(
@@ -113,7 +113,7 @@ test_open_address_file_hashmap_initialize(
 @brief		Tests the computation of a simple hash value
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_compute_simple_hash(
@@ -124,7 +124,7 @@ test_open_address_file_hashmap_compute_simple_hash(
 
 	initialize_file_hash_map_std_conditions(&map);
 
-	for (i = 0; i < MAX_HASH_TEST; i++) {
+	for (i = 0; i < ION_MAX_HASH_TEST; i++) {
 		PLANCK_UNIT_ASSERT_TRUE(tc, (i % map.map_size) == oafh_compute_simple_hash(&map, ((int *) &i), sizeof(i)));
 	}
 
@@ -136,7 +136,7 @@ test_open_address_file_hashmap_compute_simple_hash(
 			location of the item.
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_get_location(
@@ -144,8 +144,8 @@ test_open_address_file_hashmap_get_location(
 ) {
 	int i;
 
-	for (i = 0; i < MAX_HASH_TEST; i++) {
-		PLANCK_UNIT_ASSERT_TRUE(tc, (i % STD_MAP_SIZE) == oafh_get_location((ion_hash_t) i, STD_MAP_SIZE));
+	for (i = 0; i < ION_MAX_HASH_TEST; i++) {
+		PLANCK_UNIT_ASSERT_TRUE(tc, (i % ION_STD_MAP_SIZE) == oafh_get_location((ion_hash_t) i, ION_STD_MAP_SIZE));
 	}
 }
 
@@ -158,7 +158,7 @@ test_open_address_file_hashmap_get_location(
 			current occupancy of hashmap
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_find_item_location(
@@ -191,7 +191,7 @@ test_open_address_file_hashmap_find_item_location(
 
 	for (offset = 0; offset < map.map_size; offset++) {
 		/* apply continual offsets */
-#if DEBUG
+#if ION_DEBUG
 		printf("entry loc: %p %p \n", map.entry, pos_ptr);
 #endif
 		/* pos_ptr			  = (map.entry */
@@ -202,7 +202,7 @@ test_open_address_file_hashmap_find_item_location(
 		fseek(map.file, (offset * bucket_size) % (map.map_size * bucket_size), SEEK_SET);
 
 		for (i = 0; i < map.map_size; i++) {
-			item_ptr->status = IN_USE;
+			item_ptr->status = ION_IN_USE;
 			memcpy(item_ptr->data, (int *) &i, sizeof(int));
 
 			char str[10];
@@ -239,7 +239,7 @@ test_open_address_file_hashmap_find_item_location(
 @brief	  Tests a simple insert into map and reads results directly from map
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_simple_insert(
@@ -292,7 +292,7 @@ test_open_address_file_hashmap_simple_insert(
 			char str[10];
 
 			sprintf(str, "%02i is key", (i + offset) % map.map_size);
-			PLANCK_UNIT_ASSERT_TRUE(tc, record_status == IN_USE);
+			PLANCK_UNIT_ASSERT_TRUE(tc, record_status == ION_IN_USE);
 			PLANCK_UNIT_ASSERT_TRUE(tc, key == (i + offset) % map.map_size);
 			PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) value, (char *) str);
 		}
@@ -307,7 +307,7 @@ test_open_address_file_hashmap_simple_insert(
 @details	Tests a simple insert into dictionary and simple query with the
 			write_concern set to insert only
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_simple_insert_and_query(
@@ -359,7 +359,7 @@ test_open_address_file_hashmap_simple_insert_and_query(
 			been perturbed.
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_simple_delete(
@@ -429,7 +429,7 @@ test_open_address_file_hashmap_simple_delete(
 			is set for wc_insert_unique.   Will generate error.
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_duplicate_insert_1(
@@ -478,7 +478,7 @@ test_open_address_file_hashmap_duplicate_insert_1(
 			is set for wc_update but will update the value.
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_duplicate_insert_2(
@@ -569,7 +569,7 @@ test_open_address_file_hashmap_duplicate_insert_2(
 @brief		Tests that values can be updated.
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_update_1(
@@ -661,7 +661,7 @@ test_open_address_file_hashmap_update_1(
 			in dictionary already.
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_update_2(
@@ -802,7 +802,7 @@ test_open_address_file_hashmap_delete_1(
 			undisturbed.
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_delete_2(
@@ -848,7 +848,7 @@ test_open_address_file_hashmap_delete_2(
 
 	/*and update the values for the known keys */
 	for (i = (map.map_size - 1); i >= 0; i--) {
-#if DEBUG
+#if ION_DEBUG
 		printf("Deleting key: %i \n", i);
 #endif
 		status = oafh_delete(&map, (&i));
@@ -911,7 +911,7 @@ test_open_address_file_hashmap_delete_2(
 @brief		Tests that values can be inserted until capacity has been reached.
 
 @param	  tc
-				CuTest
+				Test case.
 */
 void
 test_open_address_file_hashmap_capacity(

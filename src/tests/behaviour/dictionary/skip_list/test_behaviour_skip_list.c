@@ -30,10 +30,9 @@ void
 runalltests_behaviour_skip_list(
 	void
 ) {
-	bhdct_set_context(sldict_init, 7, boolean_true);
-
-	planck_unit_suite_t *suite = bhdct_getsuite();
-
-	planck_unit_run_suite(suite);
-	planck_unit_destroy_suite(suite);
+#if defined(ARDUINO)
+	bhdct_run_tests(sldict_init, 7, ION_BHDCT_ALL_TESTS & ~ION_BHDCT_STRING_INT);
+#else
+	bhdct_run_tests(sldict_init, 7, ION_BHDCT_ALL_TESTS);
+#endif
 }

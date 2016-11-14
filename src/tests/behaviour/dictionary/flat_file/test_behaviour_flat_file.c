@@ -30,10 +30,5 @@ void
 runalltests_behaviour_flat_file(
 	void
 ) {
-	bhdct_set_context(ffdict_init, 15, boolean_false);
-
-	planck_unit_suite_t *suite = bhdct_getsuite();
-
-	planck_unit_run_suite(suite);
-	planck_unit_destroy_suite(suite);
+	bhdct_run_tests(ffdict_init, 15, ION_BHDCT_ALL_TESTS);
 }

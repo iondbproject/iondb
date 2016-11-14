@@ -136,6 +136,7 @@ flush(
 ) {
 	ion_bpp_h_node_t	*h = handle;
 	int					len;/* number of bytes to write */
+	ion_err_t			err;
 
 	/* flush buffer to disk */
 	len = h->sectorSize;
@@ -144,7 +145,9 @@ flush(
 		len *= 3;	/* root */
 	}
 
-	if (err_ok != ion_fwrite_at(h->fp, buf->adr, len, (ion_byte_t *) buf->p)) {
+	err = ion_fwrite_at(h->fp, buf->adr, len, (ion_byte_t *) buf->p);
+
+	if (err_ok != err) {
 		return error(bErrIO);
 	}
 
@@ -310,7 +313,9 @@ readDisk(
 			len *= 3;	/* root */
 		}
 
-		if (err_ok != ion_fread_at(h->fp, adr, len, (ion_byte_t *) buf->p)) {
+		ion_err_t err = ion_fread_at(h->fp, adr, len, (ion_byte_t *) buf->p);
+
+		if (err_ok != err) {
 			return error(bErrIO);
 		}
 
@@ -366,7 +371,7 @@ readDisk(
 	return bErrOk;
 }
 
-typedef enum { MODE_FIRST, MODE_MATCH, MODE_FGEQ, MODE_LLEQ } ion_bpp_mode_e;
+typedef enum ION_BPP_MODE { MODE_FIRST, MODE_MATCH, MODE_FGEQ, MODE_LLEQ } ion_bpp_mode_e;
 
 static int
 search(
@@ -429,14 +434,14 @@ search(
 						/* rec's must also match */
 						if (rec < rec(*mkey)) {
 							ub	= m - 1;
-							cc	= CC_LT;
+							cc	= ION_CC_LT;
 						}
 						else if (rec > rec(*mkey)) {
 							lb	= m + 1;
-							cc	= CC_GT;
+							cc	= ION_CC_GT;
 						}
 						else {
-							return CC_EQ;
+							return ION_CC_EQ;
 						}
 
 						break;
@@ -455,13 +460,13 @@ search(
 	if (ct(buf) == 0) {
 		/* empty list */
 		*mkey = fkey(buf);
-		return CC_LT;
+		return ION_CC_LT;
 	}
 
 	if (h->dupKeys && (mode == MODE_FIRST) && foundDup) {
 		/* next key is first key in set of duplicates */
 		*mkey += ks(1);
-		return CC_EQ;
+		return ION_CC_EQ;
 	}
 
 	if (MODE_LLEQ == mode) {
@@ -852,7 +857,7 @@ bOpen(
 	int					i;
 	ion_bpp_node_t		*p;
 
-	if ((info.sectorSize < sizeof(ion_bpp_h_node_t)) || (info.sectorSize % 4)) {
+	if ((info.sectorSize < sizeof(ion_bpp_h_node_t)) || (0 != info.sectorSize % 4)) {
 		return bErrSectorSize;
 	}
 
@@ -867,15 +872,10 @@ bOpen(
 	}
 
 	/* copy parms to ion_bpp_h_node_t */
-	if ((h = malloc(sizeof(ion_bpp_h_node_t))) == NULL) {
+	if ((h = calloc(1, sizeof(ion_bpp_h_node_t))) == NULL) {
 		return error(bErrMemory);
 	}
 
-	for (i = 0; ((unsigned int) i) < sizeof(ion_bpp_h_node_t); i++) {
-		((char *) h)[i] = 0;
-	}
-
-	memset(h, 0, sizeof(ion_bpp_h_node_t));
 	h->keySize		= info.keySize;
 	h->dupKeys		= info.dupKeys;
 	h->sectorSize	= info.sectorSize;
@@ -894,12 +894,8 @@ bOpen(
 	*/
 	bufCt			= 7;
 
-	if ((h->malloc1 = malloc(bufCt * sizeof(ion_bpp_buffer_t))) == NULL) {
+	if ((h->malloc1 = calloc(bufCt, sizeof(ion_bpp_buffer_t))) == NULL) {
 		return error(bErrMemory);
-	}
-
-	for (i = 0; ((unsigned int) i) < bufCt * sizeof(ion_bpp_buffer_t); i++) {
-		((char *) h->malloc1)[i] = 0;
 	}
 
 	buf = h->malloc1;
@@ -1168,21 +1164,21 @@ bInsertKey(
 
 			/* set mkey to point to insertion point */
 			switch (search(handle, buf, key, rec, &mkey, MODE_MATCH)) {
-				case CC_LT:	/* key < mkey */
+				case ION_CC_LT:	/* key < mkey */
 
-					if (!h->dupKeys && (0 != ct(buf)) && (h->comp(key, mkey, (ion_key_size_t) (h->keySize)) == CC_EQ)) {
+					if (!h->dupKeys && (0 != ct(buf)) && (h->comp(key, mkey, (ion_key_size_t) (h->keySize)) == ION_CC_EQ)) {
 						return bErrDupKeys;
 					}
 
 					break;
 
-				case CC_EQ:	/* key = mkey */
+				case ION_CC_EQ:	/* key = mkey */
 					return bErrDupKeys;
 					break;
 
-				case CC_GT:	/* key > mkey */
+				case ION_CC_GT:	/* key > mkey */
 
-					if (!h->dupKeys && (h->comp(key, mkey, (ion_key_size_t) (h->keySize)) == CC_EQ)) {
+					if (!h->dupKeys && (h->comp(key, mkey, (ion_key_size_t) (h->keySize)) == ION_CC_EQ)) {
 						return bErrDupKeys;
 					}
 
@@ -1338,14 +1334,14 @@ bUpdateKey(
 
 			/* set mkey to point to update point */
 			switch (search(handle, buf, key, rec, &mkey, MODE_MATCH)) {
-				case CC_LT:	/* key < mkey */
+				case ION_CC_LT:	/* key < mkey */
 					return bErrKeyNotFound;
 					break;
 
-				case CC_EQ:	/* key = mkey */
+				case ION_CC_EQ:	/* key = mkey */
 					break;
 
-				case CC_GT:	/* key > mkey */
+				case ION_CC_GT:	/* key > mkey */
 					return bErrKeyNotFound;
 					break;
 			}
@@ -1578,6 +1574,17 @@ bFindFirstKey(
 	return bErrOk;
 }
 
+/*
+ * input:
+ *   handle				 handle returned by bOpen
+ * output:
+ *   key					last key in sequential set
+ *   rec					record address
+ * returns:
+ *   bErrOk				 operation successful
+ *   bErrKeyNotFound		key not found
+*/
+
 ion_bpp_err_t
 bFindLastKey(
 	ion_bpp_handle_t			handle,
@@ -1651,6 +1658,16 @@ bFindNextKey(
 	return bErrOk;
 }
 
+/*
+ * input:
+ *   handle				 handle returned by bOpen
+ * output:
+ *   key					key found
+ *   rec					record address
+ * returns:
+ *   bErrOk				 operation successful
+ *   bErrKeyNotFound		key not found
+*/
 ion_bpp_err_t
 bFindPrevKey(
 	ion_bpp_handle_t			handle,

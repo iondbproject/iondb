@@ -126,9 +126,9 @@ struct dictionary_handler {
 	ion_err_t (*create_dictionary)(
 		ion_dictionary_id_t,
 		ion_key_type_t,
-		int,
-		int,
-		int,
+		ion_key_size_t,
+		ion_value_size_t,
+		ion_dictionary_size_t,
 		ion_dictionary_compare_t,
 		ion_dictionary_handler_t *,
 		ion_dictionary_t *
@@ -178,7 +178,7 @@ struct dictionary_handler {
 @brief		The status codes describing various states a dictionary can be
 			in.
 */
-enum ion_dictionary_status {
+enum ION_DICTIONARY_STATUS {
 	/**> A status describing the situation when a dictionary is ready to be used. */
 	ion_dictionary_status_ok,
 	/**> A status describing the situation when a dictionary has been closed. */
@@ -228,7 +228,7 @@ typedef char ion_predicate_type_t;
 @details	These type flags tell internal code what type of predicate is
 			being described.
 */
-enum predicate_type {
+enum ION_PREDICATE_TYPE {
 	predicate_equality,	/**< Predicate type for equality cursors. */
 	predicate_range,/**< Predicate tyoe for range cursors. */
 	predicate_all_records,	/**< Predicate type for cursors over all records. */
@@ -350,7 +350,7 @@ struct dictionary_cursor {
 			values are inserted with the same key. Not all implementations are
 			required to support different write concern levels.
 */
-enum write_concern {
+enum ION_WRITE_CONCERN {
 	wc_update,	/**< Write concern which allows for values to be
 								 overwritten if their associated key
 								 already exists in the dictionary. */

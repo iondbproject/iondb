@@ -25,11 +25,10 @@ extern "C" {
 #endif
 
 #include "../../key_value/kv_system.h"
-#include "../../key_value/kv_io.h"
 
-#define EMPTY	-1
-#define DELETED -2
-#define IN_USE	-3
+#define ION_EMPTY	-1
+#define ION_DELETED -2
+#define ION_IN_USE	-3
 #define SIZEOF(STATUS) 1
 
 /**
@@ -221,26 +220,6 @@ oah_query(
 	ion_hashmap_t	*hash_map,
 	ion_key_t		key,
 	ion_value_t		value
-);
-
-/**
-@brief		Helper function to print out map.
-
-@details	Helper function that displays the contents of the map including
-			both key and value.
-
-@param		hash_map
-				The map into which the data is going to be inserted.
-@param		size
-				The number of buckets available in the map.
-@param		record
-				The structure of the record being inserted.
-*/
-void
-oah_print(
-	ion_hashmap_t		*hash_map,
-	int					size,
-	ion_record_info_t	*record
 );
 
 /**

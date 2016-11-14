@@ -44,7 +44,7 @@ typedef FILE *ion_file_handle_t;
 
 #endif /* Clause ARDUINO */
 
-#define FILE_NULL -1
+#define ION_FILE_NULL -1
 
 ion_boolean_t
 ion_fexists(

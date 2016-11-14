@@ -19,7 +19,7 @@
 #include "./../../../../dictionary/dictionary.h"
 
 #if DEBUG
-#define PRINT_HEADER() io_printf("=== [%d:%s] ===\n", __LINE__, __func__);
+#define PRINT_HEADER() printf("=== [%d:%s] ===\n", __LINE__, __func__);
 #else
 #define PRINT_HEADER()
 #endif

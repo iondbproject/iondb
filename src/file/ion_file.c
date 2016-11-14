@@ -76,7 +76,11 @@ ion_fseek(
 	int					origin
 ) {
 #if defined(ARDUINO)
-	fseek(file.file, seek_to, origin);
+
+	if (0 != fseek(file.file, seek_to, origin)) {
+		return err_file_bad_seek;
+	}
+
 	return err_ok;
 #else
 

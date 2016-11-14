@@ -24,8 +24,8 @@
 */
 /******************************************************************************/
 
-#if !defined(LINKED_FILE_BAG_H_)
-#define LINKED_FILE_BAG_H_
+#if !defined(ION_LINKED_FILE_BAG_H_)
+#define ION_LINKED_FILE_BAG_H_
 
 #if defined(__cplusplus)
 extern "C" {
@@ -34,7 +34,7 @@ extern "C" {
 #include "../key_value/kv_system.h"
 #include "ion_file.h"
 
-#define LFB_NULL FILE_NULL
+#define ION_LFB_NULL ION_FILE_NULL
 
 /**
 @brief		A handler struct for a linked file bag instance.
@@ -102,25 +102,6 @@ lfb_get(
 	unsigned int		num_bytes,
 	ion_byte_t			*write_to,
 	ion_file_offset_t	*next
-);
-
-/**
-@brief		Update the next offset for the record stored at @p offset.
-@param		bag
-				A pointer to the initialized handler for the linked file
-				bag we wish to update.
-@param		offset
-				The offset of the record to set the next offset of.
-@param		next
-				The offset of the record to be referenced in the record
-				stored starting at @p offset.
-@returns	An error code describing the result of the call.
-*/
-ion_err_t
-lfb_update_next(
-	ion_lfb_t			*bag,
-	ion_file_offset_t	offset,
-	ion_file_offset_t	next
 );
 
 /**

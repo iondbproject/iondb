@@ -24,8 +24,8 @@
 
 #include "linked_file_bag.h"
 
-#if !defined(NULL)
-#define NULL ((void *) 0)
+#if !defined(ION_NULL)
+#define ION_NULL ((void *) 0)
 #endif
 
 ion_err_t
@@ -39,9 +39,9 @@ lfb_put(
 	ion_file_offset_t	next_empty;
 	ion_err_t			error;
 
-	next_empty = LFB_NULL;
+	next_empty = ION_LFB_NULL;
 
-	if (LFB_NULL != bag->next_empty) {
+	if (ION_LFB_NULL != bag->next_empty) {
 		error = ion_fread_at(bag->file_handle, bag->next_empty, sizeof(ion_file_offset_t), (ion_byte_t *) &next_empty);
 
 		if (err_ok != error) {
@@ -92,6 +92,18 @@ lfb_get(
 	return error;
 }
 
+/**
+@brief		Update the next offset for the record stored at @p offset.
+@param		bag
+				A pointer to the initialized handler for the linked file
+				bag we wish to update.
+@param		offset
+				The offset of the record to set the next offset of.
+@param		next
+				The offset of the record to be referenced in the record
+				stored starting at @p offset.
+@returns	An error code describing the result of the call.
+*/
 ion_err_t
 lfb_update_next(
 	ion_lfb_t			*bag,
@@ -126,7 +138,7 @@ lfb_delete_all(
 	ion_err_t			error;
 	ion_file_offset_t	next;
 
-	while (LFB_NULL != offset) {
+	while (ION_LFB_NULL != offset) {
 		error = ion_fread_at(bag->file_handle, offset, sizeof(ion_file_offset_t), (ion_byte_t *) &next);
 
 		if (err_ok != error) {
@@ -183,7 +195,7 @@ lfb_update_all(
 	ion_err_t			error;
 	ion_file_offset_t	next;
 
-	while (LFB_NULL != offset) {
+	while (ION_LFB_NULL != offset) {
 		error = ion_fread_at(bag->file_handle, offset, sizeof(ion_file_offset_t), (ion_byte_t *) &next);
 
 		if (err_ok != error) {

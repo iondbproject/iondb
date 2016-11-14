@@ -14,11 +14,8 @@
 /******************************************************************************/
 
 #include "open_address_file_hash.h"
-#include "open_address_file_hash_dictionary_handler.c"
-#include "../../file/ion_file.h"
-#include "../dictionary_types.h"
 
-#define TEST_FILE "file.bin"
+#define ION_TEST_FILE "file.bin"
 
 ion_err_t
 oafh_close(
@@ -79,11 +76,11 @@ oafh_initialize(
 	int record_size = SIZEOF(STATUS) + hashmap->super.record.key_size + hashmap->super.record.value_size;
 
 	file_record			= calloc(record_size, 1);
-	file_record->status = EMPTY;
+	file_record->status = ION_EMPTY;
 
 	/* write out the records to disk to prep */
-#if DEBUG
-	io_printf("Initializing hash table\n");
+#if ION_DEBUG
+	printf("Initializing hash table\n");
 #endif
 
 	int i, writes = 0;
@@ -183,14 +180,14 @@ oafh_insert(
 
 	while (count != hash_map->map_size) {
 		fread(item, record_size, 1, hash_map->file);
-#if DEBUG
+#if ION_DEBUG
 		DUMP((int) ftell(hash_map->file), "%i");
 #endif
 
-		if (item->status == IN_USE) {
+		if (item->status == ION_IN_USE) {
 			/* if a cell is in use, need to key to */
 
-			if (hash_map->super.compare(item->data, key, hash_map->super.record.key_size) == IS_EQUAL) {
+			if (hash_map->super.compare(item->data, key, hash_map->super.record.key_size) == ION_IS_EQUAL) {
 				if (hash_map->write_concern == wc_insert_unique) {
 					/* allow unique entries only */
 					free(item);
@@ -200,7 +197,7 @@ oafh_insert(
 					/* allows for values to be updated											// */
 					/* backup and write */
 					fseek(hash_map->file, SIZEOF(STATUS) + hash_map->super.record.key_size - record_size, SEEK_CUR);
-#if DEBUG
+#if ION_DEBUG
 					DUMP((int) ftell(hash_map->file), "%i");
 					DUMP(value, "%s");
 #endif
@@ -214,14 +211,14 @@ oafh_insert(
 				}
 			}
 		}
-		else if ((item->status == EMPTY) || (item->status == DELETED)) {
+		else if ((item->status == ION_EMPTY) || (item->status == ION_DELETED)) {
 			/* problem is here with base types as it is just an array of data.  Need better way */
 			/* printf("empty\n"); */
 			fseek(hash_map->file, -record_size, SEEK_CUR);
-#if DEBUG
+#if ION_DEBUG
 			DUMP((int) ftell(hash_map->file), "%i");
 #endif
-			item->status = IN_USE;
+			item->status = ION_IN_USE;
 			memcpy(item->data, key, (hash_map->super.record.key_size));
 			memcpy(item->data + hash_map->super.record.key_size, value, (hash_map->super.record.value_size));
 			fwrite(item, record_size, 1, hash_map->file);
@@ -239,14 +236,14 @@ oafh_insert(
 			frewind(hash_map->file);
 		}
 
-#if DEBUG
-		io_printf("checking location %i\n", loc);
+#if ION_DEBUG
+		printf("checking location %i\n", loc);
 #endif
 		count++;
 	}
 
-#if DEBUG
-	io_printf("Hash table full.  Insert not done");
+#if ION_DEBUG
+	printf("Hash table full.  Insert not done");
 #endif
 	free(item);
 	return ION_STATUS_ERROR(err_max_capacity);
@@ -280,18 +277,18 @@ oafh_find_item_loc(
 		fread(&item->status, SIZEOF(STATUS), 1, hash_map->file);
 		fread(item->data, record_size - SIZEOF(STATUS), 1, hash_map->file);
 
-		if (item->status == EMPTY) {
+		if (item->status == ION_EMPTY) {
 			free(item);
 			return err_item_not_found;	/* if you hit an empty cell, exit */
 		}
 		else {
 			/* calculate if there is a match */
 
-			if (item->status != DELETED) {
+			if (item->status != ION_DELETED) {
 				/*@todo correct compare to use proper return type*/
 				int key_is_equal = hash_map->super.compare(item->data, key, hash_map->super.record.key_size);
 
-				if (IS_EQUAL == key_is_equal) {
+				if (ION_IS_EQUAL == key_is_equal) {
 					(*location) = loc;
 					free(item);
 					return err_ok;
@@ -321,8 +318,8 @@ oafh_delete(
 	int loc;
 
 	if (oafh_find_item_loc(hash_map, key, &loc) == err_item_not_found) {
-#if DEBUG
-		io_printf("Item not found when trying to oah_delete.\n");
+#if ION_DEBUG
+		printf("Item not found when trying to oah_delete.\n");
 #endif
 		return ION_STATUS_ERROR(err_item_not_found);
 	}
@@ -340,7 +337,7 @@ oafh_delete(
 		fread(&item->status, SIZEOF(STATUS), 1, hash_map->file);
 		fread(item->data, record_size - SIZEOF(STATUS), 1, hash_map->file);
 
-		item->status = DELETED;	/* delete item */
+		item->status = ION_DELETED;	/* delete item */
 
 		/* backup */
 		fseek(hash_map->file, -record_size, SEEK_CUR);
@@ -348,8 +345,8 @@ oafh_delete(
 		fwrite(item->data, record_size - SIZEOF(STATUS), 1, hash_map->file);
 
 		free(item);
-#if DEBUG
-		io_printf("Item deleted at location %d\n", loc);
+#if ION_DEBUG
+		printf("Item deleted at location %d\n", loc);
 #endif
 		return ION_STATUS_OK(1);
 	}
@@ -364,15 +361,15 @@ oafh_query(
 	int loc;
 
 	if (oafh_find_item_loc(hash_map, key, &loc) == err_ok) {
-#if DEBUG
-		io_printf("Item found at location %d\n", loc);
+#if ION_DEBUG
+		printf("Item found at location %d\n", loc);
 #endif
 
 		int record_size = hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS);
 
 		/* set file position */
 		fseek(hash_map->file, (loc * record_size) + SIZEOF(STATUS) + hash_map->super.record.key_size, SEEK_SET);
-#if DEBUG
+#if ION_DEBUG
 		printf("seeking %i\n", (loc * record_size) + SIZEOF(STATUS) + hash_map->super.record.key_size);
 #endif
 		fread(value, hash_map->super.record.value_size, 1, hash_map->file);
@@ -380,8 +377,8 @@ oafh_query(
 		return ION_STATUS_OK(1);
 	}
 	else {
-#if DEBUG
-		io_printf("Item not found in hash table.\n");
+#if ION_DEBUG
+		printf("Item not found in hash table.\n");
 #endif
 		value = NULL;	/*et the number of bytes to 0 */
 		return ION_STATUS_ERROR(err_item_not_found);

@@ -39,7 +39,7 @@ extern "C" {
 			footprint considerably for each use of printf. You decide if you
 			want speed vs. minimal code space.
 */
-#define USE_INLINEPRINTF 0
+#define ION_USE_INLINEPRINTF 0
 
 /**
 @brief		A version of printf that limits the number of characters
