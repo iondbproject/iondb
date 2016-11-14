@@ -57,6 +57,35 @@ typedef struct {
 } ion_bhdct_context_t;
 
 /**
+@brief	This function tests whether or not we can build and teardown a dictionary.
+*/
+void
+test_bhdct_setup(
+	planck_unit_test_t *tc
+);
+
+/**
+@brief	This function tears down a test case and cleans everything up.
+*/
+void
+bhdct_takedown(
+	planck_unit_test_t	*tc,
+	ion_dictionary_t	*dict
+);
+
+/**
+@brief	This function does an insert into a dictionary.
+*/
+void
+bhdct_insert(
+	planck_unit_test_t	*tc,
+	ion_dictionary_t	*dict,
+	ion_key_t			key,
+	ion_value_t			value,
+	ion_boolean_t		check_result
+);
+
+/**
 @brief		Executes the behaviour test suite, given the testing parameters.
 @param		init_fcn
 				A function pointer that designates the initializer for a specific dictionary implementation.
