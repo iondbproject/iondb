@@ -59,9 +59,9 @@ ion_external_sort_init(
 
 uint32_t
 ion_external_sort_bytes_of_memory_required(
-	ion_external_sort_t				*es,
-	uint32_t 						max_number_bytes_available,
-	ion_boolean_e					dump_all
+	ion_external_sort_t *es,
+	uint32_t			max_number_bytes_available,
+	ion_boolean_e		dump_all
 );
 
 ion_err_t

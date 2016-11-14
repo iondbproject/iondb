@@ -20,12 +20,12 @@ template<typename K, typename V>
 class Dictionary {
 public:
 
-ion_dictionary_handler_t	handler;
-ion_dictionary_t			dict;
-int							size_k;
-int							size_v;
-int							dict_size;
-ion_status_t				last_status;
+ion_dictionary_handler_t handler;
+ion_dictionary_t dict;
+int size_k;
+int size_v;
+int dict_size;
+ion_status_t last_status;
 
 ~Dictionary(
 ) {

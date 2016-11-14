@@ -4,22 +4,22 @@
 @author		Wade Penson
 @brief		Implementation of the flash minsort algorithm.
 @details	It does not use dynamic sizing of the minimum index since the
- 			number of values is already known.
+			number of values is already known.
 @copyright	Copyright 2016
-                The University of British Columbia,
-                IonDB Project Contributors (see AUTHORS.md)
+				The University of British Columbia,
+				IonDB Project Contributors (see AUTHORS.md)
 @par
-            Licensed under the Apache License, Version 2.0 (the "License");
-            you may not use this file except in compliance with the License.
-            You may obtain a copy of the License at
-                    http://www.apache.org/licenses/LICENSE-2.0
+			Licensed under the Apache License, Version 2.0 (the "License");
+			you may not use this file except in compliance with the License.
+			You may obtain a copy of the License at
+					http://www.apache.org/licenses/LICENSE-2.0
 @par
-            Unless required by applicable law or agreed to in writing,
-            software distributed under the License is distributed on an
-            "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
-            either express or implied. See the License for the specific
-            language governing permissions and limitations under the
-            License.
+			Unless required by applicable law or agreed to in writing,
+			software distributed under the License is distributed on an
+			"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+			either express or implied. See the License for the specific
+			language governing permissions and limitations under the
+			License.
 
 @todo		Caching pages
 @todo		Code for sorted regions
@@ -30,7 +30,9 @@
 #include "external_sort_types.h"
 
 #if defined(DEGUB)
+
 uint32_t page_reads;
+
 #endif
 
 ion_err_t
@@ -53,17 +55,17 @@ ion_flash_min_sort_init(
 		fms->num_regions -= (es->page_size + 4);
 	}
 
-	fms->num_regions = (fms->num_regions * 8) / (es->value_size * 8 + 1);
-	fms->num_regions = (fms->num_regions > es->num_pages) ? es->num_pages : fms->num_regions;
+	fms->num_regions			= (fms->num_regions * 8) / (es->value_size * 8 + 1);
+	fms->num_regions			= (fms->num_regions > es->num_pages) ? es->num_pages : fms->num_regions;
 
 	fms->num_pages_per_region	= ION_EXTERNAL_SORT_CEILING(((uint32_t) es->num_pages), (fms->num_regions));
-	fms->num_regions = ION_EXTERNAL_SORT_CEILING(es->num_pages, fms->num_pages_per_region);
+	fms->num_regions			= ION_EXTERNAL_SORT_CEILING(es->num_pages, fms->num_pages_per_region);
 
-	fms->num_cache_pages = ((int32_t) cursor->buffer_size - ((int32_t) fms->num_regions * es->value_size + 2 * es->value_size + ION_EXTERNAL_SORT_CEILING(fms->num_regions, 8))) / (es->page_size + 4);
+	fms->num_cache_pages		= ((int32_t) cursor->buffer_size - ((int32_t) fms->num_regions * es->value_size + 2 * es->value_size + ION_EXTERNAL_SORT_CEILING(fms->num_regions, 8))) / (es->page_size + 4);
 
 	/* Initialize pointers to the corresponding locations in the buffer. */
 	fms->cur_value				= cursor->buffer + fms->num_regions * es->value_size;
-	fms->temp_value				= fms->cur_value + es->value_size; // TODO: Does not need to be allocated
+	fms->temp_value				= fms->cur_value + es->value_size;	/* TODO: Does not need to be allocated */
 	fms->min_index_bit_vector	= fms->temp_value + es->value_size;
 	fms->page_statuses			= (uint32_t *) (fms->min_index_bit_vector + ION_EXTERNAL_SORT_CEILING(fms->num_regions, 8));
 	fms->cache_pages			= ((uint8_t *) fms->page_statuses) + fms->num_cache_pages * 4;
@@ -127,11 +129,11 @@ ion_flash_min_sort_init(
 
 	fms->cur_byte_in_page	= 0;
 	fms->cur_page_in_region = 0;
-	fms->is_cur_null = boolean_false;
-	fms->page_statuses[0] = 0xFFFFFFFF;
-	fms->page_statuses[1] = 0;
+	fms->is_cur_null		= boolean_false;
+	fms->page_statuses[0]	= 0xFFFFFFFF;
+	fms->page_statuses[1]	= 0;
 
-	cursor->status = cs_cursor_initialized;
+	cursor->status			= cs_cursor_initialized;
 	return err_ok;
 }
 
@@ -144,23 +146,23 @@ ion_flash_min_sort_next(
 	ion_external_sort_t		*es		= cursor->es;
 
 	while (boolean_false == fms->is_cur_null) {
-		if (0 == fms->cur_page_in_region && 0 == fms->cur_byte_in_page) {
+		if ((0 == fms->cur_page_in_region) && (0 == fms->cur_byte_in_page)) {
 			fms->is_cur_null = boolean_true;
 
-			uint32_t temp_page = 0;
-			uint32_t temp_region = 0;
-			uint16_t temp_byte_in_buffer = 0;
+			uint32_t	temp_page			= 0;
+			uint32_t	temp_region			= 0;
+			uint16_t	temp_byte_in_buffer = 0;
 
 			while (temp_region < fms->num_regions) {
-				if (0 != ION_FMS_GET_FLAG(fms->min_index_bit_vector, temp_region) && (boolean_true == fms->is_cur_null || greater_than == es->compare_function(es->context, fms->cur_value, cursor->buffer + temp_byte_in_buffer))) {
-					fms->is_cur_null = boolean_false;
+				if ((0 != ION_FMS_GET_FLAG(fms->min_index_bit_vector, temp_region)) && ((boolean_true == fms->is_cur_null) || (greater_than == es->compare_function(es->context, fms->cur_value, cursor->buffer + temp_byte_in_buffer)))) {
+					fms->is_cur_null		= boolean_false;
 					memcpy(fms->cur_value, cursor->buffer + temp_byte_in_buffer, es->value_size);
-					fms->cur_region = temp_region;
-					fms->cur_page = temp_page;
+					fms->cur_region			= temp_region;
+					fms->cur_page			= temp_page;
 					fms->cur_byte_in_buffer = temp_byte_in_buffer;
 				}
 
-				temp_page += fms->num_pages_per_region;
+				temp_page			+= fms->num_pages_per_region;
 				temp_region++;
 				temp_byte_in_buffer += es->value_size;
 			}
@@ -200,10 +202,10 @@ ion_flash_min_sort_next(
 				fms->page_statuses[0] = fms->cur_page;
 			}
 
-			if (boolean_true == es->sorted_pages && 0 == fms->cur_byte_in_page) {
+			if ((boolean_true == es->sorted_pages) && (0 == fms->cur_byte_in_page)) {
 				/* Binary search */
-				uint16_t lower_bound = 0;
-				uint16_t upper_bound = fms->num_bytes_in_page / es->value_size;
+				uint16_t	lower_bound = 0;
+				uint16_t	upper_bound = fms->num_bytes_in_page / es->value_size;
 
 				while (1) {
 					if (upper_bound < lower_bound) {
@@ -248,13 +250,13 @@ ion_flash_min_sort_next(
 						memcpy(fms->cache_pages + es->page_size + fms->page_statuses[1] - es->value_size, fms->temp_value, es->value_size);
 					}
 					else {
-						fms->cur_byte_in_page += es->value_size;
+						fms->cur_byte_in_page	+= es->value_size;
 						memcpy(output_value, fms->temp_value, es->value_size);
-						cursor->status = cs_cursor_active;
+						cursor->status			= cs_cursor_active;
 						return err_ok;
 					}
 				}
-				else if (greater_than == es->compare_function(es->context, fms->temp_value, fms->cur_value) && (0 == ION_FMS_GET_FLAG(fms->min_index_bit_vector, fms->cur_region) || less_than == es->compare_function(es->context, fms->temp_value, cursor->buffer + fms->cur_byte_in_buffer))) {
+				else if ((greater_than == es->compare_function(es->context, fms->temp_value, fms->cur_value)) && ((0 == ION_FMS_GET_FLAG(fms->min_index_bit_vector, fms->cur_region)) || (less_than == es->compare_function(es->context, fms->temp_value, cursor->buffer + fms->cur_byte_in_buffer)))) {
 					memcpy(cursor->buffer + fms->cur_byte_in_buffer, fms->temp_value, es->value_size);
 					ION_FMS_SET_FLAG(fms->min_index_bit_vector, fms->cur_region);
 				}
@@ -281,9 +283,9 @@ ion_flash_min_sort_next(
 			fms->num_bytes_in_page = (es->page_size / (uint32_t) es->value_size) * (uint32_t) es->value_size;
 		}
 
-		fms->cur_page = 0;
+		fms->cur_page			= 0;
 		fms->cur_page_in_region = 0;
-		fms->cur_byte_in_page = 0;
+		fms->cur_byte_in_page	= 0;
 	}
 
 #if defined(DEGUB)

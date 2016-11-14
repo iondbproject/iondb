@@ -39,38 +39,40 @@
 #endif
 
 #if defined(DEGUB)
+
 extern uint32_t page_reads;
+
 #endif
 
 #define ION_FMS_GET_FLAG(bit_vector_arr, flag_index) \
-	((((uint8_t *)bit_vector_arr)[(flag_index) >> 3] >> ((flag_index) & 7)) & 1)
+	((((uint8_t *) bit_vector_arr)[(flag_index) >> 3] >> ((flag_index) & 7)) & 1)
 
 #define ION_FMS_SET_FLAG(bit_vector_arr, flag_index) \
-	(((uint8_t *)bit_vector_arr)[(flag_index) >> 3] |= (1 << ((flag_index) & 7)))
+	(((uint8_t *) bit_vector_arr)[(flag_index) >> 3] |= (1 << ((flag_index) & 7)))
 
 #define ION_FMS_CLEAR_FLAG(bit_vector_arr, flag_index) \
-	(((uint8_t *)bit_vector_arr)[(flag_index) >> 3] &= ~(1 << ((flag_index) & 7)))
+	(((uint8_t *) bit_vector_arr)[(flag_index) >> 3] &= ~(1 << ((flag_index) & 7)))
 
 #define ION_FMS_DIV_BY_POW_2_EXP(number, pow_2_exponent) \
 	((number) >> (pow_2_exponent))
 
 typedef struct {
-	uint32_t	num_regions;
-	uint32_t	num_pages_per_region;
-	uint32_t	num_pages_last_region;
-	uint32_t	num_bytes_in_page;
-	uint8_t		num_cache_pages;
-	uint32_t	cur_region;
-	uint32_t	cur_page;
-	uint32_t	cur_page_in_region;
-	uint16_t	cur_byte_in_page;
-	uint32_t	cur_byte_in_buffer;
-	ion_external_sort_data_pointer_t		*cur_value;
-	ion_external_sort_data_pointer_t		*temp_value;
-	ion_external_sort_data_pointer_t		*min_index_bit_vector;
-	uint32_t 								*page_statuses;
-	ion_external_sort_data_pointer_t 		*cache_pages;
-	ion_boolean_e	is_cur_null;
+	uint32_t							num_regions;
+	uint32_t							num_pages_per_region;
+	uint32_t							num_pages_last_region;
+	uint32_t							num_bytes_in_page;
+	uint8_t								num_cache_pages;
+	uint32_t							cur_region;
+	uint32_t							cur_page;
+	uint32_t							cur_page_in_region;
+	uint16_t							cur_byte_in_page;
+	uint32_t							cur_byte_in_buffer;
+	ion_external_sort_data_pointer_t	*cur_value;
+	ion_external_sort_data_pointer_t	*temp_value;
+	ion_external_sort_data_pointer_t	*min_index_bit_vector;
+	uint32_t							*page_statuses;
+	ion_external_sort_data_pointer_t	*cache_pages;
+	ion_boolean_e						is_cur_null;
 } ion_flash_min_sort_t;
 
 /**
@@ -79,9 +81,9 @@ typedef struct {
 			one pass scan through the file to initialize the minimum index.
 
 @param[in]	es
- 				An initialized external sort structure.
+				An initialized external sort structure.
 @param[in]	cursor
- 				An initialized external sort cursor structure.
+				An initialized external sort cursor structure.
 @return		An error defined in @ref ion_err_t.
 */
 ion_err_t
@@ -94,15 +96,15 @@ ion_flash_min_sort_init(
 @brief
 
 @param[in]	cursor
- 				An initialized external sort cursor structure.
+				An initialized external sort cursor structure.
 @param[out] output_value
- 				A place in memory for the returned value from next.
+				A place in memory for the returned value from next.
 @return		An error defined in @ref ion_err_t.
 */
 ion_cursor_status_t
 ion_flash_min_sort_next(
-	ion_external_sort_cursor_t *cursor,
-	void *output_value
+	ion_external_sort_cursor_t	*cursor,
+	void						*output_value
 );
 
 #endif /* ION_FLASH_MIN_SORT_H_ */

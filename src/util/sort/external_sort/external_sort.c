@@ -59,6 +59,7 @@ ion_external_sort_init(
 	}
 
 	es->num_values_last_page = (uint16_t) ((file_size_in_bytes % es->page_size) / es->value_size);
+
 	if (0 == es->num_values_last_page) {
 		es->num_values_last_page = es->page_size / (uint16_t) es->value_size;
 	}
@@ -70,9 +71,9 @@ ion_external_sort_init(
 
 uint32_t
 ion_external_sort_bytes_of_memory_required(
-	ion_external_sort_t				*es,
-	uint32_t 						max_number_bytes_available,
-	ion_boolean_e					dump_all
+	ion_external_sort_t *es,
+	uint32_t			max_number_bytes_available,
+	ion_boolean_e		dump_all
 ) {
 	uint32_t memory_required = 0;
 
@@ -89,14 +90,17 @@ ion_external_sort_bytes_of_memory_required(
 			}
 
 			uint32_t num_regions = ((max_number_bytes_available - 2 * es->value_size - memory_required) * 8) / (es->value_size * 8 + 1);
+
 			num_regions = (num_regions > es->num_pages) ? es->num_pages : num_regions;
 
 			uint32_t num_pages_per_region = ION_EXTERNAL_SORT_CEILING(((uint32_t) es->num_pages), (num_regions));
-			num_regions = ION_EXTERNAL_SORT_CEILING(es->num_pages, num_pages_per_region);
+
+			num_regions		= ION_EXTERNAL_SORT_CEILING(es->num_pages, num_pages_per_region);
 
 			memory_required += num_regions * es->value_size + 2 * es->value_size + ION_EXTERNAL_SORT_CEILING(num_regions, 8);
 
 			int32_t num_cache_pages = ((int32_t) max_number_bytes_available - (int32_t) memory_required) / (es->page_size + 4);
+
 			if (num_cache_pages > 0) {
 				memory_required += num_cache_pages * (uint32_t) es->page_size + num_cache_pages * 4;
 			}
@@ -131,6 +135,7 @@ ion_external_sort_init_cursor(
 			cursor->next = ion_flash_min_sort_next;
 			return ion_flash_min_sort_init(es, cursor);
 		}
+
 		default: {
 			return err_ok;
 		}
@@ -165,6 +170,7 @@ ion_external_sort_dump_all(
 			cursor.next = ion_flash_min_sort_next;
 
 			ion_flash_min_sort_t flash_min_sort_data;
+
 			cursor.implementation_data = &flash_min_sort_data;
 
 			if (err_ok != (error = ion_flash_min_sort_init(es, &cursor))) {
@@ -174,6 +180,7 @@ ion_external_sort_dump_all(
 			error = cursor.next(&cursor, NULL);
 			break;
 		}
+
 		default: {
 			break;
 		}

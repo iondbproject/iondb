@@ -7,8 +7,8 @@
 void
 setup(
 ) {
-    SPI.begin();
-    SD.begin(SD_CS_PIN);
+	SPI.begin();
+	SD.begin(SD_CS_PIN);
 	Serial.begin(BAUD_RATE);
 	runalltests_skiplist();
 	runalltests_skiplist_handler();

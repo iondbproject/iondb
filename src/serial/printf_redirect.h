@@ -28,7 +28,7 @@ extern "C" {
 #endif
 
 /* Preprocessor replacement for printf. */
-#define printf(format, ...) { char buf[512];snprintf(buf, 512, format, ## __VA_ARGS__);serial_print(buf);}
+#define printf(format, ...) { char buf[512];snprintf(buf, 512, format, ## __VA_ARGS__);serial_print(buf); }
 
 #if defined(__cplusplus)
 }

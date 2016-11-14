@@ -228,22 +228,22 @@ iinq_drop(
 
 ion_comparison_e
 iinq_sort_compare(
-	void	*context,	// TODO: Turn this into a ion_sort_comparator_context_t.
+	void	*context,	/* TODO: Turn this into a ion_sort_comparator_context_t. */
 	void	*a,
 	void	*b
 ) {
-#define TO_COMPARISON_RESULT(r)	((r) > 0 ? greater_than : ((r) < 0 ? less_than : equal))
+#define TO_COMPARISON_RESULT(r) ((r) > 0 ? greater_than : ((r) < 0 ? less_than : equal))
 
-	int					i;
-	iinq_sort_context_t	*c;
-	int 				result;
-	void 				*cur_a;
-	void 				*cur_b;
+	int i;
+	iinq_sort_context_t *c;
+	int					result;
+	void				*cur_a;
+	void				*cur_b;
 
-	result		= 0;
-	c			= (iinq_sort_context_t *)context;
-	cur_a		= a;
-	cur_b		= b;
+	result	= 0;
+	c		= (iinq_sort_context_t *) context;
+	cur_a	= a;
+	cur_b	= b;
 
 	if (NULL == c->parts) {
 		return equal;
@@ -320,7 +320,7 @@ iinq_sort_compare(
 			}
 		}
 		else if (IINQ_ORDERTYPE_FLOAT == c->parts->type) {
-			// TODO: Write a comparator for floats
+			/* TODO: Write a comparator for floats */
 		}
 		else if (IINQ_ORDERTYPE_OTHER == c->parts->type) {
 			result = strncmp(cur_a, cur_b, c->parts[i].size);
@@ -331,8 +331,8 @@ iinq_sort_compare(
 			return TO_COMPARISON_RESULT(result);
 		}
 
-		cur_a = ((uint8_t *) cur_a) + c->parts[i].size;
-		cur_b = ((uint8_t *) cur_b) + c->parts[i].size;
+		cur_a	= ((uint8_t *) cur_a) + c->parts[i].size;
+		cur_b	= ((uint8_t *) cur_b) + c->parts[i].size;
 	}
 
 	return equal;
