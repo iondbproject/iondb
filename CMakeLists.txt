@@ -51,8 +51,25 @@ if(JENKINS_BUILD)
 endif()
 
 # Add all of the CMakeLists.txt for the sub projects.
+add_subdirectory(src/tests)
+add_subdirectory(src/tests/unit/dictionary)
+
+add_subdirectory(examples)
+
+add_subdirectory(src/util/lfsr)
+
+add_subdirectory(src/iinq)
+add_subdirectory(src/dictionary/bpp_tree)
+add_subdirectory(src/dictionary/flat_file)
+add_subdirectory(src/dictionary/open_address_file_hash)
+add_subdirectory(src/dictionary/open_address_hash)
+add_subdirectory(src/dictionary/skip_list)
+
 
 add_subdirectory(src/tests/behaviour/dictionary/bpp_tree)
 add_subdirectory(src/tests/behaviour/dictionary/bpp_tree/cursor_behaviour)
 
 
+add_subdirectory(src/cpp_wrapper)
+add_subdirectory(src/tests/unit/cpp_wrapper)
+add_subdirectory(src/tests/integration/cpp_wrapper)
