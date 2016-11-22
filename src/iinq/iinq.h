@@ -1,3 +1,4 @@
+/*INDENT-OFF*/
 #if !defined(IINQ_H_)
 #define IINQ_H_
 
@@ -5,7 +6,6 @@
 extern "C" {
 #endif
 
-#include <alloca.h>
 #include "../dictionary/dictionary_types.h"
 #include "../dictionary/ion_master_table.h"
 
@@ -102,7 +102,7 @@ iinq_insert(#schema_name ".inq", key, value)
 #define UPDATE(schema_name, key, value) \
 iinq_insert(#schema_name ".inq", key, value)
 
-#define DELETE(schema_name, key) \
+#define DELETE_FROM(schema_name, key) \
 iinq_delete(#schema_name ".inq", key)
 
 #define DROP(schema_name)\
@@ -250,3 +250,4 @@ do { \
 #endif
 
 #endif
+/*INDENT-ON*/
