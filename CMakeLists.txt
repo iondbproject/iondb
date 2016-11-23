@@ -54,8 +54,6 @@ endif()
 add_subdirectory(src/tests)
 add_subdirectory(src/tests/unit/dictionary)
 
-add_subdirectory(examples)
-
 add_subdirectory(src/util/lfsr)
 
 add_subdirectory(src/iinq)
@@ -66,4 +64,5 @@ add_subdirectory(src/dictionary/open_address_hash)
 add_subdirectory(src/dictionary/skip_list)
 
 
+add_subdirectory(src/tests/behaviour/dictionary)
 add_subdirectory(src/tests/behaviour/dictionary/bpp_tree)
