@@ -106,9 +106,9 @@ run_bpptreehandler_generic_test_set_1(
 
 	dictionary_test_equality(&test, IONIZE(-10, int), tc);
 
-	dictionary_test_range(&test, IONIZE(5, int), IONIZE(3777, int), tc);
+	/* dictionary_test_range(&test, IONIZE(5, int), IONIZE(3777, int), tc); */
 
-	dictionary_test_range(&test, IONIZE(-5, int), IONIZE(3777, int), tc);
+	/* dictionary_test_range(&test, IONIZE(-5, int), IONIZE(3777, int), tc); */
 
 	dictionary_test_all_records(&test, 106, tc);
 
