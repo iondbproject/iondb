@@ -20,9 +20,9 @@ extern "C" {
 typedef long	ion_bpp_external_address_t;		/* record address for external record */
 typedef long	ion_bpp_address_t;		/* record address for btree node */
 
+#define ION_CC_LT	-1
 #define ION_CC_EQ	0
 #define ION_CC_GT	1
-#define ION_CC_LT	-1
 
 /* compare two keys and return:
  *	CC_LT	 key1 < key2
@@ -30,9 +30,9 @@ typedef long	ion_bpp_address_t;		/* record address for btree node */
  *	CC_EQ	 key1 = key2
 */
 typedef char (*ion_bpp_comparison_t)(
-		ion_key_t		key1,
-		ion_key_t		key2,
-		ion_key_size_t	size
+	ion_key_t		key1,
+	ion_key_t		key2,
+	ion_key_size_t	size
 );
 
 /* typedef int (*ion_bpp_comparison_t)(const void *key1, const void *key2, unsigned int size); */
@@ -76,8 +76,8 @@ typedef struct {
  ***********************/
 ion_bpp_err_t
 bOpen(
-		ion_bpp_open_t		info,
-		ion_bpp_handle_t	*handle
+	ion_bpp_open_t		info,
+	ion_bpp_handle_t	*handle
 );
 
 /*
@@ -94,7 +94,7 @@ bOpen(
 
 ion_bpp_err_t
 bClose(
-		ion_bpp_handle_t handle
+	ion_bpp_handle_t handle
 );
 
 /*
@@ -106,9 +106,9 @@ bClose(
 
 ion_bpp_err_t
 bInsertKey(
-		ion_bpp_handle_t			handle,
-		void						*key,
-		ion_bpp_external_address_t	rec
+	ion_bpp_handle_t			handle,
+	void						*key,
+	ion_bpp_external_address_t	rec
 );
 
 /*
@@ -129,9 +129,9 @@ bInsertKey(
 
 ion_bpp_err_t
 bUpdateKey(
-		ion_bpp_handle_t			handle,
-		void						*key,
-		ion_bpp_external_address_t	rec
+	ion_bpp_handle_t			handle,
+	void						*key,
+	ion_bpp_external_address_t	rec
 );
 
 /*
@@ -152,9 +152,9 @@ bUpdateKey(
 
 ion_bpp_err_t
 bDeleteKey(
-		ion_bpp_handle_t			handle,
-		void						*key,
-		ion_bpp_external_address_t	*rec
+	ion_bpp_handle_t			handle,
+	void						*key,
+	ion_bpp_external_address_t	*rec
 );
 
 /*
@@ -175,9 +175,9 @@ bDeleteKey(
 
 ion_bpp_err_t
 bFindKey(
-		ion_bpp_handle_t			handle,
-		void						*key,
-		ion_bpp_external_address_t	*rec
+	ion_bpp_handle_t			handle,
+	void						*key,
+	ion_bpp_external_address_t	*rec
 );
 
 /*
@@ -193,10 +193,10 @@ bFindKey(
 
 ion_bpp_err_t
 bFindFirstGreaterOrEqual(
-		ion_bpp_handle_t			handle,
-		void						*key,
-		void						*mkey,
-		ion_bpp_external_address_t	*rec
+	ion_bpp_handle_t			handle,
+	void						*key,
+	void						*mkey,
+	ion_bpp_external_address_t	*rec
 );
 
 /*
@@ -212,9 +212,9 @@ bFindFirstGreaterOrEqual(
 
 ion_bpp_err_t
 bFindFirstKey(
-		ion_bpp_handle_t			handle,
-		void						*key,
-		ion_bpp_external_address_t	*rec
+	ion_bpp_handle_t			handle,
+	void						*key,
+	ion_bpp_external_address_t	*rec
 );
 
 /*
@@ -230,9 +230,9 @@ bFindFirstKey(
 
 ion_bpp_err_t
 bFindLastKey(
-		ion_bpp_handle_t			handle,
-		void						*key,
-		ion_bpp_external_address_t	*rec
+	ion_bpp_handle_t			handle,
+	void						*key,
+	ion_bpp_external_address_t	*rec
 );
 
 /*
@@ -248,9 +248,9 @@ bFindLastKey(
 
 ion_bpp_err_t
 bFindNextKey(
-		ion_bpp_handle_t			handle,
-		void						*key,
-		ion_bpp_external_address_t	*rec
+	ion_bpp_handle_t			handle,
+	void						*key,
+	ion_bpp_external_address_t	*rec
 );
 
 /*
