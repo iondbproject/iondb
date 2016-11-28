@@ -102,13 +102,13 @@ run_bpptreehandler_generic_test_set_1(
 	dictionary_insert(&test.dictionary, IONIZE(-10, int), IONIZE(23, int));
 	dictionary_insert(&test.dictionary, IONIZE(-205, int), IONIZE(9, int));
 
-	/* dictionary_test_equality(&test, IONIZE(5, int), tc); */
+	dictionary_test_equality(&test, IONIZE(5, int), tc);
 
-	/* dictionary_test_equality(&test, IONIZE(-10, int), tc); */
+	dictionary_test_equality(&test, IONIZE(-10, int), tc);
 
-	/* dictionary_test_range(&test, IONIZE(5, int), IONIZE(3777, int), tc); */
+	dictionary_test_range(&test, IONIZE(5, int), IONIZE(3777, int), tc);
 
-	/* dictionary_test_range(&test, IONIZE(-5, int), IONIZE(3777, int), tc); */
+	dictionary_test_range(&test, IONIZE(-5, int), IONIZE(3777, int), tc);
 
 	dictionary_test_all_records(&test, 106, tc);
 
