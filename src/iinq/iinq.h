@@ -6,10 +6,6 @@
 extern "C" {
 #endif
 
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <alloca.h>
 #include "../dictionary/dictionary_types.h"
 #include "../dictionary/ion_master_table.h"
 #include "../key_value/kv_system.h"
@@ -473,7 +469,7 @@ iinq_sort_compare(
 #define UPDATE(schema_name, key, value) \
 	iinq_update( # schema_name ".inq", key, value)
 
-#define DELETE(schema_name, key) \
+#define DELETE_FROM(schema_name, key) \
 	iinq_delete( # schema_name ".inq", key)
 
 #define DROP(schema_name) \

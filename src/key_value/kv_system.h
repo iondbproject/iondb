@@ -32,7 +32,11 @@ extern "C" {
 #include <stdint.h>
 #include <string.h>
 #include <stdint.h>
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
+#include <malloc.h>
+#else /* Not windows, then use the proper header */
 #include <alloca.h>
+#endif
 
 /* Only on PC */
 #if !defined(ARDUINO)
