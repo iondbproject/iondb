@@ -1578,17 +1578,17 @@ iinq_test_the_ultimate_query(
 }
 
 IINQ_NEW_PROCESSOR_FUNC(benchmark_test) {
-//	printf("key\t\tattr0\t\tattr1\t\tattr2\t\tattr3\n");
+/*	printf("key\t\tattr0\t\tattr1\t\tattr2\t\tattr3\n"); */
 
 	uint32_t	*dataptr	= (uint32_t *) result->processed;
 	int			i			= 0;
 
 	for (i = 0; i < (result->num_bytes / sizeof(uint32_t)); i++) {
-//		printf("%d\t\t\t", *dataptr);
+/*		printf("%d\t\t\t", *dataptr); */
 		dataptr++;
 	}
 
-//	printf("\n");
+/*	printf("\n"); */
 }
 
 void
@@ -1673,13 +1673,109 @@ iinq_benchmark_query_6(
 	QUERY(SELECT(SELECT_EXPR(test_tuple->attr0 * 3), SELECT_EXPR(test_tuple->attr1 * 2), SELECT_EXPR(test_tuple->attr2 % 13), SELECT_EXPR(test_tuple->attr3 * 2 + 14)), FROM(1, test), WHERE(test_tuple->attr0 >= 0 && (2 * test_tuple->attr1) != -1), , , , , , processor);
 }
 
+/* Dana's test test */
+void
+iinq_benchmark_query_7(
+	ion_iinq_query_processor_t *processor
+) {
+	DEFINE_SCHEMA(test_1, {
+		uint32_t attr0;
+		uint32_t attr1;
+		uint32_t attr2;
+		uint32_t attr3;
+	}
+	);
+
+	DEFINE_SCHEMA(test_2, {
+		uint32_t attr0;
+		uint32_t attr1;
+		uint32_t attr2;
+		uint32_t attr3;
+	}
+	);
+
+	/* SELECT MAX(test_2->attr0), COUNT(test_1->attr1)
+	 * FROM test_1, test_2
+	 * WHERE test_1->attr3 >= test_2->attr1
+	 * GROUP BY test_2->attr0
+	 * HAVING test_1->attr1 % 2 == 0
+	 * ORDER BY test_1->attr1 DESC
+	 * */
+
+	MATERIALIZED_QUERY(SELECT(SELECT_GRBY(0), SELECT_AGGR(0)), AGGREGATES(MAX(test_2_tuple->attr0), COUNT(test_1_tuple->attr1)), FROM(1, test_1, test_2), WHERE(test_1_tuple->attr3 >= test_2_tuple->attr1), GROUPBY(ASCENDING_UINT(test_2_tuple->attr0)), HAVING((int16_t) AGGREGATE(0) % 2 == 0), ORDERBY(DESCENDING_UINT(test_1_tuple->attr1)), , , processor);
+}
+
+/* Order by 2 attributes */
+void
+iinq_benchmark_query_orderby_1(
+	ion_iinq_query_processor_t *processor
+) {
+	DEFINE_SCHEMA(test_1, {
+		uint32_t attr0;
+		uint32_t attr1;
+		uint32_t attr2;
+		uint32_t attr3;
+	}
+	);
+
+	DEFINE_SCHEMA(test_2, {
+		uint32_t attr0;
+		uint32_t attr1;
+		uint32_t attr2;
+		uint32_t attr3;
+	}
+	);
+
+	/* SELECT MAX(test_2->attr0), COUNT(test_1->attr1)
+	 * FROM test_1, test_2
+	 * WHERE test_1->attr3 >= test_2->attr1
+	 * GROUP BY test_2->attr0
+	 * HAVING test_1->attr1 % 2 == 0
+	 * ORDER BY test_1->attr1 DESC, test_2->attr1 ASC
+	 * */
+
+	MATERIALIZED_QUERY(SELECT(SELECT_GRBY(0), SELECT_AGGR(0)), AGGREGATES(MAX(test_2_tuple->attr0), COUNT(test_1_tuple->attr1)), FROM(1, test_1, test_2), WHERE(test_1_tuple->attr3 >= test_2_tuple->attr1), GROUPBY(ASCENDING_UINT(test_2_tuple->attr0)), HAVING((int16_t) AGGREGATE(0) % 2 == 0), ORDERBY(DESCENDING_UINT(test_1_tuple->attr1), ASCENDING_UINT(test_2_tuple->attr0)), , , processor);
+}
+
+/* Order by an attribute not in the select */
+void
+iinq_benchmark_query_orderby_2(
+	ion_iinq_query_processor_t *processor
+) {
+	DEFINE_SCHEMA(test_1, {
+		uint32_t attr0;
+		uint32_t attr1;
+		uint32_t attr2;
+		uint32_t attr3;
+	}
+	);
+
+	DEFINE_SCHEMA(test_2, {
+		uint32_t attr0;
+		uint32_t attr1;
+		uint32_t attr2;
+		uint32_t attr3;
+	}
+	);
+
+	/* SELECT MAX(test_2->attr0), COUNT(test_1->attr1)
+	 * FROM test_1, test_2
+	 * WHERE test_1->attr3 >= test_2->attr1
+	 * GROUP BY test_2->attr0
+	 * HAVING test_1->attr1 % 2 == 0
+	 * ORDER BY test_1->attr3 DESC
+	 * */
+
+	MATERIALIZED_QUERY(SELECT(SELECT_GRBY(0), SELECT_AGGR(0)), AGGREGATES(MAX(test_2_tuple->attr0), COUNT(test_1_tuple->attr1)), FROM(1, test_1, test_2), WHERE(test_1_tuple->attr3 >= test_2_tuple->attr1), GROUPBY(ASCENDING_UINT(test_2_tuple->attr0)), HAVING((int16_t) AGGREGATE(0) % 2 == 0), ORDERBY(DESCENDING_UINT(test_1_tuple->attr3)), , , processor);
+}
+
 void
 iinq_benchmark_time(
 	char						*query_name,
 	void (						*query_func)(ion_iinq_query_processor_t *),
 	ion_iinq_query_processor_t	*processor
 ) {
-//	printf("==================== %s ======================\n", query_name);
+/*	printf("==================== %s ======================\n", query_name); */
 
 	unsigned long start;
 
@@ -1735,6 +1831,10 @@ iinq_benchmark_set_1(
 	iinq_benchmark_time("query_5", iinq_benchmark_query_5, &processor);
 	iinq_benchmark_time("query_6", iinq_benchmark_query_6, &processor);
 
+	iinq_benchmark_time("query_7", iinq_benchmark_query_7, &processor);
+	iinq_benchmark_time("query_8", iinq_benchmark_query_orderby_1, &processor);
+	iinq_benchmark_time("query_9", iinq_benchmark_query_orderby_2, &processor);
+
 	DROP(test);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == 1);
 }
@@ -1743,6 +1843,7 @@ planck_unit_suite_t *
 iinq_get_suite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
+
 /*
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_open_source_intint);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_open_source_string10string20);
