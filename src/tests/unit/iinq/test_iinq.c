@@ -1899,6 +1899,7 @@ iinq_benchmark_set_1(
 	iinq_benchmark_time("query_8", iinq_benchmark_query_orderby_1, &processor);
 	iinq_benchmark_time("query_9", iinq_benchmark_query_orderby_2, &processor);
 	iinq_benchmark_time("query_10", iinq_benchmark_query_orderby_3, &processor);
+	iinq_benchmark_time("query_11", iinq_benchmark_query_orderby_4, &processor);
 
 	DROP(test);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == 1);
