@@ -1801,6 +1801,38 @@ iinq_benchmark_query_orderby_3(
 	MATERIALIZED_QUERY(SELECT(SELECT_GRBY(0), SELECT_AGGR(0)), AGGREGATES(MAX(test_2_tuple->attr0), COUNT(test_1_tuple->attr1)), FROM(1, test_1, test_2), WHERE(test_1_tuple->attr3 >= test_2_tuple->attr1), GROUPBY(ASCENDING_UINT(test_2_tuple->attr0)), HAVING((int16_t) AGGREGATE(0) % 2 == 0), ORDERBY(DESCENDING_UINT(test_1_tuple->attr1), ASCENDING_UINT(test_2_tuple->attr3)), , , processor);
 }
 
+/* Order by SELECT_AGGR(0) */
+void
+iinq_benchmark_query_orderby_4(
+	ion_iinq_query_processor_t *processor
+) {
+	DEFINE_SCHEMA(test_1, {
+		uint32_t attr0;
+		uint32_t attr1;
+		uint32_t attr2;
+		uint32_t attr3;
+	}
+	);
+
+	DEFINE_SCHEMA(test_2, {
+		uint32_t attr0;
+		uint32_t attr1;
+		uint32_t attr2;
+		uint32_t attr3;
+	}
+	);
+
+	/* SELECT MAX(test_2->attr0), COUNT(test_1->attr1)
+	 * FROM test_1, test_2
+	 * WHERE test_1->attr3 >= test_2->attr1
+	 * GROUP BY test_2->attr0
+	 * HAVING test_1->attr1 % 2 == 0
+	 * ORDER BY 1 DESC
+	 * */
+
+	MATERIALIZED_QUERY(SELECT(SELECT_GRBY(0), SELECT_AGGR(0)), AGGREGATES(MAX(test_2_tuple->attr0), COUNT(test_1_tuple->attr1)), FROM(1, test_1, test_2), WHERE(test_1_tuple->attr3 >= test_2_tuple->attr1), GROUPBY(ASCENDING_UINT(test_2_tuple->attr0)), HAVING((int16_t) AGGREGATE(0) % 2 == 0), ORDERBY(DESCENDING_UINT(SELECT_AGGR(0))), , , processor);
+}
+
 void
 iinq_benchmark_time(
 	char						*query_name,
