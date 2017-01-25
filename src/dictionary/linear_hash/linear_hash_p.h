@@ -104,6 +104,12 @@ linear_hash_increment_num_records(
 
 );
 
+// decrement the count of the records stored in the linear hash
+void
+linear_hash_decrement_num_records(
+
+);
+
 void
 linear_hash_increment_num_buckets(
 

@@ -238,7 +238,7 @@ linear_hash_delete(
 
     printf("Searching for record %d starting at record %d\n", id, record.id);
     while(record.id != id) {
-        printf("Current record id: %d, current record next: %ld\n", record.id, record.next);
+        //printf("Current record id: %d, current record next: %ld\n", record.id, record.next);
         if(record.next == -1) {
             // check in next overflow if there is one
             if(bucket.overflow_location != -1) {
@@ -266,6 +266,7 @@ linear_hash_delete(
 
     // decrement record count for bucket
     bucket.record_count--;
+    linear_hash_decrement_num_records();
     linear_hash_update_bucket(bucket_loc, bucket);
     printf("\nFINISHED DELETE\n");
 }
@@ -489,7 +490,7 @@ split(
 
     linear_hash_record_t record = linear_hash_get_record(bucket.anchor_record);
     file_offset record_loc = bucket.anchor_record;
-    printf("Current record id: %d, current record next: %ld\n", record.id, record.next);
+    //printf("Current record id: %d, current record next: %ld\n", record.id, record.next);
 
     while(record.next != -1) {
         // delete record from current location and rehash
@@ -609,6 +610,17 @@ linear_hash_increment_num_records(
         split();
     }
     printf("Incremented record count to %d\n", linear_hash.num_records);
+}
+
+// decrement the count of the records stored in the linear hash
+void
+linear_hash_decrement_num_records(
+
+) {
+    linear_hash_table_t linear_hash = linear_hash_read_state();
+    linear_hash.num_records--;
+    linear_hash_update_state(linear_hash);
+    printf("Decremented record count to %d\n", linear_hash.num_records);
 }
 
 void

@@ -13,17 +13,23 @@ int main() {
     linear_hash_insert(5, hash_to_bucket(5));
     linear_hash_insert(10, hash_to_bucket(10));
     linear_hash_insert(10, hash_to_bucket(10));
+
+    printf("\nINSERTING MORE BUCKET 0 RECORDS -- BUCKET SHOULD BE FULL\n");
+    linear_hash_insert(15, hash_to_bucket(15));
+    linear_hash_insert(10, hash_to_bucket(10));
     linear_hash_insert(20, hash_to_bucket(20));
     linear_hash_insert(5, hash_to_bucket(5));
 
+    printf("\nINSERTING BUCKET 2 RECORDS\n");
     linear_hash_insert(2, hash_to_bucket(2));
     linear_hash_insert(7, hash_to_bucket(7));
+
+    printf("\nINSERTING MORE BUCKET 2 RECORDS -- SPLIT SHOULD OCCUR\n");
     linear_hash_insert(7, hash_to_bucket(7));
     linear_hash_insert(2, hash_to_bucket(2));
 
-//    printf("\nINSERTING MORE RECORDS -- BUCKET SHOULD BE FULL\n");
-//
-    linear_hash_insert(2, hash_to_bucket(2));
+//    printf("\nINSERTING MORE BUCKET 2 RECORDS -- BUCKET SHOULD BE FULL\n");
+//    linear_hash_insert(2, hash_to_bucket(2));
 //    linear_hash_insert(7, hash_to_bucket(7));
 //    linear_hash_insert(7, hash_to_bucket(7));
 //    linear_hash_insert(12, hash_to_bucket(12));
@@ -68,5 +74,5 @@ int main() {
 //
 //    printf("\nGETTING RECORD 16 -- SHOULD FAIL\n");
 //    linear_hash_get(16);
-//    return 0;
+    return 0;
 }
