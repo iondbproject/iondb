@@ -156,3 +156,10 @@ void
 print_linear_hash_bucket(
         linear_hash_bucket_t bucket
 );
+
+// Write the offset of bucket idx to the map in linear hash state
+void
+store_bucket_loc_in_map(
+        int idx,
+        file_offset bucket_loc
+);
