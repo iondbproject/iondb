@@ -1,5 +1,12 @@
 typedef long file_offset;
 
+
+// SIMPLE ARRAY_LIST FOR BUCKET MAP
+typedef struct {
+    int current_size;
+    int *data[1];
+} array_list_t;
+
 // definition of linear hash record, with a type and pointer instance declared for later use
 typedef struct
 {
@@ -38,7 +45,7 @@ typedef struct {
     void* record_cache;
 
     // maps the location of the head of the linked list of bucekts corresponding to its index
-    void* bucket_map;
+    array_list_t *bucket_map;
 
 } linear_hash_table_t;
 
@@ -82,7 +89,9 @@ linear_hash_init(
 
 void
 write_new_bucket(
-        int idx
+        int idx,
+        linear_hash_bucket_t *bucket,
+        linear_hash_table_t *linear_hash
 );
 
 // returns the struct representing the bucket at the specified index
@@ -182,4 +191,24 @@ void
 store_bucket_loc_in_map(
         int idx,
         file_offset bucket_loc
+);
+
+// ARRAY_LIST METHODS
+array_list_t*
+array_list_init(
+        int init_size,
+        array_list_t *array_list
+);
+
+int
+array_list_insert(
+        int bucket_idx,
+        linear_hash_bucket_t *bucket,
+        array_list_t *array_list
+);
+
+int
+array_list_get(
+        int bucket_idx,
+        array_list_t array_list
 );

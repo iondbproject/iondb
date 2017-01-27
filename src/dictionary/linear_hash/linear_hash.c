@@ -22,10 +22,11 @@ linear_hash_init(
     linear_hash->next_split = 0;
     linear_hash->split_threshold = split_threshold;
     int *bucket_map[initial_size * 2];
-    linear_hash->bucket_map = bucket_map;
+    array_list_init(linear_hash->initial_size, linear_hash->bucket_map);
 
     for(int i = 0; i < linear_hash->initial_size; i++) {
-        write_new_bucket(i);
+        linear_hash_bucket_t *bucket;
+        write_new_bucket(i, bucket, linear_hash);
     }
 
     // check if file is open
@@ -336,18 +337,19 @@ linear_hash_get_record(
 
 void
 write_new_bucket(
-        int idx
+        int idx,
+        linear_hash_bucket_t *bucket,
+        linear_hash_table_t *linear_hash
 ) {
     // create pointer to file
     FILE *database;
     database = fopen("data.bin", "r+");
 
     // initialize bucket fields
-    linear_hash_bucket_t bucket;
-    bucket.idx = idx;
-    bucket.record_count = 0;
-    bucket.overflow_location = - 1;
-    bucket.anchor_record = -1;
+    bucket->idx = idx;
+    bucket->record_count = 0;
+    bucket->overflow_location = - 1;
+    bucket->anchor_record = -1;
 
     // check the file is open
     if(!database) {
@@ -372,7 +374,7 @@ write_new_bucket(
 
     // write bucket_loc in mapping
     store_bucket_loc_in_map(idx, bucket_loc);
-
+    array_list_insert(idx, bucket, linear_hash->bucket_map);
     printf("Successfully wrote a new bucket with index %d to the database\n", bucket.idx);
 }
 
@@ -572,7 +574,7 @@ bucket_idx_to_file_offset(
 void
 store_bucket_loc_in_map(
         int idx,
-        file_offset bucket_loc
+        file_offset bucket_loc,
 ) {
     // create a pointer to the file
     FILE *linear_hash_state;
@@ -602,7 +604,8 @@ linear_hash_increment_num_records(
 ) {
     linear_hash->num_records++;
     if(linear_hash_above_threshold(linear_hash)) {
-        write_new_bucket(linear_hash->num_buckets);
+        linear_hash_bucket_t *bucket;
+        write_new_bucket(linear_hash->num_buckets, bucket, linear_hash);
         linear_hash_increment_num_buckets(linear_hash);
         split(linear_hash);
     }
@@ -674,3 +677,62 @@ print_linear_hash_bucket(
 ) {
     printf("\nBucket\n\tindex %d\n\tanchor record location %ld\n\toverflow location %ld\n", bucket.idx, bucket.anchor_record, bucket.overflow_location);
 }
+
+array_list_t*
+array_list_init(
+        int init_size,
+        array_list_t *array_list
+) {
+    int *data[2 * init_size];
+    array_list->data = data;
+    return array_list;
+}
+
+int
+array_list_insert(
+        int bucket_idx,
+        file_offset head_loc,
+        array_list_t *array_list
+) {
+    // case we need to expand array
+    if(bucket_idx > array_list->current_size) {
+        // expand array as new_data and copy current state of data to head of new_data
+        int *new_data[array_list->current_size * 2];
+        memcopy(new_data, array_list->data, sizeof(array_list->data));
+
+        // set array_list->data to expanded new_data
+        array_list->data = new_data;
+        array_list->data[bucket_idx] = head_loc
+
+        // adjust current_size
+        array_list->current_size = array_list->current_size * 2;
+        return 1;
+    }
+
+    // case the array does not need to be expanded to fit new item
+    else {
+        array_list->data[bucket_idx] = head_loc;
+        return 0;
+    }
+}
+
+int
+array_list_get(
+        int bucket_idx,
+        array_list_t array_list
+) {
+    // case bucket_idx is outside of current size of array
+    if(bucket_idx > array_list->current_size) {
+        return -1;
+    }
+
+    // case bucket_idx is inside array
+    else {
+        return array_list->data[bucket_idx];
+    }
+}
+
+
+
+
+

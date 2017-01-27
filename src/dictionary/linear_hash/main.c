@@ -15,6 +15,18 @@ int main() {
     linear_hash_insert(25, hash_to_bucket(25, linear_hash), linear_hash);
     linear_hash_insert(15, hash_to_bucket(15, linear_hash), linear_hash);
     linear_hash_insert(10, hash_to_bucket(10, linear_hash), linear_hash);
+    linear_hash_get(10, linear_hash);
+
+    linear_hash_insert(2, hash_to_bucket(2, linear_hash), linear_hash);
+    linear_hash_insert(7, hash_to_bucket(7, linear_hash), linear_hash);
+    linear_hash_insert(7, hash_to_bucket(7, linear_hash), linear_hash);
+    linear_hash_insert(17, hash_to_bucket(17, linear_hash), linear_hash);
+    linear_hash_insert(13, hash_to_bucket(13, linear_hash), linear_hash);
+    linear_hash_insert(12, hash_to_bucket(12, linear_hash), linear_hash);
+    linear_hash_get(13, linear_hash);
+    linear_hash_get(10, linear_hash);
+    linear_hash_get(2, linear_hash);
+    linear_hash_get(17, linear_hash);
 
 //    linear_hash_insert(5, hash_to_bucket(5));
 //    linear_hash_insert(10, hash_to_bucket(10));
