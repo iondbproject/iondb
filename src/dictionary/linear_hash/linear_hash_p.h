@@ -5,6 +5,7 @@ typedef struct
 {
     int id;
     file_offset next;
+    int value;
 } linear_hash_record_t;
 
 // pointer to the anchor type for a linear hash table (which is of the type lnear_hash_record)
@@ -16,7 +17,6 @@ typedef linear_hash_record_t bucket_anchor_t;
 typedef struct {
     int idx;
     int record_count;
-
     file_offset anchor_record;
     file_offset overflow_location;
 } linear_hash_bucket_t;
@@ -30,37 +30,51 @@ typedef struct {
     int num_buckets;
     int num_records;
     int records_per_bucket;
+
+    // points to the current location in the data
+    file_offset data_pointer;
+
+    // cached page of records
+    void* record_cache;
+
+    // maps the location of the head of the linked list of bucekts corresponding to its index
+    void* bucket_map;
+
 } linear_hash_table_t;
 
 // linear hash operations
 linear_hash_record_t
 linear_hash_get(
-        int id
+        int id,
+        linear_hash_table_t *linear_hash
 );
 
 int
 linear_hash_insert(
         int id,
-        int hash_bucket_idx
+        int hash_bucket_idx,
+        linear_hash_table_t* linear_hash
 );
 
 void
 linear_hash_delete(
-        int id
+        int id,
+        linear_hash_table_t *linear_hash
 );
 
 int
 hash_to_bucket(
-        int id
+        int id,
+        linear_hash_table_t *linear_hash
 );
 
 // split function
 void
 split(
-
+        linear_hash_table_t *linear_hash
 );
 
-void
+linear_hash_table_t*
 linear_hash_init(
         int initial_size,
         int split_threshold
@@ -79,7 +93,7 @@ linear_hash_get_bucket(
 
 void
 print_linear_hash_state(
-        linear_hash_table_t linear_hash
+        linear_hash_table_t *linear_hash
 );
 
 void
@@ -101,23 +115,23 @@ linear_hash_write_record(
 
 void
 linear_hash_increment_num_records(
-
+        linear_hash_table_t *linear_hash
 );
 
 // decrement the count of the records stored in the linear hash
 void
 linear_hash_decrement_num_records(
-
+        linear_hash_table_t *linear_hash
 );
 
 void
 linear_hash_increment_num_buckets(
-
+        linear_hash_table_t *linear_hash
 );
 
 void
 linear_hash_update_state(
-        linear_hash_table_t linear_hash
+        linear_hash_table_t *linear_hash
 );
 
 file_offset
@@ -155,7 +169,7 @@ bucket_idx_to_file_offset(
 
 void
 linear_hash_increment_next_split(
-
+        linear_hash_table_t *linear_hash
 );
 
 void

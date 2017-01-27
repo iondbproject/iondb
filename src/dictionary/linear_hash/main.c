@@ -6,31 +6,41 @@ int main() {
     database = fopen("data.bin", "w");
     fclose(database);
     printf("bucket size: %lu, record size: %lu, int size: %lu\n", sizeof(linear_hash_bucket_t), sizeof(linear_hash_record_t), sizeof(int));
-    linear_hash_init(5, 50);
+    linear_hash_table_t* linear_hash = linear_hash_init(5, 50);
 
     printf("\nINSERTING BUCKET 0 RECORDS\n");
-    linear_hash_insert(5, hash_to_bucket(5));
-    linear_hash_insert(5, hash_to_bucket(5));
-    linear_hash_insert(10, hash_to_bucket(10));
-    linear_hash_insert(10, hash_to_bucket(10));
+    linear_hash_insert(5, hash_to_bucket(5, linear_hash), linear_hash);
+    linear_hash_insert(5, hash_to_bucket(5, linear_hash), linear_hash);
+    linear_hash_insert(5, hash_to_bucket(5, linear_hash), linear_hash);
+    linear_hash_insert(25, hash_to_bucket(25, linear_hash), linear_hash);
+    linear_hash_insert(15, hash_to_bucket(15, linear_hash), linear_hash);
+    linear_hash_insert(10, hash_to_bucket(10, linear_hash), linear_hash);
 
-    printf("\nINSERTING MORE BUCKET 0 RECORDS -- BUCKET SHOULD BE FULL\n");
-    linear_hash_insert(15, hash_to_bucket(15));
-    linear_hash_insert(10, hash_to_bucket(10));
-    linear_hash_insert(20, hash_to_bucket(20));
-    linear_hash_insert(5, hash_to_bucket(5));
-
-    printf("\nINSERTING BUCKET 2 RECORDS\n");
-    linear_hash_insert(2, hash_to_bucket(2));
-    linear_hash_insert(7, hash_to_bucket(7));
-
-    printf("\nINSERTING MORE BUCKET 2 RECORDS -- SPLIT SHOULD OCCUR\n");
-    linear_hash_insert(7, hash_to_bucket(7));
-    linear_hash_insert(2, hash_to_bucket(2));
-
-//    printf("\nINSERTING MORE BUCKET 2 RECORDS -- BUCKET SHOULD BE FULL\n");
+//    linear_hash_insert(5, hash_to_bucket(5));
+//    linear_hash_insert(10, hash_to_bucket(10));
+//    linear_hash_insert(10, hash_to_bucket(10));
+//
+//    printf("\nINSERTING MORE BUCKET 0 RECORDS -- BUCKET SHOULD BE FULL\n");
+//    linear_hash_insert(15, hash_to_bucket(15));
+//    linear_hash_insert(10, hash_to_bucket(10));
+//    linear_hash_insert(20, hash_to_bucket(20));
+//    linear_hash_insert(5, hash_to_bucket(5));
+//
+//    printf("\nINSERTING BUCKET 2 RECORDS\n");
 //    linear_hash_insert(2, hash_to_bucket(2));
 //    linear_hash_insert(7, hash_to_bucket(7));
+//
+//    printf("\nINSERTING MORE BUCKET 2 RECORDS -- SPLIT SHOULD OCCUR\n");
+//    linear_hash_insert(7, hash_to_bucket(7));
+//    linear_hash_insert(2, hash_to_bucket(2));
+//
+//    printf("\nINSERTING MORE BUCKET 2 RECORDS -- SPLIT SHOULD OCCUR\n");
+//    linear_hash_insert(7, hash_to_bucket(7));
+//
+//    printf("\nINSERTING MORE BUCKET 2 RECORDS -- BUCKET SHOULD BE FULL\n");
+//    linear_hash_insert(7, hash_to_bucket(7));
+//
+//    printf("\nINSERTING MORE BUCKET 2 RECORDS -- SPLIT SHOULD OCCUR\n");
 //    linear_hash_insert(7, hash_to_bucket(7));
 //    linear_hash_insert(12, hash_to_bucket(12));
 //

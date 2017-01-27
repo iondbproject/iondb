@@ -5,7 +5,7 @@
 
 // TODO: OPEN FILE IN INIT METHOD AND CREATE A DESTROY METHOD THAT CLOSES THE FILE
 // initialization function
-void
+linear_hash_table_t*
 linear_hash_init(
         int initial_size,
         int split_threshold
@@ -15,14 +15,16 @@ linear_hash_init(
     linear_hash_state = fopen("linear_hash_state.bin", "r+");
 
     // create a temporary store for records that are read
-    linear_hash_table_t linear_hash;
-    linear_hash.initial_size = initial_size;
-    linear_hash.num_buckets = initial_size;
-    linear_hash.num_records = 0;
-    linear_hash.next_split = 0;
-    linear_hash.split_threshold = split_threshold;
+    linear_hash_table_t *linear_hash = malloc(sizeof(linear_hash_table_t));
+    linear_hash->initial_size = initial_size;
+    linear_hash->num_buckets = initial_size;
+    linear_hash->num_records = 0;
+    linear_hash->next_split = 0;
+    linear_hash->split_threshold = split_threshold;
+    int *bucket_map[initial_size * 2];
+    linear_hash->bucket_map = bucket_map;
 
-    for(int i = 0; i < linear_hash.initial_size; i++) {
+    for(int i = 0; i < linear_hash->initial_size; i++) {
         write_new_bucket(i);
     }
 
@@ -32,12 +34,12 @@ linear_hash_init(
     }
 
     // linear_hash_init
-    fwrite(&linear_hash, sizeof(linear_hash_table_t), 1, linear_hash_state);
+    fwrite(linear_hash, sizeof(linear_hash_table_t), 1, linear_hash_state);
 
     fclose(linear_hash_state);
 
     printf("Linear hash table successfully initialized\n");
-
+    return linear_hash;
 }
 
 linear_hash_table_t
@@ -66,19 +68,16 @@ linear_hash_read_state(
 }
 
 // linear hash operations
-// TODO NEED TO MAKE INSERT TAKE BOTH AN ID AND A BUCKET IDX LOCATION
 int
 linear_hash_insert(
         int id,
-        int hash_bucket_idx
+        int hash_bucket_idx,
+        linear_hash_table_t *linear_hash
 ) {
     // create a linear_hash_record with the desired id
     linear_hash_record_t record;
     record.next = -1;
     record.id = id;
-
-    // get the current state of the linear hash to determine the hash function user
-    linear_hash_table_t linear_hash = linear_hash_read_state();
 
     // get the appropriate bucket for insertion
     linear_hash_bucket_t bucket = linear_hash_get_bucket(bucket_idx_to_file_offset(hash_bucket_idx));
@@ -164,7 +163,7 @@ linear_hash_insert(
     bucket.record_count++;
     linear_hash_update_bucket(bucket_loc, bucket);
 
-    linear_hash_increment_num_records();
+    linear_hash_increment_num_records(linear_hash);
     printf("Successfully inserted record %d at offset %ld\n", record.id, record_loc);
     return 1;
 }
@@ -172,10 +171,11 @@ linear_hash_insert(
 // linear hash operations
 linear_hash_record_t
 linear_hash_get(
-        int id
+        int id,
+        linear_hash_table_t *linear_hash
 ) {
     // get the index of the bucket to read
-    int bucket_idx = hash_to_bucket(id);
+    int bucket_idx = hash_to_bucket(id, linear_hash);
 
     // get the bucket where the record would be located
     linear_hash_bucket_t bucket;
@@ -222,10 +222,11 @@ linear_hash_get(
 // linear hash operations
 void
 linear_hash_delete(
-        int id
+        int id,
+        linear_hash_table_t *linear_hash
 ) {
     // get the index of the bucket to read
-    int bucket_idx = hash_to_bucket(id);
+    int bucket_idx = hash_to_bucket(id, linear_hash);
 
     // get the bucket where the record would be located
     file_offset bucket_loc = bucket_idx_to_file_offset(bucket_idx);
@@ -266,7 +267,7 @@ linear_hash_delete(
 
     // decrement record count for bucket
     bucket.record_count--;
-    linear_hash_decrement_num_records();
+    linear_hash_decrement_num_records(linear_hash);
     linear_hash_update_bucket(bucket_loc, bucket);
     printf("\nFINISHED DELETE\n");
 }
@@ -456,27 +457,26 @@ linear_hash_update_bucket(
 
 int
 hash_to_bucket(
-        int id
+        int id,
+        linear_hash_table_t *linear_hash
 ) {
-    linear_hash_table_t linear_hash = linear_hash_read_state();
-    int h0 = id % linear_hash.initial_size;
+    int h0 = id % linear_hash->initial_size;
 
     // Case the record we are looking for was in a bucket that has already been split and h1 was used
-    if(h0 < linear_hash.next_split) {
-        return id % (2 * linear_hash.initial_size);
+    if(h0 < linear_hash->next_split) {
+        return id % (2 * linear_hash->initial_size);
     }
     return h0;
 }
 
 void
 split(
-
+        linear_hash_table_t *linear_hash
 ) {
     printf("\nPERFORMING SPLIT\n");
     // get bucket to split
-    linear_hash_table_t linear_hash = linear_hash_read_state();
     print_linear_hash_state(linear_hash);
-    file_offset bucket_loc = bucket_idx_to_file_offset(linear_hash.next_split);
+    file_offset bucket_loc = bucket_idx_to_file_offset(linear_hash->next_split);
     linear_hash_bucket_t bucket = linear_hash_get_bucket(bucket_loc);
     printf("splitting bucket %d\n", bucket.idx);
     print_linear_hash_bucket(bucket);
@@ -484,7 +484,7 @@ split(
     // Case split bucket is empty
     if(bucket.anchor_record == -1) {
         printf("no records to split\n");
-        linear_hash_increment_next_split();
+        linear_hash_increment_next_split(linear_hash);
         return;
     }
 
@@ -500,8 +500,8 @@ split(
             continue;
         }
 
-        linear_hash_delete(record.id);
-        linear_hash_insert(record.id, hash_to_bucket(record.id));
+        linear_hash_delete(record.id, linear_hash);
+        linear_hash_insert(record.id, hash_to_bucket(record.id, linear_hash), linear_hash);
 
         // check in next overflow if there is one
         if(record.next == -1 && bucket.overflow_location != -1) {
@@ -517,22 +517,21 @@ split(
         record_loc = record.next;
         record = linear_hash_get_record(record.next);
     }
-    linear_hash_increment_next_split();
+    linear_hash_increment_next_split(linear_hash);
     printf("split complete\n");
 }
 
 int
 linear_hash_above_threshold(
-
+        linear_hash_table_t *linear_hash
 ) {
-    linear_hash_table_t linear_hash = linear_hash_read_state();
     print_linear_hash_state(linear_hash);
-    printf("Checking if %d records is above split threshold of %d\n", linear_hash.num_records, linear_hash.split_threshold);
-    double numerator = (double)(100 * (linear_hash.num_records));
-    double denominator = (double) (linear_hash.num_buckets * 4);
+    printf("Checking if %d records is above split threshold of %d\n", linear_hash->num_records, linear_hash->split_threshold);
+    double numerator = (double)(100 * (linear_hash->num_records));
+    double denominator = (double) (linear_hash->num_buckets * 4);
     double load = numerator / denominator;
     printf("CURRENT LOAD %f\n", load);
-    return load > linear_hash.split_threshold;
+    return load > linear_hash->split_threshold;
 }
 
 file_offset
@@ -586,7 +585,7 @@ store_bucket_loc_in_map(
     // read file_offset of bucket from mapping in linear hash
     fwrite(&bucket_loc, sizeof(file_offset), 1, linear_hash_state);
     fclose(linear_hash_state);
-    printf("Wrote the location of bucket %d sa %ld in map", idx, bucket_loc);
+    printf("Wrote the location of bucket %d to %ld in map\n", idx, bucket_loc);
 }
 
 int
@@ -599,59 +598,51 @@ linear_hash_bucket_is_full(
 
 void
 linear_hash_increment_num_records(
-
+        linear_hash_table_t *linear_hash
 ) {
-    linear_hash_table_t linear_hash = linear_hash_read_state();
-    linear_hash.num_records++;
-    linear_hash_update_state(linear_hash);
-    if(linear_hash_above_threshold()) {
-        write_new_bucket(linear_hash.num_buckets);
-        linear_hash_increment_num_buckets();
-        split();
+    linear_hash->num_records++;
+    if(linear_hash_above_threshold(linear_hash)) {
+        write_new_bucket(linear_hash->num_buckets);
+        linear_hash_increment_num_buckets(linear_hash);
+        split(linear_hash);
     }
-    printf("Incremented record count to %d\n", linear_hash.num_records);
+    printf("Incremented record count to %d\n", linear_hash->num_records);
 }
 
 // decrement the count of the records stored in the linear hash
 void
 linear_hash_decrement_num_records(
-
+        linear_hash_table_t *linear_hash
 ) {
-    linear_hash_table_t linear_hash = linear_hash_read_state();
-    linear_hash.num_records--;
-    linear_hash_update_state(linear_hash);
-    printf("Decremented record count to %d\n", linear_hash.num_records);
+    linear_hash->num_records--;
+    printf("Decremented record count to %d\n", linear_hash->num_records);
 }
 
 void
 linear_hash_increment_num_buckets(
-
+        linear_hash_table_t *linear_hash
 ) {
-    linear_hash_table_t linear_hash = linear_hash_read_state();
-    linear_hash.num_buckets++;
-    if(linear_hash.num_buckets == 2 * linear_hash.initial_size) {
-        printf("Size doubled, increasing intial size to %d\n", linear_hash.initial_size);
-        linear_hash.initial_size = linear_hash.initial_size * 2;
-        linear_hash.next_split = 0;
+    linear_hash->num_buckets++;
+    if(linear_hash->num_buckets == 2 * linear_hash->initial_size) {
+        printf("Size doubled, increasing intial size to %d\n", linear_hash->initial_size);
+        linear_hash->initial_size = linear_hash->initial_size * 2;
+        linear_hash->next_split = 0;
     }
-    linear_hash_update_state(linear_hash);
-    printf("Incremented bucket count to %d\n", linear_hash.num_buckets);
+    printf("Incremented bucket count to %d\n", linear_hash->num_buckets);
 }
 
 void
 linear_hash_increment_next_split(
-
+        linear_hash_table_t *linear_hash
 ) {
-    linear_hash_table_t linear_hash = linear_hash_read_state();
-    linear_hash.next_split++;
-    linear_hash_update_state(linear_hash);
-    printf("Incremented next_split to %d\n", linear_hash.next_split);
+    linear_hash->next_split++;
+    printf("Incremented next_split to %d\n", linear_hash->next_split);
 }
 
 
 void
 linear_hash_update_state(
-        linear_hash_table_t linear_hash
+        linear_hash_table_t *linear_hash
 ) {
     // create pointer to file
     FILE *linear_hash_state;
@@ -665,17 +656,16 @@ linear_hash_update_state(
     // write to file
     fwrite(&linear_hash, sizeof(linear_hash_table_t), 1, linear_hash_state);
     fclose(linear_hash_state);
-    linear_hash = linear_hash_read_state();
     printf("Updated linear hash state\n");
 }
 
 // DEBUG METHODS
 void
 print_linear_hash_state(
-        linear_hash_table_t linear_hash
+        linear_hash_table_t *linear_hash
 ) {
     printf("Linear Hash State\n\tinitial size: %d\n\tnum records %d\n\tnum buckets %d\n\tnext split: %d\n\tsplit threshold: %d\n",
-           linear_hash.initial_size, linear_hash.num_records, linear_hash.num_buckets, linear_hash.next_split, linear_hash.split_threshold);
+           linear_hash->initial_size, linear_hash->num_records, linear_hash->num_buckets, linear_hash->next_split, linear_hash->split_threshold);
 }
 
 void
