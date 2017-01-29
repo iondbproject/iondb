@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libskip_list.a  CMakeFiles/skip_list.dir/skip_list.c.o CMakeFiles/skip_list.dir/skip_list_handler.c.o CMakeFiles/skip_list.dir/__/dictionary.c.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libskip_list.a
