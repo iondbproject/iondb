@@ -82,7 +82,7 @@ split(
         linear_hash_table_t *linear_hash
 );
 
-int
+linear_hash_table_t*
 linear_hash_init(
         int initial_size,
         int split_threshold,
@@ -98,7 +98,8 @@ write_new_bucket(
 // returns the struct representing the bucket at the specified index
 linear_hash_bucket_t
 linear_hash_get_bucket(
-        file_offset bucket_loc
+        file_offset bucket_loc,
+        linear_hash_table_t *linear_hash
 );
 
 void
@@ -176,7 +177,8 @@ linear_hash_get_overflow_bucket(
 // Returns the file offset where bucket with index idx begins
 file_offset
 bucket_idx_to_file_offset(
-        int idx
+        int idx,
+        linear_hash_table_t *linear_hash
 );
 
 void

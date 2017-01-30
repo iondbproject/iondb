@@ -7,18 +7,13 @@
 
 // TODO: OPEN FILE IN INIT METHOD AND CREATE A DESTROY METHOD THAT CLOSES THE FILE
 // initialization function
-int
+linear_hash_table_t*
 linear_hash_init(
         int initial_size,
         int split_threshold,
         linear_hash_table_t *linear_hash
 ) {
-
-    printf("HERE");
-    // create a pointer to the file
-    FILE *linear_hash_state;
-    linear_hash_state = fopen("linear_hash_state.bin", "r+");
-
+    // open datafile
     linear_hash->database = fopen("data.bin", "r+");
 
     // initialize linear_hash fields
@@ -29,37 +24,32 @@ linear_hash_init(
     linear_hash->split_threshold = split_threshold;
     linear_hash->records_per_bucket = 4;
 
-    printf("HERE");
-
     // current offset pointed to in the datafile
     linear_hash->data_pointer = ftell(linear_hash->database);
-    printf("HERE");
 
     // mapping of buckets to file offsets
     array_list_init(initial_size, linear_hash->bucket_map);
-    printf("HERE");
 
     // write out initial buckets
     for(int i = 0; i < linear_hash->initial_size; i++) {
         write_new_bucket(i, linear_hash);
     }
 
-    print_linear_hash_bucket_map(linear_hash);
-//
-//    printf("HERE");
-//    // check if file is open
-////    if(!linear_hash_state) {
-////        printf("Unable to open file\n");
-////    }
-//
-//    // write the state of the linear_hash to disk
-////    fwrite(linear_hash, sizeof(linear_hash_table_t), 1, linear_hash_state);
-////    fclose(linear_hash_state);
-//
-//    printf("Linear hash table successfully initialized\n");
+    // Save the linear_hash state to disk
+    FILE *linear_hash_state;
+    linear_hash_state = fopen("linear_hash_state.bin", "r+");
+    // check if file is open
+    if(!linear_hash_state) {
+        printf("Unable to open file\n");
+    }
+    // write the state of the linear_hash to disk
+    fwrite(linear_hash, sizeof(linear_hash_table_t), 1, linear_hash_state);
+    fclose(linear_hash_state);
 
-    // return linear_hash that is sitting in memory
-    return 1;
+    printf("Linear hash table successfully initialized\n");
+
+    //return pointer to the linear_hash that is sitting in memory
+    return linear_hash;
 }
 
 linear_hash_table_t
@@ -100,10 +90,10 @@ linear_hash_insert(
     record.id = id;
 
     // get the appropriate bucket for insertion
-    linear_hash_bucket_t bucket = linear_hash_get_bucket(bucket_idx_to_file_offset(hash_bucket_idx));
+    linear_hash_bucket_t bucket = linear_hash_get_bucket(bucket_idx_to_file_offset(hash_bucket_idx, linear_hash), linear_hash);
 
     // location of the records in the bucket to be stored in
-    file_offset bucket_loc = bucket_idx_to_file_offset(hash_bucket_idx);
+    file_offset bucket_loc = bucket_idx_to_file_offset(hash_bucket_idx, linear_hash);
     file_offset bucket_records_loc = get_bucket_records_location(bucket_loc);
     file_offset record_loc;
 
@@ -111,7 +101,7 @@ linear_hash_insert(
     if(bucket.anchor_record == -1) {
         record_loc = bucket_records_loc;
         bucket.anchor_record = record_loc;
-        file_offset bucket_loc = bucket_idx_to_file_offset(bucket.idx);
+        file_offset bucket_loc = bucket_idx_to_file_offset(bucket.idx, linear_hash);
     }
 
     else {
@@ -119,7 +109,7 @@ linear_hash_insert(
         while(bucket.overflow_location != -1) {
             printf("Changing bucket to tail overflow\n");
             bucket_loc = bucket.overflow_location;
-            bucket = linear_hash_get_bucket(bucket.overflow_location);
+            bucket = linear_hash_get_bucket(bucket.overflow_location, linear_hash);
         }
 
         // Case that the bucket is full but there is not yet an overflow bucket
@@ -127,7 +117,7 @@ linear_hash_insert(
             /* Get location of overflow bucket and update the tail record for the linked list of buckets storing
              * items that hash to this bucket and update the tail bucket with the overflow's location */
             printf("Bucket full, creating an overflow bucket\n");
-            file_offset overflow_location = create_overflow_bucket(linear_hash);
+            file_offset overflow_location = create_overflow_bucket(linear_hash, linear_hash);
             printf("GOT %ld AS NEW OVERFLOW LOCATION\n", overflow_location);
             bucket.overflow_location = overflow_location;
             linear_hash_update_bucket(bucket_loc, bucket, linear_hash);
@@ -135,7 +125,7 @@ linear_hash_insert(
             /* Set the location of the anchor record on the new overflow bucket and update the record_loc for storing
              * the new record to be this location */
             file_offset overflow_anchor_record_loc = get_bucket_records_location(overflow_location);
-            bucket = linear_hash_get_bucket(overflow_location);
+            bucket = linear_hash_get_bucket(overflow_location, linear_hash);
             bucket.anchor_record = overflow_anchor_record_loc;
             record_loc = bucket.anchor_record;
             bucket_loc = overflow_location;
@@ -199,8 +189,8 @@ linear_hash_get(
 
     // get the bucket where the record would be located
     linear_hash_bucket_t bucket;
-    bucket = linear_hash_get_bucket(bucket_idx_to_file_offset(bucket_idx));
-    file_offset bucket_loc = bucket_idx_to_file_offset(bucket_idx);
+    bucket = linear_hash_get_bucket(bucket_idx_to_file_offset(bucket_idx, linear_hash), linear_hash);
+    file_offset bucket_loc = bucket_idx_to_file_offset(bucket_idx, linear_hash);
 
     // create a temporary store for records that are read
     linear_hash_record_t record;
@@ -219,7 +209,7 @@ linear_hash_get(
         if(record.id != id && record.next == -1 && bucket.overflow_location != -1) {
             printf("Reached end of bucket\n");
             bucket_loc = bucket.overflow_location;
-            bucket = linear_hash_get_bucket(bucket.overflow_location);
+            bucket = linear_hash_get_bucket(bucket.overflow_location, linear_hash);
             record_loc = bucket.anchor_record;
             record = linear_hash_get_record(bucket.anchor_record);
             printf("Getting next overflow bucket at offset %ld, anchor record id is %d, next is %ld\n", bucket_loc, record.id, record.next);
@@ -249,8 +239,8 @@ linear_hash_delete(
     int bucket_idx = hash_to_bucket(id, linear_hash);
 
     // get the bucket where the record would be located
-    file_offset bucket_loc = bucket_idx_to_file_offset(bucket_idx);
-    linear_hash_bucket_t bucket = linear_hash_get_bucket(bucket_loc);
+    file_offset bucket_loc = bucket_idx_to_file_offset(bucket_idx, linear_hash);
+    linear_hash_bucket_t bucket = linear_hash_get_bucket(bucket_loc, linear_hash);
 
     // create a temporary store for records that are read
     linear_hash_record_t record;
@@ -265,7 +255,7 @@ linear_hash_delete(
             if(bucket.overflow_location != -1) {
                 printf("Reached end of bucket\n");
                 bucket_loc = bucket.overflow_location;
-                bucket = linear_hash_get_bucket(bucket.overflow_location);
+                bucket = linear_hash_get_bucket(bucket.overflow_location, linear_hash);
                 record_loc = bucket.anchor_record;
                 record = linear_hash_get_record(bucket.anchor_record);
                 printf("Getting next overflow bucket at offset %ld, anchor record id is %d\n", bucket_loc, record.id);
@@ -295,30 +285,31 @@ linear_hash_delete(
 // returns the struct representing the bucket at the specified index
 linear_hash_bucket_t
 linear_hash_get_bucket(
-        file_offset bucket_loc
+        file_offset bucket_loc,
+        linear_hash_table_t *linear_hash
 ) {
-    // create a pointer to the file
-    FILE *database;
-    database = fopen("data.bin", "r+");
-
     // create a temporary store for records that are read
     linear_hash_bucket_t bucket;
 
     // check if file is open
-    if(!database) {
+    if(!linear_hash->database) {
         printf("Unable to open file\n");
         return bucket;
     }
 
+    file_offset starting_file_offset = ftell(linear_hash->database);
+
     // seek to location of record in file
-    fseek(database, bucket_loc, SEEK_SET);
+    fseek(linear_hash->database, bucket_loc, SEEK_SET);
 
     // read record
-    fread(&bucket, sizeof(linear_hash_bucket_t), 1, database);
+    fread(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database);
 
     printf("bucket %d read\n", bucket.idx);
 
-    fclose(database);
+    // restore data pointer to the original location
+    fseek(linear_hash->database, starting_file_offset, SEEK_SET);
+    linear_hash->data_pointer = starting_file_offset;
 
     return bucket;
 }
@@ -405,21 +396,18 @@ write_new_bucket(
 
 file_offset
 create_overflow_bucket(
+        int bucket_idx,
         linear_hash_table_t *linear_hash
 ) {
-    // create pointer to file
-//    FILE *database;
-//    database = fopen("data.bin", "r+");
-
-
     // store current file_offset in data file to enforce same file_offset after processing contract
     file_offset starting_file_offset = ftell(linear_hash->database);
 
     // initialize bucket fields
     linear_hash_bucket_t bucket;
-    bucket.idx = -1;
+    bucket.idx = bucket_idx;
     bucket.record_count = 0;
-    bucket.overflow_location = - 1;
+    //bucket.overflow_location = -1;
+    bucket.overflow_location = linear_hash->bucket_map->data[bucket_idx];
     bucket.anchor_record = -1;
 
     // check the file is open
@@ -429,18 +417,19 @@ create_overflow_bucket(
 
     // seek to end of file to append new bucket
     fseek(linear_hash->database, 0, SEEK_END);
-    file_offset overflow_loc = ftell(linear_hash->database);
+
+    //file_offset overflow_loc = ftell(linear_hash->database);
+    linear_hash->bucket_map->data[bucket_idx] = ftell(linear_hash->database);
 
     // write to file
-    // TODO REMOVE HARDCODED 4 AND USE LINEAR HASH FIELD
     fwrite(&bucket, sizeof(linear_hash_bucket_t) + linear_hash->records_per_bucket * sizeof(linear_hash_record_t), 1, linear_hash->database);
 
     // restore data pointer to the original location
     fseek(linear_hash->database, starting_file_offset, SEEK_SET);
     linear_hash->data_pointer = starting_file_offset;
 
-    printf("Successfully wrote an overflow bucket to the database at location %ld\n", overflow_loc);
-    return overflow_loc;
+    printf("Successfully wrote an overflow bucket to the database at location %ld\n", linear_hash->bucket_map->data[bucket_idx]);
+    return linear_hash->bucket_map->data[bucket_idx];
 }
 
 
@@ -524,8 +513,8 @@ split(
     printf("\nPERFORMING SPLIT\n");
     // get bucket to split
     print_linear_hash_state(linear_hash);
-    file_offset bucket_loc = bucket_idx_to_file_offset(linear_hash->next_split);
-    linear_hash_bucket_t bucket = linear_hash_get_bucket(bucket_loc);
+    file_offset bucket_loc = bucket_idx_to_file_offset(linear_hash->next_split, linear_hash);
+    linear_hash_bucket_t bucket = linear_hash_get_bucket(bucket_loc, linear_hash);
     printf("splitting bucket %d\n", bucket.idx);
     print_linear_hash_bucket(bucket);
 
@@ -555,7 +544,7 @@ split(
         if(record.next == -1 && bucket.overflow_location != -1) {
             printf("Reached end of bucket\n");
             bucket_loc = bucket.overflow_location;
-            bucket = linear_hash_get_bucket(bucket.overflow_location);
+            bucket = linear_hash_get_bucket(bucket.overflow_location, linear_hash);
             record_loc = bucket.anchor_record;
             record = linear_hash_get_record(bucket.anchor_record);
             printf("Getting next overflow bucket at offset %ld, anchor record id is %d\n", bucket_loc, record.id);
@@ -592,28 +581,31 @@ get_bucket_records_location(
 // Returns the file offset where bucket with index idx begins
 file_offset
 bucket_idx_to_file_offset(
-        int idx
+        int idx,
+        linear_hash_table_t *linear_hash
 ) {
-    if(idx == 0) {
-        return 0;
-    }
-    else {
-        // TODO CHANGE HARDCODED 4 TO LINEAR HASH FIELD
+//    if(idx == 0) {
+//        return 0;
+//    }
+//    else {
+//        // TODO CHANGE HARDCODED 4 TO LINEAR HASH FIELD
+//
+//        // create a pointer to the file
+//        FILE *linear_hash_state;
+//        linear_hash_state = fopen("linear_hash_state.bin", "r+");
+//
+//        // seek to the location of the bucket in the map
+//        file_offset loc_in_map = sizeof(linear_hash_table_t) + idx * sizeof(file_offset);
+//        fseek(linear_hash_state, loc_in_map, SEEK_SET);
+//
+//        // read file_offset of bucket from mapping in linear hash
+//        file_offset bucket_loc;
+//        fread(&bucket_loc, sizeof(file_offset), 1, linear_hash_state);
+//        fclose(linear_hash_state);
+//        return bucket_loc;
+//    }
 
-        // create a pointer to the file
-        FILE *linear_hash_state;
-        linear_hash_state = fopen("linear_hash_state.bin", "r+");
-
-        // seek to the location of the bucket in the map
-        file_offset loc_in_map = sizeof(linear_hash_table_t) + idx * sizeof(file_offset);
-        fseek(linear_hash_state, loc_in_map, SEEK_SET);
-
-        // read file_offset of bucket from mapping in linear hash
-        file_offset bucket_loc;
-        fread(&bucket_loc, sizeof(file_offset), 1, linear_hash_state);
-        fclose(linear_hash_state);
-        return bucket_loc;
-    }
+    return linear_hash->bucket_map->data[idx];
 }
 
 // Write the offset of bucket idx to the map in linear hash state
