@@ -2,45 +2,64 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
 
 // TODO: OPEN FILE IN INIT METHOD AND CREATE A DESTROY METHOD THAT CLOSES THE FILE
 // initialization function
-linear_hash_table_t*
+int
 linear_hash_init(
         int initial_size,
-        int split_threshold
+        int split_threshold,
+        linear_hash_table_t *linear_hash
 ) {
+
+    printf("HERE");
     // create a pointer to the file
     FILE *linear_hash_state;
     linear_hash_state = fopen("linear_hash_state.bin", "r+");
 
-    // create a temporary store for records that are read
-    linear_hash_table_t *linear_hash = malloc(sizeof(linear_hash_table_t));
+    linear_hash->database = fopen("data.bin", "r+");
+
+    // initialize linear_hash fields
     linear_hash->initial_size = initial_size;
     linear_hash->num_buckets = initial_size;
     linear_hash->num_records = 0;
     linear_hash->next_split = 0;
     linear_hash->split_threshold = split_threshold;
-    int *bucket_map[initial_size * 2];
-    array_list_init(linear_hash->initial_size, linear_hash->bucket_map);
+    linear_hash->records_per_bucket = 4;
 
+    printf("HERE");
+
+    // current offset pointed to in the datafile
+    linear_hash->data_pointer = ftell(linear_hash->database);
+    printf("HERE");
+
+    // mapping of buckets to file offsets
+    array_list_init(initial_size, linear_hash->bucket_map);
+    printf("HERE");
+
+    // write out initial buckets
     for(int i = 0; i < linear_hash->initial_size; i++) {
-        linear_hash_bucket_t *bucket;
-        write_new_bucket(i, bucket, linear_hash);
+        write_new_bucket(i, linear_hash);
     }
 
-    // check if file is open
-    if(!linear_hash_state) {
-        printf("Unable to open file\n");
-    }
+    print_linear_hash_bucket_map(linear_hash);
+//
+//    printf("HERE");
+//    // check if file is open
+////    if(!linear_hash_state) {
+////        printf("Unable to open file\n");
+////    }
+//
+//    // write the state of the linear_hash to disk
+////    fwrite(linear_hash, sizeof(linear_hash_table_t), 1, linear_hash_state);
+////    fclose(linear_hash_state);
+//
+//    printf("Linear hash table successfully initialized\n");
 
-    // linear_hash_init
-    fwrite(linear_hash, sizeof(linear_hash_table_t), 1, linear_hash_state);
-
-    fclose(linear_hash_state);
-
-    printf("Linear hash table successfully initialized\n");
-    return linear_hash;
+    // return linear_hash that is sitting in memory
+    return 1;
 }
 
 linear_hash_table_t
@@ -108,10 +127,10 @@ linear_hash_insert(
             /* Get location of overflow bucket and update the tail record for the linked list of buckets storing
              * items that hash to this bucket and update the tail bucket with the overflow's location */
             printf("Bucket full, creating an overflow bucket\n");
-            file_offset overflow_location = create_overflow_bucket();
+            file_offset overflow_location = create_overflow_bucket(linear_hash);
             printf("GOT %ld AS NEW OVERFLOW LOCATION\n", overflow_location);
             bucket.overflow_location = overflow_location;
-            linear_hash_update_bucket(bucket_loc, bucket);
+            linear_hash_update_bucket(bucket_loc, bucket, linear_hash);
 
             /* Set the location of the anchor record on the new overflow bucket and update the record_loc for storing
              * the new record to be this location */
@@ -120,7 +139,7 @@ linear_hash_insert(
             bucket.anchor_record = overflow_anchor_record_loc;
             record_loc = bucket.anchor_record;
             bucket_loc = overflow_location;
-            linear_hash_update_bucket(overflow_location, bucket);
+            linear_hash_update_bucket(overflow_location, bucket, linear_hash);
         }
 
         // case there is >= 1 record in the bucket but it is not full
@@ -151,18 +170,18 @@ linear_hash_insert(
                 printf("Setting %d.next to %ld\n", tail.id, record_loc);
                 // update tail record to point to newly inserted record
                 tail.next = record_loc;
-                linear_hash_write_record(tail_loc, tail);
+                linear_hash_write_record(tail_loc, tail, linear_hash);
             }
         }
     }
     // write new record to the db
     printf("Writing %d to offset %ld\n", record.id, record_loc);
     record.next = -1;
-    linear_hash_write_record(record_loc, record);
+    linear_hash_write_record(record_loc, record, linear_hash);
 
     // update bucket
     bucket.record_count++;
-    linear_hash_update_bucket(bucket_loc, bucket);
+    linear_hash_update_bucket(bucket_loc, bucket, linear_hash);
 
     linear_hash_increment_num_records(linear_hash);
     printf("Successfully inserted record %d at offset %ld\n", record.id, record_loc);
@@ -264,12 +283,12 @@ linear_hash_delete(
 
     // set tombstone (currently using -1) as id to mark deleted record
     record.id = -1;
-    linear_hash_write_record(record_loc, record);
+    linear_hash_write_record(record_loc, record, linear_hash);
 
     // decrement record count for bucket
     bucket.record_count--;
     linear_hash_decrement_num_records(linear_hash);
-    linear_hash_update_bucket(bucket_loc, bucket);
+    linear_hash_update_bucket(bucket_loc, bucket, linear_hash);
     printf("\nFINISHED DELETE\n");
 }
 
@@ -338,21 +357,24 @@ linear_hash_get_record(
 void
 write_new_bucket(
         int idx,
-        linear_hash_bucket_t *bucket,
         linear_hash_table_t *linear_hash
 ) {
-    // create pointer to file
-    FILE *database;
-    database = fopen("data.bin", "r+");
+//    // create pointer to file
+//    FILE *database;
+//    database = fopen("data.bin", "r+");
 
+    // store current file_offset in data file to enforce same file_offset after processing contract
+    file_offset starting_file_offset = ftell(linear_hash->database);
+
+    linear_hash_bucket_t bucket;
     // initialize bucket fields
-    bucket->idx = idx;
-    bucket->record_count = 0;
-    bucket->overflow_location = - 1;
-    bucket->anchor_record = -1;
+    bucket.idx = idx;
+    bucket.record_count = 0;
+    bucket.overflow_location = - 1;
+    bucket.anchor_record = -1;
 
     // check the file is open
-    if(!database) {
+    if(!linear_hash->database) {
         printf("Unable to open file\n");
     }
 
@@ -361,30 +383,37 @@ write_new_bucket(
     // TODO THIS IS YOUR PROBLEM -- WRITE TO PROPER LOCATION EVERY TIME TO FIX
     file_offset bucket_loc;
     if(idx == 0) {
-        fseek(database, 0, SEEK_SET);
+        fseek(linear_hash->database, 0, SEEK_SET);
         bucket_loc = 0;
     } else {
-        fseek(database, 4 * sizeof(linear_hash_record_t), SEEK_END);
-        bucket_loc = ftell(database);
+        fseek(linear_hash->database, linear_hash->records_per_bucket * sizeof(linear_hash_record_t), SEEK_END);
+        bucket_loc = ftell(linear_hash->database);
     }
 
-    // write to file
-    fwrite(&bucket, sizeof(linear_hash_bucket_t), 1, database);
-    fclose(database);
+    // write to data file
+    fwrite(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database);
+
+    // restore data pointer to the original location
+    fseek(linear_hash->database, starting_file_offset, SEEK_SET);
+    linear_hash->data_pointer = starting_file_offset;
 
     // write bucket_loc in mapping
     store_bucket_loc_in_map(idx, bucket_loc);
-    array_list_insert(idx, bucket, linear_hash->bucket_map);
+    array_list_insert(idx, bucket_loc, linear_hash->bucket_map);
     printf("Successfully wrote a new bucket with index %d to the database\n", bucket.idx);
 }
 
 file_offset
 create_overflow_bucket(
-
+        linear_hash_table_t *linear_hash
 ) {
     // create pointer to file
-    FILE *database;
-    database = fopen("data.bin", "r+");
+//    FILE *database;
+//    database = fopen("data.bin", "r+");
+
+
+    // store current file_offset in data file to enforce same file_offset after processing contract
+    file_offset starting_file_offset = ftell(linear_hash->database);
 
     // initialize bucket fields
     linear_hash_bucket_t bucket;
@@ -394,18 +423,21 @@ create_overflow_bucket(
     bucket.anchor_record = -1;
 
     // check the file is open
-    if(!database) {
+    if(!linear_hash->database) {
         printf("Unable to open file\n");
     }
 
     // seek to end of file to append new bucket
-    fseek(database, 0, SEEK_END);
-    file_offset overflow_loc = ftell(database);
+    fseek(linear_hash->database, 0, SEEK_END);
+    file_offset overflow_loc = ftell(linear_hash->database);
 
     // write to file
     // TODO REMOVE HARDCODED 4 AND USE LINEAR HASH FIELD
-    fwrite(&bucket, sizeof(linear_hash_bucket_t) + 4 * sizeof(linear_hash_record_t), 1, database);
-    fclose(database);
+    fwrite(&bucket, sizeof(linear_hash_bucket_t) + linear_hash->records_per_bucket * sizeof(linear_hash_record_t), 1, linear_hash->database);
+
+    // restore data pointer to the original location
+    fseek(linear_hash->database, starting_file_offset, SEEK_SET);
+    linear_hash->data_pointer = starting_file_offset;
 
     printf("Successfully wrote an overflow bucket to the database at location %ld\n", overflow_loc);
     return overflow_loc;
@@ -415,45 +447,59 @@ create_overflow_bucket(
 void
 linear_hash_write_record(
         file_offset record_loc,
-        linear_hash_record_t record
+        linear_hash_record_t record,
+        linear_hash_table_t *linear_hash
 ) {
     // create pointer to file
-    FILE *database;
-    database = fopen("data.bin", "r+");
+//    FILE *database;
+//    database = fopen("data.bin", "r+");
+
+    // store current file_offset in data file to enforce same file_offset after processing contract
+    file_offset starting_file_offset = ftell(linear_hash->database);
 
     // check the file is open
-    if(!database) {
+    if(!linear_hash->database) {
         printf("Unable to open file\n");
     }
 
     // seek to end of file to append new bucket
-    fseek(database, record_loc, SEEK_SET);
-    fwrite(&record, sizeof(linear_hash_record_t), 1, database);
-    fclose(database);
+    fseek(linear_hash->database, record_loc, SEEK_SET);
+    fwrite(&record, sizeof(linear_hash_record_t), 1, linear_hash->database);
+
+    // restore data pointer to the original location
+    fseek(linear_hash->database, starting_file_offset, SEEK_SET);
+    linear_hash->data_pointer = starting_file_offset;
+
     printf("Successfully wrote a new record id %d, next %ld to the database\n", record.id, record.next);
 }
 
 void
 linear_hash_update_bucket(
         file_offset bucket_loc,
-        linear_hash_bucket_t bucket
+        linear_hash_bucket_t bucket,
+        linear_hash_table_t *linear_hash
 ) {
-    // create pointer to file
-    FILE *database;
-    database = fopen("data.bin", "r+");
+//    // create pointer to file
+//    FILE *database;
+//    database = fopen("data.bin", "r+");
 
-    // check the file is open
-    if(!database) {
+    // store current file_offset in data file to enforce same file_offset after processing contract
+    file_offset starting_file_offset = ftell(linear_hash->database);
+
+    // check the file is openå
+    if(!linear_hash->database) {
         printf("Unable to open file\n");
     }
 
     // seek to end of file to append new bucket
-    fseek(database, bucket_loc, SEEK_SET);
+    fseek(linear_hash->database, bucket_loc, SEEK_SET);
 
     // write to file
-    fwrite(&bucket, sizeof(linear_hash_bucket_t), 1, database);
-    fclose(database);
+    fwrite(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database);
 
+    // restore data pointer to the original location
+    fseek(linear_hash->database, starting_file_offset, SEEK_SET);
+    linear_hash->data_pointer = starting_file_offset;
     printf("Successfully updated bucket %d\n", bucket.idx);
 }
 
@@ -574,7 +620,7 @@ bucket_idx_to_file_offset(
 void
 store_bucket_loc_in_map(
         int idx,
-        file_offset bucket_loc,
+        file_offset bucket_loc
 ) {
     // create a pointer to the file
     FILE *linear_hash_state;
@@ -605,7 +651,7 @@ linear_hash_increment_num_records(
     linear_hash->num_records++;
     if(linear_hash_above_threshold(linear_hash)) {
         linear_hash_bucket_t *bucket;
-        write_new_bucket(linear_hash->num_buckets, bucket, linear_hash);
+        write_new_bucket(linear_hash->num_buckets, linear_hash);
         linear_hash_increment_num_buckets(linear_hash);
         split(linear_hash);
     }
@@ -678,48 +724,64 @@ print_linear_hash_bucket(
     printf("\nBucket\n\tindex %d\n\tanchor record location %ld\n\toverflow location %ld\n", bucket.idx, bucket.anchor_record, bucket.overflow_location);
 }
 
+void
+print_linear_hash_bucket_map(
+        linear_hash_table_t *linear_hash
+) {
+    printf("Bucket Map State:\n");
+    for(int i = 0; i < linear_hash->bucket_map->current_size; i++) {
+        printf("\tbucket idx: %d, bucket loc in data file %ld\n", i, linear_hash->bucket_map->data[i]);
+    }
+}
+
 array_list_t*
 array_list_init(
         int init_size,
         array_list_t *array_list
 ) {
-    int *data[2 * init_size];
-    array_list->data = data;
+    array_list->current_size = init_size;
+    array_list->used = 0;
+    array_list->data = malloc(init_size * sizeof(int));
     return array_list;
 }
 
 int
 array_list_insert(
         int bucket_idx,
-        file_offset head_loc,
+        file_offset bucket_loc,
         array_list_t *array_list
 ) {
     // case we need to expand array
     if(bucket_idx > array_list->current_size) {
         // expand array as new_data and copy current state of data to head of new_data
-        int *new_data[array_list->current_size * 2];
-        memcopy(new_data, array_list->data, sizeof(array_list->data));
+        // create a temp store for the current data in array_list so it does not get overwritten
+//        int *temp = malloc(sizeof(array_list->data));
+//        memcpy(temp, array_list->data, sizeof(*array_list->data));
+//
+//        // expand the size of data to 2 * curret_size
+//        realloc(array_list->data, sizeof(array_list->data) * 2);
+//
+//        // copy the contents of tempt to the head of the new data array
+//        memcpy(temp, array_list->data, (int)sizeof(temp));
+//
+//        // adjust current_size
+//        array_list->current_size = array_list->current_size * 2;
+//
+//        array_list->data[bucket_idx] = bucket_loc;
 
-        // set array_list->data to expanded new_data
-        array_list->data = new_data;
-        array_list->data[bucket_idx] = head_loc
-
-        // adjust current_size
-        array_list->current_size = array_list->current_size * 2;
+        array_list->current_size *= 2;
+        array_list->data = (file_offset *) realloc(array_list->data, array_list->current_size * sizeof(file_offset));
         return 1;
     }
 
-    // case the array does not need to be expanded to fit new item
-    else {
-        array_list->data[bucket_idx] = head_loc;
-        return 0;
-    }
+    array_list->data[bucket_idx] = bucket_loc;
+    return 0;
 }
 
-int
+file_offset
 array_list_get(
         int bucket_idx,
-        array_list_t array_list
+        array_list_t *array_list
 ) {
     // case bucket_idx is outside of current size of array
     if(bucket_idx > array_list->current_size) {

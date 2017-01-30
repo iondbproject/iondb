@@ -1,10 +1,13 @@
+#include <stdio.h>
+
 typedef long file_offset;
 
 
 // SIMPLE ARRAY_LIST FOR BUCKET MAP
 typedef struct {
     int current_size;
-    int *data[1];
+    int used;
+    file_offset *data;
 } array_list_t;
 
 // definition of linear hash record, with a type and pointer instance declared for later use
@@ -37,12 +40,10 @@ typedef struct {
     int num_buckets;
     int num_records;
     int records_per_bucket;
+    FILE *database;
 
     // points to the current location in the data
     file_offset data_pointer;
-
-    // cached page of records
-    void* record_cache;
 
     // maps the location of the head of the linked list of bucekts corresponding to its index
     array_list_t *bucket_map;
@@ -81,16 +82,16 @@ split(
         linear_hash_table_t *linear_hash
 );
 
-linear_hash_table_t*
+int
 linear_hash_init(
         int initial_size,
-        int split_threshold
+        int split_threshold,
+        linear_hash_table_t *linear_hash
 );
 
 void
 write_new_bucket(
         int idx,
-        linear_hash_bucket_t *bucket,
         linear_hash_table_t *linear_hash
 );
 
@@ -108,7 +109,8 @@ print_linear_hash_state(
 void
 linear_hash_update_bucket(
         file_offset bucket_loc,
-        linear_hash_bucket_t bucket
+        linear_hash_bucket_t bucket,
+        linear_hash_table_t *linear_hash
 );
 
 linear_hash_record_t
@@ -119,7 +121,8 @@ linear_hash_get_record(
 void
 linear_hash_write_record(
         file_offset record_loc,
-        linear_hash_record_t record
+        linear_hash_record_t record,
+        linear_hash_table_t *linear_hash
 );
 
 void
@@ -186,6 +189,11 @@ print_linear_hash_bucket(
         linear_hash_bucket_t bucket
 );
 
+void
+print_linear_hash_bucket_map(
+        linear_hash_table_t *linear_hash
+);
+
 // Write the offset of bucket idx to the map in linear hash state
 void
 store_bucket_loc_in_map(
@@ -203,12 +211,12 @@ array_list_init(
 int
 array_list_insert(
         int bucket_idx,
-        linear_hash_bucket_t *bucket,
+        file_offset bucket_loc,
         array_list_t *array_list
 );
 
-int
+file_offset
 array_list_get(
         int bucket_idx,
-        array_list_t array_list
+        array_list_t *array_list
 );
