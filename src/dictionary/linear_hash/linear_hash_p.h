@@ -222,3 +222,9 @@ array_list_get(
         int bucket_idx,
         array_list_t *array_list
 );
+
+void
+print_all_linear_hash_index_buckets(
+        int idx,
+        linear_hash_table_t *linear_hash
+);
