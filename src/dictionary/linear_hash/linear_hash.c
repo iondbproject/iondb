@@ -11,6 +11,7 @@ linear_hash_table_t*
 linear_hash_init(
         int initial_size,
         int split_threshold,
+        array_list_t *bucket_map,
         linear_hash_table_t *linear_hash
 ) {
     // open datafile
@@ -28,7 +29,7 @@ linear_hash_init(
     linear_hash->data_pointer = ftell(linear_hash->database);
 
     // mapping of buckets to file offsets
-    array_list_init(initial_size, linear_hash->bucket_map);
+    linear_hash->bucket_map = bucket_map;
 
     // write out initial buckets
     for(int i = 0; i < linear_hash->initial_size; i++) {
@@ -372,7 +373,7 @@ write_new_bucket(
 
     // write bucket_loc in mapping
     store_bucket_loc_in_map(idx, bucket_loc);
-    //array_list_insert(idx, bucket_loc, linear_hash->bucket_map);
+    array_list_insert(idx, bucket_loc, linear_hash->bucket_map);
     printf("Successfully wrote a new bucket with index %d to the database\n", bucket.idx);
 }
 
@@ -570,28 +571,28 @@ bucket_idx_to_file_offset(
         int idx,
         linear_hash_table_t *linear_hash
 ) {
-    if(idx == 0) {
-        return 0;
-    }
-    else {
-        // TODO CHANGE HARDCODED 4 TO LINEAR HASH FIELD
+//    if(idx == 0) {
+//        return 0;
+//    }
+//    else {
+//        // TODO CHANGE HARDCODED 4 TO LINEAR HASH FIELD
+//
+//        // create a pointer to the file
+//        FILE *linear_hash_state;
+//        linear_hash_state = fopen("linear_hash_state.bin", "r+");
+//
+//        // seek to the location of the bucket in the map
+//        file_offset loc_in_map = sizeof(linear_hash_table_t) + idx * sizeof(file_offset);
+//        fseek(linear_hash_state, loc_in_map, SEEK_SET);
+//
+//        // read file_offset of bucket from mapping in linear hash
+//        file_offset bucket_loc;
+//        fread(&bucket_loc, sizeof(file_offset), 1, linear_hash_state);
+//        fclose(linear_hash_state);
+//        return bucket_loc;
+//    }
 
-        // create a pointer to the file
-        FILE *linear_hash_state;
-        linear_hash_state = fopen("linear_hash_state.bin", "r+");
-
-        // seek to the location of the bucket in the map
-        file_offset loc_in_map = sizeof(linear_hash_table_t) + idx * sizeof(file_offset);
-        fseek(linear_hash_state, loc_in_map, SEEK_SET);
-
-        // read file_offset of bucket from mapping in linear hash
-        file_offset bucket_loc;
-        fread(&bucket_loc, sizeof(file_offset), 1, linear_hash_state);
-        fclose(linear_hash_state);
-        return bucket_loc;
-    }
-
-//    return linear_hash->bucket_map->data[idx];
+    return linear_hash->bucket_map->data[idx];
 }
 
 // Write the offset of bucket idx to the map in linear hash state
@@ -735,7 +736,7 @@ array_list_init(
 ) {
     array_list->current_size = init_size;
     array_list->used = 0;
-    array_list->data = malloc(init_size * sizeof(int));
+    array_list->data = malloc(init_size * sizeof(file_offset));
     return array_list;
 }
 

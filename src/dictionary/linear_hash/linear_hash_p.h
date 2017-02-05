@@ -86,10 +86,11 @@ linear_hash_table_t*
 linear_hash_init(
         int initial_size,
         int split_threshold,
+        array_list_t *bucket_map,
         linear_hash_table_t *linear_hash
 );
 
-void
+        void
 write_new_bucket(
         int idx,
         linear_hash_table_t *linear_hash
