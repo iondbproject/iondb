@@ -229,3 +229,14 @@ print_all_linear_hash_index_buckets(
         int idx,
         linear_hash_table_t *linear_hash
 );
+
+int
+insert_hash_to_bucket(
+        int id,
+        linear_hash_table_t *linear_hash
+);
+
+void
+print_linear_hash_record(
+        linear_hash_record_t record
+);

@@ -186,20 +186,26 @@ linear_hash_get(
     record = linear_hash_get_record(bucket.anchor_record);
     file_offset record_loc = bucket.anchor_record;
 
-    while(record.next != -1) {
-        if(record.id == id) {
-            break;
+    while(record.id != id) {
+        //printf("Current record id: %d, current record next: %ld\n", record.id, record.next);
+        if(record.next == -1) {
+            // check in next overflow if there is one
+            if(bucket.overflow_location != -1) {
+                bucket_loc = bucket.overflow_location;
+                bucket = linear_hash_get_bucket(bucket.overflow_location, linear_hash);
+                record_loc = bucket.anchor_record;
+                record = linear_hash_get_record(bucket.anchor_record);
+                printf("Getting next overflow bucket at offset %ld, anchor record id is %d\n", bucket_loc, record.id);
+                continue;
+            }
+                // case there are no more overflow buckets to check in
+            else {
+                printf("Record not found\n");
+                return record;
+            }
         }
+        record_loc = record.next;
         record = linear_hash_get_record(record.next);
-
-        // check in next overflow if there is one
-        if(record.id != id && record.next == -1 && bucket.overflow_location != -1) {
-            bucket_loc = bucket.overflow_location;
-            bucket = linear_hash_get_bucket(bucket.overflow_location, linear_hash);
-            record_loc = bucket.anchor_record;
-            record = linear_hash_get_record(bucket.anchor_record);
-            printf("Getting next overflow bucket at offset %ld, anchor record id is %d, next is %ld\n", bucket_loc, record.id, record.next);
-        }
     }
 
     if(record.id == id) {
@@ -207,10 +213,8 @@ linear_hash_get(
         printf("Record %d found in bucket %d\n", record.id, bucket.idx);
         return record;
     }
-
     else {
-        // print record to console
-        printf("Record %d not found\n", id);
+        printf("Record not found\n");
         return record;
     }
 }
@@ -284,9 +288,13 @@ linear_hash_get_bucket(
 
     // seek to location of record in file
     fseek(linear_hash->database, bucket_loc, SEEK_SET);
+    printf("DATA POINTER AT %ld", ftell(linear_hash->database));
 
     // read record
     fread(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database);
+
+    printf("LINEAR HASH INSIDE SCOPE BUCKET\n\n");
+    print_linear_hash_bucket(bucket);
 
     printf("bucket %d read\n", bucket.idx);
 
@@ -402,7 +410,8 @@ create_overflow_bucket(
     fseek(linear_hash->database, 0, SEEK_END);
 
     //file_offset overflow_loc = ftell(linear_hash->database);
-    linear_hash->bucket_map->data[bucket_idx] = ftell(linear_hash->database);
+    file_offset overflow_loc = ftell(linear_hash->database);
+    array_list_insert(bucket.idx, overflow_loc, linear_hash->bucket_map);
 
     // write to file
     fwrite(&bucket, sizeof(linear_hash_bucket_t) + linear_hash->records_per_bucket * sizeof(linear_hash_record_t), 1, linear_hash->database);
@@ -412,7 +421,7 @@ create_overflow_bucket(
     linear_hash->data_pointer = starting_file_offset;
 
     printf("Successfully wrote an overflow bucket to the database at location %ld\n", linear_hash->bucket_map->data[bucket_idx]);
-    return linear_hash->bucket_map->data[bucket_idx];
+    return overflow_loc;
 }
 
 
@@ -486,6 +495,16 @@ hash_to_bucket(
     if(h0 < linear_hash->next_split) {
         h0 = id % (2 * linear_hash->initial_size);
     }
+    return h0;
+}
+
+int
+insert_hash_to_bucket(
+        int id,
+        linear_hash_table_t *linear_hash
+) {
+    int h0 = id % linear_hash->initial_size;
+
     return h0;
 }
 
@@ -701,15 +720,30 @@ print_all_linear_hash_index_buckets(
         int idx,
         linear_hash_table_t *linear_hash
 ) {
-    printf("PRINT ALL %d IDX BUCKETS\nHEAD BUCKET\n", idx);
-    linear_hash_bucket_t bucket = linear_hash_get_bucket(bucket_idx_to_file_offset(idx, linear_hash), linear_hash);
+    file_offset bucket_loc = bucket_idx_to_file_offset(idx, linear_hash);
+    printf("PRINTING ALL %d IDX BUCKETS\nHEAD BUCKET AT %ld\n", idx, bucket_loc);
+    linear_hash_bucket_t bucket = linear_hash_get_bucket(bucket_loc, linear_hash);
     while(bucket.overflow_location != -1) {
         print_linear_hash_bucket(bucket);
-        printf("BUCKET AT LOC %ld", bucket.overflow_location);
+        linear_hash_record_t record = linear_hash_get_record(bucket.anchor_record);
+        while(record.next != -1) {
+            printf("NEXT AT LOC %ld\n", record.next);
+            print_linear_hash_record(record);
+            record = linear_hash_get_record(record.next);
+        }
+        print_linear_hash_record(record);
+        printf("BUCKET AT LOC %ld\n", bucket.overflow_location);
         bucket = linear_hash_get_bucket(bucket.overflow_location, linear_hash);
     }
     printf("TAIL");
     print_linear_hash_bucket(bucket);
+    linear_hash_record_t record = linear_hash_get_record(bucket.anchor_record);
+    while(record.next != -1) {
+        printf("NEXT AT LOC %ld\n", record.next);
+        print_linear_hash_record(record);
+        record = linear_hash_get_record(record.next);
+    }
+    print_linear_hash_record(record);
 }
 
 void
@@ -717,6 +751,13 @@ print_linear_hash_bucket(
         linear_hash_bucket_t bucket
 ) {
     printf("\nBucket\n\tindex %d\n\tanchor record location %ld\n\toverflow location %ld\n\trecord count: %d\n", bucket.idx, bucket.anchor_record, bucket.overflow_location, bucket.record_count);
+}
+
+void
+print_linear_hash_record(
+        linear_hash_record_t record
+) {
+    printf("\nRecord \n\tid %d\n\trecord.next location %ld\n", record.id, record.next);
 }
 
 void
@@ -746,24 +787,9 @@ array_list_insert(
         file_offset bucket_loc,
         array_list_t *array_list
 ) {
+    printf("INSERTING %ld AS HEAD LOC FOR %d\n", bucket_loc, bucket_idx);
     // case we need to expand array
     if(bucket_idx > array_list->current_size) {
-        // expand array as new_data and copy current state of data to head of new_data
-        // create a temp store for the current data in array_list so it does not get overwritten
-//        int *temp = malloc(sizeof(array_list->data));
-//        memcpy(temp, array_list->data, sizeof(*array_list->data));
-//
-//        // expand the size of data to 2 * curret_size
-//        realloc(array_list->data, sizeof(array_list->data) * 2);
-//
-//        // copy the contents of tempt to the head of the new data array
-//        memcpy(temp, array_list->data, (int)sizeof(temp));
-//
-//        // adjust current_size
-//        array_list->current_size = array_list->current_size * 2;
-//
-//        array_list->data[bucket_idx] = bucket_loc;
-
         array_list->current_size *= 2;
 
         // TODO UPDATE THE POINTER TO THE ARRAY LIST ON THE LINEAR HASH AFTER REALLOC?
