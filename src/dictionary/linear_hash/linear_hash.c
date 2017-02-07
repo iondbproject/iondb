@@ -421,7 +421,7 @@ create_overflow_bucket(
     bucket.idx = bucket_idx;
     bucket.record_count = 0;
     //bucket.overflow_location = -1;
-    bucket.overflow_location = linear_hash->bucket_map->data[bucket_idx];
+    bucket.overflow_location = array_list_get(bucket_idx, linear_hash->bucket_map);
     bucket.anchor_record = -1;
 
     // check the file is open
@@ -443,7 +443,7 @@ create_overflow_bucket(
     fseek(linear_hash->database, starting_file_offset, SEEK_SET);
     linear_hash->data_pointer = starting_file_offset;
 
-    printf("Successfully wrote an overflow bucket to the database at location %ld\n", linear_hash->bucket_map->data[bucket_idx]);
+    printf("Successfully wrote an overflow bucket to the database at location %ld\n", array_list_get(bucket_idx, linear_hash->bucket_map));
     return overflow_loc;
 }
 
@@ -558,7 +558,6 @@ split(
                     linear_hash_delete(record.id, linear_hash);
                     print_linear_hash_record(record);
                     printf("\thash to bucket %d\n", hash_to_bucket(record.id, linear_hash));
-                    print_array_list_data(linear_hash->bucket_map);
                     linear_hash_insert(record.id, hash_to_bucket(record.id, linear_hash), linear_hash);
                 }
                 else {
@@ -658,7 +657,7 @@ bucket_idx_to_file_offset(
 //        return bucket_loc;
 //    }
 
-    return linear_hash->bucket_map->data[idx];
+    return array_list_get(idx, linear_hash->bucket_map);
 }
 
 // Write the offset of bucket idx to the map in linear hash state
@@ -839,7 +838,7 @@ print_linear_hash_bucket_map(
 ) {
     printf("Bucket Map State:\n");
     for(int i = 0; i < linear_hash->bucket_map->current_size; i++) {
-        printf("\tbucket idx: %d, bucket loc in data file %ld\n", i, linear_hash->bucket_map->data[i]);
+        printf("\tbucket idx: %d, bucket loc in data file %ld\n", i, array_list_get(i, linear_hash->bucket_map));
     }
 }
 
@@ -861,6 +860,7 @@ array_list_insert(
         array_list_t *array_list
 ) {
     printf("INSERTING %ld AS HEAD LOC FOR %d\n", bucket_loc, bucket_idx);
+    print_array_list_data(array_list);
     // case we need to expand array
     if(bucket_idx > array_list->current_size) {
         array_list->current_size = array_list->current_size * 2;

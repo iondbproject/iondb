@@ -43,22 +43,60 @@ int main() {
     linear_hash_insert(15, insert_hash_to_bucket(15, linear_hash), linear_hash);
     linear_hash_insert(20, insert_hash_to_bucket(20, linear_hash), linear_hash);
 
+    linear_hash_insert(13, insert_hash_to_bucket(13, linear_hash), linear_hash);
+    linear_hash_insert(18, insert_hash_to_bucket(18, linear_hash), linear_hash);
+    linear_hash_insert(13, insert_hash_to_bucket(13, linear_hash), linear_hash);
+    linear_hash_insert(23, insert_hash_to_bucket(23, linear_hash), linear_hash);
+
     linear_hash_insert(10, insert_hash_to_bucket(10, linear_hash), linear_hash);
     linear_hash_insert(15, insert_hash_to_bucket(15, linear_hash), linear_hash);
     linear_hash_insert(20, insert_hash_to_bucket(20, linear_hash), linear_hash);
     linear_hash_insert(10, insert_hash_to_bucket(10, linear_hash), linear_hash);
 
-    linear_hash_insert(15, insert_hash_to_bucket(15, linear_hash), linear_hash);
-    linear_hash_insert(10, insert_hash_to_bucket(10, linear_hash), linear_hash);
     linear_hash_insert(2, insert_hash_to_bucket(2, linear_hash), linear_hash);
     linear_hash_insert(7, insert_hash_to_bucket(7, linear_hash), linear_hash);
     linear_hash_insert(7, insert_hash_to_bucket(7, linear_hash), linear_hash);
     linear_hash_insert(17, insert_hash_to_bucket(17, linear_hash), linear_hash);
 
+    linear_hash_insert(16, insert_hash_to_bucket(16, linear_hash), linear_hash);
+    linear_hash_insert(26, insert_hash_to_bucket(26, linear_hash), linear_hash);
+    linear_hash_insert(26, insert_hash_to_bucket(26, linear_hash), linear_hash);
+    linear_hash_insert(16, insert_hash_to_bucket(16, linear_hash), linear_hash);
+
     linear_hash_insert(2, insert_hash_to_bucket(2, linear_hash), linear_hash);
     linear_hash_insert(12, insert_hash_to_bucket(12, linear_hash), linear_hash);
     linear_hash_insert(2, insert_hash_to_bucket(2, linear_hash), linear_hash);
     linear_hash_insert(12, insert_hash_to_bucket(12, linear_hash), linear_hash);
+
+    linear_hash_insert(14, insert_hash_to_bucket(14, linear_hash), linear_hash);
+    linear_hash_insert(14, insert_hash_to_bucket(14, linear_hash), linear_hash);
+    linear_hash_insert(14, insert_hash_to_bucket(14, linear_hash), linear_hash);
+    linear_hash_insert(14, insert_hash_to_bucket(14, linear_hash), linear_hash);
+
+    linear_hash_insert(13, insert_hash_to_bucket(13, linear_hash), linear_hash);
+    linear_hash_insert(18, insert_hash_to_bucket(18, linear_hash), linear_hash);
+    linear_hash_insert(13, insert_hash_to_bucket(13, linear_hash), linear_hash);
+    linear_hash_insert(23, insert_hash_to_bucket(23, linear_hash), linear_hash);
+
+    linear_hash_insert(14, insert_hash_to_bucket(14, linear_hash), linear_hash);
+    linear_hash_insert(14, insert_hash_to_bucket(14, linear_hash), linear_hash);
+    linear_hash_insert(14, insert_hash_to_bucket(14, linear_hash), linear_hash);
+    linear_hash_insert(14, insert_hash_to_bucket(14, linear_hash), linear_hash);
+
+    linear_hash_insert(13, insert_hash_to_bucket(13, linear_hash), linear_hash);
+    linear_hash_insert(18, insert_hash_to_bucket(18, linear_hash), linear_hash);
+    linear_hash_insert(13, insert_hash_to_bucket(13, linear_hash), linear_hash);
+    linear_hash_insert(23, insert_hash_to_bucket(23, linear_hash), linear_hash);
+
+    linear_hash_insert(14, insert_hash_to_bucket(14, linear_hash), linear_hash);
+    linear_hash_insert(14, insert_hash_to_bucket(14, linear_hash), linear_hash);
+    linear_hash_insert(14, insert_hash_to_bucket(14, linear_hash), linear_hash);
+    linear_hash_insert(14, insert_hash_to_bucket(14, linear_hash), linear_hash);
+
+    linear_hash_insert(13, insert_hash_to_bucket(13, linear_hash), linear_hash);
+    linear_hash_insert(18, insert_hash_to_bucket(18, linear_hash), linear_hash);
+    linear_hash_insert(13, insert_hash_to_bucket(13, linear_hash), linear_hash);
+    linear_hash_insert(23, insert_hash_to_bucket(23, linear_hash), linear_hash);
 
     linear_hash_insert(14, insert_hash_to_bucket(14, linear_hash), linear_hash);
     linear_hash_insert(14, insert_hash_to_bucket(14, linear_hash), linear_hash);
@@ -76,7 +114,6 @@ int main() {
     linear_hash_get(2, linear_hash);
     linear_hash_get(35, linear_hash);
     linear_hash_get(213, linear_hash);
-
 //
 //    printf("\nPERFORMING PRINTS\n");
 //    print_all_linear_hash_index_buckets(0, linear_hash);
