@@ -289,7 +289,6 @@ linear_hash_delete(
     // set tombstone (currently using -1) as id to mark deleted record
     record.id = -1;
     printf("TOMBSTONE WRITTEN\n");
-    print_linear_hash_record(record);
     linear_hash_write_record(record_loc, record, linear_hash);
 
     // decrement record count for bucket
@@ -554,13 +553,27 @@ split(
 
             while(record.next != -1) {
                 next_record = linear_hash_get_record(record.next);
-                linear_hash_delete(record.id, linear_hash);
-                linear_hash_insert(record.id, hash_to_bucket(record.id, linear_hash), linear_hash);
+                if(record.id != -1) {
+                    printf("deleting record %d\n", record.id);
+                    linear_hash_delete(record.id, linear_hash);
+                    print_linear_hash_record(record);
+                    printf("\thash to bucket %d\n", hash_to_bucket(record.id, linear_hash));
+                    print_array_list_data(linear_hash->bucket_map);
+                    linear_hash_insert(record.id, hash_to_bucket(record.id, linear_hash), linear_hash);
+                }
+                else {
+                    printf("skipping tombstone\n");
+                }
                 record = next_record;
             }
-
-            linear_hash_delete(record.id, linear_hash);
-            linear_hash_insert(record.id, hash_to_bucket(record.id, linear_hash), linear_hash);
+            if(record.id != -1) {
+                printf("deleting record %d\n", record.id);
+                linear_hash_delete(record.id, linear_hash);
+                linear_hash_insert(record.id, hash_to_bucket(record.id, linear_hash), linear_hash);
+            }
+            else {
+                printf("skipping tombstone\n");
+            }
         }
 
         bucket = linear_hash_get_bucket(bucket.overflow_location, linear_hash);
@@ -570,12 +583,24 @@ split(
         linear_hash_record_t record = linear_hash_get_record(bucket.anchor_record);
         while(record.next != -1) {
             next_record = linear_hash_get_record(record.next);
-            linear_hash_delete(record.id, linear_hash);
-            linear_hash_insert(record.id, hash_to_bucket(record.id, linear_hash), linear_hash);
+            if(record.id != -1) {
+                printf("deleting record %d\n", record.id);
+                linear_hash_delete(record.id, linear_hash);
+                linear_hash_insert(record.id, hash_to_bucket(record.id, linear_hash), linear_hash);
+            }
+            else {
+                printf("skipping tombstone\n");
+            }
             record = next_record;
         }
-        linear_hash_delete(record.id, linear_hash);
-        linear_hash_insert(record.id, hash_to_bucket(record.id, linear_hash), linear_hash);
+        if(record.id != -1) {
+            printf("deleting record %d\n", record.id);
+            linear_hash_delete(record.id, linear_hash);
+            linear_hash_insert(record.id, hash_to_bucket(record.id, linear_hash), linear_hash);
+        }
+        else {
+            printf("skipping tombstone\n");
+        }
     }
 
     linear_hash_increment_next_split(linear_hash);
@@ -692,9 +717,9 @@ linear_hash_increment_num_buckets(
         linear_hash_table_t *linear_hash
 ) {
     linear_hash->num_buckets++;
-    if(linear_hash->num_buckets == 2 * linear_hash->initial_size) {
-        printf("Size doubled, increasing intial size to %d\n", linear_hash->initial_size);
+    if(linear_hash->num_buckets == 2 * linear_hash->initial_size + 1) {
         linear_hash->initial_size = linear_hash->initial_size * 2;
+        printf("Size doubled, increasing intial size to %d\n", linear_hash->initial_size);
         linear_hash->next_split = 0;
     }
     printf("Incremented bucket count to %d\n", linear_hash->num_buckets);
@@ -829,7 +854,7 @@ array_list_init(
     return array_list;
 }
 
-int
+void
 array_list_insert(
         int bucket_idx,
         file_offset bucket_loc,
@@ -838,14 +863,14 @@ array_list_insert(
     printf("INSERTING %ld AS HEAD LOC FOR %d\n", bucket_loc, bucket_idx);
     // case we need to expand array
     if(bucket_idx > array_list->current_size) {
-        array_list->current_size *= 2;
-
+        array_list->current_size = array_list->current_size * 2;
         // TODO UPDATE THE POINTER TO THE ARRAY LIST ON THE LINEAR HASH AFTER REALLOC?
         array_list->data = (file_offset *) realloc(array_list->data, array_list->current_size * sizeof(file_offset));
+        printf("expanded array list currrent size to %d\n", array_list->current_size);
+
     }
 
     array_list->data[bucket_idx] = bucket_loc;
-    return 0;
 }
 
 file_offset
@@ -864,7 +889,15 @@ array_list_get(
     }
 }
 
-
+void
+print_array_list_data(
+        array_list_t *array_list
+) {
+    printf("ARRAY LIST\n\tcurrent_size = %d\n", array_list->current_size);
+    for(int i = 0; i < array_list->current_size; i++) {
+        printf("\t%d: %ld\n", i, array_list->data[i]);
+    }
+}
 
 
 

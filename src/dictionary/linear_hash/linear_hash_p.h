@@ -211,7 +211,7 @@ array_list_init(
         array_list_t *array_list
 );
 
-int
+void
 array_list_insert(
         int bucket_idx,
         file_offset bucket_loc,
@@ -245,4 +245,9 @@ void
 print_linear_hash_bucket_from_idx(
         int idx,
         linear_hash_table_t *linear_hash
+);
+
+void
+print_array_list_data(
+        array_list_t *array_list
 );
