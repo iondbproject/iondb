@@ -375,7 +375,7 @@ write_new_bucket(
     // initialize bucket fields
     bucket.idx = idx;
     bucket.record_count = 0;
-    bucket.overflow_location = - 1;
+    bucket.overflow_location = -1;
     bucket.anchor_record = -1;
 
     // check the file is open
@@ -640,7 +640,6 @@ bucket_idx_to_file_offset(
 //        return 0;
 //    }
 //    else {
-//        // TODO CHANGE HARDCODED 4 TO LINEAR HASH FIELD
 //
 //        // create a pointer to the file
 //        FILE *linear_hash_state;
@@ -862,7 +861,7 @@ array_list_insert(
     printf("INSERTING %ld AS HEAD LOC FOR %d\n", bucket_loc, bucket_idx);
     print_array_list_data(array_list);
     // case we need to expand array
-    if(bucket_idx > array_list->current_size) {
+    if(bucket_idx >= array_list->current_size) {
         array_list->current_size = array_list->current_size * 2;
         // TODO UPDATE THE POINTER TO THE ARRAY LIST ON THE LINEAR HASH AFTER REALLOC?
         array_list->data = (file_offset *) realloc(array_list->data, array_list->current_size * sizeof(file_offset));
