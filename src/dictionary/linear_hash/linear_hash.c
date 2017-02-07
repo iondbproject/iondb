@@ -87,12 +87,10 @@ linear_hash_insert(
 ) {
     // create a linear_hash_record with the desired id
     linear_hash_record_t record;
-    record.next = -1;
     record.id = id;
 
     // get the appropriate bucket for insertion
     linear_hash_bucket_t bucket = linear_hash_get_bucket(bucket_idx_to_file_offset(hash_bucket_idx, linear_hash), linear_hash);
-    print_linear_hash_bucket(bucket);
     // location of the records in the bucket to be stored in
     file_offset bucket_loc = bucket_idx_to_file_offset(hash_bucket_idx, linear_hash);
     file_offset bucket_records_loc = get_bucket_records_location(bucket_loc);
@@ -103,6 +101,7 @@ linear_hash_insert(
         record_loc = bucket_records_loc;
         bucket.anchor_record = record_loc;
         file_offset bucket_loc = bucket_idx_to_file_offset(bucket.idx, linear_hash);
+        record.next = -1;
     }
 
     else {
@@ -122,25 +121,47 @@ linear_hash_insert(
             record_loc = bucket.anchor_record;
             bucket_loc = overflow_location;
             linear_hash_update_bucket(overflow_location, bucket, linear_hash);
+            record.next = -1;
         }
 
         // case there is >= 1 record in the bucket but it is not full
         else {
             // scan for tombstones and use if available
-            int tombstone_found = 0;
             file_offset tombstone_loc = bucket.anchor_record;
             linear_hash_record_t scanner = linear_hash_get_record(bucket.anchor_record);
-            while(scanner.next != -1) {
-                if(scanner.id == -1) {
-                    record_loc = tombstone_loc;
-                    tombstone_found = 1;
-                    break;
+            file_offset scanner_bucket_loc = bucket_loc;
+            while(scanner.id != -1) {
+                if(scanner.next == -1) {
+                    // check in next overflow if there is one
+                    if(bucket.overflow_location != -1) {
+                        scanner_bucket_loc = bucket.overflow_location;
+                        bucket = linear_hash_get_bucket(bucket.overflow_location, linear_hash);
+                        tombstone_loc = bucket.anchor_record;
+                        scanner = linear_hash_get_record(bucket.anchor_record);
+                        printf("Scanning next overflow bucket at offset %ld, anchor record id is %d\n", scanner_bucket_loc, scanner.id);
+                        continue;
+                    }
+                        // case there are no more overflow buckets to check in
+                    else {
+                        break;
+                    }
                 }
                 tombstone_loc = scanner.next;
                 scanner = linear_hash_get_record(scanner.next);
             }
 
-            if(!tombstone_found) {
+            if(scanner.id == -1) {
+                printf("tombstone found!\n");
+                record_loc = tombstone_loc;
+                record.next = scanner.next;
+                bucket_loc = scanner_bucket_loc;
+            }
+
+            else {
+                printf("no tombstones\n");
+                bucket = linear_hash_get_bucket(bucket_loc, linear_hash);
+
+
                 // get tail record and its location
                 file_offset tail_loc = bucket.anchor_record + (bucket.record_count - 1) * sizeof(linear_hash_record_t);
                 linear_hash_record_t tail = linear_hash_get_record(tail_loc);
@@ -151,11 +172,11 @@ linear_hash_insert(
                 // update tail record to point to newly inserted record
                 tail.next = record_loc;
                 linear_hash_write_record(tail_loc, tail, linear_hash);
+                record.next = -1;
             }
         }
     }
     // write new record to the db
-    record.next = -1;
     linear_hash_write_record(record_loc, record, linear_hash);
 
     // update bucket
@@ -174,8 +195,11 @@ linear_hash_get(
         linear_hash_table_t *linear_hash
 ) {
     // get the index of the bucket to read
-    int bucket_idx = hash_to_bucket(id, linear_hash);
-
+    // get the index of the bucket to read
+    int bucket_idx = insert_hash_to_bucket(id, linear_hash);
+    if(bucket_idx < linear_hash->next_split) {
+        bucket_idx = hash_to_bucket(id, linear_hash);
+    }
     // get the bucket where the record would be located
     linear_hash_bucket_t bucket;
     bucket = linear_hash_get_bucket(bucket_idx_to_file_offset(bucket_idx, linear_hash), linear_hash);
@@ -226,7 +250,10 @@ linear_hash_delete(
         linear_hash_table_t *linear_hash
 ) {
     // get the index of the bucket to read
-    int bucket_idx = hash_to_bucket(id, linear_hash);
+    int bucket_idx = insert_hash_to_bucket(id, linear_hash);
+    if(bucket_idx < linear_hash->next_split) {
+        bucket_idx = hash_to_bucket(id, linear_hash);
+    }
 
     // get the bucket where the record would be located
     file_offset bucket_loc = bucket_idx_to_file_offset(bucket_idx, linear_hash);
@@ -261,6 +288,8 @@ linear_hash_delete(
 
     // set tombstone (currently using -1) as id to mark deleted record
     record.id = -1;
+    printf("TOMBSTONE WRITTEN\n");
+    print_linear_hash_record(record);
     linear_hash_write_record(record_loc, record, linear_hash);
 
     // decrement record count for bucket
@@ -288,13 +317,9 @@ linear_hash_get_bucket(
 
     // seek to location of record in file
     fseek(linear_hash->database, bucket_loc, SEEK_SET);
-    printf("DATA POINTER AT %ld", ftell(linear_hash->database));
 
     // read record
     fread(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database);
-
-    printf("LINEAR HASH INSIDE SCOPE BUCKET\n\n");
-    print_linear_hash_bucket(bucket);
 
     printf("bucket %d read\n", bucket.idx);
 
@@ -329,7 +354,6 @@ linear_hash_get_record(
 
     // read record
     fread(&record, sizeof(linear_hash_record_t), 1, database);
-    printf("File offset read: %ld, record %d read\n", loc, record.id);
 
     fclose(database);
 
@@ -489,13 +513,15 @@ hash_to_bucket(
         int id,
         linear_hash_table_t *linear_hash
 ) {
-    int h0 = id % linear_hash->initial_size;
-
     // Case the record we are looking for was in a bucket that has already been split and h1 was used
-    if(h0 < linear_hash->next_split) {
-        h0 = id % (2 * linear_hash->initial_size);
-    }
-    return h0;
+//    if(id > linear_hash->initial_size) {
+    return id % (2 * linear_hash->initial_size);
+//    }
+//
+//    else {
+//        return id % linear_hash->initial_size;
+//    }
+
 }
 
 int
@@ -503,9 +529,7 @@ insert_hash_to_bucket(
         int id,
         linear_hash_table_t *linear_hash
 ) {
-    int h0 = id % linear_hash->initial_size;
-
-    return h0;
+    return id % linear_hash->initial_size;
 }
 
 void
@@ -514,48 +538,46 @@ split(
 ) {
     printf("\nPERFORMING SPLIT\n");
     // get bucket to split
-    print_linear_hash_state(linear_hash);
     file_offset bucket_loc = bucket_idx_to_file_offset(linear_hash->next_split, linear_hash);
     linear_hash_bucket_t bucket = linear_hash_get_bucket(bucket_loc, linear_hash);
     printf("splitting bucket %d\n", bucket.idx);
-    print_linear_hash_bucket(bucket);
 
-    // Case split bucket is empty
-    if(bucket.anchor_record == -1) {
-        printf("no records to split\n");
-        linear_hash_increment_next_split(linear_hash);
-        printf("split complete\n");
-        return;
+    if(bucket.anchor_record != -1) {
+        linear_hash_record_t record = linear_hash_get_record(bucket.anchor_record);
+        file_offset record_loc = bucket.anchor_record;
     }
 
-    linear_hash_record_t record = linear_hash_get_record(bucket.anchor_record);
-    file_offset record_loc = bucket.anchor_record;
-    //printf("Current record id: %d, current record next: %ld\n", record.id, record.next);
+    linear_hash_record_t next_record;
+    while(bucket.overflow_location != -1) {
+        if(bucket.anchor_record != -1) {
+            linear_hash_record_t record = linear_hash_get_record(bucket.anchor_record);
 
-    while(record.next != -1) {
-        // delete record from current location and rehash
-        if(record.id == -1) {
-            // tombstone case
-            record = linear_hash_get_record(record.next);
-            continue;
+            while(record.next != -1) {
+                next_record = linear_hash_get_record(record.next);
+                linear_hash_delete(record.id, linear_hash);
+                linear_hash_insert(record.id, hash_to_bucket(record.id, linear_hash), linear_hash);
+                record = next_record;
+            }
+
+            linear_hash_delete(record.id, linear_hash);
+            linear_hash_insert(record.id, hash_to_bucket(record.id, linear_hash), linear_hash);
         }
 
+        bucket = linear_hash_get_bucket(bucket.overflow_location, linear_hash);
+    }
+
+    if(bucket.anchor_record != -1) {
+        linear_hash_record_t record = linear_hash_get_record(bucket.anchor_record);
+        while(record.next != -1) {
+            next_record = linear_hash_get_record(record.next);
+            linear_hash_delete(record.id, linear_hash);
+            linear_hash_insert(record.id, hash_to_bucket(record.id, linear_hash), linear_hash);
+            record = next_record;
+        }
         linear_hash_delete(record.id, linear_hash);
         linear_hash_insert(record.id, hash_to_bucket(record.id, linear_hash), linear_hash);
-
-        // check in next overflow if there is one
-        if(record.next == -1 && bucket.overflow_location != -1) {
-            bucket_loc = bucket.overflow_location;
-            bucket = linear_hash_get_bucket(bucket.overflow_location, linear_hash);
-            record_loc = bucket.anchor_record;
-            record = linear_hash_get_record(bucket.anchor_record);
-            printf("Getting next overflow bucket at offset %ld, anchor record id is %d\n", bucket_loc, record.id);
-            continue;
-        }
-
-        record_loc = record.next;
-        record = linear_hash_get_record(record.next);
     }
+
     linear_hash_increment_next_split(linear_hash);
     printf("split complete\n");
 }
@@ -716,6 +738,23 @@ print_linear_hash_state(
 }
 
 void
+print_linear_hash_bucket_from_idx(
+        int idx,
+        linear_hash_table_t *linear_hash
+) {
+    linear_hash_bucket_t bucket = linear_hash_get_bucket(hash_to_bucket(idx, linear_hash), linear_hash);
+    print_linear_hash_bucket(bucket);
+    if(bucket.anchor_record != -1) {
+        linear_hash_record_t record = linear_hash_get_record(bucket.anchor_record);
+        while(record.next != -1) {
+            print_linear_hash_record(record);
+            record = linear_hash_get_record(record.next);
+        }
+        print_linear_hash_record(record);
+    }
+}
+
+void
 print_all_linear_hash_index_buckets(
         int idx,
         linear_hash_table_t *linear_hash
@@ -723,27 +762,36 @@ print_all_linear_hash_index_buckets(
     file_offset bucket_loc = bucket_idx_to_file_offset(idx, linear_hash);
     printf("PRINTING ALL %d IDX BUCKETS\nHEAD BUCKET AT %ld\n", idx, bucket_loc);
     linear_hash_bucket_t bucket = linear_hash_get_bucket(bucket_loc, linear_hash);
+
     while(bucket.overflow_location != -1) {
         print_linear_hash_bucket(bucket);
+
+        if(bucket.anchor_record != -1) {
+            linear_hash_record_t record = linear_hash_get_record(bucket.anchor_record);
+
+            while(record.next != -1) {
+                print_linear_hash_record(record);
+                record = linear_hash_get_record(record.next);
+            }
+
+            print_linear_hash_record(record);
+        }
+
+        bucket = linear_hash_get_bucket(bucket.overflow_location, linear_hash);
+    }
+
+    if (bucket.overflow_location == -1) {
+        print_linear_hash_bucket(bucket);
+    }
+
+    if(bucket.anchor_record != -1) {
         linear_hash_record_t record = linear_hash_get_record(bucket.anchor_record);
         while(record.next != -1) {
-            printf("NEXT AT LOC %ld\n", record.next);
             print_linear_hash_record(record);
             record = linear_hash_get_record(record.next);
         }
         print_linear_hash_record(record);
-        printf("BUCKET AT LOC %ld\n", bucket.overflow_location);
-        bucket = linear_hash_get_bucket(bucket.overflow_location, linear_hash);
     }
-    printf("TAIL");
-    print_linear_hash_bucket(bucket);
-    linear_hash_record_t record = linear_hash_get_record(bucket.anchor_record);
-    while(record.next != -1) {
-        printf("NEXT AT LOC %ld\n", record.next);
-        print_linear_hash_record(record);
-        record = linear_hash_get_record(record.next);
-    }
-    print_linear_hash_record(record);
 }
 
 void

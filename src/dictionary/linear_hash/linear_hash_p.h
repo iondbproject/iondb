@@ -240,3 +240,9 @@ void
 print_linear_hash_record(
         linear_hash_record_t record
 );
+
+void
+print_linear_hash_bucket_from_idx(
+        int idx,
+        linear_hash_table_t *linear_hash
+);
