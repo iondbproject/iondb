@@ -67,7 +67,7 @@ linear_hash_read_state(
     // check if file is open
     if(!linear_hash_state) {
         printf("Unable to open file\n");
-        return linear_hash;
+        exit(-1);
     }
 
     fseek(linear_hash_state, 0, SEEK_SET);
@@ -309,7 +309,7 @@ linear_hash_get_bucket(
     // check if file is open
     if(!linear_hash->database) {
         printf("Unable to open file\n");
-        return bucket;
+        exit(-1);
     }
 
     file_offset starting_file_offset = ftell(linear_hash->database);
@@ -345,7 +345,7 @@ linear_hash_get_record(
     // check if file is open
     if(!database) {
         printf("Unable to open file\n");
-        return record;
+        exit(-1);
     }
 
     // seek to location of record in file
@@ -397,6 +397,8 @@ write_new_bucket(
 
     // write to data file
     fwrite(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database);
+    linear_hash_record_t blank = {-1, -1, -1};
+    fwrite(&blank, sizeof(linear_hash_record_t), linear_hash->records_per_bucket, linear_hash->database);
 
     // restore data pointer to the original location
     fseek(linear_hash->database, starting_file_offset, SEEK_SET);
@@ -437,7 +439,9 @@ create_overflow_bucket(
     array_list_insert(bucket.idx, overflow_loc, linear_hash->bucket_map);
 
     // write to file
-    fwrite(&bucket, sizeof(linear_hash_bucket_t) + linear_hash->records_per_bucket * sizeof(linear_hash_record_t), 1, linear_hash->database);
+    fwrite(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database);
+    linear_hash_record_t blank = {-1, -1, -1};
+    fwrite(&blank, sizeof(linear_hash_record_t), linear_hash->records_per_bucket, linear_hash->database);
 
     // restore data pointer to the original location
     fseek(linear_hash->database, starting_file_offset, SEEK_SET);
@@ -859,10 +863,11 @@ array_list_insert(
         array_list_t *array_list
 ) {
     printf("INSERTING %ld AS HEAD LOC FOR %d\n", bucket_loc, bucket_idx);
-    print_array_list_data(array_list);
     // case we need to expand array
     if(bucket_idx >= array_list->current_size) {
         array_list->current_size = array_list->current_size * 2;
+        //array_list->current_size = array_list->current_size + 10;
+
         // TODO UPDATE THE POINTER TO THE ARRAY LIST ON THE LINEAR HASH AFTER REALLOC?
         array_list->data = (file_offset *) realloc(array_list->data, array_list->current_size * sizeof(file_offset));
         printf("expanded array list currrent size to %d\n", array_list->current_size);
@@ -878,7 +883,7 @@ array_list_get(
         array_list_t *array_list
 ) {
     // case bucket_idx is outside of current size of array
-    if(bucket_idx > array_list->current_size) {
+    if(bucket_idx >= array_list->current_size) {
         return -1;
     }
 
