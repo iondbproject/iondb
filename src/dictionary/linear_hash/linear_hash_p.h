@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "../../key_value/kv_system.h"
 
 typedef long file_offset;
 
@@ -45,7 +46,7 @@ typedef struct {
     // points to the current location in the data
     file_offset data_pointer;
 
-    // maps the location of the head of the linked list of bucekts corresponding to its index
+    // maps the location of the head of the linked list of buckets corresponding to its index
     array_list_t *bucket_map;
 
 } linear_hash_table_t;

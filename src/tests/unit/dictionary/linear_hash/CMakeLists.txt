@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.5)
-project(test_flat_file)
+project(test_linear_hash)
 
 set(SOURCE_FILES
-    test_flat_file.h
+        test_linear_hash.h
         test_linear_hash.c
-    test_flat_file_dictionary_handler.h
-    test_flat_file_dictionary_handler.c)
+        test_linear_hash_dictionary_handler.h
+        test_linear_hash_dictionary_handler.c)
 
 if(USE_ARDUINO)
     set(${PROJECT_NAME}_BOARD       ${BOARD})
@@ -14,15 +14,15 @@ if(USE_ARDUINO)
     set(${PROJECT_NAME}_PORT        ${PORT})
     set(${PROJECT_NAME}_SERIAL      ${SERIAL})
 
-    set(${PROJECT_NAME}_SKETCH      flat_file.ino)
+    set(${PROJECT_NAME}_SKETCH linear_hash.ino)
     set(${PROJECT_NAME}_SRCS        ${SOURCE_FILES})
-    set(${PROJECT_NAME}_LIBS        planck_unit flat_file)
+    set(${PROJECT_NAME}_LIBS        planck_unit linear_hash)
 
     generate_arduino_firmware(${PROJECT_NAME})
 else()
-    add_executable(${PROJECT_NAME}          ${SOURCE_FILES} run_flat_file.c)
+    add_executable(${PROJECT_NAME}          ${SOURCE_FILES} run_linear_hash.c)
 
-    target_link_libraries(${PROJECT_NAME}   planck_unit flat_file)
+    target_link_libraries(${PROJECT_NAME}   planck_unit linear_hash)
 
     # Use cmake -DCOVERAGE_TESTING=ON to include coverage testing information.
     if (CMAKE_COMPILER_IS_GNUCC AND COVERAGE_TESTING)
