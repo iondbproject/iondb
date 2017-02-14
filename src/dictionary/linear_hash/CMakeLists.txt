@@ -3,7 +3,7 @@ project(linear_hash)
 
 set(SOURCE_FILES
     linear_hash.c
-    linear_hash_p.h
+        linear_hash.h
     ../dictionary.h
     ../dictionary.c
     ../dictionary_types.h
