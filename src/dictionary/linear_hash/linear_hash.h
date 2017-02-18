@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include "linear_hash_types.h"
 
-linear_hash_table_t *
+ion_err_t
 linear_hash_init(
 	int					initial_size,
 	int					split_threshold,
+	int					records_per_bucket,
 	array_list_t		*bucket_map,
 	linear_hash_table_t *linear_hash
 );
@@ -63,12 +64,12 @@ linear_hash_delete(
 
 linear_hash_record_t
 linear_hash_get_record(
-	file_offset loc
+	ion_fpos_t loc
 );
 
 void
 linear_hash_write_record(
-	file_offset				record_loc,
+	ion_fpos_t				record_loc,
 	linear_hash_record_t	record,
 	linear_hash_table_t		*linear_hash
 );
@@ -89,26 +90,26 @@ write_new_bucket(
 /* returns the struct representing the bucket at the specified index */
 linear_hash_bucket_t
 linear_hash_get_bucket(
-	file_offset			bucket_loc,
+	ion_fpos_t			bucket_loc,
 	linear_hash_table_t *linear_hash
 );
 
 void
 linear_hash_update_bucket(
-	file_offset				bucket_loc,
+	ion_fpos_t				bucket_loc,
 	linear_hash_bucket_t	bucket,
 	linear_hash_table_t		*linear_hash
 );
 
-file_offset
+ion_fpos_t
 create_overflow_bucket(
 	int					bucket_idx,
 	linear_hash_table_t *linear_hash
 );
 
-file_offset
+ion_fpos_t
 get_bucket_records_location(
-	file_offset bucket_loc
+	ion_fpos_t bucket_loc
 );
 
 /* hash methods */
@@ -127,12 +128,12 @@ insert_hash_to_bucket(
 /* returns the struct representing the bucket at the specified index */
 linear_hash_bucket_t
 linear_hash_get_overflow_bucket(
-	file_offset loc
+	ion_fpos_t loc
 );
 
 /* Returns the file offset where bucket with index idx begins */
-file_offset
-bucket_idx_to_file_offset(
+ion_fpos_t
+bucket_idx_to_ion_fpos_t(
 	int					idx,
 	linear_hash_table_t *linear_hash
 );
@@ -156,7 +157,7 @@ print_linear_hash_bucket_map(
 void
 store_bucket_loc_in_map(
 	int			idx,
-	file_offset bucket_loc
+	ion_fpos_t	bucket_loc
 );
 
 /* ARRAY_LIST METHODS */
@@ -169,11 +170,11 @@ array_list_init(
 void
 array_list_insert(
 	int				bucket_idx,
-	file_offset		bucket_loc,
+	ion_fpos_t		bucket_loc,
 	array_list_t	*array_list
 );
 
-file_offset
+ion_fpos_t
 array_list_get(
 	int				bucket_idx,
 	array_list_t	*array_list
@@ -205,4 +206,10 @@ print_linear_hash_bucket_from_idx(
 void
 print_linear_hash_state(
 	linear_hash_table_t *linear_hash
+);
+
+linear_hash_record_t
+record_iterator_next(
+	linear_hash_record_iterator_t	*itr,
+	linear_hash_table_t				*linear_hash
 );

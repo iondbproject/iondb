@@ -1,0 +1,113 @@
+#include "linear_hash_handler.h"
+
+/* TODO CURSOR QUERY STUFF GOES AT THE TOP OF THIS FILE (see other *_handler.c files) */
+
+/**
+@brief			Opens a specific skiplist instance of a dictionary.
+
+@param			handler
+					A pointer to the handler for the specific dictionary being opened.
+@param			dictionary
+					The pointer declared by the caller that will reference
+					the instance of the dictionary opened.
+@param			config
+					The configuration info of the specific dictionary to be opened.
+@param			compare
+					Function pointer for the comparison function for the dictionary.
+
+@return			The status of opening the dictionary.
+ */
+
+void
+linear_hash_dict_init(
+	ion_dictionary_handler_t *handler
+) {
+	handler->insert				= linear_hash_insert;
+	/* handler->get				= linear_hash_query; */
+	handler->create_dictionary	= linear_hash_dictionary;
+	handler->remove				= linear_hash_delete;
+	handler->delete_dictionary	= linear_hash_delete_dictionary;
+	/* handler->update				= linear_hash_update; */
+	/* handler->find				= linear_hash_find; */
+	handler->close_dictionary	= linear_hash_close_dictionary;
+	handler->open_dictionary	= linear_hash_open_dictionary;
+}
+
+ion_status_t
+linear_hash_dict_insert(
+	ion_dictionary_t	*dictionary,
+	ion_key_t			key,
+	ion_value_t			value
+) {
+	return linear_hash_insert(key, value, (linear_hash_table_t *) dictionary->instance);
+}
+
+ion_err_t
+linear_hash_create_dictionary(
+	ion_dictionary_id_t			id,
+	ion_key_type_t				key_type,
+	ion_key_size_t				key_size,
+	ion_value_size_t			value_size,
+	ion_dictionary_size_t		dictionary_size,
+	ion_dictionary_compare_t	compare,
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dictionary
+) {
+	UNUSED(id);
+
+	int				initial_size, split_threshold, records_per_bucket;
+	array_list_t	*bucket_map;
+
+	bucket_map				= malloc(sizeof(array_list_t));
+	bucket_map				= array_list_init(5, bucket_map);
+
+	dictionary->instance	= malloc(sizeof(linear_hash_table_t));
+
+	if (NULL == dictionary->instance) {
+		return err_out_of_memory;
+	}
+
+	dictionary->instance->compare	= compare;
+
+	initial_size					= 5;
+	split_threshold					= 85;
+	records_per_bucket				= 4;
+
+	/* TODO Should we handle the possible error code returned by this?
+	 * If yes, what sorts of errors does it return? */
+	ion_err_t result = linear_hash_init(initial_size, split_threshold, records_per_bucket, bucket_map, (ion_skiplist_t *) dictionary->instance);
+
+	if (err_ok == result) {
+		dictionary->handler = handler;
+	}
+
+	return result;
+}
+
+ion_status_t
+linear_hash_dict_delete(
+	ion_dictionary_t	*dictionary,
+	ion_key_t			key
+) {
+	return linear_hash_delete(key, (linear_hash_table_t *) dictionary->instance);
+}
+
+/* ion_err_t */
+/* linear_hash_delete_dictionary( */
+/*		ion_dictionary_t *dictionary */
+/* ) { */
+/*	ion_err_t result = sl_destroy((ion_skiplist_t *) dictionary->instance); */
+/*  */
+/*	free(dictionary->instance); */
+/*	dictionary->instance = NULL; */
+/*	return result; */
+/* } */
+/*  */
+/* ion_status_t */
+/* linear_hash_dict_update( */
+/*		ion_dictionary_t	*dictionary, */
+/*		ion_key_t			key, */
+/*		ion_value_t			value */
+/* ) { */
+/*	return sl_update((ion_skiplist_t *) dictionary->instance, key, value); */
+/* } */

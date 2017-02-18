@@ -5,18 +5,16 @@
 #include "../../key_value/kv_system.h"
 #include "../dictionary.h"
 
-typedef long file_offset;
-
 /* SIMPLE ARRAY_LIST FOR BUCKET MAP */
 typedef struct {
 	int			current_size;
-	file_offset *data;
+	ion_fpos_t	*data;
 } array_list_t;
 
 /* definition of linear hash record, with a type and pointer instance declared for later use */
 typedef struct {
 	int			id;
-	file_offset next;
+	ion_fpos_t	next;
 	int			value;
 } linear_hash_record_t;
 
@@ -24,8 +22,8 @@ typedef struct {
 typedef struct {
 	int			idx;
 	int			record_count;
-	file_offset anchor_record;
-	file_offset overflow_location;
+	ion_fpos_t	anchor_record;
+	ion_fpos_t	overflow_location;
 } linear_hash_bucket_t;
 
 /* function pointer syntax: return_type (*function_name) (arg_type) */
@@ -43,8 +41,13 @@ typedef struct {
 	FILE					*database;
 
 	/* points to the current location in the data */
-	file_offset				data_pointer;
+	ion_fpos_t				data_pointer;
 
 	/* maps the location of the head of the linked list of buckets corresponding to its index */
 	array_list_t			*bucket_map;
 } linear_hash_table_t;
+
+typedef struct {
+	ion_fpos_t	next;
+	ion_fpos_t	current_bucket_loc;
+} linear_hash_record_iterator_t;
