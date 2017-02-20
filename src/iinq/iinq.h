@@ -20,7 +20,7 @@ extern "C" {
 /**
 @brief		Page size in bytes.
 */
-#define IINQ_PAGE_SIZE	512
+#define IINQ_PAGE_SIZE	64
 
 /**
 @brief		Error code for using long jumps.
