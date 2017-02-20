@@ -1692,8 +1692,6 @@ void
 iinq_benchmark_set_1(
 	planck_unit_test_t *tc
 ) {
-	printf("Can I print here?\n");
-
 	DEFINE_SCHEMA(test, {
 		uint32_t attr0;
 		uint32_t attr1;

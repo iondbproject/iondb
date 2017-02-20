@@ -6,6 +6,8 @@
 extern "C" {
 #endif
 
+#include <errno.h>
+
 #include "../dictionary/dictionary_types.h"
 #include "../dictionary/ion_master_table.h"
 #include "../key_value/kv_system.h"
