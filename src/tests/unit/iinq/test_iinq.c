@@ -1728,12 +1728,12 @@ iinq_benchmark_set_1(
 		iinq_test_insert_into_test(tc, IONIZE(i, uint32_t), &test_val);
 	}
 
-	iinq_benchmark_time("query_1", iinq_benchmark_query_1, &processor);
-	iinq_benchmark_time("query_2", iinq_benchmark_query_2, &processor);
-	iinq_benchmark_time("query_3", iinq_benchmark_query_3, &processor);
-	iinq_benchmark_time("query_4", iinq_benchmark_query_4, &processor);
-	iinq_benchmark_time("query_5", iinq_benchmark_query_5, &processor);
-	iinq_benchmark_time("query_6", iinq_benchmark_query_6, &processor);
+//	iinq_benchmark_time("query_1", iinq_benchmark_query_1, &processor);
+//	iinq_benchmark_time("query_2", iinq_benchmark_query_2, &processor);
+//	iinq_benchmark_time("query_3", iinq_benchmark_query_3, &processor);
+//	iinq_benchmark_time("query_4", iinq_benchmark_query_4, &processor);
+//	iinq_benchmark_time("query_5", iinq_benchmark_query_5, &processor);
+//	iinq_benchmark_time("query_6", iinq_benchmark_query_6, &processor);
 
 	DROP(test);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == 1);
