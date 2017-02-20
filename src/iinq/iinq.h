@@ -7,7 +7,6 @@ extern "C" {
 #endif
 
 #include <errno.h>
-#include <string.h>
 
 #include "../dictionary/dictionary_types.h"
 #include "../dictionary/ion_master_table.h"

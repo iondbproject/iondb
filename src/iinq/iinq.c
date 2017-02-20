@@ -43,7 +43,7 @@ iinq_create_source(
 
 		if (err_ok != error) {
 			printf("*** Error on create\n");
-			printf("*** Platform error: %s\n", strerror(errno));
+			printf("*** Platform error: %d\n", errno);
 			return error;
 		}
 
