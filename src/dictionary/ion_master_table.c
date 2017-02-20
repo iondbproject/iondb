@@ -284,16 +284,22 @@ ion_master_table_create_dictionary(
 	err = ion_master_table_get_next_id(&id);
 
 	if (err_ok != err) {
+		printf("*** Error on master tab create, master tab get next id\n");
 		return err;
 	}
 
 	err = dictionary_create(handler, dictionary, id, key_type, key_size, value_size, dictionary_size);
 
 	if (err_ok != err) {
+		printf("*** Error on master tab create, dictionary create\n");
 		return err;
 	}
 
 	err = ion_add_to_master_table(dictionary, dictionary_size);
+
+	if (err_ok != err) {
+		printf("*** Error on master tab create, add to master tab\n");
+	}
 
 	return err;
 }

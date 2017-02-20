@@ -42,7 +42,7 @@ iinq_create_source(
 		error = ion_master_table_create_dictionary(&handler, &dictionary, key_type, key_size, value_size, 10);
 
 		if (err_ok != error) {
-			printf("*** Error on create");
+			printf("*** Error on create\n");
 			return error;
 		}
 
