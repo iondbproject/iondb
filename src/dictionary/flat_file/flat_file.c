@@ -59,12 +59,18 @@ flat_file_initialize(
 	if (NULL == flat_file->data_file) {
 		/* The file did not exist - lets open to write */
 		flat_file->data_file = fopen(filename, "w+b");
+		printf("$$$ Created a fresh file\n");
 
 		if (NULL == flat_file->data_file) {
 			/* Failed to open, even to create */
 			return err_file_open_error;
 		}
 	}
+	else {
+		printf("$$$ Re-read old file\n");
+	}
+
+	printf("$$$ File name: %s\n", filename);
 
 	/* For now, we don't have any header information. But we write some garbage there just so that
 	   we can verify that the code to handle the header is working.*/
@@ -87,8 +93,10 @@ flat_file_initialize(
 	}
 
 	if (0 != fseek(flat_file->data_file, 0, SEEK_END)) {
-		printf("*** Error in ff init, attempt to seek to end");
-		printf("*** Platform error: %d\n", errno);
+		int current_errno = errno;
+
+		printf("*** Error in ff init, attempt to seek to end\n");
+		printf("*** Platform error: %d\n", current_errno);
 		fclose(flat_file->data_file);
 		return err_file_bad_seek;
 	}
@@ -106,7 +114,7 @@ flat_file_initialize(
 	ion_err_t			err = flat_file_scan(flat_file, -1, &loc, &row, ION_FLAT_FILE_SCAN_BACKWARDS, flat_file_predicate_not_empty);
 
 	if ((err_ok != err) && (err_file_hit_eof != err)) {
-		printf("*** Error in ff init, scan for last non empty row");
+		printf("*** Error in ff init, scan for last non empty row\n");
 		printf("*** Platform error: %d\n", errno);
 		fclose(flat_file->data_file);
 		return err;
