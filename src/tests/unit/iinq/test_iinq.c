@@ -1692,6 +1692,8 @@ void
 iinq_benchmark_set_1(
 	planck_unit_test_t *tc
 ) {
+	printf("Can I print here?\n");
+
 	DEFINE_SCHEMA(test, {
 		uint32_t attr0;
 		uint32_t attr1;
@@ -1719,8 +1721,6 @@ iinq_benchmark_set_1(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
 
 	uint32_t i;
-
-	printf("Can I print here?\n");
 
 	for (i = 0; i < 20; i++) {
 		test_val.attr0	= i * 2;
