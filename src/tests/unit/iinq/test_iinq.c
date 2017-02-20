@@ -1,6 +1,7 @@
 #include "test_iinq.h"
 #include "../../../iinq/iinq.h"
 
+/* Tests various IINQ queries */
 typedef void (*iinq_test_results_func_t)(
 	planck_unit_test_t *,
 	ion_iinq_result_t *,
