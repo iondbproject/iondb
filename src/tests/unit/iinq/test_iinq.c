@@ -1720,7 +1720,7 @@ iinq_benchmark_set_1(
 
 	uint32_t i;
 
-	for (i = 0; i < 100; i++) {
+	for (i = 0; i < 20; i++) {
 		test_val.attr0	= i * 2;
 		test_val.attr1	= i * 3;
 		test_val.attr2	= i * 4;
