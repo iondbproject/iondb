@@ -45,6 +45,8 @@ flat_file_initialize(
 	int		actual_filename_length = dictionary_get_filename(id, "ffs", filename);
 
 	if (actual_filename_length >= ION_MAX_FILENAME_LENGTH) {
+		printf("*** Error in filename length: %d vs %d\n", actual_filename_length, ION_MAX_FILENAME_LENGTH);
+		printf("Attempted ID: %d\n", id);
 		return err_dictionary_initialization_failed;
 	}
 

@@ -17,6 +17,7 @@ iinq_create_source(
 	error				= ion_init_master_table();
 
 	if (err_ok != error) {
+		printf("*** Error on init\n");
 		return error;
 	}
 
@@ -29,6 +30,7 @@ iinq_create_source(
 			return err_file_close_error;
 		}
 
+		printf("*** Error in create source, schema exists: %s\n", schema_file_name);
 		return err_duplicate_dictionary_error;
 	}
 	/* Otherwise, we are creating the dictionary for the first time. */
@@ -40,6 +42,7 @@ iinq_create_source(
 		error = ion_master_table_create_dictionary(&handler, &dictionary, key_type, key_size, value_size, 10);
 
 		if (err_ok != error) {
+			printf("*** Error on create");
 			return error;
 		}
 
@@ -77,6 +80,7 @@ iinq_open_source(
 	error = ion_init_master_table();
 
 	if (err_ok != error) {
+		printf("*** Error on init master in open source\n");
 		return error;
 	}
 
@@ -96,6 +100,7 @@ iinq_open_source(
 		error = ion_open_dictionary(handler, dictionary, id);
 
 		if (err_ok != error) {
+			printf("*** Error on open dict in open source");
 			return error;
 		}
 
@@ -130,6 +135,7 @@ iinq_insert(
 	error				= iinq_open_source(schema_file_name, &dictionary, &handler);
 
 	if (err_ok != error) {
+		printf("*** Error on open in insert\n");
 		status = ION_STATUS_ERROR(error);
 		goto RETURN;
 	}

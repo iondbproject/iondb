@@ -219,8 +219,8 @@ ion_init_master_table(
 		/* Find existing ID count. */
 		ion_dictionary_config_info_t master_config;
 
-		if (ion_master_table_read(&master_config, 0)) {
-			return err_file_read_error;
+		if (err_ok != (error = ion_master_table_read(&master_config, 0))) {
+			return error;
 		}
 
 		ion_master_table_next_id = master_config.id;
@@ -387,7 +387,8 @@ ion_open_dictionary(
 
 	/* Lookup for id failed. */
 	if (err_ok != err) {
-		return err_dictionary_initialization_failed;
+		printf("*** Error in master tab open dict, lookup");
+		return err;
 	}
 
 	err = dictionary_open(handler, dictionary, &config);
