@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/danaklamut/ClionProjects/iondb/src/serial/printf_redirect.h
+
+/Users/danaklamut/ClionProjects/iondb/src/serial/serial_c_iface.cpp
+serial_c_iface.h
+/Users/danaklamut/ClionProjects/iondb/src/serial/serial_c_iface.h
+
+/Users/danaklamut/ClionProjects/iondb/src/serial/serial_c_iface.h
+Arduino.h
+-
+printf_redirect.h
+/Users/danaklamut/ClionProjects/iondb/src/serial/printf_redirect.h
+

@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file_behaviour_flat_file.ino.cpp
+Arduino.h
+-
+SPI.h
+-
+SD.h
+-
+test_behaviour_flat_file.h
+/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.h
+Arduino.h
+/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file/Arduino.h
+

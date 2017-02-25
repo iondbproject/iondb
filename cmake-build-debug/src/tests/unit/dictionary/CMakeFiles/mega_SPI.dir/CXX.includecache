@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.cpp
+SPI.h
+/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.h
+
+/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.h
+Arduino.h
+-
+
