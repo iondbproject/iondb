@@ -22,10 +22,10 @@ void
 linear_hash_dict_init(
 	ion_dictionary_handler_t *handler
 ) {
-	handler->insert				= linear_hash_insert;
+	handler->insert				= linear_hash_dict_insert;
 	/* handler->get				= linear_hash_query; */
-	handler->create_dictionary	= linear_hash_dictionary;
-	handler->remove				= linear_hash_delete;
+	handler->create_dictionary	= linear_hash_create_dictionary;
+	handler->remove				= linear_hash_dict_delete;
 	handler->delete_dictionary	= linear_hash_delete_dictionary;
 	/* handler->update				= linear_hash_update; */
 	/* handler->find				= linear_hash_find; */
@@ -39,7 +39,7 @@ linear_hash_dict_insert(
 	ion_key_t			key,
 	ion_value_t			value
 ) {
-	return linear_hash_insert(key, value, (linear_hash_table_t *) dictionary->instance);
+	return linear_hash_insert(1, insert_hash_to_bucket(20, (linear_hash_table_t *) dictionary->instance), (linear_hash_table_t *) dictionary->instance);
 }
 
 ion_err_t
@@ -53,7 +53,9 @@ linear_hash_create_dictionary(
 	ion_dictionary_handler_t	*handler,
 	ion_dictionary_t			*dictionary
 ) {
-	UNUSED(id);
+	/* UNUSED(id); */
+
+	printf("dictionary id: %d, key_type: %d, key_size: %d", id, key_type, key_size);
 
 	int				initial_size, split_threshold, records_per_bucket;
 	array_list_t	*bucket_map;
@@ -67,15 +69,15 @@ linear_hash_create_dictionary(
 		return err_out_of_memory;
 	}
 
-	dictionary->instance->compare	= compare;
+	/* dictionary->instance->compare	= compare; */
 
-	initial_size					= 5;
-	split_threshold					= 85;
-	records_per_bucket				= 4;
+	initial_size		= 5;
+	split_threshold		= 85;
+	records_per_bucket	= 4;
 
 	/* TODO Should we handle the possible error code returned by this?
 	 * If yes, what sorts of errors does it return? */
-	ion_err_t result = linear_hash_init(initial_size, split_threshold, records_per_bucket, bucket_map, (ion_skiplist_t *) dictionary->instance);
+	ion_err_t result = linear_hash_init(initial_size, split_threshold, records_per_bucket, bucket_map, (linear_hash_table_t *) dictionary->instance);
 
 	if (err_ok == result) {
 		dictionary->handler = handler;
@@ -89,25 +91,42 @@ linear_hash_dict_delete(
 	ion_dictionary_t	*dictionary,
 	ion_key_t			key
 ) {
-	return linear_hash_delete(key, (linear_hash_table_t *) dictionary->instance);
+	return linear_hash_delete(1, (linear_hash_table_t *) dictionary->instance);
 }
 
-/* ion_err_t */
-/* linear_hash_delete_dictionary( */
-/*		ion_dictionary_t *dictionary */
-/* ) { */
-/*	ion_err_t result = sl_destroy((ion_skiplist_t *) dictionary->instance); */
+ion_err_t
+linear_hash_delete_dictionary(
+	ion_dictionary_t *dictionary
+) {
+	ion_err_t result = linear_hash_destroy((linear_hash_table_t *) dictionary->instance);
+
+	free(dictionary->instance);
+	dictionary->instance = NULL;
+	return result;
+}
+
+ion_err_t
+linear_hash_open_dictionary(
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary,
+	ion_dictionary_config_info_t	*config,
+	ion_dictionary_compare_t		compare
+) {
+	return err_ok;	/* ffdict_create_dictionary(config->id, config->type, config->key_size, config->value_size, config->dictionary_size, compare, handler, dictionary); */
+}
+
+ion_err_t
+linear_hash_close_dictionary(
+	ion_dictionary_t *dictionary
+) {
+/*	ion_err_t err = flat_file_close((ion_flat_file_t *) dictionary->instance); */
 /*  */
 /*	free(dictionary->instance); */
 /*	dictionary->instance = NULL; */
-/*	return result; */
-/* } */
 /*  */
-/* ion_status_t */
-/* linear_hash_dict_update( */
-/*		ion_dictionary_t	*dictionary, */
-/*		ion_key_t			key, */
-/*		ion_value_t			value */
-/* ) { */
-/*	return sl_update((ion_skiplist_t *) dictionary->instance, key, value); */
-/* } */
+/*	if (err_ok != err) { */
+/*		return err; */
+/*	} */
+
+	return err_ok;
+}

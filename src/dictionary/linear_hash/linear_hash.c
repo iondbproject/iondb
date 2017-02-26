@@ -15,7 +15,7 @@ linear_hash_init(
 	linear_hash_table_t *linear_hash
 ) {
 	/* open datafile */
-	linear_hash->database			= fopen("data.bin", "r+");
+	linear_hash->database			= fopen("data.bin", "w+b");
 
 	/* initialize linear_hash fields */
 	linear_hash->initial_size		= initial_size;
@@ -37,18 +37,18 @@ linear_hash_init(
 	}
 
 	/* Save the linear_hash state to disk */
-	FILE *linear_hash_state;
+	/* FILE *linear_hash_state; */
 
-	linear_hash_state = fopen("linear_hash_state.bin", "r+");
+	linear_hash->state = fopen("linear_hash_state.bin", "w+b");
 
 	/* check if file is open */
-	if (!linear_hash_state) {
-		printf("Unable to open file\n");
-	}
+/*	if (!linear_hash_state) { */
+/*		printf("Unable to open file\n"); */
+/*	} */
 
 	/* write the state of the linear_hash to disk */
-	fwrite(linear_hash, sizeof(linear_hash_table_t), 1, linear_hash_state);
-	fclose(linear_hash_state);
+	fwrite(linear_hash, sizeof(linear_hash_table_t), 1, linear_hash->state);
+	/* fclose(linear_hash_state); */
 
 	printf("Linear hash table successfully initialized\n");
 
@@ -141,18 +141,19 @@ linear_hash_update_state(
 	linear_hash_table_t *linear_hash
 ) {
 	/* create pointer to file */
-	FILE *linear_hash_state;
+	/* FILE *linear_hash_state; */
 
-	linear_hash_state = fopen("linear_hash_state.bin", "r+");
+	/* linear_hash_state = fopen("linear_hash_state.bin", "r+"); */
 
 	/* check the file is open */
-	if (!linear_hash_state) {
-		printf("Unable to open file\n");
-	}
+/*	if (!linear_hash_state) { */
+/*		printf("Unable to open file\n"); */
+/*	} */
 
 	/* write to file */
-	fwrite(&linear_hash, sizeof(linear_hash_table_t), 1, linear_hash_state);
-	fclose(linear_hash_state);
+	fseek(linear_hash->state, 0, SEEK_SET);
+	fwrite(&linear_hash, sizeof(linear_hash_table_t), 1, linear_hash->state);
+	/* fclose(linear_hash_state); */
 	printf("Updated linear hash state\n");
 }
 
@@ -241,8 +242,7 @@ split(
 					linear_hash_insert(record.id, hash_to_bucket(record.id, linear_hash), linear_hash);
 				}
 
-				record_loc	= record.next;
-				record_loc	+= sizeof(linear_hash_record_t);
+				record_loc += sizeof(linear_hash_record_t);
 				print_linear_hash_record(record);
 				printf("sizeof(record): %lu, record_loc: %ld, record.next: %ld, sizeof + record_loc: %ld, same? %d\n", sizeof(linear_hash_record_t), record_loc, record.next, test_record_loc, test_record_loc == record.next);
 			}
@@ -267,8 +267,7 @@ split(
 				linear_hash_insert(record.id, hash_to_bucket(record.id, linear_hash), linear_hash);
 			}
 
-			record_loc	= record.next;
-			record_loc	+= sizeof(linear_hash_record_t);
+			record_loc += sizeof(linear_hash_record_t);
 			print_linear_hash_record(record);
 			printf("sizeof(record): %lu, record_loc: %ld, record.next: %ld, sizeof + record_loc: %ld, same? %d\n", sizeof(linear_hash_record_t), record_loc, record.next, test_record_loc, test_record_loc == record.next);
 		}
@@ -298,7 +297,7 @@ linear_hash_above_threshold(
 }
 
 /* linear hash operations */
-int
+ion_status_t
 linear_hash_insert(
 	int					id,
 	int					hash_bucket_idx,
@@ -321,7 +320,7 @@ linear_hash_insert(
 		record_loc				= bucket_records_loc;
 		bucket.anchor_record	= record_loc;
 
-		ion_fpos_t bucket_loc = bucket_idx_to_ion_fpos_t(bucket.idx, linear_hash);
+		/* ion_fpos_t bucket_loc = bucket_idx_to_ion_fpos_t(bucket.idx, linear_hash); */
 
 		record.next = -1;
 	}
@@ -417,7 +416,7 @@ linear_hash_insert(
 
 	linear_hash_increment_num_records(linear_hash);
 	printf("Successfully inserted record %d at offset %ld\n", record.id, record_loc);
-	return 1;
+	return ION_STATUS_ERROR(err_ok);
 }
 
 /* linear hash operations */
@@ -483,7 +482,7 @@ linear_hash_get(
 }
 
 /* linear hash operations */
-void
+ion_status_t
 linear_hash_delete(
 	int					id,
 	linear_hash_table_t *linear_hash
@@ -521,7 +520,7 @@ linear_hash_delete(
 			/* case there are no more overflow buckets to check in */
 			else {
 				printf("Record not found\n");
-				return;
+				return ION_STATUS_ERROR(err_ok);
 			}
 		}
 
@@ -538,6 +537,7 @@ linear_hash_delete(
 	bucket.record_count--;
 	linear_hash_decrement_num_records(linear_hash);
 	linear_hash_update_bucket(bucket_loc, bucket, linear_hash);
+	return ION_STATUS_ERROR(err_ok);
 }
 
 /* returns the struct representing the bucket at the specified index */
@@ -641,16 +641,22 @@ write_new_bucket(
 	/* write to data file */
 	fwrite(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database);
 
-	linear_hash_record_t blank = { -1, -1, -1 };
+	for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+		linear_hash_record_t blank = { -1, -1, -1 };
 
-	fwrite(&blank, sizeof(linear_hash_record_t), linear_hash->records_per_bucket, linear_hash->database);
+		fwrite(&blank, sizeof(linear_hash_record_t), 1, linear_hash->database);
+	}
+
+/*	linear_hash_record_t blank = { -1, -1, -1 }; */
+/*  */
+/*	fwrite(&blank, sizeof(linear_hash_record_t), linear_hash->records_per_bucket, linear_hash->database); */
 
 	/* restore data pointer to the original location */
 	fseek(linear_hash->database, starting_ion_fpos_t, SEEK_SET);
 	linear_hash->data_pointer = starting_ion_fpos_t;
 
 	/* write bucket_loc in mapping */
-	store_bucket_loc_in_map(idx, bucket_loc);
+	/* store_bucket_loc_in_map(idx, bucket_loc, linear_hash); */
 	array_list_insert(idx, bucket_loc, linear_hash->bucket_map);
 	printf("Successfully wrote a new bucket with index %d to the database\n", bucket.idx);
 }
@@ -747,12 +753,20 @@ create_overflow_bucket(
 
 	array_list_insert(bucket.idx, overflow_loc, linear_hash->bucket_map);
 
+	printf("data pointer before writing bucket: %ld\n", ftell(linear_hash->database));
+
 	/* write to file */
 	fwrite(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database);
+	printf("data pointer after writing bucket: %ld\n", ftell(linear_hash->database));
 
-	linear_hash_record_t blank = { -1, -1, -1 };
+	for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+		linear_hash_record_t blank = { -1, -1, -1 };
 
-	fwrite(&blank, sizeof(linear_hash_record_t), linear_hash->records_per_bucket, linear_hash->database);
+		fwrite(&blank, sizeof(linear_hash_record_t), 1, linear_hash->database);
+	}
+
+	/* fwrite(&blank, sizeof(linear_hash_record_t), linear_hash->records_per_bucket, linear_hash->database); */
+	printf("data pointer before writing records: %ld\n", ftell(linear_hash->database));
 
 	/* restore data pointer to the original location */
 	fseek(linear_hash->database, starting_ion_fpos_t, SEEK_SET);
@@ -824,22 +838,22 @@ insert_hash_to_bucket(
 /* Write the offset of bucket idx to the map in linear hash state */
 void
 store_bucket_loc_in_map(
-	int			idx,
-	ion_fpos_t	bucket_loc
+	int					idx,
+	ion_fpos_t			bucket_loc,
+	linear_hash_table_t *linear_hash
 ) {
 	/* create a pointer to the file */
-	FILE *linear_hash_state;
+	/* FILE *linear_hash_state; */
 
-	linear_hash_state = fopen("linear_hash_state.bin", "r+");
+	/* linear_hash->state = fopen("linear_hash_state.bin", "r+"); */
 
 	/* seek to the location of the bucket in the map */
 	ion_fpos_t loc_in_map = sizeof(linear_hash_table_t) + idx * sizeof(ion_fpos_t);
 
-	fseek(linear_hash_state, loc_in_map, SEEK_SET);
+	fseek(linear_hash->state, loc_in_map, SEEK_SET);
 
 	/* read ion_fpos_t of bucket from mapping in linear hash */
-	fwrite(&bucket_loc, sizeof(ion_fpos_t), 1, linear_hash_state);
-	fclose(linear_hash_state);
+	fwrite(&bucket_loc, sizeof(ion_fpos_t), 1, linear_hash->state);
 	printf("Wrote the location of bucket %d to %ld in map\n", idx, bucket_loc);
 }
 
@@ -918,34 +932,37 @@ print_all_linear_hash_index_buckets(
 
 	printf("PRINTING ALL %d IDX BUCKETS\nHEAD BUCKET AT %ld\n", idx, bucket_loc);
 
-	linear_hash_bucket_t	bucket				= linear_hash_get_bucket(bucket_loc, linear_hash);
-	ion_fpos_t				anchor_record_loc	= bucket_loc + sizeof(linear_hash_bucket_t);
+	linear_hash_bucket_t	bucket = linear_hash_get_bucket(bucket_loc, linear_hash);
+	ion_fpos_t				record_loc;
 	linear_hash_record_t	record;
 
-	/* walk through linked list of overflow buckets */
-	while (bucket.overflow_location != -1) {
-		print_linear_hash_bucket(bucket);
-
-		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
-			record				= linear_hash_get_record(anchor_record_loc);
-			print_linear_hash_record(record);
-			anchor_record_loc	+= sizeof(linear_hash_record_t);
-		}
-
-		if (bucket.overflow_location != -1) {
-			anchor_record_loc	= bucket.overflow_location + sizeof(linear_hash_bucket_t);
-			record				= linear_hash_get_record(anchor_record_loc);
-			bucket				= linear_hash_get_bucket(bucket.overflow_location, linear_hash);
-		}
-	}
-
-	/* handle last bucket */
+	printf("head bucket\n");
 	print_linear_hash_bucket(bucket);
 
+	while (bucket.overflow_location != -1) {
+		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
+
+		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+			record		= linear_hash_get_record(record_loc);
+
+			record_loc	+= sizeof(linear_hash_record_t);
+			print_linear_hash_record(record);
+		}
+
+		printf("current bucket\n");
+		print_linear_hash_bucket(bucket);
+		printf("getting next overflow!!\n");
+		bucket_loc	= bucket.overflow_location;
+		bucket		= linear_hash_get_bucket(bucket_loc, linear_hash);
+	}
+
+	record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
+
 	for (int i = 0; i < linear_hash->records_per_bucket; i++) {
-		record				= linear_hash_get_record(anchor_record_loc);
+		record		= linear_hash_get_record(record_loc);
+
+		record_loc	+= sizeof(linear_hash_record_t);
 		print_linear_hash_record(record);
-		anchor_record_loc	+= sizeof(linear_hash_record_t);
 	}
 }
 
@@ -1003,30 +1020,67 @@ linear_hash_bucket_iterator(
 	}
 }
 
-linear_hash_record_t
-record_iterator_next(
-	linear_hash_record_iterator_t	*itr,
-	linear_hash_table_t				*linear_hash
+/* linear_hash_record_t */
+/* record_iterator_next( */
+/*	linear_hash_record_iterator_t	*itr, */
+/*	linear_hash_table_t				*linear_hash */
+/* ) { */
+/*	linear_hash_record_t record = linear_hash_get_record(itr->next); */
+/*  */
+/*	if (itr->next - (itr->current_bucket_loc + sizeof(linear_hash_bucket_t)) / sizeof(linear_hash_record_t) == (linear_hash->records_per_bucket - 1)) { */
+/*		linear_hash_bucket_t bucket = linear_hash_get_bucket(itr->current_bucket_loc, linear_hash); */
+/*  */
+/*		if (bucket.overflow_location == -1) { */
+/*			free(itr); */
+/*  */
+/*			linear_hash_record_t blank = { -1, -1, -1 }; */
+/*  */
+/*			return blank; */
+/*		} */
+/*  */
+/*		itr->current_bucket_loc = bucket.overflow_location; */
+/*		itr->next				= itr->current_bucket_loc + sizeof(linear_hash_bucket_t); */
+/*	} */
+/*	else { */
+/*		itr->next += sizeof(linear_hash_record_t); */
+/*	} */
+/*  */
+/*	return record; */
+/* } */
+
+/* CLOSE, OPEN, CREATE, DESTROY METHODS */
+ion_err_t
+linear_hash_close(
+	linear_hash_table_t *linear_hash
 ) {
-	linear_hash_record_t record = linear_hash_get_record(itr->next);
+	free(linear_hash->bucket_map);
+	linear_hash->bucket_map = NULL;
 
-	if (itr->next - (itr->current_bucket_loc + sizeof(linear_hash_bucket_t)) / sizeof(linear_hash_record_t) == (linear_hash->records_per_bucket - 1)) {
-		linear_hash_bucket_t bucket = linear_hash_get_bucket(itr->current_bucket_loc, linear_hash);
-
-		if (bucket.overflow_location == -1) {
-			free(itr);
-
-			linear_hash_record_t blank = { -1, -1, -1 };
-
-			return blank;
-		}
-
-		itr->current_bucket_loc = bucket.overflow_location;
-		itr->next				= itr->current_bucket_loc + sizeof(linear_hash_bucket_t);
-	}
-	else {
-		itr->next += sizeof(linear_hash_record_t);
+	if (0 != fclose(linear_hash->database)) {
+		return err_file_close_error;
 	}
 
-	return record;
+	return err_ok;
+}
+
+ion_err_t
+linear_hash_destroy(
+	linear_hash_table_t *linear_hash
+) {
+	ion_err_t err = linear_hash_close(linear_hash);
+
+	if (err_ok != err) {
+		return err;
+	}
+
+	char filename[ION_MAX_FILENAME_LENGTH];
+
+/*	dictionary_get_filename(linear_hash->super.id, "ffs", filename); */
+
+	if (0 != fremove(filename)) {
+		return err_file_delete_error;
+	}
+
+	linear_hash->database = NULL;
+	return err_ok;
 }

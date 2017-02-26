@@ -39,6 +39,7 @@ typedef struct {
 	int						num_records;
 	int						records_per_bucket;
 	FILE					*database;
+	FILE					*state;
 
 	/* points to the current location in the data */
 	ion_fpos_t				data_pointer;
@@ -47,7 +48,7 @@ typedef struct {
 	array_list_t			*bucket_map;
 } linear_hash_table_t;
 
-typedef struct {
-	ion_fpos_t	next;
-	ion_fpos_t	current_bucket_loc;
-} linear_hash_record_iterator_t;
+/* typedef struct { */
+/*	ion_fpos_t	next; */
+/*	ion_fpos_t	current_bucket_loc; */
+/* } linear_hash_record_iterator_t; */

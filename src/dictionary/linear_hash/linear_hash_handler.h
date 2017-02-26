@@ -5,7 +5,6 @@
 extern "C" {
 #endif
 
-#include "linear_hash_types.h"
 #include "linear_hash.h"
 
 /**
@@ -78,6 +77,19 @@ linear_hash_create_dictionary(
 	ion_dictionary_compare_t	compare,
 	ion_dictionary_handler_t	*handler,
 	ion_dictionary_t			*dictionary
+);
+
+ion_err_t
+linear_hash_close_dictionary(
+	ion_dictionary_t *dictionary
+);
+
+ion_err_t
+linear_hash_open_dictionary(
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary,
+	ion_dictionary_config_info_t	*config,
+	ion_dictionary_compare_t		compare
 );
 
 /**

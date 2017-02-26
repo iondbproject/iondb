@@ -42,7 +42,7 @@ split(
 	linear_hash_table_t *linear_hash
 );
 
-int
+ion_status_t
 linear_hash_insert(
 	int					id,
 	int					hash_bucket_idx,
@@ -56,7 +56,7 @@ linear_hash_get(
 	linear_hash_table_t *linear_hash
 );
 
-void
+ion_status_t
 linear_hash_delete(
 	int					id,
 	linear_hash_table_t *linear_hash
@@ -156,8 +156,9 @@ print_linear_hash_bucket_map(
 /* Write the offset of bucket idx to the map in linear hash state */
 void
 store_bucket_loc_in_map(
-	int			idx,
-	ion_fpos_t	bucket_loc
+	int					idx,
+	ion_fpos_t			bucket_loc,
+	linear_hash_table_t *linear_hash
 );
 
 /* ARRAY_LIST METHODS */
@@ -208,8 +209,13 @@ print_linear_hash_state(
 	linear_hash_table_t *linear_hash
 );
 
-linear_hash_record_t
-record_iterator_next(
-	linear_hash_record_iterator_t	*itr,
-	linear_hash_table_t				*linear_hash
+/* linear_hash_record_t */
+/* record_iterator_next( */
+/*	linear_hash_record_iterator_t	*itr, */
+/*	linear_hash_table_t				*linear_hash */
+/* ); */
+
+ion_err_t
+linear_hash_destroy(
+	linear_hash_table_t *linear_hash
 );
