@@ -54,7 +54,7 @@ linear_hash_insert(
 );
 
 /* linear hash operations */
-linear_hash_record_t
+ion_status_t
 linear_hash_get(
 	int					id,
 	linear_hash_table_t *linear_hash

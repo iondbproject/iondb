@@ -23,7 +23,7 @@ linear_hash_dict_init(
 	ion_dictionary_handler_t *handler
 ) {
 	handler->insert				= linear_hash_dict_insert;
-	/* handler->get				= linear_hash_query; */
+	handler->get				= linear_hash_dict_get;
 	handler->create_dictionary	= linear_hash_create_dictionary;
 	handler->remove				= linear_hash_dict_delete;
 	handler->delete_dictionary	= linear_hash_delete_dictionary;
@@ -40,6 +40,15 @@ linear_hash_dict_insert(
 	ion_value_t			value
 ) {
 	return linear_hash_insert(key, insert_hash_to_bucket(key, (linear_hash_table_t *) dictionary->instance), (linear_hash_table_t *) dictionary->instance);
+}
+
+ion_status_t
+linear_hash_dict_get(
+	ion_dictionary_t	*dictionary,
+	ion_key_t			key,
+	ion_value_t			value
+) {
+	return linear_hash_get(key, (linear_hash_table_t *) dictionary->instance);
 }
 
 ion_err_t

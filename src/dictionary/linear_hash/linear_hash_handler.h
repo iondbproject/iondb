@@ -92,6 +92,13 @@ linear_hash_open_dictionary(
 	ion_dictionary_compare_t		compare
 );
 
+ion_status_t
+linear_hash_dict_get(
+	ion_dictionary_t	*dictionary,
+	ion_key_t			key,
+	ion_value_t			value
+);
+
 /**
 @brief	  Deletes the @p key and associated value from the given dictionary
 			instance.

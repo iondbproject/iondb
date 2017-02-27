@@ -412,7 +412,7 @@ linear_hash_insert(
 }
 
 /* linear hash operations */
-linear_hash_record_t
+ion_status_t
 linear_hash_get(
 	int					id,
 	linear_hash_table_t *linear_hash
@@ -449,12 +449,9 @@ linear_hash_get(
 			}
 
 			record_loc += sizeof(linear_hash_record_t);
-			print_linear_hash_record(record);
 		}
 
-		printf("current bucket\n");
 		print_linear_hash_bucket(bucket);
-		printf("getting next overflow!!\n");
 		bucket_loc	= bucket.overflow_location;
 		bucket		= linear_hash_get_bucket(bucket_loc, linear_hash);
 	}
@@ -471,20 +468,16 @@ linear_hash_get(
 			}
 
 			record_loc += sizeof(linear_hash_record_t);
-			print_linear_hash_record(record);
 		}
 	}
 
 	if (record_found == 0) {
 		printf("Record not found\n");
-
-		linear_hash_record_t blank = { -1, -1, -1 };
-
-		return blank;
+		return ION_STATUS_ERROR(err_item_not_found);
 	}
 	else {
 		printf("Record found!\n");
-		return record;
+		return ION_STATUS_ERROR(err_ok);
 	}
 }
 
@@ -554,7 +547,7 @@ linear_hash_delete(
 
 	if (record_found == 0) {
 		printf("Record not found\n");
-		return ION_STATUS_ERROR(err_ok);
+		return ION_STATUS_ERROR(err_item_not_found);
 	}
 
 	/* set tombstone (currently using -1) as id to mark deleted record */
