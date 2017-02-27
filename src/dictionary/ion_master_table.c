@@ -132,32 +132,32 @@ ion_master_table_read(
 	}
 
 	if (1 != fread(&(config->id), sizeof(config->id), 1, ion_master_table_file)) {
-		printf("*** Error on master tab read, ID\nb");
+		printf("*** Error on master tab read, ID\n");
 		return err_file_read_error;
 	}
 
 	if (1 != fread(&(config->use_type), sizeof(config->use_type), 1, ion_master_table_file)) {
-		printf("*** Error on master tab read, use type\nb");
+		printf("*** Error on master tab read, use type\n");
 		return err_file_read_error;
 	}
 
 	if (1 != fread(&(config->type), sizeof(config->type), 1, ion_master_table_file)) {
-		printf("*** Error on master tab read, type\nb");
+		printf("*** Error on master tab read, type\n");
 		return err_file_read_error;
 	}
 
 	if (1 != fread(&(config->key_size), sizeof(config->key_size), 1, ion_master_table_file)) {
-		printf("*** Error on master tab read, key size\nb");
+		printf("*** Error on master tab read, key size\n");
 		return err_file_read_error;
 	}
 
 	if (1 != fread(&(config->value_size), sizeof(config->value_size), 1, ion_master_table_file)) {
-		printf("*** Error on master tab read, value size\nb");
+		printf("*** Error on master tab read, value size\n");
 		return err_file_read_error;
 	}
 
 	if (1 != fread(&(config->dictionary_size), sizeof(config->dictionary_size), 1, ion_master_table_file)) {
-		printf("*** Error on master tab read, dictionary size\nb");
+		printf("*** Error on master tab read, dictionary size\n");
 		return err_file_read_error;
 	}
 
