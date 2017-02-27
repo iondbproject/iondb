@@ -11,6 +11,11 @@ extern "C" {
 #include "../../planckunit/src/planck_unit.h"
 #include "../../../iinq/iinq.h"
 
+#if defined(ARDUINO)
+#include "../../../file/kv_stdio_intercept.h"
+#include "../../../file/SD_stdio_c_iface.h"
+#endif
+
 void
 run_all_tests_iinq(
 );

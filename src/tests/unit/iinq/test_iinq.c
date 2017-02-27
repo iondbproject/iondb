@@ -1703,6 +1703,10 @@ iinq_benchmark_set_1(
 	ion_err_t					error;
 	ion_iinq_query_processor_t	processor;
 
+	/* Delete if exists */
+	error = DROP(test);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
+
 	ion_key_type_t		key_type;
 	ion_key_size_t		key_size;
 	ion_value_size_t	value_size;
@@ -1714,7 +1718,7 @@ iinq_benchmark_set_1(
 	key_type	= key_type_numeric_signed;
 	key_size	= sizeof(uint32_t);
 	value_size	= SCHEMA_SIZE(test);
-
+	printf("Attempt create\n");
 	error		= CREATE_DICTIONARY(test, key_type, key_size, value_size);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
 

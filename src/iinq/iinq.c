@@ -100,7 +100,7 @@ iinq_open_source(
 		error = ion_open_dictionary(handler, dictionary, id);
 
 		if (err_ok != error) {
-			printf("*** Error on open dict in open source");
+			printf("*** Error on open dict in open source\n");
 			return error;
 		}
 
