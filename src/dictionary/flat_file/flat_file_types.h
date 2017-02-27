@@ -28,11 +28,12 @@
 extern "C" {
 #endif
 
-#include <errno.h>
-
 #include "../dictionary.h"
 #include "../../file/SD_stdio_c_iface.h"
+
+#if defined(ARDUINO)
 #include "../../serial/serial_c_iface.h"
+#endif
 
 /**
 @brief		This type describes the status flag within a flat file row.

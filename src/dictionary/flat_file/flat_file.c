@@ -93,10 +93,7 @@ flat_file_initialize(
 	}
 
 	if (0 != fseek(flat_file->data_file, 0, SEEK_END)) {
-		int current_errno = errno;
-
 		printf("*** Error in ff init, attempt to seek to end\n");
-		printf("*** Platform error: %d\n", current_errno);
 		fclose(flat_file->data_file);
 		return err_file_bad_seek;
 	}
@@ -115,7 +112,6 @@ flat_file_initialize(
 
 	if ((err_ok != err) && (err_file_hit_eof != err)) {
 		printf("*** Error in ff init, scan for last non empty row\n");
-		printf("*** Platform error: %d\n", errno);
 		fclose(flat_file->data_file);
 		return err;
 	}

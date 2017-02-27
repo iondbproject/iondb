@@ -1583,7 +1583,7 @@ IINQ_NEW_PROCESSOR_FUNC(benchmark_test) {
 	uint32_t	*dataptr	= (uint32_t *) result->processed;
 	int			i			= 0;
 
-	for (i = 0; i < (result->num_bytes / sizeof(uint32_t)); i++) {
+	for (i = 0; i < (int) (result->num_bytes / sizeof(uint32_t)); i++) {
 /*		printf("%d\t\t\t", *dataptr); */
 		dataptr++;
 	}
@@ -1603,10 +1603,10 @@ iinq_benchmark_query_2(
 	ion_iinq_query_processor_t *processor
 ) {
 	DEFINE_SCHEMA(test, {
-		uint32_t attr0;
-		uint32_t attr1;
-		uint32_t attr2;
-		uint32_t attr3;
+		int32_t attr0;
+		int32_t attr1;
+		int32_t attr2;
+		int32_t attr3;
 	}
 	);
 
@@ -1618,10 +1618,10 @@ iinq_benchmark_query_3(
 	ion_iinq_query_processor_t *processor
 ) {
 	DEFINE_SCHEMA(test, {
-		uint32_t attr0;
-		uint32_t attr1;
-		uint32_t attr2;
-		uint32_t attr3;
+		int32_t attr0;
+		int32_t attr1;
+		int32_t attr2;
+		int32_t attr3;
 	}
 	);
 
@@ -1633,10 +1633,10 @@ iinq_benchmark_query_4(
 	ion_iinq_query_processor_t *processor
 ) {
 	DEFINE_SCHEMA(test, {
-		uint32_t attr0;
-		uint32_t attr1;
-		uint32_t attr2;
-		uint32_t attr3;
+		int32_t attr0;
+		int32_t attr1;
+		int32_t attr2;
+		int32_t attr3;
 	}
 	);
 
@@ -1648,10 +1648,10 @@ iinq_benchmark_query_5(
 	ion_iinq_query_processor_t *processor
 ) {
 	DEFINE_SCHEMA(test, {
-		uint32_t attr0;
-		uint32_t attr1;
-		uint32_t attr2;
-		uint32_t attr3;
+		int32_t attr0;
+		int32_t attr1;
+		int32_t attr2;
+		int32_t attr3;
 	}
 	);
 
@@ -1663,10 +1663,10 @@ iinq_benchmark_query_6(
 	ion_iinq_query_processor_t *processor
 ) {
 	DEFINE_SCHEMA(test, {
-		uint32_t attr0;
-		uint32_t attr1;
-		uint32_t attr2;
-		uint32_t attr3;
+		int32_t attr0;
+		int32_t attr1;
+		int32_t attr2;
+		int32_t attr3;
 	}
 	);
 
@@ -1693,10 +1693,10 @@ iinq_benchmark_set_1(
 	planck_unit_test_t *tc
 ) {
 	DEFINE_SCHEMA(test, {
-		uint32_t attr0;
-		uint32_t attr1;
-		uint32_t attr2;
-		uint32_t attr3;
+		int32_t attr0;
+		int32_t attr1;
+		int32_t attr2;
+		int32_t attr3;
 	}
 	);
 
@@ -1728,7 +1728,7 @@ iinq_benchmark_set_1(
 		iinq_test_insert_into_test(tc, IONIZE(i, uint32_t), &test_val);
 	}
 
-/*	iinq_benchmark_time("query_1", iinq_benchmark_query_1, &processor); */
+	iinq_benchmark_time("query_1", iinq_benchmark_query_1, &processor);
 /*	iinq_benchmark_time("query_2", iinq_benchmark_query_2, &processor); */
 /*	iinq_benchmark_time("query_3", iinq_benchmark_query_3, &processor); */
 /*	iinq_benchmark_time("query_4", iinq_benchmark_query_4, &processor); */
