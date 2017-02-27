@@ -8,47 +8,47 @@
 /* initialization function */
 ion_err_t
 linear_hash_init(
+	ion_dictionary_id_t id,
+	ion_key_type_t		key_type,
+	ion_key_size_t		key_size,
+	ion_value_size_t	value_size,
 	int					initial_size,
 	int					split_threshold,
 	int					records_per_bucket,
 	array_list_t		*bucket_map,
 	linear_hash_table_t *linear_hash
 ) {
+	linear_hash->super.id					= id;
+	linear_hash->super.key_type				= key_type;
+	linear_hash->super.record.key_size		= key_size;
+	linear_hash->super.record.value_size	= value_size;
+
 	/* open datafile */
-	linear_hash->database			= fopen("data.bin", "w+b");
+	linear_hash->database					= fopen("data.bin", "w+b");
 
 	/* initialize linear_hash fields */
-	linear_hash->initial_size		= initial_size;
-	linear_hash->num_buckets		= initial_size;
-	linear_hash->num_records		= 0;
-	linear_hash->next_split			= 0;
-	linear_hash->split_threshold	= split_threshold;
-	linear_hash->records_per_bucket = records_per_bucket;
+	linear_hash->initial_size				= initial_size;
+	linear_hash->num_buckets				= initial_size;
+	linear_hash->num_records				= 0;
+	linear_hash->next_split					= 0;
+	linear_hash->split_threshold			= split_threshold;
+	linear_hash->records_per_bucket			= records_per_bucket;
 
 	/* current offset pointed to in the datafile */
-	linear_hash->data_pointer		= ftell(linear_hash->database);
+	linear_hash->data_pointer				= ftell(linear_hash->database);
 
 	/* mapping of buckets to file offsets */
-	linear_hash->bucket_map			= bucket_map;
+	linear_hash->bucket_map					= bucket_map;
 
 	/* write out initial buckets */
 	for (int i = 0; i < linear_hash->initial_size; i++) {
 		write_new_bucket(i, linear_hash);
 	}
 
-	/* Save the linear_hash state to disk */
-	/* FILE *linear_hash_state; */
-
 	linear_hash->state = fopen("linear_hash_state.bin", "w+b");
-
-	/* check if file is open */
-/*	if (!linear_hash_state) { */
-/*		printf("Unable to open file\n"); */
-/*	} */
 
 	/* write the state of the linear_hash to disk */
 	fwrite(linear_hash, sizeof(linear_hash_table_t), 1, linear_hash->state);
-	/* fclose(linear_hash_state); */
 
 	printf("Linear hash table successfully initialized\n");
 
@@ -1075,7 +1075,8 @@ linear_hash_destroy(
 
 	char filename[ION_MAX_FILENAME_LENGTH];
 
-/*	dictionary_get_filename(linear_hash->super.id, "ffs", filename); */
+	memcpy(&filename, "linear_hash", sizeof("linear_hash"));
+	/* dictionary_get_filename(linear_hash->super.id, "ffs", filename); */
 
 	if (0 != fremove(filename)) {
 		return err_file_delete_error;

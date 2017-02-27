@@ -3,6 +3,10 @@
 
 ion_err_t
 linear_hash_init(
+	ion_dictionary_id_t id,
+	ion_key_type_t		key_type,
+	ion_key_size_t		key_size,
+	ion_value_size_t	value_size,
 	int					initial_size,
 	int					split_threshold,
 	int					records_per_bucket,

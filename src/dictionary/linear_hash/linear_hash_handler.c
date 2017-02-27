@@ -39,7 +39,7 @@ linear_hash_dict_insert(
 	ion_key_t			key,
 	ion_value_t			value
 ) {
-	return linear_hash_insert(1, insert_hash_to_bucket(20, (linear_hash_table_t *) dictionary->instance), (linear_hash_table_t *) dictionary->instance);
+	return linear_hash_insert(key, insert_hash_to_bucket(key, (linear_hash_table_t *) dictionary->instance), (linear_hash_table_t *) dictionary->instance);
 }
 
 ion_err_t
@@ -69,15 +69,14 @@ linear_hash_create_dictionary(
 		return err_out_of_memory;
 	}
 
-	/* dictionary->instance->compare	= compare; */
+	dictionary->instance->compare	= compare;
 
-	initial_size		= 5;
-	split_threshold		= 85;
-	records_per_bucket	= 4;
+	initial_size					= 5;
+	split_threshold					= 85;
+	records_per_bucket				= 4;
 
-	/* TODO Should we handle the possible error code returned by this?
-	 * If yes, what sorts of errors does it return? */
-	ion_err_t result = linear_hash_init(initial_size, split_threshold, records_per_bucket, bucket_map, (linear_hash_table_t *) dictionary->instance);
+	/* TODO Should we handle the possible error code returned by this? If yes, what sorts of errors does it return? */
+	ion_err_t result = linear_hash_init(id, key_type, key_size, value_size, initial_size, split_threshold, records_per_bucket, bucket_map, (linear_hash_table_t *) dictionary->instance);
 
 	if (err_ok == result) {
 		dictionary->handler = handler;
@@ -91,7 +90,7 @@ linear_hash_dict_delete(
 	ion_dictionary_t	*dictionary,
 	ion_key_t			key
 ) {
-	return linear_hash_delete(1, (linear_hash_table_t *) dictionary->instance);
+	return linear_hash_delete(key, (linear_hash_table_t *) dictionary->instance);
 }
 
 ion_err_t
@@ -112,21 +111,21 @@ linear_hash_open_dictionary(
 	ion_dictionary_config_info_t	*config,
 	ion_dictionary_compare_t		compare
 ) {
-	return err_ok;	/* ffdict_create_dictionary(config->id, config->type, config->key_size, config->value_size, config->dictionary_size, compare, handler, dictionary); */
+	return linear_hash_create_dictionary(config->id, config->type, config->key_size, config->value_size, config->dictionary_size, compare, handler, dictionary);
 }
 
 ion_err_t
 linear_hash_close_dictionary(
 	ion_dictionary_t *dictionary
 ) {
-/*	ion_err_t err = flat_file_close((ion_flat_file_t *) dictionary->instance); */
-/*  */
-/*	free(dictionary->instance); */
-/*	dictionary->instance = NULL; */
-/*  */
-/*	if (err_ok != err) { */
-/*		return err; */
-/*	} */
+	ion_err_t err = linear_hash_close((linear_hash_table_t *) dictionary->instance);
+
+	free(dictionary->instance);
+	dictionary->instance = NULL;
+
+	if (err_ok != err) {
+		return err;
+	}
 
 	return err_ok;
 }
