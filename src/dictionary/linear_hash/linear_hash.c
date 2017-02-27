@@ -503,29 +503,51 @@ linear_hash_delete(
 
 	record = linear_hash_get_record(bucket.anchor_record);
 
-	ion_fpos_t record_loc = bucket.anchor_record;
+	ion_fpos_t record_loc	= bucket.anchor_record;
 
-	while (record.id != id) {
-		/* printf("Current record id: %d, current record next: %ld\n", record.id, record.next); */
-		if (record.next == -1) {
-			/* check in next overflow if there is one */
-			if (bucket.overflow_location != -1) {
-				bucket_loc	= bucket.overflow_location;
-				bucket		= linear_hash_get_bucket(bucket.overflow_location, linear_hash);
-				record_loc	= bucket.anchor_record;
-				record		= linear_hash_get_record(bucket.anchor_record);
-				printf("Getting next overflow bucket at offset %ld, anchor record id is %d\n", bucket_loc, record.id);
-				continue;
+	int record_found		= 0;
+
+	while (bucket.overflow_location != -1 && record_found == 0) {
+		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
+
+		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+			record = linear_hash_get_record(record_loc);
+
+			if (record.id == id) {
+				record_found = 1;
+				break;
 			}
-			/* case there are no more overflow buckets to check in */
-			else {
-				printf("Record not found\n");
-				return ION_STATUS_ERROR(err_ok);
-			}
+
+			record_loc += sizeof(linear_hash_record_t);
+			print_linear_hash_record(record);
 		}
 
-		record_loc	= record.next;
-		record		= linear_hash_get_record(record.next);
+		printf("current bucket\n");
+		print_linear_hash_bucket(bucket);
+		printf("getting next overflow!!\n");
+		bucket_loc	= bucket.overflow_location;
+		bucket		= linear_hash_get_bucket(bucket_loc, linear_hash);
+	}
+
+	if (record_found == 0) {
+		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
+
+		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+			record = linear_hash_get_record(record_loc);
+
+			if (record.id == id) {
+				record_found = 1;
+				break;
+			}
+
+			record_loc += sizeof(linear_hash_record_t);
+			print_linear_hash_record(record);
+		}
+	}
+
+	if (record_found == 0) {
+		printf("Record not found\n");
+		return ION_STATUS_ERROR(err_ok);
 	}
 
 	/* set tombstone (currently using -1) as id to mark deleted record */
@@ -924,7 +946,7 @@ print_linear_hash_state(
 }
 
 void
-print_all_linear_hash_index_buckets(
+print_linear_hash_bucket_from_idx(
 	int					idx,
 	linear_hash_table_t *linear_hash
 ) {
@@ -1019,34 +1041,6 @@ linear_hash_bucket_iterator(
 		record_loc	+= sizeof(linear_hash_record_t);
 	}
 }
-
-/* linear_hash_record_t */
-/* record_iterator_next( */
-/*	linear_hash_record_iterator_t	*itr, */
-/*	linear_hash_table_t				*linear_hash */
-/* ) { */
-/*	linear_hash_record_t record = linear_hash_get_record(itr->next); */
-/*  */
-/*	if (itr->next - (itr->current_bucket_loc + sizeof(linear_hash_bucket_t)) / sizeof(linear_hash_record_t) == (linear_hash->records_per_bucket - 1)) { */
-/*		linear_hash_bucket_t bucket = linear_hash_get_bucket(itr->current_bucket_loc, linear_hash); */
-/*  */
-/*		if (bucket.overflow_location == -1) { */
-/*			free(itr); */
-/*  */
-/*			linear_hash_record_t blank = { -1, -1, -1 }; */
-/*  */
-/*			return blank; */
-/*		} */
-/*  */
-/*		itr->current_bucket_loc = bucket.overflow_location; */
-/*		itr->next				= itr->current_bucket_loc + sizeof(linear_hash_bucket_t); */
-/*	} */
-/*	else { */
-/*		itr->next += sizeof(linear_hash_record_t); */
-/*	} */
-/*  */
-/*	return record; */
-/* } */
 
 /* CLOSE, OPEN, CREATE, DESTROY METHODS */
 ion_err_t

@@ -224,7 +224,7 @@ main(
 /*	printf("\nPERFORMING PRINTS\n"); */
 	print_linear_hash_state(linear_hash);
 	print_array_list_data(linear_hash->bucket_map);
-	print_all_linear_hash_index_buckets(3, linear_hash);
+	/* print_all_linear_hash_index_buckets(3, linear_hash); */
 /*	print_all_linear_hash_index_buckets(5, linear_hash); */
 
 	return 0;

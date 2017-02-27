@@ -54,9 +54,6 @@ linear_hash_create_dictionary(
 	ion_dictionary_t			*dictionary
 ) {
 	/* UNUSED(id); */
-
-	printf("dictionary id: %d, key_type: %d, key_size: %d", id, key_type, key_size);
-
 	int				initial_size, split_threshold, records_per_bucket;
 	array_list_t	*bucket_map;
 
