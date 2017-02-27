@@ -41,7 +41,7 @@
 extern "C" {
 #endif
 
-#define  ION_FILE SD_FILE
+#define  FILE SD_FILE
 #define  fopen(x, y)		sd_fopen(x, y)
 #define  fclose(x)			sd_fclose(x)
 #define  fwrite(w, x, y, z) sd_fwrite(w, x, y, z)
