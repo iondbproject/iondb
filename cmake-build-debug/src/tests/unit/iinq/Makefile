@@ -111,6 +111,51 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
+src/tests/unit/iinq/CMakeFiles/test_iinq-upload.dir/rule:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/iinq/CMakeFiles/test_iinq-upload.dir/rule
+.PHONY : src/tests/unit/iinq/CMakeFiles/test_iinq-upload.dir/rule
+
+# Convenience name for target.
+test_iinq-upload: src/tests/unit/iinq/CMakeFiles/test_iinq-upload.dir/rule
+
+.PHONY : test_iinq-upload
+
+# fast build rule for target.
+test_iinq-upload/fast:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/iinq/CMakeFiles/test_iinq-upload.dir/build.make src/tests/unit/iinq/CMakeFiles/test_iinq-upload.dir/build
+.PHONY : test_iinq-upload/fast
+
+# Convenience name for target.
+src/tests/unit/iinq/CMakeFiles/test_iinq-serial.dir/rule:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/iinq/CMakeFiles/test_iinq-serial.dir/rule
+.PHONY : src/tests/unit/iinq/CMakeFiles/test_iinq-serial.dir/rule
+
+# Convenience name for target.
+test_iinq-serial: src/tests/unit/iinq/CMakeFiles/test_iinq-serial.dir/rule
+
+.PHONY : test_iinq-serial
+
+# fast build rule for target.
+test_iinq-serial/fast:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/iinq/CMakeFiles/test_iinq-serial.dir/build.make src/tests/unit/iinq/CMakeFiles/test_iinq-serial.dir/build
+.PHONY : test_iinq-serial/fast
+
+# Convenience name for target.
+src/tests/unit/iinq/CMakeFiles/test_iinq-size.dir/rule:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/iinq/CMakeFiles/test_iinq-size.dir/rule
+.PHONY : src/tests/unit/iinq/CMakeFiles/test_iinq-size.dir/rule
+
+# Convenience name for target.
+test_iinq-size: src/tests/unit/iinq/CMakeFiles/test_iinq-size.dir/rule
+
+.PHONY : test_iinq-size
+
+# fast build rule for target.
+test_iinq-size/fast:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/iinq/CMakeFiles/test_iinq-size.dir/build.make src/tests/unit/iinq/CMakeFiles/test_iinq-size.dir/build
+.PHONY : test_iinq-size/fast
+
+# Convenience name for target.
 src/tests/unit/iinq/CMakeFiles/test_iinq.dir/rule:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/iinq/CMakeFiles/test_iinq.dir/rule
 .PHONY : src/tests/unit/iinq/CMakeFiles/test_iinq.dir/rule
@@ -125,41 +170,14 @@ test_iinq/fast:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/iinq/CMakeFiles/test_iinq.dir/build.make src/tests/unit/iinq/CMakeFiles/test_iinq.dir/build
 .PHONY : test_iinq/fast
 
-run_iinq.o: run_iinq.c.o
+test_iinq.obj: test_iinq.c.obj
 
-.PHONY : run_iinq.o
-
-# target to build an object file
-run_iinq.c.o:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/iinq/CMakeFiles/test_iinq.dir/build.make src/tests/unit/iinq/CMakeFiles/test_iinq.dir/run_iinq.c.o
-.PHONY : run_iinq.c.o
-
-run_iinq.i: run_iinq.c.i
-
-.PHONY : run_iinq.i
-
-# target to preprocess a source file
-run_iinq.c.i:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/iinq/CMakeFiles/test_iinq.dir/build.make src/tests/unit/iinq/CMakeFiles/test_iinq.dir/run_iinq.c.i
-.PHONY : run_iinq.c.i
-
-run_iinq.s: run_iinq.c.s
-
-.PHONY : run_iinq.s
-
-# target to generate assembly for a file
-run_iinq.c.s:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/iinq/CMakeFiles/test_iinq.dir/build.make src/tests/unit/iinq/CMakeFiles/test_iinq.dir/run_iinq.c.s
-.PHONY : run_iinq.c.s
-
-test_iinq.o: test_iinq.c.o
-
-.PHONY : test_iinq.o
+.PHONY : test_iinq.obj
 
 # target to build an object file
-test_iinq.c.o:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/iinq/CMakeFiles/test_iinq.dir/build.make src/tests/unit/iinq/CMakeFiles/test_iinq.dir/test_iinq.c.o
-.PHONY : test_iinq.c.o
+test_iinq.c.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/iinq/CMakeFiles/test_iinq.dir/build.make src/tests/unit/iinq/CMakeFiles/test_iinq.dir/test_iinq.c.obj
+.PHONY : test_iinq.c.obj
 
 test_iinq.i: test_iinq.c.i
 
@@ -179,6 +197,33 @@ test_iinq.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/iinq/CMakeFiles/test_iinq.dir/build.make src/tests/unit/iinq/CMakeFiles/test_iinq.dir/test_iinq.c.s
 .PHONY : test_iinq.c.s
 
+test_iinq_iinq.ino.obj: test_iinq_iinq.ino.cpp.obj
+
+.PHONY : test_iinq_iinq.ino.obj
+
+# target to build an object file
+test_iinq_iinq.ino.cpp.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/iinq/CMakeFiles/test_iinq.dir/build.make src/tests/unit/iinq/CMakeFiles/test_iinq.dir/test_iinq_iinq.ino.cpp.obj
+.PHONY : test_iinq_iinq.ino.cpp.obj
+
+test_iinq_iinq.ino.i: test_iinq_iinq.ino.cpp.i
+
+.PHONY : test_iinq_iinq.ino.i
+
+# target to preprocess a source file
+test_iinq_iinq.ino.cpp.i:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/iinq/CMakeFiles/test_iinq.dir/build.make src/tests/unit/iinq/CMakeFiles/test_iinq.dir/test_iinq_iinq.ino.cpp.i
+.PHONY : test_iinq_iinq.ino.cpp.i
+
+test_iinq_iinq.ino.s: test_iinq_iinq.ino.cpp.s
+
+.PHONY : test_iinq_iinq.ino.s
+
+# target to generate assembly for a file
+test_iinq_iinq.ino.cpp.s:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/iinq/CMakeFiles/test_iinq.dir/build.make src/tests/unit/iinq/CMakeFiles/test_iinq.dir/test_iinq_iinq.ino.cpp.s
+.PHONY : test_iinq_iinq.ino.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -186,14 +231,17 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
+	@echo "... test_iinq-upload"
+	@echo "... test_iinq-serial"
 	@echo "... rebuild_cache"
+	@echo "... test_iinq-size"
 	@echo "... test_iinq"
-	@echo "... run_iinq.o"
-	@echo "... run_iinq.i"
-	@echo "... run_iinq.s"
-	@echo "... test_iinq.o"
+	@echo "... test_iinq.obj"
 	@echo "... test_iinq.i"
 	@echo "... test_iinq.s"
+	@echo "... test_iinq_iinq.ino.obj"
+	@echo "... test_iinq_iinq.ino.i"
+	@echo "... test_iinq_iinq.ino.s"
 .PHONY : help
 
 

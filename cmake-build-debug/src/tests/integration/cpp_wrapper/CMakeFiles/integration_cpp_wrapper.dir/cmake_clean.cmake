@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.o"
-  "../../../../bin/integration_cpp_wrapper.pdb"
-  "../../../../bin/integration_cpp_wrapper"
+  "CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.obj"
+  "integration_cpp_wrapper.pdb"
+  "integration_cpp_wrapper"
 )
 
 # Per-language clean rules from dependency scanning.

@@ -1,7 +1,7 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/open_address_hash.dir/open_address_hash.c.o"
-  "CMakeFiles/open_address_hash.dir/open_address_hash_dictionary_handler.c.o"
-  "CMakeFiles/open_address_hash.dir/__/dictionary.c.o"
+  "CMakeFiles/open_address_hash.dir/open_address_hash.c.obj"
+  "CMakeFiles/open_address_hash.dir/open_address_hash_dictionary_handler.c.obj"
+  "CMakeFiles/open_address_hash.dir/__/dictionary.c.obj"
   "libopen_address_hash.pdb"
   "libopen_address_hash.a"
 )

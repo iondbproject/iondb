@@ -111,6 +111,51 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
+src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-size.dir/rule:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-size.dir/rule
+.PHONY : src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-size.dir/rule
+
+# Convenience name for target.
+test_open_address_hash-size: src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-size.dir/rule
+
+.PHONY : test_open_address_hash-size
+
+# fast build rule for target.
+test_open_address_hash-size/fast:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-size.dir/build.make src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-size.dir/build
+.PHONY : test_open_address_hash-size/fast
+
+# Convenience name for target.
+src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-serial.dir/rule:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-serial.dir/rule
+.PHONY : src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-serial.dir/rule
+
+# Convenience name for target.
+test_open_address_hash-serial: src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-serial.dir/rule
+
+.PHONY : test_open_address_hash-serial
+
+# fast build rule for target.
+test_open_address_hash-serial/fast:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-serial.dir/build.make src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-serial.dir/build
+.PHONY : test_open_address_hash-serial/fast
+
+# Convenience name for target.
+src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-upload.dir/rule:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-upload.dir/rule
+.PHONY : src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-upload.dir/rule
+
+# Convenience name for target.
+test_open_address_hash-upload: src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-upload.dir/rule
+
+.PHONY : test_open_address_hash-upload
+
+# fast build rule for target.
+test_open_address_hash-upload/fast:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-upload.dir/build.make src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-upload.dir/build
+.PHONY : test_open_address_hash-upload/fast
+
+# Convenience name for target.
 src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/rule:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/rule
 .PHONY : src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/rule
@@ -125,41 +170,14 @@ test_open_address_hash/fast:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/build.make src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/build
 .PHONY : test_open_address_hash/fast
 
-run_open_address_hash.o: run_open_address_hash.c.o
+test_open_address_hash.obj: test_open_address_hash.c.obj
 
-.PHONY : run_open_address_hash.o
-
-# target to build an object file
-run_open_address_hash.c.o:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/build.make src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/run_open_address_hash.c.o
-.PHONY : run_open_address_hash.c.o
-
-run_open_address_hash.i: run_open_address_hash.c.i
-
-.PHONY : run_open_address_hash.i
-
-# target to preprocess a source file
-run_open_address_hash.c.i:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/build.make src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/run_open_address_hash.c.i
-.PHONY : run_open_address_hash.c.i
-
-run_open_address_hash.s: run_open_address_hash.c.s
-
-.PHONY : run_open_address_hash.s
-
-# target to generate assembly for a file
-run_open_address_hash.c.s:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/build.make src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/run_open_address_hash.c.s
-.PHONY : run_open_address_hash.c.s
-
-test_open_address_hash.o: test_open_address_hash.c.o
-
-.PHONY : test_open_address_hash.o
+.PHONY : test_open_address_hash.obj
 
 # target to build an object file
-test_open_address_hash.c.o:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/build.make src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/test_open_address_hash.c.o
-.PHONY : test_open_address_hash.c.o
+test_open_address_hash.c.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/build.make src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/test_open_address_hash.c.obj
+.PHONY : test_open_address_hash.c.obj
 
 test_open_address_hash.i: test_open_address_hash.c.i
 
@@ -179,14 +197,14 @@ test_open_address_hash.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/build.make src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/test_open_address_hash.c.s
 .PHONY : test_open_address_hash.c.s
 
-test_open_address_hash_dictionary_handler.o: test_open_address_hash_dictionary_handler.c.o
+test_open_address_hash_dictionary_handler.obj: test_open_address_hash_dictionary_handler.c.obj
 
-.PHONY : test_open_address_hash_dictionary_handler.o
+.PHONY : test_open_address_hash_dictionary_handler.obj
 
 # target to build an object file
-test_open_address_hash_dictionary_handler.c.o:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/build.make src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/test_open_address_hash_dictionary_handler.c.o
-.PHONY : test_open_address_hash_dictionary_handler.c.o
+test_open_address_hash_dictionary_handler.c.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/build.make src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/test_open_address_hash_dictionary_handler.c.obj
+.PHONY : test_open_address_hash_dictionary_handler.c.obj
 
 test_open_address_hash_dictionary_handler.i: test_open_address_hash_dictionary_handler.c.i
 
@@ -206,6 +224,33 @@ test_open_address_hash_dictionary_handler.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/build.make src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/test_open_address_hash_dictionary_handler.c.s
 .PHONY : test_open_address_hash_dictionary_handler.c.s
 
+test_open_address_hash_open_address_hash.ino.obj: test_open_address_hash_open_address_hash.ino.cpp.obj
+
+.PHONY : test_open_address_hash_open_address_hash.ino.obj
+
+# target to build an object file
+test_open_address_hash_open_address_hash.ino.cpp.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/build.make src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/test_open_address_hash_open_address_hash.ino.cpp.obj
+.PHONY : test_open_address_hash_open_address_hash.ino.cpp.obj
+
+test_open_address_hash_open_address_hash.ino.i: test_open_address_hash_open_address_hash.ino.cpp.i
+
+.PHONY : test_open_address_hash_open_address_hash.ino.i
+
+# target to preprocess a source file
+test_open_address_hash_open_address_hash.ino.cpp.i:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/build.make src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/test_open_address_hash_open_address_hash.ino.cpp.i
+.PHONY : test_open_address_hash_open_address_hash.ino.cpp.i
+
+test_open_address_hash_open_address_hash.ino.s: test_open_address_hash_open_address_hash.ino.cpp.s
+
+.PHONY : test_open_address_hash_open_address_hash.ino.s
+
+# target to generate assembly for a file
+test_open_address_hash_open_address_hash.ino.cpp.s:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/build.make src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/test_open_address_hash_open_address_hash.ino.cpp.s
+.PHONY : test_open_address_hash_open_address_hash.ino.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -214,16 +259,19 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... test_open_address_hash-size"
+	@echo "... test_open_address_hash-serial"
+	@echo "... test_open_address_hash-upload"
 	@echo "... test_open_address_hash"
-	@echo "... run_open_address_hash.o"
-	@echo "... run_open_address_hash.i"
-	@echo "... run_open_address_hash.s"
-	@echo "... test_open_address_hash.o"
+	@echo "... test_open_address_hash.obj"
 	@echo "... test_open_address_hash.i"
 	@echo "... test_open_address_hash.s"
-	@echo "... test_open_address_hash_dictionary_handler.o"
+	@echo "... test_open_address_hash_dictionary_handler.obj"
 	@echo "... test_open_address_hash_dictionary_handler.i"
 	@echo "... test_open_address_hash_dictionary_handler.s"
+	@echo "... test_open_address_hash_open_address_hash.ino.obj"
+	@echo "... test_open_address_hash_open_address_hash.ino.i"
+	@echo "... test_open_address_hash_open_address_hash.ino.s"
 .PHONY : help
 
 

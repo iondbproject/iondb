@@ -1,11 +1,12 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.o"
-  "CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.o"
-  "../../../../../bin/test_behaviour_flat_file.pdb"
-  "../../../../../bin/test_behaviour_flat_file"
+  "test_behaviour_flat_file_behaviour_flat_file.ino.cpp"
+  "CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.obj"
+  "CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.obj"
+  "test_behaviour_flat_file.pdb"
+  "test_behaviour_flat_file.elf"
 )
 
 # Per-language clean rules from dependency scanning.
-foreach(lang C)
+foreach(lang C CXX)
   include(CMakeFiles/test_behaviour_flat_file.dir/cmake_clean_${lang}.cmake OPTIONAL)
 endforeach()

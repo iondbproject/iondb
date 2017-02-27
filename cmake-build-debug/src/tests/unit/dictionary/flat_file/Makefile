@@ -111,6 +111,21 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
+src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-serial.dir/rule:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-serial.dir/rule
+.PHONY : src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-serial.dir/rule
+
+# Convenience name for target.
+test_flat_file-serial: src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-serial.dir/rule
+
+.PHONY : test_flat_file-serial
+
+# fast build rule for target.
+test_flat_file-serial/fast:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-serial.dir/build.make src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-serial.dir/build
+.PHONY : test_flat_file-serial/fast
+
+# Convenience name for target.
 src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/rule:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/rule
 .PHONY : src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/rule
@@ -125,41 +140,44 @@ test_flat_file/fast:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/build.make src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/build
 .PHONY : test_flat_file/fast
 
-run_flat_file.o: run_flat_file.c.o
+# Convenience name for target.
+src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-upload.dir/rule:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-upload.dir/rule
+.PHONY : src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-upload.dir/rule
 
-.PHONY : run_flat_file.o
+# Convenience name for target.
+test_flat_file-upload: src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-upload.dir/rule
+
+.PHONY : test_flat_file-upload
+
+# fast build rule for target.
+test_flat_file-upload/fast:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-upload.dir/build.make src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-upload.dir/build
+.PHONY : test_flat_file-upload/fast
+
+# Convenience name for target.
+src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-size.dir/rule:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-size.dir/rule
+.PHONY : src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-size.dir/rule
+
+# Convenience name for target.
+test_flat_file-size: src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-size.dir/rule
+
+.PHONY : test_flat_file-size
+
+# fast build rule for target.
+test_flat_file-size/fast:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-size.dir/build.make src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-size.dir/build
+.PHONY : test_flat_file-size/fast
+
+test_flat_file.obj: test_flat_file.c.obj
+
+.PHONY : test_flat_file.obj
 
 # target to build an object file
-run_flat_file.c.o:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/build.make src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/run_flat_file.c.o
-.PHONY : run_flat_file.c.o
-
-run_flat_file.i: run_flat_file.c.i
-
-.PHONY : run_flat_file.i
-
-# target to preprocess a source file
-run_flat_file.c.i:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/build.make src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/run_flat_file.c.i
-.PHONY : run_flat_file.c.i
-
-run_flat_file.s: run_flat_file.c.s
-
-.PHONY : run_flat_file.s
-
-# target to generate assembly for a file
-run_flat_file.c.s:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/build.make src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/run_flat_file.c.s
-.PHONY : run_flat_file.c.s
-
-test_flat_file.o: test_flat_file.c.o
-
-.PHONY : test_flat_file.o
-
-# target to build an object file
-test_flat_file.c.o:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/build.make src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/test_flat_file.c.o
-.PHONY : test_flat_file.c.o
+test_flat_file.c.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/build.make src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/test_flat_file.c.obj
+.PHONY : test_flat_file.c.obj
 
 test_flat_file.i: test_flat_file.c.i
 
@@ -179,14 +197,14 @@ test_flat_file.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/build.make src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/test_flat_file.c.s
 .PHONY : test_flat_file.c.s
 
-test_flat_file_dictionary_handler.o: test_flat_file_dictionary_handler.c.o
+test_flat_file_dictionary_handler.obj: test_flat_file_dictionary_handler.c.obj
 
-.PHONY : test_flat_file_dictionary_handler.o
+.PHONY : test_flat_file_dictionary_handler.obj
 
 # target to build an object file
-test_flat_file_dictionary_handler.c.o:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/build.make src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/test_flat_file_dictionary_handler.c.o
-.PHONY : test_flat_file_dictionary_handler.c.o
+test_flat_file_dictionary_handler.c.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/build.make src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/test_flat_file_dictionary_handler.c.obj
+.PHONY : test_flat_file_dictionary_handler.c.obj
 
 test_flat_file_dictionary_handler.i: test_flat_file_dictionary_handler.c.i
 
@@ -206,6 +224,33 @@ test_flat_file_dictionary_handler.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/build.make src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/test_flat_file_dictionary_handler.c.s
 .PHONY : test_flat_file_dictionary_handler.c.s
 
+test_flat_file_flat_file.ino.obj: test_flat_file_flat_file.ino.cpp.obj
+
+.PHONY : test_flat_file_flat_file.ino.obj
+
+# target to build an object file
+test_flat_file_flat_file.ino.cpp.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/build.make src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/test_flat_file_flat_file.ino.cpp.obj
+.PHONY : test_flat_file_flat_file.ino.cpp.obj
+
+test_flat_file_flat_file.ino.i: test_flat_file_flat_file.ino.cpp.i
+
+.PHONY : test_flat_file_flat_file.ino.i
+
+# target to preprocess a source file
+test_flat_file_flat_file.ino.cpp.i:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/build.make src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/test_flat_file_flat_file.ino.cpp.i
+.PHONY : test_flat_file_flat_file.ino.cpp.i
+
+test_flat_file_flat_file.ino.s: test_flat_file_flat_file.ino.cpp.s
+
+.PHONY : test_flat_file_flat_file.ino.s
+
+# target to generate assembly for a file
+test_flat_file_flat_file.ino.cpp.s:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/build.make src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/test_flat_file_flat_file.ino.cpp.s
+.PHONY : test_flat_file_flat_file.ino.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -213,17 +258,20 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
-	@echo "... rebuild_cache"
+	@echo "... test_flat_file-serial"
 	@echo "... test_flat_file"
-	@echo "... run_flat_file.o"
-	@echo "... run_flat_file.i"
-	@echo "... run_flat_file.s"
-	@echo "... test_flat_file.o"
+	@echo "... test_flat_file-upload"
+	@echo "... test_flat_file-size"
+	@echo "... rebuild_cache"
+	@echo "... test_flat_file.obj"
 	@echo "... test_flat_file.i"
 	@echo "... test_flat_file.s"
-	@echo "... test_flat_file_dictionary_handler.o"
+	@echo "... test_flat_file_dictionary_handler.obj"
 	@echo "... test_flat_file_dictionary_handler.i"
 	@echo "... test_flat_file_dictionary_handler.s"
+	@echo "... test_flat_file_flat_file.ino.obj"
+	@echo "... test_flat_file_flat_file.ino.i"
+	@echo "... test_flat_file_flat_file.ino.s"
 .PHONY : help
 
 

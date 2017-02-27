@@ -1,12 +1,13 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/test_open_address_hash.dir/test_open_address_hash.c.o"
-  "CMakeFiles/test_open_address_hash.dir/test_open_address_hash_dictionary_handler.c.o"
-  "CMakeFiles/test_open_address_hash.dir/run_open_address_hash.c.o"
-  "../../../../../bin/test_open_address_hash.pdb"
-  "../../../../../bin/test_open_address_hash"
+  "test_open_address_hash_open_address_hash.ino.cpp"
+  "CMakeFiles/test_open_address_hash.dir/test_open_address_hash.c.obj"
+  "CMakeFiles/test_open_address_hash.dir/test_open_address_hash_dictionary_handler.c.obj"
+  "CMakeFiles/test_open_address_hash.dir/test_open_address_hash_open_address_hash.ino.cpp.obj"
+  "test_open_address_hash.pdb"
+  "test_open_address_hash.elf"
 )
 
 # Per-language clean rules from dependency scanning.
-foreach(lang C)
+foreach(lang C CXX)
   include(CMakeFiles/test_open_address_hash.dir/cmake_clean_${lang}.cmake OPTIONAL)
 endforeach()

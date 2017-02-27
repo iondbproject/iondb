@@ -130,10 +130,6 @@ stdint.h
 ion_time/ion_time.h
 /Users/danaklamut/ClionProjects/iondb/src/tests/planckunit/src/ion_time/ion_time.h
 
-/Users/danaklamut/ClionProjects/iondb/src/tests/unit/iinq/run_iinq.c
-test_iinq.h
-/Users/danaklamut/ClionProjects/iondb/src/tests/unit/iinq/test_iinq.h
-
 /Users/danaklamut/ClionProjects/iondb/src/tests/unit/iinq/test_iinq.c
 test_iinq.h
 /Users/danaklamut/ClionProjects/iondb/src/tests/unit/iinq/test_iinq.h

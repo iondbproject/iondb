@@ -57,67 +57,68 @@ include src/iinq/CMakeFiles/iinq.dir/progress.make
 # Include the compile flags for this target's objects.
 include src/iinq/CMakeFiles/iinq.dir/flags.make
 
-src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.o: src/iinq/CMakeFiles/iinq.dir/flags.make
-src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.o: ../src/dictionary/ion_master_table.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.o"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/iinq && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/ion_master_table.c
+src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.obj: src/iinq/CMakeFiles/iinq.dir/flags.make
+src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.obj: ../src/dictionary/ion_master_table.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.obj"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/iinq && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/ion_master_table.c
 
 src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/iinq && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/ion_master_table.c > CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/iinq && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/ion_master_table.c > CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.i
 
 src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/iinq && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/ion_master_table.c -o CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/iinq && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/ion_master_table.c -o CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.s
 
-src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.o.requires:
+src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.obj.requires:
 
-.PHONY : src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.o.requires
+.PHONY : src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.obj.requires
 
-src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.o.provides: src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.o.requires
-	$(MAKE) -f src/iinq/CMakeFiles/iinq.dir/build.make src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.o.provides.build
-.PHONY : src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.o.provides
+src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.obj.provides: src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.obj.requires
+	$(MAKE) -f src/iinq/CMakeFiles/iinq.dir/build.make src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.obj.provides.build
+.PHONY : src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.obj.provides
 
-src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.o.provides.build: src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.o
+src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.obj.provides.build: src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.obj
 
 
-src/iinq/CMakeFiles/iinq.dir/iinq.c.o: src/iinq/CMakeFiles/iinq.dir/flags.make
-src/iinq/CMakeFiles/iinq.dir/iinq.c.o: ../src/iinq/iinq.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object src/iinq/CMakeFiles/iinq.dir/iinq.c.o"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/iinq && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/iinq.dir/iinq.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/iinq/iinq.c
+src/iinq/CMakeFiles/iinq.dir/iinq.c.obj: src/iinq/CMakeFiles/iinq.dir/flags.make
+src/iinq/CMakeFiles/iinq.dir/iinq.c.obj: ../src/iinq/iinq.c
+src/iinq/CMakeFiles/iinq.dir/iinq.c.obj: ../src/iinq/iinq.h
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object src/iinq/CMakeFiles/iinq.dir/iinq.c.obj"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/iinq && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/iinq.dir/iinq.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/iinq/iinq.c
 
 src/iinq/CMakeFiles/iinq.dir/iinq.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/iinq.dir/iinq.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/iinq && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/iinq/iinq.c > CMakeFiles/iinq.dir/iinq.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/iinq && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/iinq/iinq.c > CMakeFiles/iinq.dir/iinq.c.i
 
 src/iinq/CMakeFiles/iinq.dir/iinq.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/iinq.dir/iinq.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/iinq && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/iinq/iinq.c -o CMakeFiles/iinq.dir/iinq.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/iinq && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/iinq/iinq.c -o CMakeFiles/iinq.dir/iinq.c.s
 
-src/iinq/CMakeFiles/iinq.dir/iinq.c.o.requires:
+src/iinq/CMakeFiles/iinq.dir/iinq.c.obj.requires:
 
-.PHONY : src/iinq/CMakeFiles/iinq.dir/iinq.c.o.requires
+.PHONY : src/iinq/CMakeFiles/iinq.dir/iinq.c.obj.requires
 
-src/iinq/CMakeFiles/iinq.dir/iinq.c.o.provides: src/iinq/CMakeFiles/iinq.dir/iinq.c.o.requires
-	$(MAKE) -f src/iinq/CMakeFiles/iinq.dir/build.make src/iinq/CMakeFiles/iinq.dir/iinq.c.o.provides.build
-.PHONY : src/iinq/CMakeFiles/iinq.dir/iinq.c.o.provides
+src/iinq/CMakeFiles/iinq.dir/iinq.c.obj.provides: src/iinq/CMakeFiles/iinq.dir/iinq.c.obj.requires
+	$(MAKE) -f src/iinq/CMakeFiles/iinq.dir/build.make src/iinq/CMakeFiles/iinq.dir/iinq.c.obj.provides.build
+.PHONY : src/iinq/CMakeFiles/iinq.dir/iinq.c.obj.provides
 
-src/iinq/CMakeFiles/iinq.dir/iinq.c.o.provides.build: src/iinq/CMakeFiles/iinq.dir/iinq.c.o
+src/iinq/CMakeFiles/iinq.dir/iinq.c.obj.provides.build: src/iinq/CMakeFiles/iinq.dir/iinq.c.obj
 
 
 # Object files for target iinq
 iinq_OBJECTS = \
-"CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.o" \
-"CMakeFiles/iinq.dir/iinq.c.o"
+"CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.obj" \
+"CMakeFiles/iinq.dir/iinq.c.obj"
 
 # External object files for target iinq
 iinq_EXTERNAL_OBJECTS =
 
-src/iinq/libiinq.a: src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.o
-src/iinq/libiinq.a: src/iinq/CMakeFiles/iinq.dir/iinq.c.o
+src/iinq/libiinq.a: src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.obj
+src/iinq/libiinq.a: src/iinq/CMakeFiles/iinq.dir/iinq.c.obj
 src/iinq/libiinq.a: src/iinq/CMakeFiles/iinq.dir/build.make
 src/iinq/libiinq.a: src/iinq/CMakeFiles/iinq.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking C static library libiinq.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX static library libiinq.a"
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/iinq && $(CMAKE_COMMAND) -P CMakeFiles/iinq.dir/cmake_clean_target.cmake
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/iinq && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/iinq.dir/link.txt --verbose=$(VERBOSE)
 
@@ -126,8 +127,8 @@ src/iinq/CMakeFiles/iinq.dir/build: src/iinq/libiinq.a
 
 .PHONY : src/iinq/CMakeFiles/iinq.dir/build
 
-src/iinq/CMakeFiles/iinq.dir/requires: src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.o.requires
-src/iinq/CMakeFiles/iinq.dir/requires: src/iinq/CMakeFiles/iinq.dir/iinq.c.o.requires
+src/iinq/CMakeFiles/iinq.dir/requires: src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.obj.requires
+src/iinq/CMakeFiles/iinq.dir/requires: src/iinq/CMakeFiles/iinq.dir/iinq.c.obj.requires
 
 .PHONY : src/iinq/CMakeFiles/iinq.dir/requires
 

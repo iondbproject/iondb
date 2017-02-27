@@ -1,11 +1,12 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/test_behaviour_bpp_tree.dir/test_behaviour_bpp_tree.c.o"
-  "CMakeFiles/test_behaviour_bpp_tree.dir/run_behaviour_bpp_tree.c.o"
-  "../../../../../bin/test_behaviour_bpp_tree.pdb"
-  "../../../../../bin/test_behaviour_bpp_tree"
+  "test_behaviour_bpp_tree_behaviour_bpp_tree.ino.cpp"
+  "CMakeFiles/test_behaviour_bpp_tree.dir/test_behaviour_bpp_tree.c.obj"
+  "CMakeFiles/test_behaviour_bpp_tree.dir/test_behaviour_bpp_tree_behaviour_bpp_tree.ino.cpp.obj"
+  "test_behaviour_bpp_tree.pdb"
+  "test_behaviour_bpp_tree.elf"
 )
 
 # Per-language clean rules from dependency scanning.
-foreach(lang C)
+foreach(lang C CXX)
   include(CMakeFiles/test_behaviour_bpp_tree.dir/cmake_clean_${lang}.cmake OPTIONAL)
 endforeach()

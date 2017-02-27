@@ -125,14 +125,68 @@ flat_file/fast:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/build
 .PHONY : flat_file/fast
 
-__/dictionary.o: __/dictionary.c.o
+__/__/file/SD_stdio_c_iface.obj: __/__/file/SD_stdio_c_iface.cpp.obj
 
-.PHONY : __/dictionary.o
+.PHONY : __/__/file/SD_stdio_c_iface.obj
 
 # target to build an object file
-__/dictionary.c.o:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.o
-.PHONY : __/dictionary.c.o
+__/__/file/SD_stdio_c_iface.cpp.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.obj
+.PHONY : __/__/file/SD_stdio_c_iface.cpp.obj
+
+__/__/file/SD_stdio_c_iface.i: __/__/file/SD_stdio_c_iface.cpp.i
+
+.PHONY : __/__/file/SD_stdio_c_iface.i
+
+# target to preprocess a source file
+__/__/file/SD_stdio_c_iface.cpp.i:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.i
+.PHONY : __/__/file/SD_stdio_c_iface.cpp.i
+
+__/__/file/SD_stdio_c_iface.s: __/__/file/SD_stdio_c_iface.cpp.s
+
+.PHONY : __/__/file/SD_stdio_c_iface.s
+
+# target to generate assembly for a file
+__/__/file/SD_stdio_c_iface.cpp.s:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.s
+.PHONY : __/__/file/SD_stdio_c_iface.cpp.s
+
+__/__/serial/serial_c_iface.obj: __/__/serial/serial_c_iface.cpp.obj
+
+.PHONY : __/__/serial/serial_c_iface.obj
+
+# target to build an object file
+__/__/serial/serial_c_iface.cpp.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.obj
+.PHONY : __/__/serial/serial_c_iface.cpp.obj
+
+__/__/serial/serial_c_iface.i: __/__/serial/serial_c_iface.cpp.i
+
+.PHONY : __/__/serial/serial_c_iface.i
+
+# target to preprocess a source file
+__/__/serial/serial_c_iface.cpp.i:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.i
+.PHONY : __/__/serial/serial_c_iface.cpp.i
+
+__/__/serial/serial_c_iface.s: __/__/serial/serial_c_iface.cpp.s
+
+.PHONY : __/__/serial/serial_c_iface.s
+
+# target to generate assembly for a file
+__/__/serial/serial_c_iface.cpp.s:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.s
+.PHONY : __/__/serial/serial_c_iface.cpp.s
+
+__/dictionary.obj: __/dictionary.c.obj
+
+.PHONY : __/dictionary.obj
+
+# target to build an object file
+__/dictionary.c.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.obj
+.PHONY : __/dictionary.c.obj
 
 __/dictionary.i: __/dictionary.c.i
 
@@ -152,14 +206,14 @@ __/dictionary.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.s
 .PHONY : __/dictionary.c.s
 
-flat_file.o: flat_file.c.o
+flat_file.obj: flat_file.c.obj
 
-.PHONY : flat_file.o
+.PHONY : flat_file.obj
 
 # target to build an object file
-flat_file.c.o:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.o
-.PHONY : flat_file.c.o
+flat_file.c.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.obj
+.PHONY : flat_file.c.obj
 
 flat_file.i: flat_file.c.i
 
@@ -179,14 +233,14 @@ flat_file.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.s
 .PHONY : flat_file.c.s
 
-flat_file_dictionary_handler.o: flat_file_dictionary_handler.c.o
+flat_file_dictionary_handler.obj: flat_file_dictionary_handler.c.obj
 
-.PHONY : flat_file_dictionary_handler.o
+.PHONY : flat_file_dictionary_handler.obj
 
 # target to build an object file
-flat_file_dictionary_handler.c.o:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.o
-.PHONY : flat_file_dictionary_handler.c.o
+flat_file_dictionary_handler.c.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.obj
+.PHONY : flat_file_dictionary_handler.c.obj
 
 flat_file_dictionary_handler.i: flat_file_dictionary_handler.c.i
 
@@ -215,13 +269,19 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... flat_file"
-	@echo "... __/dictionary.o"
+	@echo "... __/__/file/SD_stdio_c_iface.obj"
+	@echo "... __/__/file/SD_stdio_c_iface.i"
+	@echo "... __/__/file/SD_stdio_c_iface.s"
+	@echo "... __/__/serial/serial_c_iface.obj"
+	@echo "... __/__/serial/serial_c_iface.i"
+	@echo "... __/__/serial/serial_c_iface.s"
+	@echo "... __/dictionary.obj"
 	@echo "... __/dictionary.i"
 	@echo "... __/dictionary.s"
-	@echo "... flat_file.o"
+	@echo "... flat_file.obj"
 	@echo "... flat_file.i"
 	@echo "... flat_file.s"
-	@echo "... flat_file_dictionary_handler.o"
+	@echo "... flat_file_dictionary_handler.obj"
 	@echo "... flat_file_dictionary_handler.i"
 	@echo "... flat_file_dictionary_handler.s"
 .PHONY : help

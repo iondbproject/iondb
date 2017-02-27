@@ -1,2 +1,2 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libexternal_sort.a  CMakeFiles/external_sort.dir/external_sort.c.o CMakeFiles/external_sort.dir/flash_min_sort.c.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libexternal_sort.a
+/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-ar qc libexternal_sort.a  CMakeFiles/external_sort.dir/external_sort.c.obj CMakeFiles/external_sort.dir/flash_min_sort.c.obj CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.obj CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.obj
+/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-ranlib libexternal_sort.a

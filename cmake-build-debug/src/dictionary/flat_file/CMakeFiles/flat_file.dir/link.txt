@@ -1,2 +1,2 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libflat_file.a  CMakeFiles/flat_file.dir/flat_file.c.o CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.o CMakeFiles/flat_file.dir/__/dictionary.c.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libflat_file.a
+/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-ar qc libflat_file.a  CMakeFiles/flat_file.dir/flat_file.c.obj CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.obj CMakeFiles/flat_file.dir/__/dictionary.c.obj CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.obj CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.obj
+/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-ranlib libflat_file.a

@@ -111,6 +111,51 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
+src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-serial.dir/rule:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-serial.dir/rule
+.PHONY : src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-serial.dir/rule
+
+# Convenience name for target.
+test_in_memory_sort-serial: src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-serial.dir/rule
+
+.PHONY : test_in_memory_sort-serial
+
+# fast build rule for target.
+test_in_memory_sort-serial/fast:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-serial.dir/build.make src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-serial.dir/build
+.PHONY : test_in_memory_sort-serial/fast
+
+# Convenience name for target.
+src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-upload.dir/rule:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-upload.dir/rule
+.PHONY : src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-upload.dir/rule
+
+# Convenience name for target.
+test_in_memory_sort-upload: src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-upload.dir/rule
+
+.PHONY : test_in_memory_sort-upload
+
+# fast build rule for target.
+test_in_memory_sort-upload/fast:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-upload.dir/build.make src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-upload.dir/build
+.PHONY : test_in_memory_sort-upload/fast
+
+# Convenience name for target.
+src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-size.dir/rule:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-size.dir/rule
+.PHONY : src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-size.dir/rule
+
+# Convenience name for target.
+test_in_memory_sort-size: src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-size.dir/rule
+
+.PHONY : test_in_memory_sort-size
+
+# fast build rule for target.
+test_in_memory_sort-size/fast:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-size.dir/build.make src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-size.dir/build
+.PHONY : test_in_memory_sort-size/fast
+
+# Convenience name for target.
 src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/rule:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/rule
 .PHONY : src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/rule
@@ -125,41 +170,14 @@ test_in_memory_sort/fast:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/build.make src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/build
 .PHONY : test_in_memory_sort/fast
 
-run_in_memory_sort.o: run_in_memory_sort.c.o
+test_in_memory_sort.obj: test_in_memory_sort.c.obj
 
-.PHONY : run_in_memory_sort.o
-
-# target to build an object file
-run_in_memory_sort.c.o:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/build.make src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/run_in_memory_sort.c.o
-.PHONY : run_in_memory_sort.c.o
-
-run_in_memory_sort.i: run_in_memory_sort.c.i
-
-.PHONY : run_in_memory_sort.i
-
-# target to preprocess a source file
-run_in_memory_sort.c.i:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/build.make src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/run_in_memory_sort.c.i
-.PHONY : run_in_memory_sort.c.i
-
-run_in_memory_sort.s: run_in_memory_sort.c.s
-
-.PHONY : run_in_memory_sort.s
-
-# target to generate assembly for a file
-run_in_memory_sort.c.s:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/build.make src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/run_in_memory_sort.c.s
-.PHONY : run_in_memory_sort.c.s
-
-test_in_memory_sort.o: test_in_memory_sort.c.o
-
-.PHONY : test_in_memory_sort.o
+.PHONY : test_in_memory_sort.obj
 
 # target to build an object file
-test_in_memory_sort.c.o:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/build.make src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/test_in_memory_sort.c.o
-.PHONY : test_in_memory_sort.c.o
+test_in_memory_sort.c.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/build.make src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/test_in_memory_sort.c.obj
+.PHONY : test_in_memory_sort.c.obj
 
 test_in_memory_sort.i: test_in_memory_sort.c.i
 
@@ -179,6 +197,33 @@ test_in_memory_sort.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/build.make src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/test_in_memory_sort.c.s
 .PHONY : test_in_memory_sort.c.s
 
+test_in_memory_sort_in_memory_sort.ino.obj: test_in_memory_sort_in_memory_sort.ino.cpp.obj
+
+.PHONY : test_in_memory_sort_in_memory_sort.ino.obj
+
+# target to build an object file
+test_in_memory_sort_in_memory_sort.ino.cpp.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/build.make src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/test_in_memory_sort_in_memory_sort.ino.cpp.obj
+.PHONY : test_in_memory_sort_in_memory_sort.ino.cpp.obj
+
+test_in_memory_sort_in_memory_sort.ino.i: test_in_memory_sort_in_memory_sort.ino.cpp.i
+
+.PHONY : test_in_memory_sort_in_memory_sort.ino.i
+
+# target to preprocess a source file
+test_in_memory_sort_in_memory_sort.ino.cpp.i:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/build.make src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/test_in_memory_sort_in_memory_sort.ino.cpp.i
+.PHONY : test_in_memory_sort_in_memory_sort.ino.cpp.i
+
+test_in_memory_sort_in_memory_sort.ino.s: test_in_memory_sort_in_memory_sort.ino.cpp.s
+
+.PHONY : test_in_memory_sort_in_memory_sort.ino.s
+
+# target to generate assembly for a file
+test_in_memory_sort_in_memory_sort.ino.cpp.s:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/build.make src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort.dir/test_in_memory_sort_in_memory_sort.ino.cpp.s
+.PHONY : test_in_memory_sort_in_memory_sort.ino.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -186,14 +231,17 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
+	@echo "... test_in_memory_sort-serial"
+	@echo "... test_in_memory_sort-upload"
 	@echo "... rebuild_cache"
+	@echo "... test_in_memory_sort-size"
 	@echo "... test_in_memory_sort"
-	@echo "... run_in_memory_sort.o"
-	@echo "... run_in_memory_sort.i"
-	@echo "... run_in_memory_sort.s"
-	@echo "... test_in_memory_sort.o"
+	@echo "... test_in_memory_sort.obj"
 	@echo "... test_in_memory_sort.i"
 	@echo "... test_in_memory_sort.s"
+	@echo "... test_in_memory_sort_in_memory_sort.ino.obj"
+	@echo "... test_in_memory_sort_in_memory_sort.ino.i"
+	@echo "... test_in_memory_sort_in_memory_sort.ino.s"
 .PHONY : help
 
 

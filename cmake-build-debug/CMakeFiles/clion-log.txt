@@ -1,18 +1,101 @@
-"/Applications/CLion 2.app/Contents/bin/cmake/bin/cmake" -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /Users/danaklamut/ClionProjects/iondb
--- The C compiler identification is AppleClang 7.0.2.7000181
--- The CXX compiler identification is AppleClang 7.0.2.7000181
--- Check for working C compiler: /Library/Developer/CommandLineTools/usr/bin/cc
--- Check for working C compiler: /Library/Developer/CommandLineTools/usr/bin/cc -- works
+"/Applications/CLion 2.app/Contents/bin/cmake/bin/cmake" -DCMAKE_BUILD_TYPE=Debug -DUSE_ARDUINO=TRUE -DBOARD=mega -DPROCESSOR=atmega2560 -DBAUD_RATE=115200 -DPORT=/dev/cu.usbmodem1421 -G "CodeBlocks - Unix Makefiles" /Users/danaklamut/ClionProjects/iondb
+Linking against Arduino...
+-- The C compiler identification is GNU 4.9.2
+-- The CXX compiler identification is GNU 4.9.2
+-- Arduino SDK version 1.6.10: /Applications/Arduino.app/Contents/Java
+-- Check for working C compiler: /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc
+-- Check for working C compiler: /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc -- works
 -- Detecting C compiler ABI info
 -- Detecting C compiler ABI info - done
 -- Detecting C compile features
 -- Detecting C compile features - done
--- Check for working CXX compiler: /Library/Developer/CommandLineTools/usr/bin/c++
--- Check for working CXX compiler: /Library/Developer/CommandLineTools/usr/bin/c++ -- works
+-- Check for working CXX compiler: /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++
+-- Check for working CXX compiler: /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++ -- works
 -- Detecting CXX compiler ABI info
 -- Detecting CXX compiler ABI info - done
 -- Detecting CXX compile features
 -- Detecting CXX compile features - done
+115200
+-- AVR Boards:
+--             menu: 
+--              yun: Arduino Y
+--              uno: Arduino/Genuino Uno
+--        diecimila: Arduino Duemilanove or Diecimila
+--             nano: Arduino Nano
+--             mega: Arduino/Genuino Mega or Mega 2560
+--          megaADK: Arduino Mega ADK
+--         leonardo: Arduino Leonardo
+--            micro: Arduino/Genuino Micro
+--          esplora: Arduino Esplora
+--             mini: Arduino Mini
+--         ethernet: Arduino Ethernet
+--              fio: Arduino Fio
+--               bt: Arduino BT
+--       LilyPadUSB: LilyPad Arduino USB
+--          lilypad: LilyPad Arduino
+--              pro: Arduino Pro or Pro Mini
+--         atmegang: Arduino NG or older
+--     robotControl: Arduino Robot Control
+--       robotMotor: Arduino Robot Motor
+--            gemma: Arduino Gemma
+-- 
+-- 
+-- 
+-- Generating planck_unit
+-- Generating test_dictionary
+-- Generating mega_SD for library SD
+-- Generating mega_SPI for library SPI
+Found library SPI needs mega_SD
+Found library SD needs mega_SPI
+-- Generating mega_SdFat for library SdFat
+Found library SdFat needs mega_SPI
+Found library SdFat needs mega_SD
+Found library SdFat needs mega_SPI
+-- Generating mega_SdFatUtil for library SdFatUtil
+Found library SdFatUtil needs mega_SdFat
+Found library SdFatUtil needs mega_SD
+Found library SdFatUtil needs mega_SPI
+Found library SdFatUtil needs mega_SdFat
+Found library SD needs mega_SD;mega_SPI;mega_SdFat;mega_SdFatUtil
+-- Using /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy for converting firmware image to hex
+-- Generating iinq
+-- Generating external_sort
+-- Generating in_memory_sort
+-- Generating lfsr
+-- Generating bpp_tree
+-- Generating flat_file
+-- Generating open_address_file_hash
+-- Generating open_address_hash
+-- Generating skip_list
+-- Generating test_iinq
+-- Using /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy for converting firmware image to hex
+-- Generating test_external_sort
+-- Using /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy for converting firmware image to hex
+-- Generating test_in_memory_sort
+-- Using /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy for converting firmware image to hex
+-- Generating test_bpp_tree
+-- Using /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy for converting firmware image to hex
+-- Generating test_flat_file
+-- Using /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy for converting firmware image to hex
+-- Generating test_open_address_file_hash
+-- Using /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy for converting firmware image to hex
+-- Generating test_open_address_hash
+-- Using /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy for converting firmware image to hex
+-- Generating test_skip_list
+-- Using /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy for converting firmware image to hex
+-- Generating behaviour_dictionary
+-- Generating test_behaviour_flat_file
+-- Using /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy for converting firmware image to hex
+-- Generating test_behaviour_skip_list
+-- Using /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy for converting firmware image to hex
+-- Generating test_behaviour_bpp_tree
+-- Using /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy for converting firmware image to hex
+-- Generating test_behaviour_open_address_hash
+-- Using /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy for converting firmware image to hex
+-- Generating test_behaviour_open_address_file_hash
+-- Using /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy for converting firmware image to hex
+-- Generating test_cpp_wrapper
+-- Using /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy for converting firmware image to hex
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /Users/danaklamut/ClionProjects/iondb/cmake-build-debug

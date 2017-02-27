@@ -57,78 +57,96 @@ include src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/prog
 # Include the compile flags for this target's objects.
 include src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/flags.make
 
-src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.o: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/flags.make
-src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.o: ../src/tests/unit/util/external_sort/test_external_sort.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.o"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/test_external_sort.dir/test_external_sort.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/tests/unit/util/external_sort/test_external_sort.c
+src/tests/unit/util/external_sort/test_external_sort_external_sort.ino.cpp: ../src/tests/unit/util/external_sort/external_sort.ino
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Regnerating external_sort.ino Sketch"
+	"/Applications/CLion 2.app/Contents/bin/cmake/bin/cmake" /Users/danaklamut/ClionProjects/iondb
+
+src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.obj: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/flags.make
+src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.obj: ../src/tests/unit/util/external_sort/test_external_sort.c
+src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.obj: ../src/tests/unit/util/external_sort/test_external_sort.h
+src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.obj: ../src/tests/unit/util/external_sort/../../../../util/sort/external_sort/external_sort_types.h
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.obj"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/test_external_sort.dir/test_external_sort.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/tests/unit/util/external_sort/test_external_sort.c
 
 src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/test_external_sort.dir/test_external_sort.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/tests/unit/util/external_sort/test_external_sort.c > CMakeFiles/test_external_sort.dir/test_external_sort.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/tests/unit/util/external_sort/test_external_sort.c > CMakeFiles/test_external_sort.dir/test_external_sort.c.i
 
 src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/test_external_sort.dir/test_external_sort.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/tests/unit/util/external_sort/test_external_sort.c -o CMakeFiles/test_external_sort.dir/test_external_sort.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/tests/unit/util/external_sort/test_external_sort.c -o CMakeFiles/test_external_sort.dir/test_external_sort.c.s
 
-src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.o.requires:
+src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.obj.requires:
 
-.PHONY : src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.o.requires
+.PHONY : src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.obj.requires
 
-src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.o.provides: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.o.requires
-	$(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.o.provides.build
-.PHONY : src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.o.provides
+src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.obj.provides: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.obj.requires
+	$(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.obj.provides.build
+.PHONY : src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.obj.provides
 
-src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.o.provides.build: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.o
+src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.obj.provides.build: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.obj
 
 
-src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/run_external_sort.c.o: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/flags.make
-src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/run_external_sort.c.o: ../src/tests/unit/util/external_sort/run_external_sort.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/run_external_sort.c.o"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/test_external_sort.dir/run_external_sort.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/tests/unit/util/external_sort/run_external_sort.c
+src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.obj: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/flags.make
+src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.obj: src/tests/unit/util/external_sort/test_external_sort_external_sort.ino.cpp
+src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.obj: ../src/tests/unit/util/external_sort/test_external_sort.h
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.obj"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.obj -c /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort/test_external_sort_external_sort.ino.cpp
 
-src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/run_external_sort.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/test_external_sort.dir/run_external_sort.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/tests/unit/util/external_sort/run_external_sort.c > CMakeFiles/test_external_sort.dir/run_external_sort.c.i
+src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.i"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort/test_external_sort_external_sort.ino.cpp > CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.i
 
-src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/run_external_sort.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/test_external_sort.dir/run_external_sort.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/tests/unit/util/external_sort/run_external_sort.c -o CMakeFiles/test_external_sort.dir/run_external_sort.c.s
+src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.s"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort/test_external_sort_external_sort.ino.cpp -o CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.s
 
-src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/run_external_sort.c.o.requires:
+src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.obj.requires:
 
-.PHONY : src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/run_external_sort.c.o.requires
+.PHONY : src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.obj.requires
 
-src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/run_external_sort.c.o.provides: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/run_external_sort.c.o.requires
-	$(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/run_external_sort.c.o.provides.build
-.PHONY : src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/run_external_sort.c.o.provides
+src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.obj.provides: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.obj.requires
+	$(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.obj.provides.build
+.PHONY : src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.obj.provides
 
-src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/run_external_sort.c.o.provides.build: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/run_external_sort.c.o
+src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.obj.provides.build: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.obj
 
 
 # Object files for target test_external_sort
 test_external_sort_OBJECTS = \
-"CMakeFiles/test_external_sort.dir/test_external_sort.c.o" \
-"CMakeFiles/test_external_sort.dir/run_external_sort.c.o"
+"CMakeFiles/test_external_sort.dir/test_external_sort.c.obj" \
+"CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.obj"
 
 # External object files for target test_external_sort
 test_external_sort_EXTERNAL_OBJECTS =
 
-bin/test_external_sort: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.o
-bin/test_external_sort: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/run_external_sort.c.o
-bin/test_external_sort: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build.make
-bin/test_external_sort: src/tests/libplanck_unit.a
-bin/test_external_sort: src/util/sort/external_sort/libexternal_sort.a
-bin/test_external_sort: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking C executable ../../../../../bin/test_external_sort"
+src/tests/unit/util/external_sort/test_external_sort.elf: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.obj
+src/tests/unit/util/external_sort/test_external_sort.elf: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.obj
+src/tests/unit/util/external_sort/test_external_sort.elf: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build.make
+src/tests/unit/util/external_sort/test_external_sort.elf: src/tests/unit/dictionary/libmega_SPI.a
+src/tests/unit/util/external_sort/test_external_sort.elf: src/tests/unit/dictionary/libmega_SD.a
+src/tests/unit/util/external_sort/test_external_sort.elf: src/tests/libmega_CORE.a
+src/tests/unit/util/external_sort/test_external_sort.elf: src/tests/libplanck_unit.a
+src/tests/unit/util/external_sort/test_external_sort.elf: src/util/sort/external_sort/libexternal_sort.a
+src/tests/unit/util/external_sort/test_external_sort.elf: src/tests/unit/dictionary/libmega_SD.a
+src/tests/unit/util/external_sort/test_external_sort.elf: src/tests/libmega_CORE.a
+src/tests/unit/util/external_sort/test_external_sort.elf: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable test_external_sort.elf"
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/test_external_sort.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating EEP image"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0 /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort/test_external_sort.elf /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort/test_external_sort.eep
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating HEX image"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy -O ihex -R .eeprom /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort/test_external_sort.elf /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort/test_external_sort.hex
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Calculating image size"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort && "/Applications/CLion 2.app/Contents/bin/cmake/bin/cmake" -DFIRMWARE_IMAGE=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort/test_external_sort.elf -DMCU=atmega2560 -DEEPROM_IMAGE=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort/test_external_sort.eep -P /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles/FirmwareSize.cmake
 
 # Rule to build all files generated by this target.
-src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build: bin/test_external_sort
+src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build: src/tests/unit/util/external_sort/test_external_sort.elf
 
 .PHONY : src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build
 
-src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/requires: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.o.requires
-src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/requires: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/run_external_sort.c.o.requires
+src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/requires: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.obj.requires
+src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/requires: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.obj.requires
 
 .PHONY : src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/requires
 
@@ -136,7 +154,7 @@ src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/clean:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort && $(CMAKE_COMMAND) -P CMakeFiles/test_external_sort.dir/cmake_clean.cmake
 .PHONY : src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/clean
 
-src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/depend:
+src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/depend: src/tests/unit/util/external_sort/test_external_sort_external_sort.ino.cpp
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/danaklamut/ClionProjects/iondb /Users/danaklamut/ClionProjects/iondb/src/tests/unit/util/external_sort /Users/danaklamut/ClionProjects/iondb/cmake-build-debug /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/depend
 

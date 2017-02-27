@@ -1,5 +1,5 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/in_memory_sort.dir/in_memory_sort.c.o"
+  "CMakeFiles/in_memory_sort.dir/in_memory_sort.c.obj"
   "libin_memory_sort.pdb"
   "libin_memory_sort.a"
 )

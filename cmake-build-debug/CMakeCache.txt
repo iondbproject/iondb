@@ -14,8 +14,100 @@
 # EXTERNAL cache entries
 ########################
 
+//Path to avrdude programmer configuration file.
+ARDUINO_AVRDUDE_CONFIG_PATH:FILEPATH=/Applications/Arduino.app/Contents/Java/hardware/tools/avr/etc/avrdude.conf
+
+ARDUINO_AVRDUDE_FLAGS:STRING=-V
+
 //Path to a program.
-CMAKE_AR:FILEPATH=/Library/Developer/CommandLineTools/usr/bin/ar
+ARDUINO_AVRDUDE_PROGRAM:FILEPATH=/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avrdude
+
+//Path to Arduino boards definition file.
+ARDUINO_BOARDS_PATH:FILEPATH=ARDUINO_BOARDS_PATH-NOTFOUND
+
+//Path to directory containing the Arduino bootloader images and
+// sources.
+ARDUINO_BOOTLOADERS_PATH:FILEPATH=ARDUINO_BOOTLOADERS_PATH-NOTFOUND
+
+//Path to directory containing the Arduino core sources.
+ARDUINO_CORES_PATH:FILEPATH=ARDUINO_CORES_PATH-NOTFOUND
+
+//Default Arduino Board ID when not specified.
+ARDUINO_DEFAULT_BOARD:STRING=uno
+
+//Default Arduino port when not specified.
+ARDUINO_DEFAULT_PORT:STRING=
+
+//Default Arduino Programmer ID when not specified.
+ARDUINO_DEFAULT_PROGRAMMER:STRING=
+
+//Default Arduino Serial command when not specified.
+ARDUINO_DEFAULT_SERIAL:STRING=
+
+//Path to directory containing the Arduino hardware libraries sources.
+ARDUINO_LIBRARIES_PATH:FILEPATH=/Applications/Arduino.app/Contents/Java/libraries
+
+ARDUINO_OBJCOPY_EEP_FLAGS:STRING=-O;ihex;-j;.eeprom;--set-section-flags=.eeprom=alloc,load;--no-change-warnings;--change-section-lma;.eeprom=0
+
+ARDUINO_OBJCOPY_HEX_FLAGS:STRING=-O;ihex;-R;.eeprom
+
+//Path to Arduino programmers definition file.
+ARDUINO_PROGRAMMERS_PATH:FILEPATH=ARDUINO_PROGRAMMERS_PATH-NOTFOUND
+
+//Arduino SDK path.
+ARDUINO_SDK_PATH:PATH=/Applications/Arduino.app/Contents/Java
+
+//Arduino SDK Version
+ARDUINO_SDK_VERSION:STRING=1.6.10
+
+//Arduino SDK Major Version
+ARDUINO_SDK_VERSION_MAJOR:STRING=1
+
+//Arduino SDK Minor Version
+ARDUINO_SDK_VERSION_MINOR:STRING=6
+
+//Arduino SDK Patch Version
+ARDUINO_SDK_VERSION_PATCH:STRING=10
+
+//Path to directory containing the Arduino variant sources.
+ARDUINO_VARIANTS_PATH:FILEPATH=ARDUINO_VARIANTS_PATH-NOTFOUND
+
+//Path to Arduino version file.
+ARDUINO_VERSION_PATH:FILEPATH=/Applications/Arduino.app/Contents/Java/lib/version.txt
+
+//Path to a program.
+AVRSIZE_PROGRAM:FILEPATH=/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-size
+
+//List of detected Arduino Board configurations
+AVR_BOARDS:STRING=menu;yun;uno;diecimila;nano;mega;megaADK;leonardo;micro;esplora;mini;ethernet;fio;bt;LilyPadUSB;lilypad;pro;atmegang;robotControl;robotMotor;gemma
+
+//Path to Arduino boards definition file.
+AVR_BOARDS_PATH:FILEPATH=/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/boards.txt
+
+//Path to directory containing the Arduino bootloader images and
+// sources.
+AVR_BOOTLOADERS_PATH:FILEPATH=/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/bootloaders
+
+//Path to directory containing the Arduino core sources.
+AVR_CORES_PATH:FILEPATH=/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores
+
+//Path to directory containing the Arduino hardware libraries sources.
+AVR_LIBRARIES_PATH:FILEPATH=/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries
+
+//Path to Arduino programmers definition file.
+AVR_PROGRAMMERS_PATH:FILEPATH=/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/programmers.txt
+
+//Path to directory containing the Arduino variant sources.
+AVR_VARIANTS_PATH:FILEPATH=/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/variants
+
+//No help, variable specified on the command line.
+BAUD_RATE:UNINITIALIZED=115200
+
+//No help, variable specified on the command line.
+BOARD:UNINITIALIZED=mega
+
+//Path to a program.
+CMAKE_AR:FILEPATH=/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-ar
 
 //Choose the type of build, options are: None(CMAKE_CXX_FLAGS or
 // CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.
@@ -31,129 +123,82 @@ CMAKE_CODEBLOCKS_MAKE_ARGUMENTS:STRING=-j8
 //Enable/Disable color output during build.
 CMAKE_COLOR_MAKEFILE:BOOL=ON
 
-//CXX compiler
-CMAKE_CXX_COMPILER:FILEPATH=/Library/Developer/CommandLineTools/usr/bin/c++
+CMAKE_CXX_FLAGS:STRING=-g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD
 
-//Flags used by the compiler during all build types.
-CMAKE_CXX_FLAGS:STRING=
+CMAKE_CXX_FLAGS_DEBUG:STRING=-g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD
 
-//Flags used by the compiler during debug builds.
-CMAKE_CXX_FLAGS_DEBUG:STRING=-g
+CMAKE_CXX_FLAGS_MINSIZEREL:STRING=-g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD
 
-//Flags used by the compiler during release builds for minimum
-// size.
-CMAKE_CXX_FLAGS_MINSIZEREL:STRING=-Os -DNDEBUG
+CMAKE_CXX_FLAGS_RELEASE:STRING=-g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD
 
-//Flags used by the compiler during release builds.
-CMAKE_CXX_FLAGS_RELEASE:STRING=-O3 -DNDEBUG
+CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=-g -Os -w -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -MMD
 
-//Flags used by the compiler during release builds with debug info.
-CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
+CMAKE_C_FLAGS:STRING=-g -Os -w -ffunction-sections -fdata-sections -MMD
 
-//C compiler
-CMAKE_C_COMPILER:FILEPATH=/Library/Developer/CommandLineTools/usr/bin/cc
+CMAKE_C_FLAGS_DEBUG:STRING=-g -Os -w -ffunction-sections -fdata-sections -MMD
 
-//Flags used by the compiler during all build types.
-CMAKE_C_FLAGS:STRING=
+CMAKE_C_FLAGS_MINSIZEREL:STRING=-g -Os -w -ffunction-sections -fdata-sections -MMD
 
-//Flags used by the compiler during debug builds.
-CMAKE_C_FLAGS_DEBUG:STRING=-g
+CMAKE_C_FLAGS_RELEASE:STRING=-g -Os -w -ffunction-sections -fdata-sections -MMD
 
-//Flags used by the compiler during release builds for minimum
-// size.
-CMAKE_C_FLAGS_MINSIZEREL:STRING=-Os -DNDEBUG
+CMAKE_C_FLAGS_RELWITHDEBINFO:STRING=-g -Os -w -ffunction-sections -fdata-sections -MMD
 
-//Flags used by the compiler during release builds.
-CMAKE_C_FLAGS_RELEASE:STRING=-O3 -DNDEBUG
+CMAKE_EXE_LINKER_FLAGS:STRING=-w -Os -Wl,--gc-sections
 
-//Flags used by the compiler during release builds with debug info.
-CMAKE_C_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
+CMAKE_EXE_LINKER_FLAGS_DEBUG:STRING=-w -Os -Wl,--gc-sections
 
-//Flags used by the linker.
-CMAKE_EXE_LINKER_FLAGS:STRING=
+CMAKE_EXE_LINKER_FLAGS_MINSIZEREL:STRING=-w -Os -Wl,--gc-sections
 
-//Flags used by the linker during debug builds.
-CMAKE_EXE_LINKER_FLAGS_DEBUG:STRING=
+CMAKE_EXE_LINKER_FLAGS_RELEASE:STRING=-w -Os -Wl,--gc-sections
 
-//Flags used by the linker during release minsize builds.
-CMAKE_EXE_LINKER_FLAGS_MINSIZEREL:STRING=
-
-//Flags used by the linker during release builds.
-CMAKE_EXE_LINKER_FLAGS_RELEASE:STRING=
-
-//Flags used by the linker during Release with Debug Info builds.
-CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO:STRING=
+CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO:STRING=-w -Os -Wl,--gc-sections
 
 //Enable/Disable output of compile commands during generation.
 CMAKE_EXPORT_COMPILE_COMMANDS:BOOL=OFF
-
-//Path to a program.
-CMAKE_INSTALL_NAME_TOOL:FILEPATH=/usr/bin/install_name_tool
 
 //Install path prefix, prepended onto install directories.
 CMAKE_INSTALL_PREFIX:PATH=/usr/local
 
 //Path to a program.
-CMAKE_LINKER:FILEPATH=/Library/Developer/CommandLineTools/usr/bin/ld
+CMAKE_LINKER:FILEPATH=/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-ld
 
 //Path to a program.
 CMAKE_MAKE_PROGRAM:FILEPATH=/usr/bin/make
 
-//Flags used by the linker during the creation of modules.
-CMAKE_MODULE_LINKER_FLAGS:STRING=
+CMAKE_MODULE_LINKER_FLAGS:STRING=-w -Os -Wl,--gc-sections
 
-//Flags used by the linker during debug builds.
-CMAKE_MODULE_LINKER_FLAGS_DEBUG:STRING=
+CMAKE_MODULE_LINKER_FLAGS_DEBUG:STRING=-w -Os -Wl,--gc-sections
 
-//Flags used by the linker during release minsize builds.
-CMAKE_MODULE_LINKER_FLAGS_MINSIZEREL:STRING=
+CMAKE_MODULE_LINKER_FLAGS_MINSIZEREL:STRING=-w -Os -Wl,--gc-sections
 
-//Flags used by the linker during release builds.
-CMAKE_MODULE_LINKER_FLAGS_RELEASE:STRING=
+CMAKE_MODULE_LINKER_FLAGS_RELEASE:STRING=-w -Os -Wl,--gc-sections
 
-//Flags used by the linker during Release with Debug Info builds.
-CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO:STRING=
+CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO:STRING=-w -Os -Wl,--gc-sections
 
 //Path to a program.
-CMAKE_NM:FILEPATH=/Library/Developer/CommandLineTools/usr/bin/nm
+CMAKE_NM:FILEPATH=/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-nm
 
 //Path to a program.
-CMAKE_OBJCOPY:FILEPATH=CMAKE_OBJCOPY-NOTFOUND
+CMAKE_OBJCOPY:FILEPATH=/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy
 
 //Path to a program.
-CMAKE_OBJDUMP:FILEPATH=CMAKE_OBJDUMP-NOTFOUND
-
-//Build architectures for OSX
-CMAKE_OSX_ARCHITECTURES:STRING=
-
-//Minimum OS X version to target for deployment (at runtime); newer
-// APIs weak linked. Set to empty string for default value.
-CMAKE_OSX_DEPLOYMENT_TARGET:STRING=
-
-//The product will be built against the headers and libraries located
-// inside the indicated SDK.
-CMAKE_OSX_SYSROOT:STRING=
+CMAKE_OBJDUMP:FILEPATH=/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objdump
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=planck_unit
+CMAKE_PROJECT_NAME:STATIC=IonDB
 
 //Path to a program.
-CMAKE_RANLIB:FILEPATH=/Library/Developer/CommandLineTools/usr/bin/ranlib
+CMAKE_RANLIB:FILEPATH=/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-ranlib
 
-//Flags used by the linker during the creation of dll's.
-CMAKE_SHARED_LINKER_FLAGS:STRING=
+CMAKE_SHARED_LINKER_FLAGS:STRING=-w -Os -Wl,--gc-sections
 
-//Flags used by the linker during debug builds.
-CMAKE_SHARED_LINKER_FLAGS_DEBUG:STRING=
+CMAKE_SHARED_LINKER_FLAGS_DEBUG:STRING=-w -Os -Wl,--gc-sections
 
-//Flags used by the linker during release minsize builds.
-CMAKE_SHARED_LINKER_FLAGS_MINSIZEREL:STRING=
+CMAKE_SHARED_LINKER_FLAGS_MINSIZEREL:STRING=-w -Os -Wl,--gc-sections
 
-//Flags used by the linker during release builds.
-CMAKE_SHARED_LINKER_FLAGS_RELEASE:STRING=
+CMAKE_SHARED_LINKER_FLAGS_RELEASE:STRING=-w -Os -Wl,--gc-sections
 
-//Flags used by the linker during Release with Debug Info builds.
-CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO:STRING=
+CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO:STRING=-w -Os -Wl,--gc-sections
 
 //If set, runtime paths are not added when installing shared libraries,
 // but are added when building.
@@ -178,7 +223,10 @@ CMAKE_STATIC_LINKER_FLAGS_RELEASE:STRING=
 CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
 //Path to a program.
-CMAKE_STRIP:FILEPATH=/Library/Developer/CommandLineTools/usr/bin/strip
+CMAKE_STRIP:FILEPATH=/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-strip
+
+//The CMake toolchain file
+CMAKE_TOOLCHAIN_FILE:FILEPATH=/Users/danaklamut/ClionProjects/iondb/cmake/ArduinoToolchain.cmake
 
 //If this value is on, makefiles will be generated without the
 // .SILENT directive, and all commands will be echoed to the console
@@ -186,14 +234,29 @@ CMAKE_STRIP:FILEPATH=/Library/Developer/CommandLineTools/usr/bin/strip
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
+//Value Computed by CMake
+IonDB_BINARY_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug
+
+//Value Computed by CMake
+IonDB_SOURCE_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb
+
+//No help, variable specified on the command line.
+PORT:UNINITIALIZED=/dev/cu.usbmodem1421
+
+//No help, variable specified on the command line.
+PROCESSOR:UNINITIALIZED=atmega2560
+
 //Path to a program.
 ProcessorCount_cmd_sysctl:FILEPATH=/usr/sbin/sysctl
+
+//No help, variable specified on the command line.
+USE_ARDUINO:UNINITIALIZED=TRUE
 
 //Value Computed by CMake
 behaviour_dictionary_BINARY_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary
 
 //Dependencies for the target
-behaviour_dictionary_LIB_DEPENDS:STATIC=general;planck_unit;general;bpp_tree;general;skip_list;general;flat_file;general;open_address_hash;general;open_address_file_hash;
+behaviour_dictionary_LIB_DEPENDS:STATIC=general;mega_CORE;general;planck_unit;general;bpp_tree;general;skip_list;general;flat_file;general;open_address_hash;general;open_address_file_hash;general;-lc -lm;
 
 //Value Computed by CMake
 behaviour_dictionary_SOURCE_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/src/tests/behaviour/dictionary
@@ -201,8 +264,8 @@ behaviour_dictionary_SOURCE_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/src
 //Value Computed by CMake
 bpp_tree_BINARY_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree
 
-//Dependencies for target
-bpp_tree_LIB_DEPENDS:STATIC=
+//Dependencies for the target
+bpp_tree_LIB_DEPENDS:STATIC=general;mega_SD;general;mega_CORE;general;-lc -lm;
 
 //Value Computed by CMake
 bpp_tree_SOURCE_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/src/dictionary/bpp_tree
@@ -222,8 +285,8 @@ examples_SOURCE_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/examples
 //Value Computed by CMake
 external_sort_BINARY_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/sort/external_sort
 
-//Dependencies for target
-external_sort_LIB_DEPENDS:STATIC=
+//Dependencies for the target
+external_sort_LIB_DEPENDS:STATIC=general;mega_SD;general;mega_CORE;general;-lc -lm;
 
 //Value Computed by CMake
 external_sort_SOURCE_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/src/util/sort/external_sort
@@ -231,8 +294,8 @@ external_sort_SOURCE_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/src/util/s
 //Value Computed by CMake
 flat_file_BINARY_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file
 
-//Dependencies for target
-flat_file_LIB_DEPENDS:STATIC=
+//Dependencies for the target
+flat_file_LIB_DEPENDS:STATIC=general;mega_SD;general;mega_CORE;general;-lc -lm;
 
 //Value Computed by CMake
 flat_file_SOURCE_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/src/dictionary/flat_file
@@ -241,7 +304,7 @@ flat_file_SOURCE_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/src/dictionary
 iinq_BINARY_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/iinq
 
 //Dependencies for the target
-iinq_LIB_DEPENDS:STATIC=general;bpp_tree;general;flat_file;
+iinq_LIB_DEPENDS:STATIC=general;mega_CORE;general;bpp_tree;general;flat_file;general;-lc -lm;
 
 //Value Computed by CMake
 iinq_SOURCE_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/src/iinq
@@ -249,8 +312,8 @@ iinq_SOURCE_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/src/iinq
 //Value Computed by CMake
 in_memory_sort_BINARY_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/sort/in_memory_sort
 
-//Dependencies for target
-in_memory_sort_LIB_DEPENDS:STATIC=
+//Dependencies for the target
+in_memory_sort_LIB_DEPENDS:STATIC=general;mega_CORE;general;-lc -lm;
 
 //Value Computed by CMake
 in_memory_sort_SOURCE_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/src/util/sort/in_memory_sort
@@ -264,17 +327,32 @@ integration_cpp_wrapper_SOURCE_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/
 //Value Computed by CMake
 lfsr_BINARY_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/lfsr
 
-//Dependencies for target
-lfsr_LIB_DEPENDS:STATIC=
+//Dependencies for the target
+lfsr_LIB_DEPENDS:STATIC=general;mega_CORE;general;-lc -lm;
 
 //Value Computed by CMake
 lfsr_SOURCE_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/src/util/lfsr
+
+//Dependencies for target
+mega_CORE_LIB_DEPENDS:STATIC=
+
+//Dependencies for the target
+mega_SD_LIB_DEPENDS:STATIC=general;mega_CORE;
+
+//Dependencies for the target
+mega_SPI_LIB_DEPENDS:STATIC=general;mega_CORE;
+
+//Dependencies for the target
+mega_SdFatUtil_LIB_DEPENDS:STATIC=general;mega_CORE;
+
+//Dependencies for the target
+mega_SdFat_LIB_DEPENDS:STATIC=general;mega_CORE;
 
 //Value Computed by CMake
 open_address_file_hash_BINARY_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/open_address_file_hash
 
 //Dependencies for the target
-open_address_file_hash_LIB_DEPENDS:STATIC=general;bpp_tree;
+open_address_file_hash_LIB_DEPENDS:STATIC=general;mega_SD;general;mega_CORE;general;bpp_tree;general;-lc -lm;
 
 //Value Computed by CMake
 open_address_file_hash_SOURCE_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/src/dictionary/open_address_file_hash
@@ -283,7 +361,7 @@ open_address_file_hash_SOURCE_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/s
 open_address_hash_BINARY_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/open_address_hash
 
 //Dependencies for the target
-open_address_hash_LIB_DEPENDS:STATIC=general;bpp_tree;
+open_address_hash_LIB_DEPENDS:STATIC=general;mega_CORE;general;bpp_tree;general;-lc -lm;
 
 //Value Computed by CMake
 open_address_hash_SOURCE_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/src/dictionary/open_address_hash
@@ -291,8 +369,8 @@ open_address_hash_SOURCE_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/src/di
 //Value Computed by CMake
 planck_unit_BINARY_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests
 
-//Dependencies for target
-planck_unit_LIB_DEPENDS:STATIC=
+//Dependencies for the target
+planck_unit_LIB_DEPENDS:STATIC=general;mega_CORE;general;-lc -lm;
 
 //Value Computed by CMake
 planck_unit_SOURCE_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/src/tests
@@ -301,7 +379,7 @@ planck_unit_SOURCE_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/src/tests
 skip_list_BINARY_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list
 
 //Dependencies for the target
-skip_list_LIB_DEPENDS:STATIC=general;bpp_tree;
+skip_list_LIB_DEPENDS:STATIC=general;mega_CORE;general;bpp_tree;general;-lc -lm;
 
 //Value Computed by CMake
 skip_list_SOURCE_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/src/dictionary/skip_list
@@ -401,6 +479,44 @@ test_skip_list_SOURCE_DIR:STATIC=/Users/danaklamut/ClionProjects/iondb/src/tests
 # INTERNAL cache entries
 ########################
 
+//ADVANCED property for variable: ARDUINO_AVRDUDE_CONFIG_PATH
+ARDUINO_AVRDUDE_CONFIG_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: ARDUINO_AVRDUDE_FLAGS
+ARDUINO_AVRDUDE_FLAGS-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: ARDUINO_AVRDUDE_PROGRAM
+ARDUINO_AVRDUDE_PROGRAM-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: ARDUINO_BOARDS_PATH
+ARDUINO_BOARDS_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: ARDUINO_BOOTLOADERS_PATH
+ARDUINO_BOOTLOADERS_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: ARDUINO_CORES_PATH
+ARDUINO_CORES_PATH-ADVANCED:INTERNAL=1
+//Arduino Found
+ARDUINO_FOUND:INTERNAL=True
+//ADVANCED property for variable: ARDUINO_LIBRARIES_PATH
+ARDUINO_LIBRARIES_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: ARDUINO_OBJCOPY_EEP_FLAGS
+ARDUINO_OBJCOPY_EEP_FLAGS-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: ARDUINO_OBJCOPY_HEX_FLAGS
+ARDUINO_OBJCOPY_HEX_FLAGS-ADVANCED:INTERNAL=1
+//A list of registered platforms
+ARDUINO_PLATFORMS:INTERNAL=ARDUINO;AVR
+//The path to ARDUINO
+ARDUINO_PLATFORM_PATH:INTERNAL=/Applications/Arduino.app/Contents/Java/hardware/arduino
+//ADVANCED property for variable: ARDUINO_PROGRAMMERS_PATH
+ARDUINO_PROGRAMMERS_PATH-ADVANCED:INTERNAL=1
+//Arduino Size Script
+ARDUINO_SIZE_SCRIPT:INTERNAL=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles/FirmwareSize.cmake
+//ADVANCED property for variable: ARDUINO_VARIANTS_PATH
+ARDUINO_VARIANTS_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: ARDUINO_VERSION_PATH
+ARDUINO_VERSION_PATH-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: AVRSIZE_PROGRAM
+AVRSIZE_PROGRAM-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: AVR_BOARDS
+AVR_BOARDS-ADVANCED:INTERNAL=1
+//The path to AVR
+AVR_PLATFORM_PATH:INTERNAL=/Applications/Arduino.app/Contents/Java/hardware/arduino/avr
 //ADVANCED property for variable: CMAKE_AR
 CMAKE_AR-ADVANCED:INTERNAL=1
 //This is the directory where this CMakeCache.txt was created
@@ -419,8 +535,6 @@ CMAKE_COMMAND:INTERNAL=/Applications/CLion 2.app/Contents/bin/cmake/bin/cmake
 CMAKE_CPACK_COMMAND:INTERNAL=/Applications/CLion 2.app/Contents/bin/cmake/bin/cpack
 //Path to ctest program executable.
 CMAKE_CTEST_COMMAND:INTERNAL=/Applications/CLion 2.app/Contents/bin/cmake/bin/ctest
-//ADVANCED property for variable: CMAKE_CXX_COMPILER
-CMAKE_CXX_COMPILER-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_CXX_FLAGS
 CMAKE_CXX_FLAGS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_CXX_FLAGS_DEBUG
@@ -431,8 +545,6 @@ CMAKE_CXX_FLAGS_MINSIZEREL-ADVANCED:INTERNAL=1
 CMAKE_CXX_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_CXX_FLAGS_RELWITHDEBINFO
 CMAKE_CXX_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
-//ADVANCED property for variable: CMAKE_C_COMPILER
-CMAKE_C_COMPILER-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_C_FLAGS
 CMAKE_C_FLAGS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_C_FLAGS_DEBUG
@@ -444,7 +556,7 @@ CMAKE_C_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_C_FLAGS_RELWITHDEBINFO
 CMAKE_C_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //Executable file format
-CMAKE_EXECUTABLE_FORMAT:INTERNAL=Unknown
+CMAKE_EXECUTABLE_FORMAT:INTERNAL=ELF
 //ADVANCED property for variable: CMAKE_EXE_LINKER_FLAGS
 CMAKE_EXE_LINKER_FLAGS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_EXE_LINKER_FLAGS_DEBUG
@@ -460,13 +572,13 @@ CMAKE_EXPORT_COMPILE_COMMANDS-ADVANCED:INTERNAL=1
 //Name of external makefile project generator.
 CMAKE_EXTRA_GENERATOR:INTERNAL=CodeBlocks
 //CXX compiler system defined macros
-CMAKE_EXTRA_GENERATOR_CXX_SYSTEM_DEFINED_MACROS:INTERNAL=__llvm__;1;__clang__;1;__clang_major__;7;__clang_minor__; ;__clang_patchlevel__;2;__clang_version__;"7.0.2 (clang-700.1.81)";__GNUC_MINOR__;2;__GNUC_PATCHLEVEL__;1;__GNUC__;4;__GXX_ABI_VERSION;1002;__ATOMIC_RELAXED; ;__ATOMIC_CONSUME;1;__ATOMIC_ACQUIRE;2;__ATOMIC_RELEASE;3;__ATOMIC_ACQ_REL;4;__ATOMIC_SEQ_CST;5;__PRAGMA_REDEFINE_EXTNAME;1;__VERSION__;"4.2.1 Compatible Apple LLVM 7.0.2 (clang-700.1.81)";__CONSTANT_CFSTRINGS__;1;__block;__attribute__((__blocks__(byref)));__BLOCKS__;1;__GXX_RTTI;1;__ORDER_LITTLE_ENDIAN__;1234;__ORDER_BIG_ENDIAN__;4321;__ORDER_PDP_ENDIAN__;3412;__BYTE_ORDER__;__ORDER_LITTLE_ENDIAN__;__LITTLE_ENDIAN__;1;_LP64;1;__LP64__;1;__CHAR_BIT__;8;__SCHAR_MAX__;127;__SHRT_MAX__;32767;__INT_MAX__;2147483647;__LONG_MAX__;9223372036854775807L;__LONG_LONG_MAX__;9223372036854775807LL;__WCHAR_MAX__;2147483647;__INTMAX_MAX__;9223372036854775807L;__SIZE_MAX__;18446744073709551615UL;__UINTMAX_MAX__;18446744073709551615UL;__PTRDIFF_MAX__;9223372036854775807L;__INTPTR_MAX__;9223372036854775807L;__UINTPTR_MAX__;18446744073709551615UL;__SIZEOF_DOUBLE__;8;__SIZEOF_FLOAT__;4;__SIZEOF_INT__;4;__SIZEOF_LONG__;8;__SIZEOF_LONG_DOUBLE__;16;__SIZEOF_LONG_LONG__;8;__SIZEOF_POINTER__;8;__SIZEOF_SHORT__;2;__SIZEOF_PTRDIFF_T__;8;__SIZEOF_SIZE_T__;8;__SIZEOF_WCHAR_T__;4;__SIZEOF_WINT_T__;4;__SIZEOF_INT128__;16;__INTMAX_TYPE__;long int;__INTMAX_FMTd__;"ld";__INTMAX_FMTi__;"li";__INTMAX_C_SUFFIX__;L;__UINTMAX_TYPE__;long unsigned int;__UINTMAX_FMTo__;"lo";__UINTMAX_FMTu__;"lu";__UINTMAX_FMTx__;"lx";__UINTMAX_FMTX__;"lX";__UINTMAX_C_SUFFIX__;UL;__INTMAX_WIDTH__;64;__PTRDIFF_TYPE__;long int;__PTRDIFF_FMTd__;"ld";__PTRDIFF_FMTi__;"li";__PTRDIFF_WIDTH__;64;__INTPTR_TYPE__;long int;__INTPTR_FMTd__;"ld";__INTPTR_FMTi__;"li";__INTPTR_WIDTH__;64;__SIZE_TYPE__;long unsigned int;__SIZE_FMTo__;"lo";__SIZE_FMTu__;"lu";__SIZE_FMTx__;"lx";__SIZE_FMTX__;"lX";__SIZE_WIDTH__;64;__WCHAR_TYPE__;int;__WCHAR_WIDTH__;32;__WINT_TYPE__;int;__WINT_WIDTH__;32;__SIG_ATOMIC_WIDTH__;32;__SIG_ATOMIC_MAX__;2147483647;__CHAR16_TYPE__;unsigned short;__CHAR32_TYPE__;unsigned int;__UINTMAX_WIDTH__;64;__UINTPTR_TYPE__;long unsigned int;__UINTPTR_FMTo__;"lo";__UINTPTR_FMTu__;"lu";__UINTPTR_FMTx__;"lx";__UINTPTR_FMTX__;"lX";__UINTPTR_WIDTH__;64;__FLT_DENORM_MIN__;1.40129846e-45F;__FLT_HAS_DENORM__;1;__FLT_DIG__;6;__FLT_EPSILON__;1.19209290e-7F;__FLT_HAS_INFINITY__;1;__FLT_HAS_QUIET_NAN__;1;__FLT_MANT_DIG__;24;__FLT_MAX_10_EXP__;38;__FLT_MAX_EXP__;128;__FLT_MAX__;3.40282347e+38F;__FLT_MIN_10_EXP__;(-37);__FLT_MIN_EXP__;(-125);__FLT_MIN__;1.17549435e-38F;__DBL_DENORM_MIN__;4.9406564584124654e-324;__DBL_HAS_DENORM__;1;__DBL_DIG__;15;__DBL_EPSILON__;2.2204460492503131e-16;__DBL_HAS_INFINITY__;1;__DBL_HAS_QUIET_NAN__;1;__DBL_MANT_DIG__;53;__DBL_MAX_10_EXP__;308;__DBL_MAX_EXP__;1024;__DBL_MAX__;1.7976931348623157e+308;__DBL_MIN_10_EXP__;(-307);__DBL_MIN_EXP__;(-1021);__DBL_MIN__;2.2250738585072014e-308;__LDBL_DENORM_MIN__;3.64519953188247460253e-4951L;__LDBL_HAS_DENORM__;1;__LDBL_DIG__;18;__LDBL_EPSILON__;1.08420217248550443401e-19L;__LDBL_HAS_INFINITY__;1;__LDBL_HAS_QUIET_NAN__;1;__LDBL_MANT_DIG__;64;__LDBL_MAX_10_EXP__;4932;__LDBL_MAX_EXP__;16384;__LDBL_MAX__;1.18973149535723176502e+4932L;__LDBL_MIN_10_EXP__;(-4931);__LDBL_MIN_EXP__;(-16381);__LDBL_MIN__;3.36210314311209350626e-4932L;__POINTER_WIDTH__;64;__BIGGEST_ALIGNMENT__;16;__INT8_TYPE__;signed char;__INT8_FMTd__;"hhd";__INT8_FMTi__;"hhi";__INT8_C_SUFFIX__; ;__INT16_TYPE__;short;__INT16_FMTd__;"hd";__INT16_FMTi__;"hi";__INT16_C_SUFFIX__; ;__INT32_TYPE__;int;__INT32_FMTd__;"d";__INT32_FMTi__;"i";__INT32_C_SUFFIX__; ;__INT64_TYPE__;long long int;__INT64_FMTd__;"lld";__INT64_FMTi__;"lli";__INT64_C_SUFFIX__;LL;__UINT8_TYPE__;unsigned char;__UINT8_FMTo__;"hho";__UINT8_FMTu__;"hhu";__UINT8_FMTx__;"hhx";__UINT8_FMTX__;"hhX";__UINT8_C_SUFFIX__; ;__UINT8_MAX__;255;__INT8_MAX__;127;__UINT16_TYPE__;unsigned short;__UINT16_FMTo__;"ho";__UINT16_FMTu__;"hu";__UINT16_FMTx__;"hx";__UINT16_FMTX__;"hX";__UINT16_C_SUFFIX__; ;__UINT16_MAX__;65535;__INT16_MAX__;32767;__UINT32_TYPE__;unsigned int;__UINT32_FMTo__;"o";__UINT32_FMTu__;"u";__UINT32_FMTx__;"x";__UINT32_FMTX__;"X";__UINT32_C_SUFFIX__;U;__UINT32_MAX__;4294967295U;__INT32_MAX__;2147483647;__UINT64_TYPE__;long long unsigned int;__UINT64_FMTo__;"llo";__UINT64_FMTu__;"llu";__UINT64_FMTx__;"llx";__UINT64_FMTX__;"llX";__UINT64_C_SUFFIX__;ULL;__UINT64_MAX__;18446744073709551615ULL;__INT64_MAX__;9223372036854775807LL;__INT_LEAST8_TYPE__;signed char;__INT_LEAST8_MAX__;127;__INT_LEAST8_FMTd__;"hhd";__INT_LEAST8_FMTi__;"hhi";__UINT_LEAST8_TYPE__;unsigned char;__UINT_LEAST8_MAX__;255;__UINT_LEAST8_FMTo__;"hho";__UINT_LEAST8_FMTu__;"hhu";__UINT_LEAST8_FMTx__;"hhx";__UINT_LEAST8_FMTX__;"hhX";__INT_LEAST16_TYPE__;short;__INT_LEAST16_MAX__;32767;__INT_LEAST16_FMTd__;"hd";__INT_LEAST16_FMTi__;"hi";__UINT_LEAST16_TYPE__;unsigned short;__UINT_LEAST16_MAX__;65535;__UINT_LEAST16_FMTo__;"ho";__UINT_LEAST16_FMTu__;"hu";__UINT_LEAST16_FMTx__;"hx";__UINT_LEAST16_FMTX__;"hX";__INT_LEAST32_TYPE__;int;__INT_LEAST32_MAX__;2147483647;__INT_LEAST32_FMTd__;"d";__INT_LEAST32_FMTi__;"i";__UINT_LEAST32_TYPE__;unsigned int;__UINT_LEAST32_MAX__;4294967295U;__UINT_LEAST32_FMTo__;"o";__UINT_LEAST32_FMTu__;"u";__UINT_LEAST32_FMTx__;"x";__UINT_LEAST32_FMTX__;"X";__INT_LEAST64_TYPE__;long int;__INT_LEAST64_MAX__;9223372036854775807L;__INT_LEAST64_FMTd__;"ld";__INT_LEAST64_FMTi__;"li";__UINT_LEAST64_TYPE__;long unsigned int;__UINT_LEAST64_MAX__;18446744073709551615UL;__UINT_LEAST64_FMTo__;"lo";__UINT_LEAST64_FMTu__;"lu";__UINT_LEAST64_FMTx__;"lx";__UINT_LEAST64_FMTX__;"lX";__INT_FAST8_TYPE__;signed char;__INT_FAST8_MAX__;127;__INT_FAST8_FMTd__;"hhd";__INT_FAST8_FMTi__;"hhi";__UINT_FAST8_TYPE__;unsigned char;__UINT_FAST8_MAX__;255;__UINT_FAST8_FMTo__;"hho";__UINT_FAST8_FMTu__;"hhu";__UINT_FAST8_FMTx__;"hhx";__UINT_FAST8_FMTX__;"hhX";__INT_FAST16_TYPE__;short;__INT_FAST16_MAX__;32767;__INT_FAST16_FMTd__;"hd";__INT_FAST16_FMTi__;"hi";__UINT_FAST16_TYPE__;unsigned short;__UINT_FAST16_MAX__;65535;__UINT_FAST16_FMTo__;"ho";__UINT_FAST16_FMTu__;"hu";__UINT_FAST16_FMTx__;"hx";__UINT_FAST16_FMTX__;"hX";__INT_FAST32_TYPE__;int;__INT_FAST32_MAX__;2147483647;__INT_FAST32_FMTd__;"d";__INT_FAST32_FMTi__;"i";__UINT_FAST32_TYPE__;unsigned int;__UINT_FAST32_MAX__;4294967295U;__UINT_FAST32_FMTo__;"o";__UINT_FAST32_FMTu__;"u";__UINT_FAST32_FMTx__;"x";__UINT_FAST32_FMTX__;"X";__INT_FAST64_TYPE__;long int;__INT_FAST64_MAX__;9223372036854775807L;__INT_FAST64_FMTd__;"ld";__INT_FAST64_FMTi__;"li";__UINT_FAST64_TYPE__;long unsigned int;__UINT_FAST64_MAX__;18446744073709551615UL;__UINT_FAST64_FMTo__;"lo";__UINT_FAST64_FMTu__;"lu";__UINT_FAST64_FMTx__;"lx";__UINT_FAST64_FMTX__;"lX";__USER_LABEL_PREFIX__;_;__FINITE_MATH_ONLY__; ;__GNUC_STDC_INLINE__;1;__GCC_ATOMIC_TEST_AND_SET_TRUEVAL;1;__GCC_ATOMIC_BOOL_LOCK_FREE;2;__GCC_ATOMIC_CHAR_LOCK_FREE;2;__GCC_ATOMIC_CHAR16_T_LOCK_FREE;2;__GCC_ATOMIC_CHAR32_T_LOCK_FREE;2;__GCC_ATOMIC_WCHAR_T_LOCK_FREE;2;__GCC_ATOMIC_SHORT_LOCK_FREE;2;__GCC_ATOMIC_INT_LOCK_FREE;2;__GCC_ATOMIC_LONG_LOCK_FREE;2;__GCC_ATOMIC_LLONG_LOCK_FREE;2;__GCC_ATOMIC_POINTER_LOCK_FREE;2;__NO_INLINE__;1;__PIC__;2;__pic__;2;__FLT_EVAL_METHOD__; ;__FLT_RADIX__;2;__DECIMAL_DIG__;21;__SSP__;1;__nonnull;_Nonnull;__null_unspecified;_Null_unspecified;__nullable;_Nullable;__amd64__;1;__amd64;1;__x86_64;1;__x86_64__;1;__core2;1;__core2__;1;__tune_core2__;1;__REGISTER_PREFIX__; ;__NO_MATH_INLINES;1;__GCC_HAVE_SYNC_COMPARE_AND_SWAP_16;1;__SSSE3__;1;__SSE3__;1;__SSE2__;1;__SSE2_MATH__;1;__SSE__;1;__SSE_MATH__;1;__MMX__;1;__GCC_HAVE_SYNC_COMPARE_AND_SWAP_1;1;__GCC_HAVE_SYNC_COMPARE_AND_SWAP_2;1;__GCC_HAVE_SYNC_COMPARE_AND_SWAP_4;1;__GCC_HAVE_SYNC_COMPARE_AND_SWAP_8;1;__APPLE_CC__;6000;__APPLE__;1;OBJC_NEW_PROPERTIES;1;__apple_build_version__;7000181;__weak;__attribute__((objc_gc(weak)));__strong; ;__unsafe_unretained; ;__DYNAMIC__;1;__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__;101100;__MACH__;1;__STDC__;1;__STDC_HOSTED__;1;__STDC_VERSION__;201112L;__STDC_UTF_16__;1;__STDC_UTF_32__;1;__llvm__;1;__clang__;1;__clang_major__;7;__clang_minor__; ;__clang_patchlevel__;2;__clang_version__;"7.0.2 (clang-700.1.81)";__GNUC_MINOR__;2;__GNUC_PATCHLEVEL__;1;__GNUC__;4;__GXX_ABI_VERSION;1002;__ATOMIC_RELAXED; ;__ATOMIC_CONSUME;1;__ATOMIC_ACQUIRE;2;__ATOMIC_RELEASE;3;__ATOMIC_ACQ_REL;4;__ATOMIC_SEQ_CST;5;__PRAGMA_REDEFINE_EXTNAME;1;__VERSION__;"4.2.1 Compatible Apple LLVM 7.0.2 (clang-700.1.81)";__STRICT_ANSI__;1;__GXX_EXPERIMENTAL_CXX0X__;1;__cpp_rtti;199711;__cpp_exceptions;199711;__cpp_unicode_characters;200704;__cpp_raw_strings;200710;__cpp_unicode_literals;200710;__cpp_user_defined_literals;200809;__cpp_lambdas;200907;__cpp_constexpr;200704;__cpp_range_based_for;200907;__cpp_static_assert;200410;__cpp_decltype;200707;__cpp_attributes;200809;__cpp_rvalue_references;200610;__cpp_variadic_templates;200704;__cpp_initializer_lists;200806;__cpp_delegating_constructors;200604;__cpp_nsdmi;200809;__cpp_inheriting_constructors;200802;__cpp_ref_qualifiers;200710;__cpp_alias_templates;200704;__CONSTANT_CFSTRINGS__;1;__block;__attribute__((__blocks__(byref)));__BLOCKS__;1;__EXCEPTIONS;1;__GXX_RTTI;1;__DEPRECATED;1;__GNUG__;4;__GXX_WEAK__;1;__private_extern__;extern;__ORDER_LITTLE_ENDIAN__;1234;__ORDER_BIG_ENDIAN__;4321;__ORDER_PDP_ENDIAN__;3412;__BYTE_ORDER__;__ORDER_LITTLE_ENDIAN__;__LITTLE_ENDIAN__;1;_LP64;1;__LP64__;1;__CHAR_BIT__;8;__SCHAR_MAX__;127;__SHRT_MAX__;32767;__INT_MAX__;2147483647;__LONG_MAX__;9223372036854775807L;__LONG_LONG_MAX__;9223372036854775807LL;__WCHAR_MAX__;2147483647;__INTMAX_MAX__;9223372036854775807L;__SIZE_MAX__;18446744073709551615UL;__UINTMAX_MAX__;18446744073709551615UL;__PTRDIFF_MAX__;9223372036854775807L;__INTPTR_MAX__;9223372036854775807L;__UINTPTR_MAX__;18446744073709551615UL;__SIZEOF_DOUBLE__;8;__SIZEOF_FLOAT__;4;__SIZEOF_INT__;4;__SIZEOF_LONG__;8;__SIZEOF_LONG_DOUBLE__;16;__SIZEOF_LONG_LONG__;8;__SIZEOF_POINTER__;8;__SIZEOF_SHORT__;2;__SIZEOF_PTRDIFF_T__;8;__SIZEOF_SIZE_T__;8;__SIZEOF_WCHAR_T__;4;__SIZEOF_WINT_T__;4;__SIZEOF_INT128__;16;__INTMAX_TYPE__;long int;__INTMAX_FMTd__;"ld";__INTMAX_FMTi__;"li";__INTMAX_C_SUFFIX__;L;__UINTMAX_TYPE__;long unsigned int;__UINTMAX_FMTo__;"lo";__UINTMAX_FMTu__;"lu";__UINTMAX_FMTx__;"lx";__UINTMAX_FMTX__;"lX";__UINTMAX_C_SUFFIX__;UL;__INTMAX_WIDTH__;64;__PTRDIFF_TYPE__;long int;__PTRDIFF_FMTd__;"ld";__PTRDIFF_FMTi__;"li";__PTRDIFF_WIDTH__;64;__INTPTR_TYPE__;long int;__INTPTR_FMTd__;"ld";__INTPTR_FMTi__;"li";__INTPTR_WIDTH__;64;__SIZE_TYPE__;long unsigned int;__SIZE_FMTo__;"lo";__SIZE_FMTu__;"lu";__SIZE_FMTx__;"lx";__SIZE_FMTX__;"lX";__SIZE_WIDTH__;64;__WCHAR_TYPE__;int;__WCHAR_WIDTH__;32;__WINT_TYPE__;int;__WINT_WIDTH__;32;__SIG_ATOMIC_WIDTH__;32;__SIG_ATOMIC_MAX__;2147483647;__CHAR16_TYPE__;unsigned short;__CHAR32_TYPE__;unsigned int;__UINTMAX_WIDTH__;64;__UINTPTR_TYPE__;long unsigned int;__UINTPTR_FMTo__;"lo";__UINTPTR_FMTu__;"lu";__UINTPTR_FMTx__;"lx";__UINTPTR_FMTX__;"lX";__UINTPTR_WIDTH__;64;__FLT_DENORM_MIN__;1.40129846e-45F;__FLT_HAS_DENORM__;1;__FLT_DIG__;6;__FLT_EPSILON__;1.19209290e-7F;__FLT_HAS_INFINITY__;1;__FLT_HAS_QUIET_NAN__;1;__FLT_MANT_DIG__;24;__FLT_MAX_10_EXP__;38;__FLT_MAX_EXP__;128;__FLT_MAX__;3.40282347e+38F;__FLT_MIN_10_EXP__;(-37);__FLT_MIN_EXP__;(-125);__FLT_MIN__;1.17549435e-38F;__DBL_DENORM_MIN__;4.9406564584124654e-324;__DBL_HAS_DENORM__;1;__DBL_DIG__;15;__DBL_EPSILON__;2.2204460492503131e-16;__DBL_HAS_INFINITY__;1;__DBL_HAS_QUIET_NAN__;1;__DBL_MANT_DIG__;53;__DBL_MAX_10_EXP__;308;__DBL_MAX_EXP__;1024;__DBL_MAX__;1.7976931348623157e+308;__DBL_MIN_10_EXP__;(-307);__DBL_MIN_EXP__;(-1021);__DBL_MIN__;2.2250738585072014e-308;__LDBL_DENORM_MIN__;3.64519953188247460253e-4951L;__LDBL_HAS_DENORM__;1;__LDBL_DIG__;18;__LDBL_EPSILON__;1.08420217248550443401e-19L;__LDBL_HAS_INFINITY__;1;__LDBL_HAS_QUIET_NAN__;1;__LDBL_MANT_DIG__;64;__LDBL_MAX_10_EXP__;4932;__LDBL_MAX_EXP__;16384;__LDBL_MAX__;1.18973149535723176502e+4932L;__LDBL_MIN_10_EXP__;(-4931);__LDBL_MIN_EXP__;(-16381);__LDBL_MIN__;3.36210314311209350626e-4932L;__POINTER_WIDTH__;64;__BIGGEST_ALIGNMENT__;16;__INT8_TYPE__;signed char;__INT8_FMTd__;"hhd";__INT8_FMTi__;"hhi";__INT8_C_SUFFIX__; ;__INT16_TYPE__;short;__INT16_FMTd__;"hd";__INT16_FMTi__;"hi";__INT16_C_SUFFIX__; ;__INT32_TYPE__;int;__INT32_FMTd__;"d";__INT32_FMTi__;"i";__INT32_C_SUFFIX__; ;__INT64_TYPE__;long long int;__INT64_FMTd__;"lld";__INT64_FMTi__;"lli";__INT64_C_SUFFIX__;LL;__UINT8_TYPE__;unsigned char;__UINT8_FMTo__;"hho";__UINT8_FMTu__;"hhu";__UINT8_FMTx__;"hhx";__UINT8_FMTX__;"hhX";__UINT8_C_SUFFIX__; ;__UINT8_MAX__;255;__INT8_MAX__;127;__UINT16_TYPE__;unsigned short;__UINT16_FMTo__;"ho";__UINT16_FMTu__;"hu";__UINT16_FMTx__;"hx";__UINT16_FMTX__;"hX";__UINT16_C_SUFFIX__; ;__UINT16_MAX__;65535;__INT16_MAX__;32767;__UINT32_TYPE__;unsigned int;__UINT32_FMTo__;"o";__UINT32_FMTu__;"u";__UINT32_FMTx__;"x";__UINT32_FMTX__;"X";__UINT32_C_SUFFIX__;U;__UINT32_MAX__;4294967295U;__INT32_MAX__;2147483647;__UINT64_TYPE__;long long unsigned int;__UINT64_FMTo__;"llo";__UINT64_FMTu__;"llu";__UINT64_FMTx__;"llx";__UINT64_FMTX__;"llX";__UINT64_C_SUFFIX__;ULL;__UINT64_MAX__;18446744073709551615ULL;__INT64_MAX__;9223372036854775807LL;__INT_LEAST8_TYPE__;signed char;__INT_LEAST8_MAX__;127;__INT_LEAST8_FMTd__;"hhd";__INT_LEAST8_FMTi__;"hhi";__UINT_LEAST8_TYPE__;unsigned char;__UINT_LEAST8_MAX__;255;__UINT_LEAST8_FMTo__;"hho";__UINT_LEAST8_FMTu__;"hhu";__UINT_LEAST8_FMTx__;"hhx";__UINT_LEAST8_FMTX__;"hhX";__INT_LEAST16_TYPE__;short;__INT_LEAST16_MAX__;32767;__INT_LEAST16_FMTd__;"hd";__INT_LEAST16_FMTi__;"hi";__UINT_LEAST16_TYPE__;unsigned short;__UINT_LEAST16_MAX__;65535;__UINT_LEAST16_FMTo__;"ho";__UINT_LEAST16_FMTu__;"hu";__UINT_LEAST16_FMTx__;"hx";__UINT_LEAST16_FMTX__;"hX";__INT_LEAST32_TYPE__;int;__INT_LEAST32_MAX__;2147483647;__INT_LEAST32_FMTd__;"d";__INT_LEAST32_FMTi__;"i";__UINT_LEAST32_TYPE__;unsigned int;__UINT_LEAST32_MAX__;4294967295U;__UINT_LEAST32_FMTo__;"o";__UINT_LEAST32_FMTu__;"u";__UINT_LEAST32_FMTx__;"x";__UINT_LEAST32_FMTX__;"X";__INT_LEAST64_TYPE__;long int;__INT_LEAST64_MAX__;9223372036854775807L;__INT_LEAST64_FMTd__;"ld";__INT_LEAST64_FMTi__;"li";__UINT_LEAST64_TYPE__;long unsigned int;__UINT_LEAST64_MAX__;18446744073709551615UL;__UINT_LEAST64_FMTo__;"lo";__UINT_LEAST64_FMTu__;"lu";__UINT_LEAST64_FMTx__;"lx";__UINT_LEAST64_FMTX__;"lX";__INT_FAST8_TYPE__;signed char;__INT_FAST8_MAX__;127;__INT_FAST8_FMTd__;"hhd";__INT_FAST8_FMTi__;"hhi";__UINT_FAST8_TYPE__;unsigned char;__UINT_FAST8_MAX__;255;__UINT_FAST8_FMTo__;"hho";__UINT_FAST8_FMTu__;"hhu";__UINT_FAST8_FMTx__;"hhx";__UINT_FAST8_FMTX__;"hhX";__INT_FAST16_TYPE__;short;__INT_FAST16_MAX__;32767;__INT_FAST16_FMTd__;"hd";__INT_FAST16_FMTi__;"hi";__UINT_FAST16_TYPE__;unsigned short;__UINT_FAST16_MAX__;65535;__UINT_FAST16_FMTo__;"ho";__UINT_FAST16_FMTu__;"hu";__UINT_FAST16_FMTx__;"hx";__UINT_FAST16_FMTX__;"hX";__INT_FAST32_TYPE__;int;__INT_FAST32_MAX__;2147483647;__INT_FAST32_FMTd__;"d";__INT_FAST32_FMTi__;"i";__UINT_FAST32_TYPE__;unsigned int;__UINT_FAST32_MAX__;4294967295U;__UINT_FAST32_FMTo__;"o";__UINT_FAST32_FMTu__;"u";__UINT_FAST32_FMTx__;"x";__UINT_FAST32_FMTX__;"X";__INT_FAST64_TYPE__;long int;__INT_FAST64_MAX__;9223372036854775807L;__INT_FAST64_FMTd__;"ld";__INT_FAST64_FMTi__;"li";__UINT_FAST64_TYPE__;long unsigned int;__UINT_FAST64_MAX__;18446744073709551615UL;__UINT_FAST64_FMTo__;"lo";__UINT_FAST64_FMTu__;"lu";__UINT_FAST64_FMTx__;"lx";__UINT_FAST64_FMTX__;"lX";__USER_LABEL_PREFIX__;_;__FINITE_MATH_ONLY__; ;__GNUC_GNU_INLINE__;1;__GCC_ATOMIC_TEST_AND_SET_TRUEVAL;1;__GCC_ATOMIC_BOOL_LOCK_FREE;2;__GCC_ATOMIC_CHAR_LOCK_FREE;2;__GCC_ATOMIC_CHAR16_T_LOCK_FREE;2;__GCC_ATOMIC_CHAR32_T_LOCK_FREE;2;__GCC_ATOMIC_WCHAR_T_LOCK_FREE;2;__GCC_ATOMIC_SHORT_LOCK_FREE;2;__GCC_ATOMIC_INT_LOCK_FREE;2;__GCC_ATOMIC_LONG_LOCK_FREE;2;__GCC_ATOMIC_LLONG_LOCK_FREE;2;__GCC_ATOMIC_POINTER_LOCK_FREE;2;__NO_INLINE__;1;__PIC__;2;__pic__;2;__FLT_EVAL_METHOD__; ;__FLT_RADIX__;2;__DECIMAL_DIG__;21;__SSP__;1;__nonnull;_Nonnull;__null_unspecified;_Null_unspecified;__nullable;_Nullable;__amd64__;1;__amd64;1;__x86_64;1;__x86_64__;1;__core2;1;__core2__;1;__tune_core2__;1;__REGISTER_PREFIX__; ;__NO_MATH_INLINES;1;__GCC_HAVE_SYNC_COMPARE_AND_SWAP_16;1;__SSSE3__;1;__SSE3__;1;__SSE2__;1;__SSE2_MATH__;1;__SSE__;1;__SSE_MATH__;1;__MMX__;1;__GCC_HAVE_SYNC_COMPARE_AND_SWAP_1;1;__GCC_HAVE_SYNC_COMPARE_AND_SWAP_2;1;__GCC_HAVE_SYNC_COMPARE_AND_SWAP_4;1;__GCC_HAVE_SYNC_COMPARE_AND_SWAP_8;1;__APPLE_CC__;6000;__APPLE__;1;OBJC_NEW_PROPERTIES;1;__apple_build_version__;7000181;__weak;__attribute__((objc_gc(weak)));__strong; ;__unsafe_unretained; ;__DYNAMIC__;1;__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__;101100;__MACH__;1;__STDC__;1;__STDC_HOSTED__;1;__cplusplus;201103L;__STDC_UTF_16__;1;__STDC_UTF_32__;1
+CMAKE_EXTRA_GENERATOR_CXX_SYSTEM_DEFINED_MACROS:INTERNAL=__STDC__;1;__STDC_HOSTED__;1;__GNUC__;4;__GNUC_MINOR__;9;__GNUC_PATCHLEVEL__;2;__VERSION__;"4.9.2";__ATOMIC_RELAXED; ;__ATOMIC_SEQ_CST;5;__ATOMIC_ACQUIRE;2;__ATOMIC_RELEASE;3;__ATOMIC_ACQ_REL;4;__ATOMIC_CONSUME;1;__FINITE_MATH_ONLY__; ;__SIZEOF_INT__;2;__SIZEOF_LONG__;4;__SIZEOF_LONG_LONG__;8;__SIZEOF_SHORT__;2;__SIZEOF_FLOAT__;4;__SIZEOF_DOUBLE__;4;__SIZEOF_LONG_DOUBLE__;4;__SIZEOF_SIZE_T__;2;__CHAR_BIT__;8;__BIGGEST_ALIGNMENT__;1;__ORDER_LITTLE_ENDIAN__;1234;__ORDER_BIG_ENDIAN__;4321;__ORDER_PDP_ENDIAN__;3412;__BYTE_ORDER__;__ORDER_LITTLE_ENDIAN__;__FLOAT_WORD_ORDER__;__ORDER_LITTLE_ENDIAN__;__SIZEOF_POINTER__;2;__SIZE_TYPE__;unsigned int;__PTRDIFF_TYPE__;int;__WCHAR_TYPE__;int;__WINT_TYPE__;int;__INTMAX_TYPE__;long long int;__UINTMAX_TYPE__;long long unsigned int;__CHAR16_TYPE__;unsigned int;__CHAR32_TYPE__;long unsigned int;__SIG_ATOMIC_TYPE__;char;__INT8_TYPE__;signed char;__INT16_TYPE__;int;__INT32_TYPE__;long int;__INT64_TYPE__;long long int;__UINT8_TYPE__;unsigned char;__UINT16_TYPE__;unsigned int;__UINT32_TYPE__;long unsigned int;__UINT64_TYPE__;long long unsigned int;__INT_LEAST8_TYPE__;signed char;__INT_LEAST16_TYPE__;int;__INT_LEAST32_TYPE__;long int;__INT_LEAST64_TYPE__;long long int;__UINT_LEAST8_TYPE__;unsigned char;__UINT_LEAST16_TYPE__;unsigned int;__UINT_LEAST32_TYPE__;long unsigned int;__UINT_LEAST64_TYPE__;long long unsigned int;__INT_FAST8_TYPE__;signed char;__INT_FAST16_TYPE__;int;__INT_FAST32_TYPE__;long int;__INT_FAST64_TYPE__;long long int;__UINT_FAST8_TYPE__;unsigned char;__UINT_FAST16_TYPE__;unsigned int;__UINT_FAST32_TYPE__;long unsigned int;__UINT_FAST64_TYPE__;long long unsigned int;__INTPTR_TYPE__;int;__UINTPTR_TYPE__;unsigned int;__has_include(STR);__has_include__(STR);__has_include_next(STR);__has_include_next__(STR);__GXX_ABI_VERSION;1002;__USING_SJLJ_EXCEPTIONS__;1;__SCHAR_MAX__;127;__SHRT_MAX__;32767;__INT_MAX__;32767;__LONG_MAX__;2147483647L;__LONG_LONG_MAX__;9223372036854775807LL;__WCHAR_MAX__;32767;__WCHAR_MIN__;(-__WCHAR_MAX__ - 1);__WINT_MAX__;32767;__WINT_MIN__;(-__WINT_MAX__ - 1);__PTRDIFF_MAX__;32767;__SIZE_MAX__;65535U;__INTMAX_MAX__;9223372036854775807LL;__INTMAX_C(c);c ## LL;__UINTMAX_MAX__;18446744073709551615ULL;__UINTMAX_C(c);c ## ULL;__SIG_ATOMIC_MAX__;127;__SIG_ATOMIC_MIN__;(-__SIG_ATOMIC_MAX__ - 1);__INT8_MAX__;127;__INT16_MAX__;32767;__INT32_MAX__;2147483647L;__INT64_MAX__;9223372036854775807LL;__UINT8_MAX__;255;__UINT16_MAX__;65535U;__UINT32_MAX__;4294967295UL;__UINT64_MAX__;18446744073709551615ULL;__INT_LEAST8_MAX__;127;__INT8_C(c);c;__INT_LEAST16_MAX__;32767;__INT16_C(c);c;__INT_LEAST32_MAX__;2147483647L;__INT32_C(c);c ## L;__INT_LEAST64_MAX__;9223372036854775807LL;__INT64_C(c);c ## LL;__UINT_LEAST8_MAX__;255;__UINT8_C(c);c;__UINT_LEAST16_MAX__;65535U;__UINT16_C(c);c ## U;__UINT_LEAST32_MAX__;4294967295UL;__UINT32_C(c);c ## UL;__UINT_LEAST64_MAX__;18446744073709551615ULL;__UINT64_C(c);c ## ULL;__INT_FAST8_MAX__;127;__INT_FAST16_MAX__;32767;__INT_FAST32_MAX__;2147483647L;__INT_FAST64_MAX__;9223372036854775807LL;__UINT_FAST8_MAX__;255;__UINT_FAST16_MAX__;65535U;__UINT_FAST32_MAX__;4294967295UL;__UINT_FAST64_MAX__;18446744073709551615ULL;__INTPTR_MAX__;32767;__UINTPTR_MAX__;65535U;__GCC_IEC_559; ;__GCC_IEC_559_COMPLEX; ;__FLT_EVAL_METHOD__; ;__DEC_EVAL_METHOD__;2;__FLT_RADIX__;2;__FLT_MANT_DIG__;24;__FLT_DIG__;6;__FLT_MIN_EXP__;(-125);__FLT_MIN_10_EXP__;(-37);__FLT_MAX_EXP__;128;__FLT_MAX_10_EXP__;38;__FLT_DECIMAL_DIG__;9;__FLT_MAX__;3.40282347e+38F;__FLT_MIN__;1.17549435e-38F;__FLT_EPSILON__;1.19209290e-7F;__FLT_DENORM_MIN__;1.40129846e-45F;__FLT_HAS_DENORM__;1;__FLT_HAS_INFINITY__;1;__FLT_HAS_QUIET_NAN__;1;__DBL_MANT_DIG__;24;__DBL_DIG__;6;__DBL_MIN_EXP__;(-125);__DBL_MIN_10_EXP__;(-37);__DBL_MAX_EXP__;128;__DBL_MAX_10_EXP__;38;__DBL_DECIMAL_DIG__;9;__DBL_MAX__;((double)3.40282347e+38L);__DBL_MIN__;((double)1.17549435e-38L);__DBL_EPSILON__;((double)1.19209290e-7L);__DBL_DENORM_MIN__;((double)1.40129846e-45L);__DBL_HAS_DENORM__;1;__DBL_HAS_INFINITY__;1;__DBL_HAS_QUIET_NAN__;1;__LDBL_MANT_DIG__;24;__LDBL_DIG__;6;__LDBL_MIN_EXP__;(-125);__LDBL_MIN_10_EXP__;(-37);__LDBL_MAX_EXP__;128;__LDBL_MAX_10_EXP__;38;__DECIMAL_DIG__;9;__LDBL_MAX__;3.40282347e+38L;__LDBL_MIN__;1.17549435e-38L;__LDBL_EPSILON__;1.19209290e-7L;__LDBL_DENORM_MIN__;1.40129846e-45L;__LDBL_HAS_DENORM__;1;__LDBL_HAS_INFINITY__;1;__LDBL_HAS_QUIET_NAN__;1;__DEC32_MANT_DIG__;7;__DEC32_MIN_EXP__;(-94);__DEC32_MAX_EXP__;97;__DEC32_MIN__;1E-95DF;__DEC32_MAX__;9.999999E96DF;__DEC32_EPSILON__;1E-6DF;__DEC32_SUBNORMAL_MIN__;0.000001E-95DF;__DEC64_MANT_DIG__;16;__DEC64_MIN_EXP__;(-382);__DEC64_MAX_EXP__;385;__DEC64_MIN__;1E-383DD;__DEC64_MAX__;9.999999999999999E384DD;__DEC64_EPSILON__;1E-15DD;__DEC64_SUBNORMAL_MIN__;0.000000000000001E-383DD;__DEC128_MANT_DIG__;34;__DEC128_MIN_EXP__;(-6142);__DEC128_MAX_EXP__;6145;__DEC128_MIN__;1E-6143DL;__DEC128_MAX__;9.999999999999999999999999999999999E6144DL;__DEC128_EPSILON__;1E-33DL;__DEC128_SUBNORMAL_MIN__;0.000000000000000000000000000000001E-6143DL;__SFRACT_FBIT__;7;__SFRACT_IBIT__; ;__SFRACT_MIN__;(-0.5HR-0.5HR);__SFRACT_MAX__;0X7FP-7HR;__SFRACT_EPSILON__;0x1P-7HR;__USFRACT_FBIT__;8;__USFRACT_IBIT__; ;__USFRACT_MIN__;0.0UHR;__USFRACT_MAX__;0XFFP-8UHR;__USFRACT_EPSILON__;0x1P-8UHR;__FRACT_FBIT__;15;__FRACT_IBIT__; ;__FRACT_MIN__;(-0.5R-0.5R);__FRACT_MAX__;0X7FFFP-15R;__FRACT_EPSILON__;0x1P-15R;__UFRACT_FBIT__;16;__UFRACT_IBIT__; ;__UFRACT_MIN__;0.0UR;__UFRACT_MAX__;0XFFFFP-16UR;__UFRACT_EPSILON__;0x1P-16UR;__LFRACT_FBIT__;31;__LFRACT_IBIT__; ;__LFRACT_MIN__;(-0.5LR-0.5LR);__LFRACT_MAX__;0X7FFFFFFFP-31LR;__LFRACT_EPSILON__;0x1P-31LR;__ULFRACT_FBIT__;32;__ULFRACT_IBIT__; ;__ULFRACT_MIN__;0.0ULR;__ULFRACT_MAX__;0XFFFFFFFFP-32ULR;__ULFRACT_EPSILON__;0x1P-32ULR;__LLFRACT_FBIT__;63;__LLFRACT_IBIT__; ;__LLFRACT_MIN__;(-0.5LLR-0.5LLR);__LLFRACT_MAX__;0X7FFFFFFFFFFFFFFFP-63LLR;__LLFRACT_EPSILON__;0x1P-63LLR;__ULLFRACT_FBIT__;64;__ULLFRACT_IBIT__; ;__ULLFRACT_MIN__;0.0ULLR;__ULLFRACT_MAX__;0XFFFFFFFFFFFFFFFFP-64ULLR;__ULLFRACT_EPSILON__;0x1P-64ULLR;__SACCUM_FBIT__;7;__SACCUM_IBIT__;8;__SACCUM_MIN__;(-0X1P7HK-0X1P7HK);__SACCUM_MAX__;0X7FFFP-7HK;__SACCUM_EPSILON__;0x1P-7HK;__USACCUM_FBIT__;8;__USACCUM_IBIT__;8;__USACCUM_MIN__;0.0UHK;__USACCUM_MAX__;0XFFFFP-8UHK;__USACCUM_EPSILON__;0x1P-8UHK;__ACCUM_FBIT__;15;__ACCUM_IBIT__;16;__ACCUM_MIN__;(-0X1P15K-0X1P15K);__ACCUM_MAX__;0X7FFFFFFFP-15K;__ACCUM_EPSILON__;0x1P-15K;__UACCUM_FBIT__;16;__UACCUM_IBIT__;16;__UACCUM_MIN__;0.0UK;__UACCUM_MAX__;0XFFFFFFFFP-16UK;__UACCUM_EPSILON__;0x1P-16UK;__LACCUM_FBIT__;31;__LACCUM_IBIT__;32;__LACCUM_MIN__;(-0X1P31LK-0X1P31LK);__LACCUM_MAX__;0X7FFFFFFFFFFFFFFFP-31LK;__LACCUM_EPSILON__;0x1P-31LK;__ULACCUM_FBIT__;32;__ULACCUM_IBIT__;32;__ULACCUM_MIN__;0.0ULK;__ULACCUM_MAX__;0XFFFFFFFFFFFFFFFFP-32ULK;__ULACCUM_EPSILON__;0x1P-32ULK;__LLACCUM_FBIT__;47;__LLACCUM_IBIT__;16;__LLACCUM_MIN__;(-0X1P15LLK-0X1P15LLK);__LLACCUM_MAX__;0X7FFFFFFFFFFFFFFFP-47LLK;__LLACCUM_EPSILON__;0x1P-47LLK;__ULLACCUM_FBIT__;48;__ULLACCUM_IBIT__;16;__ULLACCUM_MIN__;0.0ULLK;__ULLACCUM_MAX__;0XFFFFFFFFFFFFFFFFP-48ULLK;__ULLACCUM_EPSILON__;0x1P-48ULLK;__QQ_FBIT__;7;__QQ_IBIT__; ;__HQ_FBIT__;15;__HQ_IBIT__; ;__SQ_FBIT__;31;__SQ_IBIT__; ;__DQ_FBIT__;63;__DQ_IBIT__; ;__TQ_FBIT__;127;__TQ_IBIT__; ;__UQQ_FBIT__;8;__UQQ_IBIT__; ;__UHQ_FBIT__;16;__UHQ_IBIT__; ;__USQ_FBIT__;32;__USQ_IBIT__; ;__UDQ_FBIT__;64;__UDQ_IBIT__; ;__UTQ_FBIT__;128;__UTQ_IBIT__; ;__HA_FBIT__;7;__HA_IBIT__;8;__SA_FBIT__;15;__SA_IBIT__;16;__DA_FBIT__;31;__DA_IBIT__;32;__TA_FBIT__;47;__TA_IBIT__;16;__UHA_FBIT__;8;__UHA_IBIT__;8;__USA_FBIT__;16;__USA_IBIT__;16;__UDA_FBIT__;32;__UDA_IBIT__;32;__UTA_FBIT__;48;__UTA_IBIT__;16;__REGISTER_PREFIX__; ;__USER_LABEL_PREFIX__; ;__GNUC_GNU_INLINE__;1;__NO_INLINE__;1;__GCC_ATOMIC_BOOL_LOCK_FREE;1;__GCC_ATOMIC_CHAR_LOCK_FREE;1;__GCC_ATOMIC_CHAR16_T_LOCK_FREE;1;__GCC_ATOMIC_CHAR32_T_LOCK_FREE;1;__GCC_ATOMIC_WCHAR_T_LOCK_FREE;1;__GCC_ATOMIC_SHORT_LOCK_FREE;1;__GCC_ATOMIC_INT_LOCK_FREE;1;__GCC_ATOMIC_LONG_LOCK_FREE;1;__GCC_ATOMIC_LLONG_LOCK_FREE;1;__GCC_ATOMIC_TEST_AND_SET_TRUEVAL;1;__GCC_ATOMIC_POINTER_LOCK_FREE;1;__PRAGMA_REDEFINE_EXTNAME;1;__SIZEOF_WCHAR_T__;2;__SIZEOF_WINT_T__;2;__SIZEOF_PTRDIFF_T__;2;__AVR;1;__AVR__;1;AVR;1;__AVR_ARCH__;2;__AVR_2_BYTE_PC__;1;__AVR_HAVE_16BIT_SP__;1;__AVR_HAVE_SPH__;1;__AVR_ERRATA_SKIP__;1;__AVR_SFR_OFFSET__;0x20;__WITH_AVRLIBC__;1;__FLASH;1;__FLASH1;1;__FLASH2;1;__FLASH3;1;__FLASH4;1;__FLASH5;1;__MEMX;1;__BUILTIN_AVR_NOP;1;__BUILTIN_AVR_SEI;1;__BUILTIN_AVR_CLI;1;__BUILTIN_AVR_WDR;1;__BUILTIN_AVR_SLEEP;1;__BUILTIN_AVR_SWAP;1;__BUILTIN_AVR_FMUL;1;__BUILTIN_AVR_FMULS;1;__BUILTIN_AVR_FMULSU;1;__BUILTIN_AVR_DELAY_CYCLES;1;__BUILTIN_AVR_INSERT_BITS;1;__BUILTIN_AVR_FLASH_SEGMENT;1;__BUILTIN_AVR_ABSHR;1;__BUILTIN_AVR_ABSR;1;__BUILTIN_AVR_ABSLR;1;__BUILTIN_AVR_ABSLLR;1;__BUILTIN_AVR_ABSHK;1;__BUILTIN_AVR_ABSK;1;__BUILTIN_AVR_ABSLK;1;__BUILTIN_AVR_ABSLLK;1;__BUILTIN_AVR_ROUNDHR;1;__BUILTIN_AVR_ROUNDR;1;__BUILTIN_AVR_ROUNDLR;1;__BUILTIN_AVR_ROUNDLLR;1;__BUILTIN_AVR_ROUNDUHR;1;__BUILTIN_AVR_ROUNDUR;1;__BUILTIN_AVR_ROUNDULR;1;__BUILTIN_AVR_ROUNDULLR;1;__BUILTIN_AVR_ROUNDHK;1;__BUILTIN_AVR_ROUNDK;1;__BUILTIN_AVR_ROUNDLK;1;__BUILTIN_AVR_ROUNDLLK;1;__BUILTIN_AVR_ROUNDUHK;1;__BUILTIN_AVR_ROUNDUK;1;__BUILTIN_AVR_ROUNDULK;1;__BUILTIN_AVR_ROUNDULLK;1;__BUILTIN_AVR_COUNTLSHR;1;__BUILTIN_AVR_COUNTLSR;1;__BUILTIN_AVR_COUNTLSLR;1;__BUILTIN_AVR_COUNTLSLLR;1;__BUILTIN_AVR_COUNTLSUHR;1;__BUILTIN_AVR_COUNTLSUR;1;__BUILTIN_AVR_COUNTLSULR;1;__BUILTIN_AVR_COUNTLSULLR;1;__BUILTIN_AVR_COUNTLSHK;1;__BUILTIN_AVR_COUNTLSK;1;__BUILTIN_AVR_COUNTLSLK;1;__BUILTIN_AVR_COUNTLSLLK;1;__BUILTIN_AVR_COUNTLSUHK;1;__BUILTIN_AVR_COUNTLSUK;1;__BUILTIN_AVR_COUNTLSULK;1;__BUILTIN_AVR_COUNTLSULLK;1;__BUILTIN_AVR_BITSHR;1;__BUILTIN_AVR_BITSR;1;__BUILTIN_AVR_BITSLR;1;__BUILTIN_AVR_BITSLLR;1;__BUILTIN_AVR_BITSUHR;1;__BUILTIN_AVR_BITSUR;1;__BUILTIN_AVR_BITSULR;1;__BUILTIN_AVR_BITSULLR;1;__BUILTIN_AVR_BITSHK;1;__BUILTIN_AVR_BITSK;1;__BUILTIN_AVR_BITSLK;1;__BUILTIN_AVR_BITSLLK;1;__BUILTIN_AVR_BITSUHK;1;__BUILTIN_AVR_BITSUK;1;__BUILTIN_AVR_BITSULK;1;__BUILTIN_AVR_BITSULLK;1;__BUILTIN_AVR_HRBITS;1;__BUILTIN_AVR_RBITS;1;__BUILTIN_AVR_LRBITS;1;__BUILTIN_AVR_LLRBITS;1;__BUILTIN_AVR_UHRBITS;1;__BUILTIN_AVR_URBITS;1;__BUILTIN_AVR_ULRBITS;1;__BUILTIN_AVR_ULLRBITS;1;__BUILTIN_AVR_HKBITS;1;__BUILTIN_AVR_KBITS;1;__BUILTIN_AVR_LKBITS;1;__BUILTIN_AVR_LLKBITS;1;__BUILTIN_AVR_UHKBITS;1;__BUILTIN_AVR_UKBITS;1;__BUILTIN_AVR_ULKBITS;1;__BUILTIN_AVR_ULLKBITS;1;__BUILTIN_AVR_ABSFX;1;__BUILTIN_AVR_ROUNDFX;1;__BUILTIN_AVR_COUNTLSFX;1;__INT24_MAX__;8388607L;__INT24_MIN__;(-__INT24_MAX__-1);__UINT24_MAX__;16777215UL;__ELF__;1;__STDC__;1;__cplusplus;199711L;__STDC_HOSTED__;1;__GNUC__;4;__GNUC_MINOR__;9;__GNUC_PATCHLEVEL__;2;__VERSION__;"4.9.2";__ATOMIC_RELAXED; ;__ATOMIC_SEQ_CST;5;__ATOMIC_ACQUIRE;2;__ATOMIC_RELEASE;3;__ATOMIC_ACQ_REL;4;__ATOMIC_CONSUME;1;__FINITE_MATH_ONLY__; ;__SIZEOF_INT__;2;__SIZEOF_LONG__;4;__SIZEOF_LONG_LONG__;8;__SIZEOF_SHORT__;2;__SIZEOF_FLOAT__;4;__SIZEOF_DOUBLE__;4;__SIZEOF_LONG_DOUBLE__;4;__SIZEOF_SIZE_T__;2;__CHAR_BIT__;8;__BIGGEST_ALIGNMENT__;1;__ORDER_LITTLE_ENDIAN__;1234;__ORDER_BIG_ENDIAN__;4321;__ORDER_PDP_ENDIAN__;3412;__BYTE_ORDER__;__ORDER_LITTLE_ENDIAN__;__FLOAT_WORD_ORDER__;__ORDER_LITTLE_ENDIAN__;__SIZEOF_POINTER__;2;__GNUG__;4;__SIZE_TYPE__;unsigned int;__PTRDIFF_TYPE__;int;__WCHAR_TYPE__;int;__WINT_TYPE__;int;__INTMAX_TYPE__;long long int;__UINTMAX_TYPE__;long long unsigned int;__CHAR16_TYPE__;unsigned int;__CHAR32_TYPE__;long unsigned int;__SIG_ATOMIC_TYPE__;char;__INT8_TYPE__;signed char;__INT16_TYPE__;int;__INT32_TYPE__;long int;__INT64_TYPE__;long long int;__UINT8_TYPE__;unsigned char;__UINT16_TYPE__;unsigned int;__UINT32_TYPE__;long unsigned int;__UINT64_TYPE__;long long unsigned int;__INT_LEAST8_TYPE__;signed char;__INT_LEAST16_TYPE__;int;__INT_LEAST32_TYPE__;long int;__INT_LEAST64_TYPE__;long long int;__UINT_LEAST8_TYPE__;unsigned char;__UINT_LEAST16_TYPE__;unsigned int;__UINT_LEAST32_TYPE__;long unsigned int;__UINT_LEAST64_TYPE__;long long unsigned int;__INT_FAST8_TYPE__;signed char;__INT_FAST16_TYPE__;int;__INT_FAST32_TYPE__;long int;__INT_FAST64_TYPE__;long long int;__UINT_FAST8_TYPE__;unsigned char;__UINT_FAST16_TYPE__;unsigned int;__UINT_FAST32_TYPE__;long unsigned int;__UINT_FAST64_TYPE__;long long unsigned int;__INTPTR_TYPE__;int;__UINTPTR_TYPE__;unsigned int;__has_include(STR);__has_include__(STR);__has_include_next(STR);__has_include_next__(STR);__GXX_WEAK__;1;__DEPRECATED;1;__cpp_binary_literals;201304;__GXX_ABI_VERSION;1002;__USING_SJLJ_EXCEPTIONS__;1;__SCHAR_MAX__;127;__SHRT_MAX__;32767;__INT_MAX__;32767;__LONG_MAX__;2147483647L;__LONG_LONG_MAX__;9223372036854775807LL;__WCHAR_MAX__;32767;__WCHAR_MIN__;(-__WCHAR_MAX__ - 1);__WINT_MAX__;32767;__WINT_MIN__;(-__WINT_MAX__ - 1);__PTRDIFF_MAX__;32767;__SIZE_MAX__;65535U;__INTMAX_MAX__;9223372036854775807LL;__INTMAX_C(c);c ## LL;__UINTMAX_MAX__;18446744073709551615ULL;__UINTMAX_C(c);c ## ULL;__SIG_ATOMIC_MAX__;127;__SIG_ATOMIC_MIN__;(-__SIG_ATOMIC_MAX__ - 1);__INT8_MAX__;127;__INT16_MAX__;32767;__INT32_MAX__;2147483647L;__INT64_MAX__;9223372036854775807LL;__UINT8_MAX__;255;__UINT16_MAX__;65535U;__UINT32_MAX__;4294967295UL;__UINT64_MAX__;18446744073709551615ULL;__INT_LEAST8_MAX__;127;__INT8_C(c);c;__INT_LEAST16_MAX__;32767;__INT16_C(c);c;__INT_LEAST32_MAX__;2147483647L;__INT32_C(c);c ## L;__INT_LEAST64_MAX__;9223372036854775807LL;__INT64_C(c);c ## LL;__UINT_LEAST8_MAX__;255;__UINT8_C(c);c;__UINT_LEAST16_MAX__;65535U;__UINT16_C(c);c ## U;__UINT_LEAST32_MAX__;4294967295UL;__UINT32_C(c);c ## UL;__UINT_LEAST64_MAX__;18446744073709551615ULL;__UINT64_C(c);c ## ULL;__INT_FAST8_MAX__;127;__INT_FAST16_MAX__;32767;__INT_FAST32_MAX__;2147483647L;__INT_FAST64_MAX__;9223372036854775807LL;__UINT_FAST8_MAX__;255;__UINT_FAST16_MAX__;65535U;__UINT_FAST32_MAX__;4294967295UL;__UINT_FAST64_MAX__;18446744073709551615ULL;__INTPTR_MAX__;32767;__UINTPTR_MAX__;65535U;__GCC_IEC_559; ;__GCC_IEC_559_COMPLEX; ;__FLT_EVAL_METHOD__; ;__DEC_EVAL_METHOD__;2;__FLT_RADIX__;2;__FLT_MANT_DIG__;24;__FLT_DIG__;6;__FLT_MIN_EXP__;(-125);__FLT_MIN_10_EXP__;(-37);__FLT_MAX_EXP__;128;__FLT_MAX_10_EXP__;38;__FLT_DECIMAL_DIG__;9;__FLT_MAX__;3.40282347e+38F;__FLT_MIN__;1.17549435e-38F;__FLT_EPSILON__;1.19209290e-7F;__FLT_DENORM_MIN__;1.40129846e-45F;__FLT_HAS_DENORM__;1;__FLT_HAS_INFINITY__;1;__FLT_HAS_QUIET_NAN__;1;__DBL_MANT_DIG__;24;__DBL_DIG__;6;__DBL_MIN_EXP__;(-125);__DBL_MIN_10_EXP__;(-37);__DBL_MAX_EXP__;128;__DBL_MAX_10_EXP__;38;__DBL_DECIMAL_DIG__;9;__DBL_MAX__;double(3.40282347e+38L);__DBL_MIN__;double(1.17549435e-38L);__DBL_EPSILON__;double(1.19209290e-7L);__DBL_DENORM_MIN__;double(1.40129846e-45L);__DBL_HAS_DENORM__;1;__DBL_HAS_INFINITY__;1;__DBL_HAS_QUIET_NAN__;1;__LDBL_MANT_DIG__;24;__LDBL_DIG__;6;__LDBL_MIN_EXP__;(-125);__LDBL_MIN_10_EXP__;(-37);__LDBL_MAX_EXP__;128;__LDBL_MAX_10_EXP__;38;__DECIMAL_DIG__;9;__LDBL_MAX__;3.40282347e+38L;__LDBL_MIN__;1.17549435e-38L;__LDBL_EPSILON__;1.19209290e-7L;__LDBL_DENORM_MIN__;1.40129846e-45L;__LDBL_HAS_DENORM__;1;__LDBL_HAS_INFINITY__;1;__LDBL_HAS_QUIET_NAN__;1;__DEC32_MANT_DIG__;7;__DEC32_MIN_EXP__;(-94);__DEC32_MAX_EXP__;97;__DEC32_MIN__;1E-95DF;__DEC32_MAX__;9.999999E96DF;__DEC32_EPSILON__;1E-6DF;__DEC32_SUBNORMAL_MIN__;0.000001E-95DF;__DEC64_MANT_DIG__;16;__DEC64_MIN_EXP__;(-382);__DEC64_MAX_EXP__;385;__DEC64_MIN__;1E-383DD;__DEC64_MAX__;9.999999999999999E384DD;__DEC64_EPSILON__;1E-15DD;__DEC64_SUBNORMAL_MIN__;0.000000000000001E-383DD;__DEC128_MANT_DIG__;34;__DEC128_MIN_EXP__;(-6142);__DEC128_MAX_EXP__;6145;__DEC128_MIN__;1E-6143DL;__DEC128_MAX__;9.999999999999999999999999999999999E6144DL;__DEC128_EPSILON__;1E-33DL;__DEC128_SUBNORMAL_MIN__;0.000000000000000000000000000000001E-6143DL;__SFRACT_FBIT__;7;__SFRACT_IBIT__; ;__SFRACT_MIN__;(-0.5HR-0.5HR);__SFRACT_MAX__;0X7FP-7HR;__SFRACT_EPSILON__;0x1P-7HR;__USFRACT_FBIT__;8;__USFRACT_IBIT__; ;__USFRACT_MIN__;0.0UHR;__USFRACT_MAX__;0XFFP-8UHR;__USFRACT_EPSILON__;0x1P-8UHR;__FRACT_FBIT__;15;__FRACT_IBIT__; ;__FRACT_MIN__;(-0.5R-0.5R);__FRACT_MAX__;0X7FFFP-15R;__FRACT_EPSILON__;0x1P-15R;__UFRACT_FBIT__;16;__UFRACT_IBIT__; ;__UFRACT_MIN__;0.0UR;__UFRACT_MAX__;0XFFFFP-16UR;__UFRACT_EPSILON__;0x1P-16UR;__LFRACT_FBIT__;31;__LFRACT_IBIT__; ;__LFRACT_MIN__;(-0.5LR-0.5LR);__LFRACT_MAX__;0X7FFFFFFFP-31LR;__LFRACT_EPSILON__;0x1P-31LR;__ULFRACT_FBIT__;32;__ULFRACT_IBIT__; ;__ULFRACT_MIN__;0.0ULR;__ULFRACT_MAX__;0XFFFFFFFFP-32ULR;__ULFRACT_EPSILON__;0x1P-32ULR;__LLFRACT_FBIT__;63;__LLFRACT_IBIT__; ;__LLFRACT_MIN__;(-0.5LLR-0.5LLR);__LLFRACT_MAX__;0X7FFFFFFFFFFFFFFFP-63LLR;__LLFRACT_EPSILON__;0x1P-63LLR;__ULLFRACT_FBIT__;64;__ULLFRACT_IBIT__; ;__ULLFRACT_MIN__;0.0ULLR;__ULLFRACT_MAX__;0XFFFFFFFFFFFFFFFFP-64ULLR;__ULLFRACT_EPSILON__;0x1P-64ULLR;__SACCUM_FBIT__;7;__SACCUM_IBIT__;8;__SACCUM_MIN__;(-0X1P7HK-0X1P7HK);__SACCUM_MAX__;0X7FFFP-7HK;__SACCUM_EPSILON__;0x1P-7HK;__USACCUM_FBIT__;8;__USACCUM_IBIT__;8;__USACCUM_MIN__;0.0UHK;__USACCUM_MAX__;0XFFFFP-8UHK;__USACCUM_EPSILON__;0x1P-8UHK;__ACCUM_FBIT__;15;__ACCUM_IBIT__;16;__ACCUM_MIN__;(-0X1P15K-0X1P15K);__ACCUM_MAX__;0X7FFFFFFFP-15K;__ACCUM_EPSILON__;0x1P-15K;__UACCUM_FBIT__;16;__UACCUM_IBIT__;16;__UACCUM_MIN__;0.0UK;__UACCUM_MAX__;0XFFFFFFFFP-16UK;__UACCUM_EPSILON__;0x1P-16UK;__LACCUM_FBIT__;31;__LACCUM_IBIT__;32;__LACCUM_MIN__;(-0X1P31LK-0X1P31LK);__LACCUM_MAX__;0X7FFFFFFFFFFFFFFFP-31LK;__LACCUM_EPSILON__;0x1P-31LK;__ULACCUM_FBIT__;32;__ULACCUM_IBIT__;32;__ULACCUM_MIN__;0.0ULK;__ULACCUM_MAX__;0XFFFFFFFFFFFFFFFFP-32ULK;__ULACCUM_EPSILON__;0x1P-32ULK;__LLACCUM_FBIT__;47;__LLACCUM_IBIT__;16;__LLACCUM_MIN__;(-0X1P15LLK-0X1P15LLK);__LLACCUM_MAX__;0X7FFFFFFFFFFFFFFFP-47LLK;__LLACCUM_EPSILON__;0x1P-47LLK;__ULLACCUM_FBIT__;48;__ULLACCUM_IBIT__;16;__ULLACCUM_MIN__;0.0ULLK;__ULLACCUM_MAX__;0XFFFFFFFFFFFFFFFFP-48ULLK;__ULLACCUM_EPSILON__;0x1P-48ULLK;__QQ_FBIT__;7;__QQ_IBIT__; ;__HQ_FBIT__;15;__HQ_IBIT__; ;__SQ_FBIT__;31;__SQ_IBIT__; ;__DQ_FBIT__;63;__DQ_IBIT__; ;__TQ_FBIT__;127;__TQ_IBIT__; ;__UQQ_FBIT__;8;__UQQ_IBIT__; ;__UHQ_FBIT__;16;__UHQ_IBIT__; ;__USQ_FBIT__;32;__USQ_IBIT__; ;__UDQ_FBIT__;64;__UDQ_IBIT__; ;__UTQ_FBIT__;128;__UTQ_IBIT__; ;__HA_FBIT__;7;__HA_IBIT__;8;__SA_FBIT__;15;__SA_IBIT__;16;__DA_FBIT__;31;__DA_IBIT__;32;__TA_FBIT__;47;__TA_IBIT__;16;__UHA_FBIT__;8;__UHA_IBIT__;8;__USA_FBIT__;16;__USA_IBIT__;16;__UDA_FBIT__;32;__UDA_IBIT__;32;__UTA_FBIT__;48;__UTA_IBIT__;16;__REGISTER_PREFIX__; ;__USER_LABEL_PREFIX__; ;__GNUC_GNU_INLINE__;1;__NO_INLINE__;1;__GCC_ATOMIC_BOOL_LOCK_FREE;1;__GCC_ATOMIC_CHAR_LOCK_FREE;1;__GCC_ATOMIC_CHAR16_T_LOCK_FREE;1;__GCC_ATOMIC_CHAR32_T_LOCK_FREE;1;__GCC_ATOMIC_WCHAR_T_LOCK_FREE;1;__GCC_ATOMIC_SHORT_LOCK_FREE;1;__GCC_ATOMIC_INT_LOCK_FREE;1;__GCC_ATOMIC_LONG_LOCK_FREE;1;__GCC_ATOMIC_LLONG_LOCK_FREE;1;__GCC_ATOMIC_TEST_AND_SET_TRUEVAL;1;__GCC_ATOMIC_POINTER_LOCK_FREE;1;__PRAGMA_REDEFINE_EXTNAME;1;__SIZEOF_WCHAR_T__;2;__SIZEOF_WINT_T__;2;__SIZEOF_PTRDIFF_T__;2;__AVR;1;__AVR__;1;AVR;1;__AVR_ARCH__;2;__AVR_2_BYTE_PC__;1;__AVR_HAVE_16BIT_SP__;1;__AVR_HAVE_SPH__;1;__AVR_ERRATA_SKIP__;1;__AVR_SFR_OFFSET__;0x20;__WITH_AVRLIBC__;1;__BUILTIN_AVR_NOP;1;__BUILTIN_AVR_SEI;1;__BUILTIN_AVR_CLI;1;__BUILTIN_AVR_WDR;1;__BUILTIN_AVR_SLEEP;1;__BUILTIN_AVR_SWAP;1;__BUILTIN_AVR_FMUL;1;__BUILTIN_AVR_FMULS;1;__BUILTIN_AVR_FMULSU;1;__BUILTIN_AVR_DELAY_CYCLES;1;__BUILTIN_AVR_INSERT_BITS;1;__BUILTIN_AVR_FLASH_SEGMENT;1;__BUILTIN_AVR_ABSHR;1;__BUILTIN_AVR_ABSR;1;__BUILTIN_AVR_ABSLR;1;__BUILTIN_AVR_ABSLLR;1;__BUILTIN_AVR_ABSHK;1;__BUILTIN_AVR_ABSK;1;__BUILTIN_AVR_ABSLK;1;__BUILTIN_AVR_ABSLLK;1;__BUILTIN_AVR_ROUNDHR;1;__BUILTIN_AVR_ROUNDR;1;__BUILTIN_AVR_ROUNDLR;1;__BUILTIN_AVR_ROUNDLLR;1;__BUILTIN_AVR_ROUNDUHR;1;__BUILTIN_AVR_ROUNDUR;1;__BUILTIN_AVR_ROUNDULR;1;__BUILTIN_AVR_ROUNDULLR;1;__BUILTIN_AVR_ROUNDHK;1;__BUILTIN_AVR_ROUNDK;1;__BUILTIN_AVR_ROUNDLK;1;__BUILTIN_AVR_ROUNDLLK;1;__BUILTIN_AVR_ROUNDUHK;1;__BUILTIN_AVR_ROUNDUK;1;__BUILTIN_AVR_ROUNDULK;1;__BUILTIN_AVR_ROUNDULLK;1;__BUILTIN_AVR_COUNTLSHR;1;__BUILTIN_AVR_COUNTLSR;1;__BUILTIN_AVR_COUNTLSLR;1;__BUILTIN_AVR_COUNTLSLLR;1;__BUILTIN_AVR_COUNTLSUHR;1;__BUILTIN_AVR_COUNTLSUR;1;__BUILTIN_AVR_COUNTLSULR;1;__BUILTIN_AVR_COUNTLSULLR;1;__BUILTIN_AVR_COUNTLSHK;1;__BUILTIN_AVR_COUNTLSK;1;__BUILTIN_AVR_COUNTLSLK;1;__BUILTIN_AVR_COUNTLSLLK;1;__BUILTIN_AVR_COUNTLSUHK;1;__BUILTIN_AVR_COUNTLSUK;1;__BUILTIN_AVR_COUNTLSULK;1;__BUILTIN_AVR_COUNTLSULLK;1;__BUILTIN_AVR_BITSHR;1;__BUILTIN_AVR_BITSR;1;__BUILTIN_AVR_BITSLR;1;__BUILTIN_AVR_BITSLLR;1;__BUILTIN_AVR_BITSUHR;1;__BUILTIN_AVR_BITSUR;1;__BUILTIN_AVR_BITSULR;1;__BUILTIN_AVR_BITSULLR;1;__BUILTIN_AVR_BITSHK;1;__BUILTIN_AVR_BITSK;1;__BUILTIN_AVR_BITSLK;1;__BUILTIN_AVR_BITSLLK;1;__BUILTIN_AVR_BITSUHK;1;__BUILTIN_AVR_BITSUK;1;__BUILTIN_AVR_BITSULK;1;__BUILTIN_AVR_BITSULLK;1;__BUILTIN_AVR_HRBITS;1;__BUILTIN_AVR_RBITS;1;__BUILTIN_AVR_LRBITS;1;__BUILTIN_AVR_LLRBITS;1;__BUILTIN_AVR_UHRBITS;1;__BUILTIN_AVR_URBITS;1;__BUILTIN_AVR_ULRBITS;1;__BUILTIN_AVR_ULLRBITS;1;__BUILTIN_AVR_HKBITS;1;__BUILTIN_AVR_KBITS;1;__BUILTIN_AVR_LKBITS;1;__BUILTIN_AVR_LLKBITS;1;__BUILTIN_AVR_UHKBITS;1;__BUILTIN_AVR_UKBITS;1;__BUILTIN_AVR_ULKBITS;1;__BUILTIN_AVR_ULLKBITS;1;__BUILTIN_AVR_ABSFX;1;__BUILTIN_AVR_ROUNDFX;1;__BUILTIN_AVR_COUNTLSFX;1;__INT24_MAX__;8388607L;__INT24_MIN__;(-__INT24_MAX__-1);__UINT24_MAX__;16777215UL;__ELF__;1
 //CXX compiler system include directories
-CMAKE_EXTRA_GENERATOR_CXX_SYSTEM_INCLUDE_DIRS:INTERNAL=/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1;/usr/local/include;/Library/Developer/CommandLineTools/usr/bin/../lib/clang/7.0.2/include;/Library/Developer/CommandLineTools/usr/include;/usr/include;/System/Library/Frameworks;/Library/Frameworks
+CMAKE_EXTRA_GENERATOR_CXX_SYSTEM_INCLUDE_DIRS:INTERNAL=/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include;/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include-fixed;/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/include
 //C compiler system defined macros
-CMAKE_EXTRA_GENERATOR_C_SYSTEM_DEFINED_MACROS:INTERNAL=__llvm__;1;__clang__;1;__clang_major__;7;__clang_minor__; ;__clang_patchlevel__;2;__clang_version__;"7.0.2 (clang-700.1.81)";__GNUC_MINOR__;2;__GNUC_PATCHLEVEL__;1;__GNUC__;4;__GXX_ABI_VERSION;1002;__ATOMIC_RELAXED; ;__ATOMIC_CONSUME;1;__ATOMIC_ACQUIRE;2;__ATOMIC_RELEASE;3;__ATOMIC_ACQ_REL;4;__ATOMIC_SEQ_CST;5;__PRAGMA_REDEFINE_EXTNAME;1;__VERSION__;"4.2.1 Compatible Apple LLVM 7.0.2 (clang-700.1.81)";__CONSTANT_CFSTRINGS__;1;__block;__attribute__((__blocks__(byref)));__BLOCKS__;1;__GXX_RTTI;1;__ORDER_LITTLE_ENDIAN__;1234;__ORDER_BIG_ENDIAN__;4321;__ORDER_PDP_ENDIAN__;3412;__BYTE_ORDER__;__ORDER_LITTLE_ENDIAN__;__LITTLE_ENDIAN__;1;_LP64;1;__LP64__;1;__CHAR_BIT__;8;__SCHAR_MAX__;127;__SHRT_MAX__;32767;__INT_MAX__;2147483647;__LONG_MAX__;9223372036854775807L;__LONG_LONG_MAX__;9223372036854775807LL;__WCHAR_MAX__;2147483647;__INTMAX_MAX__;9223372036854775807L;__SIZE_MAX__;18446744073709551615UL;__UINTMAX_MAX__;18446744073709551615UL;__PTRDIFF_MAX__;9223372036854775807L;__INTPTR_MAX__;9223372036854775807L;__UINTPTR_MAX__;18446744073709551615UL;__SIZEOF_DOUBLE__;8;__SIZEOF_FLOAT__;4;__SIZEOF_INT__;4;__SIZEOF_LONG__;8;__SIZEOF_LONG_DOUBLE__;16;__SIZEOF_LONG_LONG__;8;__SIZEOF_POINTER__;8;__SIZEOF_SHORT__;2;__SIZEOF_PTRDIFF_T__;8;__SIZEOF_SIZE_T__;8;__SIZEOF_WCHAR_T__;4;__SIZEOF_WINT_T__;4;__SIZEOF_INT128__;16;__INTMAX_TYPE__;long int;__INTMAX_FMTd__;"ld";__INTMAX_FMTi__;"li";__INTMAX_C_SUFFIX__;L;__UINTMAX_TYPE__;long unsigned int;__UINTMAX_FMTo__;"lo";__UINTMAX_FMTu__;"lu";__UINTMAX_FMTx__;"lx";__UINTMAX_FMTX__;"lX";__UINTMAX_C_SUFFIX__;UL;__INTMAX_WIDTH__;64;__PTRDIFF_TYPE__;long int;__PTRDIFF_FMTd__;"ld";__PTRDIFF_FMTi__;"li";__PTRDIFF_WIDTH__;64;__INTPTR_TYPE__;long int;__INTPTR_FMTd__;"ld";__INTPTR_FMTi__;"li";__INTPTR_WIDTH__;64;__SIZE_TYPE__;long unsigned int;__SIZE_FMTo__;"lo";__SIZE_FMTu__;"lu";__SIZE_FMTx__;"lx";__SIZE_FMTX__;"lX";__SIZE_WIDTH__;64;__WCHAR_TYPE__;int;__WCHAR_WIDTH__;32;__WINT_TYPE__;int;__WINT_WIDTH__;32;__SIG_ATOMIC_WIDTH__;32;__SIG_ATOMIC_MAX__;2147483647;__CHAR16_TYPE__;unsigned short;__CHAR32_TYPE__;unsigned int;__UINTMAX_WIDTH__;64;__UINTPTR_TYPE__;long unsigned int;__UINTPTR_FMTo__;"lo";__UINTPTR_FMTu__;"lu";__UINTPTR_FMTx__;"lx";__UINTPTR_FMTX__;"lX";__UINTPTR_WIDTH__;64;__FLT_DENORM_MIN__;1.40129846e-45F;__FLT_HAS_DENORM__;1;__FLT_DIG__;6;__FLT_EPSILON__;1.19209290e-7F;__FLT_HAS_INFINITY__;1;__FLT_HAS_QUIET_NAN__;1;__FLT_MANT_DIG__;24;__FLT_MAX_10_EXP__;38;__FLT_MAX_EXP__;128;__FLT_MAX__;3.40282347e+38F;__FLT_MIN_10_EXP__;(-37);__FLT_MIN_EXP__;(-125);__FLT_MIN__;1.17549435e-38F;__DBL_DENORM_MIN__;4.9406564584124654e-324;__DBL_HAS_DENORM__;1;__DBL_DIG__;15;__DBL_EPSILON__;2.2204460492503131e-16;__DBL_HAS_INFINITY__;1;__DBL_HAS_QUIET_NAN__;1;__DBL_MANT_DIG__;53;__DBL_MAX_10_EXP__;308;__DBL_MAX_EXP__;1024;__DBL_MAX__;1.7976931348623157e+308;__DBL_MIN_10_EXP__;(-307);__DBL_MIN_EXP__;(-1021);__DBL_MIN__;2.2250738585072014e-308;__LDBL_DENORM_MIN__;3.64519953188247460253e-4951L;__LDBL_HAS_DENORM__;1;__LDBL_DIG__;18;__LDBL_EPSILON__;1.08420217248550443401e-19L;__LDBL_HAS_INFINITY__;1;__LDBL_HAS_QUIET_NAN__;1;__LDBL_MANT_DIG__;64;__LDBL_MAX_10_EXP__;4932;__LDBL_MAX_EXP__;16384;__LDBL_MAX__;1.18973149535723176502e+4932L;__LDBL_MIN_10_EXP__;(-4931);__LDBL_MIN_EXP__;(-16381);__LDBL_MIN__;3.36210314311209350626e-4932L;__POINTER_WIDTH__;64;__BIGGEST_ALIGNMENT__;16;__INT8_TYPE__;signed char;__INT8_FMTd__;"hhd";__INT8_FMTi__;"hhi";__INT8_C_SUFFIX__; ;__INT16_TYPE__;short;__INT16_FMTd__;"hd";__INT16_FMTi__;"hi";__INT16_C_SUFFIX__; ;__INT32_TYPE__;int;__INT32_FMTd__;"d";__INT32_FMTi__;"i";__INT32_C_SUFFIX__; ;__INT64_TYPE__;long long int;__INT64_FMTd__;"lld";__INT64_FMTi__;"lli";__INT64_C_SUFFIX__;LL;__UINT8_TYPE__;unsigned char;__UINT8_FMTo__;"hho";__UINT8_FMTu__;"hhu";__UINT8_FMTx__;"hhx";__UINT8_FMTX__;"hhX";__UINT8_C_SUFFIX__; ;__UINT8_MAX__;255;__INT8_MAX__;127;__UINT16_TYPE__;unsigned short;__UINT16_FMTo__;"ho";__UINT16_FMTu__;"hu";__UINT16_FMTx__;"hx";__UINT16_FMTX__;"hX";__UINT16_C_SUFFIX__; ;__UINT16_MAX__;65535;__INT16_MAX__;32767;__UINT32_TYPE__;unsigned int;__UINT32_FMTo__;"o";__UINT32_FMTu__;"u";__UINT32_FMTx__;"x";__UINT32_FMTX__;"X";__UINT32_C_SUFFIX__;U;__UINT32_MAX__;4294967295U;__INT32_MAX__;2147483647;__UINT64_TYPE__;long long unsigned int;__UINT64_FMTo__;"llo";__UINT64_FMTu__;"llu";__UINT64_FMTx__;"llx";__UINT64_FMTX__;"llX";__UINT64_C_SUFFIX__;ULL;__UINT64_MAX__;18446744073709551615ULL;__INT64_MAX__;9223372036854775807LL;__INT_LEAST8_TYPE__;signed char;__INT_LEAST8_MAX__;127;__INT_LEAST8_FMTd__;"hhd";__INT_LEAST8_FMTi__;"hhi";__UINT_LEAST8_TYPE__;unsigned char;__UINT_LEAST8_MAX__;255;__UINT_LEAST8_FMTo__;"hho";__UINT_LEAST8_FMTu__;"hhu";__UINT_LEAST8_FMTx__;"hhx";__UINT_LEAST8_FMTX__;"hhX";__INT_LEAST16_TYPE__;short;__INT_LEAST16_MAX__;32767;__INT_LEAST16_FMTd__;"hd";__INT_LEAST16_FMTi__;"hi";__UINT_LEAST16_TYPE__;unsigned short;__UINT_LEAST16_MAX__;65535;__UINT_LEAST16_FMTo__;"ho";__UINT_LEAST16_FMTu__;"hu";__UINT_LEAST16_FMTx__;"hx";__UINT_LEAST16_FMTX__;"hX";__INT_LEAST32_TYPE__;int;__INT_LEAST32_MAX__;2147483647;__INT_LEAST32_FMTd__;"d";__INT_LEAST32_FMTi__;"i";__UINT_LEAST32_TYPE__;unsigned int;__UINT_LEAST32_MAX__;4294967295U;__UINT_LEAST32_FMTo__;"o";__UINT_LEAST32_FMTu__;"u";__UINT_LEAST32_FMTx__;"x";__UINT_LEAST32_FMTX__;"X";__INT_LEAST64_TYPE__;long int;__INT_LEAST64_MAX__;9223372036854775807L;__INT_LEAST64_FMTd__;"ld";__INT_LEAST64_FMTi__;"li";__UINT_LEAST64_TYPE__;long unsigned int;__UINT_LEAST64_MAX__;18446744073709551615UL;__UINT_LEAST64_FMTo__;"lo";__UINT_LEAST64_FMTu__;"lu";__UINT_LEAST64_FMTx__;"lx";__UINT_LEAST64_FMTX__;"lX";__INT_FAST8_TYPE__;signed char;__INT_FAST8_MAX__;127;__INT_FAST8_FMTd__;"hhd";__INT_FAST8_FMTi__;"hhi";__UINT_FAST8_TYPE__;unsigned char;__UINT_FAST8_MAX__;255;__UINT_FAST8_FMTo__;"hho";__UINT_FAST8_FMTu__;"hhu";__UINT_FAST8_FMTx__;"hhx";__UINT_FAST8_FMTX__;"hhX";__INT_FAST16_TYPE__;short;__INT_FAST16_MAX__;32767;__INT_FAST16_FMTd__;"hd";__INT_FAST16_FMTi__;"hi";__UINT_FAST16_TYPE__;unsigned short;__UINT_FAST16_MAX__;65535;__UINT_FAST16_FMTo__;"ho";__UINT_FAST16_FMTu__;"hu";__UINT_FAST16_FMTx__;"hx";__UINT_FAST16_FMTX__;"hX";__INT_FAST32_TYPE__;int;__INT_FAST32_MAX__;2147483647;__INT_FAST32_FMTd__;"d";__INT_FAST32_FMTi__;"i";__UINT_FAST32_TYPE__;unsigned int;__UINT_FAST32_MAX__;4294967295U;__UINT_FAST32_FMTo__;"o";__UINT_FAST32_FMTu__;"u";__UINT_FAST32_FMTx__;"x";__UINT_FAST32_FMTX__;"X";__INT_FAST64_TYPE__;long int;__INT_FAST64_MAX__;9223372036854775807L;__INT_FAST64_FMTd__;"ld";__INT_FAST64_FMTi__;"li";__UINT_FAST64_TYPE__;long unsigned int;__UINT_FAST64_MAX__;18446744073709551615UL;__UINT_FAST64_FMTo__;"lo";__UINT_FAST64_FMTu__;"lu";__UINT_FAST64_FMTx__;"lx";__UINT_FAST64_FMTX__;"lX";__USER_LABEL_PREFIX__;_;__FINITE_MATH_ONLY__; ;__GNUC_STDC_INLINE__;1;__GCC_ATOMIC_TEST_AND_SET_TRUEVAL;1;__GCC_ATOMIC_BOOL_LOCK_FREE;2;__GCC_ATOMIC_CHAR_LOCK_FREE;2;__GCC_ATOMIC_CHAR16_T_LOCK_FREE;2;__GCC_ATOMIC_CHAR32_T_LOCK_FREE;2;__GCC_ATOMIC_WCHAR_T_LOCK_FREE;2;__GCC_ATOMIC_SHORT_LOCK_FREE;2;__GCC_ATOMIC_INT_LOCK_FREE;2;__GCC_ATOMIC_LONG_LOCK_FREE;2;__GCC_ATOMIC_LLONG_LOCK_FREE;2;__GCC_ATOMIC_POINTER_LOCK_FREE;2;__NO_INLINE__;1;__PIC__;2;__pic__;2;__FLT_EVAL_METHOD__; ;__FLT_RADIX__;2;__DECIMAL_DIG__;21;__SSP__;1;__nonnull;_Nonnull;__null_unspecified;_Null_unspecified;__nullable;_Nullable;__amd64__;1;__amd64;1;__x86_64;1;__x86_64__;1;__core2;1;__core2__;1;__tune_core2__;1;__REGISTER_PREFIX__; ;__NO_MATH_INLINES;1;__GCC_HAVE_SYNC_COMPARE_AND_SWAP_16;1;__SSSE3__;1;__SSE3__;1;__SSE2__;1;__SSE2_MATH__;1;__SSE__;1;__SSE_MATH__;1;__MMX__;1;__GCC_HAVE_SYNC_COMPARE_AND_SWAP_1;1;__GCC_HAVE_SYNC_COMPARE_AND_SWAP_2;1;__GCC_HAVE_SYNC_COMPARE_AND_SWAP_4;1;__GCC_HAVE_SYNC_COMPARE_AND_SWAP_8;1;__APPLE_CC__;6000;__APPLE__;1;OBJC_NEW_PROPERTIES;1;__apple_build_version__;7000181;__weak;__attribute__((objc_gc(weak)));__strong; ;__unsafe_unretained; ;__DYNAMIC__;1;__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__;101100;__MACH__;1;__STDC__;1;__STDC_HOSTED__;1;__STDC_VERSION__;201112L;__STDC_UTF_16__;1;__STDC_UTF_32__;1
+CMAKE_EXTRA_GENERATOR_C_SYSTEM_DEFINED_MACROS:INTERNAL=__STDC__;1;__STDC_HOSTED__;1;__GNUC__;4;__GNUC_MINOR__;9;__GNUC_PATCHLEVEL__;2;__VERSION__;"4.9.2";__ATOMIC_RELAXED; ;__ATOMIC_SEQ_CST;5;__ATOMIC_ACQUIRE;2;__ATOMIC_RELEASE;3;__ATOMIC_ACQ_REL;4;__ATOMIC_CONSUME;1;__FINITE_MATH_ONLY__; ;__SIZEOF_INT__;2;__SIZEOF_LONG__;4;__SIZEOF_LONG_LONG__;8;__SIZEOF_SHORT__;2;__SIZEOF_FLOAT__;4;__SIZEOF_DOUBLE__;4;__SIZEOF_LONG_DOUBLE__;4;__SIZEOF_SIZE_T__;2;__CHAR_BIT__;8;__BIGGEST_ALIGNMENT__;1;__ORDER_LITTLE_ENDIAN__;1234;__ORDER_BIG_ENDIAN__;4321;__ORDER_PDP_ENDIAN__;3412;__BYTE_ORDER__;__ORDER_LITTLE_ENDIAN__;__FLOAT_WORD_ORDER__;__ORDER_LITTLE_ENDIAN__;__SIZEOF_POINTER__;2;__SIZE_TYPE__;unsigned int;__PTRDIFF_TYPE__;int;__WCHAR_TYPE__;int;__WINT_TYPE__;int;__INTMAX_TYPE__;long long int;__UINTMAX_TYPE__;long long unsigned int;__CHAR16_TYPE__;unsigned int;__CHAR32_TYPE__;long unsigned int;__SIG_ATOMIC_TYPE__;char;__INT8_TYPE__;signed char;__INT16_TYPE__;int;__INT32_TYPE__;long int;__INT64_TYPE__;long long int;__UINT8_TYPE__;unsigned char;__UINT16_TYPE__;unsigned int;__UINT32_TYPE__;long unsigned int;__UINT64_TYPE__;long long unsigned int;__INT_LEAST8_TYPE__;signed char;__INT_LEAST16_TYPE__;int;__INT_LEAST32_TYPE__;long int;__INT_LEAST64_TYPE__;long long int;__UINT_LEAST8_TYPE__;unsigned char;__UINT_LEAST16_TYPE__;unsigned int;__UINT_LEAST32_TYPE__;long unsigned int;__UINT_LEAST64_TYPE__;long long unsigned int;__INT_FAST8_TYPE__;signed char;__INT_FAST16_TYPE__;int;__INT_FAST32_TYPE__;long int;__INT_FAST64_TYPE__;long long int;__UINT_FAST8_TYPE__;unsigned char;__UINT_FAST16_TYPE__;unsigned int;__UINT_FAST32_TYPE__;long unsigned int;__UINT_FAST64_TYPE__;long long unsigned int;__INTPTR_TYPE__;int;__UINTPTR_TYPE__;unsigned int;__has_include(STR);__has_include__(STR);__has_include_next(STR);__has_include_next__(STR);__GXX_ABI_VERSION;1002;__USING_SJLJ_EXCEPTIONS__;1;__SCHAR_MAX__;127;__SHRT_MAX__;32767;__INT_MAX__;32767;__LONG_MAX__;2147483647L;__LONG_LONG_MAX__;9223372036854775807LL;__WCHAR_MAX__;32767;__WCHAR_MIN__;(-__WCHAR_MAX__ - 1);__WINT_MAX__;32767;__WINT_MIN__;(-__WINT_MAX__ - 1);__PTRDIFF_MAX__;32767;__SIZE_MAX__;65535U;__INTMAX_MAX__;9223372036854775807LL;__INTMAX_C(c);c ## LL;__UINTMAX_MAX__;18446744073709551615ULL;__UINTMAX_C(c);c ## ULL;__SIG_ATOMIC_MAX__;127;__SIG_ATOMIC_MIN__;(-__SIG_ATOMIC_MAX__ - 1);__INT8_MAX__;127;__INT16_MAX__;32767;__INT32_MAX__;2147483647L;__INT64_MAX__;9223372036854775807LL;__UINT8_MAX__;255;__UINT16_MAX__;65535U;__UINT32_MAX__;4294967295UL;__UINT64_MAX__;18446744073709551615ULL;__INT_LEAST8_MAX__;127;__INT8_C(c);c;__INT_LEAST16_MAX__;32767;__INT16_C(c);c;__INT_LEAST32_MAX__;2147483647L;__INT32_C(c);c ## L;__INT_LEAST64_MAX__;9223372036854775807LL;__INT64_C(c);c ## LL;__UINT_LEAST8_MAX__;255;__UINT8_C(c);c;__UINT_LEAST16_MAX__;65535U;__UINT16_C(c);c ## U;__UINT_LEAST32_MAX__;4294967295UL;__UINT32_C(c);c ## UL;__UINT_LEAST64_MAX__;18446744073709551615ULL;__UINT64_C(c);c ## ULL;__INT_FAST8_MAX__;127;__INT_FAST16_MAX__;32767;__INT_FAST32_MAX__;2147483647L;__INT_FAST64_MAX__;9223372036854775807LL;__UINT_FAST8_MAX__;255;__UINT_FAST16_MAX__;65535U;__UINT_FAST32_MAX__;4294967295UL;__UINT_FAST64_MAX__;18446744073709551615ULL;__INTPTR_MAX__;32767;__UINTPTR_MAX__;65535U;__GCC_IEC_559; ;__GCC_IEC_559_COMPLEX; ;__FLT_EVAL_METHOD__; ;__DEC_EVAL_METHOD__;2;__FLT_RADIX__;2;__FLT_MANT_DIG__;24;__FLT_DIG__;6;__FLT_MIN_EXP__;(-125);__FLT_MIN_10_EXP__;(-37);__FLT_MAX_EXP__;128;__FLT_MAX_10_EXP__;38;__FLT_DECIMAL_DIG__;9;__FLT_MAX__;3.40282347e+38F;__FLT_MIN__;1.17549435e-38F;__FLT_EPSILON__;1.19209290e-7F;__FLT_DENORM_MIN__;1.40129846e-45F;__FLT_HAS_DENORM__;1;__FLT_HAS_INFINITY__;1;__FLT_HAS_QUIET_NAN__;1;__DBL_MANT_DIG__;24;__DBL_DIG__;6;__DBL_MIN_EXP__;(-125);__DBL_MIN_10_EXP__;(-37);__DBL_MAX_EXP__;128;__DBL_MAX_10_EXP__;38;__DBL_DECIMAL_DIG__;9;__DBL_MAX__;((double)3.40282347e+38L);__DBL_MIN__;((double)1.17549435e-38L);__DBL_EPSILON__;((double)1.19209290e-7L);__DBL_DENORM_MIN__;((double)1.40129846e-45L);__DBL_HAS_DENORM__;1;__DBL_HAS_INFINITY__;1;__DBL_HAS_QUIET_NAN__;1;__LDBL_MANT_DIG__;24;__LDBL_DIG__;6;__LDBL_MIN_EXP__;(-125);__LDBL_MIN_10_EXP__;(-37);__LDBL_MAX_EXP__;128;__LDBL_MAX_10_EXP__;38;__DECIMAL_DIG__;9;__LDBL_MAX__;3.40282347e+38L;__LDBL_MIN__;1.17549435e-38L;__LDBL_EPSILON__;1.19209290e-7L;__LDBL_DENORM_MIN__;1.40129846e-45L;__LDBL_HAS_DENORM__;1;__LDBL_HAS_INFINITY__;1;__LDBL_HAS_QUIET_NAN__;1;__DEC32_MANT_DIG__;7;__DEC32_MIN_EXP__;(-94);__DEC32_MAX_EXP__;97;__DEC32_MIN__;1E-95DF;__DEC32_MAX__;9.999999E96DF;__DEC32_EPSILON__;1E-6DF;__DEC32_SUBNORMAL_MIN__;0.000001E-95DF;__DEC64_MANT_DIG__;16;__DEC64_MIN_EXP__;(-382);__DEC64_MAX_EXP__;385;__DEC64_MIN__;1E-383DD;__DEC64_MAX__;9.999999999999999E384DD;__DEC64_EPSILON__;1E-15DD;__DEC64_SUBNORMAL_MIN__;0.000000000000001E-383DD;__DEC128_MANT_DIG__;34;__DEC128_MIN_EXP__;(-6142);__DEC128_MAX_EXP__;6145;__DEC128_MIN__;1E-6143DL;__DEC128_MAX__;9.999999999999999999999999999999999E6144DL;__DEC128_EPSILON__;1E-33DL;__DEC128_SUBNORMAL_MIN__;0.000000000000000000000000000000001E-6143DL;__SFRACT_FBIT__;7;__SFRACT_IBIT__; ;__SFRACT_MIN__;(-0.5HR-0.5HR);__SFRACT_MAX__;0X7FP-7HR;__SFRACT_EPSILON__;0x1P-7HR;__USFRACT_FBIT__;8;__USFRACT_IBIT__; ;__USFRACT_MIN__;0.0UHR;__USFRACT_MAX__;0XFFP-8UHR;__USFRACT_EPSILON__;0x1P-8UHR;__FRACT_FBIT__;15;__FRACT_IBIT__; ;__FRACT_MIN__;(-0.5R-0.5R);__FRACT_MAX__;0X7FFFP-15R;__FRACT_EPSILON__;0x1P-15R;__UFRACT_FBIT__;16;__UFRACT_IBIT__; ;__UFRACT_MIN__;0.0UR;__UFRACT_MAX__;0XFFFFP-16UR;__UFRACT_EPSILON__;0x1P-16UR;__LFRACT_FBIT__;31;__LFRACT_IBIT__; ;__LFRACT_MIN__;(-0.5LR-0.5LR);__LFRACT_MAX__;0X7FFFFFFFP-31LR;__LFRACT_EPSILON__;0x1P-31LR;__ULFRACT_FBIT__;32;__ULFRACT_IBIT__; ;__ULFRACT_MIN__;0.0ULR;__ULFRACT_MAX__;0XFFFFFFFFP-32ULR;__ULFRACT_EPSILON__;0x1P-32ULR;__LLFRACT_FBIT__;63;__LLFRACT_IBIT__; ;__LLFRACT_MIN__;(-0.5LLR-0.5LLR);__LLFRACT_MAX__;0X7FFFFFFFFFFFFFFFP-63LLR;__LLFRACT_EPSILON__;0x1P-63LLR;__ULLFRACT_FBIT__;64;__ULLFRACT_IBIT__; ;__ULLFRACT_MIN__;0.0ULLR;__ULLFRACT_MAX__;0XFFFFFFFFFFFFFFFFP-64ULLR;__ULLFRACT_EPSILON__;0x1P-64ULLR;__SACCUM_FBIT__;7;__SACCUM_IBIT__;8;__SACCUM_MIN__;(-0X1P7HK-0X1P7HK);__SACCUM_MAX__;0X7FFFP-7HK;__SACCUM_EPSILON__;0x1P-7HK;__USACCUM_FBIT__;8;__USACCUM_IBIT__;8;__USACCUM_MIN__;0.0UHK;__USACCUM_MAX__;0XFFFFP-8UHK;__USACCUM_EPSILON__;0x1P-8UHK;__ACCUM_FBIT__;15;__ACCUM_IBIT__;16;__ACCUM_MIN__;(-0X1P15K-0X1P15K);__ACCUM_MAX__;0X7FFFFFFFP-15K;__ACCUM_EPSILON__;0x1P-15K;__UACCUM_FBIT__;16;__UACCUM_IBIT__;16;__UACCUM_MIN__;0.0UK;__UACCUM_MAX__;0XFFFFFFFFP-16UK;__UACCUM_EPSILON__;0x1P-16UK;__LACCUM_FBIT__;31;__LACCUM_IBIT__;32;__LACCUM_MIN__;(-0X1P31LK-0X1P31LK);__LACCUM_MAX__;0X7FFFFFFFFFFFFFFFP-31LK;__LACCUM_EPSILON__;0x1P-31LK;__ULACCUM_FBIT__;32;__ULACCUM_IBIT__;32;__ULACCUM_MIN__;0.0ULK;__ULACCUM_MAX__;0XFFFFFFFFFFFFFFFFP-32ULK;__ULACCUM_EPSILON__;0x1P-32ULK;__LLACCUM_FBIT__;47;__LLACCUM_IBIT__;16;__LLACCUM_MIN__;(-0X1P15LLK-0X1P15LLK);__LLACCUM_MAX__;0X7FFFFFFFFFFFFFFFP-47LLK;__LLACCUM_EPSILON__;0x1P-47LLK;__ULLACCUM_FBIT__;48;__ULLACCUM_IBIT__;16;__ULLACCUM_MIN__;0.0ULLK;__ULLACCUM_MAX__;0XFFFFFFFFFFFFFFFFP-48ULLK;__ULLACCUM_EPSILON__;0x1P-48ULLK;__QQ_FBIT__;7;__QQ_IBIT__; ;__HQ_FBIT__;15;__HQ_IBIT__; ;__SQ_FBIT__;31;__SQ_IBIT__; ;__DQ_FBIT__;63;__DQ_IBIT__; ;__TQ_FBIT__;127;__TQ_IBIT__; ;__UQQ_FBIT__;8;__UQQ_IBIT__; ;__UHQ_FBIT__;16;__UHQ_IBIT__; ;__USQ_FBIT__;32;__USQ_IBIT__; ;__UDQ_FBIT__;64;__UDQ_IBIT__; ;__UTQ_FBIT__;128;__UTQ_IBIT__; ;__HA_FBIT__;7;__HA_IBIT__;8;__SA_FBIT__;15;__SA_IBIT__;16;__DA_FBIT__;31;__DA_IBIT__;32;__TA_FBIT__;47;__TA_IBIT__;16;__UHA_FBIT__;8;__UHA_IBIT__;8;__USA_FBIT__;16;__USA_IBIT__;16;__UDA_FBIT__;32;__UDA_IBIT__;32;__UTA_FBIT__;48;__UTA_IBIT__;16;__REGISTER_PREFIX__; ;__USER_LABEL_PREFIX__; ;__GNUC_GNU_INLINE__;1;__NO_INLINE__;1;__GCC_ATOMIC_BOOL_LOCK_FREE;1;__GCC_ATOMIC_CHAR_LOCK_FREE;1;__GCC_ATOMIC_CHAR16_T_LOCK_FREE;1;__GCC_ATOMIC_CHAR32_T_LOCK_FREE;1;__GCC_ATOMIC_WCHAR_T_LOCK_FREE;1;__GCC_ATOMIC_SHORT_LOCK_FREE;1;__GCC_ATOMIC_INT_LOCK_FREE;1;__GCC_ATOMIC_LONG_LOCK_FREE;1;__GCC_ATOMIC_LLONG_LOCK_FREE;1;__GCC_ATOMIC_TEST_AND_SET_TRUEVAL;1;__GCC_ATOMIC_POINTER_LOCK_FREE;1;__PRAGMA_REDEFINE_EXTNAME;1;__SIZEOF_WCHAR_T__;2;__SIZEOF_WINT_T__;2;__SIZEOF_PTRDIFF_T__;2;__AVR;1;__AVR__;1;AVR;1;__AVR_ARCH__;2;__AVR_2_BYTE_PC__;1;__AVR_HAVE_16BIT_SP__;1;__AVR_HAVE_SPH__;1;__AVR_ERRATA_SKIP__;1;__AVR_SFR_OFFSET__;0x20;__WITH_AVRLIBC__;1;__FLASH;1;__FLASH1;1;__FLASH2;1;__FLASH3;1;__FLASH4;1;__FLASH5;1;__MEMX;1;__BUILTIN_AVR_NOP;1;__BUILTIN_AVR_SEI;1;__BUILTIN_AVR_CLI;1;__BUILTIN_AVR_WDR;1;__BUILTIN_AVR_SLEEP;1;__BUILTIN_AVR_SWAP;1;__BUILTIN_AVR_FMUL;1;__BUILTIN_AVR_FMULS;1;__BUILTIN_AVR_FMULSU;1;__BUILTIN_AVR_DELAY_CYCLES;1;__BUILTIN_AVR_INSERT_BITS;1;__BUILTIN_AVR_FLASH_SEGMENT;1;__BUILTIN_AVR_ABSHR;1;__BUILTIN_AVR_ABSR;1;__BUILTIN_AVR_ABSLR;1;__BUILTIN_AVR_ABSLLR;1;__BUILTIN_AVR_ABSHK;1;__BUILTIN_AVR_ABSK;1;__BUILTIN_AVR_ABSLK;1;__BUILTIN_AVR_ABSLLK;1;__BUILTIN_AVR_ROUNDHR;1;__BUILTIN_AVR_ROUNDR;1;__BUILTIN_AVR_ROUNDLR;1;__BUILTIN_AVR_ROUNDLLR;1;__BUILTIN_AVR_ROUNDUHR;1;__BUILTIN_AVR_ROUNDUR;1;__BUILTIN_AVR_ROUNDULR;1;__BUILTIN_AVR_ROUNDULLR;1;__BUILTIN_AVR_ROUNDHK;1;__BUILTIN_AVR_ROUNDK;1;__BUILTIN_AVR_ROUNDLK;1;__BUILTIN_AVR_ROUNDLLK;1;__BUILTIN_AVR_ROUNDUHK;1;__BUILTIN_AVR_ROUNDUK;1;__BUILTIN_AVR_ROUNDULK;1;__BUILTIN_AVR_ROUNDULLK;1;__BUILTIN_AVR_COUNTLSHR;1;__BUILTIN_AVR_COUNTLSR;1;__BUILTIN_AVR_COUNTLSLR;1;__BUILTIN_AVR_COUNTLSLLR;1;__BUILTIN_AVR_COUNTLSUHR;1;__BUILTIN_AVR_COUNTLSUR;1;__BUILTIN_AVR_COUNTLSULR;1;__BUILTIN_AVR_COUNTLSULLR;1;__BUILTIN_AVR_COUNTLSHK;1;__BUILTIN_AVR_COUNTLSK;1;__BUILTIN_AVR_COUNTLSLK;1;__BUILTIN_AVR_COUNTLSLLK;1;__BUILTIN_AVR_COUNTLSUHK;1;__BUILTIN_AVR_COUNTLSUK;1;__BUILTIN_AVR_COUNTLSULK;1;__BUILTIN_AVR_COUNTLSULLK;1;__BUILTIN_AVR_BITSHR;1;__BUILTIN_AVR_BITSR;1;__BUILTIN_AVR_BITSLR;1;__BUILTIN_AVR_BITSLLR;1;__BUILTIN_AVR_BITSUHR;1;__BUILTIN_AVR_BITSUR;1;__BUILTIN_AVR_BITSULR;1;__BUILTIN_AVR_BITSULLR;1;__BUILTIN_AVR_BITSHK;1;__BUILTIN_AVR_BITSK;1;__BUILTIN_AVR_BITSLK;1;__BUILTIN_AVR_BITSLLK;1;__BUILTIN_AVR_BITSUHK;1;__BUILTIN_AVR_BITSUK;1;__BUILTIN_AVR_BITSULK;1;__BUILTIN_AVR_BITSULLK;1;__BUILTIN_AVR_HRBITS;1;__BUILTIN_AVR_RBITS;1;__BUILTIN_AVR_LRBITS;1;__BUILTIN_AVR_LLRBITS;1;__BUILTIN_AVR_UHRBITS;1;__BUILTIN_AVR_URBITS;1;__BUILTIN_AVR_ULRBITS;1;__BUILTIN_AVR_ULLRBITS;1;__BUILTIN_AVR_HKBITS;1;__BUILTIN_AVR_KBITS;1;__BUILTIN_AVR_LKBITS;1;__BUILTIN_AVR_LLKBITS;1;__BUILTIN_AVR_UHKBITS;1;__BUILTIN_AVR_UKBITS;1;__BUILTIN_AVR_ULKBITS;1;__BUILTIN_AVR_ULLKBITS;1;__BUILTIN_AVR_ABSFX;1;__BUILTIN_AVR_ROUNDFX;1;__BUILTIN_AVR_COUNTLSFX;1;__INT24_MAX__;8388607L;__INT24_MIN__;(-__INT24_MAX__-1);__UINT24_MAX__;16777215UL;__ELF__;1
 //C compiler system include directories
-CMAKE_EXTRA_GENERATOR_C_SYSTEM_INCLUDE_DIRS:INTERNAL=/usr/local/include;/Library/Developer/CommandLineTools/usr/bin/../lib/clang/7.0.2/include;/Library/Developer/CommandLineTools/usr/include;/usr/include;/System/Library/Frameworks;/Library/Frameworks
+CMAKE_EXTRA_GENERATOR_C_SYSTEM_INCLUDE_DIRS:INTERNAL=/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include;/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include-fixed;/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/include
 //Name of generator.
 CMAKE_GENERATOR:INTERNAL=Unix Makefiles
 //Name of generator platform.
@@ -476,8 +588,6 @@ CMAKE_GENERATOR_TOOLSET:INTERNAL=
 //Source directory with the top level CMakeLists.txt file for this
 // project
 CMAKE_HOME_DIRECTORY:INTERNAL=/Users/danaklamut/ClionProjects/iondb
-//ADVANCED property for variable: CMAKE_INSTALL_NAME_TOOL
-CMAKE_INSTALL_NAME_TOOL-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_LINKER
 CMAKE_LINKER-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MAKE_PROGRAM
@@ -534,6 +644,1532 @@ CMAKE_STRIP-ADVANCED:INTERNAL=1
 CMAKE_UNAME:INTERNAL=/usr/bin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
+//A list of registered cores
+CORES:INTERNAL=arduino
+//Arduino LilyPadUSB Board settings list
+LilyPadUSB.SETTINGS:INTERNAL=name;vid;pid;upload;bootloader;build
+//Arduino LilyPadUSB Board sub-settings list
+LilyPadUSB.bootloader.SUBSETTINGS:INTERNAL=tool;low_fuses;high_fuses;extended_fuses;file;unlock_bits;lock_bits
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.bootloader.extended_fuses:INTERNAL=0xce
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.bootloader.file:INTERNAL=caterina-LilyPadUSB/Caterina-LilyPadUSB.hex
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.bootloader.high_fuses:INTERNAL=0xd8
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.bootloader.lock_bits:INTERNAL=0x2F
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.bootloader.low_fuses:INTERNAL=0xff
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.bootloader.tool:INTERNAL=avrdude
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.bootloader.unlock_bits:INTERNAL=0x3F
+//Arduino LilyPadUSB Board sub-settings list
+LilyPadUSB.build.SUBSETTINGS:INTERNAL=mcu;f_cpu;vid;pid;usb_product;board;core;variant;extra_flags
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.build.board:INTERNAL=AVR_LILYPAD_USB
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.build.core:INTERNAL=arduino
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.build.extra_flags:INTERNAL={build.usb_flags}
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.build.f_cpu:INTERNAL=8000000L
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.build.mcu:INTERNAL=atmega32u4
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.build.pid:INTERNAL=0x9208
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.build.usb_product:INTERNAL="LilyPad USB"
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.build.variant:INTERNAL=leonardo
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.build.vid:INTERNAL=0x1B4F
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.name:INTERNAL=LilyPad Arduino USB
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.pid.0:INTERNAL=0x9207
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.pid.1:INTERNAL=0x9208
+//Arduino LilyPadUSB Board sub-settings list
+LilyPadUSB.pid.SUBSETTINGS:INTERNAL=0;1
+//Arduino LilyPadUSB Board sub-settings list
+LilyPadUSB.upload.SUBSETTINGS:INTERNAL=tool;protocol;maximum_size;maximum_data_size;speed;disable_flushing;use_1200bps_touch;wait_for_upload_port
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.upload.disable_flushing:INTERNAL=true
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.upload.maximum_data_size:INTERNAL=2560
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.upload.maximum_size:INTERNAL=28672
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.upload.protocol:INTERNAL=avr109
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.upload.speed:INTERNAL=57600
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.upload.tool:INTERNAL=avrdude
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.upload.use_1200bps_touch:INTERNAL=true
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.upload.wait_for_upload_port:INTERNAL=true
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.vid.0:INTERNAL=0x1B4F
+//Arduino LilyPadUSB Board setting
+LilyPadUSB.vid.1:INTERNAL=0x1B4F
+//Arduino LilyPadUSB Board sub-settings list
+LilyPadUSB.vid.SUBSETTINGS:INTERNAL=0;1
 //ADVANCED property for variable: ProcessorCount_cmd_sysctl
 ProcessorCount_cmd_sysctl-ADVANCED:INTERNAL=1
+//A list of registered variant boards
+VARIANTS:INTERNAL=eightanaloginputs;ethernet;gemma;leonardo;mega;micro;robot_control;robot_motor;standard;yun
+//The path to the core arduino
+arduino.path:INTERNAL=/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino
+//Arduino atmegang Board settings list
+atmegang.SETTINGS:INTERNAL=name;upload;bootloader;build
+//Arduino atmegang Board sub-settings list
+atmegang.bootloader.SUBSETTINGS:INTERNAL=tool;unlock_bits;lock_bits
+//Arduino atmegang Board setting
+atmegang.bootloader.lock_bits:INTERNAL=0x0F
+//Arduino atmegang Board setting
+atmegang.bootloader.tool:INTERNAL=avrdude
+//Arduino atmegang Board setting
+atmegang.bootloader.unlock_bits:INTERNAL=0x3F
+//Arduino atmegang Board sub-settings list
+atmegang.build.SUBSETTINGS:INTERNAL=mcu;f_cpu;board;core;variant
+//Arduino atmegang Board setting
+atmegang.build.board:INTERNAL=AVR_NG
+//Arduino atmegang Board setting
+atmegang.build.core:INTERNAL=arduino
+//Arduino atmegang Board setting
+atmegang.build.f_cpu:INTERNAL=16000000L
+//Arduino atmegang Board setting
+atmegang.build.mcu:INTERNAL=atmegang
+//Arduino atmegang Board setting
+atmegang.build.variant:INTERNAL=standard
+//Arduino atmegang Board setting
+atmegang.menu.cpu.atmega168:INTERNAL=ATmega168
+//Arduino atmegang Board sub-settings list
+atmegang.menu.cpu.atmega168.bootloader.SUBSETTINGS:INTERNAL=low_fuses;high_fuses;extended_fuses;file
+//Arduino atmegang Board setting
+atmegang.menu.cpu.atmega168.bootloader.extended_fuses:INTERNAL=0x00
+//Arduino atmegang Board setting
+atmegang.menu.cpu.atmega168.bootloader.file:INTERNAL=atmega/ATmegaBOOT_168_ng.hex
+//Arduino atmegang Board setting
+atmegang.menu.cpu.atmega168.bootloader.high_fuses:INTERNAL=0xdd
+//Arduino atmegang Board setting
+atmegang.menu.cpu.atmega168.bootloader.low_fuses:INTERNAL=0xff
+//Arduino atmegang Board sub-settings list
+atmegang.menu.cpu.atmega168.build.SUBSETTINGS:INTERNAL=mcu
+//Arduino atmegang Board setting
+atmegang.menu.cpu.atmega168.build.mcu:INTERNAL=atmega168
+//Arduino atmegang Board sub-settings list
+atmegang.menu.cpu.atmega168.upload.SUBSETTINGS:INTERNAL=maximum_size;maximum_data_size
+//Arduino atmegang Board setting
+atmegang.menu.cpu.atmega168.upload.maximum_data_size:INTERNAL=1024
+//Arduino atmegang Board setting
+atmegang.menu.cpu.atmega168.upload.maximum_size:INTERNAL=14336
+//Arduino atmegang Board setting
+atmegang.menu.cpu.atmega8:INTERNAL=ATmega8
+//Arduino atmegang Board sub-settings list
+atmegang.menu.cpu.atmega8.bootloader.SUBSETTINGS:INTERNAL=low_fuses;high_fuses;file
+//Arduino atmegang Board setting
+atmegang.menu.cpu.atmega8.bootloader.file:INTERNAL=atmega8/ATmegaBOOT-prod-firmware-2009-11-07.hex
+//Arduino atmegang Board setting
+atmegang.menu.cpu.atmega8.bootloader.high_fuses:INTERNAL=0xca
+//Arduino atmegang Board setting
+atmegang.menu.cpu.atmega8.bootloader.low_fuses:INTERNAL=0xdf
+//Arduino atmegang Board sub-settings list
+atmegang.menu.cpu.atmega8.build.SUBSETTINGS:INTERNAL=mcu
+//Arduino atmegang Board setting
+atmegang.menu.cpu.atmega8.build.mcu:INTERNAL=atmega8
+//Arduino atmegang Board sub-settings list
+atmegang.menu.cpu.atmega8.upload.SUBSETTINGS:INTERNAL=maximum_size;maximum_data_size
+//Arduino atmegang Board setting
+atmegang.menu.cpu.atmega8.upload.maximum_data_size:INTERNAL=1024
+//Arduino atmegang Board setting
+atmegang.menu.cpu.atmega8.upload.maximum_size:INTERNAL=7168
+//Arduino atmegang Board setting
+atmegang.name:INTERNAL=Arduino NG or older
+//Arduino atmegang Board sub-settings list
+atmegang.upload.SUBSETTINGS:INTERNAL=tool;protocol;speed
+//Arduino atmegang Board setting
+atmegang.upload.protocol:INTERNAL=arduino
+//Arduino atmegang Board setting
+atmegang.upload.speed:INTERNAL=19200
+//Arduino atmegang Board setting
+atmegang.upload.tool:INTERNAL=avrdude
+//Arduino bt Board settings list
+bt.SETTINGS:INTERNAL=name;upload;bootloader;build
+//Arduino bt Board sub-settings list
+bt.bootloader.SUBSETTINGS:INTERNAL=tool;low_fuses;unlock_bits;lock_bits
+//Arduino bt Board setting
+bt.bootloader.lock_bits:INTERNAL=0x0F
+//Arduino bt Board setting
+bt.bootloader.low_fuses:INTERNAL=0xff
+//Arduino bt Board setting
+bt.bootloader.tool:INTERNAL=avrdude
+//Arduino bt Board setting
+bt.bootloader.unlock_bits:INTERNAL=0x3F
+//Arduino bt Board sub-settings list
+bt.build.SUBSETTINGS:INTERNAL=f_cpu;board;core;variant
+//Arduino bt Board setting
+bt.build.board:INTERNAL=AVR_BT
+//Arduino bt Board setting
+bt.build.core:INTERNAL=arduino
+//Arduino bt Board setting
+bt.build.f_cpu:INTERNAL=16000000L
+//Arduino bt Board setting
+bt.build.variant:INTERNAL=eightanaloginputs
+//Arduino bt Board setting
+bt.menu.cpu.atmega168:INTERNAL=ATmega168
+//Arduino bt Board sub-settings list
+bt.menu.cpu.atmega168.bootloader.SUBSETTINGS:INTERNAL=high_fuses;extended_fuses;file
+//Arduino bt Board setting
+bt.menu.cpu.atmega168.bootloader.extended_fuses:INTERNAL=0x00
+//Arduino bt Board setting
+bt.menu.cpu.atmega168.bootloader.file:INTERNAL=bt/ATmegaBOOT_168.hex
+//Arduino bt Board setting
+bt.menu.cpu.atmega168.bootloader.high_fuses:INTERNAL=0xdd
+//Arduino bt Board sub-settings list
+bt.menu.cpu.atmega168.build.SUBSETTINGS:INTERNAL=mcu
+//Arduino bt Board setting
+bt.menu.cpu.atmega168.build.mcu:INTERNAL=atmega168
+//Arduino bt Board sub-settings list
+bt.menu.cpu.atmega168.upload.SUBSETTINGS:INTERNAL=maximum_size;maximum_data_size
+//Arduino bt Board setting
+bt.menu.cpu.atmega168.upload.maximum_data_size:INTERNAL=1024
+//Arduino bt Board setting
+bt.menu.cpu.atmega168.upload.maximum_size:INTERNAL=14336
+//Arduino bt Board setting
+bt.menu.cpu.atmega328:INTERNAL=ATmega328
+//Arduino bt Board sub-settings list
+bt.menu.cpu.atmega328.bootloader.SUBSETTINGS:INTERNAL=high_fuses;extended_fuses;file
+//Arduino bt Board setting
+bt.menu.cpu.atmega328.bootloader.extended_fuses:INTERNAL=0x05
+//Arduino bt Board setting
+bt.menu.cpu.atmega328.bootloader.file:INTERNAL=bt/ATmegaBOOT_168_atmega328_bt.hex
+//Arduino bt Board setting
+bt.menu.cpu.atmega328.bootloader.high_fuses:INTERNAL=0xd8
+//Arduino bt Board sub-settings list
+bt.menu.cpu.atmega328.build.SUBSETTINGS:INTERNAL=mcu
+//Arduino bt Board setting
+bt.menu.cpu.atmega328.build.mcu:INTERNAL=atmega328p
+//Arduino bt Board sub-settings list
+bt.menu.cpu.atmega328.upload.SUBSETTINGS:INTERNAL=maximum_size;maximum_data_size
+//Arduino bt Board setting
+bt.menu.cpu.atmega328.upload.maximum_data_size:INTERNAL=2048
+//Arduino bt Board setting
+bt.menu.cpu.atmega328.upload.maximum_size:INTERNAL=28672
+//Arduino bt Board setting
+bt.name:INTERNAL=Arduino BT
+//Arduino bt Board sub-settings list
+bt.upload.SUBSETTINGS:INTERNAL=tool;protocol;speed;disable_flushing
+//Arduino bt Board setting
+bt.upload.disable_flushing:INTERNAL=true
+//Arduino bt Board setting
+bt.upload.protocol:INTERNAL=arduino
+//Arduino bt Board setting
+bt.upload.speed:INTERNAL=19200
+//Arduino bt Board setting
+bt.upload.tool:INTERNAL=avrdude
+//Arduino diecimila Board settings list
+diecimila.SETTINGS:INTERNAL=name;upload;bootloader;build
+//Arduino diecimila Board sub-settings list
+diecimila.bootloader.SUBSETTINGS:INTERNAL=tool;low_fuses;unlock_bits;lock_bits
+//Arduino diecimila Board setting
+diecimila.bootloader.lock_bits:INTERNAL=0x0F
+//Arduino diecimila Board setting
+diecimila.bootloader.low_fuses:INTERNAL=0xFF
+//Arduino diecimila Board setting
+diecimila.bootloader.tool:INTERNAL=avrdude
+//Arduino diecimila Board setting
+diecimila.bootloader.unlock_bits:INTERNAL=0x3F
+//Arduino diecimila Board sub-settings list
+diecimila.build.SUBSETTINGS:INTERNAL=f_cpu;board;core;variant
+//Arduino diecimila Board setting
+diecimila.build.board:INTERNAL=AVR_DUEMILANOVE
+//Arduino diecimila Board setting
+diecimila.build.core:INTERNAL=arduino
+//Arduino diecimila Board setting
+diecimila.build.f_cpu:INTERNAL=16000000L
+//Arduino diecimila Board setting
+diecimila.build.variant:INTERNAL=standard
+//Arduino diecimila Board setting
+diecimila.menu.cpu.atmega168:INTERNAL=ATmega168
+//Arduino diecimila Board sub-settings list
+diecimila.menu.cpu.atmega168.bootloader.SUBSETTINGS:INTERNAL=high_fuses;extended_fuses;file
+//Arduino diecimila Board setting
+diecimila.menu.cpu.atmega168.bootloader.extended_fuses:INTERNAL=0x00
+//Arduino diecimila Board setting
+diecimila.menu.cpu.atmega168.bootloader.file:INTERNAL=atmega/ATmegaBOOT_168_diecimila.hex
+//Arduino diecimila Board setting
+diecimila.menu.cpu.atmega168.bootloader.high_fuses:INTERNAL=0xdd
+//Arduino diecimila Board sub-settings list
+diecimila.menu.cpu.atmega168.build.SUBSETTINGS:INTERNAL=mcu
+//Arduino diecimila Board setting
+diecimila.menu.cpu.atmega168.build.mcu:INTERNAL=atmega168
+//Arduino diecimila Board sub-settings list
+diecimila.menu.cpu.atmega168.upload.SUBSETTINGS:INTERNAL=maximum_size;maximum_data_size;speed
+//Arduino diecimila Board setting
+diecimila.menu.cpu.atmega168.upload.maximum_data_size:INTERNAL=1024
+//Arduino diecimila Board setting
+diecimila.menu.cpu.atmega168.upload.maximum_size:INTERNAL=14336
+//Arduino diecimila Board setting
+diecimila.menu.cpu.atmega168.upload.speed:INTERNAL=19200
+//Arduino diecimila Board setting
+diecimila.menu.cpu.atmega328:INTERNAL=ATmega328
+//Arduino diecimila Board sub-settings list
+diecimila.menu.cpu.atmega328.bootloader.SUBSETTINGS:INTERNAL=high_fuses;extended_fuses;file
+//Arduino diecimila Board setting
+diecimila.menu.cpu.atmega328.bootloader.extended_fuses:INTERNAL=0x05
+//Arduino diecimila Board setting
+diecimila.menu.cpu.atmega328.bootloader.file:INTERNAL=atmega/ATmegaBOOT_168_atmega328.hex
+//Arduino diecimila Board setting
+diecimila.menu.cpu.atmega328.bootloader.high_fuses:INTERNAL=0xDA
+//Arduino diecimila Board sub-settings list
+diecimila.menu.cpu.atmega328.build.SUBSETTINGS:INTERNAL=mcu
+//Arduino diecimila Board setting
+diecimila.menu.cpu.atmega328.build.mcu:INTERNAL=atmega328p
+//Arduino diecimila Board sub-settings list
+diecimila.menu.cpu.atmega328.upload.SUBSETTINGS:INTERNAL=maximum_size;maximum_data_size;speed
+//Arduino diecimila Board setting
+diecimila.menu.cpu.atmega328.upload.maximum_data_size:INTERNAL=2048
+//Arduino diecimila Board setting
+diecimila.menu.cpu.atmega328.upload.maximum_size:INTERNAL=30720
+//Arduino diecimila Board setting
+diecimila.menu.cpu.atmega328.upload.speed:INTERNAL=57600
+//Arduino diecimila Board setting
+diecimila.name:INTERNAL=Arduino Duemilanove or Diecimila
+//Arduino diecimila Board sub-settings list
+diecimila.upload.SUBSETTINGS:INTERNAL=tool;protocol
+//Arduino diecimila Board setting
+diecimila.upload.protocol:INTERNAL=arduino
+//Arduino diecimila Board setting
+diecimila.upload.tool:INTERNAL=avrdude
+//The path to the variant eightanaloginputs
+eightanaloginputs.path:INTERNAL=/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/variants/eightanaloginputs
+//Arduino esplora Board settings list
+esplora.SETTINGS:INTERNAL=name;vid;pid;upload;bootloader;build
+//Arduino esplora Board sub-settings list
+esplora.bootloader.SUBSETTINGS:INTERNAL=tool;low_fuses;high_fuses;extended_fuses;file;unlock_bits;lock_bits
+//Arduino esplora Board setting
+esplora.bootloader.extended_fuses:INTERNAL=0xcb
+//Arduino esplora Board setting
+esplora.bootloader.file:INTERNAL=caterina/Caterina-Esplora.hex
+//Arduino esplora Board setting
+esplora.bootloader.high_fuses:INTERNAL=0xd8
+//Arduino esplora Board setting
+esplora.bootloader.lock_bits:INTERNAL=0x2F
+//Arduino esplora Board setting
+esplora.bootloader.low_fuses:INTERNAL=0xff
+//Arduino esplora Board setting
+esplora.bootloader.tool:INTERNAL=avrdude
+//Arduino esplora Board setting
+esplora.bootloader.unlock_bits:INTERNAL=0x3F
+//Arduino esplora Board sub-settings list
+esplora.build.SUBSETTINGS:INTERNAL=mcu;f_cpu;vid;pid;usb_product;board;core;variant;extra_flags
+//Arduino esplora Board setting
+esplora.build.board:INTERNAL=AVR_ESPLORA
+//Arduino esplora Board setting
+esplora.build.core:INTERNAL=arduino
+//Arduino esplora Board setting
+esplora.build.extra_flags:INTERNAL={build.usb_flags}
+//Arduino esplora Board setting
+esplora.build.f_cpu:INTERNAL=16000000L
+//Arduino esplora Board setting
+esplora.build.mcu:INTERNAL=atmega32u4
+//Arduino esplora Board setting
+esplora.build.pid:INTERNAL=0x803c
+//Arduino esplora Board setting
+esplora.build.usb_product:INTERNAL="Arduino Esplora"
+//Arduino esplora Board setting
+esplora.build.variant:INTERNAL=leonardo
+//Arduino esplora Board setting
+esplora.build.vid:INTERNAL=0x2341
+//Arduino esplora Board setting
+esplora.name:INTERNAL=Arduino Esplora
+//Arduino esplora Board setting
+esplora.pid.0:INTERNAL=0x003C
+//Arduino esplora Board setting
+esplora.pid.1:INTERNAL=0x803C
+//Arduino esplora Board setting
+esplora.pid.2:INTERNAL=0x003C
+//Arduino esplora Board setting
+esplora.pid.3:INTERNAL=0x803C
+//Arduino esplora Board sub-settings list
+esplora.pid.SUBSETTINGS:INTERNAL=0;1;2;3
+//Arduino esplora Board sub-settings list
+esplora.upload.SUBSETTINGS:INTERNAL=tool;protocol;maximum_size;maximum_data_size;speed;disable_flushing;use_1200bps_touch;wait_for_upload_port
+//Arduino esplora Board setting
+esplora.upload.disable_flushing:INTERNAL=true
+//Arduino esplora Board setting
+esplora.upload.maximum_data_size:INTERNAL=2560
+//Arduino esplora Board setting
+esplora.upload.maximum_size:INTERNAL=28672
+//Arduino esplora Board setting
+esplora.upload.protocol:INTERNAL=avr109
+//Arduino esplora Board setting
+esplora.upload.speed:INTERNAL=57600
+//Arduino esplora Board setting
+esplora.upload.tool:INTERNAL=avrdude
+//Arduino esplora Board setting
+esplora.upload.use_1200bps_touch:INTERNAL=true
+//Arduino esplora Board setting
+esplora.upload.wait_for_upload_port:INTERNAL=true
+//Arduino esplora Board setting
+esplora.vid.0:INTERNAL=0x2341
+//Arduino esplora Board setting
+esplora.vid.1:INTERNAL=0x2341
+//Arduino esplora Board setting
+esplora.vid.2:INTERNAL=0x2A03
+//Arduino esplora Board setting
+esplora.vid.3:INTERNAL=0x2A03
+//Arduino esplora Board sub-settings list
+esplora.vid.SUBSETTINGS:INTERNAL=0;1;2;3
+//Arduino ethernet Board settings list
+ethernet.SETTINGS:INTERNAL=name;upload;bootloader;build
+//Arduino ethernet Board sub-settings list
+ethernet.bootloader.SUBSETTINGS:INTERNAL=tool;low_fuses;high_fuses;extended_fuses;file;unlock_bits;lock_bits
+//Arduino ethernet Board setting
+ethernet.bootloader.extended_fuses:INTERNAL=0x05
+//Arduino ethernet Board setting
+ethernet.bootloader.file:INTERNAL=optiboot/optiboot_atmega328.hex
+//Arduino ethernet Board setting
+ethernet.bootloader.high_fuses:INTERNAL=0xde
+//Arduino ethernet Board setting
+ethernet.bootloader.lock_bits:INTERNAL=0x0F
+//Arduino ethernet Board setting
+ethernet.bootloader.low_fuses:INTERNAL=0xff
+//Arduino ethernet Board setting
+ethernet.bootloader.tool:INTERNAL=avrdude
+//Arduino ethernet Board setting
+ethernet.bootloader.unlock_bits:INTERNAL=0x3F
+//Arduino ethernet Board sub-settings list
+ethernet.build.SUBSETTINGS:INTERNAL=variant;mcu;f_cpu;board;core
+//Arduino ethernet Board setting
+ethernet.build.board:INTERNAL=AVR_ETHERNET
+//Arduino ethernet Board setting
+ethernet.build.core:INTERNAL=arduino
+//Arduino ethernet Board setting
+ethernet.build.f_cpu:INTERNAL=16000000L
+//Arduino ethernet Board setting
+ethernet.build.mcu:INTERNAL=atmega328p
+//Arduino ethernet Board setting
+ethernet.build.variant:INTERNAL=ethernet
+//Arduino ethernet Board setting
+ethernet.name:INTERNAL=Arduino Ethernet
+//The path to the variant ethernet
+ethernet.path:INTERNAL=/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/variants/ethernet
+//Arduino ethernet Board sub-settings list
+ethernet.upload.SUBSETTINGS:INTERNAL=tool;protocol;maximum_size;maximum_data_size;speed
+//Arduino ethernet Board setting
+ethernet.upload.maximum_data_size:INTERNAL=2048
+//Arduino ethernet Board setting
+ethernet.upload.maximum_size:INTERNAL=32256
+//Arduino ethernet Board setting
+ethernet.upload.protocol:INTERNAL=arduino
+//Arduino ethernet Board setting
+ethernet.upload.speed:INTERNAL=115200
+//Arduino ethernet Board setting
+ethernet.upload.tool:INTERNAL=avrdude
+//Arduino fio Board settings list
+fio.SETTINGS:INTERNAL=name;upload;bootloader;build
+//Arduino fio Board sub-settings list
+fio.bootloader.SUBSETTINGS:INTERNAL=tool;low_fuses;high_fuses;extended_fuses;file;unlock_bits;lock_bits
+//Arduino fio Board setting
+fio.bootloader.extended_fuses:INTERNAL=0x05
+//Arduino fio Board setting
+fio.bootloader.file:INTERNAL=atmega/ATmegaBOOT_168_atmega328_pro_8MHz.hex
+//Arduino fio Board setting
+fio.bootloader.high_fuses:INTERNAL=0xDA
+//Arduino fio Board setting
+fio.bootloader.lock_bits:INTERNAL=0x0F
+//Arduino fio Board setting
+fio.bootloader.low_fuses:INTERNAL=0xFF
+//Arduino fio Board setting
+fio.bootloader.tool:INTERNAL=avrdude
+//Arduino fio Board setting
+fio.bootloader.unlock_bits:INTERNAL=0x3F
+//Arduino fio Board sub-settings list
+fio.build.SUBSETTINGS:INTERNAL=mcu;f_cpu;board;core;variant
+//Arduino fio Board setting
+fio.build.board:INTERNAL=AVR_FIO
+//Arduino fio Board setting
+fio.build.core:INTERNAL=arduino
+//Arduino fio Board setting
+fio.build.f_cpu:INTERNAL=8000000L
+//Arduino fio Board setting
+fio.build.mcu:INTERNAL=atmega328p
+//Arduino fio Board setting
+fio.build.variant:INTERNAL=eightanaloginputs
+//Arduino fio Board setting
+fio.name:INTERNAL=Arduino Fio
+//Arduino fio Board sub-settings list
+fio.upload.SUBSETTINGS:INTERNAL=tool;protocol;maximum_size;maximum_data_size;speed
+//Arduino fio Board setting
+fio.upload.maximum_data_size:INTERNAL=2048
+//Arduino fio Board setting
+fio.upload.maximum_size:INTERNAL=30720
+//Arduino fio Board setting
+fio.upload.protocol:INTERNAL=arduino
+//Arduino fio Board setting
+fio.upload.speed:INTERNAL=57600
+//Arduino fio Board setting
+fio.upload.tool:INTERNAL=avrdude
+//Arduino gemma Board settings list
+gemma.SETTINGS:INTERNAL=vid;pid;name;bootloader;build;upload
+//Arduino gemma Board sub-settings list
+gemma.bootloader.SUBSETTINGS:INTERNAL=low_fuses;high_fuses;extended_fuses;tool;lock_bits;unlock_bits;file
+//Arduino gemma Board setting
+gemma.bootloader.extended_fuses:INTERNAL=0xFE
+//Arduino gemma Board setting
+gemma.bootloader.file:INTERNAL=gemma/gemma_v1.hex
+//Arduino gemma Board setting
+gemma.bootloader.high_fuses:INTERNAL=0xD5
+//Arduino gemma Board setting
+gemma.bootloader.lock_bits:INTERNAL=
+//Arduino gemma Board setting
+gemma.bootloader.low_fuses:INTERNAL=0xF1
+//Arduino gemma Board setting
+gemma.bootloader.tool:INTERNAL=avrdude
+//Arduino gemma Board setting
+gemma.bootloader.unlock_bits:INTERNAL=
+//Arduino gemma Board sub-settings list
+gemma.build.SUBSETTINGS:INTERNAL=mcu;f_cpu;core;variant;board
+//Arduino gemma Board setting
+gemma.build.board:INTERNAL=AVR_GEMMA
+//Arduino gemma Board setting
+gemma.build.core:INTERNAL=arduino
+//Arduino gemma Board setting
+gemma.build.f_cpu:INTERNAL=8000000L
+//Arduino gemma Board setting
+gemma.build.mcu:INTERNAL=attiny85
+//Arduino gemma Board setting
+gemma.build.variant:INTERNAL=gemma
+//Arduino gemma Board setting
+gemma.name:INTERNAL=Arduino Gemma
+//The path to the variant gemma
+gemma.path:INTERNAL=/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/variants/gemma
+//Arduino gemma Board setting
+gemma.pid.0:INTERNAL=0x0c9f
+//Arduino gemma Board sub-settings list
+gemma.pid.SUBSETTINGS:INTERNAL=0
+//Arduino gemma Board sub-settings list
+gemma.upload.SUBSETTINGS:INTERNAL=tool;maximum_size
+//Arduino gemma Board setting
+gemma.upload.maximum_size:INTERNAL=5310
+//Arduino gemma Board setting
+gemma.upload.tool:INTERNAL=avrdude
+//Arduino gemma Board setting
+gemma.vid.0:INTERNAL=0x2341
+//Arduino gemma Board sub-settings list
+gemma.vid.SUBSETTINGS:INTERNAL=0
+//Arduino leonardo Board settings list
+leonardo.SETTINGS:INTERNAL=name;vid;pid;upload;bootloader;build
+//Arduino leonardo Board sub-settings list
+leonardo.bootloader.SUBSETTINGS:INTERNAL=tool;low_fuses;high_fuses;extended_fuses;file;unlock_bits;lock_bits
+//Arduino leonardo Board setting
+leonardo.bootloader.extended_fuses:INTERNAL=0xcb
+//Arduino leonardo Board setting
+leonardo.bootloader.file:INTERNAL=caterina/Caterina-Leonardo.hex
+//Arduino leonardo Board setting
+leonardo.bootloader.high_fuses:INTERNAL=0xd8
+//Arduino leonardo Board setting
+leonardo.bootloader.lock_bits:INTERNAL=0x2F
+//Arduino leonardo Board setting
+leonardo.bootloader.low_fuses:INTERNAL=0xff
+//Arduino leonardo Board setting
+leonardo.bootloader.tool:INTERNAL=avrdude
+//Arduino leonardo Board setting
+leonardo.bootloader.unlock_bits:INTERNAL=0x3F
+//Arduino leonardo Board sub-settings list
+leonardo.build.SUBSETTINGS:INTERNAL=mcu;f_cpu;vid;pid;usb_product;board;core;variant;extra_flags
+//Arduino leonardo Board setting
+leonardo.build.board:INTERNAL=AVR_LEONARDO
+//Arduino leonardo Board setting
+leonardo.build.core:INTERNAL=arduino
+//Arduino leonardo Board setting
+leonardo.build.extra_flags:INTERNAL={build.usb_flags}
+//Arduino leonardo Board setting
+leonardo.build.f_cpu:INTERNAL=16000000L
+//Arduino leonardo Board setting
+leonardo.build.mcu:INTERNAL=atmega32u4
+//Arduino leonardo Board setting
+leonardo.build.pid:INTERNAL=0x8036
+//Arduino leonardo Board setting
+leonardo.build.usb_product:INTERNAL="Arduino Leonardo"
+//Arduino leonardo Board setting
+leonardo.build.variant:INTERNAL=leonardo
+//Arduino leonardo Board setting
+leonardo.build.vid:INTERNAL=0x2341
+//Arduino leonardo Board setting
+leonardo.name:INTERNAL=Arduino Leonardo
+//The path to the variant leonardo
+leonardo.path:INTERNAL=/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/variants/leonardo
+//Arduino leonardo Board setting
+leonardo.pid.0:INTERNAL=0x0036
+//Arduino leonardo Board setting
+leonardo.pid.1:INTERNAL=0x8036
+//Arduino leonardo Board setting
+leonardo.pid.2:INTERNAL=0x0036
+//Arduino leonardo Board setting
+leonardo.pid.3:INTERNAL=0x8036
+//Arduino leonardo Board sub-settings list
+leonardo.pid.SUBSETTINGS:INTERNAL=0;1;2;3
+//Arduino leonardo Board sub-settings list
+leonardo.upload.SUBSETTINGS:INTERNAL=tool;protocol;maximum_size;maximum_data_size;speed;disable_flushing;use_1200bps_touch;wait_for_upload_port
+//Arduino leonardo Board setting
+leonardo.upload.disable_flushing:INTERNAL=true
+//Arduino leonardo Board setting
+leonardo.upload.maximum_data_size:INTERNAL=2560
+//Arduino leonardo Board setting
+leonardo.upload.maximum_size:INTERNAL=28672
+//Arduino leonardo Board setting
+leonardo.upload.protocol:INTERNAL=avr109
+//Arduino leonardo Board setting
+leonardo.upload.speed:INTERNAL=57600
+//Arduino leonardo Board setting
+leonardo.upload.tool:INTERNAL=avrdude
+//Arduino leonardo Board setting
+leonardo.upload.use_1200bps_touch:INTERNAL=true
+//Arduino leonardo Board setting
+leonardo.upload.wait_for_upload_port:INTERNAL=true
+//Arduino leonardo Board setting
+leonardo.vid.0:INTERNAL=0x2341
+//Arduino leonardo Board setting
+leonardo.vid.1:INTERNAL=0x2341
+//Arduino leonardo Board setting
+leonardo.vid.2:INTERNAL=0x2A03
+//Arduino leonardo Board setting
+leonardo.vid.3:INTERNAL=0x2A03
+//Arduino leonardo Board sub-settings list
+leonardo.vid.SUBSETTINGS:INTERNAL=0;1;2;3
+//Arduino lilypad Board settings list
+lilypad.SETTINGS:INTERNAL=name;upload;bootloader;build
+//Arduino lilypad Board sub-settings list
+lilypad.bootloader.SUBSETTINGS:INTERNAL=tool;unlock_bits;lock_bits
+//Arduino lilypad Board setting
+lilypad.bootloader.lock_bits:INTERNAL=0x0F
+//Arduino lilypad Board setting
+lilypad.bootloader.tool:INTERNAL=avrdude
+//Arduino lilypad Board setting
+lilypad.bootloader.unlock_bits:INTERNAL=0x3F
+//Arduino lilypad Board sub-settings list
+lilypad.build.SUBSETTINGS:INTERNAL=f_cpu;board;core;variant
+//Arduino lilypad Board setting
+lilypad.build.board:INTERNAL=AVR_LILYPAD
+//Arduino lilypad Board setting
+lilypad.build.core:INTERNAL=arduino
+//Arduino lilypad Board setting
+lilypad.build.f_cpu:INTERNAL=8000000L
+//Arduino lilypad Board setting
+lilypad.build.variant:INTERNAL=standard
+//Arduino lilypad Board setting
+lilypad.menu.cpu.atmega168:INTERNAL=ATmega168
+//Arduino lilypad Board sub-settings list
+lilypad.menu.cpu.atmega168.bootloader.SUBSETTINGS:INTERNAL=low_fuses;high_fuses;extended_fuses;file
+//Arduino lilypad Board setting
+lilypad.menu.cpu.atmega168.bootloader.extended_fuses:INTERNAL=0x00
+//Arduino lilypad Board setting
+lilypad.menu.cpu.atmega168.bootloader.file:INTERNAL=lilypad/LilyPadBOOT_168.hex
+//Arduino lilypad Board setting
+lilypad.menu.cpu.atmega168.bootloader.high_fuses:INTERNAL=0xdd
+//Arduino lilypad Board setting
+lilypad.menu.cpu.atmega168.bootloader.low_fuses:INTERNAL=0xe2
+//Arduino lilypad Board sub-settings list
+lilypad.menu.cpu.atmega168.build.SUBSETTINGS:INTERNAL=mcu
+//Arduino lilypad Board setting
+lilypad.menu.cpu.atmega168.build.mcu:INTERNAL=atmega168
+//Arduino lilypad Board sub-settings list
+lilypad.menu.cpu.atmega168.upload.SUBSETTINGS:INTERNAL=maximum_size;maximum_data_size;speed
+//Arduino lilypad Board setting
+lilypad.menu.cpu.atmega168.upload.maximum_data_size:INTERNAL=1024
+//Arduino lilypad Board setting
+lilypad.menu.cpu.atmega168.upload.maximum_size:INTERNAL=14336
+//Arduino lilypad Board setting
+lilypad.menu.cpu.atmega168.upload.speed:INTERNAL=19200
+//Arduino lilypad Board setting
+lilypad.menu.cpu.atmega328:INTERNAL=ATmega328
+//Arduino lilypad Board sub-settings list
+lilypad.menu.cpu.atmega328.bootloader.SUBSETTINGS:INTERNAL=low_fuses;high_fuses;extended_fuses;file
+//Arduino lilypad Board setting
+lilypad.menu.cpu.atmega328.bootloader.extended_fuses:INTERNAL=0x05
+//Arduino lilypad Board setting
+lilypad.menu.cpu.atmega328.bootloader.file:INTERNAL=atmega/ATmegaBOOT_168_atmega328_pro_8MHz.hex
+//Arduino lilypad Board setting
+lilypad.menu.cpu.atmega328.bootloader.high_fuses:INTERNAL=0xDA
+//Arduino lilypad Board setting
+lilypad.menu.cpu.atmega328.bootloader.low_fuses:INTERNAL=0xFF
+//Arduino lilypad Board sub-settings list
+lilypad.menu.cpu.atmega328.build.SUBSETTINGS:INTERNAL=mcu
+//Arduino lilypad Board setting
+lilypad.menu.cpu.atmega328.build.mcu:INTERNAL=atmega328p
+//Arduino lilypad Board sub-settings list
+lilypad.menu.cpu.atmega328.upload.SUBSETTINGS:INTERNAL=maximum_size;maximum_data_size;speed
+//Arduino lilypad Board setting
+lilypad.menu.cpu.atmega328.upload.maximum_data_size:INTERNAL=2048
+//Arduino lilypad Board setting
+lilypad.menu.cpu.atmega328.upload.maximum_size:INTERNAL=30720
+//Arduino lilypad Board setting
+lilypad.menu.cpu.atmega328.upload.speed:INTERNAL=57600
+//Arduino lilypad Board setting
+lilypad.name:INTERNAL=LilyPad Arduino
+//Arduino lilypad Board sub-settings list
+lilypad.upload.SUBSETTINGS:INTERNAL=tool;protocol
+//Arduino lilypad Board setting
+lilypad.upload.protocol:INTERNAL=arduino
+//Arduino lilypad Board setting
+lilypad.upload.tool:INTERNAL=avrdude
+//Arduino mega Board settings list
+mega.SETTINGS:INTERNAL=name;vid;pid;upload;bootloader;build
+//Arduino mega Board sub-settings list
+mega.bootloader.SUBSETTINGS:INTERNAL=tool;low_fuses;unlock_bits;lock_bits
+//Arduino mega Board setting
+mega.bootloader.lock_bits:INTERNAL=0x0F
+//Arduino mega Board setting
+mega.bootloader.low_fuses:INTERNAL=0xFF
+//Arduino mega Board setting
+mega.bootloader.tool:INTERNAL=avrdude
+//Arduino mega Board setting
+mega.bootloader.unlock_bits:INTERNAL=0x3F
+//Arduino mega Board sub-settings list
+mega.build.SUBSETTINGS:INTERNAL=f_cpu;core;variant;board
+//Arduino mega Board setting
+mega.build.board:INTERNAL=AVR_MEGA2560
+//Arduino mega Board setting
+mega.build.core:INTERNAL=arduino
+//Arduino mega Board setting
+mega.build.f_cpu:INTERNAL=16000000L
+//Arduino mega Board setting
+mega.build.variant:INTERNAL=mega
+//Arduino mega Board setting
+mega.menu.cpu.atmega1280:INTERNAL=ATmega1280
+//Arduino mega Board sub-settings list
+mega.menu.cpu.atmega1280.bootloader.SUBSETTINGS:INTERNAL=high_fuses;extended_fuses;file
+//Arduino mega Board setting
+mega.menu.cpu.atmega1280.bootloader.extended_fuses:INTERNAL=0xF5
+//Arduino mega Board setting
+mega.menu.cpu.atmega1280.bootloader.file:INTERNAL=atmega/ATmegaBOOT_168_atmega1280.hex
+//Arduino mega Board setting
+mega.menu.cpu.atmega1280.bootloader.high_fuses:INTERNAL=0xDA
+//Arduino mega Board sub-settings list
+mega.menu.cpu.atmega1280.build.SUBSETTINGS:INTERNAL=mcu;board
+//Arduino mega Board setting
+mega.menu.cpu.atmega1280.build.board:INTERNAL=AVR_MEGA
+//Arduino mega Board setting
+mega.menu.cpu.atmega1280.build.mcu:INTERNAL=atmega1280
+//Arduino mega Board sub-settings list
+mega.menu.cpu.atmega1280.upload.SUBSETTINGS:INTERNAL=protocol;maximum_size;speed
+//Arduino mega Board setting
+mega.menu.cpu.atmega1280.upload.maximum_size:INTERNAL=126976
+//Arduino mega Board setting
+mega.menu.cpu.atmega1280.upload.protocol:INTERNAL=arduino
+//Arduino mega Board setting
+mega.menu.cpu.atmega1280.upload.speed:INTERNAL=57600
+//Arduino mega Board setting
+mega.menu.cpu.atmega2560:INTERNAL=ATmega2560 (Mega 2560)
+//Arduino mega Board sub-settings list
+mega.menu.cpu.atmega2560.bootloader.SUBSETTINGS:INTERNAL=high_fuses;extended_fuses;file
+//Arduino mega Board setting
+mega.menu.cpu.atmega2560.bootloader.extended_fuses:INTERNAL=0xFD
+//Arduino mega Board setting
+mega.menu.cpu.atmega2560.bootloader.file:INTERNAL=stk500v2/stk500boot_v2_mega2560.hex
+//Arduino mega Board setting
+mega.menu.cpu.atmega2560.bootloader.high_fuses:INTERNAL=0xD8
+//Arduino mega Board sub-settings list
+mega.menu.cpu.atmega2560.build.SUBSETTINGS:INTERNAL=mcu;board
+//Arduino mega Board setting
+mega.menu.cpu.atmega2560.build.board:INTERNAL=AVR_MEGA2560
+//Arduino mega Board setting
+mega.menu.cpu.atmega2560.build.mcu:INTERNAL=atmega2560
+//Arduino mega Board sub-settings list
+mega.menu.cpu.atmega2560.upload.SUBSETTINGS:INTERNAL=protocol;maximum_size;speed
+//Arduino mega Board setting
+mega.menu.cpu.atmega2560.upload.maximum_size:INTERNAL=253952
+//Arduino mega Board setting
+mega.menu.cpu.atmega2560.upload.protocol:INTERNAL=wiring
+//Arduino mega Board setting
+mega.menu.cpu.atmega2560.upload.speed:INTERNAL=115200
+//Arduino mega Board setting
+mega.name:INTERNAL=Arduino/Genuino Mega or Mega 2560
+//The path to the variant mega
+mega.path:INTERNAL=/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/variants/mega
+//Arduino mega Board setting
+mega.pid.0:INTERNAL=0x0010
+//Arduino mega Board setting
+mega.pid.1:INTERNAL=0x0042
+//Arduino mega Board setting
+mega.pid.2:INTERNAL=0x0010
+//Arduino mega Board setting
+mega.pid.3:INTERNAL=0x0042
+//Arduino mega Board setting
+mega.pid.4:INTERNAL=0x0210
+//Arduino mega Board setting
+mega.pid.5:INTERNAL=0x0242
+//Arduino mega Board sub-settings list
+mega.pid.SUBSETTINGS:INTERNAL=0;1;2;3;4;5
+//Arduino mega Board sub-settings list
+mega.upload.SUBSETTINGS:INTERNAL=tool;maximum_data_size
+//Arduino mega Board setting
+mega.upload.maximum_data_size:INTERNAL=8192
+//Arduino mega Board setting
+mega.upload.tool:INTERNAL=avrdude
+//Arduino mega Board setting
+mega.vid.0:INTERNAL=0x2341
+//Arduino mega Board setting
+mega.vid.1:INTERNAL=0x2341
+//Arduino mega Board setting
+mega.vid.2:INTERNAL=0x2A03
+//Arduino mega Board setting
+mega.vid.3:INTERNAL=0x2A03
+//Arduino mega Board setting
+mega.vid.4:INTERNAL=0x2341
+//Arduino mega Board setting
+mega.vid.5:INTERNAL=0x2341
+//Arduino mega Board sub-settings list
+mega.vid.SUBSETTINGS:INTERNAL=0;1;2;3;4;5
+//Arduino megaADK Board settings list
+megaADK.SETTINGS:INTERNAL=name;vid;pid;upload;bootloader;build
+//Arduino megaADK Board sub-settings list
+megaADK.bootloader.SUBSETTINGS:INTERNAL=tool;low_fuses;high_fuses;extended_fuses;file;unlock_bits;lock_bits
+//Arduino megaADK Board setting
+megaADK.bootloader.extended_fuses:INTERNAL=0xFD
+//Arduino megaADK Board setting
+megaADK.bootloader.file:INTERNAL=stk500v2/stk500boot_v2_mega2560.hex
+//Arduino megaADK Board setting
+megaADK.bootloader.high_fuses:INTERNAL=0xD8
+//Arduino megaADK Board setting
+megaADK.bootloader.lock_bits:INTERNAL=0x0F
+//Arduino megaADK Board setting
+megaADK.bootloader.low_fuses:INTERNAL=0xFF
+//Arduino megaADK Board setting
+megaADK.bootloader.tool:INTERNAL=avrdude
+//Arduino megaADK Board setting
+megaADK.bootloader.unlock_bits:INTERNAL=0x3F
+//Arduino megaADK Board sub-settings list
+megaADK.build.SUBSETTINGS:INTERNAL=mcu;f_cpu;board;core;variant
+//Arduino megaADK Board setting
+megaADK.build.board:INTERNAL=AVR_ADK
+//Arduino megaADK Board setting
+megaADK.build.core:INTERNAL=arduino
+//Arduino megaADK Board setting
+megaADK.build.f_cpu:INTERNAL=16000000L
+//Arduino megaADK Board setting
+megaADK.build.mcu:INTERNAL=atmega2560
+//Arduino megaADK Board setting
+megaADK.build.variant:INTERNAL=mega
+//Arduino megaADK Board setting
+megaADK.name:INTERNAL=Arduino Mega ADK
+//Arduino megaADK Board setting
+megaADK.pid.0:INTERNAL=0x003f
+//Arduino megaADK Board setting
+megaADK.pid.1:INTERNAL=0x0044
+//Arduino megaADK Board setting
+megaADK.pid.2:INTERNAL=0x003f
+//Arduino megaADK Board setting
+megaADK.pid.3:INTERNAL=0x0044
+//Arduino megaADK Board sub-settings list
+megaADK.pid.SUBSETTINGS:INTERNAL=0;1;2;3
+//Arduino megaADK Board sub-settings list
+megaADK.upload.SUBSETTINGS:INTERNAL=tool;protocol;maximum_size;maximum_data_size;speed
+//Arduino megaADK Board setting
+megaADK.upload.maximum_data_size:INTERNAL=8192
+//Arduino megaADK Board setting
+megaADK.upload.maximum_size:INTERNAL=253952
+//Arduino megaADK Board setting
+megaADK.upload.protocol:INTERNAL=wiring
+//Arduino megaADK Board setting
+megaADK.upload.speed:INTERNAL=115200
+//Arduino megaADK Board setting
+megaADK.upload.tool:INTERNAL=avrdude
+//Arduino megaADK Board setting
+megaADK.vid.0:INTERNAL=0x2341
+//Arduino megaADK Board setting
+megaADK.vid.1:INTERNAL=0x2341
+//Arduino megaADK Board setting
+megaADK.vid.2:INTERNAL=0x2A03
+//Arduino megaADK Board setting
+megaADK.vid.3:INTERNAL=0x2A03
+//Arduino megaADK Board sub-settings list
+megaADK.vid.SUBSETTINGS:INTERNAL=0;1;2;3
+//Arduino menu Board settings list
+menu.SETTINGS:INTERNAL=cpu
+//Arduino menu Board setting
+menu.cpu:INTERNAL=Processor
+//Arduino micro Board settings list
+micro.SETTINGS:INTERNAL=name;vid;pid;upload;bootloader;build
+//Arduino micro Board sub-settings list
+micro.bootloader.SUBSETTINGS:INTERNAL=tool;low_fuses;high_fuses;extended_fuses;file;unlock_bits;lock_bits
+//Arduino micro Board setting
+micro.bootloader.extended_fuses:INTERNAL=0xcb
+//Arduino micro Board setting
+micro.bootloader.file:INTERNAL=caterina/Caterina-Micro.hex
+//Arduino micro Board setting
+micro.bootloader.high_fuses:INTERNAL=0xd8
+//Arduino micro Board setting
+micro.bootloader.lock_bits:INTERNAL=0x2F
+//Arduino micro Board setting
+micro.bootloader.low_fuses:INTERNAL=0xff
+//Arduino micro Board setting
+micro.bootloader.tool:INTERNAL=avrdude
+//Arduino micro Board setting
+micro.bootloader.unlock_bits:INTERNAL=0x3F
+//Arduino micro Board sub-settings list
+micro.build.SUBSETTINGS:INTERNAL=mcu;f_cpu;vid;pid;usb_product;board;core;variant;extra_flags
+//Arduino micro Board setting
+micro.build.board:INTERNAL=AVR_MICRO
+//Arduino micro Board setting
+micro.build.core:INTERNAL=arduino
+//Arduino micro Board setting
+micro.build.extra_flags:INTERNAL={build.usb_flags}
+//Arduino micro Board setting
+micro.build.f_cpu:INTERNAL=16000000L
+//Arduino micro Board setting
+micro.build.mcu:INTERNAL=atmega32u4
+//Arduino micro Board setting
+micro.build.pid:INTERNAL=0x8037
+//Arduino micro Board setting
+micro.build.usb_product:INTERNAL="Arduino Micro"
+//Arduino micro Board setting
+micro.build.variant:INTERNAL=micro
+//Arduino micro Board setting
+micro.build.vid:INTERNAL=0x2341
+//Arduino micro Board setting
+micro.name:INTERNAL=Arduino/Genuino Micro
+//The path to the variant micro
+micro.path:INTERNAL=/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/variants/micro
+//Arduino micro Board setting
+micro.pid.0:INTERNAL=0x0037
+//Arduino micro Board setting
+micro.pid.1:INTERNAL=0x8037
+//Arduino micro Board setting
+micro.pid.2:INTERNAL=0x0037
+//Arduino micro Board setting
+micro.pid.3:INTERNAL=0x8037
+//Arduino micro Board setting
+micro.pid.4:INTERNAL=0x0237
+//Arduino micro Board setting
+micro.pid.5:INTERNAL=0x8237
+//Arduino micro Board sub-settings list
+micro.pid.SUBSETTINGS:INTERNAL=0;1;2;3;4;5
+//Arduino micro Board sub-settings list
+micro.upload.SUBSETTINGS:INTERNAL=tool;protocol;maximum_size;maximum_data_size;speed;disable_flushing;use_1200bps_touch;wait_for_upload_port
+//Arduino micro Board setting
+micro.upload.disable_flushing:INTERNAL=true
+//Arduino micro Board setting
+micro.upload.maximum_data_size:INTERNAL=2560
+//Arduino micro Board setting
+micro.upload.maximum_size:INTERNAL=28672
+//Arduino micro Board setting
+micro.upload.protocol:INTERNAL=avr109
+//Arduino micro Board setting
+micro.upload.speed:INTERNAL=57600
+//Arduino micro Board setting
+micro.upload.tool:INTERNAL=avrdude
+//Arduino micro Board setting
+micro.upload.use_1200bps_touch:INTERNAL=true
+//Arduino micro Board setting
+micro.upload.wait_for_upload_port:INTERNAL=true
+//Arduino micro Board setting
+micro.vid.0:INTERNAL=0x2341
+//Arduino micro Board setting
+micro.vid.1:INTERNAL=0x2341
+//Arduino micro Board setting
+micro.vid.2:INTERNAL=0x2A03
+//Arduino micro Board setting
+micro.vid.3:INTERNAL=0x2A03
+//Arduino micro Board setting
+micro.vid.4:INTERNAL=caterina/Caterina-Genuino-Micro.hex
+//Arduino micro Board setting
+micro.vid.5:INTERNAL=caterina/Caterina-Genuino-Micro.hex
+//Arduino micro Board sub-settings list
+micro.vid.SUBSETTINGS:INTERNAL=0;1;2;3;4;5
+//Arduino mini Board settings list
+mini.SETTINGS:INTERNAL=name;upload;bootloader;build
+//Arduino mini Board sub-settings list
+mini.bootloader.SUBSETTINGS:INTERNAL=tool;low_fuses;unlock_bits;lock_bits
+//Arduino mini Board setting
+mini.bootloader.lock_bits:INTERNAL=0x0F
+//Arduino mini Board setting
+mini.bootloader.low_fuses:INTERNAL=0xff
+//Arduino mini Board setting
+mini.bootloader.tool:INTERNAL=avrdude
+//Arduino mini Board setting
+mini.bootloader.unlock_bits:INTERNAL=0x3F
+//Arduino mini Board sub-settings list
+mini.build.SUBSETTINGS:INTERNAL=f_cpu;board;core;variant
+//Arduino mini Board setting
+mini.build.board:INTERNAL=AVR_MINI
+//Arduino mini Board setting
+mini.build.core:INTERNAL=arduino
+//Arduino mini Board setting
+mini.build.f_cpu:INTERNAL=16000000L
+//Arduino mini Board setting
+mini.build.variant:INTERNAL=eightanaloginputs
+//Arduino mini Board setting
+mini.menu.cpu.atmega168:INTERNAL=ATmega168
+//Arduino mini Board sub-settings list
+mini.menu.cpu.atmega168.bootloader.SUBSETTINGS:INTERNAL=high_fuses;extended_fuses;file
+//Arduino mini Board setting
+mini.menu.cpu.atmega168.bootloader.extended_fuses:INTERNAL=0x00
+//Arduino mini Board setting
+mini.menu.cpu.atmega168.bootloader.file:INTERNAL=atmega/ATmegaBOOT_168_ng.hex
+//Arduino mini Board setting
+mini.menu.cpu.atmega168.bootloader.high_fuses:INTERNAL=0xdd
+//Arduino mini Board sub-settings list
+mini.menu.cpu.atmega168.build.SUBSETTINGS:INTERNAL=mcu
+//Arduino mini Board setting
+mini.menu.cpu.atmega168.build.mcu:INTERNAL=atmega168
+//Arduino mini Board sub-settings list
+mini.menu.cpu.atmega168.upload.SUBSETTINGS:INTERNAL=maximum_size;maximum_data_size;speed
+//Arduino mini Board setting
+mini.menu.cpu.atmega168.upload.maximum_data_size:INTERNAL=1024
+//Arduino mini Board setting
+mini.menu.cpu.atmega168.upload.maximum_size:INTERNAL=14336
+//Arduino mini Board setting
+mini.menu.cpu.atmega168.upload.speed:INTERNAL=19200
+//Arduino mini Board setting
+mini.menu.cpu.atmega328:INTERNAL=ATmega328
+//Arduino mini Board sub-settings list
+mini.menu.cpu.atmega328.bootloader.SUBSETTINGS:INTERNAL=high_fuses;extended_fuses;file
+//Arduino mini Board setting
+mini.menu.cpu.atmega328.bootloader.extended_fuses:INTERNAL=0x05
+//Arduino mini Board setting
+mini.menu.cpu.atmega328.bootloader.file:INTERNAL=optiboot/optiboot_atmega328-Mini.hex
+//Arduino mini Board setting
+mini.menu.cpu.atmega328.bootloader.high_fuses:INTERNAL=0xd8
+//Arduino mini Board sub-settings list
+mini.menu.cpu.atmega328.build.SUBSETTINGS:INTERNAL=mcu
+//Arduino mini Board setting
+mini.menu.cpu.atmega328.build.mcu:INTERNAL=atmega328p
+//Arduino mini Board sub-settings list
+mini.menu.cpu.atmega328.upload.SUBSETTINGS:INTERNAL=maximum_size;maximum_data_size;speed
+//Arduino mini Board setting
+mini.menu.cpu.atmega328.upload.maximum_data_size:INTERNAL=2048
+//Arduino mini Board setting
+mini.menu.cpu.atmega328.upload.maximum_size:INTERNAL=28672
+//Arduino mini Board setting
+mini.menu.cpu.atmega328.upload.speed:INTERNAL=115200
+//Arduino mini Board setting
+mini.name:INTERNAL=Arduino Mini
+//Arduino mini Board sub-settings list
+mini.upload.SUBSETTINGS:INTERNAL=tool;protocol
+//Arduino mini Board setting
+mini.upload.protocol:INTERNAL=arduino
+//Arduino mini Board setting
+mini.upload.tool:INTERNAL=avrdude
+//Arduino nano Board settings list
+nano.SETTINGS:INTERNAL=name;upload;bootloader;build
+//Arduino nano Board sub-settings list
+nano.bootloader.SUBSETTINGS:INTERNAL=tool;unlock_bits;lock_bits
+//Arduino nano Board setting
+nano.bootloader.lock_bits:INTERNAL=0x0F
+//Arduino nano Board setting
+nano.bootloader.tool:INTERNAL=avrdude
+//Arduino nano Board setting
+nano.bootloader.unlock_bits:INTERNAL=0x3F
+//Arduino nano Board sub-settings list
+nano.build.SUBSETTINGS:INTERNAL=f_cpu;board;core;variant
+//Arduino nano Board setting
+nano.build.board:INTERNAL=AVR_NANO
+//Arduino nano Board setting
+nano.build.core:INTERNAL=arduino
+//Arduino nano Board setting
+nano.build.f_cpu:INTERNAL=16000000L
+//Arduino nano Board setting
+nano.build.variant:INTERNAL=eightanaloginputs
+//Arduino nano Board setting
+nano.menu.cpu.atmega168:INTERNAL=ATmega168
+//Arduino nano Board sub-settings list
+nano.menu.cpu.atmega168.bootloader.SUBSETTINGS:INTERNAL=low_fuses;high_fuses;extended_fuses;file
+//Arduino nano Board setting
+nano.menu.cpu.atmega168.bootloader.extended_fuses:INTERNAL=0x00
+//Arduino nano Board setting
+nano.menu.cpu.atmega168.bootloader.file:INTERNAL=atmega/ATmegaBOOT_168_diecimila.hex
+//Arduino nano Board setting
+nano.menu.cpu.atmega168.bootloader.high_fuses:INTERNAL=0xdd
+//Arduino nano Board setting
+nano.menu.cpu.atmega168.bootloader.low_fuses:INTERNAL=0xff
+//Arduino nano Board sub-settings list
+nano.menu.cpu.atmega168.build.SUBSETTINGS:INTERNAL=mcu
+//Arduino nano Board setting
+nano.menu.cpu.atmega168.build.mcu:INTERNAL=atmega168
+//Arduino nano Board sub-settings list
+nano.menu.cpu.atmega168.upload.SUBSETTINGS:INTERNAL=maximum_size;maximum_data_size;speed
+//Arduino nano Board setting
+nano.menu.cpu.atmega168.upload.maximum_data_size:INTERNAL=1024
+//Arduino nano Board setting
+nano.menu.cpu.atmega168.upload.maximum_size:INTERNAL=14336
+//Arduino nano Board setting
+nano.menu.cpu.atmega168.upload.speed:INTERNAL=19200
+//Arduino nano Board setting
+nano.menu.cpu.atmega328:INTERNAL=ATmega328
+//Arduino nano Board sub-settings list
+nano.menu.cpu.atmega328.bootloader.SUBSETTINGS:INTERNAL=low_fuses;high_fuses;extended_fuses;file
+//Arduino nano Board setting
+nano.menu.cpu.atmega328.bootloader.extended_fuses:INTERNAL=0x05
+//Arduino nano Board setting
+nano.menu.cpu.atmega328.bootloader.file:INTERNAL=atmega/ATmegaBOOT_168_atmega328.hex
+//Arduino nano Board setting
+nano.menu.cpu.atmega328.bootloader.high_fuses:INTERNAL=0xDA
+//Arduino nano Board setting
+nano.menu.cpu.atmega328.bootloader.low_fuses:INTERNAL=0xFF
+//Arduino nano Board sub-settings list
+nano.menu.cpu.atmega328.build.SUBSETTINGS:INTERNAL=mcu
+//Arduino nano Board setting
+nano.menu.cpu.atmega328.build.mcu:INTERNAL=atmega328p
+//Arduino nano Board sub-settings list
+nano.menu.cpu.atmega328.upload.SUBSETTINGS:INTERNAL=maximum_size;maximum_data_size;speed
+//Arduino nano Board setting
+nano.menu.cpu.atmega328.upload.maximum_data_size:INTERNAL=2048
+//Arduino nano Board setting
+nano.menu.cpu.atmega328.upload.maximum_size:INTERNAL=30720
+//Arduino nano Board setting
+nano.menu.cpu.atmega328.upload.speed:INTERNAL=57600
+//Arduino nano Board setting
+nano.name:INTERNAL=Arduino Nano
+//Arduino nano Board sub-settings list
+nano.upload.SUBSETTINGS:INTERNAL=tool;protocol
+//Arduino nano Board setting
+nano.upload.protocol:INTERNAL=arduino
+//Arduino nano Board setting
+nano.upload.tool:INTERNAL=avrdude
+//Arduino pro Board settings list
+pro.SETTINGS:INTERNAL=name;upload;bootloader;build
+//Arduino pro Board sub-settings list
+pro.bootloader.SUBSETTINGS:INTERNAL=tool;unlock_bits;lock_bits
+//Arduino pro Board setting
+pro.bootloader.lock_bits:INTERNAL=0x0F
+//Arduino pro Board setting
+pro.bootloader.tool:INTERNAL=avrdude
+//Arduino pro Board setting
+pro.bootloader.unlock_bits:INTERNAL=0x3F
+//Arduino pro Board sub-settings list
+pro.build.SUBSETTINGS:INTERNAL=board;core;variant
+//Arduino pro Board setting
+pro.build.board:INTERNAL=AVR_PRO
+//Arduino pro Board setting
+pro.build.core:INTERNAL=arduino
+//Arduino pro Board setting
+pro.build.variant:INTERNAL=eightanaloginputs
+//Arduino pro Board setting
+pro.menu.cpu.16MHzatmega168:INTERNAL=ATmega168 (5V, 16 MHz)
+//Arduino pro Board sub-settings list
+pro.menu.cpu.16MHzatmega168.bootloader.SUBSETTINGS:INTERNAL=low_fuses;high_fuses;extended_fuses;file
+//Arduino pro Board setting
+pro.menu.cpu.16MHzatmega168.bootloader.extended_fuses:INTERNAL=0x00
+//Arduino pro Board setting
+pro.menu.cpu.16MHzatmega168.bootloader.file:INTERNAL=atmega/ATmegaBOOT_168_diecimila.hex
+//Arduino pro Board setting
+pro.menu.cpu.16MHzatmega168.bootloader.high_fuses:INTERNAL=0xdd
+//Arduino pro Board setting
+pro.menu.cpu.16MHzatmega168.bootloader.low_fuses:INTERNAL=0xff
+//Arduino pro Board sub-settings list
+pro.menu.cpu.16MHzatmega168.build.SUBSETTINGS:INTERNAL=mcu;f_cpu
+//Arduino pro Board setting
+pro.menu.cpu.16MHzatmega168.build.f_cpu:INTERNAL=16000000L
+//Arduino pro Board setting
+pro.menu.cpu.16MHzatmega168.build.mcu:INTERNAL=atmega168
+//Arduino pro Board sub-settings list
+pro.menu.cpu.16MHzatmega168.upload.SUBSETTINGS:INTERNAL=maximum_size;maximum_data_size;speed
+//Arduino pro Board setting
+pro.menu.cpu.16MHzatmega168.upload.maximum_data_size:INTERNAL=1024
+//Arduino pro Board setting
+pro.menu.cpu.16MHzatmega168.upload.maximum_size:INTERNAL=14336
+//Arduino pro Board setting
+pro.menu.cpu.16MHzatmega168.upload.speed:INTERNAL=19200
+//Arduino pro Board setting
+pro.menu.cpu.16MHzatmega328:INTERNAL=ATmega328 (5V, 16 MHz)
+//Arduino pro Board sub-settings list
+pro.menu.cpu.16MHzatmega328.bootloader.SUBSETTINGS:INTERNAL=low_fuses;high_fuses;extended_fuses;file
+//Arduino pro Board setting
+pro.menu.cpu.16MHzatmega328.bootloader.extended_fuses:INTERNAL=0x05
+//Arduino pro Board setting
+pro.menu.cpu.16MHzatmega328.bootloader.file:INTERNAL=atmega/ATmegaBOOT_168_atmega328.hex
+//Arduino pro Board setting
+pro.menu.cpu.16MHzatmega328.bootloader.high_fuses:INTERNAL=0xDA
+//Arduino pro Board setting
+pro.menu.cpu.16MHzatmega328.bootloader.low_fuses:INTERNAL=0xFF
+//Arduino pro Board sub-settings list
+pro.menu.cpu.16MHzatmega328.build.SUBSETTINGS:INTERNAL=mcu;f_cpu
+//Arduino pro Board setting
+pro.menu.cpu.16MHzatmega328.build.f_cpu:INTERNAL=16000000L
+//Arduino pro Board setting
+pro.menu.cpu.16MHzatmega328.build.mcu:INTERNAL=atmega328p
+//Arduino pro Board sub-settings list
+pro.menu.cpu.16MHzatmega328.upload.SUBSETTINGS:INTERNAL=maximum_size;maximum_data_size;speed
+//Arduino pro Board setting
+pro.menu.cpu.16MHzatmega328.upload.maximum_data_size:INTERNAL=2048
+//Arduino pro Board setting
+pro.menu.cpu.16MHzatmega328.upload.maximum_size:INTERNAL=30720
+//Arduino pro Board setting
+pro.menu.cpu.16MHzatmega328.upload.speed:INTERNAL=57600
+//Arduino pro Board setting
+pro.menu.cpu.8MHzatmega168:INTERNAL=ATmega168 (3.3V, 8 MHz)
+//Arduino pro Board sub-settings list
+pro.menu.cpu.8MHzatmega168.bootloader.SUBSETTINGS:INTERNAL=low_fuses;high_fuses;extended_fuses;file
+//Arduino pro Board setting
+pro.menu.cpu.8MHzatmega168.bootloader.extended_fuses:INTERNAL=0x00
+//Arduino pro Board setting
+pro.menu.cpu.8MHzatmega168.bootloader.file:INTERNAL=atmega/ATmegaBOOT_168_pro_8MHz.hex
+//Arduino pro Board setting
+pro.menu.cpu.8MHzatmega168.bootloader.high_fuses:INTERNAL=0xdd
+//Arduino pro Board setting
+pro.menu.cpu.8MHzatmega168.bootloader.low_fuses:INTERNAL=0xc6
+//Arduino pro Board sub-settings list
+pro.menu.cpu.8MHzatmega168.build.SUBSETTINGS:INTERNAL=mcu;f_cpu
+//Arduino pro Board setting
+pro.menu.cpu.8MHzatmega168.build.f_cpu:INTERNAL=8000000L
+//Arduino pro Board setting
+pro.menu.cpu.8MHzatmega168.build.mcu:INTERNAL=atmega168
+//Arduino pro Board sub-settings list
+pro.menu.cpu.8MHzatmega168.upload.SUBSETTINGS:INTERNAL=maximum_size;maximum_data_size;speed
+//Arduino pro Board setting
+pro.menu.cpu.8MHzatmega168.upload.maximum_data_size:INTERNAL=1024
+//Arduino pro Board setting
+pro.menu.cpu.8MHzatmega168.upload.maximum_size:INTERNAL=14336
+//Arduino pro Board setting
+pro.menu.cpu.8MHzatmega168.upload.speed:INTERNAL=19200
+//Arduino pro Board setting
+pro.menu.cpu.8MHzatmega328:INTERNAL=ATmega328 (3.3V, 8 MHz)
+//Arduino pro Board sub-settings list
+pro.menu.cpu.8MHzatmega328.bootloader.SUBSETTINGS:INTERNAL=low_fuses;high_fuses;extended_fuses;file
+//Arduino pro Board setting
+pro.menu.cpu.8MHzatmega328.bootloader.extended_fuses:INTERNAL=0x05
+//Arduino pro Board setting
+pro.menu.cpu.8MHzatmega328.bootloader.file:INTERNAL=atmega/ATmegaBOOT_168_atmega328_pro_8MHz.hex
+//Arduino pro Board setting
+pro.menu.cpu.8MHzatmega328.bootloader.high_fuses:INTERNAL=0xDA
+//Arduino pro Board setting
+pro.menu.cpu.8MHzatmega328.bootloader.low_fuses:INTERNAL=0xFF
+//Arduino pro Board sub-settings list
+pro.menu.cpu.8MHzatmega328.build.SUBSETTINGS:INTERNAL=mcu;f_cpu
+//Arduino pro Board setting
+pro.menu.cpu.8MHzatmega328.build.f_cpu:INTERNAL=8000000L
+//Arduino pro Board setting
+pro.menu.cpu.8MHzatmega328.build.mcu:INTERNAL=atmega328p
+//Arduino pro Board sub-settings list
+pro.menu.cpu.8MHzatmega328.upload.SUBSETTINGS:INTERNAL=maximum_size;maximum_data_size;speed
+//Arduino pro Board setting
+pro.menu.cpu.8MHzatmega328.upload.maximum_data_size:INTERNAL=2048
+//Arduino pro Board setting
+pro.menu.cpu.8MHzatmega328.upload.maximum_size:INTERNAL=30720
+//Arduino pro Board setting
+pro.menu.cpu.8MHzatmega328.upload.speed:INTERNAL=57600
+//Arduino pro Board setting
+pro.name:INTERNAL=Arduino Pro or Pro Mini
+//Arduino pro Board sub-settings list
+pro.upload.SUBSETTINGS:INTERNAL=tool;protocol
+//Arduino pro Board setting
+pro.upload.protocol:INTERNAL=arduino
+//Arduino pro Board setting
+pro.upload.tool:INTERNAL=avrdude
+//Arduino robotControl Board settings list
+robotControl.SETTINGS:INTERNAL=name;vid;pid;upload;bootloader;build
+//Arduino robotControl Board sub-settings list
+robotControl.bootloader.SUBSETTINGS:INTERNAL=tool;low_fuses;high_fuses;extended_fuses;file;unlock_bits;lock_bits
+//Arduino robotControl Board setting
+robotControl.bootloader.extended_fuses:INTERNAL=0xcb
+//Arduino robotControl Board setting
+robotControl.bootloader.file:INTERNAL=caterina-Arduino_Robot/Caterina-Robot-Control.hex
+//Arduino robotControl Board setting
+robotControl.bootloader.high_fuses:INTERNAL=0xd8
+//Arduino robotControl Board setting
+robotControl.bootloader.lock_bits:INTERNAL=0x2F
+//Arduino robotControl Board setting
+robotControl.bootloader.low_fuses:INTERNAL=0xff
+//Arduino robotControl Board setting
+robotControl.bootloader.tool:INTERNAL=avrdude
+//Arduino robotControl Board setting
+robotControl.bootloader.unlock_bits:INTERNAL=0x3F
+//Arduino robotControl Board sub-settings list
+robotControl.build.SUBSETTINGS:INTERNAL=mcu;f_cpu;vid;pid;usb_product;board;core;variant;extra_flags
+//Arduino robotControl Board setting
+robotControl.build.board:INTERNAL=AVR_ROBOT_CONTROL
+//Arduino robotControl Board setting
+robotControl.build.core:INTERNAL=arduino
+//Arduino robotControl Board setting
+robotControl.build.extra_flags:INTERNAL={build.usb_flags}
+//Arduino robotControl Board setting
+robotControl.build.f_cpu:INTERNAL=16000000L
+//Arduino robotControl Board setting
+robotControl.build.mcu:INTERNAL=atmega32u4
+//Arduino robotControl Board setting
+robotControl.build.pid:INTERNAL=0x8038
+//Arduino robotControl Board setting
+robotControl.build.usb_product:INTERNAL="Robot Control"
+//Arduino robotControl Board setting
+robotControl.build.variant:INTERNAL=robot_control
+//Arduino robotControl Board setting
+robotControl.build.vid:INTERNAL=0x2341
+//Arduino robotControl Board setting
+robotControl.name:INTERNAL=Arduino Robot Control
+//Arduino robotControl Board setting
+robotControl.pid.0:INTERNAL=0x0038
+//Arduino robotControl Board setting
+robotControl.pid.1:INTERNAL=0x8038
+//Arduino robotControl Board setting
+robotControl.pid.2:INTERNAL=0x0038
+//Arduino robotControl Board setting
+robotControl.pid.3:INTERNAL=0x8038
+//Arduino robotControl Board sub-settings list
+robotControl.pid.SUBSETTINGS:INTERNAL=0;1;2;3
+//Arduino robotControl Board sub-settings list
+robotControl.upload.SUBSETTINGS:INTERNAL=tool;protocol;maximum_size;maximum_data_size;speed;disable_flushing;use_1200bps_touch;wait_for_upload_port
+//Arduino robotControl Board setting
+robotControl.upload.disable_flushing:INTERNAL=true
+//Arduino robotControl Board setting
+robotControl.upload.maximum_data_size:INTERNAL=2560
+//Arduino robotControl Board setting
+robotControl.upload.maximum_size:INTERNAL=28672
+//Arduino robotControl Board setting
+robotControl.upload.protocol:INTERNAL=avr109
+//Arduino robotControl Board setting
+robotControl.upload.speed:INTERNAL=57600
+//Arduino robotControl Board setting
+robotControl.upload.tool:INTERNAL=avrdude
+//Arduino robotControl Board setting
+robotControl.upload.use_1200bps_touch:INTERNAL=true
+//Arduino robotControl Board setting
+robotControl.upload.wait_for_upload_port:INTERNAL=true
+//Arduino robotControl Board setting
+robotControl.vid.0:INTERNAL=0x2341
+//Arduino robotControl Board setting
+robotControl.vid.1:INTERNAL=0x2341
+//Arduino robotControl Board setting
+robotControl.vid.2:INTERNAL=0x2A03
+//Arduino robotControl Board setting
+robotControl.vid.3:INTERNAL=0x2A03
+//Arduino robotControl Board sub-settings list
+robotControl.vid.SUBSETTINGS:INTERNAL=0;1;2;3
+//Arduino robotMotor Board settings list
+robotMotor.SETTINGS:INTERNAL=name;vid;pid;upload;bootloader;build
+//Arduino robotMotor Board sub-settings list
+robotMotor.bootloader.SUBSETTINGS:INTERNAL=tool;low_fuses;high_fuses;extended_fuses;file;unlock_bits;lock_bits
+//Arduino robotMotor Board setting
+robotMotor.bootloader.extended_fuses:INTERNAL=0xcb
+//Arduino robotMotor Board setting
+robotMotor.bootloader.file:INTERNAL=caterina-Arduino_Robot/Caterina-Robot-Motor.hex
+//Arduino robotMotor Board setting
+robotMotor.bootloader.high_fuses:INTERNAL=0xd8
+//Arduino robotMotor Board setting
+robotMotor.bootloader.lock_bits:INTERNAL=0x2F
+//Arduino robotMotor Board setting
+robotMotor.bootloader.low_fuses:INTERNAL=0xff
+//Arduino robotMotor Board setting
+robotMotor.bootloader.tool:INTERNAL=avrdude
+//Arduino robotMotor Board setting
+robotMotor.bootloader.unlock_bits:INTERNAL=0x3F
+//Arduino robotMotor Board sub-settings list
+robotMotor.build.SUBSETTINGS:INTERNAL=mcu;f_cpu;vid;pid;usb_product;board;core;variant;extra_flags
+//Arduino robotMotor Board setting
+robotMotor.build.board:INTERNAL=AVR_ROBOT_MOTOR
+//Arduino robotMotor Board setting
+robotMotor.build.core:INTERNAL=arduino
+//Arduino robotMotor Board setting
+robotMotor.build.extra_flags:INTERNAL={build.usb_flags}
+//Arduino robotMotor Board setting
+robotMotor.build.f_cpu:INTERNAL=16000000L
+//Arduino robotMotor Board setting
+robotMotor.build.mcu:INTERNAL=atmega32u4
+//Arduino robotMotor Board setting
+robotMotor.build.pid:INTERNAL=0x8039
+//Arduino robotMotor Board setting
+robotMotor.build.usb_product:INTERNAL="Robot Motor"
+//Arduino robotMotor Board setting
+robotMotor.build.variant:INTERNAL=robot_motor
+//Arduino robotMotor Board setting
+robotMotor.build.vid:INTERNAL=0x2341
+//Arduino robotMotor Board setting
+robotMotor.name:INTERNAL=Arduino Robot Motor
+//Arduino robotMotor Board setting
+robotMotor.pid.0:INTERNAL=0x0039
+//Arduino robotMotor Board setting
+robotMotor.pid.1:INTERNAL=0x8039
+//Arduino robotMotor Board setting
+robotMotor.pid.2:INTERNAL=0x0039
+//Arduino robotMotor Board setting
+robotMotor.pid.3:INTERNAL=0x8039
+//Arduino robotMotor Board sub-settings list
+robotMotor.pid.SUBSETTINGS:INTERNAL=0;1;2;3
+//Arduino robotMotor Board sub-settings list
+robotMotor.upload.SUBSETTINGS:INTERNAL=tool;protocol;maximum_size;maximum_data_size;speed;disable_flushing;use_1200bps_touch;wait_for_upload_port
+//Arduino robotMotor Board setting
+robotMotor.upload.disable_flushing:INTERNAL=true
+//Arduino robotMotor Board setting
+robotMotor.upload.maximum_data_size:INTERNAL=2560
+//Arduino robotMotor Board setting
+robotMotor.upload.maximum_size:INTERNAL=28672
+//Arduino robotMotor Board setting
+robotMotor.upload.protocol:INTERNAL=avr109
+//Arduino robotMotor Board setting
+robotMotor.upload.speed:INTERNAL=57600
+//Arduino robotMotor Board setting
+robotMotor.upload.tool:INTERNAL=avrdude
+//Arduino robotMotor Board setting
+robotMotor.upload.use_1200bps_touch:INTERNAL=true
+//Arduino robotMotor Board setting
+robotMotor.upload.wait_for_upload_port:INTERNAL=true
+//Arduino robotMotor Board setting
+robotMotor.vid.0:INTERNAL=0x2341
+//Arduino robotMotor Board setting
+robotMotor.vid.1:INTERNAL=0x2341
+//Arduino robotMotor Board setting
+robotMotor.vid.2:INTERNAL=0x2A03
+//Arduino robotMotor Board setting
+robotMotor.vid.3:INTERNAL=0x2A03
+//Arduino robotMotor Board sub-settings list
+robotMotor.vid.SUBSETTINGS:INTERNAL=0;1;2;3
+//The path to the variant robot_control
+robot_control.path:INTERNAL=/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/variants/robot_control
+//The path to the variant robot_motor
+robot_motor.path:INTERNAL=/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/variants/robot_motor
+//The path to the variant standard
+standard.path:INTERNAL=/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/variants/standard
+//Arduino uno Board settings list
+uno.SETTINGS:INTERNAL=name;vid;pid;upload;bootloader;build
+//Arduino uno Board sub-settings list
+uno.bootloader.SUBSETTINGS:INTERNAL=tool;low_fuses;high_fuses;extended_fuses;unlock_bits;lock_bits;file
+//Arduino uno Board setting
+uno.bootloader.extended_fuses:INTERNAL=0x05
+//Arduino uno Board setting
+uno.bootloader.file:INTERNAL=optiboot/optiboot_atmega328.hex
+//Arduino uno Board setting
+uno.bootloader.high_fuses:INTERNAL=0xDE
+//Arduino uno Board setting
+uno.bootloader.lock_bits:INTERNAL=0x0F
+//Arduino uno Board setting
+uno.bootloader.low_fuses:INTERNAL=0xFF
+//Arduino uno Board setting
+uno.bootloader.tool:INTERNAL=avrdude
+//Arduino uno Board setting
+uno.bootloader.unlock_bits:INTERNAL=0x3F
+//Arduino uno Board sub-settings list
+uno.build.SUBSETTINGS:INTERNAL=mcu;f_cpu;board;core;variant
+//Arduino uno Board setting
+uno.build.board:INTERNAL=AVR_UNO
+//Arduino uno Board setting
+uno.build.core:INTERNAL=arduino
+//Arduino uno Board setting
+uno.build.f_cpu:INTERNAL=16000000L
+//Arduino uno Board setting
+uno.build.mcu:INTERNAL=atmega328p
+//Arduino uno Board setting
+uno.build.variant:INTERNAL=standard
+//Arduino uno Board setting
+uno.name:INTERNAL=Arduino/Genuino Uno
+//Arduino uno Board setting
+uno.pid.0:INTERNAL=0x0043
+//Arduino uno Board setting
+uno.pid.1:INTERNAL=0x0001
+//Arduino uno Board setting
+uno.pid.2:INTERNAL=0x0043
+//Arduino uno Board setting
+uno.pid.3:INTERNAL=0x0243
+//Arduino uno Board sub-settings list
+uno.pid.SUBSETTINGS:INTERNAL=0;1;2;3
+//Arduino uno Board sub-settings list
+uno.upload.SUBSETTINGS:INTERNAL=tool;protocol;maximum_size;maximum_data_size;speed
+//Arduino uno Board setting
+uno.upload.maximum_data_size:INTERNAL=2048
+//Arduino uno Board setting
+uno.upload.maximum_size:INTERNAL=32256
+//Arduino uno Board setting
+uno.upload.protocol:INTERNAL=arduino
+//Arduino uno Board setting
+uno.upload.speed:INTERNAL=115200
+//Arduino uno Board setting
+uno.upload.tool:INTERNAL=avrdude
+//Arduino uno Board setting
+uno.vid.0:INTERNAL=0x2341
+//Arduino uno Board setting
+uno.vid.1:INTERNAL=0x2341
+//Arduino uno Board setting
+uno.vid.2:INTERNAL=0x2A03
+//Arduino uno Board setting
+uno.vid.3:INTERNAL=0x2341
+//Arduino uno Board sub-settings list
+uno.vid.SUBSETTINGS:INTERNAL=0;1;2;3
+//Arduino yun Board settings list
+yun.SETTINGS:INTERNAL=name;upload;vid;pid;bootloader;build
+//Arduino yun Board sub-settings list
+yun.bootloader.SUBSETTINGS:INTERNAL=tool;low_fuses;high_fuses;extended_fuses;file;noblink;unlock_bits;lock_bits
+//Arduino yun Board setting
+yun.bootloader.extended_fuses:INTERNAL=0xfb
+//Arduino yun Board setting
+yun.bootloader.file:INTERNAL=caterina/Caterina-Yun.hex
+//Arduino yun Board setting
+yun.bootloader.high_fuses:INTERNAL=0xd8
+//Arduino yun Board setting
+yun.bootloader.lock_bits:INTERNAL=0x2F
+//Arduino yun Board setting
+yun.bootloader.low_fuses:INTERNAL=0xff
+//Arduino yun Board setting
+yun.bootloader.noblink:INTERNAL=caterina/Caterina-Yun-noblink.hex
+//Arduino yun Board setting
+yun.bootloader.tool:INTERNAL=avrdude
+//Arduino yun Board setting
+yun.bootloader.unlock_bits:INTERNAL=0x3F
+//Arduino yun Board sub-settings list
+yun.build.SUBSETTINGS:INTERNAL=mcu;f_cpu;vid;pid;usb_product;board;core;variant;extra_flags
+//Arduino yun Board setting
+yun.build.board:INTERNAL=AVR_YUN
+//Arduino yun Board setting
+yun.build.core:INTERNAL=arduino
+//Arduino yun Board setting
+yun.build.extra_flags:INTERNAL={build.usb_flags}
+//Arduino yun Board setting
+yun.build.f_cpu:INTERNAL=16000000L
+//Arduino yun Board setting
+yun.build.mcu:INTERNAL=atmega32u4
+//Arduino yun Board setting
+yun.build.pid:INTERNAL=0x8041
+//Arduino yun Board setting
+yun.build.usb_product:INTERNAL="Arduino Yun"
+//Arduino yun Board setting
+yun.build.variant:INTERNAL=yun
+//Arduino yun Board setting
+yun.build.vid:INTERNAL=0x2341
+//Arduino yun Board setting
+yun.name:INTERNAL=Arduino Y
+//The path to the variant yun
+yun.path:INTERNAL=/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/variants/yun
+//Arduino yun Board setting
+yun.pid.0:INTERNAL=0x0041
+//Arduino yun Board setting
+yun.pid.1:INTERNAL=0x8041
+//Arduino yun Board setting
+yun.pid.2:INTERNAL=0x0041
+//Arduino yun Board setting
+yun.pid.3:INTERNAL=0x8041
+//Arduino yun Board sub-settings list
+yun.pid.SUBSETTINGS:INTERNAL=0;1;2;3
+//Arduino yun Board sub-settings list
+yun.upload.SUBSETTINGS:INTERNAL=via_ssh;tool;protocol;maximum_size;maximum_data_size;speed;disable_flushing;use_1200bps_touch;wait_for_upload_port
+//Arduino yun Board setting
+yun.upload.disable_flushing:INTERNAL=true
+//Arduino yun Board setting
+yun.upload.maximum_data_size:INTERNAL=2560
+//Arduino yun Board setting
+yun.upload.maximum_size:INTERNAL=28672
+//Arduino yun Board setting
+yun.upload.protocol:INTERNAL=avr109
+//Arduino yun Board setting
+yun.upload.speed:INTERNAL=57600
+//Arduino yun Board setting
+yun.upload.tool:INTERNAL=avrdude
+//Arduino yun Board setting
+yun.upload.use_1200bps_touch:INTERNAL=true
+//Arduino yun Board setting
+yun.upload.via_ssh:INTERNAL=true
+//Arduino yun Board setting
+yun.upload.wait_for_upload_port:INTERNAL=true
+//Arduino yun Board setting
+yun.vid.0:INTERNAL=0x2341
+//Arduino yun Board setting
+yun.vid.1:INTERNAL=0x2341
+//Arduino yun Board setting
+yun.vid.2:INTERNAL=0x2A03
+//Arduino yun Board setting
+yun.vid.3:INTERNAL=0x2A03
+//Arduino yun Board sub-settings list
+yun.vid.SUBSETTINGS:INTERNAL=0;1;2;3
 

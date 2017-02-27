@@ -111,6 +111,51 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
+src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-size.dir/rule:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-size.dir/rule
+.PHONY : src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-size.dir/rule
+
+# Convenience name for target.
+test_behaviour_skip_list-size: src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-size.dir/rule
+
+.PHONY : test_behaviour_skip_list-size
+
+# fast build rule for target.
+test_behaviour_skip_list-size/fast:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-size.dir/build.make src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-size.dir/build
+.PHONY : test_behaviour_skip_list-size/fast
+
+# Convenience name for target.
+src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-serial.dir/rule:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-serial.dir/rule
+.PHONY : src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-serial.dir/rule
+
+# Convenience name for target.
+test_behaviour_skip_list-serial: src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-serial.dir/rule
+
+.PHONY : test_behaviour_skip_list-serial
+
+# fast build rule for target.
+test_behaviour_skip_list-serial/fast:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-serial.dir/build.make src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-serial.dir/build
+.PHONY : test_behaviour_skip_list-serial/fast
+
+# Convenience name for target.
+src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-upload.dir/rule:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-upload.dir/rule
+.PHONY : src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-upload.dir/rule
+
+# Convenience name for target.
+test_behaviour_skip_list-upload: src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-upload.dir/rule
+
+.PHONY : test_behaviour_skip_list-upload
+
+# fast build rule for target.
+test_behaviour_skip_list-upload/fast:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-upload.dir/build.make src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-upload.dir/build
+.PHONY : test_behaviour_skip_list-upload/fast
+
+# Convenience name for target.
 src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/rule:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/rule
 .PHONY : src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/rule
@@ -125,41 +170,14 @@ test_behaviour_skip_list/fast:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/build.make src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/build
 .PHONY : test_behaviour_skip_list/fast
 
-run_behaviour_skip_list.o: run_behaviour_skip_list.c.o
+test_behaviour_skip_list.obj: test_behaviour_skip_list.c.obj
 
-.PHONY : run_behaviour_skip_list.o
-
-# target to build an object file
-run_behaviour_skip_list.c.o:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/build.make src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/run_behaviour_skip_list.c.o
-.PHONY : run_behaviour_skip_list.c.o
-
-run_behaviour_skip_list.i: run_behaviour_skip_list.c.i
-
-.PHONY : run_behaviour_skip_list.i
-
-# target to preprocess a source file
-run_behaviour_skip_list.c.i:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/build.make src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/run_behaviour_skip_list.c.i
-.PHONY : run_behaviour_skip_list.c.i
-
-run_behaviour_skip_list.s: run_behaviour_skip_list.c.s
-
-.PHONY : run_behaviour_skip_list.s
-
-# target to generate assembly for a file
-run_behaviour_skip_list.c.s:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/build.make src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/run_behaviour_skip_list.c.s
-.PHONY : run_behaviour_skip_list.c.s
-
-test_behaviour_skip_list.o: test_behaviour_skip_list.c.o
-
-.PHONY : test_behaviour_skip_list.o
+.PHONY : test_behaviour_skip_list.obj
 
 # target to build an object file
-test_behaviour_skip_list.c.o:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/build.make src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/test_behaviour_skip_list.c.o
-.PHONY : test_behaviour_skip_list.c.o
+test_behaviour_skip_list.c.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/build.make src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/test_behaviour_skip_list.c.obj
+.PHONY : test_behaviour_skip_list.c.obj
 
 test_behaviour_skip_list.i: test_behaviour_skip_list.c.i
 
@@ -179,6 +197,33 @@ test_behaviour_skip_list.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/build.make src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/test_behaviour_skip_list.c.s
 .PHONY : test_behaviour_skip_list.c.s
 
+test_behaviour_skip_list_behaviour_skip_list.ino.obj: test_behaviour_skip_list_behaviour_skip_list.ino.cpp.obj
+
+.PHONY : test_behaviour_skip_list_behaviour_skip_list.ino.obj
+
+# target to build an object file
+test_behaviour_skip_list_behaviour_skip_list.ino.cpp.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/build.make src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/test_behaviour_skip_list_behaviour_skip_list.ino.cpp.obj
+.PHONY : test_behaviour_skip_list_behaviour_skip_list.ino.cpp.obj
+
+test_behaviour_skip_list_behaviour_skip_list.ino.i: test_behaviour_skip_list_behaviour_skip_list.ino.cpp.i
+
+.PHONY : test_behaviour_skip_list_behaviour_skip_list.ino.i
+
+# target to preprocess a source file
+test_behaviour_skip_list_behaviour_skip_list.ino.cpp.i:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/build.make src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/test_behaviour_skip_list_behaviour_skip_list.ino.cpp.i
+.PHONY : test_behaviour_skip_list_behaviour_skip_list.ino.cpp.i
+
+test_behaviour_skip_list_behaviour_skip_list.ino.s: test_behaviour_skip_list_behaviour_skip_list.ino.cpp.s
+
+.PHONY : test_behaviour_skip_list_behaviour_skip_list.ino.s
+
+# target to generate assembly for a file
+test_behaviour_skip_list_behaviour_skip_list.ino.cpp.s:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/build.make src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list.dir/test_behaviour_skip_list_behaviour_skip_list.ino.cpp.s
+.PHONY : test_behaviour_skip_list_behaviour_skip_list.ino.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -186,14 +231,17 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
+	@echo "... test_behaviour_skip_list-size"
+	@echo "... test_behaviour_skip_list-serial"
+	@echo "... test_behaviour_skip_list-upload"
 	@echo "... rebuild_cache"
 	@echo "... test_behaviour_skip_list"
-	@echo "... run_behaviour_skip_list.o"
-	@echo "... run_behaviour_skip_list.i"
-	@echo "... run_behaviour_skip_list.s"
-	@echo "... test_behaviour_skip_list.o"
+	@echo "... test_behaviour_skip_list.obj"
 	@echo "... test_behaviour_skip_list.i"
 	@echo "... test_behaviour_skip_list.s"
+	@echo "... test_behaviour_skip_list_behaviour_skip_list.ino.obj"
+	@echo "... test_behaviour_skip_list_behaviour_skip_list.ino.i"
+	@echo "... test_behaviour_skip_list_behaviour_skip_list.ino.s"
 .PHONY : help
 
 

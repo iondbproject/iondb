@@ -1,2 +1,2 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc liblfsr.a  CMakeFiles/lfsr.dir/lfsr.c.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib liblfsr.a
+/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-ar qc liblfsr.a  CMakeFiles/lfsr.dir/lfsr.c.obj
+/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-ranlib liblfsr.a

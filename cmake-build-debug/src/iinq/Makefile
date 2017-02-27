@@ -125,14 +125,14 @@ iinq/fast:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/iinq/CMakeFiles/iinq.dir/build.make src/iinq/CMakeFiles/iinq.dir/build
 .PHONY : iinq/fast
 
-__/dictionary/ion_master_table.o: __/dictionary/ion_master_table.c.o
+__/dictionary/ion_master_table.obj: __/dictionary/ion_master_table.c.obj
 
-.PHONY : __/dictionary/ion_master_table.o
+.PHONY : __/dictionary/ion_master_table.obj
 
 # target to build an object file
-__/dictionary/ion_master_table.c.o:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/iinq/CMakeFiles/iinq.dir/build.make src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.o
-.PHONY : __/dictionary/ion_master_table.c.o
+__/dictionary/ion_master_table.c.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/iinq/CMakeFiles/iinq.dir/build.make src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.obj
+.PHONY : __/dictionary/ion_master_table.c.obj
 
 __/dictionary/ion_master_table.i: __/dictionary/ion_master_table.c.i
 
@@ -152,14 +152,14 @@ __/dictionary/ion_master_table.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/iinq/CMakeFiles/iinq.dir/build.make src/iinq/CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.s
 .PHONY : __/dictionary/ion_master_table.c.s
 
-iinq.o: iinq.c.o
+iinq.obj: iinq.c.obj
 
-.PHONY : iinq.o
+.PHONY : iinq.obj
 
 # target to build an object file
-iinq.c.o:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/iinq/CMakeFiles/iinq.dir/build.make src/iinq/CMakeFiles/iinq.dir/iinq.c.o
-.PHONY : iinq.c.o
+iinq.c.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/iinq/CMakeFiles/iinq.dir/build.make src/iinq/CMakeFiles/iinq.dir/iinq.c.obj
+.PHONY : iinq.c.obj
 
 iinq.i: iinq.c.i
 
@@ -188,10 +188,10 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... iinq"
-	@echo "... __/dictionary/ion_master_table.o"
+	@echo "... __/dictionary/ion_master_table.obj"
 	@echo "... __/dictionary/ion_master_table.i"
 	@echo "... __/dictionary/ion_master_table.s"
-	@echo "... iinq.o"
+	@echo "... iinq.obj"
 	@echo "... iinq.i"
 	@echo "... iinq.s"
 .PHONY : help

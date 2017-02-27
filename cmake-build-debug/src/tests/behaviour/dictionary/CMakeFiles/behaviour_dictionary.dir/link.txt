@@ -1,2 +1,2 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libbehaviour_dictionary.a  CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.o CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libbehaviour_dictionary.a
+/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-ar qc libbehaviour_dictionary.a  CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.obj CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.obj
+/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-ranlib libbehaviour_dictionary.a

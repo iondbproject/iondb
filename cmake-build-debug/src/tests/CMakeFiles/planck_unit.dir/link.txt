@@ -1,2 +1,2 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libplanck_unit.a  CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.o CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libplanck_unit.a
+/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-ar qc libplanck_unit.a  CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.obj CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.obj CMakeFiles/planck_unit.dir/__/serial/serial_c_iface.cpp.obj
+/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-ranlib libplanck_unit.a

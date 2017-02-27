@@ -1,2 +1,2 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libiinq.a  CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.o CMakeFiles/iinq.dir/iinq.c.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libiinq.a
+/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-ar qc libiinq.a  CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.obj CMakeFiles/iinq.dir/iinq.c.obj
+/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-ranlib libiinq.a

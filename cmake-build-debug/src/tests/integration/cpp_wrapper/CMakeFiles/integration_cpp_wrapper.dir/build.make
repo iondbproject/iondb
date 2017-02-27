@@ -57,54 +57,56 @@ include src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir
 # Include the compile flags for this target's objects.
 include src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/flags.make
 
-src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.o: src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/flags.make
-src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.o: ../src/tests/integration/cpp_wrapper/CppWrapperTest.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.o"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/integration/cpp_wrapper && /Library/Developer/CommandLineTools/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.o -c /Users/danaklamut/ClionProjects/iondb/src/tests/integration/cpp_wrapper/CppWrapperTest.cpp
+src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.obj: src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/flags.make
+src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.obj: ../src/tests/integration/cpp_wrapper/CppWrapperTest.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.obj"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/integration/cpp_wrapper && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.obj -c /Users/danaklamut/ClionProjects/iondb/src/tests/integration/cpp_wrapper/CppWrapperTest.cpp
 
 src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/integration/cpp_wrapper && /Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/tests/integration/cpp_wrapper/CppWrapperTest.cpp > CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/integration/cpp_wrapper && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/tests/integration/cpp_wrapper/CppWrapperTest.cpp > CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.i
 
 src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/integration/cpp_wrapper && /Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/tests/integration/cpp_wrapper/CppWrapperTest.cpp -o CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/integration/cpp_wrapper && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/tests/integration/cpp_wrapper/CppWrapperTest.cpp -o CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.s
 
-src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.o.requires:
+src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.obj.requires:
 
-.PHONY : src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.o.requires
+.PHONY : src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.obj.requires
 
-src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.o.provides: src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.o.requires
-	$(MAKE) -f src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/build.make src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.o.provides.build
-.PHONY : src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.o.provides
+src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.obj.provides: src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.obj.requires
+	$(MAKE) -f src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/build.make src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.obj.provides.build
+.PHONY : src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.obj.provides
 
-src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.o.provides.build: src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.o
+src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.obj.provides.build: src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.obj
 
 
 # Object files for target integration_cpp_wrapper
 integration_cpp_wrapper_OBJECTS = \
-"CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.o"
+"CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.obj"
 
 # External object files for target integration_cpp_wrapper
 integration_cpp_wrapper_EXTERNAL_OBJECTS =
 
-bin/integration_cpp_wrapper: src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.o
-bin/integration_cpp_wrapper: src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/build.make
-bin/integration_cpp_wrapper: src/dictionary/flat_file/libflat_file.a
-bin/integration_cpp_wrapper: src/dictionary/open_address_file_hash/libopen_address_file_hash.a
-bin/integration_cpp_wrapper: src/dictionary/open_address_hash/libopen_address_hash.a
-bin/integration_cpp_wrapper: src/dictionary/skip_list/libskip_list.a
-bin/integration_cpp_wrapper: src/dictionary/bpp_tree/libbpp_tree.a
-bin/integration_cpp_wrapper: src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable ../../../../bin/integration_cpp_wrapper"
+src/tests/integration/cpp_wrapper/integration_cpp_wrapper: src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.obj
+src/tests/integration/cpp_wrapper/integration_cpp_wrapper: src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/build.make
+src/tests/integration/cpp_wrapper/integration_cpp_wrapper: src/dictionary/flat_file/libflat_file.a
+src/tests/integration/cpp_wrapper/integration_cpp_wrapper: src/dictionary/open_address_file_hash/libopen_address_file_hash.a
+src/tests/integration/cpp_wrapper/integration_cpp_wrapper: src/dictionary/open_address_hash/libopen_address_hash.a
+src/tests/integration/cpp_wrapper/integration_cpp_wrapper: src/dictionary/skip_list/libskip_list.a
+src/tests/integration/cpp_wrapper/integration_cpp_wrapper: src/dictionary/bpp_tree/libbpp_tree.a
+src/tests/integration/cpp_wrapper/integration_cpp_wrapper: src/tests/unit/dictionary/libmega_SD.a
+src/tests/integration/cpp_wrapper/integration_cpp_wrapper: src/tests/libmega_CORE.a
+src/tests/integration/cpp_wrapper/integration_cpp_wrapper: src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable integration_cpp_wrapper"
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/integration/cpp_wrapper && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/integration_cpp_wrapper.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
-src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/build: bin/integration_cpp_wrapper
+src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/build: src/tests/integration/cpp_wrapper/integration_cpp_wrapper
 
 .PHONY : src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/build
 
-src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/requires: src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.o.requires
+src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/requires: src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.obj.requires
 
 .PHONY : src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/requires
 

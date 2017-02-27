@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/iinq/test_iinq_iinq.ino.cpp
+Arduino.h
+-
+SPI.h
+-
+SD.h
+-
+test_iinq.h
+/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/iinq/test_iinq.h
+Arduino.h
+/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/iinq/Arduino.h
+

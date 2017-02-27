@@ -125,14 +125,41 @@ skip_list/fast:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/skip_list/CMakeFiles/skip_list.dir/build.make src/dictionary/skip_list/CMakeFiles/skip_list.dir/build
 .PHONY : skip_list/fast
 
-__/dictionary.o: __/dictionary.c.o
+__/__/serial/serial_c_iface.obj: __/__/serial/serial_c_iface.cpp.obj
 
-.PHONY : __/dictionary.o
+.PHONY : __/__/serial/serial_c_iface.obj
 
 # target to build an object file
-__/dictionary.c.o:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/skip_list/CMakeFiles/skip_list.dir/build.make src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.o
-.PHONY : __/dictionary.c.o
+__/__/serial/serial_c_iface.cpp.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/skip_list/CMakeFiles/skip_list.dir/build.make src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.obj
+.PHONY : __/__/serial/serial_c_iface.cpp.obj
+
+__/__/serial/serial_c_iface.i: __/__/serial/serial_c_iface.cpp.i
+
+.PHONY : __/__/serial/serial_c_iface.i
+
+# target to preprocess a source file
+__/__/serial/serial_c_iface.cpp.i:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/skip_list/CMakeFiles/skip_list.dir/build.make src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.i
+.PHONY : __/__/serial/serial_c_iface.cpp.i
+
+__/__/serial/serial_c_iface.s: __/__/serial/serial_c_iface.cpp.s
+
+.PHONY : __/__/serial/serial_c_iface.s
+
+# target to generate assembly for a file
+__/__/serial/serial_c_iface.cpp.s:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/skip_list/CMakeFiles/skip_list.dir/build.make src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.s
+.PHONY : __/__/serial/serial_c_iface.cpp.s
+
+__/dictionary.obj: __/dictionary.c.obj
+
+.PHONY : __/dictionary.obj
+
+# target to build an object file
+__/dictionary.c.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/skip_list/CMakeFiles/skip_list.dir/build.make src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.obj
+.PHONY : __/dictionary.c.obj
 
 __/dictionary.i: __/dictionary.c.i
 
@@ -152,14 +179,14 @@ __/dictionary.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/skip_list/CMakeFiles/skip_list.dir/build.make src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.s
 .PHONY : __/dictionary.c.s
 
-skip_list.o: skip_list.c.o
+skip_list.obj: skip_list.c.obj
 
-.PHONY : skip_list.o
+.PHONY : skip_list.obj
 
 # target to build an object file
-skip_list.c.o:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/skip_list/CMakeFiles/skip_list.dir/build.make src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.o
-.PHONY : skip_list.c.o
+skip_list.c.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/skip_list/CMakeFiles/skip_list.dir/build.make src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.obj
+.PHONY : skip_list.c.obj
 
 skip_list.i: skip_list.c.i
 
@@ -179,14 +206,14 @@ skip_list.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/skip_list/CMakeFiles/skip_list.dir/build.make src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.s
 .PHONY : skip_list.c.s
 
-skip_list_handler.o: skip_list_handler.c.o
+skip_list_handler.obj: skip_list_handler.c.obj
 
-.PHONY : skip_list_handler.o
+.PHONY : skip_list_handler.obj
 
 # target to build an object file
-skip_list_handler.c.o:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/skip_list/CMakeFiles/skip_list.dir/build.make src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.o
-.PHONY : skip_list_handler.c.o
+skip_list_handler.c.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/skip_list/CMakeFiles/skip_list.dir/build.make src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.obj
+.PHONY : skip_list_handler.c.obj
 
 skip_list_handler.i: skip_list_handler.c.i
 
@@ -215,13 +242,16 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... skip_list"
-	@echo "... __/dictionary.o"
+	@echo "... __/__/serial/serial_c_iface.obj"
+	@echo "... __/__/serial/serial_c_iface.i"
+	@echo "... __/__/serial/serial_c_iface.s"
+	@echo "... __/dictionary.obj"
 	@echo "... __/dictionary.i"
 	@echo "... __/dictionary.s"
-	@echo "... skip_list.o"
+	@echo "... skip_list.obj"
 	@echo "... skip_list.i"
 	@echo "... skip_list.s"
-	@echo "... skip_list_handler.o"
+	@echo "... skip_list_handler.obj"
 	@echo "... skip_list_handler.i"
 	@echo "... skip_list_handler.s"
 .PHONY : help

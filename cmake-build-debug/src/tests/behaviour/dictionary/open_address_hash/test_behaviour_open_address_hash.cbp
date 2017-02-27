@@ -5,7 +5,7 @@
 		<Option title="test_behaviour_open_address_hash"/>
 		<Option makefile_is_custom="1"/>
 		<Option compiler="gcc"/>
-		<Option virtualFolders="CMake Files\;CMake Files\src\;CMake Files\src\tests\;CMake Files\src\tests\unit\;CMake Files\src\tests\unit\dictionary\;CMake Files\src\tests\unit\dictionary\bpp_tree\;CMake Files\src\tests\unit\dictionary\flat_file\;CMake Files\src\tests\unit\dictionary\open_address_file_hash\;CMake Files\src\tests\unit\dictionary\open_address_hash\;CMake Files\src\tests\unit\dictionary\skip_list\;CMake Files\src\tests\unit\iinq\;CMake Files\src\tests\unit\util\;CMake Files\src\tests\unit\util\external_sort\;CMake Files\src\tests\unit\util\in_memory_sort\;CMake Files\src\tests\unit\cpp_wrapper\;CMake Files\src\tests\behaviour\;CMake Files\src\tests\behaviour\dictionary\;CMake Files\src\tests\behaviour\dictionary\flat_file\;CMake Files\src\tests\behaviour\dictionary\skip_list\;CMake Files\src\tests\behaviour\dictionary\bpp_tree\;CMake Files\src\tests\behaviour\dictionary\open_address_hash\;CMake Files\src\tests\behaviour\dictionary\open_address_file_hash\;CMake Files\src\tests\integration\;CMake Files\src\tests\integration\cpp_wrapper\;CMake Files\src\iinq\;CMake Files\src\util\;CMake Files\src\util\sort\;CMake Files\src\util\sort\external_sort\;CMake Files\src\util\sort\in_memory_sort\;CMake Files\src\util\lfsr\;CMake Files\src\dictionary\;CMake Files\src\dictionary\bpp_tree\;CMake Files\src\dictionary\flat_file\;CMake Files\src\dictionary\open_address_file_hash\;CMake Files\src\dictionary\open_address_hash\;CMake Files\src\dictionary\skip_list\;CMake Files\src\cpp_wrapper\;CMake Files\examples\;"/>
+		<Option virtualFolders="CMake Files\;CMake Files\cmake\;CMake Files\cmake\Platform\;CMake Files\src\;CMake Files\src\tests\;CMake Files\src\tests\unit\;CMake Files\src\tests\unit\dictionary\;CMake Files\src\tests\unit\dictionary\bpp_tree\;CMake Files\src\tests\unit\dictionary\flat_file\;CMake Files\src\tests\unit\dictionary\open_address_file_hash\;CMake Files\src\tests\unit\dictionary\open_address_hash\;CMake Files\src\tests\unit\dictionary\skip_list\;CMake Files\src\tests\unit\iinq\;CMake Files\src\tests\unit\util\;CMake Files\src\tests\unit\util\external_sort\;CMake Files\src\tests\unit\util\in_memory_sort\;CMake Files\src\tests\unit\cpp_wrapper\;CMake Files\src\tests\behaviour\;CMake Files\src\tests\behaviour\dictionary\;CMake Files\src\tests\behaviour\dictionary\flat_file\;CMake Files\src\tests\behaviour\dictionary\skip_list\;CMake Files\src\tests\behaviour\dictionary\bpp_tree\;CMake Files\src\tests\behaviour\dictionary\open_address_hash\;CMake Files\src\tests\behaviour\dictionary\open_address_file_hash\;CMake Files\src\tests\integration\;CMake Files\src\tests\integration\cpp_wrapper\;CMake Files\src\iinq\;CMake Files\src\util\;CMake Files\src\util\sort\;CMake Files\src\util\sort\external_sort\;CMake Files\src\util\sort\in_memory_sort\;CMake Files\src\util\lfsr\;CMake Files\src\dictionary\;CMake Files\src\dictionary\bpp_tree\;CMake Files\src\dictionary\flat_file\;CMake Files\src\dictionary\open_address_file_hash\;CMake Files\src\dictionary\open_address_hash\;CMake Files\src\dictionary\skip_list\;CMake Files\src\cpp_wrapper\;CMake Files\examples\;"/>
 		<Build>
 			<Target title="all">
 				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash"/>
@@ -17,20 +17,46 @@
 					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
+			<Target title="test_behaviour_open_address_hash-serial">
+				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash/Makefile&quot;  VERBOSE=1 test_behaviour_open_address_hash-serial"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="test_behaviour_open_address_hash-size">
+				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash/Makefile&quot;  VERBOSE=1 test_behaviour_open_address_hash-size"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="test_behaviour_open_address_hash-upload">
+				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash/Makefile&quot;  VERBOSE=1 test_behaviour_open_address_hash-upload"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
 			<Target title="test_behaviour_open_address_hash">
-				<Option output="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/bin/test_behaviour_open_address_hash" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/bin"/>
+				<Option output="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash/test_behaviour_open_address_hash.elf" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/bin/../lib/clang/7.0.2/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
-					<Add directory="/usr/include"/>
-					<Add directory="/System/Library/Frameworks"/>
-					<Add directory="/Library/Frameworks"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1"/>
+					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include"/>
+					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include-fixed"/>
+					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/include"/>
 				</Compiler>
 				<MakeCommands>
 					<Build command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash/Makefile&quot;  VERBOSE=1 test_behaviour_open_address_hash"/>
@@ -40,19 +66,15 @@
 				</MakeCommands>
 			</Target>
 			<Target title="test_behaviour_open_address_hash/fast">
-				<Option output="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/bin/test_behaviour_open_address_hash" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/bin"/>
+				<Option output="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash/test_behaviour_open_address_hash.elf" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/usr/local/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/bin/../lib/clang/7.0.2/include"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
-					<Add directory="/usr/include"/>
-					<Add directory="/System/Library/Frameworks"/>
-					<Add directory="/Library/Frameworks"/>
-					<Add directory="/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1"/>
+					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include"/>
+					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include-fixed"/>
+					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/include"/>
 				</Compiler>
 				<MakeCommands>
 					<Build command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/open_address_hash/Makefile&quot;  VERBOSE=1 test_behaviour_open_address_hash/fast"/>
@@ -62,14 +84,29 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/danaklamut/ClionProjects/iondb/src/tests/behaviour/dictionary/open_address_hash/run_behaviour_open_address_hash.c">
-			<Option target="test_behaviour_open_address_hash"/>
-		</Unit>
 		<Unit filename="/Users/danaklamut/ClionProjects/iondb/src/tests/behaviour/dictionary/open_address_hash/test_behaviour_open_address_hash.c">
 			<Option target="test_behaviour_open_address_hash"/>
 		</Unit>
 		<Unit filename="/Users/danaklamut/ClionProjects/iondb/src/tests/behaviour/dictionary/open_address_hash/test_behaviour_open_address_hash.h">
 			<Option target="test_behaviour_open_address_hash"/>
+		</Unit>
+		<Unit filename="/Users/danaklamut/ClionProjects/iondb/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/Users/danaklamut/ClionProjects/iondb/cmake/ArduinoToolchain.cmake">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/danaklamut/ClionProjects/iondb/cmake/ArduinoToolchain.cmake">
+			<Option virtualFolder="CMake Files\cmake\"/>
+		</Unit>
+		<Unit filename="/Users/danaklamut/ClionProjects/iondb/cmake/Platform/Arduino.cmake">
+			<Option virtualFolder="CMake Files\cmake\Platform\"/>
+		</Unit>
+		<Unit filename="/Users/danaklamut/ClionProjects/iondb/cmake/Platform/Arduino.cmake">
+			<Option virtualFolder="CMake Files\cmake\Platform\"/>
+		</Unit>
+		<Unit filename="/Users/danaklamut/ClionProjects/iondb/cmake/Platform/Arduino.cmake">
+			<Option virtualFolder="CMake Files\cmake\Platform\"/>
 		</Unit>
 		<Unit filename="/Users/danaklamut/ClionProjects/iondb/src/tests/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\src\tests\"/>

@@ -57,93 +57,121 @@ include src/dictionary/skip_list/CMakeFiles/skip_list.dir/progress.make
 # Include the compile flags for this target's objects.
 include src/dictionary/skip_list/CMakeFiles/skip_list.dir/flags.make
 
-src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.o: src/dictionary/skip_list/CMakeFiles/skip_list.dir/flags.make
-src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.o: ../src/dictionary/skip_list/skip_list.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.o"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/skip_list.dir/skip_list.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/skip_list/skip_list.c
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.obj: src/dictionary/skip_list/CMakeFiles/skip_list.dir/flags.make
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.obj: ../src/dictionary/skip_list/skip_list.c
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.obj: ../src/dictionary/skip_list/skip_list.h
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.obj"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/skip_list.dir/skip_list.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/skip_list/skip_list.c
 
 src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/skip_list.dir/skip_list.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/skip_list/skip_list.c > CMakeFiles/skip_list.dir/skip_list.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/skip_list/skip_list.c > CMakeFiles/skip_list.dir/skip_list.c.i
 
 src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/skip_list.dir/skip_list.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/skip_list/skip_list.c -o CMakeFiles/skip_list.dir/skip_list.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/skip_list/skip_list.c -o CMakeFiles/skip_list.dir/skip_list.c.s
 
-src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.o.requires:
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.obj.requires:
 
-.PHONY : src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.o.requires
+.PHONY : src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.obj.requires
 
-src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.o.provides: src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.o.requires
-	$(MAKE) -f src/dictionary/skip_list/CMakeFiles/skip_list.dir/build.make src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.o.provides.build
-.PHONY : src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.o.provides
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.obj.provides: src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.obj.requires
+	$(MAKE) -f src/dictionary/skip_list/CMakeFiles/skip_list.dir/build.make src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.obj.provides.build
+.PHONY : src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.obj.provides
 
-src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.o.provides.build: src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.o
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.obj.provides.build: src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.obj
 
 
-src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.o: src/dictionary/skip_list/CMakeFiles/skip_list.dir/flags.make
-src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.o: ../src/dictionary/skip_list/skip_list_handler.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.o"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/skip_list.dir/skip_list_handler.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/skip_list/skip_list_handler.c
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.obj: src/dictionary/skip_list/CMakeFiles/skip_list.dir/flags.make
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.obj: ../src/dictionary/skip_list/skip_list_handler.c
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.obj: ../src/dictionary/skip_list/skip_list_handler.h
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.obj"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/skip_list.dir/skip_list_handler.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/skip_list/skip_list_handler.c
 
 src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/skip_list.dir/skip_list_handler.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/skip_list/skip_list_handler.c > CMakeFiles/skip_list.dir/skip_list_handler.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/skip_list/skip_list_handler.c > CMakeFiles/skip_list.dir/skip_list_handler.c.i
 
 src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/skip_list.dir/skip_list_handler.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/skip_list/skip_list_handler.c -o CMakeFiles/skip_list.dir/skip_list_handler.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/skip_list/skip_list_handler.c -o CMakeFiles/skip_list.dir/skip_list_handler.c.s
 
-src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.o.requires:
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.obj.requires:
 
-.PHONY : src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.o.requires
+.PHONY : src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.obj.requires
 
-src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.o.provides: src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.o.requires
-	$(MAKE) -f src/dictionary/skip_list/CMakeFiles/skip_list.dir/build.make src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.o.provides.build
-.PHONY : src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.o.provides
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.obj.provides: src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.obj.requires
+	$(MAKE) -f src/dictionary/skip_list/CMakeFiles/skip_list.dir/build.make src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.obj.provides.build
+.PHONY : src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.obj.provides
 
-src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.o.provides.build: src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.o
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.obj.provides.build: src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.obj
 
 
-src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.o: src/dictionary/skip_list/CMakeFiles/skip_list.dir/flags.make
-src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.o: ../src/dictionary/dictionary.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.o"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/skip_list.dir/__/dictionary.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/dictionary.c
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.obj: src/dictionary/skip_list/CMakeFiles/skip_list.dir/flags.make
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.obj: ../src/dictionary/dictionary.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.obj"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/skip_list.dir/__/dictionary.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/dictionary.c
 
 src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/skip_list.dir/__/dictionary.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/dictionary.c > CMakeFiles/skip_list.dir/__/dictionary.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/dictionary.c > CMakeFiles/skip_list.dir/__/dictionary.c.i
 
 src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/skip_list.dir/__/dictionary.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/dictionary.c -o CMakeFiles/skip_list.dir/__/dictionary.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/dictionary.c -o CMakeFiles/skip_list.dir/__/dictionary.c.s
 
-src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.o.requires:
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.obj.requires:
 
-.PHONY : src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.o.requires
+.PHONY : src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.obj.requires
 
-src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.o.provides: src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.o.requires
-	$(MAKE) -f src/dictionary/skip_list/CMakeFiles/skip_list.dir/build.make src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.o.provides.build
-.PHONY : src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.o.provides
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.obj.provides: src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.obj.requires
+	$(MAKE) -f src/dictionary/skip_list/CMakeFiles/skip_list.dir/build.make src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.obj.provides.build
+.PHONY : src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.obj.provides
 
-src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.o.provides.build: src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.o
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.obj.provides.build: src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.obj
+
+
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.obj: src/dictionary/skip_list/CMakeFiles/skip_list.dir/flags.make
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.obj: ../src/serial/serial_c_iface.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.obj"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.obj -c /Users/danaklamut/ClionProjects/iondb/src/serial/serial_c_iface.cpp
+
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.i"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/serial/serial_c_iface.cpp > CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.i
+
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.s"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/serial/serial_c_iface.cpp -o CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.s
+
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.obj.requires:
+
+.PHONY : src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.obj.requires
+
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.obj.provides: src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.obj.requires
+	$(MAKE) -f src/dictionary/skip_list/CMakeFiles/skip_list.dir/build.make src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.obj.provides.build
+.PHONY : src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.obj.provides
+
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.obj.provides.build: src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.obj
 
 
 # Object files for target skip_list
 skip_list_OBJECTS = \
-"CMakeFiles/skip_list.dir/skip_list.c.o" \
-"CMakeFiles/skip_list.dir/skip_list_handler.c.o" \
-"CMakeFiles/skip_list.dir/__/dictionary.c.o"
+"CMakeFiles/skip_list.dir/skip_list.c.obj" \
+"CMakeFiles/skip_list.dir/skip_list_handler.c.obj" \
+"CMakeFiles/skip_list.dir/__/dictionary.c.obj" \
+"CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.obj"
 
 # External object files for target skip_list
 skip_list_EXTERNAL_OBJECTS =
 
-src/dictionary/skip_list/libskip_list.a: src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.o
-src/dictionary/skip_list/libskip_list.a: src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.o
-src/dictionary/skip_list/libskip_list.a: src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.o
+src/dictionary/skip_list/libskip_list.a: src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.obj
+src/dictionary/skip_list/libskip_list.a: src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.obj
+src/dictionary/skip_list/libskip_list.a: src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.obj
+src/dictionary/skip_list/libskip_list.a: src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.obj
 src/dictionary/skip_list/libskip_list.a: src/dictionary/skip_list/CMakeFiles/skip_list.dir/build.make
 src/dictionary/skip_list/libskip_list.a: src/dictionary/skip_list/CMakeFiles/skip_list.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking C static library libskip_list.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX static library libskip_list.a"
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && $(CMAKE_COMMAND) -P CMakeFiles/skip_list.dir/cmake_clean_target.cmake
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/skip_list && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/skip_list.dir/link.txt --verbose=$(VERBOSE)
 
@@ -152,9 +180,10 @@ src/dictionary/skip_list/CMakeFiles/skip_list.dir/build: src/dictionary/skip_lis
 
 .PHONY : src/dictionary/skip_list/CMakeFiles/skip_list.dir/build
 
-src/dictionary/skip_list/CMakeFiles/skip_list.dir/requires: src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.o.requires
-src/dictionary/skip_list/CMakeFiles/skip_list.dir/requires: src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.o.requires
-src/dictionary/skip_list/CMakeFiles/skip_list.dir/requires: src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.o.requires
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/requires: src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list.c.obj.requires
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/requires: src/dictionary/skip_list/CMakeFiles/skip_list.dir/skip_list_handler.c.obj.requires
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/requires: src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/dictionary.c.obj.requires
+src/dictionary/skip_list/CMakeFiles/skip_list.dir/requires: src/dictionary/skip_list/CMakeFiles/skip_list.dir/__/__/serial/serial_c_iface.cpp.obj.requires
 
 .PHONY : src/dictionary/skip_list/CMakeFiles/skip_list.dir/requires
 

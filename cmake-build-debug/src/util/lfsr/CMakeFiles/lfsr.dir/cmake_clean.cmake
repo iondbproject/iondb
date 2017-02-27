@@ -1,5 +1,5 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/lfsr.dir/lfsr.c.o"
+  "CMakeFiles/lfsr.dir/lfsr.c.obj"
   "liblfsr.pdb"
   "liblfsr.a"
 )

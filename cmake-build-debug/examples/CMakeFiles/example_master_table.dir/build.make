@@ -57,78 +57,80 @@ include examples/CMakeFiles/example_master_table.dir/progress.make
 # Include the compile flags for this target's objects.
 include examples/CMakeFiles/example_master_table.dir/flags.make
 
-examples/CMakeFiles/example_master_table.dir/master_table_example.c.o: examples/CMakeFiles/example_master_table.dir/flags.make
-examples/CMakeFiles/example_master_table.dir/master_table_example.c.o: ../examples/master_table_example.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object examples/CMakeFiles/example_master_table.dir/master_table_example.c.o"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/examples && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/example_master_table.dir/master_table_example.c.o   -c /Users/danaklamut/ClionProjects/iondb/examples/master_table_example.c
+examples/CMakeFiles/example_master_table.dir/master_table_example.c.obj: examples/CMakeFiles/example_master_table.dir/flags.make
+examples/CMakeFiles/example_master_table.dir/master_table_example.c.obj: ../examples/master_table_example.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object examples/CMakeFiles/example_master_table.dir/master_table_example.c.obj"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/examples && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/example_master_table.dir/master_table_example.c.obj   -c /Users/danaklamut/ClionProjects/iondb/examples/master_table_example.c
 
 examples/CMakeFiles/example_master_table.dir/master_table_example.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/example_master_table.dir/master_table_example.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/examples && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/examples/master_table_example.c > CMakeFiles/example_master_table.dir/master_table_example.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/examples && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/examples/master_table_example.c > CMakeFiles/example_master_table.dir/master_table_example.c.i
 
 examples/CMakeFiles/example_master_table.dir/master_table_example.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/example_master_table.dir/master_table_example.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/examples && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/examples/master_table_example.c -o CMakeFiles/example_master_table.dir/master_table_example.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/examples && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/examples/master_table_example.c -o CMakeFiles/example_master_table.dir/master_table_example.c.s
 
-examples/CMakeFiles/example_master_table.dir/master_table_example.c.o.requires:
+examples/CMakeFiles/example_master_table.dir/master_table_example.c.obj.requires:
 
-.PHONY : examples/CMakeFiles/example_master_table.dir/master_table_example.c.o.requires
+.PHONY : examples/CMakeFiles/example_master_table.dir/master_table_example.c.obj.requires
 
-examples/CMakeFiles/example_master_table.dir/master_table_example.c.o.provides: examples/CMakeFiles/example_master_table.dir/master_table_example.c.o.requires
-	$(MAKE) -f examples/CMakeFiles/example_master_table.dir/build.make examples/CMakeFiles/example_master_table.dir/master_table_example.c.o.provides.build
-.PHONY : examples/CMakeFiles/example_master_table.dir/master_table_example.c.o.provides
+examples/CMakeFiles/example_master_table.dir/master_table_example.c.obj.provides: examples/CMakeFiles/example_master_table.dir/master_table_example.c.obj.requires
+	$(MAKE) -f examples/CMakeFiles/example_master_table.dir/build.make examples/CMakeFiles/example_master_table.dir/master_table_example.c.obj.provides.build
+.PHONY : examples/CMakeFiles/example_master_table.dir/master_table_example.c.obj.provides
 
-examples/CMakeFiles/example_master_table.dir/master_table_example.c.o.provides.build: examples/CMakeFiles/example_master_table.dir/master_table_example.c.o
+examples/CMakeFiles/example_master_table.dir/master_table_example.c.obj.provides.build: examples/CMakeFiles/example_master_table.dir/master_table_example.c.obj
 
 
-examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.o: examples/CMakeFiles/example_master_table.dir/flags.make
-examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.o: ../src/dictionary/ion_master_table.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.o"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/examples && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/ion_master_table.c
+examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.obj: examples/CMakeFiles/example_master_table.dir/flags.make
+examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.obj: ../src/dictionary/ion_master_table.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.obj"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/examples && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/ion_master_table.c
 
 examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/examples && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/ion_master_table.c > CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/examples && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/ion_master_table.c > CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.i
 
 examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/examples && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/ion_master_table.c -o CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/examples && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/ion_master_table.c -o CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.s
 
-examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.o.requires:
+examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.obj.requires:
 
-.PHONY : examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.o.requires
+.PHONY : examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.obj.requires
 
-examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.o.provides: examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.o.requires
-	$(MAKE) -f examples/CMakeFiles/example_master_table.dir/build.make examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.o.provides.build
-.PHONY : examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.o.provides
+examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.obj.provides: examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.obj.requires
+	$(MAKE) -f examples/CMakeFiles/example_master_table.dir/build.make examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.obj.provides.build
+.PHONY : examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.obj.provides
 
-examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.o.provides.build: examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.o
+examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.obj.provides.build: examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.obj
 
 
 # Object files for target example_master_table
 example_master_table_OBJECTS = \
-"CMakeFiles/example_master_table.dir/master_table_example.c.o" \
-"CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.o"
+"CMakeFiles/example_master_table.dir/master_table_example.c.obj" \
+"CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.obj"
 
 # External object files for target example_master_table
 example_master_table_EXTERNAL_OBJECTS =
 
-bin/example_master_table: examples/CMakeFiles/example_master_table.dir/master_table_example.c.o
-bin/example_master_table: examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.o
-bin/example_master_table: examples/CMakeFiles/example_master_table.dir/build.make
-bin/example_master_table: src/dictionary/bpp_tree/libbpp_tree.a
-bin/example_master_table: src/dictionary/flat_file/libflat_file.a
-bin/example_master_table: examples/CMakeFiles/example_master_table.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking C executable ../bin/example_master_table"
+examples/example_master_table: examples/CMakeFiles/example_master_table.dir/master_table_example.c.obj
+examples/example_master_table: examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.obj
+examples/example_master_table: examples/CMakeFiles/example_master_table.dir/build.make
+examples/example_master_table: src/dictionary/bpp_tree/libbpp_tree.a
+examples/example_master_table: src/dictionary/flat_file/libflat_file.a
+examples/example_master_table: src/tests/unit/dictionary/libmega_SD.a
+examples/example_master_table: src/tests/libmega_CORE.a
+examples/example_master_table: examples/CMakeFiles/example_master_table.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable example_master_table"
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/examples && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/example_master_table.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
-examples/CMakeFiles/example_master_table.dir/build: bin/example_master_table
+examples/CMakeFiles/example_master_table.dir/build: examples/example_master_table
 
 .PHONY : examples/CMakeFiles/example_master_table.dir/build
 
-examples/CMakeFiles/example_master_table.dir/requires: examples/CMakeFiles/example_master_table.dir/master_table_example.c.o.requires
-examples/CMakeFiles/example_master_table.dir/requires: examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.o.requires
+examples/CMakeFiles/example_master_table.dir/requires: examples/CMakeFiles/example_master_table.dir/master_table_example.c.obj.requires
+examples/CMakeFiles/example_master_table.dir/requires: examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.obj.requires
 
 .PHONY : examples/CMakeFiles/example_master_table.dir/requires
 

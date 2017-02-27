@@ -125,14 +125,68 @@ external_sort/fast:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/util/sort/external_sort/CMakeFiles/external_sort.dir/build.make src/util/sort/external_sort/CMakeFiles/external_sort.dir/build
 .PHONY : external_sort/fast
 
-external_sort.o: external_sort.c.o
+__/__/__/file/SD_stdio_c_iface.obj: __/__/__/file/SD_stdio_c_iface.cpp.obj
 
-.PHONY : external_sort.o
+.PHONY : __/__/__/file/SD_stdio_c_iface.obj
 
 # target to build an object file
-external_sort.c.o:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/util/sort/external_sort/CMakeFiles/external_sort.dir/build.make src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.o
-.PHONY : external_sort.c.o
+__/__/__/file/SD_stdio_c_iface.cpp.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/util/sort/external_sort/CMakeFiles/external_sort.dir/build.make src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.obj
+.PHONY : __/__/__/file/SD_stdio_c_iface.cpp.obj
+
+__/__/__/file/SD_stdio_c_iface.i: __/__/__/file/SD_stdio_c_iface.cpp.i
+
+.PHONY : __/__/__/file/SD_stdio_c_iface.i
+
+# target to preprocess a source file
+__/__/__/file/SD_stdio_c_iface.cpp.i:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/util/sort/external_sort/CMakeFiles/external_sort.dir/build.make src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.i
+.PHONY : __/__/__/file/SD_stdio_c_iface.cpp.i
+
+__/__/__/file/SD_stdio_c_iface.s: __/__/__/file/SD_stdio_c_iface.cpp.s
+
+.PHONY : __/__/__/file/SD_stdio_c_iface.s
+
+# target to generate assembly for a file
+__/__/__/file/SD_stdio_c_iface.cpp.s:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/util/sort/external_sort/CMakeFiles/external_sort.dir/build.make src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.s
+.PHONY : __/__/__/file/SD_stdio_c_iface.cpp.s
+
+__/__/__/serial/serial_c_iface.obj: __/__/__/serial/serial_c_iface.cpp.obj
+
+.PHONY : __/__/__/serial/serial_c_iface.obj
+
+# target to build an object file
+__/__/__/serial/serial_c_iface.cpp.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/util/sort/external_sort/CMakeFiles/external_sort.dir/build.make src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.obj
+.PHONY : __/__/__/serial/serial_c_iface.cpp.obj
+
+__/__/__/serial/serial_c_iface.i: __/__/__/serial/serial_c_iface.cpp.i
+
+.PHONY : __/__/__/serial/serial_c_iface.i
+
+# target to preprocess a source file
+__/__/__/serial/serial_c_iface.cpp.i:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/util/sort/external_sort/CMakeFiles/external_sort.dir/build.make src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.i
+.PHONY : __/__/__/serial/serial_c_iface.cpp.i
+
+__/__/__/serial/serial_c_iface.s: __/__/__/serial/serial_c_iface.cpp.s
+
+.PHONY : __/__/__/serial/serial_c_iface.s
+
+# target to generate assembly for a file
+__/__/__/serial/serial_c_iface.cpp.s:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/util/sort/external_sort/CMakeFiles/external_sort.dir/build.make src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.s
+.PHONY : __/__/__/serial/serial_c_iface.cpp.s
+
+external_sort.obj: external_sort.c.obj
+
+.PHONY : external_sort.obj
+
+# target to build an object file
+external_sort.c.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/util/sort/external_sort/CMakeFiles/external_sort.dir/build.make src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.obj
+.PHONY : external_sort.c.obj
 
 external_sort.i: external_sort.c.i
 
@@ -152,14 +206,14 @@ external_sort.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/util/sort/external_sort/CMakeFiles/external_sort.dir/build.make src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.s
 .PHONY : external_sort.c.s
 
-flash_min_sort.o: flash_min_sort.c.o
+flash_min_sort.obj: flash_min_sort.c.obj
 
-.PHONY : flash_min_sort.o
+.PHONY : flash_min_sort.obj
 
 # target to build an object file
-flash_min_sort.c.o:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/util/sort/external_sort/CMakeFiles/external_sort.dir/build.make src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.o
-.PHONY : flash_min_sort.c.o
+flash_min_sort.c.obj:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/util/sort/external_sort/CMakeFiles/external_sort.dir/build.make src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.obj
+.PHONY : flash_min_sort.c.obj
 
 flash_min_sort.i: flash_min_sort.c.i
 
@@ -188,10 +242,16 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... external_sort"
-	@echo "... external_sort.o"
+	@echo "... __/__/__/file/SD_stdio_c_iface.obj"
+	@echo "... __/__/__/file/SD_stdio_c_iface.i"
+	@echo "... __/__/__/file/SD_stdio_c_iface.s"
+	@echo "... __/__/__/serial/serial_c_iface.obj"
+	@echo "... __/__/__/serial/serial_c_iface.i"
+	@echo "... __/__/__/serial/serial_c_iface.s"
+	@echo "... external_sort.obj"
 	@echo "... external_sort.i"
 	@echo "... external_sort.s"
-	@echo "... flash_min_sort.o"
+	@echo "... flash_min_sort.obj"
 	@echo "... flash_min_sort.i"
 	@echo "... flash_min_sort.s"
 .PHONY : help
