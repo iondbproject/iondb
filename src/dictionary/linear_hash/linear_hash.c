@@ -1,4 +1,5 @@
 #include "linear_hash.h"
+#include "../../key_value/kv_system.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -161,62 +162,6 @@ void
 split(
 	linear_hash_table_t *linear_hash
 ) {
-/*	printf("\nPERFORMING SPIT\n"); */
-/*	ion_fpos_t				bucket_loc	= bucket_idx_to_ion_fpos_t(linear_hash->next_split, linear_hash); */
-/*	linear_hash_bucket_t bucket = linear_hash_get_bucket(bucket_loc, linear_hash); */
-/*	ion_fpos_t record_loc = bucket_loc + sizeof(linear_hash_bucket_t); */
-/*	linear_hash_record_t record; */
-/*  */
-/*	printf("splitting bucket %d\n", bucket.idx); */
-/*	print_linear_hash_state(linear_hash); */
-/*  */
-/*	if (bucket.anchor_record == -1) { */
-/*		printf("no records to split - split complete\n"); */
-/*		linear_hash_increment_next_split(linear_hash); */
-/*		return; */
-/*	} */
-/*  */
-/*	// walk through linked list of overflow buckets */
-/*	while(bucket.overflow_location != -1) { */
-/*		if(bucket.record_count > 0) { */
-/*			for (int i = 0; i < linear_hash->records_per_bucket; i++) { */
-/*				record = linear_hash_get_record(record_loc); */
-/*				if (record.id != -1) { */
-/*					printf("deleting record %d\n", record.id); */
-/*					linear_hash_delete(record.id, linear_hash); */
-/*					print_linear_hash_record(record); */
-/*					printf("\thash to bucket %d\n", hash_to_bucket(record.id, linear_hash)); */
-/*					linear_hash_insert(record.id, hash_to_bucket(record.id, linear_hash), linear_hash); */
-/*				} */
-/*				else { */
-/*					printf("skipping tombstone\n"); */
-/*				} */
-/*				record_loc += sizeof(linear_hash_record_t); */
-/*			} */
-/*		} */
-/*  */
-/*		record_loc = bucket.overflow_location + sizeof(linear_hash_bucket_t); */
-/*		bucket = linear_hash_get_bucket(bucket.overflow_location, linear_hash); */
-/*	} */
-/*  */
-/*	// handle last bucket */
-/*	if(bucket.record_count > 0) { */
-/*		for (int i = 0; i < linear_hash->records_per_bucket; i++) { */
-/*			record = linear_hash_get_record(record_loc); */
-/*			if (record.id != -1) { */
-/*				printf("deleting record %d\n", record.id); */
-/*				linear_hash_delete(record.id, linear_hash); */
-/*				print_linear_hash_record(record); */
-/*				printf("\thash to bucket %d\n", hash_to_bucket(record.id, linear_hash)); */
-/*				linear_hash_insert(record.id, hash_to_bucket(record.id, linear_hash), linear_hash); */
-/*			} */
-/*			else { */
-/*				printf("skipping tombstone\n"); */
-/*			} */
-/*			record_loc += sizeof(linear_hash_record_t); */
-/*		} */
-/*	} */
-
 	printf("\nPERFORMING SPLIT\n");
 
 	/* get bucket to split */
@@ -229,45 +174,47 @@ split(
 	ion_fpos_t				test_record_loc;
 	linear_hash_record_t	record;
 
+	/* status to hold amount of records deleted */
+	ion_status_t status;
+
 	while (bucket.overflow_location != -1) {
 		if (bucket.record_count > 0) {
-			record_loc		= bucket_loc + sizeof(linear_hash_bucket_t);
-			test_record_loc = record_loc;
+			record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
 			for (int i = 0; i < linear_hash->records_per_bucket; i++) {
 				record = linear_hash_get_record(record_loc);
 
 				if (record.id != -1) {
-					linear_hash_delete(record.id, linear_hash);
-					linear_hash_insert(record.id, hash_to_bucket(record.id, linear_hash), linear_hash);
+					status = linear_hash_delete(record.id, linear_hash);
+
+					for (int i = 0; i < status.count; i++) {
+						linear_hash_insert(record.id, hash_to_bucket(record.id, linear_hash), linear_hash);
+					}
 				}
 
 				record_loc += sizeof(linear_hash_record_t);
-				print_linear_hash_record(record);
 			}
 		}
 
-		printf("current bucket\n");
-		print_linear_hash_bucket(bucket);
-		printf("getting next overflow!!\n");
 		bucket_loc	= bucket.overflow_location;
 		bucket		= linear_hash_get_bucket(bucket_loc, linear_hash);
 	}
 
 	if (bucket.record_count > 0) {
-		record_loc		= bucket_loc + sizeof(linear_hash_bucket_t);
-		test_record_loc = record_loc;
+		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
 		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
 			record = linear_hash_get_record(record_loc);
 
 			if (record.id != -1) {
-				linear_hash_delete(record.id, linear_hash);
-				linear_hash_insert(record.id, hash_to_bucket(record.id, linear_hash), linear_hash);
+				status = linear_hash_delete(record.id, linear_hash);
+
+				for (int i = 0; i < status.count; i++) {
+					linear_hash_insert(record.id, hash_to_bucket(record.id, linear_hash), linear_hash);
+				}
 			}
 
 			record_loc += sizeof(linear_hash_record_t);
-			print_linear_hash_record(record);
 		}
 	}
 
@@ -279,7 +226,6 @@ int
 linear_hash_above_threshold(
 	linear_hash_table_t *linear_hash
 ) {
-	print_linear_hash_state(linear_hash);
 	printf("Checking if %d records is above split threshold of %d\n", linear_hash->num_records, linear_hash->split_threshold);
 
 	double	numerator	= (double) (100 * (linear_hash->num_records));
@@ -417,8 +363,10 @@ linear_hash_get(
 	int					id,
 	linear_hash_table_t *linear_hash
 ) {
+	/* status for result count */
+	ion_status_t status = ION_STATUS_INITIALIZE;
 	/* get the index of the bucket to read */
-	int bucket_idx = insert_hash_to_bucket(id, linear_hash);
+	int bucket_idx		= insert_hash_to_bucket(id, linear_hash);
 
 	if (bucket_idx < linear_hash->next_split) {
 		bucket_idx = hash_to_bucket(id, linear_hash);
@@ -433,52 +381,47 @@ linear_hash_get(
 
 	record = linear_hash_get_record(bucket.anchor_record);
 
-	ion_fpos_t record_loc	= bucket.anchor_record;
+	ion_fpos_t record_loc = bucket.anchor_record;
 
-	int record_found		= 0;
-
-	while (bucket.overflow_location != -1 && record_found == 0) {
+	while (bucket.overflow_location != -1) {
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
 		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
 			record = linear_hash_get_record(record_loc);
 
 			if (record.id == id) {
-				record_found = 1;
-				break;
+				status.count++;
 			}
 
 			record_loc += sizeof(linear_hash_record_t);
 		}
 
-		print_linear_hash_bucket(bucket);
 		bucket_loc	= bucket.overflow_location;
 		bucket		= linear_hash_get_bucket(bucket_loc, linear_hash);
 	}
 
-	if (record_found == 0) {
-		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
+	record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
-		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
-			record = linear_hash_get_record(record_loc);
+	for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+		record = linear_hash_get_record(record_loc);
 
-			if (record.id == id) {
-				record_found = 1;
-				break;
-			}
-
-			record_loc += sizeof(linear_hash_record_t);
+		if (record.id == id) {
+			status.count++;
 		}
+
+		record_loc += sizeof(linear_hash_record_t);
 	}
 
-	if (record_found == 0) {
+	if (status.count == 0) {
+		status.error = err_item_not_found;
 		printf("Record not found\n");
-		return ION_STATUS_ERROR(err_item_not_found);
 	}
 	else {
-		printf("Record found!\n");
-		return ION_STATUS_ERROR(err_ok);
+		status.error = err_ok;
+		printf("Record found %d records with id %d\n", status.count, id);
 	}
+
+	return status;
 }
 
 /* linear hash operations */
@@ -487,8 +430,9 @@ linear_hash_delete(
 	int					id,
 	linear_hash_table_t *linear_hash
 ) {
+	ion_status_t status = ION_STATUS_INITIALIZE;
 	/* get the index of the bucket to read */
-	int bucket_idx = insert_hash_to_bucket(id, linear_hash);
+	int bucket_idx		= insert_hash_to_bucket(id, linear_hash);
 
 	if (bucket_idx < linear_hash->next_split) {
 		bucket_idx = hash_to_bucket(id, linear_hash);
@@ -503,63 +447,59 @@ linear_hash_delete(
 
 	record = linear_hash_get_record(bucket.anchor_record);
 
-	ion_fpos_t record_loc	= bucket.anchor_record;
+	ion_fpos_t record_loc = bucket.anchor_record;
 
-	int record_found		= 0;
-
-	while (bucket.overflow_location != -1 && record_found == 0) {
+	while (bucket.overflow_location != -1) {
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
 		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
 			record = linear_hash_get_record(record_loc);
 
 			if (record.id == id) {
-				record_found = 1;
-				break;
+				record.id = -1;
+				linear_hash_write_record(record_loc, record, linear_hash);
+				status.count++;
+				bucket.record_count--;
+				linear_hash_update_bucket(bucket_loc, bucket, linear_hash);
+				linear_hash_decrement_num_records(linear_hash);
+				printf("TOMBSTONE WRITTEN\n");
 			}
 
 			record_loc += sizeof(linear_hash_record_t);
-			print_linear_hash_record(record);
 		}
 
-		printf("current bucket\n");
-		print_linear_hash_bucket(bucket);
-		printf("getting next overflow!!\n");
 		bucket_loc	= bucket.overflow_location;
 		bucket		= linear_hash_get_bucket(bucket_loc, linear_hash);
 	}
 
-	if (record_found == 0) {
-		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
+	record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
-		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
-			record = linear_hash_get_record(record_loc);
+	for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+		record = linear_hash_get_record(record_loc);
 
-			if (record.id == id) {
-				record_found = 1;
-				break;
-			}
-
-			record_loc += sizeof(linear_hash_record_t);
-			print_linear_hash_record(record);
+		if (record.id == id) {
+			record.id = -1;
+			linear_hash_write_record(record_loc, record, linear_hash);
+			status.count++;
+			bucket.record_count--;
+			linear_hash_update_bucket(bucket_loc, bucket, linear_hash);
+			linear_hash_decrement_num_records(linear_hash);
+			printf("TOMBSTONE WRITTEN\n");
 		}
+
+		record_loc += sizeof(linear_hash_record_t);
 	}
 
-	if (record_found == 0) {
+	if (status.count == 0) {
 		printf("Record not found\n");
-		return ION_STATUS_ERROR(err_item_not_found);
+		status.error = err_item_not_found;
+	}
+	else {
+		status.error = err_ok;
+		printf("Deleted %d records with id %d\n", status.count, id);
 	}
 
-	/* set tombstone (currently using -1) as id to mark deleted record */
-	record.id = -1;
-	printf("TOMBSTONE WRITTEN\n");
-	linear_hash_write_record(record_loc, record, linear_hash);
-
-	/* decrement record count for bucket */
-	bucket.record_count--;
-	linear_hash_decrement_num_records(linear_hash);
-	linear_hash_update_bucket(bucket_loc, bucket, linear_hash);
-	return ION_STATUS_ERROR(err_ok);
+	return status;
 }
 
 /* returns the struct representing the bucket at the specified index */
@@ -703,8 +643,6 @@ linear_hash_get_bucket(
 
 	/* read record */
 	fread(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database);
-
-	printf("bucket %d read\n", bucket.idx);
 
 	/* restore data pointer to the original location */
 	fseek(linear_hash->database, starting_ion_fpos_t, SEEK_SET);
