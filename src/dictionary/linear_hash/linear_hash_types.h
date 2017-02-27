@@ -13,9 +13,8 @@ typedef struct {
 
 /* definition of linear hash record, with a type and pointer instance declared for later use */
 typedef struct {
-	int			id;
-	ion_fpos_t	next;
-	int			value;
+	int id;
+	int value;
 } linear_hash_record_t;
 
 /* buckets */
