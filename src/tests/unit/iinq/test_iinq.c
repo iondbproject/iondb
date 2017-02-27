@@ -1704,6 +1704,7 @@ iinq_benchmark_set_1(
 	ion_iinq_query_processor_t	processor;
 
 	/* Delete if exists */
+	ion_delete_master_table();
 	error = DROP(test);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
 
