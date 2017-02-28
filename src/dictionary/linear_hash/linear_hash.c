@@ -436,6 +436,76 @@ linear_hash_get(
 	return status;
 }
 
+ion_status_t
+linear_hash_update(
+	int					id,
+	int					value,
+	linear_hash_table_t *linear_hash
+) {
+	ion_status_t status = ION_STATUS_INITIALIZE;
+	/* get the index of the bucket to read */
+	int bucket_idx		= insert_hash_to_bucket(id, linear_hash);
+
+	if (bucket_idx < linear_hash->next_split) {
+		bucket_idx = hash_to_bucket(id, linear_hash);
+	}
+
+	/* get the bucket where the record would be located */
+	ion_fpos_t				bucket_loc	= bucket_idx_to_ion_fpos_t(bucket_idx, linear_hash);
+	linear_hash_bucket_t	bucket		= linear_hash_get_bucket(bucket_loc, linear_hash);
+
+	/* create a temporary store for records that are read */
+	linear_hash_record_t record;
+
+	record = linear_hash_get_record(bucket.anchor_record, linear_hash);
+
+	ion_fpos_t record_loc = bucket.anchor_record;
+
+	while (bucket.overflow_location != -1) {
+		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
+
+		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+			record = linear_hash_get_record(record_loc, linear_hash);
+
+			if (record.id == id) {
+				record.value = value;
+				linear_hash_write_record(record_loc, record, linear_hash);
+				status.count++;
+			}
+
+			record_loc += sizeof(linear_hash_record_t);
+		}
+
+		bucket_loc	= bucket.overflow_location;
+		bucket		= linear_hash_get_bucket(bucket_loc, linear_hash);
+	}
+
+	record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
+
+	for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+		record = linear_hash_get_record(record_loc, linear_hash);
+
+		if (record.id == id) {
+			record.value = value;
+			linear_hash_write_record(record_loc, record, linear_hash);
+			status.count++;
+		}
+
+		record_loc += sizeof(linear_hash_record_t);
+	}
+
+	if (status.count == 0) {
+		printf("Record not found\n");
+		status.error = err_item_not_found;
+	}
+	else {
+		status.error = err_ok;
+		printf("Updated %d records with id %d, set their values to %d\n", status.count, id, value);
+	}
+
+	return status;
+}
+
 /* linear hash operations */
 ion_status_t
 linear_hash_delete(

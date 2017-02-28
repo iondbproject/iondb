@@ -51,6 +51,15 @@ linear_hash_dict_get(
 	return linear_hash_get(key, (linear_hash_table_t *) dictionary->instance);
 }
 
+ion_status_t
+linear_hash_dict_update(
+	ion_dictionary_t	*dictionary,
+	ion_key_t			key,
+	ion_value_t			value
+) {
+	return linear_hash_update(key, value, (linear_hash_table_t *) dictionary->instance);
+}
+
 ion_err_t
 linear_hash_create_dictionary(
 	ion_dictionary_id_t			id,

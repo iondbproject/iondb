@@ -61,6 +61,13 @@ linear_hash_get(
 );
 
 ion_status_t
+linear_hash_update(
+	int					id,
+	int					value,
+	linear_hash_table_t *linear_hash
+);
+
+ion_status_t
 linear_hash_delete(
 	int					id,
 	linear_hash_table_t *linear_hash
