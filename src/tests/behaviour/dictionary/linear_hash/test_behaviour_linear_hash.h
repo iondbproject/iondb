@@ -2,7 +2,7 @@
 /**
 @file
 @author		Spencer MacBeth
-@brief		Header declarations for the linear hash unit tests.
+@brief		Entry point for flat file behaviour tests.
 @copyright	Copyright 2016
 				The University of British Columbia,
 				IonDB Project Contributors (see AUTHORS.md)
@@ -21,18 +21,16 @@
 */
 /******************************************************************************/
 
-#if !defined(TEST_LINEAR_HASH_H)
-#define TEST_LINEAR_HASH_H
+#if !defined(TEST_BEHAVIOUR_LINEAR_HASH_H)
+#define TEST_BEHAVIOUR_LINEAR_HASH_H
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-#include "../../../planckunit/src/planck_unit.h"
-#include "../../../../dictionary/linear_hash/linear_hash.h"
-
 void
-runalltests_linear_hash(
+runalltests_behaviour_linear_hash(
+	void
 );
 
 #if defined(__cplusplus)

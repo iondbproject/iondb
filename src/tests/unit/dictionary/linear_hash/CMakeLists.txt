@@ -5,7 +5,8 @@ set(SOURCE_FILES
         test_linear_hash.h
         test_linear_hash.c
         test_linear_hash_dictionary_handler.h
-        test_linear_hash_dictionary_handler.c)
+        test_linear_hash_dictionary_handler.c
+        )
 
 if(USE_ARDUINO)
     set(${PROJECT_NAME}_BOARD       ${BOARD})
@@ -16,13 +17,13 @@ if(USE_ARDUINO)
 
     set(${PROJECT_NAME}_SKETCH linear_hash.ino)
     set(${PROJECT_NAME}_SRCS        ${SOURCE_FILES})
-    set(${PROJECT_NAME}_LIBS        planck_unit linear_hash)
+    set(${PROJECT_NAME}_LIBS        planck_unit linear_hash flat_file)
 
     generate_arduino_firmware(${PROJECT_NAME})
 else()
     add_executable(${PROJECT_NAME}          ${SOURCE_FILES} run_linear_hash.c)
 
-    target_link_libraries(${PROJECT_NAME}   planck_unit linear_hash)
+    target_link_libraries(${PROJECT_NAME}   planck_unit linear_hash flat_file)
 
     # Use cmake -DCOVERAGE_TESTING=ON to include coverage testing information.
     if (CMAKE_COMPILER_IS_GNUCC AND COVERAGE_TESTING)

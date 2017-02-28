@@ -25,7 +25,7 @@
 
 void
 test_linear_hash_create_destroy(
-		planck_unit_test_t *tc
+	planck_unit_test_t *tc
 ) {
 	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true);
 }
@@ -36,7 +36,6 @@ linear_hash_getsuite(
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_create_destroy);
-
 
 	return suite;
 }

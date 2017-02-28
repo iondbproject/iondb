@@ -68,7 +68,8 @@ linear_hash_delete(
 
 linear_hash_record_t
 linear_hash_get_record(
-	ion_fpos_t loc
+	ion_fpos_t			loc,
+	linear_hash_table_t *linear_hash
 );
 
 void

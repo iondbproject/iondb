@@ -31,7 +31,7 @@ extern "C" {
 #include <stdio.h>
 #include <string.h>
 #include "../../../planckunit/src/planck_unit.h"
-#include "../../../../dictionary/flat_file/flat_file_dictionary_handler.h"
+#include "../../../../dictionary/linear_hash/linear_hash_handler.h"
 
 void
 runalltests_flat_file_handler(

@@ -56,7 +56,7 @@ oadict_query(
 */
 ion_err_t
 oadict_scan(
-	ion_oadict_cursor_t *cursor		/* don't need to pass in the cursor */
+	ion_oadict_cursor_t *cursor	/* don't need to pass in the cursor */
 ) {
 	/* need to scan hashmap fully looking for values that satisfy - need to think about */
 	ion_hashmap_t *hash_map = (ion_hashmap_t *) (cursor->super.dictionary->instance);
