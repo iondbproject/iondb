@@ -5,6 +5,11 @@
 #include "../../key_value/kv_system.h"
 #include "../dictionary.h"
 
+typedef ion_byte_t *linear_hash_record_status_t;
+
+#define linear_hash_record_status_empty 0x0;
+#define linear_hash_record_status_full	0x1;
+
 /* SIMPLE ARRAY_LIST FOR BUCKET MAP */
 typedef struct {
 	int			current_size;
@@ -13,8 +18,8 @@ typedef struct {
 
 /* definition of linear hash record, with a type and pointer instance declared for later use */
 typedef struct {
-	int id;
-	int value;
+	ion_key_t	key;
+	ion_value_t value;
 } linear_hash_record_t;
 
 /* buckets */

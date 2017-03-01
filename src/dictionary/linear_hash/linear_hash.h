@@ -48,7 +48,8 @@ split(
 
 ion_status_t
 linear_hash_insert(
-	int					id,
+	ion_key_t			key,
+	ion_value_t			value,
 	int					hash_bucket_idx,
 	linear_hash_table_t *linear_hash
 );
@@ -56,34 +57,40 @@ linear_hash_insert(
 /* linear hash operations */
 ion_status_t
 linear_hash_get(
-	int					id,
+	ion_key_t			key,
+	ion_value_t			value,
 	linear_hash_table_t *linear_hash
 );
 
 ion_status_t
 linear_hash_update(
-	int					id,
-	int					value,
+	ion_key_t			key,
+	ion_value_t			value,
 	linear_hash_table_t *linear_hash
 );
 
 ion_status_t
 linear_hash_delete(
-	int					id,
+	ion_key_t			key,
 	linear_hash_table_t *linear_hash
 );
 
-linear_hash_record_t
+ion_err_t
 linear_hash_get_record(
-	ion_fpos_t			loc,
-	linear_hash_table_t *linear_hash
+	ion_fpos_t					loc,
+	ion_key_t					key,
+	ion_value_t					value,
+	linear_hash_record_status_t status,
+	linear_hash_table_t			*linear_hash
 );
 
-void
+ion_err_t
 linear_hash_write_record(
-	ion_fpos_t				record_loc,
-	linear_hash_record_t	record,
-	linear_hash_table_t		*linear_hash
+	ion_fpos_t					record_loc,
+	ion_key_t					key,
+	ion_value_t					value,
+	linear_hash_record_status_t status,
+	linear_hash_table_t			*linear_hash
 );
 
 /* check if linear hash is above its split threshold */
@@ -127,13 +134,13 @@ get_bucket_records_location(
 /* hash methods */
 int
 hash_to_bucket(
-	int					id,
+	ion_key_t			key,
 	linear_hash_table_t *linear_hash
 );
 
 int
 insert_hash_to_bucket(
-	int					id,
+	ion_key_t			key,
 	linear_hash_table_t *linear_hash
 );
 

@@ -39,7 +39,7 @@ linear_hash_dict_insert(
 	ion_key_t			key,
 	ion_value_t			value
 ) {
-	return linear_hash_insert(key, insert_hash_to_bucket(key, (linear_hash_table_t *) dictionary->instance), (linear_hash_table_t *) dictionary->instance);
+	return linear_hash_insert(key, value, insert_hash_to_bucket(key, (linear_hash_table_t *) dictionary->instance), (linear_hash_table_t *) dictionary->instance);
 }
 
 ion_status_t
@@ -48,7 +48,7 @@ linear_hash_dict_get(
 	ion_key_t			key,
 	ion_value_t			value
 ) {
-	return linear_hash_get(key, (linear_hash_table_t *) dictionary->instance);
+	return linear_hash_get(key, value, (linear_hash_table_t *) dictionary->instance);
 }
 
 ion_status_t
