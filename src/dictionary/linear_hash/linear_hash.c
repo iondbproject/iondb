@@ -529,8 +529,9 @@ linear_hash_update(
 	}
 
 	if (status.count == 0) {
-		printf("Record not found\n");
+		printf("Record not found, performing upsert\n");
 		status.error = err_item_not_found;
+		return linear_hash_insert(key, value, insert_hash_to_bucket(key, linear_hash), linear_hash);
 	}
 	else {
 		status.error = err_ok;
