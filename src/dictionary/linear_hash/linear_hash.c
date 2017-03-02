@@ -632,7 +632,7 @@ linear_hash_get_record(
 	fseek(linear_hash->database, loc, SEEK_SET);
 
 	/* read record data elements */
-	fread(status, sizeof(status), 1, linear_hash->database);
+	fread(status, sizeof(ion_byte_t), 1, linear_hash->database);
 	fread(key, sizeof(linear_hash->super.record.key_size), 1, linear_hash->database);
 	fread(value, sizeof(linear_hash->super.record.value_size), 1, linear_hash->database);
 
