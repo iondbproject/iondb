@@ -77,20 +77,20 @@ linear_hash_delete(
 
 ion_err_t
 linear_hash_get_record(
-	ion_fpos_t					loc,
-	ion_key_t					key,
-	ion_value_t					value,
-	linear_hash_record_status_t status,
-	linear_hash_table_t			*linear_hash
+	ion_fpos_t			loc,
+	ion_key_t			key,
+	ion_value_t			value,
+	ion_byte_t			*status,
+	linear_hash_table_t *linear_hash
 );
 
 ion_err_t
 linear_hash_write_record(
-	ion_fpos_t					record_loc,
-	ion_key_t					key,
-	ion_value_t					value,
-	linear_hash_record_status_t status,
-	linear_hash_table_t			*linear_hash
+	ion_fpos_t			record_loc,
+	ion_key_t			key,
+	ion_value_t			value,
+	ion_byte_t			*status,
+	linear_hash_table_t *linear_hash
 );
 
 /* check if linear hash is above its split threshold */
