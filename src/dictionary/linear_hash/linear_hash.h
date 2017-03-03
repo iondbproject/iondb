@@ -78,8 +78,8 @@ linear_hash_delete(
 ion_err_t
 linear_hash_get_record(
 	ion_fpos_t			loc,
-	ion_key_t			key,
-	ion_value_t			value,
+	ion_byte_t			*key,
+	ion_byte_t			*value,
 	ion_byte_t			*status,
 	linear_hash_table_t *linear_hash
 );
@@ -87,8 +87,8 @@ linear_hash_get_record(
 ion_err_t
 linear_hash_write_record(
 	ion_fpos_t			record_loc,
-	ion_key_t			key,
-	ion_value_t			value,
+	ion_byte_t			*key,
+	ion_byte_t			*value,
 	ion_byte_t			*status,
 	linear_hash_table_t *linear_hash
 );

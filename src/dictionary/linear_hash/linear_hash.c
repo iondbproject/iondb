@@ -181,8 +181,8 @@ split(
 	ion_fpos_t record_loc;
 
 	/* stores for record data */
-	ion_byte_t	record_key[linear_hash->super.record.key_size];
-	ion_byte_t	record_value[linear_hash->super.record.key_size];
+	ion_byte_t	*record_key		= alloca(linear_hash->super.record.key_size);
+	ion_byte_t	*record_value	= alloca(linear_hash->super.record.value_size);
 	ion_byte_t	record_status;
 
 	/* status to hold amount of records deleted */
@@ -283,10 +283,8 @@ linear_hash_insert(
 
 	/* Case the bucket is empty */
 	if (bucket.anchor_record == -1) {
-		printf("here!!!");
 		record_loc				= bucket_records_loc;
 		bucket.anchor_record	= record_loc;
-		/* ion_fpos_t bucket_loc = bucket_idx_to_ion_fpos_t(bucket.idx, linear_hash); */
 	}
 	else {
 		/* Case that the bucket is full but there is not yet an overflow bucket */
@@ -553,16 +551,16 @@ linear_hash_delete(
 	/* create a temporary store for record data that are read */
 	ion_byte_t	record_key[linear_hash->super.record.key_size];
 	ion_byte_t	record_value[linear_hash->super.record.key_size];
-	ion_byte_t	record_status		= 1;
+	ion_byte_t	record_status;
 
-	ion_fpos_t	record_loc			= bucket.anchor_record;
-	ion_fpos_t	record_total_size	= linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(ion_byte_t);
+	ion_fpos_t	record_loc;
+	ion_fpos_t	record_total_size = linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(ion_byte_t);
 
 	while (bucket.overflow_location != -1) {
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
 		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
-			linear_hash_get_record(bucket.anchor_record, key, record_value, &record_status, linear_hash);
+			linear_hash_get_record(record_loc, key, record_value, &record_status, linear_hash);
 
 			if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
 				record_status = 0;
@@ -584,7 +582,7 @@ linear_hash_delete(
 	record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
 	for (int i = 0; i < linear_hash->records_per_bucket; i++) {
-		linear_hash_get_record(bucket.anchor_record, key, record_value, &record_status, linear_hash);
+		linear_hash_get_record(record_loc, key, record_value, &record_status, linear_hash);
 
 		if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
 			record_status = 0;
@@ -615,8 +613,8 @@ linear_hash_delete(
 ion_err_t
 linear_hash_get_record(
 	ion_fpos_t			loc,
-	ion_key_t			key,
-	ion_value_t			value,
+	ion_byte_t			*key,
+	ion_byte_t			*value,
 	ion_byte_t			*status,
 	linear_hash_table_t *linear_hash
 ) {
@@ -625,8 +623,8 @@ linear_hash_get_record(
 
 	/* read record data elements */
 	fread(status, sizeof(ion_byte_t), 1, linear_hash->database);
-	fread(key, sizeof(linear_hash->super.record.key_size), 1, linear_hash->database);
-	fread(value, sizeof(linear_hash->super.record.value_size), 1, linear_hash->database);
+	fread(key, linear_hash->super.record.key_size, 1, linear_hash->database);
+	fread(value, linear_hash->super.record.value_size, 1, linear_hash->database);
 
 	return err_ok;
 }
@@ -634,8 +632,8 @@ linear_hash_get_record(
 ion_err_t
 linear_hash_write_record(
 	ion_fpos_t			record_loc,
-	ion_key_t			key,
-	ion_value_t			value,
+	ion_byte_t			*key,
+	ion_byte_t			*value,
 	ion_byte_t			*status,
 	linear_hash_table_t *linear_hash
 ) {
@@ -706,7 +704,7 @@ write_new_bucket(
 
 	for (int i = 0; i < linear_hash->records_per_bucket; i++) {
 		fwrite(&record_status, sizeof(ion_byte_t), 1, linear_hash->database);
-		fwrite(&record_blank, sizeof(linear_hash->super.record.key_size + linear_hash->super.record.value_size), 1, linear_hash->database);
+		fwrite(&record_blank, linear_hash->super.record.key_size + linear_hash->super.record.value_size, 1, linear_hash->database);
 	}
 
 	/* restore data pointer to the original location */
@@ -820,8 +818,8 @@ create_overflow_bucket(
 	memset(record_blank, 0, linear_hash->super.record.key_size + linear_hash->super.record.value_size);
 
 	for (int i = 0; i < linear_hash->records_per_bucket; i++) {
-		fwrite(&record_status, sizeof(record_status), 1, linear_hash->database);
-		fwrite(&record_blank, sizeof(linear_hash->super.record.key_size + linear_hash->super.record.value_size), 1, linear_hash->database);
+		fwrite(&record_status, sizeof(ion_byte_t), 1, linear_hash->database);
+		fwrite(&record_blank, linear_hash->super.record.key_size + linear_hash->super.record.value_size, 1, linear_hash->database);
 	}
 
 	/* restore data pointer to the original location */
@@ -970,6 +968,7 @@ print_array_list_data(
 		printf("\t%d: %ld\n", i, array_list->data[i]);
 	}
 }
+*/
 
 void
 print_linear_hash_state(
@@ -978,7 +977,6 @@ print_linear_hash_state(
 	printf("Linear Hash State\n\tinitial size: %d\n\tnum records %d\n\tnum buckets %d\n\tnext split: %d\n\tsplit threshold: %d\n", linear_hash->initial_size, linear_hash->num_records, linear_hash->num_buckets, linear_hash->next_split, linear_hash->split_threshold);
 }
 
-*/
 void
 print_linear_hash_bucket_from_idx(
 	int					idx,
@@ -994,10 +992,10 @@ print_linear_hash_bucket_from_idx(
 	printf("head bucket\n");
 	print_linear_hash_bucket(bucket);
 
-	ion_byte_t	record_key[linear_hash->super.record.key_size];
-	ion_byte_t	record_value[linear_hash->super.record.key_size];
+	ion_byte_t	*record_key			= alloca(linear_hash->super.record.key_size);
+	ion_byte_t	*record_value		= alloca(linear_hash->super.record.value_size);
 	ion_byte_t	record_status;
-	ion_fpos_t	record_total_size = linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(record_status);
+	ion_fpos_t	record_total_size	= linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(ion_byte_t);
 
 	while (bucket.overflow_location != -1) {
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
@@ -1008,13 +1006,11 @@ print_linear_hash_bucket_from_idx(
 			record_loc += record_total_size;
 
 			if ((linear_hash->super.key_type == key_type_numeric_unsigned) || (linear_hash->super.key_type == key_type_numeric_signed)) {
-				printf("record\n\tkey: %d\n\tvalue: %d\n\tstatus: %d\n", *record_key, *record_value, record_status);
+				printf("record\n\tkey: %d\n\tvalue: %d\n\tstatus: %d\n", NEUTRALIZE(record_key, int), NEUTRALIZE(record_value, int), record_status);
 			}
 			else {
-				printf("record\n\tkey: %s\n\tvalue: %d\n\tstatus: %d\n", *record_key, *record_value, record_status);
+				printf("record\n\tkey: %d\n\tvalue: %d\n\tstatus: %d\n", NEUTRALIZE(record_key, char), NEUTRALIZE(record_value, int), record_status);
 			}
-
-			/* print_linear_hash_record(record); */
 		}
 
 		printf("current bucket\n");
@@ -1032,10 +1028,10 @@ print_linear_hash_bucket_from_idx(
 		record_loc += record_total_size;
 
 		if ((linear_hash->super.key_type == key_type_numeric_unsigned) || (linear_hash->super.key_type == key_type_numeric_signed)) {
-			printf("record\n\tkey: %d\n\tvalue: %d\n\tstatus: %d\n", *record_key, *record_value, record_status);
+			printf("record\n\tkey: %d\n\tvalue: %d\n\tstatus: %d\n", NEUTRALIZE(record_key, int), NEUTRALIZE(record_value, int), record_status);
 		}
 		else {
-			printf("record\n\tkey: %s\n\tvalue: %d\n\tstatus: %d\n", *record_key, *record_value, record_status);
+			printf("record\n\tkey: %d\n\tvalue: %d\n\tstatus: %d\n", NEUTRALIZE(record_key, char), NEUTRALIZE(record_value, int), record_status);
 		}
 	}
 }
