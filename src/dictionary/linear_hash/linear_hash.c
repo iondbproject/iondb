@@ -563,14 +563,16 @@ linear_hash_delete(
 		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
 			linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
-			if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
-				record_status = 0;
-				linear_hash_write_record(record_loc, record_key, record_value, &record_status, linear_hash);
-				status.count++;
-				bucket.record_count--;
-				linear_hash_update_bucket(bucket_loc, bucket, linear_hash);
-				linear_hash_decrement_num_records(linear_hash);
-				printf("TOMBSTONE WRITTEN\n");
+			if (record_status != 0) {
+				if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
+					record_status = 0;
+					linear_hash_write_record(record_loc, record_key, record_value, &record_status, linear_hash);
+					status.count++;
+					bucket.record_count--;
+					linear_hash_update_bucket(bucket_loc, bucket, linear_hash);
+					linear_hash_decrement_num_records(linear_hash);
+					printf("TOMBSTONE WRITTEN\n");
+				}
 			}
 
 			record_loc += record_total_size;
@@ -585,14 +587,16 @@ linear_hash_delete(
 	for (int i = 0; i < linear_hash->records_per_bucket; i++) {
 		linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
-		if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
-			record_status = 0;
-			linear_hash_write_record(record_loc, record_key, record_value, &record_status, linear_hash);
-			status.count++;
-			bucket.record_count--;
-			linear_hash_update_bucket(bucket_loc, bucket, linear_hash);
-			linear_hash_decrement_num_records(linear_hash);
-			printf("TOMBSTONE WRITTEN\n");
+		if (record_status != 0) {
+			if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
+				record_status = 0;
+				linear_hash_write_record(record_loc, record_key, record_value, &record_status, linear_hash);
+				status.count++;
+				bucket.record_count--;
+				linear_hash_update_bucket(bucket_loc, bucket, linear_hash);
+				linear_hash_decrement_num_records(linear_hash);
+				printf("TOMBSTONE WRITTEN\n");
+			}
 		}
 
 		record_loc += record_total_size;
@@ -873,8 +877,9 @@ hash_to_bucket(
 ) {
 	/* Case the record we are looking for was in a bucket that has already been split and h1 was used */
 /*	if(id > linear_hash->initial_size) { */
-	return *((ion_byte_t *) key) % (2 * linear_hash->initial_size);
-/*	} */
+	int key_bytes_as_int = *((ion_byte_t *) key);
+
+	return key_bytes_as_int % (2 * linear_hash->initial_size);	/*	} */
 /*  */
 /*	else { */
 /*		return id % linear_hash->initial_size; */
@@ -886,7 +891,9 @@ insert_hash_to_bucket(
 	ion_key_t			key,
 	linear_hash_table_t *linear_hash
 ) {
-	return *((ion_byte_t *) key) % linear_hash->initial_size;
+	int key_bytes_as_int = *((ion_byte_t *) key);
+
+	return key_bytes_as_int % linear_hash->initial_size;
 }
 
 /* Write the offset of bucket idx to the map in linear hash state */
