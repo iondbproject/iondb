@@ -409,12 +409,9 @@ linear_hash_get(
 	ion_byte_t	*record_value			= alloca(linear_hash->super.record.value_size);
 	ion_byte_t	record_status;
 	ion_fpos_t	record_total_size		= linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(ion_byte_t);
+	ion_fpos_t	record_loc;
 
-	linear_hash_get_record(bucket.anchor_record, record_key, record_value, &record_status, linear_hash);
-
-	ion_fpos_t record_loc	= bucket.anchor_record;
-
-	int found				= 0;
+	int found							= 0;
 
 	while (bucket.overflow_location != -1 && found == 0) {
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
@@ -422,18 +419,22 @@ linear_hash_get(
 		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
 			linear_hash_get_record(bucket.anchor_record, record_key, record_value, &record_status, linear_hash);
 
-			if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
-				status.count++;
-				memcpy(value, record_value, linear_hash->super.record.value_size);
-				found = 1;
-				break;
+			if (record_status != 0) {
+				if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
+					status.count++;
+					memcpy(value, record_value, linear_hash->super.record.value_size);
+					found = 1;
+					break;
+				}
 			}
 
 			record_loc += record_total_size;
 		}
 
-		bucket_loc	= bucket.overflow_location;
-		bucket		= linear_hash_get_bucket(bucket_loc, linear_hash);
+		if (found == 0) {
+			bucket_loc	= bucket.overflow_location;
+			bucket		= linear_hash_get_bucket(bucket_loc, linear_hash);
+		}
 	}
 
 	record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
@@ -442,11 +443,12 @@ linear_hash_get(
 		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
 			linear_hash_get_record(bucket.anchor_record, record_key, record_value, &record_status, linear_hash);
 
-			if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
-				status.count++;
-				memcpy(value, record_value, linear_hash->super.record.value_size);
-				found = 1;
-				break;
+			if (record_status != 0) {
+				if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
+					status.count++;
+					memcpy(value, record_value, linear_hash->super.record.value_size);
+					break;
+				}
 			}
 
 			record_loc += record_total_size;

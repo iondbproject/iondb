@@ -27,8 +27,8 @@ main(
 	int *key_data		= alloca(linear_hash->super.record.key_size);
 	int *value_data		= alloca(linear_hash->super.record.value_size);
 
-	*key_data	= 11;
-	*value_data = 11;
+	*key_data	= 10;
+	*value_data = 10;
 	memcpy(key, key_data, sizeof(linear_hash->super.record.key_size));
 	memcpy(value, value_data, sizeof(linear_hash->super.record.value_size));
 
@@ -40,8 +40,8 @@ main(
 	linear_hash_insert(key, value, insert_hash_to_bucket(key, linear_hash), linear_hash);
 	linear_hash_insert(key, value, insert_hash_to_bucket(key, linear_hash), linear_hash);
 
-	*key_data	= 6;
-	*value_data = 6;
+	*key_data	= 5;
+	*value_data = 5;
 	memcpy(key, key_data, sizeof(linear_hash->super.record.key_size));
 	memcpy(value, value_data, sizeof(linear_hash->super.record.value_size));
 
@@ -53,8 +53,8 @@ main(
 	linear_hash_insert(key, value, insert_hash_to_bucket(key, linear_hash), linear_hash);
 	linear_hash_insert(key, value, insert_hash_to_bucket(key, linear_hash), linear_hash);
 
-	*key_data	= 6;
-	*value_data = 6;
+	*key_data	= 5;
+	*value_data = 5;
 	memcpy(key, key_data, sizeof(linear_hash->super.record.key_size));
 	memcpy(value, value_data, sizeof(linear_hash->super.record.value_size));
 
@@ -68,13 +68,14 @@ main(
 	linear_hash_insert(key, value, insert_hash_to_bucket(key, linear_hash), linear_hash);
 	linear_hash_insert(key, value, insert_hash_to_bucket(key, linear_hash), linear_hash);
 
-	*key_data	= 11;
-	*value_data = 11;
+	*key_data	= 10;
+	*value_data = 10;
 	memcpy(key, key_data, sizeof(linear_hash->super.record.key_size));
 	memcpy(value, value_data, sizeof(linear_hash->super.record.value_size));
 	linear_hash_insert(key, value, insert_hash_to_bucket(key, linear_hash), linear_hash);
 
-	print_linear_hash_bucket_from_idx(1, linear_hash);
+	print_linear_hash_bucket_from_idx(0, linear_hash);
+	print_linear_hash_bucket_from_idx(5, linear_hash);
 
 	print_linear_hash_state(linear_hash);
 	return 0;
