@@ -1,120 +1,39 @@
-#include "../../../../dictionary/linear_hash/linear_hash_handler.c"
+#include "test_linear_hash.h"
+
 int
 main(
 ) {
-	ion_dictionary_t			dict;
-	ion_dictionary_handler_t	handler;
+/*	runalltests_linear_hash(); */
+/*	runalltests_flat_file_handler(); */
+	ion_key_type_t		key_type			= key_type_numeric_unsigned;
+	ion_key_size_t		key_size			= sizeof(int);
+	ion_value_size_t	value_size			= sizeof(int);
 
-	linear_hash_dict_init(&handler);
-	dictionary_create(&handler, &dict, 1, key_type_numeric_unsigned, sizeof(ion_key_t), sizeof(ion_value_t), sizeof(ion_dictionary_t));
-	dict.handler->insert(&dict, 10, 1);
-/*	dict.handler->insert(&dict, 10, 1); */
-/*	dict.handler->insert(&dict, 10, 1); */
-/*	dict.handler->insert(&dict, 10, 1); */
-/*	dict.handler->insert(&dict, 10, 1); */
-/*	dict.handler->insert(&dict, 10, 1); */
-/*	dict.handler->insert(&dict, 10, 1); */
-/*	dict.handler->insert(&dict, 10, 1); */
-/*	dict.handler->insert(&dict, 5, 5); */
-/*	dict.handler->insert(&dict, 5, 5); */
-/*	dict.handler->insert(&dict, 5, 5); */
-/*	dict.handler->insert(&dict, 5, 5); */
-/*	dict.handler->insert(&dict, 15, 15); */
-/*	dict.handler->insert(&dict, 15, 15); */
-/*	dict.handler->insert(&dict, 15, 15); */
-/*	dict.handler->insert(&dict, 20, 20); */
-/*	dict.handler->insert(&dict, 20, 20); */
-/*	dict.handler->insert(&dict, 20, 20); */
-/*	dict.handler->insert(&dict, 20, 20); */
-/*	dict.handler->insert(&dict, 20, 20); */
-/*	dict.handler->insert(&dict, 25, 25); */
-/*	dict.handler->insert(&dict, 25, 25); */
-/*	dict.handler->insert(&dict, 25, 25); */
-/*	dict.handler->insert(&dict, 25, 25); */
-/*	dict.handler->insert(&dict, 50, 50); */
-/*	dict.handler->insert(&dict, 50, 50); */
-/*	dict.handler->insert(&dict, 50, 50); */
-/*	dict.handler->insert(&dict, 50, 50); */
-/*	dict.handler->insert(&dict, 1, 1); */
-/*	dict.handler->insert(&dict, 1, 1); */
-/*	dict.handler->insert(&dict, 1, 1); */
-/*	dict.handler->insert(&dict, 1, 1); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 2, 2); */
-/*	dict.handler->insert(&dict, 12, 12); */
-/*	dict.handler->insert(&dict, 12, 12); */
-/*	dict.handler->insert(&dict, 12, 12); */
-/*	dict.handler->insert(&dict, 12, 12); */
-/*	dict.handler->insert(&dict, 12, 12); */
-/*	dict.handler->insert(&dict, 12, 12); */
-/*	dict.handler->insert(&dict, 12, 12); */
-/*	dict.handler->insert(&dict, 12, 12); */
-/*	dict.handler->insert(&dict, 12, 12); */
-/*	dict.handler->insert(&dict, 122, 122); */
-/*	dict.handler->insert(&dict, 122, 122); */
-/*	dict.handler->insert(&dict, 122, 122); */
-/*	dict.handler->insert(&dict, 122, 122); */
-/*	dict.handler->insert(&dict, 122, 122); */
-/*	dict.handler->insert(&dict, 13, 13); */
-/*	dict.handler->insert(&dict, 13, 13); */
-/*	dict.handler->insert(&dict, 13, 13); */
-/*	dict.handler->insert(&dict, 13, 13); */
-/*	dict.handler->insert(&dict, 13, 13); */
-/*	dict.handler->insert(&dict, 13, 13); */
-/*	dict.handler->insert(&dict, 13, 13); */
-/*	dict.handler->insert(&dict, 13, 13); */
-/*	dict.handler->insert(&dict, 13, 13); */
-/*	dict.handler->insert(&dict, 17, 17); */
-/*	dict.handler->insert(&dict, 17, 17); */
-/*	dict.handler->insert(&dict, 17, 17); */
-/*	dict.handler->insert(&dict, 17, 17); */
-/*	dict.handler->insert(&dict, 17, 17); */
-/*	dict.handler->insert(&dict, 17, 17); */
-/*	dict.handler->insert(&dict, 16, 16); */
-/*	dict.handler->insert(&dict, 26, 26); */
-/*	dict.handler->insert(&dict, 26, 26); */
-/*	dict.handler->insert(&dict, 16, 16); */
-/*	dict.handler->insert(&dict, 66, 66); */
-/*	dict.handler->insert(&dict, 25, 25); */
-/*  */
-/*	print_linear_hash_state(dict.instance); */
-/*  */
-/* //	linear_hash_get(10, dict.instance); */
-/* //	dict.handler->remove(&dict, 10); */
-/* //	printf("\nPERFORMING GET 5\n"); */
-/* //	linear_hash_get(10, dict.instance); */
-/*  */
-/*	print_linear_hash_bucket_from_idx(5, dict.instance); */
+	int					initial_size		= 5;
+	int					split_threshold		= 85;
+	int					records_per_bucket	= 4;
+	linear_hash_table_t *linear_hash		= alloca(sizeof(linear_hash_table_t));
+	array_list_t		*bucket_map			= alloca(sizeof(array_list_t));
 
+	array_list_init(initial_size, bucket_map);
+
+	ion_err_t err = linear_hash_init(1, key_type, key_size, value_size, initial_size, split_threshold, records_per_bucket, bucket_map, linear_hash);
+
+	linear_hash->super.compare = dictionary_compare_signed_value;
+
+	ion_byte_t	*key	= alloca(linear_hash->super.record.key_size);
+	ion_byte_t	*value	= alloca(linear_hash->super.record.value_size);
+
+	int *key_data		= alloca(linear_hash->super.record.key_size);
+	int *value_data		= alloca(linear_hash->super.record.value_size);
+
+	*key_data	= 1;
+	*value_data = 1;
+
+	memcpy(key, key_data, sizeof(linear_hash->super.record.key_size));
+	memcpy(value, value_data, sizeof(linear_hash->super.record.value_size));
+
+	linear_hash_insert(key, value, insert_hash_to_bucket(key, linear_hash), linear_hash);
+	print_linear_hash_bucket_from_idx(0, linear_hash);
 	return 0;
 }
