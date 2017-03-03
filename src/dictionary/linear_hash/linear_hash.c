@@ -197,7 +197,10 @@ split(
 			for (int i = 0; i < linear_hash->records_per_bucket; i++) {
 				linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
-				if (record_status == 1) {
+				int insert_hash_key = insert_hash_to_bucket(record_key, linear_hash);
+				int split_hash_key	= hash_to_bucket(record_key, linear_hash);
+
+				if ((record_status == 1) && (insert_hash_key != split_hash_key)) {
 					status = linear_hash_delete(record_key, linear_hash);
 
 					for (int i = 0; i < status.count; i++) {
@@ -219,7 +222,10 @@ split(
 		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
 			linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
-			if (record_status == 1) {
+			int insert_hash_key = insert_hash_to_bucket(record_key, linear_hash);
+			int split_hash_key	= hash_to_bucket(record_key, linear_hash);
+
+			if ((record_status == 1) && (insert_hash_key != split_hash_key)) {
 				status = linear_hash_delete(record_key, linear_hash);
 
 				for (int i = 0; i < status.count; i++) {
