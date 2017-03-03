@@ -38,10 +38,6 @@ main(
 	linear_hash_insert(key, value, insert_hash_to_bucket(key, linear_hash), linear_hash);
 	linear_hash_insert(key, value, insert_hash_to_bucket(key, linear_hash), linear_hash);
 	linear_hash_insert(key, value, insert_hash_to_bucket(key, linear_hash), linear_hash);
-	linear_hash_insert(key, value, insert_hash_to_bucket(key, linear_hash), linear_hash);
-	linear_hash_insert(key, value, insert_hash_to_bucket(key, linear_hash), linear_hash);
-	linear_hash_insert(key, value, insert_hash_to_bucket(key, linear_hash), linear_hash);
-	linear_hash_insert(key, value, insert_hash_to_bucket(key, linear_hash), linear_hash);
 
 	for (int i = 0; i < linear_hash->num_buckets; i++) {
 		print_linear_hash_bucket_from_idx(i, linear_hash);

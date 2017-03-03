@@ -294,7 +294,6 @@ linear_hash_insert(
 			ion_fpos_t overflow_location = create_overflow_bucket(bucket.idx, linear_hash);
 
 			printf("Bucket full, creating an overflow bucket at %ld\n", overflow_location);
-			linear_hash_update_bucket(bucket_loc, bucket, linear_hash);
 
 			/* Set the location of the anchor record on the new overflow bucket and update the record_loc for storing
 			 * the new record to be this location */
@@ -330,8 +329,10 @@ linear_hash_insert(
 					scanner_loc += record_total_size;
 				}
 
-				scanner_bucket_loc	= bucket.overflow_location;
-				bucket				= linear_hash_get_bucket(scanner_bucket_loc, linear_hash);
+				if (stop == 0) {
+					scanner_bucket_loc	= bucket.overflow_location;
+					bucket				= linear_hash_get_bucket(scanner_bucket_loc, linear_hash);
+				}
 			}
 
 			/* scan last bucket if necesarry */
@@ -802,7 +803,7 @@ create_overflow_bucket(
 	/* seek to end of file to append new bucket */
 	fseek(linear_hash->database, 0, SEEK_END);
 
-	/* ion_fpos_t overflow_loc = ftell(linear_hash->database); */
+	/* get overflow location for new overflow bucket */
 	ion_fpos_t overflow_loc = ftell(linear_hash->database);
 
 	array_list_insert(bucket.idx, overflow_loc, linear_hash->bucket_map);
