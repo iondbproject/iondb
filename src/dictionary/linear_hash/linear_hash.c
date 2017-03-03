@@ -188,7 +188,7 @@ split(
 	/* status to hold amount of records deleted */
 	ion_status_t status;
 
-	ion_fpos_t record_total_size = linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(record_status);
+	ion_fpos_t record_total_size = linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(ion_byte_t);
 
 	while (bucket.overflow_location != -1) {
 		if (bucket.record_count > 0) {
@@ -550,8 +550,8 @@ linear_hash_delete(
 	linear_hash_bucket_t	bucket		= linear_hash_get_bucket(bucket_loc, linear_hash);
 
 	/* create a temporary store for record data that are read */
-	ion_byte_t	record_key[linear_hash->super.record.key_size];
-	ion_byte_t	record_value[linear_hash->super.record.key_size];
+	ion_byte_t	*record_key				= alloca(linear_hash->super.record.key_size);
+	ion_byte_t	*record_value			= alloca(linear_hash->super.record.value_size);
 	ion_byte_t	record_status;
 
 	ion_fpos_t	record_loc;
@@ -561,7 +561,7 @@ linear_hash_delete(
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
 		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
-			linear_hash_get_record(record_loc, key, record_value, &record_status, linear_hash);
+			linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
 			if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
 				record_status = 0;
@@ -583,7 +583,7 @@ linear_hash_delete(
 	record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
 	for (int i = 0; i < linear_hash->records_per_bucket; i++) {
-		linear_hash_get_record(record_loc, key, record_value, &record_status, linear_hash);
+		linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
 		if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
 			record_status = 0;
