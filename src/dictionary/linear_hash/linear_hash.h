@@ -57,8 +57,8 @@ linear_hash_insert(
 /* linear hash operations */
 ion_status_t
 linear_hash_get(
-	ion_key_t			key,
-	ion_value_t			value,
+	ion_byte_t			*key,
+	ion_byte_t			*value,
 	linear_hash_table_t *linear_hash
 );
 
