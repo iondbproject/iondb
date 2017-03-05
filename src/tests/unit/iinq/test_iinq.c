@@ -1850,7 +1850,6 @@ iinq_benchmark_set_1(
 	key_type	= key_type_numeric_signed;
 	key_size	= sizeof(uint32_t);
 	value_size	= SCHEMA_SIZE(test);
-	printf("Attempt create\n");
 	error		= CREATE_DICTIONARY(test, key_type, key_size, value_size);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
 

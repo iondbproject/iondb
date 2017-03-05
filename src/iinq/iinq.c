@@ -97,7 +97,6 @@ iinq_open_source(
 			return err_file_incomplete_read;
 		}
 
-		printf("$$$ Open source read ID from schema as: %d\n", id);
 		error = ion_open_dictionary(handler, dictionary, id);
 
 		if (err_ok != error) {

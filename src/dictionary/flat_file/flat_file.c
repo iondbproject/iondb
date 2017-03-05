@@ -59,18 +59,12 @@ flat_file_initialize(
 	if (NULL == flat_file->data_file) {
 		/* The file did not exist - lets open to write */
 		flat_file->data_file = fopen(filename, "w+b");
-		printf("$$$ Created a fresh file\n");
 
 		if (NULL == flat_file->data_file) {
 			/* Failed to open, even to create */
 			return err_file_open_error;
 		}
 	}
-	else {
-		printf("$$$ Re-read old file\n");
-	}
-
-	printf("$$$ File name: %s\n", filename);
 
 	/* For now, we don't have any header information. But we write some garbage there just so that
 	   we can verify that the code to handle the header is working.*/

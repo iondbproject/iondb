@@ -120,14 +120,9 @@ ion_master_table_read(
 ) {
 	long old_pos = ftell(ion_master_table_file);
 
-	printf("Using where mode: %d\n", where);
-
 	if (ION_MASTER_TABLE_CALCULATE_POS == where) {
 		where = (int) (config->id * ION_MASTER_TABLE_RECORD_SIZE(config));
 	}
-
-	printf("Current ID: %d\n", ion_master_table_next_id);
-	printf("Attempt to read: %d\n", config->id);
 
 	if (0 != fseek(ion_master_table_file, where, SEEK_SET)) {
 		return err_file_bad_seek;
