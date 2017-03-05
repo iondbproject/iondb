@@ -120,6 +120,8 @@ ion_master_table_read(
 ) {
 	long old_pos = ftell(ion_master_table_file);
 
+	printf("Using where mode: %d\n", where);
+
 	if (ION_MASTER_TABLE_CALCULATE_POS == where) {
 		where = (int) (config->id * ION_MASTER_TABLE_RECORD_SIZE(config));
 	}

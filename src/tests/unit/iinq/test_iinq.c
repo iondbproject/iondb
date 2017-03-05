@@ -1596,6 +1596,136 @@ iinq_benchmark_query_1(
 	ion_iinq_query_processor_t *processor
 ) {
 	QUERY(SELECT_ALL, FROM(1, test), WHERE(1), , , , , , processor);
+/*	do {
+		ion_err_t			error;
+		ion_iinq_result_t	result;
+		int					jmp_r;
+		jmp_buf				selectbuf;
+
+		result.raw_record_size	= 0;
+		result.num_bytes		= 0;
+
+		ion_iinq_cleanup_t	*first;
+		ion_iinq_cleanup_t	*last;
+		ion_iinq_cleanup_t	*ref_cursor;
+		ion_iinq_cleanup_t	*last_cursor;
+
+		first		= ((void *) 0);
+		last		= ((void *) 0);
+		ref_cursor	= ((void *) 0);
+		last_cursor = ((void *) 0);
+
+		ion_iinq_source_t test;
+
+		test.cleanup.next		= ((void *) 0);
+		test.cleanup.last		= last;
+		test.cleanup.reference	= &test;
+
+		if (((void *) 0) == first) {
+			first = &test.cleanup;
+		}
+
+		if (((void *) 0) != last) {
+			last->next = &test.cleanup;
+		}
+
+		last					= &test.cleanup;
+		test.cleanup.next		= ((void *) 0);
+		test.dictionary.handler = &test.handler;
+		error					= iinq_open_source("test" ".inq", &(test.dictionary), &(test.handler));
+
+		if (err_ok != error) {
+			break;
+		}
+
+		result.raw_record_size	+= test.dictionary.instance->record.key_size;
+		result.raw_record_size	+= test.dictionary.instance->record.value_size;
+		result.num_bytes		+= test.dictionary.instance->record.key_size;
+		result.num_bytes		+= test.dictionary.instance->record.value_size;
+		error					= dictionary_build_predicate(&(test.predicate), predicate_all_records);
+
+		if (err_ok != error) {
+			break;
+		}
+
+		dictionary_find(&test.dictionary, &test.predicate, &test.cursor);
+		;
+		result.data				= __builtin_alloca(result.raw_record_size);
+		result.processed		= result.data;
+		test.key				= result.processed;
+		result.processed		+= test.dictionary.instance->record.key_size;
+		test.value				= result.processed;
+		result.processed		+= test.dictionary.instance->record.value_size;
+		test.ion_record.key		= test.key;
+		test.ion_record.value	= test.value;
+		;
+
+		struct iinq_test_schema *test_tuple;
+
+		test_tuple	= test.value;
+		;
+		ref_cursor	= first;
+
+		while (ref_cursor != last) {
+			if ((((void *) 0) == ref_cursor) || ((cs_cursor_active != (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(ref_cursor->reference->cursor, &ref_cursor->reference->ion_record))) && (cs_cursor_initialized != ref_cursor->reference->cursor_status))) {
+				break;
+			}
+
+			ref_cursor = ref_cursor->next;
+		}
+
+		ref_cursor = last;
+		goto SKIP_COMPUTE_SELECT;
+		COMPUTE_SELECT:;
+		__builtin___memcpy_chk(result.processed, result.data, result.num_bytes, __builtin_object_size(result.processed, 0));
+		goto DONE_COMPUTE_SELECT;
+		SKIP_COMPUTE_SELECT:;
+
+		while (1) {
+			if (((void *) 0) == ref_cursor) {
+				break;
+			}
+
+			last_cursor = ref_cursor;
+
+			while (((void *) 0) != ref_cursor && (cs_cursor_active != (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(ref_cursor->reference->cursor, &ref_cursor->reference->ion_record)) && cs_cursor_initialized != ref_cursor->reference->cursor_status)) {
+				ref_cursor->reference->cursor->destroy(&ref_cursor->reference->cursor);
+				dictionary_find(&ref_cursor->reference->dictionary, &ref_cursor->reference->predicate, &ref_cursor->reference->cursor);
+
+				if (((cs_cursor_active != (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(ref_cursor->reference->cursor, &ref_cursor->reference->ion_record))) && (cs_cursor_initialized != ref_cursor->reference->cursor_status))) {
+					goto IINQ_QUERY_CLEANUP;
+				}
+
+				ref_cursor = ref_cursor->last;
+			}
+
+			if (((void *) 0) == ref_cursor) {
+				break;
+			}
+			else if (last_cursor != ref_cursor) {
+				ref_cursor = last;
+			}
+
+			if (!(1)) {
+				continue;
+			}
+
+			jmp_r = setjmp(selectbuf);
+			goto COMPUTE_SELECT;
+			DONE_COMPUTE_SELECT:;
+			(processor)->execute(&result, (processor)->state);
+		}
+
+		IINQ_QUERY_CLEANUP:
+
+		while (((void *) 0) != first) {
+			first->reference->cursor->destroy(&first->reference->cursor);
+			ion_close_dictionary(&first->reference->dictionary);
+			first = first->next;
+		}
+	} while (0);
+
+	; */
 }
 
 void
@@ -1704,9 +1834,10 @@ iinq_benchmark_set_1(
 	ion_iinq_query_processor_t	processor;
 
 	/* Delete if exists */
-	ion_delete_master_table();
-	error = DROP(test);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
+/*	error = DROP(test); */
+/*	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error); */
+/*	ion_delete_master_table(); */
+	fremove("test.inq");
 
 	ion_key_type_t		key_type;
 	ion_key_size_t		key_size;
@@ -1725,7 +1856,7 @@ iinq_benchmark_set_1(
 
 	uint32_t i;
 
-	for (i = 0; i < 20; i++) {
+	for (i = 0; i < 100; i++) {
 		test_val.attr0	= i * 2;
 		test_val.attr1	= i * 3;
 		test_val.attr2	= i * 4;
