@@ -158,7 +158,7 @@ dictionary_update(
 	ion_key_t			key,
 	ion_value_t			value
 ) {
-	return ION_STATUS_INITIALIZE;	/* dictionary->handler->update(dictionary, key, value); */
+	return dictionary->handler->update(dictionary, key, value);
 }
 
 ion_err_t

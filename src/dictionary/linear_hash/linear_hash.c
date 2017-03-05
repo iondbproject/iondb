@@ -501,12 +501,13 @@ linear_hash_update(
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
 		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
-			linear_hash_get_record(bucket.anchor_record, record_key, record_value, &record_status, linear_hash);
+			linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
-			if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
-				record_status = 1;
-				linear_hash_write_record(record_loc, record_key, record_value, &record_status, linear_hash);
-				status.count++;
+			if (record_status == 1) {
+				if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
+					linear_hash_write_record(record_loc, record_key, value, &record_status, linear_hash);
+					status.count++;
+				}
 			}
 
 			record_loc += record_total_size;
@@ -519,12 +520,13 @@ linear_hash_update(
 	record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
 	for (int i = 0; i < linear_hash->records_per_bucket; i++) {
-		linear_hash_get_record(bucket.anchor_record, record_key, record_value, &record_status, linear_hash);
+		linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
-		if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
-			record_status = 1;
-			linear_hash_write_record(record_loc, record_key, record_value, &record_status, linear_hash);
-			status.count++;
+		if (record_status == 1) {
+			if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
+				linear_hash_write_record(record_loc, record_key, value, &record_status, linear_hash);
+				status.count++;
+			}
 		}
 
 		record_loc += record_total_size;

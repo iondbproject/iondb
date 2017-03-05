@@ -27,7 +27,7 @@ linear_hash_dict_init(
 	handler->create_dictionary	= linear_hash_create_dictionary;
 	handler->remove				= linear_hash_dict_delete;
 	handler->delete_dictionary	= linear_hash_delete_dictionary;
-	/* handler->update				= linear_hash_update; */
+	handler->update				= linear_hash_dict_update;
 	/* handler->find				= linear_hash_find; */
 	handler->close_dictionary	= linear_hash_close_dictionary;
 	handler->open_dictionary	= linear_hash_open_dictionary;
