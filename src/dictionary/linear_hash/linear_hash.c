@@ -1010,6 +1010,8 @@ linear_hash_close(
 		return err_file_close_error;
 	}
 
+	free(linear_hash);
+
 	return err_ok;
 }
 
