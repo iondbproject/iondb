@@ -238,3 +238,8 @@ ion_err_t
 linear_hash_destroy(
 	linear_hash_table_t *linear_hash
 );
+
+ion_err_t
+linear_hash_close(
+	linear_hash_table_t *linear_hash
+);
