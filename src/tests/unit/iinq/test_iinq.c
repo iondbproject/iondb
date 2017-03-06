@@ -233,13 +233,12 @@ iinq_get_suite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-/*
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_open_source_intint);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_open_source_string10string20);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_insert_update_delete_drop_dictionary_intint);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_single_dictionary);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_two_dictionaries);
-*/
+
 	return suite;
 }
 

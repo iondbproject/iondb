@@ -249,7 +249,7 @@ IINQ_QUERY_CLEANUP: \
 	} \
 	} \
 	while (0) { \
-		; \
+ \
 	}
 
 #if defined(__cplusplus)
