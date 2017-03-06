@@ -762,7 +762,7 @@ create_overflow_bucket(
 
 	/* check the file is open */
 	if (!linear_hash->database) {
-		/* handle me */
+		/* please handle me */
 	}
 
 	/* seek to end of file to append new bucket */
