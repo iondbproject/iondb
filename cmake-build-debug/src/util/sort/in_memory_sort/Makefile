@@ -125,14 +125,14 @@ in_memory_sort/fast:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/util/sort/in_memory_sort/CMakeFiles/in_memory_sort.dir/build.make src/util/sort/in_memory_sort/CMakeFiles/in_memory_sort.dir/build
 .PHONY : in_memory_sort/fast
 
-in_memory_sort.obj: in_memory_sort.c.obj
+in_memory_sort.o: in_memory_sort.c.o
 
-.PHONY : in_memory_sort.obj
+.PHONY : in_memory_sort.o
 
 # target to build an object file
-in_memory_sort.c.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/util/sort/in_memory_sort/CMakeFiles/in_memory_sort.dir/build.make src/util/sort/in_memory_sort/CMakeFiles/in_memory_sort.dir/in_memory_sort.c.obj
-.PHONY : in_memory_sort.c.obj
+in_memory_sort.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/util/sort/in_memory_sort/CMakeFiles/in_memory_sort.dir/build.make src/util/sort/in_memory_sort/CMakeFiles/in_memory_sort.dir/in_memory_sort.c.o
+.PHONY : in_memory_sort.c.o
 
 in_memory_sort.i: in_memory_sort.c.i
 
@@ -161,7 +161,7 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... in_memory_sort"
-	@echo "... in_memory_sort.obj"
+	@echo "... in_memory_sort.o"
 	@echo "... in_memory_sort.i"
 	@echo "... in_memory_sort.s"
 .PHONY : help

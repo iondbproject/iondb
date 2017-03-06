@@ -57,122 +57,67 @@ include src/util/sort/external_sort/CMakeFiles/external_sort.dir/progress.make
 # Include the compile flags for this target's objects.
 include src/util/sort/external_sort/CMakeFiles/external_sort.dir/flags.make
 
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.obj: src/util/sort/external_sort/CMakeFiles/external_sort.dir/flags.make
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.obj: ../src/util/sort/external_sort/external_sort.c
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.obj: ../src/util/sort/external_sort/external_sort.h
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/sort/external_sort && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/external_sort.dir/external_sort.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/util/sort/external_sort/external_sort.c
+src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.o: src/util/sort/external_sort/CMakeFiles/external_sort.dir/flags.make
+src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.o: ../src/util/sort/external_sort/external_sort.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.o"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/sort/external_sort && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/external_sort.dir/external_sort.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/util/sort/external_sort/external_sort.c
 
 src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/external_sort.dir/external_sort.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/sort/external_sort && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/util/sort/external_sort/external_sort.c > CMakeFiles/external_sort.dir/external_sort.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/sort/external_sort && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/util/sort/external_sort/external_sort.c > CMakeFiles/external_sort.dir/external_sort.c.i
 
 src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/external_sort.dir/external_sort.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/sort/external_sort && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/util/sort/external_sort/external_sort.c -o CMakeFiles/external_sort.dir/external_sort.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/sort/external_sort && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/util/sort/external_sort/external_sort.c -o CMakeFiles/external_sort.dir/external_sort.c.s
 
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.obj.requires:
+src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.o.requires:
 
-.PHONY : src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.obj.requires
+.PHONY : src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.o.requires
 
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.obj.provides: src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.obj.requires
-	$(MAKE) -f src/util/sort/external_sort/CMakeFiles/external_sort.dir/build.make src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.obj.provides.build
-.PHONY : src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.obj.provides
+src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.o.provides: src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.o.requires
+	$(MAKE) -f src/util/sort/external_sort/CMakeFiles/external_sort.dir/build.make src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.o.provides.build
+.PHONY : src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.o.provides
 
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.obj.provides.build: src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.obj
+src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.o.provides.build: src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.o
 
 
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.obj: src/util/sort/external_sort/CMakeFiles/external_sort.dir/flags.make
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.obj: ../src/util/sort/external_sort/flash_min_sort.c
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.obj: ../src/util/sort/external_sort/flash_min_sort.h
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.obj: ../src/util/sort/external_sort/external_sort_types.h
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/sort/external_sort && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/external_sort.dir/flash_min_sort.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/util/sort/external_sort/flash_min_sort.c
+src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.o: src/util/sort/external_sort/CMakeFiles/external_sort.dir/flags.make
+src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.o: ../src/util/sort/external_sort/flash_min_sort.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.o"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/sort/external_sort && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/external_sort.dir/flash_min_sort.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/util/sort/external_sort/flash_min_sort.c
 
 src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/external_sort.dir/flash_min_sort.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/sort/external_sort && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/util/sort/external_sort/flash_min_sort.c > CMakeFiles/external_sort.dir/flash_min_sort.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/sort/external_sort && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/util/sort/external_sort/flash_min_sort.c > CMakeFiles/external_sort.dir/flash_min_sort.c.i
 
 src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/external_sort.dir/flash_min_sort.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/sort/external_sort && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/util/sort/external_sort/flash_min_sort.c -o CMakeFiles/external_sort.dir/flash_min_sort.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/sort/external_sort && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/util/sort/external_sort/flash_min_sort.c -o CMakeFiles/external_sort.dir/flash_min_sort.c.s
 
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.obj.requires:
+src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.o.requires:
 
-.PHONY : src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.obj.requires
+.PHONY : src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.o.requires
 
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.obj.provides: src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.obj.requires
-	$(MAKE) -f src/util/sort/external_sort/CMakeFiles/external_sort.dir/build.make src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.obj.provides.build
-.PHONY : src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.obj.provides
+src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.o.provides: src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.o.requires
+	$(MAKE) -f src/util/sort/external_sort/CMakeFiles/external_sort.dir/build.make src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.o.provides.build
+.PHONY : src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.o.provides
 
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.obj.provides.build: src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.obj
-
-
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.obj: src/util/sort/external_sort/CMakeFiles/external_sort.dir/flags.make
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.obj: ../src/serial/serial_c_iface.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/sort/external_sort && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.obj -c /Users/danaklamut/ClionProjects/iondb/src/serial/serial_c_iface.cpp
-
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/sort/external_sort && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/serial/serial_c_iface.cpp > CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.i
-
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/sort/external_sort && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/serial/serial_c_iface.cpp -o CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.s
-
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.obj.requires:
-
-.PHONY : src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.obj.requires
-
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.obj.provides: src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.obj.requires
-	$(MAKE) -f src/util/sort/external_sort/CMakeFiles/external_sort.dir/build.make src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.obj.provides.build
-.PHONY : src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.obj.provides
-
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.obj.provides.build: src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.obj
-
-
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.obj: src/util/sort/external_sort/CMakeFiles/external_sort.dir/flags.make
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.obj: ../src/file/SD_stdio_c_iface.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/sort/external_sort && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.obj -c /Users/danaklamut/ClionProjects/iondb/src/file/SD_stdio_c_iface.cpp
-
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/sort/external_sort && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/file/SD_stdio_c_iface.cpp > CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.i
-
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/sort/external_sort && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/file/SD_stdio_c_iface.cpp -o CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.s
-
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.obj.requires:
-
-.PHONY : src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.obj.requires
-
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.obj.provides: src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.obj.requires
-	$(MAKE) -f src/util/sort/external_sort/CMakeFiles/external_sort.dir/build.make src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.obj.provides.build
-.PHONY : src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.obj.provides
-
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.obj.provides.build: src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.obj
+src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.o.provides.build: src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.o
 
 
 # Object files for target external_sort
 external_sort_OBJECTS = \
-"CMakeFiles/external_sort.dir/external_sort.c.obj" \
-"CMakeFiles/external_sort.dir/flash_min_sort.c.obj" \
-"CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.obj" \
-"CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.obj"
+"CMakeFiles/external_sort.dir/external_sort.c.o" \
+"CMakeFiles/external_sort.dir/flash_min_sort.c.o"
 
 # External object files for target external_sort
 external_sort_EXTERNAL_OBJECTS =
 
-src/util/sort/external_sort/libexternal_sort.a: src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.obj
-src/util/sort/external_sort/libexternal_sort.a: src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.obj
-src/util/sort/external_sort/libexternal_sort.a: src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.obj
-src/util/sort/external_sort/libexternal_sort.a: src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.obj
+src/util/sort/external_sort/libexternal_sort.a: src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.o
+src/util/sort/external_sort/libexternal_sort.a: src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.o
 src/util/sort/external_sort/libexternal_sort.a: src/util/sort/external_sort/CMakeFiles/external_sort.dir/build.make
 src/util/sort/external_sort/libexternal_sort.a: src/util/sort/external_sort/CMakeFiles/external_sort.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX static library libexternal_sort.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking C static library libexternal_sort.a"
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/sort/external_sort && $(CMAKE_COMMAND) -P CMakeFiles/external_sort.dir/cmake_clean_target.cmake
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/sort/external_sort && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/external_sort.dir/link.txt --verbose=$(VERBOSE)
 
@@ -181,10 +126,8 @@ src/util/sort/external_sort/CMakeFiles/external_sort.dir/build: src/util/sort/ex
 
 .PHONY : src/util/sort/external_sort/CMakeFiles/external_sort.dir/build
 
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/requires: src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.obj.requires
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/requires: src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.obj.requires
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/requires: src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/serial/serial_c_iface.cpp.obj.requires
-src/util/sort/external_sort/CMakeFiles/external_sort.dir/requires: src/util/sort/external_sort/CMakeFiles/external_sort.dir/__/__/__/file/SD_stdio_c_iface.cpp.obj.requires
+src/util/sort/external_sort/CMakeFiles/external_sort.dir/requires: src/util/sort/external_sort/CMakeFiles/external_sort.dir/external_sort.c.o.requires
+src/util/sort/external_sort/CMakeFiles/external_sort.dir/requires: src/util/sort/external_sort/CMakeFiles/external_sort.dir/flash_min_sort.c.o.requires
 
 .PHONY : src/util/sort/external_sort/CMakeFiles/external_sort.dir/requires
 

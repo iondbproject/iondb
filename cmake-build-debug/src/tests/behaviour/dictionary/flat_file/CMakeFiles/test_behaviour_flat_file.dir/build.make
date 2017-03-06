@@ -57,103 +57,83 @@ include src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_
 # Include the compile flags for this target's objects.
 include src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/flags.make
 
-src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file_behaviour_flat_file.ino.cpp: ../src/tests/behaviour/dictionary/flat_file/behaviour_flat_file.ino
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Regnerating behaviour_flat_file.ino Sketch"
-	"/Applications/CLion 2.app/Contents/bin/cmake/bin/cmake" /Users/danaklamut/ClionProjects/iondb
-
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.obj: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/flags.make
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.obj: ../src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.c
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.obj: ../src/tests/behaviour/dictionary/flat_file/../../../planckunit/src/planck_unit.h
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.obj: ../src/tests/behaviour/dictionary/flat_file/../behaviour_dictionary.h
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.obj: ../src/tests/behaviour/dictionary/flat_file/../../../../dictionary/flat_file/flat_file_dictionary_handler.h
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.obj: ../src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.h
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.c
+src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.o: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/flags.make
+src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.o: ../src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.o"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.c
 
 src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.c > CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.c > CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.i
 
 src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.c -o CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.c -o CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.s
 
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.obj.requires:
+src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.o.requires:
 
-.PHONY : src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.obj.requires
+.PHONY : src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.o.requires
 
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.obj.provides: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.obj.requires
-	$(MAKE) -f src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/build.make src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.obj.provides.build
-.PHONY : src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.obj.provides
+src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.o.provides: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.o.requires
+	$(MAKE) -f src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/build.make src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.o.provides.build
+.PHONY : src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.o.provides
 
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.obj.provides.build: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.obj
+src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.o.provides.build: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.o
 
 
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.obj: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/flags.make
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.obj: src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file_behaviour_flat_file.ino.cpp
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.obj: ../src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.h
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.obj -c /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file_behaviour_flat_file.ino.cpp
+src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.o: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/flags.make
+src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.o: ../src/tests/behaviour/dictionary/flat_file/run_behaviour_flat_file.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.o"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/tests/behaviour/dictionary/flat_file/run_behaviour_flat_file.c
 
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file_behaviour_flat_file.ino.cpp > CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.i
+src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.i"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/tests/behaviour/dictionary/flat_file/run_behaviour_flat_file.c > CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.i
 
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file_behaviour_flat_file.ino.cpp -o CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.s
+src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.s"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/tests/behaviour/dictionary/flat_file/run_behaviour_flat_file.c -o CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.s
 
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.obj.requires:
+src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.o.requires:
 
-.PHONY : src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.obj.requires
+.PHONY : src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.o.requires
 
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.obj.provides: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.obj.requires
-	$(MAKE) -f src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/build.make src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.obj.provides.build
-.PHONY : src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.obj.provides
+src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.o.provides: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.o.requires
+	$(MAKE) -f src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/build.make src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.o.provides.build
+.PHONY : src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.o.provides
 
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.obj.provides.build: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.obj
+src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.o.provides.build: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.o
 
 
 # Object files for target test_behaviour_flat_file
 test_behaviour_flat_file_OBJECTS = \
-"CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.obj" \
-"CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.obj"
+"CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.o" \
+"CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.o"
 
 # External object files for target test_behaviour_flat_file
 test_behaviour_flat_file_EXTERNAL_OBJECTS =
 
-src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.elf: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.obj
-src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.elf: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.obj
-src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.elf: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/build.make
-src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.elf: src/tests/unit/dictionary/libmega_SPI.a
-src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.elf: src/tests/unit/dictionary/libmega_SD.a
-src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.elf: src/tests/libmega_CORE.a
-src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.elf: src/tests/behaviour/dictionary/libbehaviour_dictionary.a
-src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.elf: src/tests/libplanck_unit.a
-src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.elf: src/dictionary/skip_list/libskip_list.a
-src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.elf: src/dictionary/flat_file/libflat_file.a
-src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.elf: src/dictionary/open_address_hash/libopen_address_hash.a
-src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.elf: src/dictionary/open_address_file_hash/libopen_address_file_hash.a
-src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.elf: src/dictionary/bpp_tree/libbpp_tree.a
-src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.elf: src/tests/unit/dictionary/libmega_SD.a
-src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.elf: src/tests/libmega_CORE.a
-src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.elf: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable test_behaviour_flat_file.elf"
+bin/test_behaviour_flat_file: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.o
+bin/test_behaviour_flat_file: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.o
+bin/test_behaviour_flat_file: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/build.make
+bin/test_behaviour_flat_file: src/tests/behaviour/dictionary/libbehaviour_dictionary.a
+bin/test_behaviour_flat_file: src/tests/libplanck_unit.a
+bin/test_behaviour_flat_file: src/dictionary/skip_list/libskip_list.a
+bin/test_behaviour_flat_file: src/dictionary/flat_file/libflat_file.a
+bin/test_behaviour_flat_file: src/dictionary/open_address_hash/libopen_address_hash.a
+bin/test_behaviour_flat_file: src/dictionary/open_address_file_hash/libopen_address_file_hash.a
+bin/test_behaviour_flat_file: src/dictionary/bpp_tree/libbpp_tree.a
+bin/test_behaviour_flat_file: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking C executable ../../../../../bin/test_behaviour_flat_file"
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/test_behaviour_flat_file.dir/link.txt --verbose=$(VERBOSE)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating EEP image"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0 /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.elf /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.eep
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating HEX image"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy -O ihex -R .eeprom /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.elf /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.hex
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Calculating image size"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file && "/Applications/CLion 2.app/Contents/bin/cmake/bin/cmake" -DFIRMWARE_IMAGE=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.elf -DMCU=atmega2560 -DEEPROM_IMAGE=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.eep -P /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles/FirmwareSize.cmake
 
 # Rule to build all files generated by this target.
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/build: src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file.elf
+src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/build: bin/test_behaviour_flat_file
 
 .PHONY : src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/build
 
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/requires: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.obj.requires
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/requires: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.obj.requires
+src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/requires: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.o.requires
+src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/requires: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.o.requires
 
 .PHONY : src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/requires
 
@@ -161,7 +141,7 @@ src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file && $(CMAKE_COMMAND) -P CMakeFiles/test_behaviour_flat_file.dir/cmake_clean.cmake
 .PHONY : src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/clean
 
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/depend: src/tests/behaviour/dictionary/flat_file/test_behaviour_flat_file_behaviour_flat_file.ino.cpp
+src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/depend:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/danaklamut/ClionProjects/iondb /Users/danaklamut/ClionProjects/iondb/src/tests/behaviour/dictionary/flat_file /Users/danaklamut/ClionProjects/iondb/cmake-build-debug /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/depend
 

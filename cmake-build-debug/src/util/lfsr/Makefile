@@ -125,14 +125,14 @@ lfsr/fast:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/util/lfsr/CMakeFiles/lfsr.dir/build.make src/util/lfsr/CMakeFiles/lfsr.dir/build
 .PHONY : lfsr/fast
 
-lfsr.obj: lfsr.c.obj
+lfsr.o: lfsr.c.o
 
-.PHONY : lfsr.obj
+.PHONY : lfsr.o
 
 # target to build an object file
-lfsr.c.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/util/lfsr/CMakeFiles/lfsr.dir/build.make src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.obj
-.PHONY : lfsr.c.obj
+lfsr.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/util/lfsr/CMakeFiles/lfsr.dir/build.make src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.o
+.PHONY : lfsr.c.o
 
 lfsr.i: lfsr.c.i
 
@@ -161,7 +161,7 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... lfsr"
-	@echo "... lfsr.obj"
+	@echo "... lfsr.o"
 	@echo "... lfsr.i"
 	@echo "... lfsr.s"
 .PHONY : help

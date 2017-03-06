@@ -125,41 +125,14 @@ bpp_tree/fast:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build
 .PHONY : bpp_tree/fast
 
-__/__/file/SD_stdio_c_iface.obj: __/__/file/SD_stdio_c_iface.cpp.obj
+__/__/file/ion_file.o: __/__/file/ion_file.c.o
 
-.PHONY : __/__/file/SD_stdio_c_iface.obj
-
-# target to build an object file
-__/__/file/SD_stdio_c_iface.cpp.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.obj
-.PHONY : __/__/file/SD_stdio_c_iface.cpp.obj
-
-__/__/file/SD_stdio_c_iface.i: __/__/file/SD_stdio_c_iface.cpp.i
-
-.PHONY : __/__/file/SD_stdio_c_iface.i
-
-# target to preprocess a source file
-__/__/file/SD_stdio_c_iface.cpp.i:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.i
-.PHONY : __/__/file/SD_stdio_c_iface.cpp.i
-
-__/__/file/SD_stdio_c_iface.s: __/__/file/SD_stdio_c_iface.cpp.s
-
-.PHONY : __/__/file/SD_stdio_c_iface.s
-
-# target to generate assembly for a file
-__/__/file/SD_stdio_c_iface.cpp.s:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.s
-.PHONY : __/__/file/SD_stdio_c_iface.cpp.s
-
-__/__/file/ion_file.obj: __/__/file/ion_file.c.obj
-
-.PHONY : __/__/file/ion_file.obj
+.PHONY : __/__/file/ion_file.o
 
 # target to build an object file
-__/__/file/ion_file.c.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.obj
-.PHONY : __/__/file/ion_file.c.obj
+__/__/file/ion_file.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.o
+.PHONY : __/__/file/ion_file.c.o
 
 __/__/file/ion_file.i: __/__/file/ion_file.c.i
 
@@ -179,14 +152,14 @@ __/__/file/ion_file.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.s
 .PHONY : __/__/file/ion_file.c.s
 
-__/__/file/linked_file_bag.obj: __/__/file/linked_file_bag.c.obj
+__/__/file/linked_file_bag.o: __/__/file/linked_file_bag.c.o
 
-.PHONY : __/__/file/linked_file_bag.obj
+.PHONY : __/__/file/linked_file_bag.o
 
 # target to build an object file
-__/__/file/linked_file_bag.c.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.obj
-.PHONY : __/__/file/linked_file_bag.c.obj
+__/__/file/linked_file_bag.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.o
+.PHONY : __/__/file/linked_file_bag.c.o
 
 __/__/file/linked_file_bag.i: __/__/file/linked_file_bag.c.i
 
@@ -206,41 +179,14 @@ __/__/file/linked_file_bag.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.s
 .PHONY : __/__/file/linked_file_bag.c.s
 
-__/__/serial/serial_c_iface.obj: __/__/serial/serial_c_iface.cpp.obj
+__/dictionary.o: __/dictionary.c.o
 
-.PHONY : __/__/serial/serial_c_iface.obj
-
-# target to build an object file
-__/__/serial/serial_c_iface.cpp.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.obj
-.PHONY : __/__/serial/serial_c_iface.cpp.obj
-
-__/__/serial/serial_c_iface.i: __/__/serial/serial_c_iface.cpp.i
-
-.PHONY : __/__/serial/serial_c_iface.i
-
-# target to preprocess a source file
-__/__/serial/serial_c_iface.cpp.i:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.i
-.PHONY : __/__/serial/serial_c_iface.cpp.i
-
-__/__/serial/serial_c_iface.s: __/__/serial/serial_c_iface.cpp.s
-
-.PHONY : __/__/serial/serial_c_iface.s
-
-# target to generate assembly for a file
-__/__/serial/serial_c_iface.cpp.s:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.s
-.PHONY : __/__/serial/serial_c_iface.cpp.s
-
-__/dictionary.obj: __/dictionary.c.obj
-
-.PHONY : __/dictionary.obj
+.PHONY : __/dictionary.o
 
 # target to build an object file
-__/dictionary.c.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.obj
-.PHONY : __/dictionary.c.obj
+__/dictionary.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.o
+.PHONY : __/dictionary.c.o
 
 __/dictionary.i: __/dictionary.c.i
 
@@ -260,14 +206,14 @@ __/dictionary.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.s
 .PHONY : __/dictionary.c.s
 
-bpp_tree.obj: bpp_tree.c.obj
+bpp_tree.o: bpp_tree.c.o
 
-.PHONY : bpp_tree.obj
+.PHONY : bpp_tree.o
 
 # target to build an object file
-bpp_tree.c.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.obj
-.PHONY : bpp_tree.c.obj
+bpp_tree.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.o
+.PHONY : bpp_tree.c.o
 
 bpp_tree.i: bpp_tree.c.i
 
@@ -287,14 +233,14 @@ bpp_tree.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.s
 .PHONY : bpp_tree.c.s
 
-bpp_tree_handler.obj: bpp_tree_handler.c.obj
+bpp_tree_handler.o: bpp_tree_handler.c.o
 
-.PHONY : bpp_tree_handler.obj
+.PHONY : bpp_tree_handler.o
 
 # target to build an object file
-bpp_tree_handler.c.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.obj
-.PHONY : bpp_tree_handler.c.obj
+bpp_tree_handler.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.o
+.PHONY : bpp_tree_handler.c.o
 
 bpp_tree_handler.i: bpp_tree_handler.c.i
 
@@ -323,25 +269,19 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... bpp_tree"
-	@echo "... __/__/file/SD_stdio_c_iface.obj"
-	@echo "... __/__/file/SD_stdio_c_iface.i"
-	@echo "... __/__/file/SD_stdio_c_iface.s"
-	@echo "... __/__/file/ion_file.obj"
+	@echo "... __/__/file/ion_file.o"
 	@echo "... __/__/file/ion_file.i"
 	@echo "... __/__/file/ion_file.s"
-	@echo "... __/__/file/linked_file_bag.obj"
+	@echo "... __/__/file/linked_file_bag.o"
 	@echo "... __/__/file/linked_file_bag.i"
 	@echo "... __/__/file/linked_file_bag.s"
-	@echo "... __/__/serial/serial_c_iface.obj"
-	@echo "... __/__/serial/serial_c_iface.i"
-	@echo "... __/__/serial/serial_c_iface.s"
-	@echo "... __/dictionary.obj"
+	@echo "... __/dictionary.o"
 	@echo "... __/dictionary.i"
 	@echo "... __/dictionary.s"
-	@echo "... bpp_tree.obj"
+	@echo "... bpp_tree.o"
 	@echo "... bpp_tree.i"
 	@echo "... bpp_tree.s"
-	@echo "... bpp_tree_handler.obj"
+	@echo "... bpp_tree_handler.o"
 	@echo "... bpp_tree_handler.i"
 	@echo "... bpp_tree_handler.s"
 .PHONY : help

@@ -111,51 +111,6 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-src/tests/unit/dictionary/CMakeFiles/test_dictionary-serial.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/dictionary/CMakeFiles/test_dictionary-serial.dir/rule
-.PHONY : src/tests/unit/dictionary/CMakeFiles/test_dictionary-serial.dir/rule
-
-# Convenience name for target.
-test_dictionary-serial: src/tests/unit/dictionary/CMakeFiles/test_dictionary-serial.dir/rule
-
-.PHONY : test_dictionary-serial
-
-# fast build rule for target.
-test_dictionary-serial/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary-serial.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary-serial.dir/build
-.PHONY : test_dictionary-serial/fast
-
-# Convenience name for target.
-src/tests/unit/dictionary/CMakeFiles/test_dictionary-size.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/dictionary/CMakeFiles/test_dictionary-size.dir/rule
-.PHONY : src/tests/unit/dictionary/CMakeFiles/test_dictionary-size.dir/rule
-
-# Convenience name for target.
-test_dictionary-size: src/tests/unit/dictionary/CMakeFiles/test_dictionary-size.dir/rule
-
-.PHONY : test_dictionary-size
-
-# fast build rule for target.
-test_dictionary-size/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary-size.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary-size.dir/build
-.PHONY : test_dictionary-size/fast
-
-# Convenience name for target.
-src/tests/unit/dictionary/CMakeFiles/upload.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/dictionary/CMakeFiles/upload.dir/rule
-.PHONY : src/tests/unit/dictionary/CMakeFiles/upload.dir/rule
-
-# Convenience name for target.
-upload: src/tests/unit/dictionary/CMakeFiles/upload.dir/rule
-
-.PHONY : upload
-
-# fast build rule for target.
-upload/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/upload.dir/build.make src/tests/unit/dictionary/CMakeFiles/upload.dir/build
-.PHONY : upload/fast
-
-# Convenience name for target.
 src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/rule:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/rule
 .PHONY : src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/rule
@@ -170,281 +125,14 @@ test_dictionary/fast:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/build
 .PHONY : test_dictionary/fast
 
-# Convenience name for target.
-src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/rule
-.PHONY : src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/rule
+__/__/__/dictionary/ion_master_table.o: __/__/__/dictionary/ion_master_table.c.o
 
-# Convenience name for target.
-mega_SdFat: src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/rule
-
-.PHONY : mega_SdFat
-
-# fast build rule for target.
-mega_SdFat/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/build
-.PHONY : mega_SdFat/fast
-
-# Convenience name for target.
-src/tests/unit/dictionary/CMakeFiles/test_dictionary-upload.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/dictionary/CMakeFiles/test_dictionary-upload.dir/rule
-.PHONY : src/tests/unit/dictionary/CMakeFiles/test_dictionary-upload.dir/rule
-
-# Convenience name for target.
-test_dictionary-upload: src/tests/unit/dictionary/CMakeFiles/test_dictionary-upload.dir/rule
-
-.PHONY : test_dictionary-upload
-
-# fast build rule for target.
-test_dictionary-upload/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary-upload.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary-upload.dir/build
-.PHONY : test_dictionary-upload/fast
-
-# Convenience name for target.
-src/tests/unit/dictionary/CMakeFiles/mega_SPI.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/dictionary/CMakeFiles/mega_SPI.dir/rule
-.PHONY : src/tests/unit/dictionary/CMakeFiles/mega_SPI.dir/rule
-
-# Convenience name for target.
-mega_SPI: src/tests/unit/dictionary/CMakeFiles/mega_SPI.dir/rule
-
-.PHONY : mega_SPI
-
-# fast build rule for target.
-mega_SPI/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SPI.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SPI.dir/build
-.PHONY : mega_SPI/fast
-
-# Convenience name for target.
-src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/rule
-.PHONY : src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/rule
-
-# Convenience name for target.
-mega_SdFatUtil: src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/rule
-
-.PHONY : mega_SdFatUtil
-
-# fast build rule for target.
-mega_SdFatUtil/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/build
-.PHONY : mega_SdFatUtil/fast
-
-# Convenience name for target.
-src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/rule
-.PHONY : src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/rule
-
-# Convenience name for target.
-mega_SD: src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/rule
-
-.PHONY : mega_SD
-
-# fast build rule for target.
-mega_SD/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/build
-.PHONY : mega_SD/fast
-
-Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.obj: Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.cpp.obj
-
-.PHONY : Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.obj
+.PHONY : __/__/__/dictionary/ion_master_table.o
 
 # target to build an object file
-Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.cpp.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SPI.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SPI.dir/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.cpp.obj
-.PHONY : Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.cpp.obj
-
-Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.i: Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.cpp.i
-
-.PHONY : Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.i
-
-# target to preprocess a source file
-Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.cpp.i:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SPI.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SPI.dir/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.cpp.i
-.PHONY : Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.cpp.i
-
-Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.s: Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.cpp.s
-
-.PHONY : Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.s
-
-# target to generate assembly for a file
-Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.cpp.s:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SPI.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SPI.dir/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.cpp.s
-.PHONY : Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.cpp.s
-
-Applications/Arduino.app/Contents/Java/libraries/SD/src/File.obj: Applications/Arduino.app/Contents/Java/libraries/SD/src/File.cpp.obj
-
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/File.obj
-
-# target to build an object file
-Applications/Arduino.app/Contents/Java/libraries/SD/src/File.cpp.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/File.cpp.obj
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/File.cpp.obj
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/File.cpp.obj
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/File.cpp.obj
-
-Applications/Arduino.app/Contents/Java/libraries/SD/src/File.i: Applications/Arduino.app/Contents/Java/libraries/SD/src/File.cpp.i
-
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/File.i
-
-# target to preprocess a source file
-Applications/Arduino.app/Contents/Java/libraries/SD/src/File.cpp.i:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/File.cpp.i
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/File.cpp.i
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/File.cpp.i
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/File.cpp.i
-
-Applications/Arduino.app/Contents/Java/libraries/SD/src/File.s: Applications/Arduino.app/Contents/Java/libraries/SD/src/File.cpp.s
-
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/File.s
-
-# target to generate assembly for a file
-Applications/Arduino.app/Contents/Java/libraries/SD/src/File.cpp.s:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/File.cpp.s
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/File.cpp.s
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/File.cpp.s
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/File.cpp.s
-
-Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.obj: Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.cpp.obj
-
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.obj
-
-# target to build an object file
-Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.cpp.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.cpp.obj
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.cpp.obj
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.cpp.obj
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.cpp.obj
-
-Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.i: Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.cpp.i
-
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.i
-
-# target to preprocess a source file
-Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.cpp.i:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.cpp.i
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.cpp.i
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.cpp.i
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.cpp.i
-
-Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.s: Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.cpp.s
-
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.s
-
-# target to generate assembly for a file
-Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.cpp.s:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.cpp.s
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.cpp.s
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.cpp.s
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.cpp.s
-
-Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.obj: Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.cpp.obj
-
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.obj
-
-# target to build an object file
-Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.cpp.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.cpp.obj
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.cpp.obj
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.cpp.obj
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.cpp.obj
-
-Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.i: Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.cpp.i
-
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.i
-
-# target to preprocess a source file
-Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.cpp.i:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.cpp.i
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.cpp.i
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.cpp.i
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.cpp.i
-
-Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.s: Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.cpp.s
-
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.s
-
-# target to generate assembly for a file
-Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.cpp.s:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.cpp.s
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.cpp.s
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.cpp.s
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.cpp.s
-
-Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.obj: Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.cpp.obj
-
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.obj
-
-# target to build an object file
-Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.cpp.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.cpp.obj
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.cpp.obj
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.cpp.obj
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.cpp.obj
-
-Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.i: Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.cpp.i
-
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.i
-
-# target to preprocess a source file
-Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.cpp.i:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.cpp.i
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.cpp.i
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.cpp.i
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.cpp.i
-
-Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.s: Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.cpp.s
-
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.s
-
-# target to generate assembly for a file
-Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.cpp.s:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.cpp.s
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.cpp.s
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.cpp.s
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.cpp.s
-
-Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.obj: Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.cpp.obj
-
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.obj
-
-# target to build an object file
-Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.cpp.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.cpp.obj
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.cpp.obj
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.cpp.obj
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.cpp.obj
-
-Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.i: Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.cpp.i
-
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.i
-
-# target to preprocess a source file
-Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.cpp.i:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.cpp.i
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.cpp.i
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.cpp.i
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.cpp.i
-
-Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.s: Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.cpp.s
-
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.s
-
-# target to generate assembly for a file
-Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.cpp.s:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.cpp.s
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.cpp.s
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.cpp.s
-.PHONY : Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.cpp.s
-
-__/__/__/dictionary/ion_master_table.obj: __/__/__/dictionary/ion_master_table.c.obj
-
-.PHONY : __/__/__/dictionary/ion_master_table.obj
-
-# target to build an object file
-__/__/__/dictionary/ion_master_table.c.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/__/__/__/dictionary/ion_master_table.c.obj
-.PHONY : __/__/__/dictionary/ion_master_table.c.obj
+__/__/__/dictionary/ion_master_table.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/__/__/__/dictionary/ion_master_table.c.o
+.PHONY : __/__/__/dictionary/ion_master_table.c.o
 
 __/__/__/dictionary/ion_master_table.i: __/__/__/dictionary/ion_master_table.c.i
 
@@ -464,41 +152,14 @@ __/__/__/dictionary/ion_master_table.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/__/__/__/dictionary/ion_master_table.c.s
 .PHONY : __/__/__/dictionary/ion_master_table.c.s
 
-__/__/__/file/SD_stdio_c_iface.obj: __/__/__/file/SD_stdio_c_iface.cpp.obj
+generic_dictionary_test.o: generic_dictionary_test.c.o
 
-.PHONY : __/__/__/file/SD_stdio_c_iface.obj
-
-# target to build an object file
-__/__/__/file/SD_stdio_c_iface.cpp.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/__/__/__/file/SD_stdio_c_iface.cpp.obj
-.PHONY : __/__/__/file/SD_stdio_c_iface.cpp.obj
-
-__/__/__/file/SD_stdio_c_iface.i: __/__/__/file/SD_stdio_c_iface.cpp.i
-
-.PHONY : __/__/__/file/SD_stdio_c_iface.i
-
-# target to preprocess a source file
-__/__/__/file/SD_stdio_c_iface.cpp.i:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/__/__/__/file/SD_stdio_c_iface.cpp.i
-.PHONY : __/__/__/file/SD_stdio_c_iface.cpp.i
-
-__/__/__/file/SD_stdio_c_iface.s: __/__/__/file/SD_stdio_c_iface.cpp.s
-
-.PHONY : __/__/__/file/SD_stdio_c_iface.s
-
-# target to generate assembly for a file
-__/__/__/file/SD_stdio_c_iface.cpp.s:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/__/__/__/file/SD_stdio_c_iface.cpp.s
-.PHONY : __/__/__/file/SD_stdio_c_iface.cpp.s
-
-generic_dictionary_test.obj: generic_dictionary_test.c.obj
-
-.PHONY : generic_dictionary_test.obj
+.PHONY : generic_dictionary_test.o
 
 # target to build an object file
-generic_dictionary_test.c.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/generic_dictionary_test.c.obj
-.PHONY : generic_dictionary_test.c.obj
+generic_dictionary_test.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/generic_dictionary_test.c.o
+.PHONY : generic_dictionary_test.c.o
 
 generic_dictionary_test.i: generic_dictionary_test.c.i
 
@@ -518,14 +179,41 @@ generic_dictionary_test.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/generic_dictionary_test.c.s
 .PHONY : generic_dictionary_test.c.s
 
-test_dictionary.obj: test_dictionary.c.obj
+run_dictionary.o: run_dictionary.c.o
 
-.PHONY : test_dictionary.obj
+.PHONY : run_dictionary.o
 
 # target to build an object file
-test_dictionary.c.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/test_dictionary.c.obj
-.PHONY : test_dictionary.c.obj
+run_dictionary.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/run_dictionary.c.o
+.PHONY : run_dictionary.c.o
+
+run_dictionary.i: run_dictionary.c.i
+
+.PHONY : run_dictionary.i
+
+# target to preprocess a source file
+run_dictionary.c.i:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/run_dictionary.c.i
+.PHONY : run_dictionary.c.i
+
+run_dictionary.s: run_dictionary.c.s
+
+.PHONY : run_dictionary.s
+
+# target to generate assembly for a file
+run_dictionary.c.s:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/run_dictionary.c.s
+.PHONY : run_dictionary.c.s
+
+test_dictionary.o: test_dictionary.c.o
+
+.PHONY : test_dictionary.o
+
+# target to build an object file
+test_dictionary.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/test_dictionary.c.o
+.PHONY : test_dictionary.c.o
 
 test_dictionary.i: test_dictionary.c.i
 
@@ -545,33 +233,6 @@ test_dictionary.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/test_dictionary.c.s
 .PHONY : test_dictionary.c.s
 
-test_dictionary_dictionary.ino.obj: test_dictionary_dictionary.ino.cpp.obj
-
-.PHONY : test_dictionary_dictionary.ino.obj
-
-# target to build an object file
-test_dictionary_dictionary.ino.cpp.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/test_dictionary_dictionary.ino.cpp.obj
-.PHONY : test_dictionary_dictionary.ino.cpp.obj
-
-test_dictionary_dictionary.ino.i: test_dictionary_dictionary.ino.cpp.i
-
-.PHONY : test_dictionary_dictionary.ino.i
-
-# target to preprocess a source file
-test_dictionary_dictionary.ino.cpp.i:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/test_dictionary_dictionary.ino.cpp.i
-.PHONY : test_dictionary_dictionary.ino.cpp.i
-
-test_dictionary_dictionary.ino.s: test_dictionary_dictionary.ino.cpp.s
-
-.PHONY : test_dictionary_dictionary.ino.s
-
-# target to generate assembly for a file
-test_dictionary_dictionary.ino.cpp.s:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/test_dictionary_dictionary.ino.cpp.s
-.PHONY : test_dictionary_dictionary.ino.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -579,49 +240,20 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... edit_cache"
-	@echo "... test_dictionary-serial"
-	@echo "... test_dictionary-size"
 	@echo "... rebuild_cache"
-	@echo "... upload"
 	@echo "... test_dictionary"
-	@echo "... mega_SdFat"
-	@echo "... test_dictionary-upload"
-	@echo "... mega_SPI"
-	@echo "... mega_SdFatUtil"
-	@echo "... mega_SD"
-	@echo "... Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.obj"
-	@echo "... Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.i"
-	@echo "... Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.s"
-	@echo "... Applications/Arduino.app/Contents/Java/libraries/SD/src/File.obj"
-	@echo "... Applications/Arduino.app/Contents/Java/libraries/SD/src/File.i"
-	@echo "... Applications/Arduino.app/Contents/Java/libraries/SD/src/File.s"
-	@echo "... Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.obj"
-	@echo "... Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.i"
-	@echo "... Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.s"
-	@echo "... Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.obj"
-	@echo "... Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.i"
-	@echo "... Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.s"
-	@echo "... Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.obj"
-	@echo "... Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.i"
-	@echo "... Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.s"
-	@echo "... Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.obj"
-	@echo "... Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.i"
-	@echo "... Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.s"
-	@echo "... __/__/__/dictionary/ion_master_table.obj"
+	@echo "... __/__/__/dictionary/ion_master_table.o"
 	@echo "... __/__/__/dictionary/ion_master_table.i"
 	@echo "... __/__/__/dictionary/ion_master_table.s"
-	@echo "... __/__/__/file/SD_stdio_c_iface.obj"
-	@echo "... __/__/__/file/SD_stdio_c_iface.i"
-	@echo "... __/__/__/file/SD_stdio_c_iface.s"
-	@echo "... generic_dictionary_test.obj"
+	@echo "... generic_dictionary_test.o"
 	@echo "... generic_dictionary_test.i"
 	@echo "... generic_dictionary_test.s"
-	@echo "... test_dictionary.obj"
+	@echo "... run_dictionary.o"
+	@echo "... run_dictionary.i"
+	@echo "... run_dictionary.s"
+	@echo "... test_dictionary.o"
 	@echo "... test_dictionary.i"
 	@echo "... test_dictionary.s"
-	@echo "... test_dictionary_dictionary.ino.obj"
-	@echo "... test_dictionary_dictionary.ino.i"
-	@echo "... test_dictionary_dictionary.ino.s"
 .PHONY : help
 
 

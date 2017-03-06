@@ -746,9 +746,9 @@ src/tests/unit/iinq/preinstall:
 # Target rules for target src/tests/unit/iinq/CMakeFiles/test_iinq.dir
 
 # All Build rule for target.
-src/tests/unit/iinq/CMakeFiles/test_iinq.dir/all: src/tests/CMakeFiles/planck_unit.dir/all
 src/tests/unit/iinq/CMakeFiles/test_iinq.dir/all: src/iinq/CMakeFiles/iinq.dir/all
 src/tests/unit/iinq/CMakeFiles/test_iinq.dir/all: src/util/sort/external_sort/CMakeFiles/external_sort.dir/all
+src/tests/unit/iinq/CMakeFiles/test_iinq.dir/all: src/tests/CMakeFiles/planck_unit.dir/all
 src/tests/unit/iinq/CMakeFiles/test_iinq.dir/all: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/all
 src/tests/unit/iinq/CMakeFiles/test_iinq.dir/all: src/dictionary/flat_file/CMakeFiles/flat_file.dir/all
 	$(MAKE) -f src/tests/unit/iinq/CMakeFiles/test_iinq.dir/build.make src/tests/unit/iinq/CMakeFiles/test_iinq.dir/depend
@@ -805,8 +805,8 @@ src/tests/unit/util/external_sort/preinstall:
 # Target rules for target src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir
 
 # All Build rule for target.
-src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/all: src/tests/CMakeFiles/planck_unit.dir/all
 src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/all: src/util/sort/external_sort/CMakeFiles/external_sort.dir/all
+src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/all: src/tests/CMakeFiles/planck_unit.dir/all
 	$(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/depend
 	$(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-release/CMakeFiles --progress-num=71,72,73 "Built target test_external_sort"

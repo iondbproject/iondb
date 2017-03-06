@@ -5,7 +5,7 @@
 		<Option title="test_dictionary"/>
 		<Option makefile_is_custom="1"/>
 		<Option compiler="gcc"/>
-		<Option virtualFolders="CMake Files\;CMake Files\cmake\;CMake Files\cmake\Platform\;CMake Files\src\;CMake Files\src\tests\;CMake Files\src\tests\unit\;CMake Files\src\tests\unit\dictionary\;CMake Files\src\tests\unit\dictionary\bpp_tree\;CMake Files\src\tests\unit\dictionary\flat_file\;CMake Files\src\tests\unit\dictionary\open_address_file_hash\;CMake Files\src\tests\unit\dictionary\open_address_hash\;CMake Files\src\tests\unit\dictionary\skip_list\;CMake Files\src\tests\unit\iinq\;CMake Files\src\tests\unit\util\;CMake Files\src\tests\unit\util\external_sort\;CMake Files\src\tests\unit\util\in_memory_sort\;CMake Files\src\tests\unit\cpp_wrapper\;CMake Files\src\tests\behaviour\;CMake Files\src\tests\behaviour\dictionary\;CMake Files\src\tests\behaviour\dictionary\flat_file\;CMake Files\src\tests\behaviour\dictionary\skip_list\;CMake Files\src\tests\behaviour\dictionary\bpp_tree\;CMake Files\src\tests\behaviour\dictionary\open_address_hash\;CMake Files\src\tests\behaviour\dictionary\open_address_file_hash\;CMake Files\src\tests\integration\;CMake Files\src\tests\integration\cpp_wrapper\;CMake Files\src\iinq\;CMake Files\src\util\;CMake Files\src\util\sort\;CMake Files\src\util\sort\external_sort\;CMake Files\src\util\sort\in_memory_sort\;CMake Files\src\util\lfsr\;CMake Files\src\dictionary\;CMake Files\src\dictionary\bpp_tree\;CMake Files\src\dictionary\flat_file\;CMake Files\src\dictionary\open_address_file_hash\;CMake Files\src\dictionary\open_address_hash\;CMake Files\src\dictionary\skip_list\;CMake Files\src\cpp_wrapper\;CMake Files\examples\;"/>
+		<Option virtualFolders="CMake Files\;CMake Files\src\;CMake Files\src\tests\;CMake Files\src\tests\unit\;CMake Files\src\tests\unit\dictionary\;CMake Files\src\tests\unit\dictionary\bpp_tree\;CMake Files\src\tests\unit\dictionary\flat_file\;CMake Files\src\tests\unit\dictionary\open_address_file_hash\;CMake Files\src\tests\unit\dictionary\open_address_hash\;CMake Files\src\tests\unit\dictionary\skip_list\;CMake Files\src\tests\unit\iinq\;CMake Files\src\tests\unit\util\;CMake Files\src\tests\unit\util\external_sort\;CMake Files\src\tests\unit\util\in_memory_sort\;CMake Files\src\tests\unit\cpp_wrapper\;CMake Files\src\tests\behaviour\;CMake Files\src\tests\behaviour\dictionary\;CMake Files\src\tests\behaviour\dictionary\flat_file\;CMake Files\src\tests\behaviour\dictionary\skip_list\;CMake Files\src\tests\behaviour\dictionary\bpp_tree\;CMake Files\src\tests\behaviour\dictionary\open_address_hash\;CMake Files\src\tests\behaviour\dictionary\open_address_file_hash\;CMake Files\src\tests\integration\;CMake Files\src\tests\integration\cpp_wrapper\;CMake Files\src\iinq\;CMake Files\src\util\;CMake Files\src\util\sort\;CMake Files\src\util\sort\external_sort\;CMake Files\src\util\sort\in_memory_sort\;CMake Files\src\util\lfsr\;CMake Files\src\dictionary\;CMake Files\src\dictionary\bpp_tree\;CMake Files\src\dictionary\flat_file\;CMake Files\src\dictionary\open_address_file_hash\;CMake Files\src\dictionary\open_address_hash\;CMake Files\src\dictionary\skip_list\;CMake Files\src\cpp_wrapper\;CMake Files\examples\;"/>
 		<Build>
 			<Target title="all">
 				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary"/>
@@ -17,58 +17,20 @@
 					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
-			<Target title="test_dictionary-serial">
-				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary"/>
-				<Option type="4"/>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 test_dictionary-serial"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="test_dictionary-size">
-				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary"/>
-				<Option type="4"/>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 test_dictionary-size"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="upload">
-				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary"/>
-				<Option type="4"/>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 upload"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
 			<Target title="test_dictionary">
-				<Option output="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/test_dictionary.elf" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary"/>
+				<Option output="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/bin/test_dictionary" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/bin"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include-fixed"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/bin/../lib/clang/7.0.2/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1"/>
 				</Compiler>
 				<MakeCommands>
 					<Build command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 test_dictionary"/>
@@ -78,27 +40,19 @@
 				</MakeCommands>
 			</Target>
 			<Target title="test_dictionary/fast">
-				<Option output="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/test_dictionary.elf" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary"/>
+				<Option output="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/bin/test_dictionary" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/bin"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include-fixed"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/bin/../lib/clang/7.0.2/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/bin/../include/c++/v1"/>
 				</Compiler>
 				<MakeCommands>
 					<Build command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 test_dictionary/fast"/>
@@ -107,341 +61,11 @@
 					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
-			<Target title="mega_SdFat">
-				<Option output="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/libmega_SdFat.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary"/>
-				<Option object_output="./"/>
-				<Option type="2"/>
-				<Option compiler="gcc"/>
-				<Compiler>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include-fixed"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/include"/>
-				</Compiler>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 mega_SdFat"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="mega_SdFat/fast">
-				<Option output="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/libmega_SdFat.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary"/>
-				<Option object_output="./"/>
-				<Option type="2"/>
-				<Option compiler="gcc"/>
-				<Compiler>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include-fixed"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/include"/>
-				</Compiler>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 mega_SdFat/fast"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="test_dictionary-upload">
-				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary"/>
-				<Option type="4"/>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 test_dictionary-upload"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="mega_SPI">
-				<Option output="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/libmega_SPI.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary"/>
-				<Option object_output="./"/>
-				<Option type="2"/>
-				<Option compiler="gcc"/>
-				<Compiler>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include-fixed"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/include"/>
-				</Compiler>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 mega_SPI"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="mega_SPI/fast">
-				<Option output="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/libmega_SPI.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary"/>
-				<Option object_output="./"/>
-				<Option type="2"/>
-				<Option compiler="gcc"/>
-				<Compiler>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include-fixed"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/include"/>
-				</Compiler>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 mega_SPI/fast"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="mega_SdFatUtil">
-				<Option output="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/libmega_SdFatUtil.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary"/>
-				<Option object_output="./"/>
-				<Option type="2"/>
-				<Option compiler="gcc"/>
-				<Compiler>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include-fixed"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/include"/>
-				</Compiler>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 mega_SdFatUtil"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="mega_SdFatUtil/fast">
-				<Option output="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/libmega_SdFatUtil.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary"/>
-				<Option object_output="./"/>
-				<Option type="2"/>
-				<Option compiler="gcc"/>
-				<Compiler>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include-fixed"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/include"/>
-				</Compiler>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 mega_SdFatUtil/fast"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="mega_SD">
-				<Option output="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/libmega_SD.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary"/>
-				<Option object_output="./"/>
-				<Option type="2"/>
-				<Option compiler="gcc"/>
-				<Compiler>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include-fixed"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/include"/>
-				</Compiler>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 mega_SD"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="mega_SD/fast">
-				<Option output="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/libmega_SD.a" prefix_auto="0" extension_auto="0"/>
-				<Option working_dir="/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary"/>
-				<Option object_output="./"/>
-				<Option type="2"/>
-				<Option compiler="gcc"/>
-				<Compiler>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFat/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil/src"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SdFatUtil/utility"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/include-fixed"/>
-					<Add directory="/Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.9.2/../../../../avr/include"/>
-				</Compiler>
-				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 mega_SD/fast"/>
-					<CompileFile command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -j8 -f &quot;/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
 		</Build>
-		<Unit filename="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.cpp">
-			<Option target="mega_SPI"/>
-		</Unit>
-		<Unit filename="/Applications/Arduino.app/Contents/Java/hardware/arduino/avr/libraries/SPI/src/SPI.h">
-			<Option target="mega_SPI"/>
-		</Unit>
-		<Unit filename="/Applications/Arduino.app/Contents/Java/libraries/SD/src/File.cpp">
-			<Option target="mega_SdFat"/>
-			<Option target="mega_SdFatUtil"/>
-			<Option target="mega_SD"/>
-		</Unit>
-		<Unit filename="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.cpp">
-			<Option target="mega_SdFat"/>
-			<Option target="mega_SdFatUtil"/>
-			<Option target="mega_SD"/>
-		</Unit>
-		<Unit filename="/Applications/Arduino.app/Contents/Java/libraries/SD/src/SD.h">
-			<Option target="mega_SdFat"/>
-			<Option target="mega_SdFatUtil"/>
-			<Option target="mega_SD"/>
-		</Unit>
-		<Unit filename="/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/FatStructs.h">
-			<Option target="mega_SdFat"/>
-			<Option target="mega_SdFatUtil"/>
-			<Option target="mega_SD"/>
-		</Unit>
-		<Unit filename="/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.cpp">
-			<Option target="mega_SdFat"/>
-			<Option target="mega_SdFatUtil"/>
-			<Option target="mega_SD"/>
-		</Unit>
-		<Unit filename="/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2Card.h">
-			<Option target="mega_SdFat"/>
-			<Option target="mega_SdFatUtil"/>
-			<Option target="mega_SD"/>
-		</Unit>
-		<Unit filename="/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/Sd2PinMap.h">
-			<Option target="mega_SdFat"/>
-			<Option target="mega_SdFatUtil"/>
-			<Option target="mega_SD"/>
-		</Unit>
-		<Unit filename="/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFat.h">
-			<Option target="mega_SdFat"/>
-			<Option target="mega_SdFatUtil"/>
-			<Option target="mega_SD"/>
-		</Unit>
-		<Unit filename="/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFatUtil.h">
-			<Option target="mega_SdFat"/>
-			<Option target="mega_SdFatUtil"/>
-			<Option target="mega_SD"/>
-		</Unit>
-		<Unit filename="/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFatmainpage.h">
-			<Option target="mega_SdFat"/>
-			<Option target="mega_SdFatUtil"/>
-			<Option target="mega_SD"/>
-		</Unit>
-		<Unit filename="/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdFile.cpp">
-			<Option target="mega_SdFat"/>
-			<Option target="mega_SdFatUtil"/>
-			<Option target="mega_SD"/>
-		</Unit>
-		<Unit filename="/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdInfo.h">
-			<Option target="mega_SdFat"/>
-			<Option target="mega_SdFatUtil"/>
-			<Option target="mega_SD"/>
-		</Unit>
-		<Unit filename="/Applications/Arduino.app/Contents/Java/libraries/SD/src/utility/SdVolume.cpp">
-			<Option target="mega_SdFat"/>
-			<Option target="mega_SdFatUtil"/>
-			<Option target="mega_SD"/>
-		</Unit>
 		<Unit filename="/Users/danaklamut/ClionProjects/iondb/src/dictionary/ion_master_table.c">
 			<Option target="test_dictionary"/>
 		</Unit>
 		<Unit filename="/Users/danaklamut/ClionProjects/iondb/src/dictionary/ion_master_table.h">
-			<Option target="test_dictionary"/>
-		</Unit>
-		<Unit filename="/Users/danaklamut/ClionProjects/iondb/src/file/SD_stdio_c_iface.cpp">
-			<Option target="test_dictionary"/>
-		</Unit>
-		<Unit filename="/Users/danaklamut/ClionProjects/iondb/src/file/SD_stdio_c_iface.h">
-			<Option target="test_dictionary"/>
-		</Unit>
-		<Unit filename="/Users/danaklamut/ClionProjects/iondb/src/file/kv_stdio_intercept.h">
 			<Option target="test_dictionary"/>
 		</Unit>
 		<Unit filename="/Users/danaklamut/ClionProjects/iondb/src/tests/unit/dictionary/generic_dictionary_test.c">
@@ -450,29 +74,14 @@
 		<Unit filename="/Users/danaklamut/ClionProjects/iondb/src/tests/unit/dictionary/generic_dictionary_test.h">
 			<Option target="test_dictionary"/>
 		</Unit>
+		<Unit filename="/Users/danaklamut/ClionProjects/iondb/src/tests/unit/dictionary/run_dictionary.c">
+			<Option target="test_dictionary"/>
+		</Unit>
 		<Unit filename="/Users/danaklamut/ClionProjects/iondb/src/tests/unit/dictionary/test_dictionary.c">
 			<Option target="test_dictionary"/>
 		</Unit>
 		<Unit filename="/Users/danaklamut/ClionProjects/iondb/src/tests/unit/dictionary/test_dictionary.h">
 			<Option target="test_dictionary"/>
-		</Unit>
-		<Unit filename="/Users/danaklamut/ClionProjects/iondb/CMakeLists.txt">
-			<Option virtualFolder="CMake Files\"/>
-		</Unit>
-		<Unit filename="/Users/danaklamut/ClionProjects/iondb/cmake/ArduinoToolchain.cmake">
-			<Option virtualFolder="CMake Files\cmake\"/>
-		</Unit>
-		<Unit filename="/Users/danaklamut/ClionProjects/iondb/cmake/ArduinoToolchain.cmake">
-			<Option virtualFolder="CMake Files\cmake\"/>
-		</Unit>
-		<Unit filename="/Users/danaklamut/ClionProjects/iondb/cmake/Platform/Arduino.cmake">
-			<Option virtualFolder="CMake Files\cmake\Platform\"/>
-		</Unit>
-		<Unit filename="/Users/danaklamut/ClionProjects/iondb/cmake/Platform/Arduino.cmake">
-			<Option virtualFolder="CMake Files\cmake\Platform\"/>
-		</Unit>
-		<Unit filename="/Users/danaklamut/ClionProjects/iondb/cmake/Platform/Arduino.cmake">
-			<Option virtualFolder="CMake Files\cmake\Platform\"/>
 		</Unit>
 		<Unit filename="/Users/danaklamut/ClionProjects/iondb/src/tests/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\src\tests\"/>

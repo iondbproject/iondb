@@ -111,51 +111,6 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-serial.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-serial.dir/rule
-.PHONY : src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-serial.dir/rule
-
-# Convenience name for target.
-test_external_sort-serial: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-serial.dir/rule
-
-.PHONY : test_external_sort-serial
-
-# fast build rule for target.
-test_external_sort-serial/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-serial.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-serial.dir/build
-.PHONY : test_external_sort-serial/fast
-
-# Convenience name for target.
-src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-upload.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-upload.dir/rule
-.PHONY : src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-upload.dir/rule
-
-# Convenience name for target.
-test_external_sort-upload: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-upload.dir/rule
-
-.PHONY : test_external_sort-upload
-
-# fast build rule for target.
-test_external_sort-upload/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-upload.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-upload.dir/build
-.PHONY : test_external_sort-upload/fast
-
-# Convenience name for target.
-src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-size.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-size.dir/rule
-.PHONY : src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-size.dir/rule
-
-# Convenience name for target.
-test_external_sort-size: src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-size.dir/rule
-
-.PHONY : test_external_sort-size
-
-# fast build rule for target.
-test_external_sort-size/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-size.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-size.dir/build
-.PHONY : test_external_sort-size/fast
-
-# Convenience name for target.
 src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/rule:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/rule
 .PHONY : src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/rule
@@ -170,14 +125,41 @@ test_external_sort/fast:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build
 .PHONY : test_external_sort/fast
 
-test_external_sort.obj: test_external_sort.c.obj
+run_external_sort.o: run_external_sort.c.o
 
-.PHONY : test_external_sort.obj
+.PHONY : run_external_sort.o
 
 # target to build an object file
-test_external_sort.c.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.obj
-.PHONY : test_external_sort.c.obj
+run_external_sort.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/run_external_sort.c.o
+.PHONY : run_external_sort.c.o
+
+run_external_sort.i: run_external_sort.c.i
+
+.PHONY : run_external_sort.i
+
+# target to preprocess a source file
+run_external_sort.c.i:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/run_external_sort.c.i
+.PHONY : run_external_sort.c.i
+
+run_external_sort.s: run_external_sort.c.s
+
+.PHONY : run_external_sort.s
+
+# target to generate assembly for a file
+run_external_sort.c.s:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/run_external_sort.c.s
+.PHONY : run_external_sort.c.s
+
+test_external_sort.o: test_external_sort.c.o
+
+.PHONY : test_external_sort.o
+
+# target to build an object file
+test_external_sort.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.o
+.PHONY : test_external_sort.c.o
 
 test_external_sort.i: test_external_sort.c.i
 
@@ -197,33 +179,6 @@ test_external_sort.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort.c.s
 .PHONY : test_external_sort.c.s
 
-test_external_sort_external_sort.ino.obj: test_external_sort_external_sort.ino.cpp.obj
-
-.PHONY : test_external_sort_external_sort.ino.obj
-
-# target to build an object file
-test_external_sort_external_sort.ino.cpp.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.obj
-.PHONY : test_external_sort_external_sort.ino.cpp.obj
-
-test_external_sort_external_sort.ino.i: test_external_sort_external_sort.ino.cpp.i
-
-.PHONY : test_external_sort_external_sort.ino.i
-
-# target to preprocess a source file
-test_external_sort_external_sort.ino.cpp.i:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.i
-.PHONY : test_external_sort_external_sort.ino.cpp.i
-
-test_external_sort_external_sort.ino.s: test_external_sort_external_sort.ino.cpp.s
-
-.PHONY : test_external_sort_external_sort.ino.s
-
-# target to generate assembly for a file
-test_external_sort_external_sort.ino.cpp.s:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/test_external_sort_external_sort.ino.cpp.s
-.PHONY : test_external_sort_external_sort.ino.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -232,16 +187,13 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... test_external_sort-serial"
-	@echo "... test_external_sort-upload"
-	@echo "... test_external_sort-size"
 	@echo "... test_external_sort"
-	@echo "... test_external_sort.obj"
+	@echo "... run_external_sort.o"
+	@echo "... run_external_sort.i"
+	@echo "... run_external_sort.s"
+	@echo "... test_external_sort.o"
 	@echo "... test_external_sort.i"
 	@echo "... test_external_sort.s"
-	@echo "... test_external_sort_external_sort.ino.obj"
-	@echo "... test_external_sort_external_sort.ino.i"
-	@echo "... test_external_sort_external_sort.ino.s"
 .PHONY : help
 
 

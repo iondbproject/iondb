@@ -57,68 +57,67 @@ include src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/progr
 # Include the compile flags for this target's objects.
 include src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/flags.make
 
-src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.obj: src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/flags.make
-src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.obj: ../src/tests/behaviour/dictionary/behaviour_dictionary.c
-src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.obj: ../src/tests/behaviour/dictionary/behaviour_dictionary.h
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/tests/behaviour/dictionary/behaviour_dictionary.c
+src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.o: src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/flags.make
+src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.o: ../src/tests/behaviour/dictionary/behaviour_dictionary.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.o"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/tests/behaviour/dictionary/behaviour_dictionary.c
 
 src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/tests/behaviour/dictionary/behaviour_dictionary.c > CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/tests/behaviour/dictionary/behaviour_dictionary.c > CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.i
 
 src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/tests/behaviour/dictionary/behaviour_dictionary.c -o CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/tests/behaviour/dictionary/behaviour_dictionary.c -o CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.s
 
-src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.obj.requires:
+src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.o.requires:
 
-.PHONY : src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.obj.requires
+.PHONY : src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.o.requires
 
-src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.obj.provides: src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.obj.requires
-	$(MAKE) -f src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/build.make src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.obj.provides.build
-.PHONY : src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.obj.provides
+src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.o.provides: src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.o.requires
+	$(MAKE) -f src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/build.make src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.o.provides.build
+.PHONY : src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.o.provides
 
-src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.obj.provides.build: src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.obj
+src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.o.provides.build: src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.o
 
 
-src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.obj: src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/flags.make
-src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.obj: ../src/dictionary/ion_master_table.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/ion_master_table.c
+src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.o: src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/flags.make
+src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.o: ../src/dictionary/ion_master_table.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.o"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/ion_master_table.c
 
 src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/ion_master_table.c > CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/ion_master_table.c > CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.i
 
 src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/ion_master_table.c -o CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/ion_master_table.c -o CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.s
 
-src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.obj.requires:
+src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.o.requires:
 
-.PHONY : src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.obj.requires
+.PHONY : src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.o.requires
 
-src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.obj.provides: src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.obj.requires
-	$(MAKE) -f src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/build.make src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.obj.provides.build
-.PHONY : src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.obj.provides
+src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.o.provides: src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.o.requires
+	$(MAKE) -f src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/build.make src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.o.provides.build
+.PHONY : src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.o.provides
 
-src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.obj.provides.build: src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.obj
+src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.o.provides.build: src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.o
 
 
 # Object files for target behaviour_dictionary
 behaviour_dictionary_OBJECTS = \
-"CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.obj" \
-"CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.obj"
+"CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.o" \
+"CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.o"
 
 # External object files for target behaviour_dictionary
 behaviour_dictionary_EXTERNAL_OBJECTS =
 
-src/tests/behaviour/dictionary/libbehaviour_dictionary.a: src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.obj
-src/tests/behaviour/dictionary/libbehaviour_dictionary.a: src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.obj
+src/tests/behaviour/dictionary/libbehaviour_dictionary.a: src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.o
+src/tests/behaviour/dictionary/libbehaviour_dictionary.a: src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.o
 src/tests/behaviour/dictionary/libbehaviour_dictionary.a: src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/build.make
 src/tests/behaviour/dictionary/libbehaviour_dictionary.a: src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX static library libbehaviour_dictionary.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking C static library libbehaviour_dictionary.a"
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary && $(CMAKE_COMMAND) -P CMakeFiles/behaviour_dictionary.dir/cmake_clean_target.cmake
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/behaviour/dictionary && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/behaviour_dictionary.dir/link.txt --verbose=$(VERBOSE)
 
@@ -127,8 +126,8 @@ src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/build: src/te
 
 .PHONY : src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/build
 
-src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/requires: src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.obj.requires
-src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/requires: src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.obj.requires
+src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/requires: src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.o.requires
+src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/requires: src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.o.requires
 
 .PHONY : src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/requires
 

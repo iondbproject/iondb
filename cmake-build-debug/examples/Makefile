@@ -125,14 +125,14 @@ example_master_table/fast:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f examples/CMakeFiles/example_master_table.dir/build.make examples/CMakeFiles/example_master_table.dir/build
 .PHONY : example_master_table/fast
 
-__/src/dictionary/ion_master_table.obj: __/src/dictionary/ion_master_table.c.obj
+__/src/dictionary/ion_master_table.o: __/src/dictionary/ion_master_table.c.o
 
-.PHONY : __/src/dictionary/ion_master_table.obj
+.PHONY : __/src/dictionary/ion_master_table.o
 
 # target to build an object file
-__/src/dictionary/ion_master_table.c.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f examples/CMakeFiles/example_master_table.dir/build.make examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.obj
-.PHONY : __/src/dictionary/ion_master_table.c.obj
+__/src/dictionary/ion_master_table.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f examples/CMakeFiles/example_master_table.dir/build.make examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.o
+.PHONY : __/src/dictionary/ion_master_table.c.o
 
 __/src/dictionary/ion_master_table.i: __/src/dictionary/ion_master_table.c.i
 
@@ -152,14 +152,14 @@ __/src/dictionary/ion_master_table.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f examples/CMakeFiles/example_master_table.dir/build.make examples/CMakeFiles/example_master_table.dir/__/src/dictionary/ion_master_table.c.s
 .PHONY : __/src/dictionary/ion_master_table.c.s
 
-master_table_example.obj: master_table_example.c.obj
+master_table_example.o: master_table_example.c.o
 
-.PHONY : master_table_example.obj
+.PHONY : master_table_example.o
 
 # target to build an object file
-master_table_example.c.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f examples/CMakeFiles/example_master_table.dir/build.make examples/CMakeFiles/example_master_table.dir/master_table_example.c.obj
-.PHONY : master_table_example.c.obj
+master_table_example.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f examples/CMakeFiles/example_master_table.dir/build.make examples/CMakeFiles/example_master_table.dir/master_table_example.c.o
+.PHONY : master_table_example.c.o
 
 master_table_example.i: master_table_example.c.i
 
@@ -188,10 +188,10 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... example_master_table"
-	@echo "... __/src/dictionary/ion_master_table.obj"
+	@echo "... __/src/dictionary/ion_master_table.o"
 	@echo "... __/src/dictionary/ion_master_table.i"
 	@echo "... __/src/dictionary/ion_master_table.s"
-	@echo "... master_table_example.obj"
+	@echo "... master_table_example.o"
 	@echo "... master_table_example.i"
 	@echo "... master_table_example.s"
 .PHONY : help

@@ -56,17 +56,6 @@ CMAKE_BINARY_DIR = /Users/danaklamut/ClionProjects/iondb/cmake-build-debug
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	"/Applications/CLion 2.app/Contents/bin/cmake/bin/cmake" -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
-
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
-
-.PHONY : rebuild_cache/fast
-
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
@@ -77,6 +66,17 @@ edit_cache:
 edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
+
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	"/Applications/CLion 2.app/Contents/bin/cmake/bin/cmake" -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+
+.PHONY : rebuild_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -111,51 +111,6 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-serial.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-serial.dir/rule
-.PHONY : src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-serial.dir/rule
-
-# Convenience name for target.
-test_cpp_wrapper-serial: src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-serial.dir/rule
-
-.PHONY : test_cpp_wrapper-serial
-
-# fast build rule for target.
-test_cpp_wrapper-serial/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-serial.dir/build.make src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-serial.dir/build
-.PHONY : test_cpp_wrapper-serial/fast
-
-# Convenience name for target.
-src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-upload.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-upload.dir/rule
-.PHONY : src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-upload.dir/rule
-
-# Convenience name for target.
-test_cpp_wrapper-upload: src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-upload.dir/rule
-
-.PHONY : test_cpp_wrapper-upload
-
-# fast build rule for target.
-test_cpp_wrapper-upload/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-upload.dir/build.make src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-upload.dir/build
-.PHONY : test_cpp_wrapper-upload/fast
-
-# Convenience name for target.
-src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-size.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-size.dir/rule
-.PHONY : src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-size.dir/rule
-
-# Convenience name for target.
-test_cpp_wrapper-size: src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-size.dir/rule
-
-.PHONY : test_cpp_wrapper-size
-
-# fast build rule for target.
-test_cpp_wrapper-size/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-size.dir/build.make src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-size.dir/build
-.PHONY : test_cpp_wrapper-size/fast
-
-# Convenience name for target.
 src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/rule:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/rule
 .PHONY : src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/rule
@@ -170,14 +125,41 @@ test_cpp_wrapper/fast:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/build.make src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/build
 .PHONY : test_cpp_wrapper/fast
 
-test_cpp_wrapper.obj: test_cpp_wrapper.cpp.obj
+run_cpp_wrapper.o: run_cpp_wrapper.cpp.o
 
-.PHONY : test_cpp_wrapper.obj
+.PHONY : run_cpp_wrapper.o
 
 # target to build an object file
-test_cpp_wrapper.cpp.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/build.make src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/test_cpp_wrapper.cpp.obj
-.PHONY : test_cpp_wrapper.cpp.obj
+run_cpp_wrapper.cpp.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/build.make src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/run_cpp_wrapper.cpp.o
+.PHONY : run_cpp_wrapper.cpp.o
+
+run_cpp_wrapper.i: run_cpp_wrapper.cpp.i
+
+.PHONY : run_cpp_wrapper.i
+
+# target to preprocess a source file
+run_cpp_wrapper.cpp.i:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/build.make src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/run_cpp_wrapper.cpp.i
+.PHONY : run_cpp_wrapper.cpp.i
+
+run_cpp_wrapper.s: run_cpp_wrapper.cpp.s
+
+.PHONY : run_cpp_wrapper.s
+
+# target to generate assembly for a file
+run_cpp_wrapper.cpp.s:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/build.make src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/run_cpp_wrapper.cpp.s
+.PHONY : run_cpp_wrapper.cpp.s
+
+test_cpp_wrapper.o: test_cpp_wrapper.cpp.o
+
+.PHONY : test_cpp_wrapper.o
+
+# target to build an object file
+test_cpp_wrapper.cpp.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/build.make src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/test_cpp_wrapper.cpp.o
+.PHONY : test_cpp_wrapper.cpp.o
 
 test_cpp_wrapper.i: test_cpp_wrapper.cpp.i
 
@@ -197,51 +179,21 @@ test_cpp_wrapper.cpp.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/build.make src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/test_cpp_wrapper.cpp.s
 .PHONY : test_cpp_wrapper.cpp.s
 
-test_cpp_wrapper_cpp_wrapper.ino.obj: test_cpp_wrapper_cpp_wrapper.ino.cpp.obj
-
-.PHONY : test_cpp_wrapper_cpp_wrapper.ino.obj
-
-# target to build an object file
-test_cpp_wrapper_cpp_wrapper.ino.cpp.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/build.make src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/test_cpp_wrapper_cpp_wrapper.ino.cpp.obj
-.PHONY : test_cpp_wrapper_cpp_wrapper.ino.cpp.obj
-
-test_cpp_wrapper_cpp_wrapper.ino.i: test_cpp_wrapper_cpp_wrapper.ino.cpp.i
-
-.PHONY : test_cpp_wrapper_cpp_wrapper.ino.i
-
-# target to preprocess a source file
-test_cpp_wrapper_cpp_wrapper.ino.cpp.i:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/build.make src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/test_cpp_wrapper_cpp_wrapper.ino.cpp.i
-.PHONY : test_cpp_wrapper_cpp_wrapper.ino.cpp.i
-
-test_cpp_wrapper_cpp_wrapper.ino.s: test_cpp_wrapper_cpp_wrapper.ino.cpp.s
-
-.PHONY : test_cpp_wrapper_cpp_wrapper.ino.s
-
-# target to generate assembly for a file
-test_cpp_wrapper_cpp_wrapper.ino.cpp.s:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/build.make src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper.dir/test_cpp_wrapper_cpp_wrapper.ino.cpp.s
-.PHONY : test_cpp_wrapper_cpp_wrapper.ino.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... rebuild_cache"
-	@echo "... test_cpp_wrapper-serial"
-	@echo "... test_cpp_wrapper-upload"
 	@echo "... edit_cache"
-	@echo "... test_cpp_wrapper-size"
+	@echo "... rebuild_cache"
 	@echo "... test_cpp_wrapper"
-	@echo "... test_cpp_wrapper.obj"
+	@echo "... run_cpp_wrapper.o"
+	@echo "... run_cpp_wrapper.i"
+	@echo "... run_cpp_wrapper.s"
+	@echo "... test_cpp_wrapper.o"
 	@echo "... test_cpp_wrapper.i"
 	@echo "... test_cpp_wrapper.s"
-	@echo "... test_cpp_wrapper_cpp_wrapper.ino.obj"
-	@echo "... test_cpp_wrapper_cpp_wrapper.ino.i"
-	@echo "... test_cpp_wrapper_cpp_wrapper.ino.s"
 .PHONY : help
 
 

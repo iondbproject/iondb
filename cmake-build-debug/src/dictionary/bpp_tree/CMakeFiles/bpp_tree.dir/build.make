@@ -57,199 +57,145 @@ include src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/progress.make
 # Include the compile flags for this target's objects.
 include src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/flags.make
 
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.obj: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/flags.make
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.obj: ../src/dictionary/bpp_tree/bpp_tree.c
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.obj: ../src/dictionary/bpp_tree/bpp_tree.h
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/bpp_tree.dir/bpp_tree.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/bpp_tree/bpp_tree.c
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.o: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/flags.make
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.o: ../src/dictionary/bpp_tree/bpp_tree.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.o"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/bpp_tree.dir/bpp_tree.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/bpp_tree/bpp_tree.c
 
 src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/bpp_tree.dir/bpp_tree.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/bpp_tree/bpp_tree.c > CMakeFiles/bpp_tree.dir/bpp_tree.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/bpp_tree/bpp_tree.c > CMakeFiles/bpp_tree.dir/bpp_tree.c.i
 
 src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/bpp_tree.dir/bpp_tree.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/bpp_tree/bpp_tree.c -o CMakeFiles/bpp_tree.dir/bpp_tree.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/bpp_tree/bpp_tree.c -o CMakeFiles/bpp_tree.dir/bpp_tree.c.s
 
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.obj.requires:
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.o.requires:
 
-.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.obj.requires
+.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.o.requires
 
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.obj.provides: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.obj.requires
-	$(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.obj.provides.build
-.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.obj.provides
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.o.provides: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.o.requires
+	$(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.o.provides.build
+.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.o.provides
 
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.obj.provides.build: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.obj
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.o.provides.build: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.o
 
 
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.obj: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/flags.make
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.obj: ../src/dictionary/bpp_tree/bpp_tree_handler.c
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.obj: ../src/dictionary/bpp_tree/bpp_tree_handler.h
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/bpp_tree/bpp_tree_handler.c
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.o: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/flags.make
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.o: ../src/dictionary/bpp_tree/bpp_tree_handler.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.o"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/bpp_tree/bpp_tree_handler.c
 
 src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/bpp_tree/bpp_tree_handler.c > CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/bpp_tree/bpp_tree_handler.c > CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.i
 
 src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/bpp_tree/bpp_tree_handler.c -o CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/bpp_tree/bpp_tree_handler.c -o CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.s
 
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.obj.requires:
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.o.requires:
 
-.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.obj.requires
+.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.o.requires
 
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.obj.provides: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.obj.requires
-	$(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.obj.provides.build
-.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.obj.provides
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.o.provides: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.o.requires
+	$(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.o.provides.build
+.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.o.provides
 
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.obj.provides.build: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.obj
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.o.provides.build: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.o
 
 
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.obj: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/flags.make
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.obj: ../src/file/linked_file_bag.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/file/linked_file_bag.c
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.o: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/flags.make
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.o: ../src/file/linked_file_bag.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.o"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/file/linked_file_bag.c
 
 src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/file/linked_file_bag.c > CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/file/linked_file_bag.c > CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.i
 
 src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/file/linked_file_bag.c -o CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/file/linked_file_bag.c -o CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.s
 
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.obj.requires:
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.o.requires:
 
-.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.obj.requires
+.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.o.requires
 
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.obj.provides: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.obj.requires
-	$(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.obj.provides.build
-.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.obj.provides
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.o.provides: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.o.requires
+	$(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.o.provides.build
+.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.o.provides
 
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.obj.provides.build: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.obj
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.o.provides.build: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.o
 
 
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.obj: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/flags.make
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.obj: ../src/file/ion_file.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/file/ion_file.c
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.o: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/flags.make
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.o: ../src/file/ion_file.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.o"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/file/ion_file.c
 
 src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/file/ion_file.c > CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/file/ion_file.c > CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.i
 
 src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/file/ion_file.c -o CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/file/ion_file.c -o CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.s
 
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.obj.requires:
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.o.requires:
 
-.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.obj.requires
+.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.o.requires
 
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.obj.provides: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.obj.requires
-	$(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.obj.provides.build
-.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.obj.provides
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.o.provides: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.o.requires
+	$(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.o.provides.build
+.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.o.provides
 
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.obj.provides.build: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.obj
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.o.provides.build: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.o
 
 
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.obj: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/flags.make
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.obj: ../src/dictionary/dictionary.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/bpp_tree.dir/__/dictionary.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/dictionary.c
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.o: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/flags.make
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.o: ../src/dictionary/dictionary.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.o"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/bpp_tree.dir/__/dictionary.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/dictionary.c
 
 src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/bpp_tree.dir/__/dictionary.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/dictionary.c > CMakeFiles/bpp_tree.dir/__/dictionary.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/dictionary.c > CMakeFiles/bpp_tree.dir/__/dictionary.c.i
 
 src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/bpp_tree.dir/__/dictionary.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/dictionary.c -o CMakeFiles/bpp_tree.dir/__/dictionary.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/dictionary.c -o CMakeFiles/bpp_tree.dir/__/dictionary.c.s
 
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.obj.requires:
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.o.requires:
 
-.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.obj.requires
+.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.o.requires
 
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.obj.provides: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.obj.requires
-	$(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.obj.provides.build
-.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.obj.provides
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.o.provides: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.o.requires
+	$(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.o.provides.build
+.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.o.provides
 
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.obj.provides.build: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.obj
-
-
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.obj: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/flags.make
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.obj: ../src/serial/serial_c_iface.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.obj -c /Users/danaklamut/ClionProjects/iondb/src/serial/serial_c_iface.cpp
-
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/serial/serial_c_iface.cpp > CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.i
-
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/serial/serial_c_iface.cpp -o CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.s
-
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.obj.requires:
-
-.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.obj.requires
-
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.obj.provides: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.obj.requires
-	$(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.obj.provides.build
-.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.obj.provides
-
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.obj.provides.build: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.obj
-
-
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.obj: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/flags.make
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.obj: ../src/file/SD_stdio_c_iface.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.obj -c /Users/danaklamut/ClionProjects/iondb/src/file/SD_stdio_c_iface.cpp
-
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/file/SD_stdio_c_iface.cpp > CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.i
-
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/file/SD_stdio_c_iface.cpp -o CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.s
-
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.obj.requires:
-
-.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.obj.requires
-
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.obj.provides: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.obj.requires
-	$(MAKE) -f src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.obj.provides.build
-.PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.obj.provides
-
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.obj.provides.build: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.obj
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.o.provides.build: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.o
 
 
 # Object files for target bpp_tree
 bpp_tree_OBJECTS = \
-"CMakeFiles/bpp_tree.dir/bpp_tree.c.obj" \
-"CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.obj" \
-"CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.obj" \
-"CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.obj" \
-"CMakeFiles/bpp_tree.dir/__/dictionary.c.obj" \
-"CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.obj" \
-"CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.obj"
+"CMakeFiles/bpp_tree.dir/bpp_tree.c.o" \
+"CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.o" \
+"CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.o" \
+"CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.o" \
+"CMakeFiles/bpp_tree.dir/__/dictionary.c.o"
 
 # External object files for target bpp_tree
 bpp_tree_EXTERNAL_OBJECTS =
 
-src/dictionary/bpp_tree/libbpp_tree.a: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.obj
-src/dictionary/bpp_tree/libbpp_tree.a: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.obj
-src/dictionary/bpp_tree/libbpp_tree.a: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.obj
-src/dictionary/bpp_tree/libbpp_tree.a: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.obj
-src/dictionary/bpp_tree/libbpp_tree.a: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.obj
-src/dictionary/bpp_tree/libbpp_tree.a: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.obj
-src/dictionary/bpp_tree/libbpp_tree.a: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.obj
+src/dictionary/bpp_tree/libbpp_tree.a: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.o
+src/dictionary/bpp_tree/libbpp_tree.a: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.o
+src/dictionary/bpp_tree/libbpp_tree.a: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.o
+src/dictionary/bpp_tree/libbpp_tree.a: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.o
+src/dictionary/bpp_tree/libbpp_tree.a: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.o
 src/dictionary/bpp_tree/libbpp_tree.a: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build.make
 src/dictionary/bpp_tree/libbpp_tree.a: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX static library libbpp_tree.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking C static library libbpp_tree.a"
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && $(CMAKE_COMMAND) -P CMakeFiles/bpp_tree.dir/cmake_clean_target.cmake
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/bpp_tree && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/bpp_tree.dir/link.txt --verbose=$(VERBOSE)
 
@@ -258,13 +204,11 @@ src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build: src/dictionary/bpp_tree/l
 
 .PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/build
 
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/requires: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.obj.requires
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/requires: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.obj.requires
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/requires: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.obj.requires
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/requires: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.obj.requires
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/requires: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.obj.requires
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/requires: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/serial/serial_c_iface.cpp.obj.requires
-src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/requires: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/SD_stdio_c_iface.cpp.obj.requires
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/requires: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree.c.o.requires
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/requires: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.o.requires
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/requires: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.o.requires
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/requires: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.o.requires
+src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/requires: src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/__/dictionary.c.o.requires
 
 .PHONY : src/dictionary/bpp_tree/CMakeFiles/bpp_tree.dir/requires
 

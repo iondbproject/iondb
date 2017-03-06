@@ -2366,9 +2366,6 @@
 		<Unit filename="/Users/danaklamut/ClionProjects/iondb/cmake/ArduinoToolchain.cmake">
 			<Option virtualFolder="CMake Files\cmake\"/>
 		</Unit>
-		<Unit filename="/Users/danaklamut/ClionProjects/iondb/cmake/ArduinoToolchain.cmake">
-			<Option virtualFolder="CMake Files\cmake\"/>
-		</Unit>
 		<Unit filename="/Users/danaklamut/ClionProjects/iondb/cmake/Platform/Arduino.cmake">
 			<Option virtualFolder="CMake Files\cmake\Platform\"/>
 		</Unit>

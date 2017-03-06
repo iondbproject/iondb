@@ -125,14 +125,14 @@ open_address_hash/fast:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/open_address_hash/CMakeFiles/open_address_hash.dir/build.make src/dictionary/open_address_hash/CMakeFiles/open_address_hash.dir/build
 .PHONY : open_address_hash/fast
 
-__/dictionary.obj: __/dictionary.c.obj
+__/dictionary.o: __/dictionary.c.o
 
-.PHONY : __/dictionary.obj
+.PHONY : __/dictionary.o
 
 # target to build an object file
-__/dictionary.c.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/open_address_hash/CMakeFiles/open_address_hash.dir/build.make src/dictionary/open_address_hash/CMakeFiles/open_address_hash.dir/__/dictionary.c.obj
-.PHONY : __/dictionary.c.obj
+__/dictionary.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/open_address_hash/CMakeFiles/open_address_hash.dir/build.make src/dictionary/open_address_hash/CMakeFiles/open_address_hash.dir/__/dictionary.c.o
+.PHONY : __/dictionary.c.o
 
 __/dictionary.i: __/dictionary.c.i
 
@@ -152,14 +152,14 @@ __/dictionary.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/open_address_hash/CMakeFiles/open_address_hash.dir/build.make src/dictionary/open_address_hash/CMakeFiles/open_address_hash.dir/__/dictionary.c.s
 .PHONY : __/dictionary.c.s
 
-open_address_hash.obj: open_address_hash.c.obj
+open_address_hash.o: open_address_hash.c.o
 
-.PHONY : open_address_hash.obj
+.PHONY : open_address_hash.o
 
 # target to build an object file
-open_address_hash.c.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/open_address_hash/CMakeFiles/open_address_hash.dir/build.make src/dictionary/open_address_hash/CMakeFiles/open_address_hash.dir/open_address_hash.c.obj
-.PHONY : open_address_hash.c.obj
+open_address_hash.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/open_address_hash/CMakeFiles/open_address_hash.dir/build.make src/dictionary/open_address_hash/CMakeFiles/open_address_hash.dir/open_address_hash.c.o
+.PHONY : open_address_hash.c.o
 
 open_address_hash.i: open_address_hash.c.i
 
@@ -179,14 +179,14 @@ open_address_hash.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/open_address_hash/CMakeFiles/open_address_hash.dir/build.make src/dictionary/open_address_hash/CMakeFiles/open_address_hash.dir/open_address_hash.c.s
 .PHONY : open_address_hash.c.s
 
-open_address_hash_dictionary_handler.obj: open_address_hash_dictionary_handler.c.obj
+open_address_hash_dictionary_handler.o: open_address_hash_dictionary_handler.c.o
 
-.PHONY : open_address_hash_dictionary_handler.obj
+.PHONY : open_address_hash_dictionary_handler.o
 
 # target to build an object file
-open_address_hash_dictionary_handler.c.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/open_address_hash/CMakeFiles/open_address_hash.dir/build.make src/dictionary/open_address_hash/CMakeFiles/open_address_hash.dir/open_address_hash_dictionary_handler.c.obj
-.PHONY : open_address_hash_dictionary_handler.c.obj
+open_address_hash_dictionary_handler.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/dictionary/open_address_hash/CMakeFiles/open_address_hash.dir/build.make src/dictionary/open_address_hash/CMakeFiles/open_address_hash.dir/open_address_hash_dictionary_handler.c.o
+.PHONY : open_address_hash_dictionary_handler.c.o
 
 open_address_hash_dictionary_handler.i: open_address_hash_dictionary_handler.c.i
 
@@ -215,13 +215,13 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... open_address_hash"
-	@echo "... __/dictionary.obj"
+	@echo "... __/dictionary.o"
 	@echo "... __/dictionary.i"
 	@echo "... __/dictionary.s"
-	@echo "... open_address_hash.obj"
+	@echo "... open_address_hash.o"
 	@echo "... open_address_hash.i"
 	@echo "... open_address_hash.s"
-	@echo "... open_address_hash_dictionary_handler.obj"
+	@echo "... open_address_hash_dictionary_handler.o"
 	@echo "... open_address_hash_dictionary_handler.i"
 	@echo "... open_address_hash_dictionary_handler.s"
 .PHONY : help

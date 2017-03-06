@@ -56,17 +56,6 @@ CMAKE_BINARY_DIR = /Users/danaklamut/ClionProjects/iondb/cmake-build-debug
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	"/Applications/CLion 2.app/Contents/bin/cmake/bin/cmake" -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
-
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
-
-.PHONY : rebuild_cache/fast
-
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
@@ -77,6 +66,17 @@ edit_cache:
 edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
+
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	"/Applications/CLion 2.app/Contents/bin/cmake/bin/cmake" -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+
+.PHONY : rebuild_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -125,59 +125,14 @@ test_bpp_tree/fast:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build
 .PHONY : test_bpp_tree/fast
 
-# Convenience name for target.
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-upload.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-upload.dir/rule
-.PHONY : src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-upload.dir/rule
+__/generic_dictionary_test.o: __/generic_dictionary_test.c.o
 
-# Convenience name for target.
-test_bpp_tree-upload: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-upload.dir/rule
-
-.PHONY : test_bpp_tree-upload
-
-# fast build rule for target.
-test_bpp_tree-upload/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-upload.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-upload.dir/build
-.PHONY : test_bpp_tree-upload/fast
-
-# Convenience name for target.
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-size.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-size.dir/rule
-.PHONY : src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-size.dir/rule
-
-# Convenience name for target.
-test_bpp_tree-size: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-size.dir/rule
-
-.PHONY : test_bpp_tree-size
-
-# fast build rule for target.
-test_bpp_tree-size/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-size.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-size.dir/build
-.PHONY : test_bpp_tree-size/fast
-
-# Convenience name for target.
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-serial.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-serial.dir/rule
-.PHONY : src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-serial.dir/rule
-
-# Convenience name for target.
-test_bpp_tree-serial: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-serial.dir/rule
-
-.PHONY : test_bpp_tree-serial
-
-# fast build rule for target.
-test_bpp_tree-serial/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-serial.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-serial.dir/build
-.PHONY : test_bpp_tree-serial/fast
-
-__/generic_dictionary_test.obj: __/generic_dictionary_test.c.obj
-
-.PHONY : __/generic_dictionary_test.obj
+.PHONY : __/generic_dictionary_test.o
 
 # target to build an object file
-__/generic_dictionary_test.c.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.obj
-.PHONY : __/generic_dictionary_test.c.obj
+__/generic_dictionary_test.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.o
+.PHONY : __/generic_dictionary_test.c.o
 
 __/generic_dictionary_test.i: __/generic_dictionary_test.c.i
 
@@ -197,41 +152,41 @@ __/generic_dictionary_test.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.s
 .PHONY : __/generic_dictionary_test.c.s
 
-test_bpp_tree_bpp_tree.ino.obj: test_bpp_tree_bpp_tree.ino.cpp.obj
+run_bpp_tree.o: run_bpp_tree.c.o
 
-.PHONY : test_bpp_tree_bpp_tree.ino.obj
+.PHONY : run_bpp_tree.o
 
 # target to build an object file
-test_bpp_tree_bpp_tree.ino.cpp.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.obj
-.PHONY : test_bpp_tree_bpp_tree.ino.cpp.obj
+run_bpp_tree.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.o
+.PHONY : run_bpp_tree.c.o
 
-test_bpp_tree_bpp_tree.ino.i: test_bpp_tree_bpp_tree.ino.cpp.i
+run_bpp_tree.i: run_bpp_tree.c.i
 
-.PHONY : test_bpp_tree_bpp_tree.ino.i
+.PHONY : run_bpp_tree.i
 
 # target to preprocess a source file
-test_bpp_tree_bpp_tree.ino.cpp.i:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.i
-.PHONY : test_bpp_tree_bpp_tree.ino.cpp.i
+run_bpp_tree.c.i:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.i
+.PHONY : run_bpp_tree.c.i
 
-test_bpp_tree_bpp_tree.ino.s: test_bpp_tree_bpp_tree.ino.cpp.s
+run_bpp_tree.s: run_bpp_tree.c.s
 
-.PHONY : test_bpp_tree_bpp_tree.ino.s
+.PHONY : run_bpp_tree.s
 
 # target to generate assembly for a file
-test_bpp_tree_bpp_tree.ino.cpp.s:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.s
-.PHONY : test_bpp_tree_bpp_tree.ino.cpp.s
+run_bpp_tree.c.s:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.s
+.PHONY : run_bpp_tree.c.s
 
-test_bpp_tree_handler.obj: test_bpp_tree_handler.c.obj
+test_bpp_tree_handler.o: test_bpp_tree_handler.c.o
 
-.PHONY : test_bpp_tree_handler.obj
+.PHONY : test_bpp_tree_handler.o
 
 # target to build an object file
-test_bpp_tree_handler.c.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.obj
-.PHONY : test_bpp_tree_handler.c.obj
+test_bpp_tree_handler.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.o
+.PHONY : test_bpp_tree_handler.c.o
 
 test_bpp_tree_handler.i: test_bpp_tree_handler.c.i
 
@@ -257,19 +212,16 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... rebuild_cache"
 	@echo "... edit_cache"
+	@echo "... rebuild_cache"
 	@echo "... test_bpp_tree"
-	@echo "... test_bpp_tree-upload"
-	@echo "... test_bpp_tree-size"
-	@echo "... test_bpp_tree-serial"
-	@echo "... __/generic_dictionary_test.obj"
+	@echo "... __/generic_dictionary_test.o"
 	@echo "... __/generic_dictionary_test.i"
 	@echo "... __/generic_dictionary_test.s"
-	@echo "... test_bpp_tree_bpp_tree.ino.obj"
-	@echo "... test_bpp_tree_bpp_tree.ino.i"
-	@echo "... test_bpp_tree_bpp_tree.ino.s"
-	@echo "... test_bpp_tree_handler.obj"
+	@echo "... run_bpp_tree.o"
+	@echo "... run_bpp_tree.i"
+	@echo "... run_bpp_tree.s"
+	@echo "... test_bpp_tree_handler.o"
 	@echo "... test_bpp_tree_handler.i"
 	@echo "... test_bpp_tree_handler.s"
 .PHONY : help

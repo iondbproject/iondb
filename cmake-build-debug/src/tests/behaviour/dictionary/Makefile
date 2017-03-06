@@ -125,14 +125,14 @@ behaviour_dictionary/fast:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/build.make src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/build
 .PHONY : behaviour_dictionary/fast
 
-__/__/__/dictionary/ion_master_table.obj: __/__/__/dictionary/ion_master_table.c.obj
+__/__/__/dictionary/ion_master_table.o: __/__/__/dictionary/ion_master_table.c.o
 
-.PHONY : __/__/__/dictionary/ion_master_table.obj
+.PHONY : __/__/__/dictionary/ion_master_table.o
 
 # target to build an object file
-__/__/__/dictionary/ion_master_table.c.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/build.make src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.obj
-.PHONY : __/__/__/dictionary/ion_master_table.c.obj
+__/__/__/dictionary/ion_master_table.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/build.make src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.o
+.PHONY : __/__/__/dictionary/ion_master_table.c.o
 
 __/__/__/dictionary/ion_master_table.i: __/__/__/dictionary/ion_master_table.c.i
 
@@ -152,14 +152,14 @@ __/__/__/dictionary/ion_master_table.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/build.make src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/__/__/__/dictionary/ion_master_table.c.s
 .PHONY : __/__/__/dictionary/ion_master_table.c.s
 
-behaviour_dictionary.obj: behaviour_dictionary.c.obj
+behaviour_dictionary.o: behaviour_dictionary.c.o
 
-.PHONY : behaviour_dictionary.obj
+.PHONY : behaviour_dictionary.o
 
 # target to build an object file
-behaviour_dictionary.c.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/build.make src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.obj
-.PHONY : behaviour_dictionary.c.obj
+behaviour_dictionary.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/build.make src/tests/behaviour/dictionary/CMakeFiles/behaviour_dictionary.dir/behaviour_dictionary.c.o
+.PHONY : behaviour_dictionary.c.o
 
 behaviour_dictionary.i: behaviour_dictionary.c.i
 
@@ -188,10 +188,10 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... behaviour_dictionary"
-	@echo "... __/__/__/dictionary/ion_master_table.obj"
+	@echo "... __/__/__/dictionary/ion_master_table.o"
 	@echo "... __/__/__/dictionary/ion_master_table.i"
 	@echo "... __/__/__/dictionary/ion_master_table.s"
-	@echo "... behaviour_dictionary.obj"
+	@echo "... behaviour_dictionary.o"
 	@echo "... behaviour_dictionary.i"
 	@echo "... behaviour_dictionary.s"
 .PHONY : help

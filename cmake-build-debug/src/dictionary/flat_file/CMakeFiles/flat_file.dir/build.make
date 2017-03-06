@@ -57,147 +57,93 @@ include src/dictionary/flat_file/CMakeFiles/flat_file.dir/progress.make
 # Include the compile flags for this target's objects.
 include src/dictionary/flat_file/CMakeFiles/flat_file.dir/flags.make
 
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.obj: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flags.make
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.obj: ../src/dictionary/flat_file/flat_file.c
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.obj: ../src/dictionary/flat_file/flat_file.h
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/flat_file.dir/flat_file.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/flat_file/flat_file.c
+src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.o: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flags.make
+src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.o: ../src/dictionary/flat_file/flat_file.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.o"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/flat_file.dir/flat_file.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/flat_file/flat_file.c
 
 src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/flat_file.dir/flat_file.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/flat_file/flat_file.c > CMakeFiles/flat_file.dir/flat_file.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/flat_file/flat_file.c > CMakeFiles/flat_file.dir/flat_file.c.i
 
 src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/flat_file.dir/flat_file.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/flat_file/flat_file.c -o CMakeFiles/flat_file.dir/flat_file.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/flat_file/flat_file.c -o CMakeFiles/flat_file.dir/flat_file.c.s
 
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.obj.requires:
+src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.o.requires:
 
-.PHONY : src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.obj.requires
+.PHONY : src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.o.requires
 
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.obj.provides: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.obj.requires
-	$(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.obj.provides.build
-.PHONY : src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.obj.provides
+src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.o.provides: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.o.requires
+	$(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.o.provides.build
+.PHONY : src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.o.provides
 
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.obj.provides.build: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.obj
+src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.o.provides.build: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.o
 
 
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.obj: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flags.make
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.obj: ../src/dictionary/flat_file/flat_file_dictionary_handler.c
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.obj: ../src/dictionary/flat_file/flat_file_dictionary_handler.h
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/flat_file/flat_file_dictionary_handler.c
+src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.o: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flags.make
+src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.o: ../src/dictionary/flat_file/flat_file_dictionary_handler.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.o"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/flat_file/flat_file_dictionary_handler.c
 
 src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/flat_file/flat_file_dictionary_handler.c > CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/flat_file/flat_file_dictionary_handler.c > CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.i
 
 src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/flat_file/flat_file_dictionary_handler.c -o CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/flat_file/flat_file_dictionary_handler.c -o CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.s
 
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.obj.requires:
+src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.o.requires:
 
-.PHONY : src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.obj.requires
+.PHONY : src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.o.requires
 
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.obj.provides: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.obj.requires
-	$(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.obj.provides.build
-.PHONY : src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.obj.provides
+src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.o.provides: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.o.requires
+	$(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.o.provides.build
+.PHONY : src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.o.provides
 
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.obj.provides.build: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.obj
+src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.o.provides.build: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.o
 
 
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.obj: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flags.make
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.obj: ../src/dictionary/dictionary.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/flat_file.dir/__/dictionary.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/dictionary.c
+src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.o: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flags.make
+src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.o: ../src/dictionary/dictionary.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.o"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/flat_file.dir/__/dictionary.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/dictionary/dictionary.c
 
 src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/flat_file.dir/__/dictionary.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/dictionary.c > CMakeFiles/flat_file.dir/__/dictionary.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/dictionary/dictionary.c > CMakeFiles/flat_file.dir/__/dictionary.c.i
 
 src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/flat_file.dir/__/dictionary.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/dictionary.c -o CMakeFiles/flat_file.dir/__/dictionary.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/dictionary/dictionary.c -o CMakeFiles/flat_file.dir/__/dictionary.c.s
 
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.obj.requires:
+src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.o.requires:
 
-.PHONY : src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.obj.requires
+.PHONY : src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.o.requires
 
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.obj.provides: src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.obj.requires
-	$(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.obj.provides.build
-.PHONY : src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.obj.provides
+src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.o.provides: src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.o.requires
+	$(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.o.provides.build
+.PHONY : src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.o.provides
 
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.obj.provides.build: src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.obj
-
-
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.obj: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flags.make
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.obj: ../src/file/SD_stdio_c_iface.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.obj -c /Users/danaklamut/ClionProjects/iondb/src/file/SD_stdio_c_iface.cpp
-
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/file/SD_stdio_c_iface.cpp > CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.i
-
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/file/SD_stdio_c_iface.cpp -o CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.s
-
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.obj.requires:
-
-.PHONY : src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.obj.requires
-
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.obj.provides: src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.obj.requires
-	$(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.obj.provides.build
-.PHONY : src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.obj.provides
-
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.obj.provides.build: src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.obj
-
-
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.obj: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flags.make
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.obj: ../src/serial/serial_c_iface.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.obj -c /Users/danaklamut/ClionProjects/iondb/src/serial/serial_c_iface.cpp
-
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/serial/serial_c_iface.cpp > CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.i
-
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/serial/serial_c_iface.cpp -o CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.s
-
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.obj.requires:
-
-.PHONY : src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.obj.requires
-
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.obj.provides: src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.obj.requires
-	$(MAKE) -f src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.obj.provides.build
-.PHONY : src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.obj.provides
-
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.obj.provides.build: src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.obj
+src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.o.provides.build: src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.o
 
 
 # Object files for target flat_file
 flat_file_OBJECTS = \
-"CMakeFiles/flat_file.dir/flat_file.c.obj" \
-"CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.obj" \
-"CMakeFiles/flat_file.dir/__/dictionary.c.obj" \
-"CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.obj" \
-"CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.obj"
+"CMakeFiles/flat_file.dir/flat_file.c.o" \
+"CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.o" \
+"CMakeFiles/flat_file.dir/__/dictionary.c.o"
 
 # External object files for target flat_file
 flat_file_EXTERNAL_OBJECTS =
 
-src/dictionary/flat_file/libflat_file.a: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.obj
-src/dictionary/flat_file/libflat_file.a: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.obj
-src/dictionary/flat_file/libflat_file.a: src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.obj
-src/dictionary/flat_file/libflat_file.a: src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.obj
-src/dictionary/flat_file/libflat_file.a: src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.obj
+src/dictionary/flat_file/libflat_file.a: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.o
+src/dictionary/flat_file/libflat_file.a: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.o
+src/dictionary/flat_file/libflat_file.a: src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.o
 src/dictionary/flat_file/libflat_file.a: src/dictionary/flat_file/CMakeFiles/flat_file.dir/build.make
 src/dictionary/flat_file/libflat_file.a: src/dictionary/flat_file/CMakeFiles/flat_file.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX static library libflat_file.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking C static library libflat_file.a"
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && $(CMAKE_COMMAND) -P CMakeFiles/flat_file.dir/cmake_clean_target.cmake
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/dictionary/flat_file && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/flat_file.dir/link.txt --verbose=$(VERBOSE)
 
@@ -206,11 +152,9 @@ src/dictionary/flat_file/CMakeFiles/flat_file.dir/build: src/dictionary/flat_fil
 
 .PHONY : src/dictionary/flat_file/CMakeFiles/flat_file.dir/build
 
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/requires: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.obj.requires
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/requires: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.obj.requires
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/requires: src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.obj.requires
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/requires: src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/file/SD_stdio_c_iface.cpp.obj.requires
-src/dictionary/flat_file/CMakeFiles/flat_file.dir/requires: src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/__/serial/serial_c_iface.cpp.obj.requires
+src/dictionary/flat_file/CMakeFiles/flat_file.dir/requires: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file.c.o.requires
+src/dictionary/flat_file/CMakeFiles/flat_file.dir/requires: src/dictionary/flat_file/CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.o.requires
+src/dictionary/flat_file/CMakeFiles/flat_file.dir/requires: src/dictionary/flat_file/CMakeFiles/flat_file.dir/__/dictionary.c.o.requires
 
 .PHONY : src/dictionary/flat_file/CMakeFiles/flat_file.dir/requires
 

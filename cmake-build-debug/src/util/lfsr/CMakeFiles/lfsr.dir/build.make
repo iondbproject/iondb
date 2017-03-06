@@ -57,42 +57,41 @@ include src/util/lfsr/CMakeFiles/lfsr.dir/progress.make
 # Include the compile flags for this target's objects.
 include src/util/lfsr/CMakeFiles/lfsr.dir/flags.make
 
-src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.obj: src/util/lfsr/CMakeFiles/lfsr.dir/flags.make
-src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.obj: ../src/util/lfsr/lfsr.c
-src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.obj: ../src/util/lfsr/lfsr.h
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/lfsr && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/lfsr.dir/lfsr.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/util/lfsr/lfsr.c
+src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.o: src/util/lfsr/CMakeFiles/lfsr.dir/flags.make
+src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.o: ../src/util/lfsr/lfsr.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.o"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/lfsr && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/lfsr.dir/lfsr.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/util/lfsr/lfsr.c
 
 src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/lfsr.dir/lfsr.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/lfsr && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/util/lfsr/lfsr.c > CMakeFiles/lfsr.dir/lfsr.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/lfsr && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/util/lfsr/lfsr.c > CMakeFiles/lfsr.dir/lfsr.c.i
 
 src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/lfsr.dir/lfsr.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/lfsr && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/util/lfsr/lfsr.c -o CMakeFiles/lfsr.dir/lfsr.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/lfsr && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/util/lfsr/lfsr.c -o CMakeFiles/lfsr.dir/lfsr.c.s
 
-src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.obj.requires:
+src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.o.requires:
 
-.PHONY : src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.obj.requires
+.PHONY : src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.o.requires
 
-src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.obj.provides: src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.obj.requires
-	$(MAKE) -f src/util/lfsr/CMakeFiles/lfsr.dir/build.make src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.obj.provides.build
-.PHONY : src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.obj.provides
+src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.o.provides: src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.o.requires
+	$(MAKE) -f src/util/lfsr/CMakeFiles/lfsr.dir/build.make src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.o.provides.build
+.PHONY : src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.o.provides
 
-src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.obj.provides.build: src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.obj
+src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.o.provides.build: src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.o
 
 
 # Object files for target lfsr
 lfsr_OBJECTS = \
-"CMakeFiles/lfsr.dir/lfsr.c.obj"
+"CMakeFiles/lfsr.dir/lfsr.c.o"
 
 # External object files for target lfsr
 lfsr_EXTERNAL_OBJECTS =
 
-src/util/lfsr/liblfsr.a: src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.obj
+src/util/lfsr/liblfsr.a: src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.o
 src/util/lfsr/liblfsr.a: src/util/lfsr/CMakeFiles/lfsr.dir/build.make
 src/util/lfsr/liblfsr.a: src/util/lfsr/CMakeFiles/lfsr.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library liblfsr.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C static library liblfsr.a"
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/lfsr && $(CMAKE_COMMAND) -P CMakeFiles/lfsr.dir/cmake_clean_target.cmake
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/util/lfsr && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/lfsr.dir/link.txt --verbose=$(VERBOSE)
 
@@ -101,7 +100,7 @@ src/util/lfsr/CMakeFiles/lfsr.dir/build: src/util/lfsr/liblfsr.a
 
 .PHONY : src/util/lfsr/CMakeFiles/lfsr.dir/build
 
-src/util/lfsr/CMakeFiles/lfsr.dir/requires: src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.obj.requires
+src/util/lfsr/CMakeFiles/lfsr.dir/requires: src/util/lfsr/CMakeFiles/lfsr.dir/lfsr.c.o.requires
 
 .PHONY : src/util/lfsr/CMakeFiles/lfsr.dir/requires
 

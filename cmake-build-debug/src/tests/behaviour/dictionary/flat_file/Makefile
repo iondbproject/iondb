@@ -111,51 +111,6 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-size.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-size.dir/rule
-.PHONY : src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-size.dir/rule
-
-# Convenience name for target.
-test_behaviour_flat_file-size: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-size.dir/rule
-
-.PHONY : test_behaviour_flat_file-size
-
-# fast build rule for target.
-test_behaviour_flat_file-size/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-size.dir/build.make src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-size.dir/build
-.PHONY : test_behaviour_flat_file-size/fast
-
-# Convenience name for target.
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-serial.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-serial.dir/rule
-.PHONY : src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-serial.dir/rule
-
-# Convenience name for target.
-test_behaviour_flat_file-serial: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-serial.dir/rule
-
-.PHONY : test_behaviour_flat_file-serial
-
-# fast build rule for target.
-test_behaviour_flat_file-serial/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-serial.dir/build.make src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-serial.dir/build
-.PHONY : test_behaviour_flat_file-serial/fast
-
-# Convenience name for target.
-src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-upload.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-upload.dir/rule
-.PHONY : src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-upload.dir/rule
-
-# Convenience name for target.
-test_behaviour_flat_file-upload: src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-upload.dir/rule
-
-.PHONY : test_behaviour_flat_file-upload
-
-# fast build rule for target.
-test_behaviour_flat_file-upload/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-upload.dir/build.make src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-upload.dir/build
-.PHONY : test_behaviour_flat_file-upload/fast
-
-# Convenience name for target.
 src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/rule:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/rule
 .PHONY : src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/rule
@@ -170,14 +125,41 @@ test_behaviour_flat_file/fast:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/build.make src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/build
 .PHONY : test_behaviour_flat_file/fast
 
-test_behaviour_flat_file.obj: test_behaviour_flat_file.c.obj
+run_behaviour_flat_file.o: run_behaviour_flat_file.c.o
 
-.PHONY : test_behaviour_flat_file.obj
+.PHONY : run_behaviour_flat_file.o
 
 # target to build an object file
-test_behaviour_flat_file.c.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/build.make src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.obj
-.PHONY : test_behaviour_flat_file.c.obj
+run_behaviour_flat_file.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/build.make src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.o
+.PHONY : run_behaviour_flat_file.c.o
+
+run_behaviour_flat_file.i: run_behaviour_flat_file.c.i
+
+.PHONY : run_behaviour_flat_file.i
+
+# target to preprocess a source file
+run_behaviour_flat_file.c.i:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/build.make src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.i
+.PHONY : run_behaviour_flat_file.c.i
+
+run_behaviour_flat_file.s: run_behaviour_flat_file.c.s
+
+.PHONY : run_behaviour_flat_file.s
+
+# target to generate assembly for a file
+run_behaviour_flat_file.c.s:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/build.make src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/run_behaviour_flat_file.c.s
+.PHONY : run_behaviour_flat_file.c.s
+
+test_behaviour_flat_file.o: test_behaviour_flat_file.c.o
+
+.PHONY : test_behaviour_flat_file.o
+
+# target to build an object file
+test_behaviour_flat_file.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/build.make src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.o
+.PHONY : test_behaviour_flat_file.c.o
 
 test_behaviour_flat_file.i: test_behaviour_flat_file.c.i
 
@@ -197,33 +179,6 @@ test_behaviour_flat_file.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/build.make src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file.c.s
 .PHONY : test_behaviour_flat_file.c.s
 
-test_behaviour_flat_file_behaviour_flat_file.ino.obj: test_behaviour_flat_file_behaviour_flat_file.ino.cpp.obj
-
-.PHONY : test_behaviour_flat_file_behaviour_flat_file.ino.obj
-
-# target to build an object file
-test_behaviour_flat_file_behaviour_flat_file.ino.cpp.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/build.make src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.obj
-.PHONY : test_behaviour_flat_file_behaviour_flat_file.ino.cpp.obj
-
-test_behaviour_flat_file_behaviour_flat_file.ino.i: test_behaviour_flat_file_behaviour_flat_file.ino.cpp.i
-
-.PHONY : test_behaviour_flat_file_behaviour_flat_file.ino.i
-
-# target to preprocess a source file
-test_behaviour_flat_file_behaviour_flat_file.ino.cpp.i:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/build.make src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.i
-.PHONY : test_behaviour_flat_file_behaviour_flat_file.ino.cpp.i
-
-test_behaviour_flat_file_behaviour_flat_file.ino.s: test_behaviour_flat_file_behaviour_flat_file.ino.cpp.s
-
-.PHONY : test_behaviour_flat_file_behaviour_flat_file.ino.s
-
-# target to generate assembly for a file
-test_behaviour_flat_file_behaviour_flat_file.ino.cpp.s:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/build.make src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/test_behaviour_flat_file_behaviour_flat_file.ino.cpp.s
-.PHONY : test_behaviour_flat_file_behaviour_flat_file.ino.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -232,16 +187,13 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... test_behaviour_flat_file-size"
-	@echo "... test_behaviour_flat_file-serial"
-	@echo "... test_behaviour_flat_file-upload"
 	@echo "... test_behaviour_flat_file"
-	@echo "... test_behaviour_flat_file.obj"
+	@echo "... run_behaviour_flat_file.o"
+	@echo "... run_behaviour_flat_file.i"
+	@echo "... run_behaviour_flat_file.s"
+	@echo "... test_behaviour_flat_file.o"
 	@echo "... test_behaviour_flat_file.i"
 	@echo "... test_behaviour_flat_file.s"
-	@echo "... test_behaviour_flat_file_behaviour_flat_file.ino.obj"
-	@echo "... test_behaviour_flat_file_behaviour_flat_file.ino.i"
-	@echo "... test_behaviour_flat_file_behaviour_flat_file.ino.s"
 .PHONY : help
 
 

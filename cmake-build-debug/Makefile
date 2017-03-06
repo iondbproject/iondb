@@ -124,58 +124,6 @@ planck_unit/fast:
 .PHONY : planck_unit/fast
 
 #=============================================================================
-# Target rules for targets named mega_CORE
-
-# Build rule for target.
-mega_CORE: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 mega_CORE
-.PHONY : mega_CORE
-
-# fast build rule for target.
-mega_CORE/fast:
-	$(MAKE) -f src/tests/CMakeFiles/mega_CORE.dir/build.make src/tests/CMakeFiles/mega_CORE.dir/build
-.PHONY : mega_CORE/fast
-
-#=============================================================================
-# Target rules for targets named test_dictionary-serial
-
-# Build rule for target.
-test_dictionary-serial: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_dictionary-serial
-.PHONY : test_dictionary-serial
-
-# fast build rule for target.
-test_dictionary-serial/fast:
-	$(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary-serial.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary-serial.dir/build
-.PHONY : test_dictionary-serial/fast
-
-#=============================================================================
-# Target rules for targets named test_dictionary-size
-
-# Build rule for target.
-test_dictionary-size: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_dictionary-size
-.PHONY : test_dictionary-size
-
-# fast build rule for target.
-test_dictionary-size/fast:
-	$(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary-size.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary-size.dir/build
-.PHONY : test_dictionary-size/fast
-
-#=============================================================================
-# Target rules for targets named upload
-
-# Build rule for target.
-upload: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 upload
-.PHONY : upload
-
-# fast build rule for target.
-upload/fast:
-	$(MAKE) -f src/tests/unit/dictionary/CMakeFiles/upload.dir/build.make src/tests/unit/dictionary/CMakeFiles/upload.dir/build
-.PHONY : upload/fast
-
-#=============================================================================
 # Target rules for targets named test_dictionary
 
 # Build rule for target.
@@ -187,71 +135,6 @@ test_dictionary: cmake_check_build_system
 test_dictionary/fast:
 	$(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary.dir/build
 .PHONY : test_dictionary/fast
-
-#=============================================================================
-# Target rules for targets named mega_SdFat
-
-# Build rule for target.
-mega_SdFat: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 mega_SdFat
-.PHONY : mega_SdFat
-
-# fast build rule for target.
-mega_SdFat/fast:
-	$(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFat.dir/build
-.PHONY : mega_SdFat/fast
-
-#=============================================================================
-# Target rules for targets named test_dictionary-upload
-
-# Build rule for target.
-test_dictionary-upload: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_dictionary-upload
-.PHONY : test_dictionary-upload
-
-# fast build rule for target.
-test_dictionary-upload/fast:
-	$(MAKE) -f src/tests/unit/dictionary/CMakeFiles/test_dictionary-upload.dir/build.make src/tests/unit/dictionary/CMakeFiles/test_dictionary-upload.dir/build
-.PHONY : test_dictionary-upload/fast
-
-#=============================================================================
-# Target rules for targets named mega_SPI
-
-# Build rule for target.
-mega_SPI: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 mega_SPI
-.PHONY : mega_SPI
-
-# fast build rule for target.
-mega_SPI/fast:
-	$(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SPI.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SPI.dir/build
-.PHONY : mega_SPI/fast
-
-#=============================================================================
-# Target rules for targets named mega_SdFatUtil
-
-# Build rule for target.
-mega_SdFatUtil: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 mega_SdFatUtil
-.PHONY : mega_SdFatUtil
-
-# fast build rule for target.
-mega_SdFatUtil/fast:
-	$(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SdFatUtil.dir/build
-.PHONY : mega_SdFatUtil/fast
-
-#=============================================================================
-# Target rules for targets named mega_SD
-
-# Build rule for target.
-mega_SD: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 mega_SD
-.PHONY : mega_SD
-
-# fast build rule for target.
-mega_SD/fast:
-	$(MAKE) -f src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/build.make src/tests/unit/dictionary/CMakeFiles/mega_SD.dir/build
-.PHONY : mega_SD/fast
 
 #=============================================================================
 # Target rules for targets named example_master_table
@@ -384,45 +267,6 @@ skip_list/fast:
 .PHONY : skip_list/fast
 
 #=============================================================================
-# Target rules for targets named test_iinq-upload
-
-# Build rule for target.
-test_iinq-upload: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_iinq-upload
-.PHONY : test_iinq-upload
-
-# fast build rule for target.
-test_iinq-upload/fast:
-	$(MAKE) -f src/tests/unit/iinq/CMakeFiles/test_iinq-upload.dir/build.make src/tests/unit/iinq/CMakeFiles/test_iinq-upload.dir/build
-.PHONY : test_iinq-upload/fast
-
-#=============================================================================
-# Target rules for targets named test_iinq-serial
-
-# Build rule for target.
-test_iinq-serial: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_iinq-serial
-.PHONY : test_iinq-serial
-
-# fast build rule for target.
-test_iinq-serial/fast:
-	$(MAKE) -f src/tests/unit/iinq/CMakeFiles/test_iinq-serial.dir/build.make src/tests/unit/iinq/CMakeFiles/test_iinq-serial.dir/build
-.PHONY : test_iinq-serial/fast
-
-#=============================================================================
-# Target rules for targets named test_iinq-size
-
-# Build rule for target.
-test_iinq-size: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_iinq-size
-.PHONY : test_iinq-size
-
-# fast build rule for target.
-test_iinq-size/fast:
-	$(MAKE) -f src/tests/unit/iinq/CMakeFiles/test_iinq-size.dir/build.make src/tests/unit/iinq/CMakeFiles/test_iinq-size.dir/build
-.PHONY : test_iinq-size/fast
-
-#=============================================================================
 # Target rules for targets named test_iinq
 
 # Build rule for target.
@@ -436,45 +280,6 @@ test_iinq/fast:
 .PHONY : test_iinq/fast
 
 #=============================================================================
-# Target rules for targets named test_external_sort-serial
-
-# Build rule for target.
-test_external_sort-serial: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_external_sort-serial
-.PHONY : test_external_sort-serial
-
-# fast build rule for target.
-test_external_sort-serial/fast:
-	$(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-serial.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-serial.dir/build
-.PHONY : test_external_sort-serial/fast
-
-#=============================================================================
-# Target rules for targets named test_external_sort-upload
-
-# Build rule for target.
-test_external_sort-upload: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_external_sort-upload
-.PHONY : test_external_sort-upload
-
-# fast build rule for target.
-test_external_sort-upload/fast:
-	$(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-upload.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-upload.dir/build
-.PHONY : test_external_sort-upload/fast
-
-#=============================================================================
-# Target rules for targets named test_external_sort-size
-
-# Build rule for target.
-test_external_sort-size: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_external_sort-size
-.PHONY : test_external_sort-size
-
-# fast build rule for target.
-test_external_sort-size/fast:
-	$(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-size.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort-size.dir/build
-.PHONY : test_external_sort-size/fast
-
-#=============================================================================
 # Target rules for targets named test_external_sort
 
 # Build rule for target.
@@ -486,45 +291,6 @@ test_external_sort: cmake_check_build_system
 test_external_sort/fast:
 	$(MAKE) -f src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build.make src/tests/unit/util/external_sort/CMakeFiles/test_external_sort.dir/build
 .PHONY : test_external_sort/fast
-
-#=============================================================================
-# Target rules for targets named test_in_memory_sort-serial
-
-# Build rule for target.
-test_in_memory_sort-serial: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_in_memory_sort-serial
-.PHONY : test_in_memory_sort-serial
-
-# fast build rule for target.
-test_in_memory_sort-serial/fast:
-	$(MAKE) -f src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-serial.dir/build.make src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-serial.dir/build
-.PHONY : test_in_memory_sort-serial/fast
-
-#=============================================================================
-# Target rules for targets named test_in_memory_sort-upload
-
-# Build rule for target.
-test_in_memory_sort-upload: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_in_memory_sort-upload
-.PHONY : test_in_memory_sort-upload
-
-# fast build rule for target.
-test_in_memory_sort-upload/fast:
-	$(MAKE) -f src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-upload.dir/build.make src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-upload.dir/build
-.PHONY : test_in_memory_sort-upload/fast
-
-#=============================================================================
-# Target rules for targets named test_in_memory_sort-size
-
-# Build rule for target.
-test_in_memory_sort-size: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_in_memory_sort-size
-.PHONY : test_in_memory_sort-size
-
-# fast build rule for target.
-test_in_memory_sort-size/fast:
-	$(MAKE) -f src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-size.dir/build.make src/tests/unit/util/in_memory_sort/CMakeFiles/test_in_memory_sort-size.dir/build
-.PHONY : test_in_memory_sort-size/fast
 
 #=============================================================================
 # Target rules for targets named test_in_memory_sort
@@ -553,58 +319,6 @@ test_bpp_tree/fast:
 .PHONY : test_bpp_tree/fast
 
 #=============================================================================
-# Target rules for targets named test_bpp_tree-upload
-
-# Build rule for target.
-test_bpp_tree-upload: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_bpp_tree-upload
-.PHONY : test_bpp_tree-upload
-
-# fast build rule for target.
-test_bpp_tree-upload/fast:
-	$(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-upload.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-upload.dir/build
-.PHONY : test_bpp_tree-upload/fast
-
-#=============================================================================
-# Target rules for targets named test_bpp_tree-size
-
-# Build rule for target.
-test_bpp_tree-size: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_bpp_tree-size
-.PHONY : test_bpp_tree-size
-
-# fast build rule for target.
-test_bpp_tree-size/fast:
-	$(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-size.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-size.dir/build
-.PHONY : test_bpp_tree-size/fast
-
-#=============================================================================
-# Target rules for targets named test_bpp_tree-serial
-
-# Build rule for target.
-test_bpp_tree-serial: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_bpp_tree-serial
-.PHONY : test_bpp_tree-serial
-
-# fast build rule for target.
-test_bpp_tree-serial/fast:
-	$(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-serial.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree-serial.dir/build
-.PHONY : test_bpp_tree-serial/fast
-
-#=============================================================================
-# Target rules for targets named test_flat_file-serial
-
-# Build rule for target.
-test_flat_file-serial: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_flat_file-serial
-.PHONY : test_flat_file-serial
-
-# fast build rule for target.
-test_flat_file-serial/fast:
-	$(MAKE) -f src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-serial.dir/build.make src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-serial.dir/build
-.PHONY : test_flat_file-serial/fast
-
-#=============================================================================
 # Target rules for targets named test_flat_file
 
 # Build rule for target.
@@ -616,71 +330,6 @@ test_flat_file: cmake_check_build_system
 test_flat_file/fast:
 	$(MAKE) -f src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/build.make src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file.dir/build
 .PHONY : test_flat_file/fast
-
-#=============================================================================
-# Target rules for targets named test_flat_file-upload
-
-# Build rule for target.
-test_flat_file-upload: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_flat_file-upload
-.PHONY : test_flat_file-upload
-
-# fast build rule for target.
-test_flat_file-upload/fast:
-	$(MAKE) -f src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-upload.dir/build.make src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-upload.dir/build
-.PHONY : test_flat_file-upload/fast
-
-#=============================================================================
-# Target rules for targets named test_flat_file-size
-
-# Build rule for target.
-test_flat_file-size: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_flat_file-size
-.PHONY : test_flat_file-size
-
-# fast build rule for target.
-test_flat_file-size/fast:
-	$(MAKE) -f src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-size.dir/build.make src/tests/unit/dictionary/flat_file/CMakeFiles/test_flat_file-size.dir/build
-.PHONY : test_flat_file-size/fast
-
-#=============================================================================
-# Target rules for targets named test_open_address_file_hash-serial
-
-# Build rule for target.
-test_open_address_file_hash-serial: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_open_address_file_hash-serial
-.PHONY : test_open_address_file_hash-serial
-
-# fast build rule for target.
-test_open_address_file_hash-serial/fast:
-	$(MAKE) -f src/tests/unit/dictionary/open_address_file_hash/CMakeFiles/test_open_address_file_hash-serial.dir/build.make src/tests/unit/dictionary/open_address_file_hash/CMakeFiles/test_open_address_file_hash-serial.dir/build
-.PHONY : test_open_address_file_hash-serial/fast
-
-#=============================================================================
-# Target rules for targets named test_open_address_file_hash-upload
-
-# Build rule for target.
-test_open_address_file_hash-upload: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_open_address_file_hash-upload
-.PHONY : test_open_address_file_hash-upload
-
-# fast build rule for target.
-test_open_address_file_hash-upload/fast:
-	$(MAKE) -f src/tests/unit/dictionary/open_address_file_hash/CMakeFiles/test_open_address_file_hash-upload.dir/build.make src/tests/unit/dictionary/open_address_file_hash/CMakeFiles/test_open_address_file_hash-upload.dir/build
-.PHONY : test_open_address_file_hash-upload/fast
-
-#=============================================================================
-# Target rules for targets named test_open_address_file_hash-size
-
-# Build rule for target.
-test_open_address_file_hash-size: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_open_address_file_hash-size
-.PHONY : test_open_address_file_hash-size
-
-# fast build rule for target.
-test_open_address_file_hash-size/fast:
-	$(MAKE) -f src/tests/unit/dictionary/open_address_file_hash/CMakeFiles/test_open_address_file_hash-size.dir/build.make src/tests/unit/dictionary/open_address_file_hash/CMakeFiles/test_open_address_file_hash-size.dir/build
-.PHONY : test_open_address_file_hash-size/fast
 
 #=============================================================================
 # Target rules for targets named test_open_address_file_hash
@@ -696,45 +345,6 @@ test_open_address_file_hash/fast:
 .PHONY : test_open_address_file_hash/fast
 
 #=============================================================================
-# Target rules for targets named test_open_address_hash-size
-
-# Build rule for target.
-test_open_address_hash-size: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_open_address_hash-size
-.PHONY : test_open_address_hash-size
-
-# fast build rule for target.
-test_open_address_hash-size/fast:
-	$(MAKE) -f src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-size.dir/build.make src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-size.dir/build
-.PHONY : test_open_address_hash-size/fast
-
-#=============================================================================
-# Target rules for targets named test_open_address_hash-serial
-
-# Build rule for target.
-test_open_address_hash-serial: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_open_address_hash-serial
-.PHONY : test_open_address_hash-serial
-
-# fast build rule for target.
-test_open_address_hash-serial/fast:
-	$(MAKE) -f src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-serial.dir/build.make src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-serial.dir/build
-.PHONY : test_open_address_hash-serial/fast
-
-#=============================================================================
-# Target rules for targets named test_open_address_hash-upload
-
-# Build rule for target.
-test_open_address_hash-upload: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_open_address_hash-upload
-.PHONY : test_open_address_hash-upload
-
-# fast build rule for target.
-test_open_address_hash-upload/fast:
-	$(MAKE) -f src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-upload.dir/build.make src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash-upload.dir/build
-.PHONY : test_open_address_hash-upload/fast
-
-#=============================================================================
 # Target rules for targets named test_open_address_hash
 
 # Build rule for target.
@@ -746,45 +356,6 @@ test_open_address_hash: cmake_check_build_system
 test_open_address_hash/fast:
 	$(MAKE) -f src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/build.make src/tests/unit/dictionary/open_address_hash/CMakeFiles/test_open_address_hash.dir/build
 .PHONY : test_open_address_hash/fast
-
-#=============================================================================
-# Target rules for targets named test_skip_list-serial
-
-# Build rule for target.
-test_skip_list-serial: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_skip_list-serial
-.PHONY : test_skip_list-serial
-
-# fast build rule for target.
-test_skip_list-serial/fast:
-	$(MAKE) -f src/tests/unit/dictionary/skip_list/CMakeFiles/test_skip_list-serial.dir/build.make src/tests/unit/dictionary/skip_list/CMakeFiles/test_skip_list-serial.dir/build
-.PHONY : test_skip_list-serial/fast
-
-#=============================================================================
-# Target rules for targets named test_skip_list-upload
-
-# Build rule for target.
-test_skip_list-upload: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_skip_list-upload
-.PHONY : test_skip_list-upload
-
-# fast build rule for target.
-test_skip_list-upload/fast:
-	$(MAKE) -f src/tests/unit/dictionary/skip_list/CMakeFiles/test_skip_list-upload.dir/build.make src/tests/unit/dictionary/skip_list/CMakeFiles/test_skip_list-upload.dir/build
-.PHONY : test_skip_list-upload/fast
-
-#=============================================================================
-# Target rules for targets named test_skip_list-size
-
-# Build rule for target.
-test_skip_list-size: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_skip_list-size
-.PHONY : test_skip_list-size
-
-# fast build rule for target.
-test_skip_list-size/fast:
-	$(MAKE) -f src/tests/unit/dictionary/skip_list/CMakeFiles/test_skip_list-size.dir/build.make src/tests/unit/dictionary/skip_list/CMakeFiles/test_skip_list-size.dir/build
-.PHONY : test_skip_list-size/fast
 
 #=============================================================================
 # Target rules for targets named test_skip_list
@@ -813,45 +384,6 @@ behaviour_dictionary/fast:
 .PHONY : behaviour_dictionary/fast
 
 #=============================================================================
-# Target rules for targets named test_behaviour_flat_file-size
-
-# Build rule for target.
-test_behaviour_flat_file-size: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_behaviour_flat_file-size
-.PHONY : test_behaviour_flat_file-size
-
-# fast build rule for target.
-test_behaviour_flat_file-size/fast:
-	$(MAKE) -f src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-size.dir/build.make src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-size.dir/build
-.PHONY : test_behaviour_flat_file-size/fast
-
-#=============================================================================
-# Target rules for targets named test_behaviour_flat_file-serial
-
-# Build rule for target.
-test_behaviour_flat_file-serial: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_behaviour_flat_file-serial
-.PHONY : test_behaviour_flat_file-serial
-
-# fast build rule for target.
-test_behaviour_flat_file-serial/fast:
-	$(MAKE) -f src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-serial.dir/build.make src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-serial.dir/build
-.PHONY : test_behaviour_flat_file-serial/fast
-
-#=============================================================================
-# Target rules for targets named test_behaviour_flat_file-upload
-
-# Build rule for target.
-test_behaviour_flat_file-upload: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_behaviour_flat_file-upload
-.PHONY : test_behaviour_flat_file-upload
-
-# fast build rule for target.
-test_behaviour_flat_file-upload/fast:
-	$(MAKE) -f src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-upload.dir/build.make src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file-upload.dir/build
-.PHONY : test_behaviour_flat_file-upload/fast
-
-#=============================================================================
 # Target rules for targets named test_behaviour_flat_file
 
 # Build rule for target.
@@ -863,45 +395,6 @@ test_behaviour_flat_file: cmake_check_build_system
 test_behaviour_flat_file/fast:
 	$(MAKE) -f src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/build.make src/tests/behaviour/dictionary/flat_file/CMakeFiles/test_behaviour_flat_file.dir/build
 .PHONY : test_behaviour_flat_file/fast
-
-#=============================================================================
-# Target rules for targets named test_behaviour_skip_list-size
-
-# Build rule for target.
-test_behaviour_skip_list-size: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_behaviour_skip_list-size
-.PHONY : test_behaviour_skip_list-size
-
-# fast build rule for target.
-test_behaviour_skip_list-size/fast:
-	$(MAKE) -f src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-size.dir/build.make src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-size.dir/build
-.PHONY : test_behaviour_skip_list-size/fast
-
-#=============================================================================
-# Target rules for targets named test_behaviour_skip_list-serial
-
-# Build rule for target.
-test_behaviour_skip_list-serial: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_behaviour_skip_list-serial
-.PHONY : test_behaviour_skip_list-serial
-
-# fast build rule for target.
-test_behaviour_skip_list-serial/fast:
-	$(MAKE) -f src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-serial.dir/build.make src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-serial.dir/build
-.PHONY : test_behaviour_skip_list-serial/fast
-
-#=============================================================================
-# Target rules for targets named test_behaviour_skip_list-upload
-
-# Build rule for target.
-test_behaviour_skip_list-upload: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_behaviour_skip_list-upload
-.PHONY : test_behaviour_skip_list-upload
-
-# fast build rule for target.
-test_behaviour_skip_list-upload/fast:
-	$(MAKE) -f src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-upload.dir/build.make src/tests/behaviour/dictionary/skip_list/CMakeFiles/test_behaviour_skip_list-upload.dir/build
-.PHONY : test_behaviour_skip_list-upload/fast
 
 #=============================================================================
 # Target rules for targets named test_behaviour_skip_list
@@ -917,45 +410,6 @@ test_behaviour_skip_list/fast:
 .PHONY : test_behaviour_skip_list/fast
 
 #=============================================================================
-# Target rules for targets named test_behaviour_bpp_tree-serial
-
-# Build rule for target.
-test_behaviour_bpp_tree-serial: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_behaviour_bpp_tree-serial
-.PHONY : test_behaviour_bpp_tree-serial
-
-# fast build rule for target.
-test_behaviour_bpp_tree-serial/fast:
-	$(MAKE) -f src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-serial.dir/build.make src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-serial.dir/build
-.PHONY : test_behaviour_bpp_tree-serial/fast
-
-#=============================================================================
-# Target rules for targets named test_behaviour_bpp_tree-upload
-
-# Build rule for target.
-test_behaviour_bpp_tree-upload: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_behaviour_bpp_tree-upload
-.PHONY : test_behaviour_bpp_tree-upload
-
-# fast build rule for target.
-test_behaviour_bpp_tree-upload/fast:
-	$(MAKE) -f src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-upload.dir/build.make src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-upload.dir/build
-.PHONY : test_behaviour_bpp_tree-upload/fast
-
-#=============================================================================
-# Target rules for targets named test_behaviour_bpp_tree-size
-
-# Build rule for target.
-test_behaviour_bpp_tree-size: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_behaviour_bpp_tree-size
-.PHONY : test_behaviour_bpp_tree-size
-
-# fast build rule for target.
-test_behaviour_bpp_tree-size/fast:
-	$(MAKE) -f src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-size.dir/build.make src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-size.dir/build
-.PHONY : test_behaviour_bpp_tree-size/fast
-
-#=============================================================================
 # Target rules for targets named test_behaviour_bpp_tree
 
 # Build rule for target.
@@ -967,45 +421,6 @@ test_behaviour_bpp_tree: cmake_check_build_system
 test_behaviour_bpp_tree/fast:
 	$(MAKE) -f src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/build.make src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/build
 .PHONY : test_behaviour_bpp_tree/fast
-
-#=============================================================================
-# Target rules for targets named test_behaviour_open_address_hash-serial
-
-# Build rule for target.
-test_behaviour_open_address_hash-serial: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_behaviour_open_address_hash-serial
-.PHONY : test_behaviour_open_address_hash-serial
-
-# fast build rule for target.
-test_behaviour_open_address_hash-serial/fast:
-	$(MAKE) -f src/tests/behaviour/dictionary/open_address_hash/CMakeFiles/test_behaviour_open_address_hash-serial.dir/build.make src/tests/behaviour/dictionary/open_address_hash/CMakeFiles/test_behaviour_open_address_hash-serial.dir/build
-.PHONY : test_behaviour_open_address_hash-serial/fast
-
-#=============================================================================
-# Target rules for targets named test_behaviour_open_address_hash-size
-
-# Build rule for target.
-test_behaviour_open_address_hash-size: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_behaviour_open_address_hash-size
-.PHONY : test_behaviour_open_address_hash-size
-
-# fast build rule for target.
-test_behaviour_open_address_hash-size/fast:
-	$(MAKE) -f src/tests/behaviour/dictionary/open_address_hash/CMakeFiles/test_behaviour_open_address_hash-size.dir/build.make src/tests/behaviour/dictionary/open_address_hash/CMakeFiles/test_behaviour_open_address_hash-size.dir/build
-.PHONY : test_behaviour_open_address_hash-size/fast
-
-#=============================================================================
-# Target rules for targets named test_behaviour_open_address_hash-upload
-
-# Build rule for target.
-test_behaviour_open_address_hash-upload: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_behaviour_open_address_hash-upload
-.PHONY : test_behaviour_open_address_hash-upload
-
-# fast build rule for target.
-test_behaviour_open_address_hash-upload/fast:
-	$(MAKE) -f src/tests/behaviour/dictionary/open_address_hash/CMakeFiles/test_behaviour_open_address_hash-upload.dir/build.make src/tests/behaviour/dictionary/open_address_hash/CMakeFiles/test_behaviour_open_address_hash-upload.dir/build
-.PHONY : test_behaviour_open_address_hash-upload/fast
 
 #=============================================================================
 # Target rules for targets named test_behaviour_open_address_hash
@@ -1021,45 +436,6 @@ test_behaviour_open_address_hash/fast:
 .PHONY : test_behaviour_open_address_hash/fast
 
 #=============================================================================
-# Target rules for targets named test_behaviour_open_address_file_hash-upload
-
-# Build rule for target.
-test_behaviour_open_address_file_hash-upload: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_behaviour_open_address_file_hash-upload
-.PHONY : test_behaviour_open_address_file_hash-upload
-
-# fast build rule for target.
-test_behaviour_open_address_file_hash-upload/fast:
-	$(MAKE) -f src/tests/behaviour/dictionary/open_address_file_hash/CMakeFiles/test_behaviour_open_address_file_hash-upload.dir/build.make src/tests/behaviour/dictionary/open_address_file_hash/CMakeFiles/test_behaviour_open_address_file_hash-upload.dir/build
-.PHONY : test_behaviour_open_address_file_hash-upload/fast
-
-#=============================================================================
-# Target rules for targets named test_behaviour_open_address_file_hash-serial
-
-# Build rule for target.
-test_behaviour_open_address_file_hash-serial: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_behaviour_open_address_file_hash-serial
-.PHONY : test_behaviour_open_address_file_hash-serial
-
-# fast build rule for target.
-test_behaviour_open_address_file_hash-serial/fast:
-	$(MAKE) -f src/tests/behaviour/dictionary/open_address_file_hash/CMakeFiles/test_behaviour_open_address_file_hash-serial.dir/build.make src/tests/behaviour/dictionary/open_address_file_hash/CMakeFiles/test_behaviour_open_address_file_hash-serial.dir/build
-.PHONY : test_behaviour_open_address_file_hash-serial/fast
-
-#=============================================================================
-# Target rules for targets named test_behaviour_open_address_file_hash-size
-
-# Build rule for target.
-test_behaviour_open_address_file_hash-size: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_behaviour_open_address_file_hash-size
-.PHONY : test_behaviour_open_address_file_hash-size
-
-# fast build rule for target.
-test_behaviour_open_address_file_hash-size/fast:
-	$(MAKE) -f src/tests/behaviour/dictionary/open_address_file_hash/CMakeFiles/test_behaviour_open_address_file_hash-size.dir/build.make src/tests/behaviour/dictionary/open_address_file_hash/CMakeFiles/test_behaviour_open_address_file_hash-size.dir/build
-.PHONY : test_behaviour_open_address_file_hash-size/fast
-
-#=============================================================================
 # Target rules for targets named test_behaviour_open_address_file_hash
 
 # Build rule for target.
@@ -1071,45 +447,6 @@ test_behaviour_open_address_file_hash: cmake_check_build_system
 test_behaviour_open_address_file_hash/fast:
 	$(MAKE) -f src/tests/behaviour/dictionary/open_address_file_hash/CMakeFiles/test_behaviour_open_address_file_hash.dir/build.make src/tests/behaviour/dictionary/open_address_file_hash/CMakeFiles/test_behaviour_open_address_file_hash.dir/build
 .PHONY : test_behaviour_open_address_file_hash/fast
-
-#=============================================================================
-# Target rules for targets named test_cpp_wrapper-serial
-
-# Build rule for target.
-test_cpp_wrapper-serial: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_cpp_wrapper-serial
-.PHONY : test_cpp_wrapper-serial
-
-# fast build rule for target.
-test_cpp_wrapper-serial/fast:
-	$(MAKE) -f src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-serial.dir/build.make src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-serial.dir/build
-.PHONY : test_cpp_wrapper-serial/fast
-
-#=============================================================================
-# Target rules for targets named test_cpp_wrapper-upload
-
-# Build rule for target.
-test_cpp_wrapper-upload: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_cpp_wrapper-upload
-.PHONY : test_cpp_wrapper-upload
-
-# fast build rule for target.
-test_cpp_wrapper-upload/fast:
-	$(MAKE) -f src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-upload.dir/build.make src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-upload.dir/build
-.PHONY : test_cpp_wrapper-upload/fast
-
-#=============================================================================
-# Target rules for targets named test_cpp_wrapper-size
-
-# Build rule for target.
-test_cpp_wrapper-size: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 test_cpp_wrapper-size
-.PHONY : test_cpp_wrapper-size
-
-# fast build rule for target.
-test_cpp_wrapper-size/fast:
-	$(MAKE) -f src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-size.dir/build.make src/tests/unit/cpp_wrapper/CMakeFiles/test_cpp_wrapper-size.dir/build
-.PHONY : test_cpp_wrapper-size/fast
 
 #=============================================================================
 # Target rules for targets named test_cpp_wrapper
@@ -1146,16 +483,7 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... planck_unit"
-	@echo "... mega_CORE"
-	@echo "... test_dictionary-serial"
-	@echo "... test_dictionary-size"
-	@echo "... upload"
 	@echo "... test_dictionary"
-	@echo "... mega_SdFat"
-	@echo "... test_dictionary-upload"
-	@echo "... mega_SPI"
-	@echo "... mega_SdFatUtil"
-	@echo "... mega_SD"
 	@echo "... example_master_table"
 	@echo "... iinq"
 	@echo "... external_sort"
@@ -1166,62 +494,20 @@ help:
 	@echo "... open_address_file_hash"
 	@echo "... open_address_hash"
 	@echo "... skip_list"
-	@echo "... test_iinq-upload"
-	@echo "... test_iinq-serial"
-	@echo "... test_iinq-size"
 	@echo "... test_iinq"
-	@echo "... test_external_sort-serial"
-	@echo "... test_external_sort-upload"
-	@echo "... test_external_sort-size"
 	@echo "... test_external_sort"
-	@echo "... test_in_memory_sort-serial"
-	@echo "... test_in_memory_sort-upload"
-	@echo "... test_in_memory_sort-size"
 	@echo "... test_in_memory_sort"
 	@echo "... test_bpp_tree"
-	@echo "... test_bpp_tree-upload"
-	@echo "... test_bpp_tree-size"
-	@echo "... test_bpp_tree-serial"
-	@echo "... test_flat_file-serial"
 	@echo "... test_flat_file"
-	@echo "... test_flat_file-upload"
-	@echo "... test_flat_file-size"
-	@echo "... test_open_address_file_hash-serial"
-	@echo "... test_open_address_file_hash-upload"
-	@echo "... test_open_address_file_hash-size"
 	@echo "... test_open_address_file_hash"
-	@echo "... test_open_address_hash-size"
-	@echo "... test_open_address_hash-serial"
-	@echo "... test_open_address_hash-upload"
 	@echo "... test_open_address_hash"
-	@echo "... test_skip_list-serial"
-	@echo "... test_skip_list-upload"
-	@echo "... test_skip_list-size"
 	@echo "... test_skip_list"
 	@echo "... behaviour_dictionary"
-	@echo "... test_behaviour_flat_file-size"
-	@echo "... test_behaviour_flat_file-serial"
-	@echo "... test_behaviour_flat_file-upload"
 	@echo "... test_behaviour_flat_file"
-	@echo "... test_behaviour_skip_list-size"
-	@echo "... test_behaviour_skip_list-serial"
-	@echo "... test_behaviour_skip_list-upload"
 	@echo "... test_behaviour_skip_list"
-	@echo "... test_behaviour_bpp_tree-serial"
-	@echo "... test_behaviour_bpp_tree-upload"
-	@echo "... test_behaviour_bpp_tree-size"
 	@echo "... test_behaviour_bpp_tree"
-	@echo "... test_behaviour_open_address_hash-serial"
-	@echo "... test_behaviour_open_address_hash-size"
-	@echo "... test_behaviour_open_address_hash-upload"
 	@echo "... test_behaviour_open_address_hash"
-	@echo "... test_behaviour_open_address_file_hash-upload"
-	@echo "... test_behaviour_open_address_file_hash-serial"
-	@echo "... test_behaviour_open_address_file_hash-size"
 	@echo "... test_behaviour_open_address_file_hash"
-	@echo "... test_cpp_wrapper-serial"
-	@echo "... test_cpp_wrapper-upload"
-	@echo "... test_cpp_wrapper-size"
 	@echo "... test_cpp_wrapper"
 	@echo "... integration_cpp_wrapper"
 .PHONY : help

@@ -56,17 +56,6 @@ CMAKE_BINARY_DIR = /Users/danaklamut/ClionProjects/iondb/cmake-build-debug
 #=============================================================================
 # Targets provided globally by CMake.
 
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	"/Applications/CLion 2.app/Contents/bin/cmake/bin/cmake" -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
-
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
-
-.PHONY : rebuild_cache/fast
-
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
@@ -77,6 +66,17 @@ edit_cache:
 edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
+
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	"/Applications/CLion 2.app/Contents/bin/cmake/bin/cmake" -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
+
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
+
+.PHONY : rebuild_cache/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -111,51 +111,6 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-serial.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-serial.dir/rule
-.PHONY : src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-serial.dir/rule
-
-# Convenience name for target.
-test_behaviour_bpp_tree-serial: src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-serial.dir/rule
-
-.PHONY : test_behaviour_bpp_tree-serial
-
-# fast build rule for target.
-test_behaviour_bpp_tree-serial/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-serial.dir/build.make src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-serial.dir/build
-.PHONY : test_behaviour_bpp_tree-serial/fast
-
-# Convenience name for target.
-src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-upload.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-upload.dir/rule
-.PHONY : src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-upload.dir/rule
-
-# Convenience name for target.
-test_behaviour_bpp_tree-upload: src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-upload.dir/rule
-
-.PHONY : test_behaviour_bpp_tree-upload
-
-# fast build rule for target.
-test_behaviour_bpp_tree-upload/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-upload.dir/build.make src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-upload.dir/build
-.PHONY : test_behaviour_bpp_tree-upload/fast
-
-# Convenience name for target.
-src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-size.dir/rule:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-size.dir/rule
-.PHONY : src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-size.dir/rule
-
-# Convenience name for target.
-test_behaviour_bpp_tree-size: src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-size.dir/rule
-
-.PHONY : test_behaviour_bpp_tree-size
-
-# fast build rule for target.
-test_behaviour_bpp_tree-size/fast:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-size.dir/build.make src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree-size.dir/build
-.PHONY : test_behaviour_bpp_tree-size/fast
-
-# Convenience name for target.
 src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/rule:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/rule
 .PHONY : src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/rule
@@ -170,14 +125,41 @@ test_behaviour_bpp_tree/fast:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/build.make src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/build
 .PHONY : test_behaviour_bpp_tree/fast
 
-test_behaviour_bpp_tree.obj: test_behaviour_bpp_tree.c.obj
+run_behaviour_bpp_tree.o: run_behaviour_bpp_tree.c.o
 
-.PHONY : test_behaviour_bpp_tree.obj
+.PHONY : run_behaviour_bpp_tree.o
 
 # target to build an object file
-test_behaviour_bpp_tree.c.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/build.make src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/test_behaviour_bpp_tree.c.obj
-.PHONY : test_behaviour_bpp_tree.c.obj
+run_behaviour_bpp_tree.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/build.make src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/run_behaviour_bpp_tree.c.o
+.PHONY : run_behaviour_bpp_tree.c.o
+
+run_behaviour_bpp_tree.i: run_behaviour_bpp_tree.c.i
+
+.PHONY : run_behaviour_bpp_tree.i
+
+# target to preprocess a source file
+run_behaviour_bpp_tree.c.i:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/build.make src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/run_behaviour_bpp_tree.c.i
+.PHONY : run_behaviour_bpp_tree.c.i
+
+run_behaviour_bpp_tree.s: run_behaviour_bpp_tree.c.s
+
+.PHONY : run_behaviour_bpp_tree.s
+
+# target to generate assembly for a file
+run_behaviour_bpp_tree.c.s:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/build.make src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/run_behaviour_bpp_tree.c.s
+.PHONY : run_behaviour_bpp_tree.c.s
+
+test_behaviour_bpp_tree.o: test_behaviour_bpp_tree.c.o
+
+.PHONY : test_behaviour_bpp_tree.o
+
+# target to build an object file
+test_behaviour_bpp_tree.c.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/build.make src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/test_behaviour_bpp_tree.c.o
+.PHONY : test_behaviour_bpp_tree.c.o
 
 test_behaviour_bpp_tree.i: test_behaviour_bpp_tree.c.i
 
@@ -197,51 +179,21 @@ test_behaviour_bpp_tree.c.s:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/build.make src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/test_behaviour_bpp_tree.c.s
 .PHONY : test_behaviour_bpp_tree.c.s
 
-test_behaviour_bpp_tree_behaviour_bpp_tree.ino.obj: test_behaviour_bpp_tree_behaviour_bpp_tree.ino.cpp.obj
-
-.PHONY : test_behaviour_bpp_tree_behaviour_bpp_tree.ino.obj
-
-# target to build an object file
-test_behaviour_bpp_tree_behaviour_bpp_tree.ino.cpp.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/build.make src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/test_behaviour_bpp_tree_behaviour_bpp_tree.ino.cpp.obj
-.PHONY : test_behaviour_bpp_tree_behaviour_bpp_tree.ino.cpp.obj
-
-test_behaviour_bpp_tree_behaviour_bpp_tree.ino.i: test_behaviour_bpp_tree_behaviour_bpp_tree.ino.cpp.i
-
-.PHONY : test_behaviour_bpp_tree_behaviour_bpp_tree.ino.i
-
-# target to preprocess a source file
-test_behaviour_bpp_tree_behaviour_bpp_tree.ino.cpp.i:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/build.make src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/test_behaviour_bpp_tree_behaviour_bpp_tree.ino.cpp.i
-.PHONY : test_behaviour_bpp_tree_behaviour_bpp_tree.ino.cpp.i
-
-test_behaviour_bpp_tree_behaviour_bpp_tree.ino.s: test_behaviour_bpp_tree_behaviour_bpp_tree.ino.cpp.s
-
-.PHONY : test_behaviour_bpp_tree_behaviour_bpp_tree.ino.s
-
-# target to generate assembly for a file
-test_behaviour_bpp_tree_behaviour_bpp_tree.ino.cpp.s:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/build.make src/tests/behaviour/dictionary/bpp_tree/CMakeFiles/test_behaviour_bpp_tree.dir/test_behaviour_bpp_tree_behaviour_bpp_tree.ino.cpp.s
-.PHONY : test_behaviour_bpp_tree_behaviour_bpp_tree.ino.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... rebuild_cache"
-	@echo "... test_behaviour_bpp_tree-serial"
-	@echo "... test_behaviour_bpp_tree-upload"
 	@echo "... edit_cache"
-	@echo "... test_behaviour_bpp_tree-size"
+	@echo "... rebuild_cache"
 	@echo "... test_behaviour_bpp_tree"
-	@echo "... test_behaviour_bpp_tree.obj"
+	@echo "... run_behaviour_bpp_tree.o"
+	@echo "... run_behaviour_bpp_tree.i"
+	@echo "... run_behaviour_bpp_tree.s"
+	@echo "... test_behaviour_bpp_tree.o"
 	@echo "... test_behaviour_bpp_tree.i"
 	@echo "... test_behaviour_bpp_tree.s"
-	@echo "... test_behaviour_bpp_tree_behaviour_bpp_tree.ino.obj"
-	@echo "... test_behaviour_bpp_tree_behaviour_bpp_tree.ino.i"
-	@echo "... test_behaviour_bpp_tree_behaviour_bpp_tree.ino.s"
 .PHONY : help
 
 

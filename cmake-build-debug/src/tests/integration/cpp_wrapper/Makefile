@@ -125,14 +125,14 @@ integration_cpp_wrapper/fast:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/build.make src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/build
 .PHONY : integration_cpp_wrapper/fast
 
-CppWrapperTest.obj: CppWrapperTest.cpp.obj
+CppWrapperTest.o: CppWrapperTest.cpp.o
 
-.PHONY : CppWrapperTest.obj
+.PHONY : CppWrapperTest.o
 
 # target to build an object file
-CppWrapperTest.cpp.obj:
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/build.make src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.obj
-.PHONY : CppWrapperTest.cpp.obj
+CppWrapperTest.cpp.o:
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(MAKE) -f src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/build.make src/tests/integration/cpp_wrapper/CMakeFiles/integration_cpp_wrapper.dir/CppWrapperTest.cpp.o
+.PHONY : CppWrapperTest.cpp.o
 
 CppWrapperTest.i: CppWrapperTest.cpp.i
 
@@ -161,7 +161,7 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... integration_cpp_wrapper"
-	@echo "... CppWrapperTest.obj"
+	@echo "... CppWrapperTest.o"
 	@echo "... CppWrapperTest.i"
 	@echo "... CppWrapperTest.s"
 .PHONY : help

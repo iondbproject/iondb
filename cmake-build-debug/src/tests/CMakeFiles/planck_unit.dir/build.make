@@ -57,93 +57,67 @@ include src/tests/CMakeFiles/planck_unit.dir/progress.make
 # Include the compile flags for this target's objects.
 include src/tests/CMakeFiles/planck_unit.dir/flags.make
 
-src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.obj: src/tests/CMakeFiles/planck_unit.dir/flags.make
-src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.obj: ../src/tests/planckunit/src/planck_unit.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/tests/planckunit/src/planck_unit.c
+src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.o: src/tests/CMakeFiles/planck_unit.dir/flags.make
+src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.o: ../src/tests/planckunit/src/planck_unit.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.o"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/tests/planckunit/src/planck_unit.c
 
 src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/tests/planckunit/src/planck_unit.c > CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/tests/planckunit/src/planck_unit.c > CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.i
 
 src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/tests/planckunit/src/planck_unit.c -o CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/tests/planckunit/src/planck_unit.c -o CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.s
 
-src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.obj.requires:
+src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.o.requires:
 
-.PHONY : src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.obj.requires
+.PHONY : src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.o.requires
 
-src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.obj.provides: src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.obj.requires
-	$(MAKE) -f src/tests/CMakeFiles/planck_unit.dir/build.make src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.obj.provides.build
-.PHONY : src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.obj.provides
+src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.o.provides: src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.o.requires
+	$(MAKE) -f src/tests/CMakeFiles/planck_unit.dir/build.make src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.o.provides.build
+.PHONY : src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.o.provides
 
-src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.obj.provides.build: src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.obj
+src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.o.provides.build: src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.o
 
 
-src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.obj: src/tests/CMakeFiles/planck_unit.dir/flags.make
-src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.obj: ../src/tests/planckunit/src/ion_time/ion_time.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/tests/planckunit/src/ion_time/ion_time.c
+src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.o: src/tests/CMakeFiles/planck_unit.dir/flags.make
+src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.o: ../src/tests/planckunit/src/ion_time/ion_time.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.o"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/tests/planckunit/src/ion_time/ion_time.c
 
 src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/tests/planckunit/src/ion_time/ion_time.c > CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/tests/planckunit/src/ion_time/ion_time.c > CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.i
 
 src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/tests/planckunit/src/ion_time/ion_time.c -o CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/tests/planckunit/src/ion_time/ion_time.c -o CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.s
 
-src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.obj.requires:
+src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.o.requires:
 
-.PHONY : src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.obj.requires
+.PHONY : src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.o.requires
 
-src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.obj.provides: src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.obj.requires
-	$(MAKE) -f src/tests/CMakeFiles/planck_unit.dir/build.make src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.obj.provides.build
-.PHONY : src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.obj.provides
+src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.o.provides: src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.o.requires
+	$(MAKE) -f src/tests/CMakeFiles/planck_unit.dir/build.make src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.o.provides.build
+.PHONY : src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.o.provides
 
-src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.obj.provides.build: src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.obj
-
-
-src/tests/CMakeFiles/planck_unit.dir/__/serial/serial_c_iface.cpp.obj: src/tests/CMakeFiles/planck_unit.dir/flags.make
-src/tests/CMakeFiles/planck_unit.dir/__/serial/serial_c_iface.cpp.obj: ../src/serial/serial_c_iface.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object src/tests/CMakeFiles/planck_unit.dir/__/serial/serial_c_iface.cpp.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/planck_unit.dir/__/serial/serial_c_iface.cpp.obj -c /Users/danaklamut/ClionProjects/iondb/src/serial/serial_c_iface.cpp
-
-src/tests/CMakeFiles/planck_unit.dir/__/serial/serial_c_iface.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/planck_unit.dir/__/serial/serial_c_iface.cpp.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/serial/serial_c_iface.cpp > CMakeFiles/planck_unit.dir/__/serial/serial_c_iface.cpp.i
-
-src/tests/CMakeFiles/planck_unit.dir/__/serial/serial_c_iface.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/planck_unit.dir/__/serial/serial_c_iface.cpp.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/serial/serial_c_iface.cpp -o CMakeFiles/planck_unit.dir/__/serial/serial_c_iface.cpp.s
-
-src/tests/CMakeFiles/planck_unit.dir/__/serial/serial_c_iface.cpp.obj.requires:
-
-.PHONY : src/tests/CMakeFiles/planck_unit.dir/__/serial/serial_c_iface.cpp.obj.requires
-
-src/tests/CMakeFiles/planck_unit.dir/__/serial/serial_c_iface.cpp.obj.provides: src/tests/CMakeFiles/planck_unit.dir/__/serial/serial_c_iface.cpp.obj.requires
-	$(MAKE) -f src/tests/CMakeFiles/planck_unit.dir/build.make src/tests/CMakeFiles/planck_unit.dir/__/serial/serial_c_iface.cpp.obj.provides.build
-.PHONY : src/tests/CMakeFiles/planck_unit.dir/__/serial/serial_c_iface.cpp.obj.provides
-
-src/tests/CMakeFiles/planck_unit.dir/__/serial/serial_c_iface.cpp.obj.provides.build: src/tests/CMakeFiles/planck_unit.dir/__/serial/serial_c_iface.cpp.obj
+src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.o.provides.build: src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.o
 
 
 # Object files for target planck_unit
 planck_unit_OBJECTS = \
-"CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.obj" \
-"CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.obj" \
-"CMakeFiles/planck_unit.dir/__/serial/serial_c_iface.cpp.obj"
+"CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.o" \
+"CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.o"
 
 # External object files for target planck_unit
 planck_unit_EXTERNAL_OBJECTS =
 
-src/tests/libplanck_unit.a: src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.obj
-src/tests/libplanck_unit.a: src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.obj
-src/tests/libplanck_unit.a: src/tests/CMakeFiles/planck_unit.dir/__/serial/serial_c_iface.cpp.obj
+src/tests/libplanck_unit.a: src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.o
+src/tests/libplanck_unit.a: src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.o
 src/tests/libplanck_unit.a: src/tests/CMakeFiles/planck_unit.dir/build.make
 src/tests/libplanck_unit.a: src/tests/CMakeFiles/planck_unit.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX static library libplanck_unit.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking C static library libplanck_unit.a"
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests && $(CMAKE_COMMAND) -P CMakeFiles/planck_unit.dir/cmake_clean_target.cmake
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/planck_unit.dir/link.txt --verbose=$(VERBOSE)
 
@@ -152,9 +126,8 @@ src/tests/CMakeFiles/planck_unit.dir/build: src/tests/libplanck_unit.a
 
 .PHONY : src/tests/CMakeFiles/planck_unit.dir/build
 
-src/tests/CMakeFiles/planck_unit.dir/requires: src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.obj.requires
-src/tests/CMakeFiles/planck_unit.dir/requires: src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.obj.requires
-src/tests/CMakeFiles/planck_unit.dir/requires: src/tests/CMakeFiles/planck_unit.dir/__/serial/serial_c_iface.cpp.obj.requires
+src/tests/CMakeFiles/planck_unit.dir/requires: src/tests/CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.o.requires
+src/tests/CMakeFiles/planck_unit.dir/requires: src/tests/CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.o.requires
 
 .PHONY : src/tests/CMakeFiles/planck_unit.dir/requires
 

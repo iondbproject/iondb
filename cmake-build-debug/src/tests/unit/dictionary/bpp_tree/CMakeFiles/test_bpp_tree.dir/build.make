@@ -57,123 +57,106 @@ include src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/progress
 # Include the compile flags for this target's objects.
 include src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/flags.make
 
-src/tests/unit/dictionary/bpp_tree/test_bpp_tree_bpp_tree.ino.cpp: ../src/tests/unit/dictionary/bpp_tree/bpp_tree.ino
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Regnerating bpp_tree.ino Sketch"
-	"/Applications/CLion 2.app/Contents/bin/cmake/bin/cmake" /Users/danaklamut/ClionProjects/iondb
+src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.o: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/flags.make
+src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.o: ../src/tests/unit/dictionary/bpp_tree/run_bpp_tree.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.o"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/tests/unit/dictionary/bpp_tree/run_bpp_tree.c
 
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.obj: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/flags.make
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.obj: ../src/tests/unit/dictionary/bpp_tree/test_bpp_tree_handler.c
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.obj: ../src/tests/unit/dictionary/bpp_tree/test_bpp_tree_handler.h
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/tests/unit/dictionary/bpp_tree/test_bpp_tree_handler.c
+src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.i"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/tests/unit/dictionary/bpp_tree/run_bpp_tree.c > CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.i
+
+src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.s"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/tests/unit/dictionary/bpp_tree/run_bpp_tree.c -o CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.s
+
+src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.o.requires:
+
+.PHONY : src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.o.requires
+
+src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.o.provides: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.o.requires
+	$(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.o.provides.build
+.PHONY : src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.o.provides
+
+src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.o.provides.build: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.o
+
+
+src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.o: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/flags.make
+src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.o: ../src/tests/unit/dictionary/bpp_tree/test_bpp_tree_handler.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.o"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/tests/unit/dictionary/bpp_tree/test_bpp_tree_handler.c
 
 src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/tests/unit/dictionary/bpp_tree/test_bpp_tree_handler.c > CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/tests/unit/dictionary/bpp_tree/test_bpp_tree_handler.c > CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.i
 
 src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/tests/unit/dictionary/bpp_tree/test_bpp_tree_handler.c -o CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/tests/unit/dictionary/bpp_tree/test_bpp_tree_handler.c -o CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.s
 
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.obj.requires:
+src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.o.requires:
 
-.PHONY : src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.obj.requires
+.PHONY : src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.o.requires
 
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.obj.provides: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.obj.requires
-	$(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.obj.provides.build
-.PHONY : src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.obj.provides
+src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.o.provides: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.o.requires
+	$(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.o.provides.build
+.PHONY : src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.o.provides
 
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.obj.provides.build: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.obj
+src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.o.provides.build: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.o
 
 
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.obj: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/flags.make
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.obj: ../src/tests/unit/dictionary/generic_dictionary_test.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.obj   -c /Users/danaklamut/ClionProjects/iondb/src/tests/unit/dictionary/generic_dictionary_test.c
+src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.o: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/flags.make
+src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.o: ../src/tests/unit/dictionary/generic_dictionary_test.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.o"
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.o   -c /Users/danaklamut/ClionProjects/iondb/src/tests/unit/dictionary/generic_dictionary_test.c
 
 src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/tests/unit/dictionary/generic_dictionary_test.c > CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.i
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/src/tests/unit/dictionary/generic_dictionary_test.c > CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.i
 
 src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-gcc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/tests/unit/dictionary/generic_dictionary_test.c -o CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.s
+	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && /Library/Developer/CommandLineTools/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/src/tests/unit/dictionary/generic_dictionary_test.c -o CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.s
 
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.obj.requires:
+src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.o.requires:
 
-.PHONY : src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.obj.requires
+.PHONY : src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.o.requires
 
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.obj.provides: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.obj.requires
-	$(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.obj.provides.build
-.PHONY : src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.obj.provides
+src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.o.provides: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.o.requires
+	$(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.o.provides.build
+.PHONY : src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.o.provides
 
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.obj.provides.build: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.obj
-
-
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.obj: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/flags.make
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.obj: src/tests/unit/dictionary/bpp_tree/test_bpp_tree_bpp_tree.ino.cpp
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.obj: ../src/tests/unit/dictionary/bpp_tree/test_bpp_tree_handler.h
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.obj"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.obj -c /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree/test_bpp_tree_bpp_tree.ino.cpp
-
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.i"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree/test_bpp_tree_bpp_tree.ino.cpp > CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.i
-
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.s"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree/test_bpp_tree_bpp_tree.ino.cpp -o CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.s
-
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.obj.requires:
-
-.PHONY : src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.obj.requires
-
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.obj.provides: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.obj.requires
-	$(MAKE) -f src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build.make src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.obj.provides.build
-.PHONY : src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.obj.provides
-
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.obj.provides.build: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.obj
+src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.o.provides.build: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.o
 
 
 # Object files for target test_bpp_tree
 test_bpp_tree_OBJECTS = \
-"CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.obj" \
-"CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.obj" \
-"CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.obj"
+"CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.o" \
+"CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.o" \
+"CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.o"
 
 # External object files for target test_bpp_tree
 test_bpp_tree_EXTERNAL_OBJECTS =
 
-src/tests/unit/dictionary/bpp_tree/test_bpp_tree.elf: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.obj
-src/tests/unit/dictionary/bpp_tree/test_bpp_tree.elf: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.obj
-src/tests/unit/dictionary/bpp_tree/test_bpp_tree.elf: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.obj
-src/tests/unit/dictionary/bpp_tree/test_bpp_tree.elf: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build.make
-src/tests/unit/dictionary/bpp_tree/test_bpp_tree.elf: src/tests/unit/dictionary/libmega_SPI.a
-src/tests/unit/dictionary/bpp_tree/test_bpp_tree.elf: src/tests/unit/dictionary/libmega_SD.a
-src/tests/unit/dictionary/bpp_tree/test_bpp_tree.elf: src/tests/libmega_CORE.a
-src/tests/unit/dictionary/bpp_tree/test_bpp_tree.elf: src/tests/libplanck_unit.a
-src/tests/unit/dictionary/bpp_tree/test_bpp_tree.elf: src/dictionary/bpp_tree/libbpp_tree.a
-src/tests/unit/dictionary/bpp_tree/test_bpp_tree.elf: src/dictionary/flat_file/libflat_file.a
-src/tests/unit/dictionary/bpp_tree/test_bpp_tree.elf: src/tests/unit/dictionary/libmega_SD.a
-src/tests/unit/dictionary/bpp_tree/test_bpp_tree.elf: src/tests/libmega_CORE.a
-src/tests/unit/dictionary/bpp_tree/test_bpp_tree.elf: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable test_bpp_tree.elf"
+bin/test_bpp_tree: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.o
+bin/test_bpp_tree: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.o
+bin/test_bpp_tree: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.o
+bin/test_bpp_tree: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build.make
+bin/test_bpp_tree: src/tests/libplanck_unit.a
+bin/test_bpp_tree: src/dictionary/bpp_tree/libbpp_tree.a
+bin/test_bpp_tree: src/dictionary/flat_file/libflat_file.a
+bin/test_bpp_tree: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking C executable ../../../../../bin/test_bpp_tree"
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/test_bpp_tree.dir/link.txt --verbose=$(VERBOSE)
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating EEP image"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0 /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree/test_bpp_tree.elf /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree/test_bpp_tree.eep
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Generating HEX image"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && /Applications/Arduino.app/Contents/Java/hardware/tools/avr/bin/avr-objcopy -O ihex -R .eeprom /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree/test_bpp_tree.elf /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree/test_bpp_tree.hex
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold "Calculating image size"
-	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && "/Applications/CLion 2.app/Contents/bin/cmake/bin/cmake" -DFIRMWARE_IMAGE=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree/test_bpp_tree.elf -DMCU=atmega2560 -DEEPROM_IMAGE=/Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree/test_bpp_tree.eep -P /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/CMakeFiles/FirmwareSize.cmake
 
 # Rule to build all files generated by this target.
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build: src/tests/unit/dictionary/bpp_tree/test_bpp_tree.elf
+src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build: bin/test_bpp_tree
 
 .PHONY : src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/build
 
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/requires: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.obj.requires
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/requires: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.obj.requires
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/requires: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_bpp_tree.ino.cpp.obj.requires
+src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/requires: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/run_bpp_tree.c.o.requires
+src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/requires: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/test_bpp_tree_handler.c.o.requires
+src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/requires: src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/__/generic_dictionary_test.c.o.requires
 
 .PHONY : src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/requires
 
@@ -181,7 +164,7 @@ src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/clean:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree && $(CMAKE_COMMAND) -P CMakeFiles/test_bpp_tree.dir/cmake_clean.cmake
 .PHONY : src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/clean
 
-src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/depend: src/tests/unit/dictionary/bpp_tree/test_bpp_tree_bpp_tree.ino.cpp
+src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/depend:
 	cd /Users/danaklamut/ClionProjects/iondb/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/danaklamut/ClionProjects/iondb /Users/danaklamut/ClionProjects/iondb/src/tests/unit/dictionary/bpp_tree /Users/danaklamut/ClionProjects/iondb/cmake-build-debug /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree /Users/danaklamut/ClionProjects/iondb/cmake-build-debug/src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : src/tests/unit/dictionary/bpp_tree/CMakeFiles/test_bpp_tree.dir/depend
 
