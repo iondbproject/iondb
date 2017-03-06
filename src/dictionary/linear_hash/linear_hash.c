@@ -639,9 +639,6 @@ write_new_bucket(
 	int					idx,
 	linear_hash_table_t *linear_hash
 ) {
-	/* store current ion_fpos_t in data file to enforce same ion_fpos_t after processing contract */
-	ion_fpos_t starting_ion_fpos_t = ftell(linear_hash->database);
-
 	linear_hash_bucket_t bucket;
 
 	/* initialize bucket fields */
@@ -677,10 +674,6 @@ write_new_bucket(
 		fwrite(&record_status, sizeof(ion_byte_t), 1, linear_hash->database);
 		fwrite(&record_blank, linear_hash->super.record.key_size + linear_hash->super.record.value_size, 1, linear_hash->database);
 	}
-
-	/* restore data pointer to the original location */
-	fseek(linear_hash->database, starting_ion_fpos_t, SEEK_SET);
-	linear_hash->data_pointer = starting_ion_fpos_t;
 
 	/* write bucket_loc in mapping */
 	/* store_bucket_loc_in_map(idx, bucket_loc, linear_hash); */
