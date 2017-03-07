@@ -47,7 +47,7 @@ test_linear_hash_create(
 	int				records_per_bucket	= 4;
 	array_list_t	*bucket_map			= alloca(sizeof(array_list_t));
 
-	ion_err_t err						= linear_hash_init(1, key_type, key_size, value_size, initial_size, split_threshold, records_per_bucket, bucket_map, linear_hash);
+	ion_err_t err						= linear_hash_init(1, dictionary_size, key_type, key_size, value_size, initial_size, split_threshold, records_per_bucket, bucket_map, linear_hash);
 
 	linear_hash->super.compare = dictionary_compare_signed_value;
 

@@ -35,7 +35,7 @@ typedef struct {
 typedef struct {
 	/**> Parent structure that holds dictionary level information. */
 	ion_dictionary_parent_t super;
-
+	ion_dictionary_size_t	dictionary_size;
 	int						initial_size;
 	int						next_split;
 	int						split_threshold;

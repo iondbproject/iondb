@@ -3,15 +3,16 @@
 
 ion_err_t
 linear_hash_init(
-	ion_dictionary_id_t id,
-	ion_key_type_t		key_type,
-	ion_key_size_t		key_size,
-	ion_value_size_t	value_size,
-	int					initial_size,
-	int					split_threshold,
-	int					records_per_bucket,
-	array_list_t		*bucket_map,
-	linear_hash_table_t *linear_hash
+	ion_dictionary_id_t		id,
+	ion_dictionary_size_t	dictionary_size,
+	ion_key_type_t			key_type,
+	ion_key_size_t			key_size,
+	ion_value_size_t		value_size,
+	int						initial_size,
+	int						split_threshold,
+	int						records_per_bucket,
+	array_list_t			*bucket_map,
+	linear_hash_table_t		*linear_hash
 );
 
 void
