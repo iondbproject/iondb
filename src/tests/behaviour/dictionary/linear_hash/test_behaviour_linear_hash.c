@@ -30,5 +30,5 @@ void
 runalltests_behaviour_linear_hash(
 	void
 ) {
-	bhdct_run_tests(linear_hash_dict_init, 15, ION_BHDCT_ALL_TESTS && ~ION_BHDCT_INT_INT);
+	bhdct_run_tests(linear_hash_dict_init, 15, ION_BHDCT_ALL_TESTS & ~ION_BHDCT_INT_INT);
 }
