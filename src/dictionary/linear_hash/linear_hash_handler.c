@@ -2,22 +2,6 @@
 
 /* TODO CURSOR QUERY STUFF GOES AT THE TOP OF THIS FILE (see other *_handler.c files) */
 
-/**
-@brief			Opens a specific skiplist instance of a dictionary.
-
-@param			handler
-					A pointer to the handler for the specific dictionary being opened.
-@param			dictionary
-					The pointer declared by the caller that will reference
-					the instance of the dictionary opened.
-@param			config
-					The configuration info of the specific dictionary to be opened.
-@param			compare
-					Function pointer for the comparison function for the dictionary.
-
-@return			The status of opening the dictionary.
- */
-
 void
 linear_hash_dict_init(
 	ion_dictionary_handler_t *handler
