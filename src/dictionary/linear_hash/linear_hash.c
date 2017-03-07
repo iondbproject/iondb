@@ -678,9 +678,8 @@ write_new_bucket(
 	fwrite(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database);
 
 	/* write bucket data to file */
-	ion_byte_t record_status;
-
-	ion_byte_t record_blank[linear_hash->super.record.key_size + linear_hash->super.record.value_size];
+	ion_byte_t	record_status = 0;
+	ion_byte_t	record_blank[linear_hash->super.record.key_size + linear_hash->super.record.value_size];
 
 	memset(record_blank, 0, linear_hash->super.record.key_size + linear_hash->super.record.value_size);
 
