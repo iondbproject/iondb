@@ -5,6 +5,8 @@ main(
 ) {
 /*	runalltests_linear_hash(); */
 /*	runalltests_flat_file_handler(); */
+
+	/*
 	ion_key_type_t		key_type			= key_type_numeric_signed;
 	ion_key_size_t		key_size			= sizeof(int);
 	ion_value_size_t	value_size			= sizeof(int);
@@ -54,5 +56,7 @@ main(
 	linear_hash_insert(key, value, insert_hash_to_bucket(key, linear_hash), linear_hash);
 
 	linear_hash_close(linear_hash);
+	*/
+
 	return 0;
 }
