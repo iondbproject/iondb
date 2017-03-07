@@ -34,7 +34,6 @@ linear_hash_init(
 
 	/* open datafile */
 	linear_hash->database			= fopen(data_filename, "w+b");
-	fwrite(&(int) { 0xADDE }, sizeof(int), 1, linear_hash->database);
 
 	/* initialize linear_hash fields */
 	linear_hash->initial_size		= initial_size;
@@ -649,8 +648,9 @@ write_new_bucket(
 	bucket.anchor_record		= -1;
 
 	/* seek to end of file to append new bucket */
-	ion_fpos_t	bucket_loc;
-//	ion_fpos_t	record_total_size = linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(ion_byte_t);
+	ion_fpos_t bucket_loc;
+
+	fseek(linear_hash->database, 0, SEEK_SET);
 
 	if (idx == 0) {
 		fseek(linear_hash->database, 0, SEEK_SET);
@@ -688,6 +688,7 @@ linear_hash_get_bucket(
 	linear_hash_table_t *linear_hash
 ) {
 	fseek(linear_hash->database, 0, SEEK_END);
+
 	/* create a temporary store for records that are read */
 	linear_hash_bucket_t bucket;
 
@@ -999,9 +1000,15 @@ ion_err_t
 linear_hash_close(
 	linear_hash_table_t *linear_hash
 ) {
-	free(linear_hash->bucket_map->data);
-	free(linear_hash->bucket_map);
-	linear_hash->bucket_map = NULL;
+	if (linear_hash->bucket_map->data != NULL) {
+		free(linear_hash->bucket_map->data);
+		linear_hash->bucket_map->data = NULL;
+	}
+
+	if (linear_hash->bucket_map != NULL) {
+		free(linear_hash->bucket_map->data);
+		linear_hash->bucket_map = NULL;
+	}
 
 	if (0 != fclose(linear_hash->database)) {
 		return err_file_close_error;
