@@ -42,6 +42,8 @@ test_linear_hash_create(
 	ion_value_size_t		value_size,
 	ion_dictionary_size_t	dictionary_size
 ) {
+	/* TODO create and desetroy a linear_hash in every file */
+
 	int				initial_size		= 5;
 	int				split_threshold		= 85;
 	int				records_per_bucket	= 4;
@@ -56,6 +58,8 @@ test_linear_hash_create(
 	PLANCK_UNIT_ASSERT_TRUE(tc, NULL != linear_hash->state);
 	PLANCK_UNIT_ASSERT_TRUE(tc, initial_size == linear_hash->num_buckets);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == linear_hash->num_records);
+
+	err = linear_hash_close(linear_hash);	/* todo test me */
 }
 
 planck_unit_suite_t *

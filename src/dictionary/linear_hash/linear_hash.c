@@ -686,7 +686,7 @@ write_new_bucket(
 
 	for (int i = 0; i < linear_hash->records_per_bucket; i++) {
 		fwrite(&record_status, sizeof(ion_byte_t), 1, linear_hash->database);
-		fwrite(&record_blank, linear_hash->super.record.key_size + linear_hash->super.record.value_size, 1, linear_hash->database);
+		fwrite(record_blank, linear_hash->super.record.key_size + linear_hash->super.record.value_size, 1, linear_hash->database);
 	}
 
 	/* write bucket_loc in mapping */
@@ -790,7 +790,7 @@ create_overflow_bucket(
 
 	for (int i = 0; i < linear_hash->records_per_bucket; i++) {
 		fwrite(&record_status, sizeof(ion_byte_t), 1, linear_hash->database);
-		fwrite(&record_blank, linear_hash->super.record.key_size + linear_hash->super.record.value_size, 1, linear_hash->database);
+		fwrite(record_blank, linear_hash->super.record.key_size + linear_hash->super.record.value_size, 1, linear_hash->database);
 	}
 
 	/* restore data pointer to the original location */
