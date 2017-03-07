@@ -33,6 +33,12 @@ static void writeHeader(FILE *file, ion_bpp_header *head){
 	if(fwrite(&head->recordCount, sizeof(unsigned long), 2, file) == 0) { /*Write both longs */
 		printf("ERR: Write of recordCount, depth Failed!\n");
 	}
+	
+	if(head->revision > 0) {
+		if(fwrite(&head->allow_duplicates, sizeof(bool), 1, file) == 0) {
+			printf("ERR: Write of allow_duplicates Failed!\n");
+		}
+	}
 	//fwrite(&EMPTY,1,9,file);
 }
 static ion_bpp* openBpp(char *filename, ion_bpp_header *new_file){
@@ -74,6 +80,14 @@ static ion_bpp* openBpp(char *filename, ion_bpp_header *new_file){
 		if(fread(&newTree->head->recordCount, sizeof(unsigned long), 2, newTree->file) == 0) {
 			printf("ERR: Read of recordCount, depth Failed!\n");
 		}
+		if(newTree->head->revision > 0) {
+			if(fread(&newTree->head->allow_duplicates, sizeof(bool), 1, newTree->file) == 0) {
+				printf("ERR: Read of allow_duplicates Failed!\n");
+			}
+		} else {
+			newTree->head->allow_duplicates = 0;
+		}
+		
 	}
 	newTree->indices = getRowIndices(newTree->head);
 	return newTree;
@@ -83,7 +97,7 @@ static void debugPrintHeader(ion_bpp_header *head){
 	printf("Revision Version:\t%i\nKey Size (bytes):\t%i\nValue Size (bytes):\t%i\nLeaf Count:\t\t%i\nRecord Count:\t\t%lu\nTree Depth:\t\t%lu\n",head->revision,head->keySize,head->valueSize,head->leafCount,head->recordCount,head->depth);
 	}
 }
-static void* searchRecords(ion_bpp *bpp, void* searchKey){ //TODO CLEANUP, FIXES
+static void* searchRecords(ion_bpp *bpp, void* searchKey){ //TODO CLEANUP, FIXES //PLZ USE OTHER SEARCH
 	int* tmp = (int*) searchKey;
 	printf("Searching for %i\n\n",*tmp);
 	void* leaf;
@@ -149,6 +163,8 @@ static void* searchRecords(ion_bpp *bpp, void* searchKey){ //TODO CLEANUP, FIXES
 }
 static unsigned char insertRecords(ion_bpp *bpp, void* key, void* value){
 	if(key == NULL){return 255;}/*Invalid Key TODO::Check if Key value == 0*/
+	int depth = 0;
+	
 	//Special case, EMPTY tree
 	if(bpp->head->depth==0){
 		printf("Begin Special case Insertion!\n");
@@ -164,7 +180,8 @@ static unsigned char insertRecords(ion_bpp *bpp, void* key, void* value){
 			bpp->head->recordCount++;
 			writeHeader(bpp->file, bpp->head);
 		}
-	}//TODO :: After mergeRight and mergeUp are built./* else {
+	}//TODO :: After mergeRight and mergeUp are built.
+/* else {
 		void* leaf;
 		leaf = malloc(bpp->head->keySize * bpp->head->leafCount);
 		long leaf_offset=0;
@@ -195,6 +212,190 @@ static unsigned char insertRecords(ion_bpp *bpp, void* key, void* value){
 	return 0;
 }
 
+
+
+static ion_bpp_search_record* searchRecordOffset(ion_bpp *bpp, void* searchKey){ //SUPERIOR TO OTHER SEARCH
+	void* leaf;
+	void* element;
+	leaf = malloc(bpp->head->keySize * bpp->head->leafCount);
+	bool found = 0;
+	bool next_row = 0;
+	unsigned long offset = 0;
+	void* nullValue = calculateNullNode(bpp->head->keySize, bpp->head->revision);
+	int comp = 0;
+	int isNull = 0;
+	for (int depth = 0; depth < bpp->head->depth;depth++){
+		found = 0;
+		fseek(bpp->file, bpp->indices[depth]+(offset*bpp->head->keySize),SEEK_SET);
+		fread(leaf,bpp->head->keySize, bpp->head->leafCount, bpp->file);
+		for (int node = 0; node < bpp->head->leafCount; node++){
+			element = leaf + (node * bpp->head->keySize);
+			comp = memcmp(searchKey,element,bpp->head->keySize);
+			isNull = memcmp(nullValue,element,bpp->head->keySize);
+			printf("cmp: %i",comp);
+			if(comp<0){
+				if(depth == bpp->head->depth-1) {
+					offset = offset + node;
+				} else {
+					offset = offset * (bpp->head->leafCount+1) + node;
+				}
+				next_row = 1;
+				break;
+			}
+			if(comp==0){
+				printf("Found: Depth %i", depth);
+				if(depth == bpp->head->depth-1) {
+					offset = offset + node;
+				} else {
+					offset = offset * (bpp->head->leafCount+1) + node+1;
+				}
+				found=1;
+				next_row = 1;
+				break;
+			}
+			if(isNull == 0){
+				if(depth == bpp->head->depth-1) {
+					offset = offset + node;
+				} else {
+					offset = offset * (bpp->head->leafCount+1) + node+1;
+				}
+				found=0;
+				next_row = 1;
+				break;
+			}
+			//offset * (bpp->head->leafCount+1) + i
+		}
+		if(next_row == 0){
+			printf("NEXTROW %lu\n", offset);
+			//offset = (offset + (bpp->head->leafCount)) * (bpp->head->leafCount+1);
+			//offset = (offset * (bpp->head->leafCount+1)) + (bpp->head->leafCount);
+			if(depth != bpp->head->depth-1){
+				offset = (offset + (bpp->head->leafCount+1)) * (bpp->head->leafCount);
+			}
+			printf("Off %lu\n",offset);
+		}
+		next_row = 0;
+	}
+	ion_bpp_search_record* rec;
+	rec = (ion_bpp_search_record*) malloc(sizeof(ion_bpp_search_record));
+	rec->row_offset = (unsigned long*) malloc(sizeof(long));
+	(*rec->row_offset) = offset;
+	rec->found = found;
+	rec->has_end_offset = 0;
+	if(found && bpp->head->allow_duplicates){
+		while(true){
+			offset++;
+			fseek(bpp->file, bpp->indices[bpp->head->depth-1]+(offset*bpp->head->keySize),SEEK_SET);
+			if(fread(element,bpp->head->keySize, 1, bpp->file) == 0){
+				break;
+			}
+			if(memcmp(searchKey,element,bpp->head->keySize) == 0){
+				if(rec->has_end_offset == 0){
+					rec->end_offset = (long*)malloc(sizeof(long));
+					rec->has_end_offset = 1;
+				}
+				(*rec->end_offset) = offset;
+			} else {break;}
+		}
+	}
+	free(leaf);
+	free(nullValue);
+	return rec;
+}
+static void* readRecords(ion_bpp *bpp, ion_bpp_search_record *rec, bool return_all){
+	if(return_all){
+		void* result = malloc(bpp->head->valueSize * ((*rec->end_offset) - (*rec->row_offset)));
+		fseek(bpp->file, bpp->indices[bpp->head->depth]+((*rec->row_offset) * bpp->head->valueSize),SEEK_SET);
+		fread(result,bpp->head->valueSize, (*rec->end_offset - *rec->row_offset), bpp->file);
+		return result;
+	} else {
+		void* result = malloc(bpp->head->valueSize);
+		fseek(bpp->file, bpp->indices[bpp->head->depth]+((*rec->row_offset) * bpp->head->valueSize),SEEK_SET);
+		fread(result,bpp->head->valueSize, 1, bpp->file);
+		return result;
+	}
+}
+
+static unsigned char deleteRecords(ion_bpp *bpp, void* key){ //No support for duplicate keys at this time TODO
+	ion_bpp_search_record* rec = searchRecordOffset(bpp, key);
+	if (rec->found == 0) {
+		return 0;
+	} else {
+		unsigned short depth_in_leaf = (*rec->row_offset) % bpp->head->leafCount;
+		printf("\nDepth in Leaf: %u\n", depth_in_leaf);
+		if(depth_in_leaf < (bpp->head->leafCount)) {
+			void* nullValue = calculateNullNode(bpp->head->keySize, bpp->head->revision);
+			void* element = malloc(bpp->head->keySize);
+			//fseek(bpp->file, bpp->indices[bpp->head->depth-1]+((*rec->row_offset) * bpp->head->keySize),SEEK_SET);
+			//fread(element,bpp->head->keySize, 1, bpp->file);
+			for(int i = 0; i<(bpp->head->leafCount-1);i++){
+				printf("HERE! %lu : %lu",*rec->row_offset + i + 1, *rec->row_offset + i);
+				//fread(element,bpp->head->keySize, 1, bpp->file);
+				//if(memcmp(nullValue,element_b,bpp->head->keySize)==0){
+				move(bpp, bpp->head->depth-1, *rec->row_offset + i + 1, *rec->row_offset + i, i==(bpp->head->leafCount-2),false);
+				//}
+			}
+		} else {
+			move(bpp, bpp->head->depth-1, *rec->row_offset+1, *rec->row_offset, 1,0);
+		}
+	}
+}
+
+
+static void move(ion_bpp *bpp, int depth, long source_offset, long dest_offset, bool clear, bool whole_leaf){
+	void* leaf;
+	unsigned short* size;
+	unsigned short nodes = 1;
+	if (whole_leaf) {nodes = bpp->head->leafCount;}
+	if(depth != bpp->head->depth){
+		size = &(bpp->head->keySize);
+		leaf = malloc(bpp->head->keySize * nodes);
+	} else {
+		size = &(bpp->head->valueSize);
+		leaf = malloc(bpp->head->valueSize * nodes);
+	}
+	//printf("size: %ui\nnodes: %ui\n", *size, nodes);
+	fseek(bpp->file, bpp->indices[depth]+(source_offset * (*size)),SEEK_SET);
+	fread(leaf,*size, nodes, bpp->file);
+	//int *temp = (int*) leaf;
+	//printf("%i", *temp);
+	fseek(bpp->file, bpp->indices[depth]+(dest_offset * (*size)),SEEK_SET);
+	fwrite(leaf,*size, nodes, bpp->file);
+	if (clear) {
+		//printf("clear\n");
+		leaf = calculateNullNode(*size, bpp->head->revision);
+		fseek(bpp->file, bpp->indices[depth]+(source_offset * (*size)),SEEK_SET);
+		for (int i = 0; i<nodes;i++){
+			fwrite(leaf,*size, 1, bpp->file);
+		}
+	}
+	if(depth != bpp->head->depth){
+		if (!whole_leaf) {nodes = 0; /* Only do left children if only one node; whatever called this will have to do cleanup to shift... or, I could add it here TODO Add left_shift */}
+		for (unsigned short i = 0; i<=nodes; i++){
+			//printf("Recursive\n");
+			if (depth != bpp->head->depth -1) {
+				move(bpp, depth+1, source_offset * (bpp->head->leafCount+1) + i, dest_offset * (bpp->head->leafCount+1)+i, clear, 1);
+			} else{
+				move(bpp, depth+1,source_offset,dest_offset,clear,1);
+			}
+		}
+	}
+}
+
+static unsigned short getLeafCount(ion_bpp *bpp, unsigned short elementSize, long absolute_offset){
+	void* leaf;
+	leaf = malloc(elementSize * bpp->head->leafCount);
+	fseek(bpp->file, absolute_offset,SEEK_SET);
+	fread(leaf,elementSize, bpp->head->leafCount, bpp->file);
+	void* nullValue = calculateNullNode(elementSize, bpp->head->revision);
+	unsigned short i = 0;
+	void* element = leaf + (i * bpp->head->keySize);
+	while(i<bpp->head->leafCount && memcmp(nullValue,element,elementSize) != 0){
+		i++;
+		void* element = leaf + (i * bpp->head->keySize);
+	}
+	return i;
+}
 
 
 

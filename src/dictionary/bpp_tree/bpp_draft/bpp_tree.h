@@ -17,6 +17,7 @@ typedef struct {
 	unsigned short			leafCount;	/* number of nodes per leaf; links this+1 */
 	unsigned long			recordCount;/* number of records in tree*/
 	unsigned long			depth;		/* number of levels in the tree */
+	bool					allow_duplicates;
 } ion_bpp_header;
 
 /* Since the header is suspected to be 23 bytes, and may change in the future, offset the first data record by 32 bytes; 256 bits */
@@ -33,17 +34,29 @@ typedef struct {
 	FILE					*file;		/* File on Disk */
 } ion_bpp;
 
+typedef struct {
+	bool				found;			/* Whether the key was at teh destination or not */
+	bool				has_end_offset;	/* Whether there where multiple matching keys; otherwise, end_offset variable is set to NULL */
+	unsigned long		*row_offset;	/* How many records in was it found (or, the leaf searched, and failed leaf loc) */
+	unsigned long		*end_offset;	/* Likely null */
+} ion_bpp_search_record;
+
 
 static long* getRowIndices(ion_bpp_header *head);
 static void writeHeader(FILE *file, ion_bpp_header *new_head);
 static ion_bpp* openBpp(char *filename, ion_bpp_header *new_file);
 static void* searchRecords(ion_bpp *bpp, void* searchKey);
+static ion_bpp_search_record* searchRecordOffset(ion_bpp *bpp, void* searchKey);
+static void* readRecords(ion_bpp *bpp, ion_bpp_search_record *rec, bool return_all);
 static unsigned char insertRecords(ion_bpp *bpp, void* key, void* value);
 static unsigned char updateRecords(ion_bpp *bpp, void* key, void* value);
 static unsigned char deleteRecords(ion_bpp *bpp, void* key);
 static bool mergeRight(ion_bpp *bpp, int depth, long leaf_offset);
 static bool mergeUp(ion_bpp *bpp, int depth, long leaf_offset);
+static void move(ion_bpp *bpp, int depth, long source_offset, long dest_offset, bool clear, bool whole_leaf);
 static void* calculateNullNode(unsigned short keySize, unsigned char revision);
+
+static unsigned short getLeafCount(ion_bpp *bpp, unsigned short elementSize, long absolute_offset);
 
 static void debugPrintHeader(ion_bpp_header *head);
 static void debugPrintTree(ion_bpp *tree);

@@ -32,22 +32,57 @@ int main( int argc, const char* argv[] ){
 		printf("------------------------------------------------\n\n");
 		int v = 99;
 		int *value = &v;
-		value = searchRecords(tree, value);
-		if(value == NULL) {printf("Record [99] NOT FOUND");} else{printf("%i",*value);}
+		//value = searchRecords(tree, value);
+		ion_bpp_search_record* rec = searchRecordOffset(tree, value);
+		printf("\nFound: %i\nOffset: %lu\n", rec->found, *rec->row_offset);
+		if(rec->found == 0) {printf("Record [99] NOT FOUND");} else{
+			value = readRecords(tree, rec, false);
+			printf("%i\n",*value);
+		}
 		printf("------------------------------------------------\n\n");
 
 		v = 95;
 		value = &v;
-		value = searchRecords(tree, value);
+		/*value = searchRecords(tree, value);
 		if(value == NULL) {printf("Record [95] NOT FOUND");} else{printf("%i",*value);}
+		printf("------------------------------------------------\n\n");*/
+		rec = searchRecordOffset(tree, value);
+		printf("\nFound: %i\nOffset: %lu\n", rec->found, *rec->row_offset);
+		if(rec->found == 0) {printf("Record [95] NOT FOUND");} else{
+			value = readRecords(tree, rec, false);
+			printf("%i\n",*value);
+		}
 		printf("------------------------------------------------\n\n");
 
 		v=4;
 		value = &v;
-		value = searchRecords(tree, value);
+		/*value = searchRecords(tree, value);
 		if(value == NULL) {printf("Record [4] NOT FOUND");} else{printf("%i",*value);}
-		printf("------------------------------------------------\n\n");
+		printf("------------------------------------------------\n\n");*/
 
+
+		rec = searchRecordOffset(tree, value);
+		printf("\nFound: %i\nOffset: %lu\n", rec->found, *rec->row_offset);
+		if(rec->found == 0) {printf("Record [4] NOT FOUND");} else{
+			value = readRecords(tree, rec, false);
+			printf("%i\n",*value);
+		}
+		printf("------------------------------------------------\n\n");
+		v=10;
+		value = &v;
+
+		rec = searchRecordOffset(tree, value);
+		printf("\nFound: %i\nOffset: %lu\n", rec->found, *rec->row_offset);
+		if(rec->found == 0) {printf("Record [10] NOT FOUND");} else{
+			value = readRecords(tree, rec, false);
+			printf("%i\n",*value);
+		}
+		printf("------------------------------------------------\n\n");
+		//move(tree, 1, 0, 2, true, false);
+		v = 10;
+		value = &v;
+		deleteRecords(tree, value);
+		debugPrintTree(tree);
 	
 	
 

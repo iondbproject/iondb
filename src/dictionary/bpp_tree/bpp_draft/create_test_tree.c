@@ -101,6 +101,5 @@ int main( int argc, const char* argv[] ){
 	fwrite(&empty, sizeof(unsigned int), 1, file);
 	fwrite(&empty, sizeof(unsigned int), 1, file);
 	fclose(file);
-	free(file);
 	
 }
