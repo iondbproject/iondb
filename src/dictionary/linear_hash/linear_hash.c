@@ -656,7 +656,7 @@ write_new_bucket(
 		bucket_loc = 0;
 	}
 	else {
-		fseek(linear_hash->database, linear_hash->records_per_bucket * record_total_size, SEEK_END);
+		fseek(linear_hash->database, 0, SEEK_END);
 		bucket_loc = ftell(linear_hash->database);
 	}
 
@@ -694,17 +694,11 @@ linear_hash_get_bucket(
 		exit(-1);
 	}
 
-	ion_fpos_t starting_ion_fpos_t = ftell(linear_hash->database);
-
 	/* seek to location of record in file */
 	fseek(linear_hash->database, bucket_loc, SEEK_SET);
 
 	/* read record */
 	fread(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database);
-
-	/* restore data pointer to the original location */
-	fseek(linear_hash->database, starting_ion_fpos_t, SEEK_SET);
-	linear_hash->data_pointer = starting_ion_fpos_t;
 
 	return bucket;
 }
@@ -1003,14 +997,13 @@ ion_err_t
 linear_hash_close(
 	linear_hash_table_t *linear_hash
 ) {
+	free(linear_hash->bucket_map->data);
 	free(linear_hash->bucket_map);
 	linear_hash->bucket_map = NULL;
 
 	if (0 != fclose(linear_hash->database)) {
 		return err_file_close_error;
 	}
-
-	free(linear_hash);
 
 	return err_ok;
 }
