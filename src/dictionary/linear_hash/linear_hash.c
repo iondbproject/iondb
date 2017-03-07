@@ -33,7 +33,17 @@ linear_hash_init(
 	dictionary_get_filename(linear_hash->super.id, "lhs", state_filename);
 
 	/* open datafile */
-	linear_hash->database			= fopen(data_filename, "w+b");
+	linear_hash->database = fopen(data_filename, "w+b");
+
+	if (linear_hash->database == NULL) {
+		return err_file_open_error;
+	}
+
+	linear_hash->state = fopen(state_filename, "w+b");
+
+	if (linear_hash->state == NULL) {
+		return err_file_open_error;
+	}
 
 	/* initialize linear_hash fields */
 	linear_hash->initial_size		= initial_size;
@@ -53,8 +63,6 @@ linear_hash_init(
 	for (int i = 0; i < linear_hash->initial_size; i++) {
 		write_new_bucket(i, linear_hash);
 	}
-
-	linear_hash->state = fopen(state_filename, "w+b");
 
 	/* write the state of the linear_hash to disk */
 	fwrite(linear_hash, sizeof(linear_hash_table_t), 1, linear_hash->state);
@@ -649,8 +657,6 @@ write_new_bucket(
 
 	/* seek to end of file to append new bucket */
 	ion_fpos_t bucket_loc;
-
-	fseek(linear_hash->database, 0, SEEK_SET);
 
 	if (idx == 0) {
 		fseek(linear_hash->database, 0, SEEK_SET);
