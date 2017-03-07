@@ -1,6 +1,6 @@
 #include "linear_hash.h"
 #include "../../key_value/kv_system.h"
-#include <math.h>
+#include <math.h>a
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -642,11 +642,15 @@ linear_hash_write_record(
 	return err_ok;
 }
 
-void
+ion_err_t
 write_new_bucket(
 	int					idx,
 	linear_hash_table_t *linear_hash
 ) {
+	if (linear_hash->database == NULL) {
+		return err_file_open_error;
+	}
+
 	linear_hash_bucket_t bucket;
 
 	/* initialize bucket fields */
@@ -685,6 +689,8 @@ write_new_bucket(
 	/* write bucket_loc in mapping */
 	/* store_bucket_loc_in_map(idx, bucket_loc, linear_hash); */
 	array_list_insert(idx, bucket_loc, linear_hash->bucket_map);
+
+	return err_ok;
 }
 
 /* returns the struct representing the bucket at the specified index */

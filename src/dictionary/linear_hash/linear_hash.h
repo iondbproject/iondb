@@ -100,7 +100,7 @@ linear_hash_above_threshold(
 );
 
 /* BUCKET OPERATIONS */
-void
+ion_err_t
 write_new_bucket(
 	int					idx,
 	linear_hash_table_t *linear_hash
