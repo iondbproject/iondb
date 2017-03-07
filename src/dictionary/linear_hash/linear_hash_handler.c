@@ -75,6 +75,9 @@ linear_hash_create_dictionary(
 	int				initial_size, split_threshold, records_per_bucket;
 	array_list_t	*bucket_map;
 
+	/* dictionary_size unused */
+	dictionary_size = NULL;
+
 	bucket_map				= malloc(sizeof(array_list_t));
 	bucket_map				= array_list_init(5, bucket_map);
 

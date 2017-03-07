@@ -1,6 +1,6 @@
 #include "linear_hash.h"
 #include "../../key_value/kv_system.h"
-#include <math.h>a
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
