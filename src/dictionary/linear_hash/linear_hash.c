@@ -38,13 +38,13 @@ linear_hash_init(
 	/* open datafile */
 	linear_hash->database = fopen(data_filename, "w+b");
 
-	if (linear_hash->database == NULL) {
+	if (NULL == linear_hash->database) {
 		return err_file_open_error;
 	}
 
 	linear_hash->state = fopen(state_filename, "w+b");
 
-	if (linear_hash->state == NULL) {
+	if (NULL == linear_hash->state) {
 		return err_file_open_error;
 	}
 
@@ -64,9 +64,15 @@ linear_hash_init(
 
 	int i;
 
+	ion_err_t err;
+
 	/* write out initial buckets */
 	for (i = 0; i < linear_hash->initial_size; i++) {
-		write_new_bucket(i, linear_hash);
+		err = write_new_bucket(i, linear_hash);
+
+		if (err != err_ok) {
+			return err;
+		}
 	}
 
 	/* write the state of the linear_hash to disk */
@@ -122,13 +128,20 @@ linear_hash_increment_num_records(
 ) {
 	linear_hash->num_records++;
 
+	ion_err_t err = err_ok;
+
 	if (linear_hash_above_threshold(linear_hash)) {
-		write_new_bucket(linear_hash->num_buckets, linear_hash);
+		err = write_new_bucket(linear_hash->num_buckets, linear_hash);
+
+		if (err != err_ok) {
+			return err;
+		}
+
 		linear_hash_increment_num_buckets(linear_hash);
-		return split(linear_hash);
+		err = split(linear_hash);
 	}
 
-	return err_ok;
+	return err;
 }
 
 /* decrement the count of the records stored in the linear hash */
@@ -250,7 +263,7 @@ split(
 				}
 
 				for (j = 0; j < status.count; j++) {
-					linear_hash_insert(record_key, record_value, hash_to_bucket(record_key, linear_hash), linear_hash);
+					status = linear_hash_insert(record_key, record_value, hash_to_bucket(record_key, linear_hash), linear_hash);
 
 					if (status.error != err_ok) {
 						return status.error;
@@ -331,7 +344,11 @@ linear_hash_insert(
 			bucket.anchor_record	= overflow_anchor_record_loc;
 			record_loc				= bucket.anchor_record;
 			bucket_loc				= overflow_location;
-			linear_hash_update_bucket(overflow_location, bucket, linear_hash);
+			status.error			= linear_hash_update_bucket(overflow_location, bucket, linear_hash);
+
+			if (status.error != err_ok) {
+				return status;
+			}
 		}
 		/* case there is >= 1 record in the bucket but it is not full */
 		else {
@@ -349,7 +366,11 @@ linear_hash_insert(
 
 			while (bucket.overflow_location != -1 && stop != 1) {
 				for (i = 0; i < linear_hash->records_per_bucket; i++) {
-					linear_hash_get_record(scanner_loc, scanner_key, scanner_value, &scanner_status, linear_hash);
+					status.error = linear_hash_get_record(scanner_loc, scanner_key, scanner_value, &scanner_status, linear_hash);
+
+					if (status.error != err_ok) {
+						return status;
+					}
 
 					if (scanner_status == 0) {
 						stop = 1;
@@ -368,7 +389,11 @@ linear_hash_insert(
 			/* scan last bucket if necesarry */
 			if (stop != 1) {
 				for (i = 0; i < linear_hash->records_per_bucket; i++) {
-					linear_hash_get_record(scanner_loc, scanner_key, scanner_value, &scanner_status, linear_hash);
+					status.error = linear_hash_get_record(scanner_loc, scanner_key, scanner_value, &scanner_status, linear_hash);
+
+					if (status.error != err_ok) {
+						return status;
+					}
 
 					if (scanner_status == 0) {
 						stop = 1;
@@ -393,14 +418,23 @@ linear_hash_insert(
 	}
 
 	/* write new record to the db */
-	linear_hash_write_record(record_loc, record_key, record_value, &record_status, linear_hash);
-	status.error = err_ok;
+	status.error = linear_hash_write_record(record_loc, record_key, record_value, &record_status, linear_hash);
+
+	if (status.error != err_ok) {
+		return status;
+	}
+
 	status.count++;
 
 	/* update bucket */
 	bucket.record_count++;
-	linear_hash_update_bucket(bucket_loc, bucket, linear_hash);
+	status.error = linear_hash_update_bucket(bucket_loc, bucket, linear_hash);
 
+	if (status.error != err_ok) {
+		return status;
+	}
+
+	status.error = err_ok;
 	linear_hash_increment_num_records(linear_hash);
 	return status;
 }
@@ -440,7 +474,11 @@ linear_hash_get(
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
 		for (i = 0; i < linear_hash->records_per_bucket; i++) {
-			linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
+			status.error = linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
+
+			if (status.error != err_ok) {
+				return status;
+			}
 
 			if (record_status != 0) {
 				if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
@@ -464,7 +502,11 @@ linear_hash_get(
 
 	if (found == 0) {
 		for (i = 0; i < linear_hash->records_per_bucket; i++) {
-			linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
+			status.error = linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
+
+			if (status.error != err_ok) {
+				return status;
+			}
 
 			if (record_status != 0) {
 				if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
@@ -520,11 +562,20 @@ linear_hash_update(
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
 		for (i = 0; i < linear_hash->records_per_bucket; i++) {
-			linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
+			status.error = linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
+
+			if (status.error != err_ok) {
+				return status;
+			}
 
 			if (record_status == 1) {
 				if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
-					linear_hash_write_record(record_loc, record_key, value, &record_status, linear_hash);
+					status.error = linear_hash_write_record(record_loc, record_key, value, &record_status, linear_hash);
+
+					if (status.error != err_ok) {
+						return status;
+					}
+
 					status.count++;
 				}
 			}
@@ -539,11 +590,20 @@ linear_hash_update(
 	record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
 	for (i = 0; i < linear_hash->records_per_bucket; i++) {
-		linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
+		status.error = linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
+
+		if (status.error != err_ok) {
+			return status;
+		}
 
 		if (record_status == 1) {
 			if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
-				linear_hash_write_record(record_loc, record_key, value, &record_status, linear_hash);
+				status.error = linear_hash_write_record(record_loc, record_key, value, &record_status, linear_hash);
+
+				if (status.error != err_ok) {
+					return status;
+				}
+
 				status.count++;
 			}
 		}
@@ -594,15 +654,29 @@ linear_hash_delete(
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
 		for (i = 0; i < linear_hash->records_per_bucket; i++) {
-			linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
+			status.error = linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
+
+			if (status.error != err_ok) {
+				return status;
+			}
 
 			if (record_status != 0) {
 				if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
-					record_status = 0;
-					linear_hash_write_record(record_loc, record_key, record_value, &record_status, linear_hash);
+					record_status	= 0;
+					status.error	= linear_hash_write_record(record_loc, record_key, record_value, &record_status, linear_hash);
+
+					if (status.error != err_ok) {
+						return status;
+					}
+
 					status.count++;
 					bucket.record_count--;
-					linear_hash_update_bucket(bucket_loc, bucket, linear_hash);
+					status.error = linear_hash_update_bucket(bucket_loc, bucket, linear_hash);
+
+					if (status.error != err_ok) {
+						return status;
+					}
+
 					linear_hash_decrement_num_records(linear_hash);
 				}
 			}
@@ -617,15 +691,29 @@ linear_hash_delete(
 	record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
 	for (i = 0; i < linear_hash->records_per_bucket; i++) {
-		linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
+		status.error = linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
+
+		if (status.error != err_ok) {
+			return status;
+		}
 
 		if (record_status != 0) {
 			if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
-				record_status = 0;
-				linear_hash_write_record(record_loc, record_key, record_value, &record_status, linear_hash);
+				record_status	= 0;
+				status.error	= linear_hash_write_record(record_loc, record_key, record_value, &record_status, linear_hash);
+
+				if (status.error != err_ok) {
+					return status;
+				}
+
 				status.count++;
 				bucket.record_count--;
-				linear_hash_update_bucket(bucket_loc, bucket, linear_hash);
+				status.error = linear_hash_update_bucket(bucket_loc, bucket, linear_hash);
+
+				if (status.error != err_ok) {
+					return status;
+				}
+
 				linear_hash_decrement_num_records(linear_hash);
 			}
 		}
@@ -766,7 +854,11 @@ write_new_bucket(
 
 	/* write bucket_loc in mapping */
 	/* store_bucket_loc_in_map(idx, bucket_loc, linear_hash); */
-	array_list_insert(idx, bucket_loc, linear_hash->bucket_map);
+	ion_err_t err = array_list_insert(idx, bucket_loc, linear_hash->bucket_map);
+
+	if (err != err_ok) {
+		return err;
+	}
 
 	return err_ok;
 }
@@ -825,6 +917,7 @@ linear_hash_update_bucket(
 	return err_ok;
 }
 
+/* TODO change me to a write back parameter */
 ion_fpos_t
 create_overflow_bucket(
 	int					bucket_idx,
@@ -839,24 +932,25 @@ create_overflow_bucket(
 	bucket.overflow_location	= array_list_get(bucket_idx, linear_hash->bucket_map);
 	bucket.anchor_record		= -1;
 
-	/* check the file is open */
-	if (!linear_hash->database) {
-		/* please handle me */
-	}
-
 	/* seek to end of file to append new bucket */
 	if (0 != fseek(linear_hash->database, 0, SEEK_END)) {
-		return err_file_bad_seek;
+		/* return err_file_bad_seek; */
 	}
 
 	/* get overflow location for new overflow bucket */
 	ion_fpos_t overflow_loc = ftell(linear_hash->database);
 
-	array_list_insert(bucket.idx, overflow_loc, linear_hash->bucket_map);
+	ion_err_t err;
+
+	err = array_list_insert(bucket.idx, overflow_loc, linear_hash->bucket_map);
+
+	if (err != err_ok) {
+		/* return err; */
+	}
 
 	/* write to file */
 	if (1 != fwrite(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database)) {
-		return err_file_write_error;
+		/* return err_file_write_error; */
 	}
 
 	/* write bucket data to file */
@@ -870,11 +964,11 @@ create_overflow_bucket(
 
 	for (i = 0; i < linear_hash->records_per_bucket; i++) {
 		if (1 != fwrite(&record_status, sizeof(ion_byte_t), 1, linear_hash->database)) {
-			return err_file_write_error;
+			/* return err_file_write_error; */
 		}
 
 		if (1 != fwrite(record_blank, linear_hash->super.record.key_size + linear_hash->super.record.value_size, 1, linear_hash->database)) {
-			return err_file_write_error;
+			/* return err_file_write_error; */
 		}
 	}
 
