@@ -62,8 +62,10 @@ linear_hash_init(
 	/* mapping of buckets to file offsets */
 	linear_hash->bucket_map			= bucket_map;
 
+	int i;
+
 	/* write out initial buckets */
-	for (int i = 0; i < linear_hash->initial_size; i++) {
+	for (i = 0; i < linear_hash->initial_size; i++) {
 		write_new_bucket(i, linear_hash);
 	}
 
@@ -176,11 +178,13 @@ split(
 
 	ion_fpos_t record_total_size = linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(ion_byte_t);
 
+	int i, j;
+
 	while (bucket.overflow_location != -1) {
 		if (bucket.record_count > 0) {
 			record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
-			for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+			for (i = 0; i < linear_hash->records_per_bucket; i++) {
 				linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
 				int insert_hash_key = insert_hash_to_bucket(record_key, linear_hash);
@@ -189,7 +193,7 @@ split(
 				if ((record_status == 1) && (insert_hash_key != split_hash_key)) {
 					status = linear_hash_delete(record_key, linear_hash);
 
-					for (int i = 0; i < status.count; i++) {
+					for (j = 0; j < status.count; j++) {
 						linear_hash_insert(record_key, record_value, hash_to_bucket(record_key, linear_hash), linear_hash);
 					}
 				}
@@ -205,7 +209,7 @@ split(
 	if (bucket.record_count > 0) {
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
-		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+		for (i = 0; i < linear_hash->records_per_bucket; i++) {
 			linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
 			int insert_hash_key = insert_hash_to_bucket(record_key, linear_hash);
@@ -214,7 +218,7 @@ split(
 			if ((record_status == 1) && (insert_hash_key != split_hash_key)) {
 				status = linear_hash_delete(record_key, linear_hash);
 
-				for (int i = 0; i < status.count; i++) {
+				for (j = 0; j < status.count; j++) {
 					linear_hash_insert(record_key, record_value, hash_to_bucket(record_key, linear_hash), linear_hash);
 				}
 			}
@@ -306,8 +310,10 @@ linear_hash_insert(
 			ion_fpos_t	scanner_bucket_loc	= bucket_loc;
 			int			stop				= 0;
 
+			int i;
+
 			while (bucket.overflow_location != -1 && stop != 1) {
-				for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+				for (i = 0; i < linear_hash->records_per_bucket; i++) {
 					linear_hash_get_record(scanner_loc, scanner_key, scanner_value, &scanner_status, linear_hash);
 
 					if (scanner_status == 0) {
@@ -326,7 +332,7 @@ linear_hash_insert(
 
 			/* scan last bucket if necesarry */
 			if (stop != 1) {
-				for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+				for (i = 0; i < linear_hash->records_per_bucket; i++) {
 					linear_hash_get_record(scanner_loc, scanner_key, scanner_value, &scanner_status, linear_hash);
 
 					if (scanner_status == 0) {
@@ -393,10 +399,12 @@ linear_hash_get(
 
 	int found							= 0;
 
+	int i;
+
 	while (bucket.overflow_location != -1 && found == 0) {
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
-		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+		for (i = 0; i < linear_hash->records_per_bucket; i++) {
 			linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
 			if (record_status != 0) {
@@ -420,7 +428,7 @@ linear_hash_get(
 	record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
 	if (found == 0) {
-		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+		for (i = 0; i < linear_hash->records_per_bucket; i++) {
 			linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
 			if (record_status != 0) {
@@ -471,10 +479,12 @@ linear_hash_update(
 	ion_fpos_t	record_loc;
 	ion_fpos_t	record_total_size = linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(ion_byte_t);
 
+	int i;
+
 	while (bucket.overflow_location != -1) {
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
-		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+		for (i = 0; i < linear_hash->records_per_bucket; i++) {
 			linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
 			if (record_status == 1) {
@@ -493,7 +503,7 @@ linear_hash_update(
 
 	record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
-	for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+	for (i = 0; i < linear_hash->records_per_bucket; i++) {
 		linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
 		if (record_status == 1) {
@@ -543,10 +553,12 @@ linear_hash_delete(
 	ion_fpos_t	record_loc;
 	ion_fpos_t	record_total_size = linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(ion_byte_t);
 
+	int i;
+
 	while (bucket.overflow_location != -1) {
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
-		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+		for (i = 0; i < linear_hash->records_per_bucket; i++) {
 			linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
 			if (record_status != 0) {
@@ -569,7 +581,7 @@ linear_hash_delete(
 
 	record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
-	for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+	for (i = 0; i < linear_hash->records_per_bucket; i++) {
 		linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
 		if (record_status != 0) {
@@ -683,7 +695,9 @@ write_new_bucket(
 
 	memset(record_blank, 0, linear_hash->super.record.key_size + linear_hash->super.record.value_size);
 
-	for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+	int i;
+
+	for (i = 0; i < linear_hash->records_per_bucket; i++) {
 		fwrite(&record_status, sizeof(ion_byte_t), 1, linear_hash->database);
 		fwrite(record_blank, linear_hash->super.record.key_size + linear_hash->super.record.value_size, 1, linear_hash->database);
 	}
@@ -787,7 +801,9 @@ create_overflow_bucket(
 
 	memset(record_blank, 0, linear_hash->super.record.key_size + linear_hash->super.record.value_size);
 
-	for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+	int i;
+
+	for (i = 0; i < linear_hash->records_per_bucket; i++) {
 		fwrite(&record_status, sizeof(ion_byte_t), 1, linear_hash->database);
 		fwrite(record_blank, linear_hash->super.record.key_size + linear_hash->super.record.value_size, 1, linear_hash->database);
 	}
@@ -920,7 +936,9 @@ void
 print_array_list_data(
 	array_list_t *array_list
 ) {
-	for (int i = 0; i < array_list->current_size; i++) {
+	int i;
+
+	for (i = 0; i < array_list->current_size; i++) {
 		printf("\t%d: %ld\n", i, array_list->data[i]);
 	}
 }
@@ -952,10 +970,12 @@ print_linear_hash_bucket_from_idx(
 	ion_byte_t	record_status;
 	ion_fpos_t	record_total_size	= linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(ion_byte_t);
 
+	int i;
+
 	while (bucket.overflow_location != -1) {
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
-		for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+		for (i = 0; i < linear_hash->records_per_bucket; i++) {
 			linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
 			record_loc += record_total_size;
@@ -977,7 +997,7 @@ print_linear_hash_bucket_from_idx(
 
 	record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
-	for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+	for (i = 0; i < linear_hash->records_per_bucket; i++) {
 		linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
 		record_loc += record_total_size;
@@ -1004,7 +1024,9 @@ print_linear_hash_bucket_map(
 ) {
 	printf("Bucket Map State:\n");
 
-	for (int i = 0; i < linear_hash->bucket_map->current_size; i++) {
+	int i;
+
+	for (i = 0; i < linear_hash->bucket_map->current_size; i++) {
 		printf("\tbucket idx: %d, bucket loc in data file %ld\n", i, array_list_get(i, linear_hash->bucket_map));
 	}
 }
