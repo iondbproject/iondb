@@ -15,23 +15,23 @@ linear_hash_init(
 	linear_hash_table_t		*linear_hash
 );
 
-void
+ion_err_t
 linear_hash_increment_num_records(
 	linear_hash_table_t *linear_hash
 );
 
 /* decrement the count of the records stored in the linear hash */
-void
+ion_err_t
 linear_hash_decrement_num_records(
 	linear_hash_table_t *linear_hash
 );
 
-void
+ion_err_t
 linear_hash_increment_num_buckets(
 	linear_hash_table_t *linear_hash
 );
 
-void
+ion_err_t
 linear_hash_update_state(
 	linear_hash_table_t *linear_hash
 );
@@ -42,7 +42,7 @@ linear_hash_bucket_is_full(
 );
 
 /* split function */
-void
+ion_err_t
 split(
 	linear_hash_table_t *linear_hash
 );
@@ -114,7 +114,7 @@ linear_hash_get_bucket(
 	linear_hash_table_t *linear_hash
 );
 
-void
+ion_err_t
 linear_hash_update_bucket(
 	ion_fpos_t				bucket_loc,
 	linear_hash_bucket_t	bucket,
@@ -158,7 +158,7 @@ bucket_idx_to_ion_fpos_t(
 	linear_hash_table_t *linear_hash
 );
 
-void
+ion_err_t
 linear_hash_increment_next_split(
 	linear_hash_table_t *linear_hash
 );
@@ -174,7 +174,7 @@ print_linear_hash_bucket_map(
 );
 
 /* Write the offset of bucket idx to the map in linear hash state */
-void
+ion_err_t
 store_bucket_loc_in_map(
 	int					idx,
 	ion_fpos_t			bucket_loc,
@@ -182,13 +182,13 @@ store_bucket_loc_in_map(
 );
 
 /* ARRAY_LIST METHODS */
-array_list_t *
+ion_err_t
 array_list_init(
 	int				init_size,
 	array_list_t	*array_list
 );
 
-void
+ion_err_t
 array_list_insert(
 	int				bucket_idx,
 	ion_fpos_t		bucket_loc,

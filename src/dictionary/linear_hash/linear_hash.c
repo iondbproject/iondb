@@ -70,12 +70,15 @@ linear_hash_init(
 	}
 
 	/* write the state of the linear_hash to disk */
-	fwrite(linear_hash, sizeof(linear_hash_table_t), 1, linear_hash->state);
+	if (1 != fwrite(linear_hash, sizeof(linear_hash_table_t), 1, linear_hash->state)) {
+		return err_file_write_error;
+	}
 
 	/* return pointer to the linear_hash that is sitting in memory */
 	return err_ok;
 }
 
+/* TODO change to write back parameter */
 linear_hash_table_t
 linear_hash_read_state(
 ) {
@@ -92,9 +95,14 @@ linear_hash_read_state(
 		exit(-1);
 	}
 
-	fseek(linear_hash_state, 0, SEEK_SET);
+	if (0 != fseek(linear_hash_state, 0, SEEK_SET)) {
+		/* return err_file_bad_seek; */
+	}
+
 	/* read state */
-	fread(&linear_hash, sizeof(linear_hash_table_t), 1, linear_hash_state);
+	if (1 != fread(&linear_hash, sizeof(linear_hash_table_t), 1, linear_hash_state)) {
+		/* return err_file_read_error; */
+	}
 
 	fclose(linear_hash_state);
 	return linear_hash;
@@ -108,7 +116,7 @@ linear_hash_bucket_is_full(
 	return bucket.record_count == 4;
 }
 
-void
+ion_err_t
 linear_hash_increment_num_records(
 	linear_hash_table_t *linear_hash
 ) {
@@ -117,19 +125,22 @@ linear_hash_increment_num_records(
 	if (linear_hash_above_threshold(linear_hash)) {
 		write_new_bucket(linear_hash->num_buckets, linear_hash);
 		linear_hash_increment_num_buckets(linear_hash);
-		split(linear_hash);
+		return split(linear_hash);
 	}
+
+	return err_ok;
 }
 
 /* decrement the count of the records stored in the linear hash */
-void
+ion_err_t
 linear_hash_decrement_num_records(
 	linear_hash_table_t *linear_hash
 ) {
 	linear_hash->num_records--;
+	return err_ok;
 }
 
-void
+ion_err_t
 linear_hash_increment_num_buckets(
 	linear_hash_table_t *linear_hash
 ) {
@@ -139,26 +150,35 @@ linear_hash_increment_num_buckets(
 		linear_hash->initial_size	= linear_hash->initial_size * 2;
 		linear_hash->next_split		= 0;
 	}
+
+	return err_ok;
 }
 
-void
+ion_err_t
 linear_hash_increment_next_split(
 	linear_hash_table_t *linear_hash
 ) {
 	linear_hash->next_split++;
+	return err_ok;
 }
 
-void
+ion_err_t
 linear_hash_update_state(
 	linear_hash_table_t *linear_hash
 ) {
 	/* write to file */
-	fseek(linear_hash->state, 0, SEEK_SET);
-	fwrite(&linear_hash, sizeof(linear_hash_table_t), 1, linear_hash->state);
-	/* fclose(linear_hash_state); */
+	if (0 != fseek(linear_hash->state, 0, SEEK_SET)) {
+		return err_file_bad_seek;
+	}
+
+	if (1 != fwrite(&linear_hash, sizeof(linear_hash_table_t), 1, linear_hash->state)) {
+		return err_file_write_error;
+	}
+
+	return err_ok;
 }
 
-void
+ion_err_t
 split(
 	linear_hash_table_t *linear_hash
 ) {
@@ -174,9 +194,8 @@ split(
 	ion_byte_t	record_status;
 
 	/* status to hold amount of records deleted */
-	ion_status_t status;
-
-	ion_fpos_t record_total_size = linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(ion_byte_t);
+	ion_status_t	status;
+	ion_fpos_t		record_total_size = linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(ion_byte_t);
 
 	int i, j;
 
@@ -193,8 +212,16 @@ split(
 				if ((record_status == 1) && (insert_hash_key != split_hash_key)) {
 					status = linear_hash_delete(record_key, linear_hash);
 
+					if (status.error != err_ok) {
+						return status.error;
+					}
+
 					for (j = 0; j < status.count; j++) {
-						linear_hash_insert(record_key, record_value, hash_to_bucket(record_key, linear_hash), linear_hash);
+						status = linear_hash_insert(record_key, record_value, hash_to_bucket(record_key, linear_hash), linear_hash);
+
+						if (status.error != err_ok) {
+							return status.error;
+						}
 					}
 				}
 
@@ -218,8 +245,16 @@ split(
 			if ((record_status == 1) && (insert_hash_key != split_hash_key)) {
 				status = linear_hash_delete(record_key, linear_hash);
 
+				if (status.error != err_ok) {
+					return status.error;
+				}
+
 				for (j = 0; j < status.count; j++) {
 					linear_hash_insert(record_key, record_value, hash_to_bucket(record_key, linear_hash), linear_hash);
+
+					if (status.error != err_ok) {
+						return status.error;
+					}
 				}
 			}
 
@@ -227,7 +262,7 @@ split(
 		}
 	}
 
-	linear_hash_increment_next_split(linear_hash);
+	return linear_hash_increment_next_split(linear_hash);
 }
 
 int
@@ -618,12 +653,22 @@ linear_hash_get_record(
 	linear_hash_table_t *linear_hash
 ) {
 	/* seek to location of record in file */
-	fseek(linear_hash->database, loc, SEEK_SET);
+	if (0 != fseek(linear_hash->database, loc, SEEK_SET)) {
+		return err_file_bad_seek;
+	}
 
 	/* read record data elements */
-	fread(status, sizeof(ion_byte_t), 1, linear_hash->database);
-	fread(key, linear_hash->super.record.key_size, 1, linear_hash->database);
-	fread(value, linear_hash->super.record.value_size, 1, linear_hash->database);
+	if (1 != fread(status, sizeof(ion_byte_t), 1, linear_hash->database)) {
+		return err_file_read_error;
+	}
+
+	if (1 != fread(key, linear_hash->super.record.key_size, 1, linear_hash->database)) {
+		return err_file_read_error;
+	}
+
+	if (1 != fread(value, linear_hash->super.record.value_size, 1, linear_hash->database)) {
+		return err_file_read_error;
+	}
 
 	return err_ok;
 }
@@ -636,23 +681,27 @@ linear_hash_write_record(
 	ion_byte_t			*status,
 	linear_hash_table_t *linear_hash
 ) {
-	/* store current ion_fpos_t in data file to enforce same ion_fpos_t after processing contract */
-	ion_fpos_t starting_ion_fpos_t = ftell(linear_hash->database);
-
 	/* check the file is open */
 	if (!linear_hash->database) {
 		return err_file_close_error;
 	}
 
 	/* seek to end of file to append new bucket */
-	fseek(linear_hash->database, record_loc, SEEK_SET);
-	fwrite(status, sizeof(ion_byte_t), 1, linear_hash->database);
-	fwrite(key, linear_hash->super.record.key_size, 1, linear_hash->database);
-	fwrite(value, linear_hash->super.record.value_size, 1, linear_hash->database);
+	if (0 != fseek(linear_hash->database, record_loc, SEEK_SET)) {
+		return err_file_bad_seek;
+	}
 
-	/* restore data pointer to the original location */
-	fseek(linear_hash->database, starting_ion_fpos_t, SEEK_SET);
-	linear_hash->data_pointer = starting_ion_fpos_t;
+	if (1 != fwrite(status, sizeof(ion_byte_t), 1, linear_hash->database)) {
+		return err_file_write_error;
+	}
+
+	if (1 != fwrite(key, linear_hash->super.record.key_size, 1, linear_hash->database)) {
+		return err_file_write_error;
+	}
+
+	if (1 != fwrite(value, linear_hash->super.record.value_size, 1, linear_hash->database)) {
+		return err_file_write_error;
+	}
 
 	return err_ok;
 }
@@ -678,16 +727,24 @@ write_new_bucket(
 	ion_fpos_t bucket_loc;
 
 	if (idx == 0) {
-		fseek(linear_hash->database, 0, SEEK_SET);
+		if (0 != fseek(linear_hash->database, 0, SEEK_SET)) {
+			return err_file_bad_seek;
+		}
+
 		bucket_loc = 0;
 	}
 	else {
-		fseek(linear_hash->database, 0, SEEK_END);
+		if (0 != fseek(linear_hash->database, 0, SEEK_END)) {
+			return err_file_bad_seek;
+		}
+
 		bucket_loc = ftell(linear_hash->database);
 	}
 
 	/* write bucket data to file */
-	fwrite(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database);
+	if (1 != fwrite(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database)) {
+		return err_file_incomplete_write;
+	}
 
 	/* write bucket data to file */
 	ion_byte_t	record_status = 0;
@@ -698,8 +755,13 @@ write_new_bucket(
 	int i;
 
 	for (i = 0; i < linear_hash->records_per_bucket; i++) {
-		fwrite(&record_status, sizeof(ion_byte_t), 1, linear_hash->database);
-		fwrite(record_blank, linear_hash->super.record.key_size + linear_hash->super.record.value_size, 1, linear_hash->database);
+		if (1 != fwrite(&record_status, sizeof(ion_byte_t), 1, linear_hash->database)) {
+			return err_file_incomplete_write;
+		}
+
+		if (1 != fwrite(record_blank, linear_hash->super.record.key_size + linear_hash->super.record.value_size, 1, linear_hash->database)) {
+			return err_file_incomplete_write;
+		}
 	}
 
 	/* write bucket_loc in mapping */
@@ -709,13 +771,16 @@ write_new_bucket(
 	return err_ok;
 }
 
+/* TODO change to write back parameter to allow for error reporting */
 /* returns the struct representing the bucket at the specified index */
 linear_hash_bucket_t
 linear_hash_get_bucket(
 	ion_fpos_t			bucket_loc,
 	linear_hash_table_t *linear_hash
 ) {
-	fseek(linear_hash->database, 0, SEEK_END);
+	if (0 != fseek(linear_hash->database, 0, SEEK_END)) {
+		/* return err_file_bad_seek; */
+	}
 
 	/* create a temporary store for records that are read */
 	linear_hash_bucket_t bucket;
@@ -726,39 +791,38 @@ linear_hash_get_bucket(
 	}
 
 	/* seek to location of record in file */
-	fseek(linear_hash->database, bucket_loc, SEEK_SET);
+	if (0 != fseek(linear_hash->database, bucket_loc, SEEK_SET)) {
+		/* return err_file_bad_seek; */
+	}
 
 	/* read record */
-	fread(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database);
+	if (1 != fread(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database)) {
+		/* return err_file_bad_seek; */
+	}
 
 	return bucket;
 }
 
-void
+ion_err_t
 linear_hash_update_bucket(
 	ion_fpos_t				bucket_loc,
 	linear_hash_bucket_t	bucket,
 	linear_hash_table_t		*linear_hash
 ) {
-/*	// create pointer to file */
-/*	FILE *database; */
-/*	database = fopen("data.bin", "r+"); */
-
-	/* store current ion_fpos_t in data file to enforce same ion_fpos_t after processing contract */
-	ion_fpos_t starting_ion_fpos_t = ftell(linear_hash->database);
-
-	/* check the file is openå */
+	/* check the file is open */
 	if (!linear_hash->database) {}
 
 	/* seek to end of file to append new bucket */
-	fseek(linear_hash->database, bucket_loc, SEEK_SET);
+	if (0 != fseek(linear_hash->database, bucket_loc, SEEK_SET)) {
+		return err_file_bad_seek;
+	}
 
 	/* write to file */
-	fwrite(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database);
+	if (1 != fwrite(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database)) {
+		return err_file_write_error;
+	}
 
-	/* restore data pointer to the original location */
-	fseek(linear_hash->database, starting_ion_fpos_t, SEEK_SET);
-	linear_hash->data_pointer = starting_ion_fpos_t;
+	return err_ok;
 }
 
 ion_fpos_t
@@ -766,9 +830,6 @@ create_overflow_bucket(
 	int					bucket_idx,
 	linear_hash_table_t *linear_hash
 ) {
-	/* store current ion_fpos_t in data file to enforce same ion_fpos_t after processing contract */
-	ion_fpos_t starting_ion_fpos_t = ftell(linear_hash->database);
-
 	/* initialize bucket fields */
 	linear_hash_bucket_t bucket;
 
@@ -784,7 +845,9 @@ create_overflow_bucket(
 	}
 
 	/* seek to end of file to append new bucket */
-	fseek(linear_hash->database, 0, SEEK_END);
+	if (0 != fseek(linear_hash->database, 0, SEEK_END)) {
+		return err_file_bad_seek;
+	}
 
 	/* get overflow location for new overflow bucket */
 	ion_fpos_t overflow_loc = ftell(linear_hash->database);
@@ -792,7 +855,9 @@ create_overflow_bucket(
 	array_list_insert(bucket.idx, overflow_loc, linear_hash->bucket_map);
 
 	/* write to file */
-	fwrite(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database);
+	if (1 != fwrite(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database)) {
+		return err_file_write_error;
+	}
 
 	/* write bucket data to file */
 	ion_byte_t record_status = 0;
@@ -804,13 +869,14 @@ create_overflow_bucket(
 	int i;
 
 	for (i = 0; i < linear_hash->records_per_bucket; i++) {
-		fwrite(&record_status, sizeof(ion_byte_t), 1, linear_hash->database);
-		fwrite(record_blank, linear_hash->super.record.key_size + linear_hash->super.record.value_size, 1, linear_hash->database);
-	}
+		if (1 != fwrite(&record_status, sizeof(ion_byte_t), 1, linear_hash->database)) {
+			return err_file_write_error;
+		}
 
-	/* restore data pointer to the original location */
-	fseek(linear_hash->database, starting_ion_fpos_t, SEEK_SET);
-	linear_hash->data_pointer = starting_ion_fpos_t;
+		if (1 != fwrite(record_blank, linear_hash->super.record.key_size + linear_hash->super.record.value_size, 1, linear_hash->database)) {
+			return err_file_write_error;
+		}
+	}
 
 	return overflow_loc;
 }
@@ -873,35 +939,45 @@ insert_hash_to_bucket(
 }
 
 /* Write the offset of bucket idx to the map in linear hash state */
-void
+ion_err_t
 store_bucket_loc_in_map(
 	int					idx,
 	ion_fpos_t			bucket_loc,
 	linear_hash_table_t *linear_hash
 ) {
-	/* create a pointer to the file */
-	/* FILE *linear_hash_state; */
 	/* seek to the location of the bucket in the map */
 	ion_fpos_t loc_in_map = sizeof(linear_hash_table_t) + idx * sizeof(ion_fpos_t);
 
-	fseek(linear_hash->state, loc_in_map, SEEK_SET);
+	if (0 != fseek(linear_hash->state, loc_in_map, SEEK_SET)) {
+		return err_file_bad_seek;
+	}
 
 	/* read ion_fpos_t of bucket from mapping in linear hash */
-	fwrite(&bucket_loc, sizeof(ion_fpos_t), 1, linear_hash->state);
+	if (1 != fwrite(&bucket_loc, sizeof(ion_fpos_t), 1, linear_hash->state)) {
+		return err_file_write_error;
+	}
+
+	return err_ok;
 }
 
 /* ARRAY LIST METHODS */
-array_list_t *
+ion_err_t
 array_list_init(
 	int				init_size,
 	array_list_t	*array_list
 ) {
 	array_list->current_size	= init_size;
 	array_list->data			= malloc(init_size * sizeof(ion_fpos_t));
-	return array_list;
+
+	if (NULL == array_list->data) {
+		free(array_list->data);
+		return err_out_of_memory;
+	}
+
+	return err_ok;
 }
 
-void
+ion_err_t
 array_list_insert(
 	int				bucket_idx,
 	ion_fpos_t		bucket_loc,
@@ -912,9 +988,16 @@ array_list_insert(
 		array_list->current_size	= array_list->current_size * 2;
 
 		array_list->data			= (ion_fpos_t *) realloc(array_list->data, array_list->current_size * sizeof(ion_fpos_t));
+
+		if (NULL == array_list->data) {
+			free(array_list->data);
+			return err_out_of_memory;
+		}
 	}
 
 	array_list->data[bucket_idx] = bucket_loc;
+
+	return err_ok;
 }
 
 ion_fpos_t

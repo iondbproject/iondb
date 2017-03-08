@@ -59,10 +59,19 @@ linear_hash_create_dictionary(
 	int				initial_size, split_threshold, records_per_bucket;
 	array_list_t	*bucket_map;
 
-	bucket_map				= malloc(sizeof(array_list_t));
+	bucket_map = malloc(sizeof(array_list_t));
+
+	if (NULL == bucket_map) {
+		return err_out_of_memory;
+	}
+
 	array_list_init(5, bucket_map);
 
-	dictionary->instance	= malloc(sizeof(linear_hash_table_t));
+	dictionary->instance = malloc(sizeof(linear_hash_table_t));
+
+	if (NULL == dictionary->instance) {
+		return err_out_of_memory;
+	}
 
 	if (NULL == dictionary->instance) {
 		return err_out_of_memory;
