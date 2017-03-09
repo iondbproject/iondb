@@ -587,8 +587,6 @@ iinq_test_create_query_select_all_from_where_orderby_ascending_records(
 
 	int expected_key	= count;
 
-	printf("Count: %d\nKey: %d\nValue: %d\n", count, NEUTRALIZE(key, uint32_t), NEUTRALIZE(value, uint32_t));
-
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_key, NEUTRALIZE(key, uint32_t));
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_key, NEUTRALIZE(value, uint32_t));
 }
@@ -956,7 +954,6 @@ iinq_test_create_query_select_sum_from_where_groupby_aggregate(
 	value_size	= sizeof(uint32_t);
 
 	error		= CREATE_DICTIONARY(test, key_type, key_size, value_size);
-	printf("error: %d\n", error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
 
 	iinq_test_insert_into_test(tc, IONIZE(13, uint32_t), IONIZE(13, uint32_t));
@@ -1257,7 +1254,6 @@ iinq_test_create_query_select_count_from_where_groupby_aggregate_schema_records(
 	}
 }
 
-/* query template */
 void
 iinq_test_create_query_select_count_from_where_groupby_aggregate_schema(
 	planck_unit_test_t *tc
@@ -1582,17 +1578,17 @@ iinq_test_the_ultimate_query(
 }
 
 IINQ_NEW_PROCESSOR_FUNC(benchmark_test) {
-	printf("key\t\tattr0\t\tattr1\t\tattr2\t\tattr3\n");
+/*	printf("key\t\tattr0\t\tattr1\t\tattr2\t\tattr3\n"); */
 
 	uint32_t	*dataptr	= (uint32_t *) result->processed;
 	int			i			= 0;
 
 	for (i = 0; i < (result->num_bytes / sizeof(uint32_t)); i++) {
-		printf("%d\t\t\t", *dataptr);
+/*		printf("%d\t\t\t", *dataptr); */
 		dataptr++;
 	}
 
-	printf("\n");
+/*	printf("\n"); */
 }
 
 void
@@ -1697,14 +1693,6 @@ iinq_benchmark_query_7(
 	}
 	);
 
-	/* SELECT MAX(test_2->attr0), COUNT(test_1->attr1)
-	 * FROM test_1, test_2
-	 * WHERE test_1->attr3 >= test_2->attr1
-	 * GROUP BY test_2->attr0
-	 * HAVING test_1->attr1 % 2 == 0
-	 * ORDER BY test_1->attr1 DESC
-	 * */
-
 	MATERIALIZED_QUERY(SELECT(SELECT_GRBY(0), SELECT_AGGR(0)), AGGREGATES(MAX(test_2_tuple->attr0), COUNT(test_1_tuple->attr1)), FROM(1, test_1, test_2), WHERE(test_1_tuple->attr3 >= test_2_tuple->attr1), GROUPBY(ASCENDING_UINT(test_2_tuple->attr0)), HAVING((int16_t) AGGREGATE(0) % 2 == 0), ORDERBY(DESCENDING_UINT(test_1_tuple->attr1)), , , processor);
 }
 
@@ -1720,7 +1708,7 @@ iinq_benchmark_time(
 
 	start = ion_time();
 	query_func(processor);
-	printf("%s time: %lums\n===\n\n", query_name, ion_time() - start);
+/*	printf("%s time: %lums\n===\n\n", query_name, ion_time() - start); */
 }
 
 void
@@ -1769,14 +1757,11 @@ iinq_benchmark_set_1(
 	iinq_benchmark_time("query_4", iinq_benchmark_query_4, &processor);
 	iinq_benchmark_time("query_5", iinq_benchmark_query_5, &processor);
 	iinq_benchmark_time("query_6", iinq_benchmark_query_6, &processor);
-
 	iinq_benchmark_time("query_7", iinq_benchmark_query_7, &processor);
 
 	DROP(test);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == 1);
 }
-
-/* New tests */
 
 void
 iinq_test_create_query_select_max_from_where_orderby_records(
@@ -2447,20 +2432,17 @@ iinq_test_create_query_select_all_from_where_orderby_ascending_string_records(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(uint32_t) * 2, result->num_bytes);
 
 	char *key			= (char *) result->processed;
-/*	ion_value_t value	= result->processed + sizeof(uint32_t); */
 
 	char *expected_key	= "test";
 
 	printf("key:%s", key);
 	PLANCK_UNIT_ASSERT_TRUE(tc, expected_key == key);
-/*	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_key, NEUTRALIZE(value, uint32_t)); */
 }
 
 void
 iinq_test_orderby_string_ascending(
 	ion_iinq_query_processor_t *processor
 ) {
-/*	MATERIALIZED_QUERY(SELECT(test.key), AGGREGATES_NONE, FROM(0, test), WHERE(1), GROUPBY_NONE, HAVING_NONE, ORDERBY(ASCENDING(test.key)), , , processor); */
 	QUERY(SELECT(SELECT_EXPR(test.key)), FROM(0, test), WHERE(1), GROUPBY_NONE, HAVING_NONE, ORDERBY(ASCENDING(test.key)), , , processor);
 }
 
@@ -2548,27 +2530,27 @@ iinq_get_suite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_open_source_intint); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_open_source_string10string20); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_insert_update_delete_drop_dictionary_intint); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_single_dictionary); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_expression_all_from_where_single_dictionary); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_two_dictionaries); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_aggregates); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_expression_from_where_aggregates); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_complex_expression_from_where_aggregates); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_ascending_small); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_ascending_large); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_descending_small); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_descending_large); */
+/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_open_source_intint);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_open_source_string10string20);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_insert_update_delete_drop_dictionary_intint);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_single_dictionary);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_expression_all_from_where_single_dictionary);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_two_dictionaries);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_aggregates);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_expression_from_where_aggregates);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_complex_expression_from_where_aggregates);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_ascending_small);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_ascending_large);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_descending_small);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_descending_large);
 
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_small); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_large); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_aggregate); */
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_small);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_large);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_aggregate);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_sum_from_where_groupby_aggregate);
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_having_aggregate); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_key_from_where_groupby); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby_small); */
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_having_aggregate);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_key_from_where_groupby);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby_small); */
 
 	/* TODO: Failing :( fix me */
 	/* PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_groupby_aggregate_orderby_large); */
@@ -2577,30 +2559,30 @@ iinq_get_suite(
 /*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_string_from_join_where_schema); */
 
 	/* TODO: Failing :( fix me * / */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_the_ultimate_query);* / */
+/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_the_ultimate_query); */
 
-	/* New tests */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_orderby_ascending_small); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_orderby_descending_small); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_orderby_ascending_large); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_orderby_descending_large); */
+/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_orderby_ascending_small);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_orderby_descending_small);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_orderby_ascending_large);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_max_from_where_orderby_descending_large);
 
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_min_from_where_orderby_ascending_small); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_min_from_where_orderby_descending_small); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_min_from_where_orderby_ascending_large); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_min_from_where_orderby_descending_large); */
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_min_from_where_orderby_ascending_small);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_min_from_where_orderby_descending_small);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_min_from_where_orderby_ascending_large);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_min_from_where_orderby_descending_large);
 
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_orderby_ascending_aggregate_schema); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_max_from_where_groupby_aggregate_schema); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_min_from_where_groupby_aggregate_schema); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_max_from_where_groupby_orderby_aggregate_ascending_schema); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_max_from_where_groupby_orderby_aggregate_descending_schema); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_min_from_where_groupby_orderby_aggregate_ascending_schema); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_min_from_where_groupby_orderby_aggregate_descending_schema); */
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_from_where_groupby_orderby_ascending_aggregate_schema);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_max_from_where_groupby_aggregate_schema);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_min_from_where_groupby_aggregate_schema);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_max_from_where_groupby_orderby_aggregate_ascending_schema);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_max_from_where_groupby_orderby_aggregate_descending_schema);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_min_from_where_groupby_orderby_aggregate_ascending_schema);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_count_min_from_where_groupby_orderby_aggregate_descending_schema); */
 
+	/* Failing :( SELECT_EXPR does not currently support string keys */
 /*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_test_create_query_select_all_from_where_orderby_string_ascending_small); */
 
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_benchmark_set_1); */
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_benchmark_set_1);
 
 	return suite;
 }
