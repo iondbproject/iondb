@@ -1,2 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libbpp_tree.a  CMakeFiles/bpp_tree.dir/bpp_tree.c.o CMakeFiles/bpp_tree.dir/bpp_tree_handler.c.o CMakeFiles/bpp_tree.dir/__/__/file/linked_file_bag.c.o CMakeFiles/bpp_tree.dir/__/__/file/ion_file.c.o CMakeFiles/bpp_tree.dir/__/dictionary.c.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libbpp_tree.a

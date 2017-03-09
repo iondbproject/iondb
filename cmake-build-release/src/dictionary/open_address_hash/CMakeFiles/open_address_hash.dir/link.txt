@@ -1,2 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libopen_address_hash.a  CMakeFiles/open_address_hash.dir/open_address_hash.c.o CMakeFiles/open_address_hash.dir/open_address_hash_dictionary_handler.c.o CMakeFiles/open_address_hash.dir/__/dictionary.c.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libopen_address_hash.a
