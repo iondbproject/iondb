@@ -1498,7 +1498,6 @@ bhdct_run_tests(
 	if (bhdct_context.test_classes & ION_BHDCT_INT_INT) {
 		planck_unit_suite_t *suite = planck_unit_new_suite();
 
-/*
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_setup);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_single);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_multiple);
@@ -1515,7 +1514,7 @@ bhdct_run_tests(
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_exist_single);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_single);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_multiple);
-
+/*
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_all);
 */
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_empty);
