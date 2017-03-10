@@ -108,10 +108,11 @@ write_new_bucket(
 );
 
 /* returns the struct representing the bucket at the specified index */
-linear_hash_bucket_t
+ion_err_t
 linear_hash_get_bucket(
-	ion_fpos_t			bucket_loc,
-	linear_hash_table_t *linear_hash
+	ion_fpos_t				bucket_loc,
+	linear_hash_bucket_t	*bucket,
+	linear_hash_table_t		*linear_hash
 );
 
 ion_err_t
