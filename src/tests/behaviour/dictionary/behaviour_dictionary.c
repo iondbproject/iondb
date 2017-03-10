@@ -1498,42 +1498,41 @@ bhdct_run_tests(
 	if (bhdct_context.test_classes & ION_BHDCT_INT_INT) {
 		planck_unit_suite_t *suite = planck_unit_new_suite();
 
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_setup); */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_single); */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_multiple); */
-/*  */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_single); */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_in_many); */
-/*  */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_lots); */
-/*  */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_empty); */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_single); */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_many); */
-/*  */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_exist_single); */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_single); */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_multiple); */
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_setup);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_single);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_multiple);
 
-		/* TODO FIX THIS TEST ON DEVICE! */
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_single);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_in_many);
+
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_lots);
+
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_empty);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_single);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_many);
+
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_exist_single);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_single);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_multiple);
+
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_all);
 
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_empty); */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_single); */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_several); */
-/*  */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single); */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single_several); */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_all); */
-/*  */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_empty_single); */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_nonexist_single); */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_nonexist_in_many); */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_exist_single); */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_exist_in_many); */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_all); */
-/*  */
-/*		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_then_insert); */
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_empty);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_single);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_several);
+
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single_several);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_all);
+
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_empty_single);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_nonexist_single);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_nonexist_in_many);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_exist_single);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_exist_in_many);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_all);
+
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_then_insert);
 
 		planck_unit_run_suite(suite);
 		planck_unit_destroy_suite(suite);

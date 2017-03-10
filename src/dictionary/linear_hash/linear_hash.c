@@ -370,8 +370,6 @@ linear_hash_insert(
 			int i;
 
 			while (bucket.overflow_location != -1 && stop != 1) {
-				print_linear_hash_bucket(bucket);
-
 				for (i = 0; i < linear_hash->records_per_bucket; i++) {
 					status.error = linear_hash_get_record(scanner_loc, scanner_key, scanner_value, &scanner_status, linear_hash);
 
@@ -876,8 +874,7 @@ write_new_bucket(
 	return err_ok;
 }
 
-/* TODO change to write back parameter to allow for error reporting */
-/* returns the struct representing the bucket at the specified index */
+/* writes the struct representing the bucket at the location to the bucket parameter*/
 ion_err_t
 linear_hash_get_bucket(
 	ion_fpos_t				bucket_loc,
