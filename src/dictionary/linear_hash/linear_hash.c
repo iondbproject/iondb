@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* TODO: OPEN FILE IN INIT METHOD AND CREATE A DESTROY METHOD THAT CLOSES THE FILE */
-/* TODO: ALLOCATE ARRAYLIST AND INITIALIZE IT WITHIN linear_hash_init*/
 /* initialization function */
 ion_err_t
 linear_hash_init(
@@ -18,7 +16,6 @@ linear_hash_init(
 	int						initial_size,
 	int						split_threshold,
 	int						records_per_bucket,
-	array_list_t			*bucket_map,
 	linear_hash_table_t		*linear_hash
 ) {
 	/* parameter not used */
@@ -61,7 +58,16 @@ linear_hash_init(
 	linear_hash->data_pointer		= ftell(linear_hash->database);
 
 	/* mapping of buckets to file offsets */
-	linear_hash->bucket_map			= bucket_map;
+	array_list_t *bucket_map;
+
+	bucket_map = malloc(sizeof(array_list_t));
+
+	if (NULL == bucket_map) {
+		return err_out_of_memory;
+	}
+
+	array_list_init(5, bucket_map);
+	linear_hash->bucket_map = bucket_map;
 
 	int i;
 

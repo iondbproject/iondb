@@ -11,7 +11,6 @@ linear_hash_init(
 	int						initial_size,
 	int						split_threshold,
 	int						records_per_bucket,
-	array_list_t			*bucket_map,
 	linear_hash_table_t		*linear_hash
 );
 
