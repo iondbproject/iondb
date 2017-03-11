@@ -1499,7 +1499,7 @@ bhdct_run_tests(
 		planck_unit_suite_t *suite = planck_unit_new_suite();
 
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_setup);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_single);
+		/*PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_single);*/
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_multiple);
 
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_single);

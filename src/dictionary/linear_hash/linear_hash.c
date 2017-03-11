@@ -874,6 +874,7 @@ write_new_bucket(
 	return err_ok;
 }
 
+/* TODO HANDLE ERROR PROPAGATION FROM THIS METHOD */
 /* writes the struct representing the bucket at the location to the bucket parameter*/
 ion_err_t
 linear_hash_get_bucket(
