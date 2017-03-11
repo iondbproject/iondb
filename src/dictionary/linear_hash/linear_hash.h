@@ -37,7 +37,8 @@ linear_hash_update_state(
 
 int
 linear_hash_bucket_is_full(
-	linear_hash_bucket_t bucket
+	linear_hash_bucket_t	bucket,
+	linear_hash_table_t		*linear_hash
 );
 
 /* split function */

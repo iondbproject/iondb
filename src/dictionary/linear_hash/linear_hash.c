@@ -123,10 +123,11 @@ linear_hash_read_state(
 
 int
 linear_hash_bucket_is_full(
-	linear_hash_bucket_t bucket
+	linear_hash_bucket_t	bucket,
+	linear_hash_table_t		*linear_hash
 ) {
 	/* TODO CHANGE HARDCODED 4 TO LINEAR HASH FIELD */
-	return bucket.record_count == 4;
+	return bucket.record_count == linear_hash->records_per_bucket;
 }
 
 ion_err_t
@@ -342,7 +343,7 @@ linear_hash_insert(
 	}
 	else {
 		/* Case that the bucket is full but there is not yet an overflow bucket */
-		if (linear_hash_bucket_is_full(bucket)) {
+		if (linear_hash_bucket_is_full(bucket, linear_hash)) {
 			/* Get location of overflow bucket and update the tail record for the linked list of buckets storing
 			 * items that hash to this bucket and update the tail bucket with the overflow's location */
 			ion_fpos_t overflow_location			= create_overflow_bucket(bucket.idx, linear_hash);
