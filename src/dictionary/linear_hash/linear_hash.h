@@ -125,6 +125,7 @@ linear_hash_update_bucket(
 ion_fpos_t
 create_overflow_bucket(
 	int					bucket_idx,
+	ion_fpos_t			*overflow_location,
 	linear_hash_table_t *linear_hash
 );
 
