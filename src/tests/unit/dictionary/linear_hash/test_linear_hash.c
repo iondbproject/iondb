@@ -209,13 +209,13 @@ void
 test_linear_hash_basic_operations(
 	planck_unit_test_t *tc
 ) {
-	linear_hash_table_t linear_hash;
+	linear_hash_table_t *linear_hash = alloca(sizeof(linear_hash_table_t));
 
-	test_linear_hash_setup(tc, &linear_hash);
-	test_linear_hash_insert(tc, IONIZE(17, int), IONIZE(19, int), err_ok, 1, boolean_true, &linear_hash);
-	test_linear_hash_update(tc, IONIZE(17, int), IONIZE(25, int), err_ok, 1, &linear_hash);
-	test_linear_hash_delete(tc, IONIZE(17, int), err_ok, 1, &linear_hash);
-	test_linear_hash_takedown(tc, &linear_hash);
+	test_linear_hash_setup(tc, linear_hash);
+	test_linear_hash_insert(tc, IONIZE(17, int), IONIZE(19, int), err_ok, 1, boolean_true, linear_hash);
+	test_linear_hash_update(tc, IONIZE(17, int), IONIZE(25, int), err_ok, 1, linear_hash);
+	test_linear_hash_delete(tc, IONIZE(17, int), err_ok, 1, linear_hash);
+	test_linear_hash_takedown(tc, linear_hash);
 }
 
 /**
@@ -225,63 +225,213 @@ void
 test_linear_hash_bucket_map_head_updates(
 	planck_unit_test_t *tc
 ) {
-	linear_hash_table_t linear_hash;
+	linear_hash_table_t *linear_hash = alloca(sizeof(linear_hash_table_t));
 
-	test_linear_hash_setup(tc, &linear_hash);
+	test_linear_hash_setup(tc, linear_hash);
 
 	ion_fpos_t expected_bucket_head = 0;
 
 	/* base case -- assuming bucket 0 is inserted to */
-	test_linear_hash_insert(tc, IONIZE(0, int), IONIZE(19, int), err_ok, 1, boolean_true, &linear_hash);
-	printf("ll head %ld\n", array_list_get(0, linear_hash.bucket_map));
-	PLANCK_UNIT_ASSERT_TRUE(tc, expected_bucket_head == array_list_get(0, linear_hash.bucket_map));
+	test_linear_hash_insert(tc, IONIZE(0, int), IONIZE(19, int), err_ok, 1, boolean_true, linear_hash);
+	PLANCK_UNIT_ASSERT_TRUE(tc, expected_bucket_head == array_list_get(0, linear_hash->bucket_map));
 
 	/* fill bucket 0 and cause the generation of an overflow */
 	int i;
 
-	for (i = 0; i < linear_hash.records_per_bucket; i++) {
-		test_linear_hash_insert(tc, IONIZE(0, int), IONIZE(19, int), err_ok, 1, boolean_true, &linear_hash);
+	for (i = 0; i < linear_hash->records_per_bucket; i++) {
+		test_linear_hash_insert(tc, IONIZE(0, int), IONIZE(19, int), err_ok, 1, boolean_true, linear_hash);
 	}
 
 	/* test that the head of 0 index bucket linked list in the bucket map has changed */
-	PLANCK_UNIT_ASSERT_TRUE(tc, expected_bucket_head != array_list_get(0, linear_hash.bucket_map));
+	PLANCK_UNIT_ASSERT_TRUE(tc, expected_bucket_head != array_list_get(0, linear_hash->bucket_map));
 
-	ion_fpos_t total_record_size = linear_hash.super.record.key_size + linear_hash.super.record.value_size + sizeof(ion_byte_t);
+	ion_fpos_t total_record_size = linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(ion_byte_t);
 
 	/* test that the new head of 0 index bucket is at the correct location */
-	expected_bucket_head = fseek(linear_hash.database, -4 * total_record_size - sizeof(linear_hash_bucket_t), SEEK_END);
-	PLANCK_UNIT_ASSERT_TRUE(tc, expected_bucket_head != array_list_get(0, linear_hash.bucket_map));
+	expected_bucket_head = fseek(linear_hash->database, -4 * total_record_size - sizeof(linear_hash_bucket_t), SEEK_END);
+	PLANCK_UNIT_ASSERT_TRUE(tc, expected_bucket_head != array_list_get(0, linear_hash->bucket_map));
 
-	test_linear_hash_takedown(tc, &linear_hash);
+	test_linear_hash_takedown(tc, linear_hash);
 }
 
 /**
 @brief		Tests that the linear_hash.num_buckets increments when an insert occurs that pushes the linear_hash passed its split threshold
 */
+void
+test_linear_hash_increment_buckets(
+	planck_unit_test_t *tc
+) {
+	linear_hash_table_t *linear_hash = alloca(sizeof(linear_hash_table_t));
+
+	test_linear_hash_setup(tc, linear_hash);
+
+	double split_cardinality	= linear_hash->records_per_bucket * linear_hash->num_buckets * linear_hash->split_threshold / 100;
+
+	int original_number_buckets = linear_hash->num_buckets;
+	int i;
+
+	/* test while inserting to reach threshold - linear_hash.num_buckets should not change over this range */
+	for (i = 0; i < split_cardinality; i++) {
+		test_linear_hash_insert(tc, IONIZE(17, int), IONIZE(19, int), err_ok, 1, boolean_true, linear_hash);
+		PLANCK_UNIT_ASSERT_TRUE(tc, original_number_buckets == linear_hash->num_buckets);
+	}
+
+	/* test inserting push above threshold - linear_hash.num_buckets should increase by one */
+	test_linear_hash_insert(tc, IONIZE(17, int), IONIZE(19, int), err_ok, 1, boolean_true, linear_hash);
+	PLANCK_UNIT_ASSERT_TRUE(tc, original_number_buckets + 1 == linear_hash->num_buckets);
+
+	test_linear_hash_takedown(tc, linear_hash);
+}
 
 /**
 @brief		Tests that the proper hash function is used for records that hash to a bucket that has been split
 */
+void
+test_linear_hash_correct_hash_function(
+	planck_unit_test_t *tc
+) {
+	linear_hash_table_t *linear_hash = alloca(sizeof(linear_hash_table_t));
+
+	test_linear_hash_setup(tc, linear_hash);
+
+	double split_cardinality	= linear_hash->records_per_bucket * linear_hash->num_buckets * linear_hash->split_threshold / 100;
+
+	/* assuming initial size of 5 so that key 5 hashes to bucket 0 using h0 */
+	int expected_hash_bucket	= 0;
+
+	/* resolve buck key 5 hashes to given the current linear_hash state - should be 0 */
+	int hash_idx				= insert_hash_to_bucket(IONIZE(5, int), linear_hash);
+
+	if (hash_idx < linear_hash->next_split) {
+		hash_idx = hash_to_bucket(IONIZE(5, int), linear_hash);
+	}
+
+	int i;
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, expected_hash_bucket == hash_idx);
+
+	/* test while inserting to reach threshold - linear_hash.num_buckets should not change over this range */
+	for (i = 0; i < split_cardinality; i++) {
+		test_linear_hash_insert(tc, IONIZE(5, int), IONIZE(5, int), err_ok, 1, boolean_true, linear_hash);
+	}
+
+	/* test inserting push above threshold - linear_hash.num_buckets should increase by one */
+	test_linear_hash_insert(tc, IONIZE(5, int), IONIZE(5, int), err_ok, 1, boolean_true, linear_hash);
+
+	expected_hash_bucket	= 5;
+
+	/* resolve buck key 5 hashes to given the current linear_hash state - should be 5 */
+	hash_idx				= insert_hash_to_bucket(IONIZE(5, int), linear_hash);
+
+	if (hash_idx < linear_hash->next_split) {
+		hash_idx = hash_to_bucket(IONIZE(5, int), linear_hash);
+	}
+
+	/* assuming initial size of 5 so that key 5 hashes to bucket 5 using h1 */
+	PLANCK_UNIT_ASSERT_TRUE(tc, expected_hash_bucket == hash_idx);
+
+	test_linear_hash_takedown(tc, linear_hash);
+}
 
 /**
 @brief		Tests that records are rehashed to the correct bucket after a split
 */
+void
+test_linear_hash_correct_bucket_after_split(
+	planck_unit_test_t *tc
+) {
+	linear_hash_table_t *linear_hash = alloca(sizeof(linear_hash_table_t));
+
+	test_linear_hash_setup(tc, linear_hash);
+
+	double split_cardinality				= linear_hash->records_per_bucket * linear_hash->num_buckets * linear_hash->split_threshold / 100;
+
+	/* assuming initial size of 5 so that key 5 hashes to bucket 0 using h0 */
+	int			expected_hash_bucket		= 0;
+	ion_fpos_t	expected_bucket_location	= array_list_get(expected_hash_bucket, linear_hash);
+
+	/* resolve buck key 5 hashes to given the current linear_hash state - should be 0 */
+	int hash_idx							= insert_hash_to_bucket(IONIZE(5, int), linear_hash);
+
+	if (hash_idx < linear_hash->next_split) {
+		hash_idx = hash_to_bucket(IONIZE(5, int), linear_hash);
+	}
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, expected_bucket_location == array_list_get(hash_idx, linear_hash));
+
+	int i;
+
+	/* test while inserting to reach threshold - linear_hash.num_buckets should not change over this range */
+	for (i = 0; i < split_cardinality; i++) {
+		test_linear_hash_insert(tc, IONIZE(5, int), IONIZE(5, int), err_ok, 1, boolean_true, linear_hash);
+	}
+
+	/* test inserting push above threshold - linear_hash.num_buckets should increase by one */
+	test_linear_hash_insert(tc, IONIZE(5, int), IONIZE(5, int), err_ok, 1, boolean_true, linear_hash);
+
+	expected_hash_bucket		= 5;
+	expected_bucket_location	= array_list_get(expected_hash_bucket, linear_hash);
+
+	/* resolve buck key 5 hashes to given the current linear_hash state - should be 5 */
+	hash_idx					= insert_hash_to_bucket(IONIZE(5, int), linear_hash);
+
+	if (hash_idx < linear_hash->next_split) {
+		hash_idx = hash_to_bucket(IONIZE(5, int), linear_hash);
+	}
+
+	/* assuming initial size of 5 so that key 5 hashes to bucket 5 using h1 */
+	PLANCK_UNIT_ASSERT_TRUE(tc, expected_bucket_location == array_list_get(hash_idx, linear_hash));
+	test_linear_hash_takedown(tc, linear_hash);
+}
 
 /**
-@brief		Tests that the gloabl number of records are always incremented on insertion
+@brief		Tests that the number of records in the linear hash gets incremented and decremented on insertions and deletions respectvely
 */
+void
+test_linear_hash_global_record_increments_decrements(
+	planck_unit_test_t *tc
+) {
+	linear_hash_table_t *linear_hash = alloca(sizeof(linear_hash_table_t));
+
+	test_linear_hash_setup(tc, linear_hash);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == linear_hash->num_records);
+	test_linear_hash_insert(tc, IONIZE(17, int), IONIZE(19, int), err_ok, 1, boolean_true, linear_hash);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == linear_hash->num_records);
+	test_linear_hash_delete(tc, IONIZE(17, int), err_ok, 1, linear_hash);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == linear_hash->num_records);
+	test_linear_hash_takedown(tc, linear_hash);
+}
 
 /**
-@brief		Tests that the gloabl number of records are always decremented on deletion
+@brief		Tests that the number of records for a bucket gets incremented and decremented on insertions and deletions respectvely
 */
+void
+test_linear_hash_local_record_increments_decrements(
+	planck_unit_test_t *tc
+) {
+	linear_hash_table_t *linear_hash = alloca(sizeof(linear_hash_table_t));
 
-/**
-@brief		Tests that the number of records for a bucket gets incremented on insertions
-*/
+	test_linear_hash_setup(tc, linear_hash);
 
-/**
-@brief		Tests that the number of records for a bucket gets decremented on deletions
-*/
+	linear_hash_bucket_t *bucket = alloca(sizeof(linear_hash_bucket_t));
+
+	bucket->record_count		= -1;
+	bucket->anchor_record		= -1;
+	bucket->idx					= -1;
+	bucket->overflow_location	= -1;
+
+	linear_hash_get_bucket(0, bucket, linear_hash);
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == bucket->record_count);
+	test_linear_hash_insert(tc, IONIZE(0, int), IONIZE(19, int), err_ok, 1, boolean_true, linear_hash);
+	linear_hash_get_bucket(0, bucket, linear_hash);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == bucket->record_count);
+	test_linear_hash_delete(tc, IONIZE(0, int), err_ok, 1, linear_hash);
+	linear_hash_get_bucket(0, bucket, linear_hash);
+	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == bucket->record_count);
+
+	test_linear_hash_takedown(tc, linear_hash);
+}
 
 planck_unit_suite_t *
 linear_hash_getsuite(
@@ -290,6 +440,11 @@ linear_hash_getsuite(
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_basic_operations);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_bucket_map_head_updates);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_increment_buckets);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_correct_hash_function);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_correct_bucket_after_split);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_global_record_increments_decrements);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_local_record_increments_decrements);
 	return suite;
 }
 
