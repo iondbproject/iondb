@@ -221,6 +221,39 @@ test_linear_hash_basic_operations(
 /**
 @brief		Tests that the linear_hash.bucket_map receives a new head for the idx after creating an overflow bucket
 */
+void
+test_linear_hash_bucket_map_head_updates(
+	planck_unit_test_t *tc
+) {
+	linear_hash_table_t linear_hash;
+
+	test_linear_hash_setup(tc, &linear_hash);
+
+	ion_fpos_t expected_bucket_head = 0;
+
+	/* base case -- assuming bucket 0 is inserted to */
+	test_linear_hash_insert(tc, IONIZE(0, int), IONIZE(19, int), err_ok, 1, boolean_true, &linear_hash);
+	printf("ll head %ld\n", array_list_get(0, linear_hash.bucket_map));
+	PLANCK_UNIT_ASSERT_TRUE(tc, expected_bucket_head == array_list_get(0, linear_hash.bucket_map));
+
+	/* fill bucket 0 and cause the generation of an overflow */
+	int i;
+
+	for (i = 0; i < linear_hash.records_per_bucket; i++) {
+		test_linear_hash_insert(tc, IONIZE(0, int), IONIZE(19, int), err_ok, 1, boolean_true, &linear_hash);
+	}
+
+	/* test that the head of 0 index bucket linked list in the bucket map has changed */
+	PLANCK_UNIT_ASSERT_TRUE(tc, expected_bucket_head != array_list_get(0, linear_hash.bucket_map));
+
+	ion_fpos_t total_record_size = linear_hash.super.record.key_size + linear_hash.super.record.value_size + sizeof(ion_byte_t);
+
+	/* test that the new head of 0 index bucket is at the correct location */
+	expected_bucket_head = fseek(linear_hash.database, -4 * total_record_size - sizeof(linear_hash_bucket_t), SEEK_END);
+	PLANCK_UNIT_ASSERT_TRUE(tc, expected_bucket_head != array_list_get(0, linear_hash.bucket_map));
+
+	test_linear_hash_takedown(tc, &linear_hash);
+}
 
 /**
 @brief		Tests that the linear_hash.num_buckets increments when an insert occurs that pushes the linear_hash passed its split threshold
@@ -256,6 +289,7 @@ linear_hash_getsuite(
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_basic_operations);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_bucket_map_head_updates);
 	return suite;
 }
 
