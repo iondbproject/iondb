@@ -23,13 +23,6 @@
 
 #include "test_linear_hash.h"
 
-void
-test_linear_hash_create_destroy(
-	planck_unit_test_t *tc
-) {
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true);
-}
-
 /**
 @brief		Initializes a test flatfile instance and does a few sanity checks.
 */
@@ -437,7 +430,7 @@ test_linear_hash_local_record_increments_decrements(
 @brief		Tests some basic creation and destruction stuff for the flat file.
 */
 void
-test_flat_file_create_destroy(
+test_linear_hash_create_destroy(
 	planck_unit_test_t *tc
 ) {
 	linear_hash_table_t *linear_hash = alloca(sizeof(linear_hash_table_t));
@@ -452,7 +445,7 @@ linear_hash_getsuite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_create_destroy);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_create_destroy);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_basic_operations);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_bucket_map_head_updates);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_increment_buckets);
