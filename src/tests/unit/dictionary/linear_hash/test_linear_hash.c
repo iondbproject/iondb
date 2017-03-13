@@ -348,7 +348,7 @@ test_linear_hash_correct_bucket_after_split(
 
 	/* assuming initial size of 5 so that key 5 hashes to bucket 0 using h0 */
 	int			expected_hash_bucket		= 0;
-	ion_fpos_t	expected_bucket_location	= array_list_get(expected_hash_bucket, linear_hash);
+	ion_fpos_t	expected_bucket_location	= array_list_get(expected_hash_bucket, linear_hash->bucket_map);
 
 	/* resolve buck key 5 hashes to given the current linear_hash state - should be 0 */
 	int hash_idx							= insert_hash_to_bucket(IONIZE(5, int), linear_hash);
@@ -357,7 +357,7 @@ test_linear_hash_correct_bucket_after_split(
 		hash_idx = hash_to_bucket(IONIZE(5, int), linear_hash);
 	}
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, expected_bucket_location == array_list_get(hash_idx, linear_hash));
+	PLANCK_UNIT_ASSERT_TRUE(tc, expected_bucket_location == array_list_get(hash_idx, linear_hash->bucket_map));
 
 	int i;
 
@@ -370,7 +370,7 @@ test_linear_hash_correct_bucket_after_split(
 	test_linear_hash_insert(tc, IONIZE(5, int), IONIZE(5, int), err_ok, 1, boolean_true, linear_hash);
 
 	expected_hash_bucket		= 5;
-	expected_bucket_location	= array_list_get(expected_hash_bucket, linear_hash);
+	expected_bucket_location	= array_list_get(expected_hash_bucket, linear_hash->bucket_map);
 
 	/* resolve buck key 5 hashes to given the current linear_hash state - should be 5 */
 	hash_idx					= insert_hash_to_bucket(IONIZE(5, int), linear_hash);
@@ -380,7 +380,7 @@ test_linear_hash_correct_bucket_after_split(
 	}
 
 	/* assuming initial size of 5 so that key 5 hashes to bucket 5 using h1 */
-	PLANCK_UNIT_ASSERT_TRUE(tc, expected_bucket_location == array_list_get(hash_idx, linear_hash));
+	PLANCK_UNIT_ASSERT_TRUE(tc, expected_bucket_location == array_list_get(hash_idx, linear_hash->bucket_map));
 	test_linear_hash_takedown(tc, linear_hash);
 }
 
@@ -433,11 +433,26 @@ test_linear_hash_local_record_increments_decrements(
 	test_linear_hash_takedown(tc, linear_hash);
 }
 
+/**
+@brief		Tests some basic creation and destruction stuff for the flat file.
+*/
+void
+test_flat_file_create_destroy(
+	planck_unit_test_t *tc
+) {
+	linear_hash_table_t *linear_hash = alloca(sizeof(linear_hash_table_t));
+
+	test_linear_hash_setup(tc, linear_hash);
+
+	test_linear_hash_takedown(tc, linear_hash);
+}
+
 planck_unit_suite_t *
 linear_hash_getsuite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_flat_file_create_destroy);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_basic_operations);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_bucket_map_head_updates);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_increment_buckets);
