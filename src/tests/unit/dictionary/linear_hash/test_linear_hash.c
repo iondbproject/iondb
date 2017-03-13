@@ -202,6 +202,10 @@ test_linear_hash_get(
 }
 
 /**
+@brief		Tests that the basic insert/update/delete/get operations of the linear_hash are working as intended
+*/
+
+/**
 @brief		Tests that the linear_hash.bucket_map receives a new head for the idx after creating an overflow bucket
 */
 
