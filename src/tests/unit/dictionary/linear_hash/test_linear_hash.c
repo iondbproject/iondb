@@ -56,8 +56,6 @@ test_linear_hash_create(
 	PLANCK_UNIT_ASSERT_TRUE(tc, NULL != linear_hash->state);
 	PLANCK_UNIT_ASSERT_TRUE(tc, initial_size == linear_hash->num_buckets);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == linear_hash->num_records);
-
-	err = linear_hash_close(linear_hash);	/* todo test me */
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
 }
 
@@ -97,6 +95,37 @@ test_linear_hash_takedown(
 	test_linear_hash_destroy(tc, linear_hash);
 }
 
+void
+test_linear_hash_get(
+	planck_unit_test_t	*tc,
+	ion_key_t			key,
+	ion_err_t			expected_status,
+	ion_result_count_t	expected_count,
+	ion_value_t			expected_value,
+	linear_hash_table_t *linear_hash
+) {
+	ion_value_t defaultval = alloca(linear_hash->super.record.value_size);
+
+	memset(defaultval, 0x76, linear_hash->super.record.value_size);
+
+	ion_value_t retval = alloca(linear_hash->super.record.value_size);
+
+	memcpy(retval, defaultval, linear_hash->super.record.value_size);
+
+	ion_status_t status = linear_hash_get(key, retval, linear_hash);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_status, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, status.count);
+
+	if (err_ok == status.error) {
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, memcmp(expected_value, retval, linear_hash->super.record.value_size));
+	}
+	else {
+		/* Here, we check to see that the passed in space to write the value remains unchanged, if we have an error condition. */
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, memcmp(defaultval, retval, linear_hash->super.record.value_size));
+	}
+}
+
 /**
 @brief		Inserts into the flat file and optionally checks if the insert was OK
 			by reading the data file. Don't turn on check_result unless you expect
@@ -115,7 +144,7 @@ test_linear_hash_insert(
 	int bucket_idx = insert_hash_to_bucket(key, linear_hash);
 
 	if (bucket_idx < linear_hash->next_split) {
-		bucket_idx = hash_to_bucket(key, key_type_numeric_unsigned);
+		bucket_idx = hash_to_bucket(key, linear_hash);
 	}
 
 	ion_status_t status = linear_hash_insert(key, value, bucket_idx, linear_hash);
@@ -123,7 +152,9 @@ test_linear_hash_insert(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_status, status.error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, status.count);
 
-	if (check_result) {}
+	if (check_result) {
+		test_linear_hash_get(tc, key, err_ok, 1, value, linear_hash);
+	}
 }
 
 /**
@@ -144,7 +175,7 @@ test_linear_hash_update(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, status.count);
 
 	if (err_ok == expected_status) {
-		test_linear_hash_get(tc, key, expected_status, expected_count, value, boolean_true, linear_hash);
+		test_linear_hash_get(tc, key, expected_status, expected_count, value, linear_hash);
 	}
 }
 
@@ -159,51 +190,33 @@ test_linear_hash_delete(
 	ion_result_count_t	expected_count,
 	linear_hash_table_t *linear_hash
 ) {
-	ion_status_t status = linear_hash_update(key, value, linear_hash);
+	ion_status_t status = linear_hash_delete(key, linear_hash);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_status, status.error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, status.count);
 
 	if (err_ok == expected_status) {
-		test_linear_hash_get(tc, key, err_item_not_found, 0, value, boolean_true, linear_hash);
-	}
-}
+		ion_byte_t *value = alloca(linear_hash->super.record.value_size);
 
-void
-test_linear_hash_get(
-	planck_unit_test_t	*tc,
-	ion_key_t			key,
-	ion_err_t			expected_status,
-	ion_result_count_t	expected_count,
-	ion_value_t			expected_value,
-	ion_boolean_t		check_result,
-	linear_hash_table_t *linear_hash
-) {
-	ion_value_t defaultval = alloca(linear_hash->super.record.value_size);
-
-	memset(defaultval, 0x76, linear_hash->super.record.value_size);
-
-	ion_value_t retval = alloca(linear_hash->super.record.value_size);
-
-	memcpy(retval, defaultval, linear_hash->super.record.value_size);
-
-	ion_status_t status = linear_hash_get(key, retval, linear_hash);
-
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_status, status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, status.count);
-
-	if (err_ok == status.error) {
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, memcmp(expected_value, retval, linear_hash->super->record.value_size));
-	}
-	else {
-		/* Here, we check to see that the passed in space to write the value remains unchanged, if we have an error condition. */
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, memcmp(defaultval, retval, linear_hash->super.record.value_size));
+		test_linear_hash_get(tc, key, err_item_not_found, 0, value, linear_hash);
 	}
 }
 
 /**
 @brief		Tests that the basic insert/update/delete/get operations of the linear_hash are working as intended
 */
+void
+test_linear_hash_basic_operations(
+	planck_unit_test_t *tc
+) {
+	linear_hash_table_t linear_hash;
+
+	test_linear_hash_setup(tc, &linear_hash);
+	test_linear_hash_insert(tc, IONIZE(17, int), IONIZE(19, int), err_ok, 1, boolean_true, &linear_hash);
+	test_linear_hash_update(tc, IONIZE(17, int), IONIZE(25, int), err_ok, 1, &linear_hash);
+	test_linear_hash_delete(tc, IONIZE(17, int), err_ok, 1, &linear_hash);
+	test_linear_hash_takedown(tc, &linear_hash);
+}
 
 /**
 @brief		Tests that the linear_hash.bucket_map receives a new head for the idx after creating an overflow bucket
@@ -242,6 +255,7 @@ linear_hash_getsuite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_basic_operations);
 	return suite;
 }
 
