@@ -1562,11 +1562,11 @@ bhdct_run_tests(
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_empty_string_key);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_single_string_key);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_several_string_key);
-*/
+
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single_string_key);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single_several_string_key);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_all_string_key);
-
+*/
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_empty_single_string_key);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_nonexist_single_string_key);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_nonexist_in_many_string_key);
