@@ -1583,7 +1583,7 @@ IINQ_NEW_PROCESSOR_FUNC(benchmark_test) {
 	uint32_t	*dataptr	= (uint32_t *) result->processed;
 	int			i			= 0;
 
-	for (i = 0; i < (result->num_bytes / sizeof(uint32_t)); i++) {
+	for (i = 0; i < (int) (result->num_bytes / sizeof(uint32_t)); i++) {
 /*		printf("%d\t\t\t", *dataptr); */
 		dataptr++;
 	}
@@ -2522,8 +2522,6 @@ iinq_test_create_query_select_all_from_where_orderby_string_ascending_large(
 ) {
 	iinq_test_create_query_select_all_from_where_orderby_string(tc, 100, boolean_true);
 }
-
-/* End new tests */
 
 planck_unit_suite_t *
 iinq_get_suite(
