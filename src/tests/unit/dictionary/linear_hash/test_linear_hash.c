@@ -201,6 +201,38 @@ test_linear_hash_get(
 	}
 }
 
+/**
+@brief		Tests that the linear_hash.bucket_map receives a new head for the idx after creating an overflow bucket
+*/
+
+/**
+@brief		Tests that the linear_hash.num_buckets increments when an insert occurs that pushes the linear_hash passed its split threshold
+*/
+
+/**
+@brief		Tests that the proper hash function is used for records that hash to a bucket that has been split
+*/
+
+/**
+@brief		Tests that records are rehashed to the correct bucket after a split
+*/
+
+/**
+@brief		Tests that the gloabl number of records are always incremented on insertion
+*/
+
+/**
+@brief		Tests that the gloabl number of records are always decremented on deletion
+*/
+
+/**
+@brief		Tests that the number of records for a bucket gets incremented on insertions
+*/
+
+/**
+@brief		Tests that the number of records for a bucket gets decremented on deletions
+*/
+
 planck_unit_suite_t *
 linear_hash_getsuite(
 ) {
