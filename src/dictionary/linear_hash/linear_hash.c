@@ -344,9 +344,9 @@ linear_hash_insert(
 		if (linear_hash_bucket_is_full(bucket, linear_hash)) {
 			/* Get location of overflow bucket and update the tail record for the linked list of buckets storing
 			 * items that hash to this bucket and update the tail bucket with the overflow's location */
-			ion_fpos_t overflow_location = alloca(sizeof(ion_fpos_t));
+			ion_fpos_t *overflow_location = alloca(sizeof(ion_fpos_t));
 
-			status.error = create_overflow_bucket(bucket.idx, &overflow_location, linear_hash);
+			status.error = create_overflow_bucket(bucket.idx, overflow_location, linear_hash);
 
 			if (err_ok != status.error) {
 				return status;
@@ -356,9 +356,9 @@ linear_hash_insert(
 
 			/* Set the location of the anchor record on the new overflow bucket and update the record_loc for storing
 			 * the new record to be this location */
-			ion_fpos_t overflow_anchor_record_loc = get_bucket_records_location(overflow_location);
+			ion_fpos_t overflow_anchor_record_loc = get_bucket_records_location(*overflow_location);
 
-			status.error = linear_hash_get_bucket(overflow_location, &bucket, linear_hash);
+			status.error = linear_hash_get_bucket(*overflow_location, &bucket, linear_hash);
 
 			if (status.error != err_ok) {
 				return status;
@@ -366,8 +366,8 @@ linear_hash_insert(
 
 			bucket.anchor_record	= overflow_anchor_record_loc;
 			record_loc				= bucket.anchor_record;
-			bucket_loc				= overflow_location;
-			status.error			= linear_hash_update_bucket(overflow_location, bucket, linear_hash);
+			bucket_loc				= *overflow_location;
+			status.error			= linear_hash_update_bucket(*overflow_location, bucket, linear_hash);
 
 			if (status.error != err_ok) {
 				return status;
