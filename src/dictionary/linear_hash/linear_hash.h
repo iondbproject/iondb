@@ -137,13 +137,13 @@ get_bucket_records_location(
 /* hash methods */
 int
 hash_to_bucket(
-	ion_key_t			key,
+	ion_byte_t			*key,
 	linear_hash_table_t *linear_hash
 );
 
 int
 insert_hash_to_bucket(
-	ion_key_t			key,
+	ion_byte_t			*key,
 	linear_hash_table_t *linear_hash
 );
 

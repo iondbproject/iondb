@@ -1069,7 +1069,7 @@ bucket_idx_to_ion_fpos_t(
 
 int
 hash_to_bucket(
-	ion_key_t			key,
+	ion_byte_t			*key,
 	linear_hash_table_t *linear_hash
 ) {
 	/* Case the record we are looking for was in a bucket that has already been split and h1 was used */
@@ -1080,7 +1080,7 @@ hash_to_bucket(
 
 int
 insert_hash_to_bucket(
-	ion_key_t			key,
+	ion_byte_t			*key,
 	linear_hash_table_t *linear_hash
 ) {
 	int key_bytes_as_int = *((ion_byte_t *) key);
