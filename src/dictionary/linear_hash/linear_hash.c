@@ -208,7 +208,8 @@ split(
 	ion_byte_t	*record_value = alloca(linear_hash->super.record.value_size);
 	ion_byte_t	record_status;
 
-	ion_fpos_t record_total_size = linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(ion_byte_t);
+	ion_fpos_t	record_total_size = linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(ion_byte_t);
+	int			split_hash_key;
 
 	int i, j;
 
@@ -220,7 +221,8 @@ split(
 				linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
 				int insert_hash_key = insert_hash_to_bucket(record_key, linear_hash);
-				int split_hash_key	= hash_to_bucket(record_key, linear_hash);
+
+				split_hash_key = hash_to_bucket(record_key, linear_hash);
 
 				if ((record_status == 1) && (insert_hash_key != split_hash_key)) {
 					status = linear_hash_delete(record_key, linear_hash);
@@ -257,7 +259,8 @@ split(
 			linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
 			int insert_hash_key = insert_hash_to_bucket(record_key, linear_hash);
-			int split_hash_key	= hash_to_bucket(record_key, linear_hash);
+
+			split_hash_key = hash_to_bucket(record_key, linear_hash);
 
 			if ((record_status == 1) && (insert_hash_key != split_hash_key)) {
 				status = linear_hash_delete(record_key, linear_hash);
@@ -350,8 +353,6 @@ linear_hash_insert(
 
 			if (err_ok != status.error) {
 				return status;
-				return status;
-				return status;
 			}
 
 			/* Set the location of the anchor record on the new overflow bucket and update the record_loc for storing
@@ -435,6 +436,7 @@ linear_hash_insert(
 				record_loc	= scanner_loc;
 				bucket_loc	= scanner_bucket_loc;
 			}
+			/* TODO is this step necesarry? */
 			else {
 				status.error = linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
 
