@@ -299,6 +299,7 @@ linear_hash_above_threshold(
 	return above_threshold;
 }
 
+/* TODO it may not be necesarry to copy the key to a location */
 /* linear hash operations */
 ion_status_t
 linear_hash_insert(
