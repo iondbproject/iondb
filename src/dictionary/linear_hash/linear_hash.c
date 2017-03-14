@@ -1,5 +1,6 @@
 #include "linear_hash.h"
 #include "../../key_value/kv_system.h"
+#include "linear_hash_types.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -1178,7 +1179,7 @@ void
 print_linear_hash_state(
 	linear_hash_table_t *linear_hash
 ) {
-	printf("Linear Hash State\n\tinitial size: %d\n\tnum records %d\n\tnum buckets %d\n\tnext split: %d\n\tsplit threshold: %d\n", linear_hash->initial_size, linear_hash->num_records, linear_hash->num_buckets, linear_hash->next_split, linear_hash->split_threshold);
+	printf("Linear Hash State\n\tinitial size: %d\n\tnum records %d\n\tnum buckets %d\n\tnext split: %d\n\tsplit threshold: %d\n\tbucket_map size: %d", linear_hash->initial_size, linear_hash->num_records, linear_hash->num_buckets, linear_hash->next_split, linear_hash->split_threshold, linear_hash->bucket_map->current_size);
 }
 
 void
