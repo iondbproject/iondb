@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include "linear_hash_types.h"
 
+#if defined(ARDUINO)
+#include "../../serial/serial_c_iface.h"
+#endif
+
 ion_err_t
 linear_hash_init(
 	ion_dictionary_id_t		id,

@@ -1079,6 +1079,7 @@ hash_to_bucket(
 	return key_bytes_as_int % (2 * linear_hash->initial_size);	/*	} */
 }
 
+/* TODO change back to ion_key_t */
 int
 insert_hash_to_bucket(
 	ion_byte_t			*key,
@@ -1121,7 +1122,6 @@ array_list_init(
 	array_list->data			= malloc(init_size * sizeof(ion_fpos_t));
 
 	if (NULL == array_list->data) {
-		free(array_list->data);
 		return err_out_of_memory;
 	}
 
@@ -1279,7 +1279,7 @@ linear_hash_close(
 	}
 
 	if (linear_hash->bucket_map != NULL) {
-		free(linear_hash->bucket_map->data);
+		free(linear_hash->bucket_map);
 		linear_hash->bucket_map = NULL;
 	}
 

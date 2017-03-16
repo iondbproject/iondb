@@ -52,7 +52,7 @@ endif()
 
 # Add all of the CMakeLists.txt for the sub projects.
 add_subdirectory(src/tests)
-add_subdirectory(src/tests/unit/dictionary)
+#add_subdirectory(src/tests/unit/dictionary)
 
 add_subdirectory(examples)
 
@@ -84,5 +84,5 @@ add_subdirectory(src/tests/behaviour/dictionary/linear_hash)
 
 
 add_subdirectory(src/cpp_wrapper)
-add_subdirectory(src/tests/unit/cpp_wrapper)
-add_subdirectory(src/tests/integration/cpp_wrapper)
+#add_subdirectory(src/tests/unit/cpp_wrapper)
+#add_subdirectory(src/tests/integration/cpp_wrapper)
