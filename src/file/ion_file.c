@@ -190,7 +190,7 @@ ion_fread(
 #else
 
 	if (1 != fread(write_to, num_bytes, 1, file)) {
-		return err_file_incomplete_read;
+		return err_file_read_error;
 	}
 
 	return err_ok;

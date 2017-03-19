@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libiinq.a  CMakeFiles/iinq.dir/__/dictionary/ion_master_table.c.o CMakeFiles/iinq.dir/iinq.c.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libiinq.a

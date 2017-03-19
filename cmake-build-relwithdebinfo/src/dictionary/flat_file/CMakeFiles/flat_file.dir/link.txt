@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libflat_file.a  CMakeFiles/flat_file.dir/flat_file.c.o CMakeFiles/flat_file.dir/flat_file_dictionary_handler.c.o CMakeFiles/flat_file.dir/__/dictionary.c.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libflat_file.a
