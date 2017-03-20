@@ -58,10 +58,6 @@ linear_hash_init(
 		}
 	}
 
-	if (NULL == linear_hash->state) {
-		return err_file_open_error;
-	}
-
 	/* initialize linear_hash fields */
 	linear_hash->initial_size		= initial_size;
 	linear_hash->num_buckets		= initial_size;
