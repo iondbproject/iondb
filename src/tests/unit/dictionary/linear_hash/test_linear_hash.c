@@ -449,9 +449,9 @@ void
 test_linear_hash_create_destroy(
 	planck_unit_test_t *tc
 ) {
-/*
 	linear_hash_table_t *linear_hash = alloca(sizeof(linear_hash_table_t));
 
+/*
 	test_linear_hash_setup(tc, linear_hash);
 
 	test_linear_hash_takedown(tc, linear_hash);
