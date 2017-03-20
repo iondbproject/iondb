@@ -80,7 +80,7 @@ add_subdirectory(src/tests/behaviour/dictionary)
 #add_subdirectory(src/tests/behaviour/dictionary/bpp_tree)
 #add_subdirectory(src/tests/behaviour/dictionary/open_address_hash)
 #add_subdirectory(src/tests/behaviour/dictionary/open_address_file_hash)
-add_subdirectory(src/tests/behaviour/dictionary/linear_hash)
+#add_subdirectory(src/tests/behaviour/dictionary/linear_hash)
 
 
 add_subdirectory(src/cpp_wrapper)
