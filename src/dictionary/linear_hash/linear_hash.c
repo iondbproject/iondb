@@ -1317,5 +1317,6 @@ linear_hash_destroy(
 	}
 
 	linear_hash->database = NULL;
+
 	return err_ok;
 }
