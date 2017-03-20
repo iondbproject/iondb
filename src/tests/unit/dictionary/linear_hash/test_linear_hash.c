@@ -40,7 +40,7 @@ test_linear_hash_create(
 	int			initial_size		= 5;
 	int			split_threshold		= 85;
 	int			records_per_bucket	= 4;
-	ion_err_t	err					= linear_hash_init(1, dictionary_size, key_type, key_size, value_size, initial_size, split_threshold, records_per_bucket, linear_hash);
+	ion_err_t	err					= linear_hash_init(0, dictionary_size, key_type, key_size, value_size, initial_size, split_threshold, records_per_bucket, linear_hash);
 
 	linear_hash->super.compare = dictionary_compare_signed_value;
 
@@ -451,11 +451,10 @@ test_linear_hash_create_destroy(
 ) {
 	linear_hash_table_t *linear_hash = alloca(sizeof(linear_hash_table_t));
 
-/*
 	test_linear_hash_setup(tc, linear_hash);
 
 	test_linear_hash_takedown(tc, linear_hash);
-*/
+
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == 1);
 }
 
