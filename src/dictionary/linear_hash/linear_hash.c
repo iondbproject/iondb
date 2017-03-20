@@ -1287,6 +1287,10 @@ linear_hash_close(
 		return err_file_close_error;
 	}
 
+	if (0 != fclose(linear_hash->state)) {
+		return err_file_close_error;
+	}
+
 	return err_ok;
 }
 
