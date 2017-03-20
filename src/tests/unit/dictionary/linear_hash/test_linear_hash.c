@@ -292,11 +292,19 @@ test_linear_hash_correct_hash_function(
 	/* assuming initial size of 5 so that key 5 hashes to bucket 0 using h0 */
 	int expected_hash_bucket	= 0;
 
+	int *k;
+
+	*k = 5;
+
+	ion_byte_t *hash_key = alloca(linear_hash->super.record.key_size);
+
+	memcpy(hash_key, k, sizeof(linear_hash->super.record.key_size));
+
 	/* resolve buck key 5 hashes to given the current linear_hash state - should be 0 */
-	int hash_idx				= insert_hash_to_bucket(IONIZE(5, int), linear_hash);
+	int hash_idx = insert_hash_to_bucket(hash_key, linear_hash);
 
 	if (hash_idx < linear_hash->next_split) {
-		hash_idx = hash_to_bucket(IONIZE(5, int), linear_hash);
+		hash_idx = hash_to_bucket(hash_key, linear_hash);
 	}
 
 	int i;
@@ -314,10 +322,10 @@ test_linear_hash_correct_hash_function(
 	expected_hash_bucket	= 5;
 
 	/* resolve buck key 5 hashes to given the current linear_hash state - should be 5 */
-	hash_idx				= insert_hash_to_bucket(IONIZE(5, int), linear_hash);
+	hash_idx				= insert_hash_to_bucket(hash_key, linear_hash);
 
 	if (hash_idx < linear_hash->next_split) {
-		hash_idx = hash_to_bucket(IONIZE(5, int), linear_hash);
+		hash_idx = hash_to_bucket(hash_key, linear_hash);
 	}
 
 	/* assuming initial size of 5 so that key 5 hashes to bucket 5 using h1 */
@@ -343,11 +351,19 @@ test_linear_hash_correct_bucket_after_split(
 	int			expected_hash_bucket		= 0;
 	ion_fpos_t	expected_bucket_location	= array_list_get(expected_hash_bucket, linear_hash->bucket_map);
 
+	int *k;
+
+	*k = 5;
+
+	ion_byte_t *hash_key = alloca(linear_hash->super.record.key_size);
+
+	memcpy(hash_key, k, sizeof(linear_hash->super.record.key_size));
+
 	/* resolve buck key 5 hashes to given the current linear_hash state - should be 0 */
-	int hash_idx							= insert_hash_to_bucket(IONIZE(5, int), linear_hash);
+	int hash_idx = insert_hash_to_bucket(hash_key, linear_hash);
 
 	if (hash_idx < linear_hash->next_split) {
-		hash_idx = hash_to_bucket(IONIZE(5, int), linear_hash);
+		hash_idx = hash_to_bucket(hash_key, linear_hash);
 	}
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, expected_bucket_location == array_list_get(hash_idx, linear_hash->bucket_map));
@@ -366,10 +382,10 @@ test_linear_hash_correct_bucket_after_split(
 	expected_bucket_location	= array_list_get(expected_hash_bucket, linear_hash->bucket_map);
 
 	/* resolve buck key 5 hashes to given the current linear_hash state - should be 5 */
-	hash_idx					= insert_hash_to_bucket(IONIZE(5, int), linear_hash);
+	hash_idx					= insert_hash_to_bucket(hash_key, linear_hash);
 
 	if (hash_idx < linear_hash->next_split) {
-		hash_idx = hash_to_bucket(IONIZE(5, int), linear_hash);
+		hash_idx = hash_to_bucket(hash_key, linear_hash);
 	}
 
 	/* assuming initial size of 5 so that key 5 hashes to bucket 5 using h1 */
