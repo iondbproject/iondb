@@ -292,7 +292,7 @@ test_linear_hash_correct_hash_function(
 	/* assuming initial size of 5 so that key 5 hashes to bucket 0 using h0 */
 	int expected_hash_bucket	= 0;
 
-	int *k;
+	int *k						= alloca(sizeof(int));
 
 	*k = 5;
 
@@ -351,7 +351,7 @@ test_linear_hash_correct_bucket_after_split(
 	int			expected_hash_bucket		= 0;
 	ion_fpos_t	expected_bucket_location	= array_list_get(expected_hash_bucket, linear_hash->bucket_map);
 
-	int *k;
+	int *k									= alloca(sizeof(int));
 
 	*k = 5;
 
