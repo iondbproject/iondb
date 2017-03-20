@@ -1308,6 +1308,8 @@ linear_hash_destroy(
 		return err_file_delete_error;
 	}
 
+	linear_hash->state = NULL;
+
 	dictionary_get_filename(linear_hash->super.id, "lhd", filename);
 
 	if (0 != fremove(filename)) {
