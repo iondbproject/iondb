@@ -466,7 +466,7 @@ linear_hash_getsuite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_basic_operations);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_bucket_map_head_updates);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_increment_buckets);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_correct_hash_function);
+	//PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_correct_hash_function);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_correct_bucket_after_split);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_global_record_increments_decrements);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_local_record_increments_decrements);
