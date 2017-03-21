@@ -58,7 +58,6 @@ linear_hash_init(
 		}
 	}
 
-
 	/* initialize linear_hash fields */
 	linear_hash->initial_size		= initial_size;
 	linear_hash->num_buckets		= initial_size;
@@ -96,6 +95,7 @@ linear_hash_init(
 	}
 
 	err = linear_hash_write_state(linear_hash);
+
 	/* write the state of the linear_hash to disk */
 	if (err != err_ok) {
 		return err;
@@ -107,7 +107,7 @@ linear_hash_init(
 
 ion_err_t
 linear_hash_write_state(
-	linear_hash_table_t * linear_hash
+	linear_hash_table_t *linear_hash
 ) {
 	if (1 != fwrite(&(linear_hash->initial_size), sizeof(linear_hash->initial_size), 1, linear_hash->state)) {
 		return err_file_write_error;
