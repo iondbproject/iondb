@@ -46,29 +46,18 @@ linear_hash_init(
 		}
 	}
 
-	FILE * state = fopen(state_filename, "r+b");
+	linear_hash->state = fopen(state_filename, "r+b");
 
-	if (NULL == state) {
+	if (NULL == linear_hash->state) {
 		/* The file did not exist - lets open to write */
-		state = fopen(state_filename, "w+b");
+		linear_hash->state = fopen(state_filename, "w+b");
 
-		if (NULL == state) {
+		if (NULL == linear_hash->state) {
 			/* Failed to open, even to create */
 			return err_file_open_error;
 		}
 	}
 
-	/*
-	if (NULL == linear_hash->state) {
-		/* The file did not exist - lets open to write
-		linear_hash->state = fopen(state_filename, "w+b");
-
-		if (NULL == linear_hash->state) {
-			/* Failed to open, even to create
-			return err_file_open_error;
-		}
-	}
-	*/
 
 	/* initialize linear_hash fields */
 	linear_hash->initial_size		= initial_size;
@@ -106,12 +95,44 @@ linear_hash_init(
 		}
 	}
 
+	err = linear_hash_write_state(linear_hash);
 	/* write the state of the linear_hash to disk */
-	if (1 != fwrite(linear_hash, sizeof(linear_hash_table_t), 1, state)) {
-		return err_file_write_error;
+	if (err != err_ok) {
+		return err;
 	}
 
 	/* return pointer to the linear_hash that is sitting in memory */
+	return err_ok;
+}
+
+ion_err_t
+linear_hash_write_state(
+	linear_hash_table_t * linear_hash
+) {
+	if (1 != fwrite(&(linear_hash->initial_size), sizeof(linear_hash->initial_size), 1, linear_hash->state)) {
+		return err_file_write_error;
+	}
+
+	if (1 != fwrite(&(linear_hash->next_split), sizeof(linear_hash->next_split), 1, linear_hash->state)) {
+		return err_file_write_error;
+	}
+
+	if (1 != fwrite(&(linear_hash->split_threshold), sizeof(linear_hash->split_threshold), 1, linear_hash->state)) {
+		return err_file_write_error;
+	}
+
+	if (1 != fwrite(&(linear_hash->num_buckets), sizeof(linear_hash->num_buckets), 1, linear_hash->state)) {
+		return err_file_write_error;
+	}
+
+	if (1 != fwrite(&(linear_hash->num_records), sizeof(linear_hash->num_records), 1, linear_hash->state)) {
+		return err_file_write_error;
+	}
+
+	if (1 != fwrite(&(linear_hash->records_per_bucket), sizeof(linear_hash->records_per_bucket), 1, linear_hash->state)) {
+		return err_file_write_error;
+	}
+
 	return err_ok;
 }
 
