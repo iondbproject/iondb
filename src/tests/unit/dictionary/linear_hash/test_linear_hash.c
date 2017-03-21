@@ -465,9 +465,9 @@ test_linear_hash_create_destroy(
 
 	/* linear_hash_close(linear_hash); */
 
-	free(linear_hash);
 	free(linear_hash->bucket_map->data);
 	free(linear_hash->bucket_map);
+	free(linear_hash);
 
 	linear_hash = NULL;
 
