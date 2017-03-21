@@ -46,17 +46,29 @@ linear_hash_init(
 		}
 	}
 
-	linear_hash->state = fopen(state_filename, "r+b");
+	FILE * state = fopen(state_filename, "r+b");
 
-	if (NULL == linear_hash->state) {
+	if (NULL == state) {
 		/* The file did not exist - lets open to write */
-		linear_hash->state = fopen(state_filename, "w+b");
+		state = fopen(state_filename, "w+b");
 
-		if (NULL == linear_hash->state) {
+		if (NULL == state) {
 			/* Failed to open, even to create */
 			return err_file_open_error;
 		}
 	}
+
+	/*
+	if (NULL == linear_hash->state) {
+		/* The file did not exist - lets open to write
+		linear_hash->state = fopen(state_filename, "w+b");
+
+		if (NULL == linear_hash->state) {
+			/* Failed to open, even to create
+			return err_file_open_error;
+		}
+	}
+	*/
 
 	/* initialize linear_hash fields */
 	linear_hash->initial_size		= initial_size;
@@ -95,7 +107,7 @@ linear_hash_init(
 	}
 
 	/* write the state of the linear_hash to disk */
-	if (1 != fwrite(linear_hash, sizeof(linear_hash_table_t), 1, linear_hash->state)) {
+	if (1 != fwrite(linear_hash, sizeof(linear_hash_table_t), 1, state)) {
 		return err_file_write_error;
 	}
 

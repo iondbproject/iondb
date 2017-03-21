@@ -451,17 +451,18 @@ void
 test_linear_hash_create_destroy(
 	planck_unit_test_t *tc
 ) {
-	int				id					= 0;
-	int				dictionary_size		= 4;
+	ion_dictionary_id_t				id					= 0;
+	ion_dictionary_size_t			dictionary_size		= 4;
 	int				initial_size		= 5;
 	int				split_threshold		= 85;
 	int				records_per_bucket	= 4;
 	ion_key_size_t	key_size			= sizeof(int);
-	ion_key_size_t	value_size			= sizeof(int);
+	ion_value_size_t value_size			= sizeof(int);
+	ion_key_type_t key_type = key_type_numeric_signed;
 
 	linear_hash_table_t *linear_hash	= malloc(sizeof(linear_hash_table_t));
 
-	linear_hash_init(id, dictionary_size, key_type_numeric_signed, key_size, value_size, initial_size, split_threshold, records_per_bucket, linear_hash);
+	linear_hash_init(id, dictionary_size, key_type, key_size, value_size, initial_size, split_threshold, records_per_bucket, linear_hash);
 
 	/* linear_hash_close(linear_hash); */
 
