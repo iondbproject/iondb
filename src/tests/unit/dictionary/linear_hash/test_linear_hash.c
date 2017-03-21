@@ -119,6 +119,8 @@ test_linear_hash_get(
 		/* Here, we check to see that the passed in space to write the value remains unchanged, if we have an error condition. */
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, memcmp(defaultval, retval, linear_hash->super.record.value_size));
 	}
+
+
 }
 
 /**
@@ -451,14 +453,15 @@ void
 test_linear_hash_create_destroy(
 	planck_unit_test_t *tc
 ) {
-	linear_hash_table_t *linear_hash = malloc(sizeof(linear_hash_table_t));
-	ion_err_t err = linear_hash_init(0, 4, key_type_numeric_unsigned, (int) sizeof(int), (int) sizeof(int), 5, 85, 4, linear_hash);
+	linear_hash_table_t *linear_hash	= malloc(sizeof(linear_hash_table_t));
+	ion_err_t			err				= linear_hash_init(0, 4, key_type_numeric_unsigned, (int) sizeof(int), (int) sizeof(int), 5, 85, 4, linear_hash);
+
 	linear_hash_destroy(linear_hash);
 	free(linear_hash);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == 1);
 
-// 	test_linear_hash_setup(tc, linear_hash);
-//	test_linear_hash_takedown(tc, linear_hash);
+/*  test_linear_hash_setup(tc, linear_hash); */
+/*	test_linear_hash_takedown(tc, linear_hash); */
 }
 
 planck_unit_suite_t *

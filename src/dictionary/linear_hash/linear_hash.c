@@ -1283,9 +1283,13 @@ linear_hash_close(
 		return err_file_close_error;
 	}
 
+	linear_hash->database = NULL;
+
 	if (0 != fclose(linear_hash->state)) {
 		return err_file_close_error;
 	}
+
+	linear_hash->state = NULL;
 
 	return err_ok;
 }
@@ -1308,15 +1312,11 @@ linear_hash_destroy(
 		return err_file_delete_error;
 	}
 
-	linear_hash->state = NULL;
-
 	dictionary_get_filename(linear_hash->super.id, "lhd", filename);
 
 	if (0 != fremove(filename)) {
 		return err_file_delete_error;
 	}
-
-	linear_hash->database = NULL;
 
 	return err_ok;
 }
