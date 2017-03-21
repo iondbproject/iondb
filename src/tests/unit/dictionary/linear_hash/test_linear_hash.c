@@ -292,11 +292,11 @@ test_linear_hash_correct_hash_function(
 	double split_cardinality	= linear_hash->records_per_bucket * linear_hash->num_buckets * linear_hash->split_threshold / 100;
 
 	/* assuming initial size of 5 so that key 5 hashes to bucket 0 using h0 */
-	int expected_hash_bucket	= 0;
+	int expected_hash_bucket	= 1;
 
 	int *k						= alloca(sizeof(int));
 
-	*k = 5;
+	*k = 2;
 
 	ion_byte_t *hash_key = alloca(linear_hash->super.record.key_size);
 
@@ -314,14 +314,14 @@ test_linear_hash_correct_hash_function(
 	PLANCK_UNIT_ASSERT_TRUE(tc, expected_hash_bucket == hash_idx);
 
 	/* test while inserting to reach threshold - linear_hash.num_buckets should not change over this range */
-	for (i = 0; i < split_cardinality; i++) {
-		test_linear_hash_insert(tc, IONIZE(5, int), IONIZE(5, int), err_ok, 1, boolean_true, linear_hash);
+	for (i = 0; i < split_cardinality * 2; i++) {
+		test_linear_hash_insert(tc, IONIZE(2, int), IONIZE(5, int), err_ok, 1, boolean_true, linear_hash);
 	}
 
 	/* test inserting push above threshold - linear_hash.num_buckets should increase by one */
-	test_linear_hash_insert(tc, IONIZE(5, int), IONIZE(5, int), err_ok, 1, boolean_true, linear_hash);
+	test_linear_hash_insert(tc, IONIZE(2, int), IONIZE(5, int), err_ok, 1, boolean_true, linear_hash);
 
-	expected_hash_bucket	= 5;
+	expected_hash_bucket	= 6;
 
 	/* resolve buck key 5 hashes to given the current linear_hash state - should be 5 */
 	hash_idx				= insert_hash_to_bucket(hash_key, linear_hash);
@@ -350,18 +350,18 @@ test_linear_hash_correct_bucket_after_split(
 	double split_cardinality				= linear_hash->records_per_bucket * linear_hash->num_buckets * linear_hash->split_threshold / 100;
 
 	/* assuming initial size of 5 so that key 5 hashes to bucket 0 using h0 */
-	int			expected_hash_bucket		= 0;
+	int			expected_hash_bucket		= 1;
 	ion_fpos_t	expected_bucket_location	= array_list_get(expected_hash_bucket, linear_hash->bucket_map);
 
 	int *k									= alloca(sizeof(int));
 
-	*k = 5;
+	*k = 2;
 
 	ion_byte_t *hash_key = alloca(linear_hash->super.record.key_size);
 
 	memcpy(hash_key, k, sizeof(linear_hash->super.record.key_size));
 
-	/* resolve buck key 5 hashes to given the current linear_hash state - should be 0 */
+	/* resolve bucket key 2 hashes to given the current linear_hash state - should be 1 */
 	int hash_idx = insert_hash_to_bucket(hash_key, linear_hash);
 
 	if (hash_idx < linear_hash->next_split) {
@@ -373,14 +373,14 @@ test_linear_hash_correct_bucket_after_split(
 	int i;
 
 	/* test while inserting to reach threshold - linear_hash.num_buckets should not change over this range */
-	for (i = 0; i < split_cardinality; i++) {
-		test_linear_hash_insert(tc, IONIZE(5, int), IONIZE(5, int), err_ok, 1, boolean_true, linear_hash);
+	for (i = 0; i < split_cardinality * 2; i++) {
+		test_linear_hash_insert(tc, IONIZE(2, int), IONIZE(5, int), err_ok, 1, boolean_true, linear_hash);
 	}
 
 	/* test inserting push above threshold - linear_hash.num_buckets should increase by one */
-	test_linear_hash_insert(tc, IONIZE(5, int), IONIZE(5, int), err_ok, 1, boolean_true, linear_hash);
+	test_linear_hash_insert(tc, IONIZE(2, int), IONIZE(5, int), err_ok, 1, boolean_true, linear_hash);
 
-	expected_hash_bucket		= 5;
+	expected_hash_bucket		= 6;
 	expected_bucket_location	= array_list_get(expected_hash_bucket, linear_hash->bucket_map);
 
 	/* resolve buck key 5 hashes to given the current linear_hash state - should be 5 */
@@ -390,7 +390,7 @@ test_linear_hash_correct_bucket_after_split(
 		hash_idx = hash_to_bucket(hash_key, linear_hash);
 	}
 
-	/* assuming initial size of 5 so that key 5 hashes to bucket 5 using h1 */
+	/* assuming initial size of 5 so that key 2 hashes to bucket 6 using h1 */
 	PLANCK_UNIT_ASSERT_TRUE(tc, expected_bucket_location == array_list_get(hash_idx, linear_hash->bucket_map));
 	test_linear_hash_takedown(tc, linear_hash);
 }
@@ -464,11 +464,11 @@ linear_hash_getsuite(
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_create_destroy);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_basic_operations);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_bucket_map_head_updates);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_bucket_map_head_updates);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_increment_buckets);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_correct_hash_function);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_correct_bucket_after_split);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_global_record_increments_decrements);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_global_record_increments_decrements);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_local_record_increments_decrements);
 
 	return suite;

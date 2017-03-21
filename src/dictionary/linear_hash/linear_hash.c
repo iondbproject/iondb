@@ -1107,7 +1107,7 @@ hash_to_bucket(
 	/* Case the record we are looking for was in a bucket that has already been split and h1 was used */
 	int key_bytes_as_int = *((ion_byte_t *) key);
 
-	return key_bytes_as_int % (2 * linear_hash->initial_size);	/*	} */
+	return hash(key_bytes_as_int) % (2 * linear_hash->initial_size);	/*	} */
 }
 
 /* TODO change back to ion_key_t */
@@ -1118,7 +1118,15 @@ insert_hash_to_bucket(
 ) {
 	int key_bytes_as_int = *((ion_byte_t *) key);
 
-	return key_bytes_as_int % linear_hash->initial_size;
+	return hash(key_bytes_as_int) % linear_hash->initial_size;
+}
+
+unsigned long
+hash(
+    unsigned long key_bytes_value
+) {
+    return key_bytes_value * 2654435761 % (unsigned long) pow(2, 32);
+
 }
 
 /* Write the offset of bucket idx to the map in linear hash state */
