@@ -1,5 +1,6 @@
 #include "linear_hash.h"
 #include "../../key_value/kv_system.h"
+#include "linear_hash_types.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -1269,6 +1270,7 @@ ion_err_t
 linear_hash_close(
 	linear_hash_table_t *linear_hash
 ) {
+
 	if (linear_hash->bucket_map->data != NULL) {
 		free(linear_hash->bucket_map->data);
 		linear_hash->bucket_map->data = NULL;
@@ -1285,10 +1287,11 @@ linear_hash_close(
 
 	linear_hash->database = NULL;
 
-	if (0 != fclose(linear_hash->state)) {
-		return err_file_close_error;
-	}
+//	if (0 != fclose(linear_hash->state)) {
+//		return err_file_close_error;
+//	}
 
+	fclose(linear_hash->state);
 	linear_hash->state = NULL;
 
 	return err_ok;
