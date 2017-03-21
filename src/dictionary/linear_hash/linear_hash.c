@@ -1107,7 +1107,7 @@ hash_to_bucket(
 	/* Case the record we are looking for was in a bucket that has already been split and h1 was used */
 	int key_bytes_as_int = *((ion_byte_t *) key);
 
-	return hash(key_bytes_as_int) % (2 * linear_hash->initial_size);/*	} */
+	return key_bytes_as_int % (2 * linear_hash->initial_size);
 }
 
 /* TODO change back to ion_key_t */
@@ -1118,7 +1118,7 @@ insert_hash_to_bucket(
 ) {
 	int key_bytes_as_int = *((ion_byte_t *) key);
 
-	return hash(key_bytes_as_int) % linear_hash->initial_size;
+	return key_bytes_as_int % linear_hash->initial_size;
 }
 
 unsigned long
