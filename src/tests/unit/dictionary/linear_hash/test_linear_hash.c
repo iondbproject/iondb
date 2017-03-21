@@ -22,7 +22,6 @@
 /******************************************************************************/
 
 #include "test_linear_hash.h"
-#include "../../../../dictionary/linear_hash/linear_hash_types.h"
 
 /**
 @brief		Initializes a test flatfile instance and does a few sanity checks.
