@@ -158,7 +158,7 @@ insert_hash_to_bucket(
 
 unsigned long
 hash(
-        unsigned long key_bytes_value
+	unsigned long key_bytes_value
 );
 
 /* returns the struct representing the bucket at the specified index */

@@ -347,7 +347,7 @@ test_linear_hash_correct_bucket_after_split(
 
 	test_linear_hash_setup(tc, linear_hash);
 
-	double split_cardinality				= linear_hash->records_per_bucket * linear_hash->num_buckets * linear_hash->split_threshold / 100;
+	double split_cardinality				= linear_hash->records_per_bucket * (linear_hash->num_buckets + 1) * linear_hash->split_threshold / 100;
 
 	/* assuming initial size of 5 so that key 5 hashes to bucket 0 using h0 */
 	int			expected_hash_bucket		= 1;
@@ -373,7 +373,7 @@ test_linear_hash_correct_bucket_after_split(
 	int i;
 
 	/* test while inserting to reach threshold - linear_hash.num_buckets should not change over this range */
-	for (i = 0; i < split_cardinality * 2; i++) {
+	for (i = 0; i < split_cardinality; i++) {
 		test_linear_hash_insert(tc, IONIZE(2, int), IONIZE(5, int), err_ok, 1, boolean_true, linear_hash);
 	}
 
@@ -464,11 +464,11 @@ linear_hash_getsuite(
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_create_destroy);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_basic_operations);
-    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_bucket_map_head_updates);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_bucket_map_head_updates);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_increment_buckets);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_correct_hash_function);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_correct_bucket_after_split);
-    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_global_record_increments_decrements);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_global_record_increments_decrements);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_local_record_increments_decrements);
 
 	return suite;
