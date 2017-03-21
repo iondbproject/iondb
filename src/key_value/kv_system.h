@@ -88,7 +88,7 @@ typedef unsigned char byte;
 	((ion_status_t) { (error), (count) } \
 	)
 #define ION_STATUS_INITIALIZE \
-	((ion_status_t) { err_status_uninitialized, 0 } \
+	((ion_status_t) { err_uninitialized, 0 } \
 	)
 #define ION_STATUS_ERROR(error) \
 	((ion_status_t) { (error), 0 } \
