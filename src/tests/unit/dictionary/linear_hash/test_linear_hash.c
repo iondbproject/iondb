@@ -22,6 +22,7 @@
 /******************************************************************************/
 
 #include "test_linear_hash.h"
+#include "../../../../dictionary/linear_hash/linear_hash_types.h"
 
 /**
 @brief		Initializes a test flatfile instance and does a few sanity checks.
@@ -463,9 +464,12 @@ test_linear_hash_create_destroy(
 
 	linear_hash_init(id, dictionary_size, key_type_numeric_signed, key_size, value_size, initial_size, split_threshold, records_per_bucket, linear_hash);
 
-	//linear_hash_close(linear_hash);
+	/* linear_hash_close(linear_hash); */
 
 	free(linear_hash);
+	free(linear_hash->bucket_map->data);
+	free(linear_hash->bucket_map);
+
 	linear_hash = NULL;
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == 1);
