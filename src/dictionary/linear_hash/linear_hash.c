@@ -1269,7 +1269,6 @@ ion_err_t
 linear_hash_close(
 	linear_hash_table_t *linear_hash
 ) {
-
 	if (linear_hash->bucket_map->data != NULL) {
 		free(linear_hash->bucket_map->data);
 		linear_hash->bucket_map->data = NULL;
