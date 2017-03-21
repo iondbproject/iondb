@@ -206,8 +206,10 @@ linear_hash_update_state(
 		return err_file_bad_seek;
 	}
 
-	if (1 != fwrite(&linear_hash, sizeof(linear_hash_table_t), 1, linear_hash->state)) {
-		return err_file_write_error;
+	ion_err_t err = linear_hash_write_state(linear_hash);
+
+	if (err != err_ok) {
+		return err;
 	}
 
 	return err_ok;
