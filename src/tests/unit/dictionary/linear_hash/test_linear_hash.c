@@ -363,7 +363,7 @@ test_linear_hash_correct_bucket_after_split(
 
 	/* resolve bucket key 2 hashes to given the current linear_hash state - should be 1 */
 	int hash_idx = insert_hash_to_bucket(hash_key, linear_hash);
-    //printf("h1 : %d\n", hash_idx);
+    printf("h1 : %d\n", hash_idx);
 	if (hash_idx < linear_hash->next_split) {
 		hash_idx = hash_to_bucket(hash_key, linear_hash);
 	}
@@ -389,18 +389,12 @@ test_linear_hash_correct_bucket_after_split(
 	if (hash_idx < linear_hash->next_split) {
 		hash_idx = hash_to_bucket(hash_key, linear_hash);
 	}
-    //printf("h2 : %d\n", hash_idx);
+    printf("h2 : %d\n", hash_idx);
 
 	/* assuming initial size of 5 so that key 2 hashes to bucket 6 using h1 */
 	PLANCK_UNIT_ASSERT_TRUE(tc, expected_bucket_location == array_list_get(hash_idx, linear_hash->bucket_map));
 
-    /* LINEAR HASH TAKEDOWN */
-    ion_err_t err = linear_hash_destroy(linear_hash);
-
-    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
-    PLANCK_UNIT_ASSERT_TRUE(tc, NULL == linear_hash->database);
-
-    free(linear_hash);
+    test_linear_hash_takedown(tc, linear_hash);
 }
 
 /**
@@ -470,14 +464,14 @@ linear_hash_getsuite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_create_destroy);
+	/*PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_create_destroy);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_basic_operations);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_bucket_map_head_updates);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_increment_buckets);
-	/* PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_correct_hash_function); */
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_correct_bucket_after_split);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_increment_buckets);*/
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_correct_hash_function);
+	/*PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_correct_bucket_after_split);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_global_record_increments_decrements);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_local_record_increments_decrements);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_local_record_increments_decrements);*/
 
 	return suite;
 }
