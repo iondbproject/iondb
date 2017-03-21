@@ -64,6 +64,8 @@ test_linear_hash_destroy(
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == linear_hash->database);
+
+	free(linear_hash);
 }
 
 /**
@@ -202,7 +204,7 @@ void
 test_linear_hash_basic_operations(
 	planck_unit_test_t *tc
 ) {
-	linear_hash_table_t *linear_hash = alloca(sizeof(linear_hash_table_t));
+	linear_hash_table_t *linear_hash = malloc(sizeof(linear_hash_table_t));
 
 	test_linear_hash_setup(tc, linear_hash);
 	test_linear_hash_insert(tc, IONIZE(17, int), IONIZE(19, int), err_ok, 1, boolean_true, linear_hash);
@@ -218,7 +220,7 @@ void
 test_linear_hash_bucket_map_head_updates(
 	planck_unit_test_t *tc
 ) {
-	linear_hash_table_t *linear_hash = alloca(sizeof(linear_hash_table_t));
+	linear_hash_table_t *linear_hash = malloc(sizeof(linear_hash_table_t));
 
 	test_linear_hash_setup(tc, linear_hash);
 
@@ -254,7 +256,7 @@ void
 test_linear_hash_increment_buckets(
 	planck_unit_test_t *tc
 ) {
-	linear_hash_table_t *linear_hash = alloca(sizeof(linear_hash_table_t));
+	linear_hash_table_t *linear_hash = malloc(sizeof(linear_hash_table_t));
 
 	test_linear_hash_setup(tc, linear_hash);
 
@@ -283,7 +285,7 @@ void
 test_linear_hash_correct_hash_function(
 	planck_unit_test_t *tc
 ) {
-	linear_hash_table_t *linear_hash = alloca(sizeof(linear_hash_table_t));
+	linear_hash_table_t *linear_hash = malloc(sizeof(linear_hash_table_t));
 
 	test_linear_hash_setup(tc, linear_hash);
 
@@ -341,7 +343,7 @@ void
 test_linear_hash_correct_bucket_after_split(
 	planck_unit_test_t *tc
 ) {
-	linear_hash_table_t *linear_hash = alloca(sizeof(linear_hash_table_t));
+	linear_hash_table_t *linear_hash = malloc(sizeof(linear_hash_table_t));
 
 	test_linear_hash_setup(tc, linear_hash);
 
@@ -400,7 +402,7 @@ void
 test_linear_hash_global_record_increments_decrements(
 	planck_unit_test_t *tc
 ) {
-	linear_hash_table_t *linear_hash = alloca(sizeof(linear_hash_table_t));
+	linear_hash_table_t *linear_hash = malloc(sizeof(linear_hash_table_t));
 
 	test_linear_hash_setup(tc, linear_hash);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == linear_hash->num_records);
@@ -418,7 +420,7 @@ void
 test_linear_hash_local_record_increments_decrements(
 	planck_unit_test_t *tc
 ) {
-	linear_hash_table_t *linear_hash = alloca(sizeof(linear_hash_table_t));
+	linear_hash_table_t *linear_hash = malloc(sizeof(linear_hash_table_t));
 
 	test_linear_hash_setup(tc, linear_hash);
 
@@ -470,6 +472,7 @@ linear_hash_getsuite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_global_record_increments_decrements);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_local_record_increments_decrements);
 	 */
+
 	return suite;
 }
 
