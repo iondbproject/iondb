@@ -99,9 +99,11 @@ linear_hash_init(
 			/* Failed to open, even to create */
 			return err_file_open_error;
 		}
-	} else {
-		// read linear_hash state in associated lhs file
+	}
+	else {
+		/* read linear_hash state in associated lhs file */
 		err = linear_hash_read_state(linear_hash);
+
 		if (err != err_ok) {
 			return err;
 		}
@@ -122,27 +124,27 @@ ion_err_t
 linear_hash_write_state(
 	linear_hash_table_t *linear_hash
 ) {
-	if (1 != fwrite(&(linear_hash->initial_size), sizeof(linear_hash->initial_size), 1, linear_hash->state)) {
+	if (1 != fwrite(&linear_hash->initial_size, sizeof(linear_hash->initial_size), 1, linear_hash->state)) {
 		return err_file_write_error;
 	}
 
-	if (1 != fwrite(&(linear_hash->next_split), sizeof(linear_hash->next_split), 1, linear_hash->state)) {
+	if (1 != fwrite(&linear_hash->next_split, sizeof(linear_hash->next_split), 1, linear_hash->state)) {
 		return err_file_write_error;
 	}
 
-	if (1 != fwrite(&(linear_hash->split_threshold), sizeof(linear_hash->split_threshold), 1, linear_hash->state)) {
+	if (1 != fwrite(&linear_hash->split_threshold, sizeof(linear_hash->split_threshold), 1, linear_hash->state)) {
 		return err_file_write_error;
 	}
 
-	if (1 != fwrite(&(linear_hash->num_buckets), sizeof(linear_hash->num_buckets), 1, linear_hash->state)) {
+	if (1 != fwrite(&linear_hash->num_buckets, sizeof(linear_hash->num_buckets), 1, linear_hash->state)) {
 		return err_file_write_error;
 	}
 
-	if (1 != fwrite(&(linear_hash->num_records), sizeof(linear_hash->num_records), 1, linear_hash->state)) {
+	if (1 != fwrite(&linear_hash->num_records, sizeof(linear_hash->num_records), 1, linear_hash->state)) {
 		return err_file_write_error;
 	}
 
-	if (1 != fwrite(&(linear_hash->records_per_bucket), sizeof(linear_hash->records_per_bucket), 1, linear_hash->state)) {
+	if (1 != fwrite(&linear_hash->records_per_bucket, sizeof(linear_hash->records_per_bucket), 1, linear_hash->state)) {
 		return err_file_write_error;
 	}
 
@@ -151,33 +153,33 @@ linear_hash_write_state(
 
 ion_err_t
 linear_hash_read_state(
-		linear_hash_table_t *linear_hash
+	linear_hash_table_t *linear_hash
 ) {
-	if(0 != fseek(linear_hash->state, 0, SEEK_SET)) {
+	if (0 != fseek(linear_hash->state, 0, SEEK_SET)) {
 		return err_file_bad_seek;
 	}
 
-	if (1 != fread(&(linear_hash->initial_size), sizeof(linear_hash->initial_size), 1, linear_hash->state)) {
+	if (1 != fread(&linear_hash->initial_size, sizeof(linear_hash->initial_size), 1, linear_hash->state)) {
 		return err_file_read_error;
 	}
 
-	if (1 != fread(&(linear_hash->next_split), sizeof(linear_hash->next_split), 1, linear_hash->state)) {
+	if (1 != fread(&linear_hash->next_split, sizeof(linear_hash->next_split), 1, linear_hash->state)) {
 		return err_file_read_error;
 	}
 
-	if (1 != fread(&(linear_hash->split_threshold), sizeof(linear_hash->split_threshold), 1, linear_hash->state)) {
+	if (1 != fread(&linear_hash->split_threshold, sizeof(linear_hash->split_threshold), 1, linear_hash->state)) {
 		return err_file_read_error;
 	}
 
-	if (1 != fread(&(linear_hash->num_buckets), sizeof(linear_hash->num_buckets), 1, linear_hash->state)) {
+	if (1 != fread(&linear_hash->num_buckets, sizeof(linear_hash->num_buckets), 1, linear_hash->state)) {
 		return err_file_read_error;
 	}
 
-	if (1 != fread(&(linear_hash->num_records), sizeof(linear_hash->num_records), 1, linear_hash->state)) {
+	if (1 != fread(&linear_hash->num_records, sizeof(linear_hash->num_records), 1, linear_hash->state)) {
 		return err_file_read_error;
 	}
 
-	if (1 != fread(&(linear_hash->records_per_bucket), sizeof(linear_hash->records_per_bucket), 1, linear_hash->state)) {
+	if (1 != fread(&linear_hash->records_per_bucket, sizeof(linear_hash->records_per_bucket), 1, linear_hash->state)) {
 		return err_file_read_error;
 	}
 

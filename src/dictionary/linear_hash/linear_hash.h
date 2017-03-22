@@ -20,7 +20,7 @@ linear_hash_init(
 
 ion_err_t
 linear_hash_read_state(
-        linear_hash_table_t *linear_hash
+	linear_hash_table_t *linear_hash
 );
 
 ion_err_t
