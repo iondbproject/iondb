@@ -1,7 +1,5 @@
 #include "linear_hash_handler.h"
 
-/* TODO CURSOR QUERY STUFF GOES AT THE TOP OF THIS FILE (see other *_handler.c files) */
-
 void
 linear_hash_dict_init(
 	ion_dictionary_handler_t *handler
@@ -12,7 +10,7 @@ linear_hash_dict_init(
 	handler->remove				= linear_hash_dict_delete;
 	handler->delete_dictionary	= linear_hash_delete_dictionary;
 	handler->update				= linear_hash_dict_update;
-	handler->find				= linear_hash_dict_find;
+//	handler->find				= linear_hash_dict_find;
 	handler->close_dictionary	= linear_hash_close_dictionary;
 	handler->open_dictionary	= linear_hash_open_dictionary;
 }
@@ -129,9 +127,12 @@ linear_hash_close_dictionary(
 	return err_ok;
 }
 
-ion_err_t
+ion_status_t
 linear_hash_dict_find(
-	ion_dictionary_t *dictionary
+        ion_dictionary_t *dictionary
 ) {
-	return err_not_implemented;
+    ion_status_t status = ION_STATUS_INITIALIZE;
+    status.error = err_not_implemented;
+    return status;
+
 }

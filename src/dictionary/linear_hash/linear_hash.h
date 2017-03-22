@@ -86,7 +86,7 @@ linear_hash_update(
 
 ion_status_t
 linear_hash_delete(
-	ion_key_t			key,
+	ion_byte_t			*key,
 	linear_hash_table_t *linear_hash
 );
 

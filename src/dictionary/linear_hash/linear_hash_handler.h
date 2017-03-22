@@ -154,7 +154,7 @@ linear_hash_dict_update(
 
 #endif /* SKIP_LIST_HANDLER_H_ */
 
-ion_err_t
+ion_status_t
 linear_hash_dict_find(
-	ion_dictionary_t *dictionary
+		ion_dictionary_t *dictionary
 );
