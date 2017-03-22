@@ -2,14 +2,14 @@ cmake_minimum_required(VERSION 3.5)
 project(linear_hash)
 
 set(SOURCE_FILES
-    linear_hash.c
-    linear_hash.h
-    linear_hash_types.h
-    linear_hash_handler.c
+        linear_hash.c
+        linear_hash.h
+        linear_hash_types.h
+        linear_hash_handler.c
         linear_hash_handler.h
-    ../dictionary.h
-    ../dictionary.c
-    ../dictionary_types.h
+        ../dictionary.h
+        ../dictionary.c
+        ../dictionary_types.h
         ../../key_value/kv_system.h)
 
 if(USE_ARDUINO)
@@ -18,17 +18,18 @@ if(USE_ARDUINO)
     set(${PROJECT_NAME}_MANUAL      ${MANUAL})
 
     set(${PROJECT_NAME}_SRCS
-        ${SOURCE_FILES}
-        ../../file/kv_stdio_intercept.h
-        ../../file/SD_stdio_c_iface.h
-        ../../file/SD_stdio_c_iface.cpp)
+            ${SOURCE_FILES}
+            ../../file/kv_stdio_intercept.h
+            ../../file/SD_stdio_c_iface.h
+            ../../file/SD_stdio_c_iface.cpp)
 
-#    if(DEBUG)
-        set(${PROJECT_NAME}_SRCS
+    #    if(DEBUG)
+    set(${PROJECT_NAME}_SRCS
+            "${${PROJECT_NAME}_SRCS}"
             ../../serial/printf_redirect.h
             ../../serial/serial_c_iface.h
             ../../serial/serial_c_iface.cpp)
-#    endif()
+    #    endif()
 
     generate_arduino_library(${PROJECT_NAME})
 else()

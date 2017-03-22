@@ -156,5 +156,5 @@ linear_hash_dict_update(
 
 ion_status_t
 linear_hash_dict_find(
-		ion_dictionary_t *dictionary
+	ion_dictionary_t *dictionary
 );

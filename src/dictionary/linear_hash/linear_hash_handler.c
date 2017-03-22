@@ -10,7 +10,7 @@ linear_hash_dict_init(
 	handler->remove				= linear_hash_dict_delete;
 	handler->delete_dictionary	= linear_hash_delete_dictionary;
 	handler->update				= linear_hash_dict_update;
-//	handler->find				= linear_hash_dict_find;
+/*	handler->find				= linear_hash_dict_find; */
 	handler->close_dictionary	= linear_hash_close_dictionary;
 	handler->open_dictionary	= linear_hash_open_dictionary;
 }
@@ -70,7 +70,7 @@ linear_hash_create_dictionary(
 
 	initial_size					= 2;
 	split_threshold					= 85;
-	records_per_bucket				= 4;
+	records_per_bucket				= 20;
 
 	/* TODO Should we handle the possible error code returned by this? If yes, what sorts of errors does it return? */
 	ion_err_t result = linear_hash_init(id, dictionary_size, key_type, key_size, value_size, initial_size, split_threshold, records_per_bucket, (linear_hash_table_t *) dictionary->instance);
@@ -129,10 +129,10 @@ linear_hash_close_dictionary(
 
 ion_status_t
 linear_hash_dict_find(
-        ion_dictionary_t *dictionary
+	ion_dictionary_t *dictionary
 ) {
-    ion_status_t status = ION_STATUS_INITIALIZE;
-    status.error = err_not_implemented;
-    return status;
-
+	ion_status_t status = ION_STATUS_INITIALIZE;
+    UNUSED(dictionary);
+	status.error = err_not_implemented;
+	return status;
 }
