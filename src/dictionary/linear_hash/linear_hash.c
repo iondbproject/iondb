@@ -1,5 +1,4 @@
 #include "linear_hash.h"
-#include "../../key_value/kv_system.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -65,9 +64,6 @@ linear_hash_init(
 	linear_hash->next_split			= 0;
 	linear_hash->split_threshold	= split_threshold;
 	linear_hash->records_per_bucket = records_per_bucket;
-
-	/* current offset pointed to in the datafile */
-	linear_hash->data_pointer		= ftell(linear_hash->database);
 
 	/* mapping of buckets to file offsets */
 	array_list_t *bucket_map;

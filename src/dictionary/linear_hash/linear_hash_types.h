@@ -46,9 +46,6 @@ typedef struct {
 	FILE					*database;
 	FILE					*state;
 
-	/* points to the current location in the data */
-	ion_fpos_t				data_pointer;
-
 	/* maps the location of the head of the linked list of buckets corresponding to its index */
 	array_list_t			*bucket_map;
 } linear_hash_table_t;

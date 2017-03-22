@@ -131,7 +131,7 @@ linear_hash_close_dictionary(
 
 ion_err_t
 linear_hash_dict_find(
-        ion_dictionary_t *dictionary
+	ion_dictionary_t *dictionary
 ) {
-    return err_not_implemented;
+	return err_not_implemented;
 }
