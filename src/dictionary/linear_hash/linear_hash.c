@@ -17,12 +17,23 @@ linear_hash_init(
 	int						records_per_bucket,
 	linear_hash_table_t		*linear_hash
 ) {
+	// err
+	ion_err_t err;
+
 	/* parameter not used */
 	linear_hash->super.id					= id;
 	linear_hash->dictionary_size			= dictionary_size;
 	linear_hash->super.key_type				= key_type;
 	linear_hash->super.record.key_size		= key_size;
 	linear_hash->super.record.value_size	= value_size;
+
+	/* initialize linear_hash fields */
+	linear_hash->initial_size		= initial_size;
+	linear_hash->num_buckets		= initial_size;
+	linear_hash->num_records		= 0;
+	linear_hash->next_split			= 0;
+	linear_hash->split_threshold	= split_threshold;
+	linear_hash->records_per_bucket = records_per_bucket;
 
 	char data_filename[ION_MAX_FILENAME_LENGTH];
 
@@ -31,6 +42,28 @@ linear_hash_init(
 	char state_filename[ION_MAX_FILENAME_LENGTH];
 
 	dictionary_get_filename(linear_hash->super.id, "lhs", state_filename);
+
+
+	/* mapping of buckets to file offsets */
+	array_list_t *bucket_map;
+
+	bucket_map = malloc(sizeof(array_list_t));
+
+	if (NULL == bucket_map) {
+		// clean up resources before returning if out of memory
+		linear_hash_close(linear_hash);
+		return err_out_of_memory;
+	}
+
+	err = array_list_init(5, bucket_map);
+
+	if(err != err_ok) {
+		// clean up resources before returning if out of memory
+		linear_hash_close(linear_hash);
+		return err;
+	}
+
+	linear_hash->bucket_map = bucket_map;
 
 	/* open datafile */
 	linear_hash->database = fopen(data_filename, "r+b");
@@ -43,6 +76,18 @@ linear_hash_init(
 			/* Failed to open, even to create */
 			return err_file_open_error;
 		}
+
+		int i;
+
+		/* write out initial buckets */
+		for (i = 0; i < linear_hash->initial_size; i++) {
+			err = write_new_bucket(i, linear_hash);
+
+			if (err != err_ok) {
+				linear_hash_close(linear_hash);
+				return err;
+			}
+		}
 	}
 
 	linear_hash->state = fopen(state_filename, "r+b");
@@ -54,39 +99,6 @@ linear_hash_init(
 		if (NULL == linear_hash->state) {
 			/* Failed to open, even to create */
 			return err_file_open_error;
-		}
-	}
-
-	/* initialize linear_hash fields */
-	linear_hash->initial_size		= initial_size;
-	linear_hash->num_buckets		= initial_size;
-	linear_hash->num_records		= 0;
-	linear_hash->next_split			= 0;
-	linear_hash->split_threshold	= split_threshold;
-	linear_hash->records_per_bucket = records_per_bucket;
-
-	/* mapping of buckets to file offsets */
-	array_list_t *bucket_map;
-
-	bucket_map = malloc(sizeof(array_list_t));
-
-	if (NULL == bucket_map) {
-		return err_out_of_memory;
-	}
-
-	array_list_init(5, bucket_map);
-	linear_hash->bucket_map = bucket_map;
-
-	int i;
-
-	ion_err_t err;
-
-	/* write out initial buckets */
-	for (i = 0; i < linear_hash->initial_size; i++) {
-		err = write_new_bucket(i, linear_hash);
-
-		if (err != err_ok) {
-			return err;
 		}
 	}
 
