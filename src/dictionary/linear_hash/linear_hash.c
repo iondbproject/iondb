@@ -17,7 +17,7 @@ linear_hash_init(
 	int						records_per_bucket,
 	linear_hash_table_t		*linear_hash
 ) {
-	// err
+	/* err */
 	ion_err_t err;
 
 	/* parameter not used */
@@ -28,12 +28,12 @@ linear_hash_init(
 	linear_hash->super.record.value_size	= value_size;
 
 	/* initialize linear_hash fields */
-	linear_hash->initial_size		= initial_size;
-	linear_hash->num_buckets		= initial_size;
-	linear_hash->num_records		= 0;
-	linear_hash->next_split			= 0;
-	linear_hash->split_threshold	= split_threshold;
-	linear_hash->records_per_bucket = records_per_bucket;
+	linear_hash->initial_size				= initial_size;
+	linear_hash->num_buckets				= initial_size;
+	linear_hash->num_records				= 0;
+	linear_hash->next_split					= 0;
+	linear_hash->split_threshold			= split_threshold;
+	linear_hash->records_per_bucket			= records_per_bucket;
 
 	char data_filename[ION_MAX_FILENAME_LENGTH];
 
@@ -43,22 +43,21 @@ linear_hash_init(
 
 	dictionary_get_filename(linear_hash->super.id, "lhs", state_filename);
 
-
 	/* mapping of buckets to file offsets */
 	array_list_t *bucket_map;
 
 	bucket_map = malloc(sizeof(array_list_t));
 
 	if (NULL == bucket_map) {
-		// clean up resources before returning if out of memory
+		/* clean up resources before returning if out of memory */
 		linear_hash_close(linear_hash);
 		return err_out_of_memory;
 	}
 
 	err = array_list_init(5, bucket_map);
 
-	if(err != err_ok) {
-		// clean up resources before returning if out of memory
+	if (err != err_ok) {
+		/* clean up resources before returning if out of memory */
 		linear_hash_close(linear_hash);
 		return err;
 	}
@@ -66,7 +65,7 @@ linear_hash_init(
 	linear_hash->bucket_map = bucket_map;
 
 	/* open datafile */
-	linear_hash->database = fopen(data_filename, "r+b");
+	linear_hash->database	= fopen(data_filename, "r+b");
 
 	if (NULL == linear_hash->database) {
 		/* The file did not exist - lets open to write */
@@ -99,6 +98,12 @@ linear_hash_init(
 		if (NULL == linear_hash->state) {
 			/* Failed to open, even to create */
 			return err_file_open_error;
+		}
+	} else {
+		// read linear_hash state in associated lhs file
+		err = linear_hash_read_state(linear_hash);
+		if (err != err_ok) {
+			return err;
 		}
 	}
 
@@ -139,6 +144,41 @@ linear_hash_write_state(
 
 	if (1 != fwrite(&(linear_hash->records_per_bucket), sizeof(linear_hash->records_per_bucket), 1, linear_hash->state)) {
 		return err_file_write_error;
+	}
+
+	return err_ok;
+}
+
+ion_err_t
+linear_hash_read_state(
+		linear_hash_table_t *linear_hash
+) {
+	if(0 != fseek(linear_hash->state, 0, SEEK_SET)) {
+		return err_file_bad_seek;
+	}
+
+	if (1 != fread(&(linear_hash->initial_size), sizeof(linear_hash->initial_size), 1, linear_hash->state)) {
+		return err_file_read_error;
+	}
+
+	if (1 != fread(&(linear_hash->next_split), sizeof(linear_hash->next_split), 1, linear_hash->state)) {
+		return err_file_read_error;
+	}
+
+	if (1 != fread(&(linear_hash->split_threshold), sizeof(linear_hash->split_threshold), 1, linear_hash->state)) {
+		return err_file_read_error;
+	}
+
+	if (1 != fread(&(linear_hash->num_buckets), sizeof(linear_hash->num_buckets), 1, linear_hash->state)) {
+		return err_file_read_error;
+	}
+
+	if (1 != fread(&(linear_hash->num_records), sizeof(linear_hash->num_records), 1, linear_hash->state)) {
+		return err_file_read_error;
+	}
+
+	if (1 != fread(&(linear_hash->records_per_bucket), sizeof(linear_hash->records_per_bucket), 1, linear_hash->state)) {
+		return err_file_read_error;
 	}
 
 	return err_ok;
