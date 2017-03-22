@@ -1125,6 +1125,14 @@ unsigned long
 hash(
 	unsigned long key_bytes_value
 ) {
+	/* Hash for string */
+/*	uint32_t hash = 5381; */
+/*	int8_t c; */
+/*  */
+/*	while ((c = *str++)) */
+/*	{ */
+/*		hash = (uint32_t)((hash << 5) + hash) ^ c; / * hash * 33 ^ c * / */
+/*	} */
 	return key_bytes_value * 2654435761 % (unsigned long) pow(2, 32);
 }
 

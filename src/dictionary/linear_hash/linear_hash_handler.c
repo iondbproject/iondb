@@ -70,7 +70,7 @@ linear_hash_create_dictionary(
 
 	dictionary->instance->compare	= compare;
 
-	initial_size					= 5;
+	initial_size					= 2;
 	split_threshold					= 85;
 	records_per_bucket				= 4;
 

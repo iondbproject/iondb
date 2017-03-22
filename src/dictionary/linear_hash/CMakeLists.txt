@@ -25,7 +25,6 @@ if(USE_ARDUINO)
 
 #    if(DEBUG)
         set(${PROJECT_NAME}_SRCS
-            "${${PROJECT_NAME}_SRCS}"
             ../../serial/printf_redirect.h
             ../../serial/serial_c_iface.h
             ../../serial/serial_c_iface.cpp)
