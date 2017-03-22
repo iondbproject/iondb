@@ -12,7 +12,7 @@ linear_hash_dict_init(
 	handler->remove				= linear_hash_dict_delete;
 	handler->delete_dictionary	= linear_hash_delete_dictionary;
 	handler->update				= linear_hash_dict_update;
-	/* handler->find				= linear_hash_find; */
+	handler->find				= linear_hash_dict_find;
 	handler->close_dictionary	= linear_hash_close_dictionary;
 	handler->open_dictionary	= linear_hash_open_dictionary;
 }
@@ -127,4 +127,11 @@ linear_hash_close_dictionary(
 	}
 
 	return err_ok;
+}
+
+ion_err_t
+linear_hash_dict_find(
+        ion_dictionary_t *dictionary
+) {
+    return err_not_implemented;
 }
