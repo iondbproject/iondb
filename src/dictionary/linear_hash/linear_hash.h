@@ -132,7 +132,7 @@ linear_hash_get_bucket(
 ion_err_t
 linear_hash_update_bucket(
 	ion_fpos_t				bucket_loc,
-	linear_hash_bucket_t	bucket,
+	linear_hash_bucket_t	*bucket,
 	linear_hash_table_t		*linear_hash
 );
 
