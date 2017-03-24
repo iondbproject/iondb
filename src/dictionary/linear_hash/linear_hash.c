@@ -76,8 +76,10 @@ linear_hash_init(
 		}
 	}
 
-	linear_hash->state	= fopen(state_filename, "w+b");
-	err					= linear_hash_write_state(linear_hash);
+	linear_hash->swap_bucket_loc	= array_list_get(0, linear_hash->bucket_map);
+
+	linear_hash->state				= fopen(state_filename, "w+b");
+	err								= linear_hash_write_state(linear_hash);
 
 	if (err != err_ok) {
 		return err;
@@ -414,7 +416,7 @@ invalidate_buffer_records(
 	ion_byte_t			*records,
 	linear_hash_table_t *linear_hash
 ) {
-	//TODO IMPLEMENT PROPER ERROR HANDLING
+	/* TODO IMPLEMENT PROPER ERROR HANDLING */
 	/* buffers for reading records */
 	ion_byte_t	*record_key			= alloca(linear_hash->super.record.key_size);
 	ion_byte_t	record_status;
@@ -437,6 +439,7 @@ invalidate_buffer_records(
 
 		record_offset += record_total_size;
 	}
+
 	return err_ok;
 }
 
@@ -452,6 +455,45 @@ linear_hash_above_threshold(
 	int above_threshold = (load > linear_hash->split_threshold);
 
 	return above_threshold;
+}
+
+ion_err_t
+linear_hash_get_bucket_swap_record(
+	int					bucket_idx,
+	ion_fpos_t			*record_loc,
+	ion_byte_t			*key,
+	ion_byte_t			*value,
+	ion_byte_t			*status,
+	linear_hash_table_t *linear_hash
+) {
+	/* read in bucket currently swapping to obtain the last record */
+	ion_fpos_t bucket_loc = array_list_get(bucket_idx, linear_hash->bucket_map);
+
+	linear_hash_bucket_t bucket;
+
+	linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
+
+	ion_fpos_t	record_total_size	= linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(ion_byte_t);
+	ion_fpos_t	swap_record_loc		= bucket_loc + sizeof(linear_hash_bucket_t) + ((bucket.record_count - 1) * record_total_size);
+
+	/* read in the record to swap with next */
+	ion_err_t err					= linear_hash_get_record(swap_record_loc, key, value, status, linear_hash);
+
+	if (err != err_ok) {
+		return err;
+	}
+
+	ion_byte_t deleted_status = 0;
+
+	err = linear_hash_write_record(swap_record_loc, key, value, &deleted_status, linear_hash);
+
+	if (err != err_ok) {
+		return err;
+	}
+
+	*record_loc = swap_record_loc;
+
+	return err;
 }
 
 /* TODO it may not be necesarry to copy the key to a location */
@@ -521,41 +563,19 @@ linear_hash_insert(
 				return status;
 			}
 
-			bucket.anchor_record = overflow_anchor_record_loc;
-			record_loc = bucket.anchor_record;
-			bucket_loc = *overflow_location;
-			status.error = linear_hash_update_bucket(*overflow_location, &bucket, linear_hash);
+			bucket.anchor_record	= overflow_anchor_record_loc;
+			record_loc				= bucket.anchor_record;
+			bucket_loc				= *overflow_location;
+			status.error			= linear_hash_update_bucket(*overflow_location, &bucket, linear_hash);
 
 			if (status.error != err_ok) {
 				return status;
 			}
 		}
-			/* case there is >= 1 record in the bucket but it is not full */
+		/* case there is >= 1 record in the bucket but it is not full */
 		else {
 			/* create a linear_hash_record with the desired key, value, and status of full*/
-			ion_fpos_t scanner_bucket_loc = bucket_loc;
-			ion_boolean_t found = boolean_false;
-
-			while (bucket.overflow_location != -1) {
-				if (bucket.record_count < linear_hash->records_per_bucket) {
-					record_loc = scanner_bucket_loc + sizeof(linear_hash_bucket_t) +
-								 (bucket.record_count * record_total_size);
-					bucket_loc = scanner_bucket_loc;
-					found = boolean_true;
-					break;
-				}
-
-				scanner_bucket_loc = bucket.overflow_location;
-				status.error = linear_hash_get_bucket(scanner_bucket_loc, &bucket, linear_hash);
-			}
-
-			if(found == boolean_false) {
-				if (bucket.record_count < linear_hash->records_per_bucket) {
-					record_loc = scanner_bucket_loc + sizeof(linear_hash_bucket_t) +
-								 (bucket.record_count * record_total_size);
-					bucket_loc = scanner_bucket_loc;
-				}
-			}
+			record_loc = bucket_loc + sizeof(linear_hash_bucket_t) + bucket.record_count * record_total_size;
 		}
 	}
 
@@ -841,43 +861,16 @@ linear_hash_delete(
 			if (record_status != 0) {
 				if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
 					/* TODO Create wrapper methods and implement proper error propagation */
-					/* read the terminal record of the bucket: */
-					memcpy(&terminal_record_status, records + ((bucket.record_count - 1) * record_total_size), sizeof(ion_byte_t));
-					memcpy(terminal_record_key, records + ((bucket.record_count - 1) * record_total_size) + sizeof(ion_byte_t), linear_hash->super.record.key_size);
-					memcpy(terminal_record_value, records + ((bucket.record_count - 1) * record_total_size) + sizeof(ion_byte_t) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);
+					/* store the record_loc in a write back paramter that is used before being overwritten */
+					ion_fpos_t swap_record_loc = record_loc;
 
-					if(bucket.record_count == 1 || i == bucket.record_count - 1) {
-						record_status = 0;
-						status.error			= linear_hash_write_record(record_loc, record_key, record_value, &record_status, linear_hash);
-					}
+					/* obtain the swap record */
+					linear_hash_get_bucket_swap_record(bucket_idx, &swap_record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
 
-					/* if terminal record going to be deleted anyways */
-					else if (linear_hash->super.compare(terminal_record_key, key, linear_hash->super.record.key_size) == 0) {
-						/* invalidate terminal record in the buffer and datafile */
-						terminal_record_status	= 0;
-						memcpy(records + ((bucket.record_count - 1) * record_total_size), &terminal_record_status, sizeof(ion_byte_t));
-						status.error			= linear_hash_write_record(bucket_loc + sizeof(linear_hash_bucket_t) + ((bucket.record_count - 1) * record_total_size), terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
-						status.error			= linear_hash_write_record(record_loc, record_key, record_value, &terminal_record_status, linear_hash);
-
-						// adjusted bucket record count for deleted terminal
-						bucket.record_count--;
-						//adjust status count for deleted terminal
-						status.count++;
-						// adjust linear_hash record count for deleted terminal
-						linear_hash_decrement_num_records(linear_hash);
-					}
-
-					else {
-						/* otherwise, write terminal record to old records spot */
-						status.error			= linear_hash_write_record(record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
-
-						/* then invalidate terminal record */
-						terminal_record_status	= 0;
-						status.error			= linear_hash_write_record(bucket_loc + sizeof(linear_hash_bucket_t) + ((bucket.record_count - 1) * record_total_size), terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
-					}
-
-					if (status.error != err_ok) {
-						return status;
+					/* if we are not trying to swap a record with itself */
+					if (record_loc != swap_record_loc) {
+						/* write the swapped record to record_loc */
+						linear_hash_write_record(record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
 					}
 
 					status.count++;
@@ -917,38 +910,16 @@ linear_hash_delete(
 		if (record_status != 0) {
 			if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
 				/* TODO Create wrapper methods and implement proper error propagation */
-				/* read the terminal record of the bucket: */
-				memcpy(&terminal_record_status, records + ((bucket.record_count - 1) * record_total_size), sizeof(ion_byte_t));
-				memcpy(terminal_record_key, records + ((bucket.record_count - 1) * record_total_size) + sizeof(ion_byte_t), linear_hash->super.record.key_size);
-				memcpy(terminal_record_value, records + ((bucket.record_count - 1) * record_total_size) + sizeof(ion_byte_t) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);
+				/* store the record_loc in a write back paramter that is used before being overwritten */
+				ion_fpos_t swap_record_loc = record_loc;
 
-				if(bucket.record_count == 1 || i == bucket.record_count - 1) {
-					record_status = 0;
-					status.error			= linear_hash_write_record(record_loc, record_key, record_value, &record_status, linear_hash);
-				}
+				/* obtain the swap record */
+				linear_hash_get_bucket_swap_record(bucket_idx, &swap_record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
 
-				/* if terminal record going to be deleted anyways */
-				else if (linear_hash->super.compare(terminal_record_key, key, linear_hash->super.record.key_size) == 0) {
-					/* invalidate terminal record in the buffer and datafile */
-					terminal_record_status	= 0;
-					memcpy(records + ((bucket.record_count - 1) * record_total_size), &terminal_record_status, sizeof(ion_byte_t));
-					status.error			= linear_hash_write_record(bucket_loc + sizeof(linear_hash_bucket_t) + ((bucket.record_count - 1) * record_total_size), terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
-					status.error			= linear_hash_write_record(record_loc, record_key, record_value, &terminal_record_status, linear_hash);
-
-					// adjusted bucket record count for deleted terminal
-					bucket.record_count--;
-					//adjust status count for deleted terminal
-					status.count++;
-					// adjust linear_hash record count for deleted terminal
-					linear_hash_decrement_num_records(linear_hash);
-				}
-				else {
-					/* otherwise, write terminal record to old records spot */
-					status.error			= linear_hash_write_record(record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
-
-					/* then invalidate terminal record */
-					terminal_record_status	= 0;
-					status.error			= linear_hash_write_record(bucket_loc + sizeof(linear_hash_bucket_t) + ((bucket.record_count - 1) * record_total_size), terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
+				/* if we are not trying to swap a record with itself */
+				if (record_loc != swap_record_loc) {
+					/* write the swapped record to record_loc */
+					linear_hash_write_record(record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
 				}
 
 				if (status.error != err_ok) {
@@ -1311,7 +1282,7 @@ hash_to_bucket(
 	linear_hash_table_t *linear_hash
 ) {
 	/* Case the record we are looking for was in a bucket that has already been split and h1 was used */
-	int key_bytes_as_int = *((ion_byte_t *) key);
+	int key_bytes_as_int = *key;
 
 	return key_bytes_as_int & ((2 * linear_hash->initial_size) - 1);
 }
@@ -1322,7 +1293,7 @@ insert_hash_to_bucket(
 	ion_byte_t			*key,
 	linear_hash_table_t *linear_hash
 ) {
-	int key_bytes_as_int = *((ion_byte_t *) key);
+	int key_bytes_as_int = *key;
 
 	return key_bytes_as_int & (linear_hash->initial_size - 1);
 }
