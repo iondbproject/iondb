@@ -63,81 +63,83 @@ linear_hash_init(
 	}
 
 	linear_hash->bucket_map = bucket_map;
-    linear_hash->database = fopen(data_filename, "w+b");
-    int i;
-    for (i = 0; i < linear_hash->initial_size; i++) {
-        err = write_new_bucket(i, linear_hash);
+	linear_hash->database	= fopen(data_filename, "w+b");
 
-        if (err != err_ok) {
-            linear_hash_close(linear_hash);
-            return err;
-        }
-    }
+	int i;
 
-    linear_hash->state = fopen(state_filename, "w+b");
-    err = linear_hash_write_state(linear_hash);
+	for (i = 0; i < linear_hash->initial_size; i++) {
+		err = write_new_bucket(i, linear_hash);
 
-    if (err != err_ok) {
-        return err;
-    }
+		if (err != err_ok) {
+			linear_hash_close(linear_hash);
+			return err;
+		}
+	}
+
+	linear_hash->state	= fopen(state_filename, "w+b");
+	err					= linear_hash_write_state(linear_hash);
+
+	if (err != err_ok) {
+		return err;
+	}
 
 	/* open datafile */
-//	linear_hash->database	= fopen(data_filename, "r+b");
-//
-//	if (NULL == linear_hash->database) {
-//		/* The file did not exist - lets open to write */
-//		linear_hash->database = fopen(data_filename, "w+b");
-//
-//		if (NULL == linear_hash->database) {
-//			/* Failed to open, even to create */
-//			return err_file_open_error;
-//		}
-//
-//		int i;
-//
-//		/* write out initial buckets */
-//		for (i = 0; i < linear_hash->initial_size; i++) {
-//			err = write_new_bucket(i, linear_hash);
-//
-//			if (err != err_ok) {
-//				linear_hash_close(linear_hash);
-//				return err;
-//			}
-//		}
-//	}
-//
-//	linear_hash->state = fopen(state_filename, "r+b");
-//
-//	if (NULL == linear_hash->state) {
-//		/* The file did not exist - lets open to write */
-//		linear_hash->state = fopen(state_filename, "w+b");
-//
-//		if (NULL == linear_hash->state) {
-//			/* Failed to open, even to create */
-//			return err_file_open_error;
-//		}
-//
-//
-//        err = linear_hash_write_state(linear_hash);
-//        if (err != err_ok) {
-//            return err;
-//        }
-//    }
-//	else {
-//		/* read linear_hash state in associated lhs file */
-//		err = linear_hash_read_state(linear_hash);
-//
-//		if (err != err_ok) {
-//			return err;
-//		}
-//	}
-//
-//	err = linear_hash_write_state(linear_hash);
-//
-//	/* write the state of the linear_hash to disk */
-//	if (err != err_ok) {
-//		return err;
-//	}
+/*	linear_hash->database	= fopen(data_filename, "r+b"); */
+/*  */
+/*	if (NULL == linear_hash->database) { */
+/*		/ * The file did not exist - lets open to write * / */
+/*		linear_hash->database = fopen(data_filename, "w+b"); */
+/*  */
+/*		if (NULL == linear_hash->database) { */
+/*			/ * Failed to open, even to create * / */
+/*			return err_file_open_error; */
+/*		} */
+/*  */
+/*		int i; */
+/*  */
+/*		/ * write out initial buckets * / */
+/*		for (i = 0; i < linear_hash->initial_size; i++) { */
+/*			err = write_new_bucket(i, linear_hash); */
+/*  */
+/*			if (err != err_ok) { */
+/*				linear_hash_close(linear_hash); */
+/*				return err; */
+/*			} */
+/*		} */
+/*	} */
+/*  */
+/*	linear_hash->state = fopen(state_filename, "r+b"); */
+/*  */
+/*	if (NULL == linear_hash->state) { */
+/*		/ * The file did not exist - lets open to write * / */
+/*		linear_hash->state = fopen(state_filename, "w+b"); */
+/*  */
+/*		if (NULL == linear_hash->state) { */
+/*			/ * Failed to open, even to create * / */
+/*			return err_file_open_error; */
+/*		} */
+/*  */
+/*  */
+/*		err = linear_hash_write_state(linear_hash); */
+/*		if (err != err_ok) { */
+/*			return err; */
+/*		} */
+/*	} */
+/*	else { */
+/*		/ * read linear_hash state in associated lhs file * / */
+/*		err = linear_hash_read_state(linear_hash); */
+/*  */
+/*		if (err != err_ok) { */
+/*			return err; */
+/*		} */
+/*	} */
+/*  */
+/*	err = linear_hash_write_state(linear_hash); */
+/*  */
+/*	/ * write the state of the linear_hash to disk * / */
+/*	if (err != err_ok) { */
+/*		return err; */
+/*	} */
 
 	/* return pointer to the linear_hash that is sitting in memory */
 	return err_ok;
@@ -335,11 +337,18 @@ split(
 				if ((record_status == 1) && (insert_hash_key != split_hash_key)) {
 					status = linear_hash_delete(record_key, linear_hash);
 
+					// tombstone the status of all the records with this key currently in the buffer
+					invalidate_buffer_records(record_key, bucket.record_count, records, linear_hash);
+
+					// TODO need to invalide all in records with same id
+
 					if (status.error != err_ok) {
 						return status.error;
 					}
 
-					for (j = 0; j < status.count; j++) {
+					int num_deleted = status.count;
+
+					for (j = 0; j < num_deleted; j++) {
 						status = linear_hash_insert(record_key, record_value, hash_to_bucket(record_key, linear_hash), linear_hash);
 
 						if (status.error != err_ok) {
@@ -378,12 +387,16 @@ split(
 
 			if ((record_status == 1) && (insert_hash_key != split_hash_key)) {
 				status = linear_hash_delete(record_key, linear_hash);
+				// tombstone the status of all the records with this key currently in the buffer
+				invalidate_buffer_records(record_key, bucket.record_count, records, linear_hash);
 
 				if (status.error != err_ok) {
 					return status.error;
 				}
 
-				for (j = 0; j < status.count; j++) {
+				int num_deleted = status.count;
+
+				for (j = 0; j < num_deleted; j++) {
 					status = linear_hash_insert(record_key, record_value, hash_to_bucket(record_key, linear_hash), linear_hash);
 
 					if (status.error != err_ok) {
@@ -397,6 +410,38 @@ split(
 	}
 
 	return linear_hash_increment_next_split(linear_hash);
+}
+
+ion_err_t
+invalidate_buffer_records(
+		ion_byte_t * key,
+		int record_count,
+		ion_byte_t * records,
+		linear_hash_table_t * linear_hash
+) {
+	// buffers for reading records
+	ion_byte_t *record_key = alloca(linear_hash->super.record.key_size);
+	ion_byte_t record_status;
+	ion_byte_t tombstone_status = 0;
+	ion_fpos_t record_offset = 0;
+	ion_fpos_t	record_total_size	= linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(ion_byte_t);
+
+	// iterate over all records in the buffer
+	int i;
+	for (i = 0; i < record_count; i++) {
+		memcpy(&record_status, records + record_offset, sizeof(ion_byte_t));
+		memcpy(record_key, records + record_offset + sizeof(ion_byte_t), linear_hash->super.record.key_size);
+
+		// if record is not tombstoned and has a matching key
+		if ((record_status == 1)
+			&&	linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
+			// overwrite its status with a tombstone
+			memcpy(records + record_offset, &tombstone_status, sizeof(ion_byte_t));
+
+		}
+
+		record_offset += record_total_size;
+	}
 }
 
 int
@@ -842,15 +887,10 @@ linear_hash_delete(
 	ion_fpos_t	record_offset	= 0;
 	ion_fpos_t	record_loc;
 
-    // memory allocated to transfer the terminal records to delete location for swap on delete
-    ion_byte_t	*terminal_record_key		= alloca(linear_hash->super.record.key_size);
-    ion_byte_t	*terminal_record_value		= alloca(linear_hash->super.record.value_size);
-    ion_byte_t	terminal_record_status;
-
-    // memory allocated to transfer the terminal records to delete location for swap on delete
-    ion_byte_t	*terminal_record_key2		= alloca(linear_hash->super.record.key_size);
-    ion_byte_t	*terminal_record_value2		= alloca(linear_hash->super.record.value_size);
-    ion_byte_t	terminal_record_status2;
+	/* memory allocated to transfer the terminal records to delete location for swap on delete */
+	ion_byte_t	*terminal_record_key	= alloca(linear_hash->super.record.key_size);
+	ion_byte_t	*terminal_record_value	= alloca(linear_hash->super.record.value_size);
+	ion_byte_t	terminal_record_status;
 
 	while (bucket.overflow_location != -1) {
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
@@ -858,35 +898,35 @@ linear_hash_delete(
 		fread(records, record_total_size, linear_hash->records_per_bucket, linear_hash->database);
 
 		for (i = 0; i < linear_hash->records_per_bucket; i++) {
-            // read in record
+			/* read in record */
 			memcpy(&record_status, records + record_offset, sizeof(ion_byte_t));
 			memcpy(record_key, records + record_offset + sizeof(ion_byte_t), linear_hash->super.record.key_size);
 			memcpy(record_value, records + record_offset + sizeof(ion_byte_t) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);
 
 			if (record_status != 0) {
 				if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
-					record_status	= 0;
-					status.error	= linear_hash_write_record(record_loc, record_key, record_value, &record_status, linear_hash);
-/*
-                    // read the terminal record of the bucket:
-                    memcpy(&terminal_record_status2, records + ((bucket.record_count - 1) * record_total_size), sizeof(ion_byte_t));
-                    memcpy(terminal_record_key2, records + ((bucket.record_count - 1) * record_total_size) + sizeof(ion_byte_t), linear_hash->super.record.key_size);
-                    memcpy(terminal_record_value2, records + ((bucket.record_count - 1) * record_total_size) + sizeof(ion_byte_t) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);
+					// TODO Create wrapper methods and implement proper error propagation
+					// read the terminal record of the bucket:
+					memcpy(&terminal_record_status, records + ((bucket.record_count - 1) * record_total_size), sizeof(ion_byte_t));
+					memcpy(terminal_record_key, records + ((bucket.record_count - 1) * record_total_size) + sizeof(ion_byte_t), linear_hash->super.record.key_size);
+					memcpy(terminal_record_value, records + ((bucket.record_count - 1) * record_total_size) + sizeof(ion_byte_t) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);
 
-                    fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t) + ((bucket.record_count - 1) * record_total_size), SEEK_SET);
-                    fread(&terminal_record_status, sizeof(ion_byte_t), 1, linear_hash->database);
-                    fread(terminal_record_key, linear_hash->super.record.key_size, 1, linear_hash->database);
-                    fread(terminal_record_value,  linear_hash->super.record.value_size, 1, linear_hash->database);
+					// if terminal record going to be deleted anyways
+					if(linear_hash->super.compare(terminal_record_key, key, linear_hash->super.record.key_size) == 0) {
+						// invalidate terminal record in the buffer and datafile
+						terminal_record_status = 0;
+						memcpy(records + ((bucket.record_count - 1) * record_total_size), &terminal_record_status, sizeof(ion_byte_t));
+						status.error	= linear_hash_write_record(bucket_loc + sizeof(linear_hash_bucket_t) + ((bucket.record_count - 1) * record_total_size), terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
+					} else {
+						// otherwise, write terminal record to old records spot
+						status.error	= linear_hash_write_record(record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
 
-                    // write the terminal record to the data file
-                    status.error	= linear_hash_write_record(record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
+						// then invalidate terminal record
+						terminal_record_status = 0;
+						status.error	= linear_hash_write_record(bucket_loc + sizeof(linear_hash_bucket_t) + ((bucket.record_count - 1) * record_total_size), terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
+					}
 
-                    // invalidate the status of the previous copy of the terminal record
-                    terminal_record_status = 0;
-                    // TODO write a method that only writes to the status not all record attributes
-                    status.error	= linear_hash_write_record(bucket_loc + sizeof(linear_hash_bucket_t) + (bucket.record_count * record_total_size), terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
-*/
-                    if (status.error != err_ok) {
+					if (status.error != err_ok) {
 						return status;
 					}
 
@@ -926,27 +966,27 @@ linear_hash_delete(
 
 		if (record_status != 0) {
 			if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
-				record_status	= 0;
-				status.error	= linear_hash_write_record(record_loc, record_key, record_value, &record_status, linear_hash);
-/*
-                // read the terminal record of the bucket:
-                memcpy(&terminal_record_status2, records + ((bucket.record_count - 1) * record_total_size), sizeof(ion_byte_t));
-                memcpy(terminal_record_key2, records + ((bucket.record_count - 1) * record_total_size) + sizeof(ion_byte_t), linear_hash->super.record.key_size);
-                memcpy(terminal_record_value2, records + ((bucket.record_count - 1) * record_total_size) + sizeof(ion_byte_t) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);
+				// TODO Create wrapper methods and implement proper error propagation
+				// read the terminal record of the bucket:
+				memcpy(&terminal_record_status, records + ((bucket.record_count - 1) * record_total_size), sizeof(ion_byte_t));
+				memcpy(terminal_record_key, records + ((bucket.record_count - 1) * record_total_size) + sizeof(ion_byte_t), linear_hash->super.record.key_size);
+				memcpy(terminal_record_value, records + ((bucket.record_count - 1) * record_total_size) + sizeof(ion_byte_t) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);
 
-                fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t) + (bucket.record_count * record_total_size), SEEK_SET);
-                fread(&terminal_record_status, sizeof(ion_byte_t), 1, linear_hash->database);
-                fread(terminal_record_key, linear_hash->super.record.key_size, 1, linear_hash->database);
-                fread(terminal_record_value,  linear_hash->super.record.value_size, 1, linear_hash->database);
+				// if terminal record going to be deleted anyways
+				if(linear_hash->super.compare(terminal_record_key, key, linear_hash->super.record.key_size) == 0) {
+					// invalidate terminal record in the buffer and datafile
+					terminal_record_status = 0;
+					memcpy(records + ((bucket.record_count - 1) * record_total_size), &terminal_record_status, sizeof(ion_byte_t));
+					status.error	= linear_hash_write_record(bucket_loc + sizeof(linear_hash_bucket_t) + ((bucket.record_count - 1) * record_total_size), terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
+				} else {
+					// otherwise, write terminal record to old records spot
+					status.error	= linear_hash_write_record(record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
 
-                // write the terminal record to the data file
-                status.error	= linear_hash_write_record(record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
-
-                // invalidate the status of the previous copy of the terminal record
-                terminal_record_status = 0;
-                // TODO write a method that only writes to the status not all record attributes
-                status.error	= linear_hash_write_record(bucket_loc + sizeof(linear_hash_bucket_t) + ((bucket.record_count - 1) * record_total_size), terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
-*/
+					// then invalidate terminal record
+					terminal_record_status = 0;
+					status.error	= linear_hash_write_record(bucket_loc + sizeof(linear_hash_bucket_t) + ((bucket.record_count - 1) * record_total_size), terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
+				}
+				
 				if (status.error != err_ok) {
 					return status;
 				}
@@ -1080,17 +1120,17 @@ write_new_bucket(
 		return err_file_incomplete_write;
 	}
 
-    if (1 != fwrite(&bucket.record_count, sizeof(int), 1, linear_hash->database)) {
-        return err_file_incomplete_write;
-    }
+	if (1 != fwrite(&bucket.record_count, sizeof(int), 1, linear_hash->database)) {
+		return err_file_incomplete_write;
+	}
 
-    if (1 != fwrite(&bucket.anchor_record, sizeof(ion_fpos_t), 1, linear_hash->database)) {
-        return err_file_incomplete_write;
-    }
+	if (1 != fwrite(&bucket.anchor_record, sizeof(ion_fpos_t), 1, linear_hash->database)) {
+		return err_file_incomplete_write;
+	}
 
-    if (1 != fwrite(&bucket.overflow_location, sizeof(ion_fpos_t), 1, linear_hash->database)) {
-        return err_file_incomplete_write;
-    }
+	if (1 != fwrite(&bucket.overflow_location, sizeof(ion_fpos_t), 1, linear_hash->database)) {
+		return err_file_incomplete_write;
+	}
 
 	/* write bucket data to file */
 	ion_byte_t	record_status = 0;
@@ -1138,21 +1178,21 @@ linear_hash_get_bucket(
 		return err_file_bad_seek;
 	}
 
-    if (1 != fread(&bucket->idx, sizeof(int), 1, linear_hash->database)) {
-        return err_file_read_error;
-    }
+	if (1 != fread(&bucket->idx, sizeof(int), 1, linear_hash->database)) {
+		return err_file_read_error;
+	}
 
-    if (1 != fread(&bucket->record_count, sizeof(int), 1, linear_hash->database)) {
-        return err_file_read_error;
-    }
+	if (1 != fread(&bucket->record_count, sizeof(int), 1, linear_hash->database)) {
+		return err_file_read_error;
+	}
 
-    if (1 != fread(&bucket->anchor_record, sizeof(ion_fpos_t), 1, linear_hash->database)) {
-        return err_file_read_error;
-    }
+	if (1 != fread(&bucket->anchor_record, sizeof(ion_fpos_t), 1, linear_hash->database)) {
+		return err_file_read_error;
+	}
 
-    if (1 != fread(&bucket->overflow_location, sizeof(ion_fpos_t), 1, linear_hash->database)) {
-        return err_file_read_error;
-    }
+	if (1 != fread(&bucket->overflow_location, sizeof(ion_fpos_t), 1, linear_hash->database)) {
+		return err_file_read_error;
+	}
 
 	return err_ok;
 }
@@ -1165,30 +1205,32 @@ linear_hash_update_bucket(
 ) {
 	/* check the file is open */
 	if (NULL == linear_hash->database) {
-        return err_file_open_error;
-    }
+		return err_file_open_error;
+	}
 
 	/* seek to end of file to append new bucket */
 	if (0 != fseek(linear_hash->database, bucket_loc, SEEK_SET)) {
 		return err_file_bad_seek;
 	}
-    fseek(linear_hash->database, bucket_loc, SEEK_SET);
-    /* write bucket data to file */
-    if (1 != fwrite(&bucket->idx, sizeof(int), 1, linear_hash->database)) {
-        return err_file_incomplete_write;
-    }
 
-    if (1 != fwrite(&bucket->record_count, sizeof(int), 1, linear_hash->database)) {
-        return err_file_incomplete_write;
-    }
+	fseek(linear_hash->database, bucket_loc, SEEK_SET);
 
-    if (1 != fwrite(&bucket->anchor_record, sizeof(ion_fpos_t), 1, linear_hash->database)) {
-        return err_file_incomplete_write;
-    }
+	/* write bucket data to file */
+	if (1 != fwrite(&bucket->idx, sizeof(int), 1, linear_hash->database)) {
+		return err_file_incomplete_write;
+	}
 
-    if (1 != fwrite(&bucket->overflow_location, sizeof(ion_fpos_t), 1, linear_hash->database)) {
-        return err_file_incomplete_write;
-    }
+	if (1 != fwrite(&bucket->record_count, sizeof(int), 1, linear_hash->database)) {
+		return err_file_incomplete_write;
+	}
+
+	if (1 != fwrite(&bucket->anchor_record, sizeof(ion_fpos_t), 1, linear_hash->database)) {
+		return err_file_incomplete_write;
+	}
+
+	if (1 != fwrite(&bucket->overflow_location, sizeof(ion_fpos_t), 1, linear_hash->database)) {
+		return err_file_incomplete_write;
+	}
 
 	return err_ok;
 }
@@ -1225,21 +1267,21 @@ create_overflow_bucket(
 	}
 
 	/* write to file */
-    if (1 != fwrite(&bucket.idx, sizeof(int), 1, linear_hash->database)) {
-        return err_file_incomplete_write;
-    }
+	if (1 != fwrite(&bucket.idx, sizeof(int), 1, linear_hash->database)) {
+		return err_file_incomplete_write;
+	}
 
-    if (1 != fwrite(&bucket.record_count, sizeof(int), 1, linear_hash->database)) {
-        return err_file_incomplete_write;
-    }
+	if (1 != fwrite(&bucket.record_count, sizeof(int), 1, linear_hash->database)) {
+		return err_file_incomplete_write;
+	}
 
-    if (1 != fwrite(&bucket.anchor_record, sizeof(ion_fpos_t), 1, linear_hash->database)) {
-        return err_file_incomplete_write;
-    }
+	if (1 != fwrite(&bucket.anchor_record, sizeof(ion_fpos_t), 1, linear_hash->database)) {
+		return err_file_incomplete_write;
+	}
 
-    if (1 != fwrite(&bucket.overflow_location, sizeof(ion_fpos_t), 1, linear_hash->database)) {
-        return err_file_incomplete_write;
-    }
+	if (1 != fwrite(&bucket.overflow_location, sizeof(ion_fpos_t), 1, linear_hash->database)) {
+		return err_file_incomplete_write;
+	}
 
 	/* write bucket data to file */
 	ion_byte_t record_status = 0;
@@ -1536,7 +1578,7 @@ linear_hash_close(
 	linear_hash->database = NULL;
 
 	if (0 != fclose(linear_hash->state)) {
-        linear_hash_write_state(linear_hash);
+		linear_hash_write_state(linear_hash);
 		return err_file_close_error;
 	}
 
