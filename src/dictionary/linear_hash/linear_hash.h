@@ -150,10 +150,10 @@ get_bucket_records_location(
 
 ion_err_t
 invalidate_buffer_records(
-		ion_byte_t * key,
-		int record_count,
-		ion_byte_t * records,
-		linear_hash_table_t * linear_hash
+	ion_byte_t			*key,
+	int					record_count,
+	ion_byte_t			*records,
+	linear_hash_table_t *linear_hash
 );
 
 /* hash methods */
