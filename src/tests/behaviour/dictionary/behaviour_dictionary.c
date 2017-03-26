@@ -1513,8 +1513,6 @@ bhdct_run_tests(
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_exist_single);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_single);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_multiple);
-
-		/* THIS MAY BE A FAILING TEST */
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_all);
 
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_empty);

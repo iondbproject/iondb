@@ -317,7 +317,7 @@ split(
 	ion_byte_t	*records		= alloca(record_total_size * linear_hash->records_per_bucket);
 	ion_fpos_t	record_offset	= 0;
 
-	while (bucket.overflow_location != -1) {
+    while (bucket.overflow_location != -1) {
 		if (bucket.record_count > 0) {
 			fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
 			fread(records, record_total_size, linear_hash->records_per_bucket, linear_hash->database);
@@ -335,9 +335,7 @@ split(
 					status = linear_hash_delete(record_key, linear_hash);
 
 					/* tombstone the status of all the records with this key currently in the buffer */
-					invalidate_buffer_records(record_key, bucket.record_count, records, linear_hash);
-
-					/* TODO need to invalide all in records with same id */
+//					invalidate_buffer_records(record_key, bucket.record_count, records, linear_hash);
 
 					if (status.error != err_ok) {
 						return status.error;
@@ -352,7 +350,13 @@ split(
 							return status.error;
 						}
 					}
-				}
+
+                    i = -1;
+                    record_offset = -1 * record_total_size;
+                    fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
+                    fread(records, record_total_size, linear_hash->records_per_bucket, linear_hash->database);
+                    status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
+                }
 
 				/* record_loc += record_total_size; */
 				record_offset += record_total_size;
@@ -385,7 +389,7 @@ split(
 			if ((record_status == 1) && (insert_hash_key != split_hash_key)) {
 				status = linear_hash_delete(record_key, linear_hash);
 				/* tombstone the status of all the records with this key currently in the buffer */
-				invalidate_buffer_records(record_key, bucket.record_count, records, linear_hash);
+	//			invalidate_buffer_records(record_key, bucket.record_count, records, linear_hash);
 
 				if (status.error != err_ok) {
 					return status.error;
@@ -400,7 +404,12 @@ split(
 						return status.error;
 					}
 				}
-			}
+                i = -1;
+                record_offset = -1 * record_total_size;
+                fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
+                fread(records, record_total_size, linear_hash->records_per_bucket, linear_hash->database);
+                status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
+            }
 
 			record_offset += record_total_size;
 		}
@@ -468,10 +477,20 @@ linear_hash_get_bucket_swap_record(
 ) {
 	/* read in bucket currently swapping to obtain the last record */
 	ion_fpos_t bucket_loc = array_list_get(bucket_idx, linear_hash->bucket_map);
-
 	linear_hash_bucket_t bucket;
 
 	linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
+
+    // tail bucket may be empty get to the first bucket with records available
+    if(bucket.record_count == 0) {
+        while(bucket.overflow_location != -1) {
+            bucket_loc = bucket.overflow_location;
+            linear_hash_get_bucket(bucket.overflow_location, &bucket, linear_hash);
+            if(bucket.record_count > 0) {
+                break;
+            }
+        }
+    }
 
 	ion_fpos_t	record_total_size	= linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(ion_byte_t);
 	ion_fpos_t	swap_record_loc		= bucket_loc + sizeof(linear_hash_bucket_t) + ((bucket.record_count - 1) * record_total_size);
@@ -492,6 +511,13 @@ linear_hash_get_bucket_swap_record(
 	}
 
 	*record_loc = swap_record_loc;
+
+    bucket.record_count--;
+    err = linear_hash_update_bucket(bucket_loc, &bucket, linear_hash);
+
+    if (err != err_ok) {
+        return err;
+    }
 
 	return err;
 }
@@ -540,6 +566,7 @@ linear_hash_insert(
 		record_loc				= bucket_records_loc;
 		bucket.anchor_record	= record_loc;
 	}
+
 	else {
 		/* Case that the bucket is full but there is not yet an overflow bucket */
 		if (linear_hash_bucket_is_full(bucket, linear_hash)) {
@@ -574,6 +601,7 @@ linear_hash_insert(
 		}
 		/* case there is >= 1 record in the bucket but it is not full */
 		else {
+
 			/* create a linear_hash_record with the desired key, value, and status of full*/
 			record_loc = bucket_loc + sizeof(linear_hash_bucket_t) + bucket.record_count * record_total_size;
 		}
@@ -866,7 +894,7 @@ linear_hash_delete(
 
 					/* obtain the swap record */
 					linear_hash_get_bucket_swap_record(bucket_idx, &swap_record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
-
+                    
 					/* if we are not trying to swap a record with itself */
 					if (record_loc != swap_record_loc) {
 						/* write the swapped record to record_loc */
@@ -874,8 +902,6 @@ linear_hash_delete(
 					}
 
 					status.count++;
-					bucket.record_count--;
-					status.error = linear_hash_update_bucket(bucket_loc, &bucket, linear_hash);
 
 					if (status.error != err_ok) {
 						return status;
@@ -927,8 +953,6 @@ linear_hash_delete(
 				}
 
 				status.count++;
-				bucket.record_count--;
-				status.error = linear_hash_update_bucket(bucket_loc, &bucket, linear_hash);
 
 				if (status.error != err_ok) {
 					return status;
