@@ -41,6 +41,7 @@ extern "C" {
 #if !defined(ARDUINO)
 #define fremove(x)	remove(x)
 #define frewind(x)	rewind(x)
+#define fdeleteall()
 #endif
 
 #define ION_USING_MASTER_TABLE	1
