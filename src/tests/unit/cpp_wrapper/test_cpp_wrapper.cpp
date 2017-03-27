@@ -1186,6 +1186,8 @@ cpp_wrapper_getsuite_2(
 void
 runalltests_cpp_wrapper(
 ) {
+	fdeleteall();
+
 	planck_unit_suite_t *suite1 = cpp_wrapper_getsuite_1();
 
 	planck_unit_run_suite(suite1);

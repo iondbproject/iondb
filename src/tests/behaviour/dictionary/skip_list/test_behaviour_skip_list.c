@@ -31,6 +31,7 @@ runalltests_behaviour_skip_list(
 	void
 ) {
 #if defined(ARDUINO)
+	fdeleteall();
 	bhdct_run_tests(sldict_init, 7, ION_BHDCT_ALL_TESTS & ~ION_BHDCT_STRING_INT);
 #else
 	bhdct_run_tests(sldict_init, 7, ION_BHDCT_ALL_TESTS);

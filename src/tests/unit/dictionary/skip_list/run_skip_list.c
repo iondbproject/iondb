@@ -13,6 +13,7 @@ int
 main(
 	void
 ) {
+	fdeleteall();
 	runalltests_skiplist();
 	runalltests_skiplist_handler();
 	return 0;

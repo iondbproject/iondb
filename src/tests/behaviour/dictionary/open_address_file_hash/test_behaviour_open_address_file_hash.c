@@ -30,5 +30,6 @@ void
 runalltests_behaviour_open_address_file_hash(
 	void
 ) {
+	fdeleteall();
 	bhdct_run_tests(oafdict_init, 200, ION_BHDCT_ALL_TESTS & ~ION_BHDCT_DUPLICATES);
 }
