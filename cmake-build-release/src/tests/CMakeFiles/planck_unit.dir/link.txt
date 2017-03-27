@@ -1,2 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libplanck_unit.a  CMakeFiles/planck_unit.dir/planckunit/src/planck_unit.c.o CMakeFiles/planck_unit.dir/planckunit/src/ion_time/ion_time.c.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libplanck_unit.a

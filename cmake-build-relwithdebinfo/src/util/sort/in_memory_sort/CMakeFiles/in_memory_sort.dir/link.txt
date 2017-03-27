@@ -1,2 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/ar qc libin_memory_sort.a  CMakeFiles/in_memory_sort.dir/in_memory_sort.c.o
-/Library/Developer/CommandLineTools/usr/bin/ranlib libin_memory_sort.a
