@@ -169,9 +169,9 @@ insert_hash_to_bucket(
 	linear_hash_table_t *linear_hash
 );
 
-unsigned long
+int
 hash(
-	unsigned long key_bytes_value
+		int key
 );
 
 /* returns the struct representing the bucket at the specified index */
@@ -257,12 +257,6 @@ void
 print_linear_hash_state(
 	linear_hash_table_t *linear_hash
 );
-
-/* linear_hash_record_t */
-/* record_iterator_next( */
-/*	linear_hash_record_iterator_t	*itr, */
-/*	linear_hash_table_t				*linear_hash */
-/* ); */
 
 ion_err_t
 linear_hash_destroy(

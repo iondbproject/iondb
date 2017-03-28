@@ -68,9 +68,9 @@ linear_hash_create_dictionary(
 
 	dictionary->instance->compare	= compare;
 
-	initial_size					= 2;
+	initial_size					= 4;
 	split_threshold					= 85;
-	records_per_bucket				= 10;
+	records_per_bucket				= 20;
 
 	/* TODO Should we handle the possible error code returned by this? If yes, what sorts of errors does it return? */
 	ion_err_t result = linear_hash_init(id, dictionary_size, key_type, key_size, value_size, initial_size, split_threshold, records_per_bucket, (linear_hash_table_t *) dictionary->instance);

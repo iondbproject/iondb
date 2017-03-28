@@ -27,7 +27,6 @@ typedef struct {
 typedef struct {
 	int			idx;
 	int			record_count;
-	ion_fpos_t	anchor_record;
 	ion_fpos_t	overflow_location;
 } linear_hash_bucket_t;
 
