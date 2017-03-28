@@ -352,11 +352,11 @@ split(
 					}
 
 					/* refresh cached data and restart iteration */
-					i				= -1;
-					record_offset	= -1 * record_total_size;
-					fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
-					fread(records, record_total_size, linear_hash->records_per_bucket, linear_hash->database);
+					fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t) + i * record_total_size, SEEK_SET);
+					fread(records + i * record_total_size, record_total_size, linear_hash->records_per_bucket, linear_hash->database);
 					status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
+                    i--;
+                    record_offset	-= record_total_size;
 				}
 
 				/* record_loc += record_total_size; */
@@ -407,11 +407,11 @@ split(
 				}
 
 				/* refresh cached data and restart iteration */
-				i				= -1;
-				record_offset	= -1 * record_total_size;
-				fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
-				fread(records, record_total_size, linear_hash->records_per_bucket, linear_hash->database);
-				status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
+                fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t) + i * record_total_size, SEEK_SET);
+                fread(records + i * record_total_size, record_total_size, linear_hash->records_per_bucket, linear_hash->database);
+                status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
+                i--;
+                record_offset	-= record_total_size;
 			}
 
 			record_offset += record_total_size;
@@ -902,13 +902,14 @@ linear_hash_delete(
 					/* obtain the swap record */
 					linear_hash_get_bucket_swap_record(bucket_idx, &swap_record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
 
-                    // delete all swap records which are going to be deleted anyways
-                    while(linear_hash->super.compare(terminal_record_key, key, linear_hash->super.record.key_size) == 0) {
-                        linear_hash_get_bucket_swap_record(bucket_idx, &swap_record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
-                        if(terminal_record_status == 0) {
-                            break;
-                        }
-                    }
+					/* delete all swap records which are going to be deleted anyways */
+					while (linear_hash->super.compare(terminal_record_key, key, linear_hash->super.record.key_size) == 0) {
+						linear_hash_get_bucket_swap_record(bucket_idx, &swap_record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
+
+						if (terminal_record_status == 0) {
+							break;
+						}
+					}
 
 					/* if we are not trying to swap a record with itself */
 					if (record_loc != swap_record_loc) {
@@ -957,13 +958,14 @@ linear_hash_delete(
 				/* obtain the swap record */
 				linear_hash_get_bucket_swap_record(bucket_idx, &swap_record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
 
-                // delete all swap records which are going to be deleted anyways
-                while(linear_hash->super.compare(terminal_record_key, key, linear_hash->super.record.key_size) == 0) {
-                    linear_hash_get_bucket_swap_record(bucket_idx, &swap_record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
-                    if(terminal_record_status == 0) {
-                        break;
-                    }
-                }
+				/* delete all swap records which are going to be deleted anyways */
+				while (linear_hash->super.compare(terminal_record_key, key, linear_hash->super.record.key_size) == 0) {
+					linear_hash_get_bucket_swap_record(bucket_idx, &swap_record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
+
+					if (terminal_record_status == 0) {
+						break;
+					}
+				}
 
 				/* if we are not trying to swap a record with itself */
 				if (record_loc != swap_record_loc) {
