@@ -171,7 +171,7 @@ insert_hash_to_bucket(
 
 int
 hash(
-		int key
+	int key
 );
 
 /* returns the struct representing the bucket at the specified index */

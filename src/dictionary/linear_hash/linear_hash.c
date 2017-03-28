@@ -351,7 +351,7 @@ split(
 						}
 					}
 
-                    // refresh cached data and restart iteration
+					/* refresh cached data and restart iteration */
 					i				= -1;
 					record_offset	= -1 * record_total_size;
 					fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
@@ -406,7 +406,7 @@ split(
 					}
 				}
 
-                // refresh cached data and restart iteration
+				/* refresh cached data and restart iteration */
 				i				= -1;
 				record_offset	= -1 * record_total_size;
 				fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
@@ -484,17 +484,17 @@ linear_hash_get_bucket_swap_record(
 
 	linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
 
-//	/* tail bucket may be empty get to the first bucket with records available THIS DOES NOT LEAVE EMPTY BUCKETS FLOATING ABOUT */
-//	if (bucket.record_count == 0) {
-//		while (bucket.overflow_location != -1) {
-//			bucket_loc = bucket.overflow_location;
-//			linear_hash_get_bucket(bucket.overflow_location, &bucket, linear_hash);
-//
-//			if (bucket.record_count > 0) {
-//				break;
-//			}
-//		}
-//	}
+/*	/ * tail bucket may be empty get to the first bucket with records available THIS DOES NOT LEAVE EMPTY BUCKETS FLOATING ABOUT * / */
+/*	if (bucket.record_count == 0) { */
+/*		while (bucket.overflow_location != -1) { */
+/*			bucket_loc = bucket.overflow_location; */
+/*			linear_hash_get_bucket(bucket.overflow_location, &bucket, linear_hash); */
+/*  */
+/*			if (bucket.record_count > 0) { */
+/*				break; */
+/*			} */
+/*		} */
+/*	} */
 
 	ion_fpos_t	record_total_size	= linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(ion_byte_t);
 	ion_fpos_t	swap_record_loc		= bucket_loc + sizeof(linear_hash_bucket_t) + ((bucket.record_count - 1) * record_total_size);
@@ -518,13 +518,13 @@ linear_hash_get_bucket_swap_record(
 
 	bucket.record_count--;
 
-    // garuntee the bucket in the bucket map has records in it - THIS LEAVES EMPTY BUCKETS FLOATING ABOUT
-    if(bucket.record_count == 0 && bucket.overflow_location != -1) {
-        array_list_insert(bucket.idx, bucket.overflow_location, linear_hash->bucket_map);
-    }
+	/* garuntee the bucket in the bucket map has records in it - THIS LEAVES EMPTY BUCKETS FLOATING ABOUT */
+	if ((bucket.record_count == 0) && (bucket.overflow_location != -1)) {
+		array_list_insert(bucket.idx, bucket.overflow_location, linear_hash->bucket_map);
+	}
 
-    // no need to update bucket when using this strategy
-    //err			= linear_hash_update_bucket(bucket_loc, &bucket, linear_hash);
+	/* no need to update bucket when using this strategy */
+	/* err			= linear_hash_update_bucket(bucket_loc, &bucket, linear_hash); */
 
 	if (err != err_ok) {
 		return err;
@@ -574,7 +574,7 @@ linear_hash_insert(
 
 	/* Case the bucket is empty */
 	if (bucket.record_count == 0) {
-		record_loc				= bucket_records_loc;
+		record_loc = bucket_records_loc;
 	}
 	else {
 		/* Case that the bucket is full but there is not yet an overflow bucket */
@@ -599,9 +599,9 @@ linear_hash_insert(
 				return status;
 			}
 
-			record_loc				= overflow_records_loc;
-			bucket_loc				= *overflow_location;
-			status.error			= linear_hash_update_bucket(*overflow_location, &bucket, linear_hash);
+			record_loc		= overflow_records_loc;
+			bucket_loc		= *overflow_location;
+			status.error	= linear_hash_update_bucket(*overflow_location, &bucket, linear_hash);
 
 			if (status.error != err_ok) {
 				return status;
@@ -902,6 +902,14 @@ linear_hash_delete(
 					/* obtain the swap record */
 					linear_hash_get_bucket_swap_record(bucket_idx, &swap_record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
 
+                    // delete all swap records which are going to be deleted anyways
+                    while(linear_hash->super.compare(terminal_record_key, key, linear_hash->super.record.key_size) == 0) {
+                        linear_hash_get_bucket_swap_record(bucket_idx, &swap_record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
+                        if(terminal_record_status == 0) {
+                            break;
+                        }
+                    }
+
 					/* if we are not trying to swap a record with itself */
 					if (record_loc != swap_record_loc) {
 						/* write the swapped record to record_loc */
@@ -948,6 +956,14 @@ linear_hash_delete(
 
 				/* obtain the swap record */
 				linear_hash_get_bucket_swap_record(bucket_idx, &swap_record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
+
+                // delete all swap records which are going to be deleted anyways
+                while(linear_hash->super.compare(terminal_record_key, key, linear_hash->super.record.key_size) == 0) {
+                    linear_hash_get_bucket_swap_record(bucket_idx, &swap_record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
+                    if(terminal_record_status == 0) {
+                        break;
+                    }
+                }
 
 				/* if we are not trying to swap a record with itself */
 				if (record_loc != swap_record_loc) {
@@ -1291,15 +1307,15 @@ bucket_idx_to_ion_fpos_t(
 
 int
 hash(
-        int key
+	int key
 ) {
-    key = ~key + (key << 15); // key = (key << 15) - key - 1;
-    key = key ^ (key >> 12);
-    key = key + (key << 2);
-    key = key ^ (key >> 4);
-    key = key * 2057;
-    key = key ^ (key >> 16);
-    return key;
+	key = ~key + (key << 15);	/* key = (key << 15) - key - 1; */
+	key = key ^ (key >> 12);
+	key = key + (key << 2);
+	key = key ^ (key >> 4);
+	key = key * 2057;
+	key = key ^ (key >> 16);
+	return key;
 }
 
 int

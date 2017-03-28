@@ -462,102 +462,104 @@ test_linear_hash_create_destroy(
 
 void
 test_linear_hash_benchmark(
-
 ) {
-    // create linear hash
-    int dictionary_size = 20;
-    int			initial_size		= 2;
-    int			split_threshold		= 85;
-    int			records_per_bucket	= 4;
-    ion_key_type_t key_type = key_type_numeric_unsigned;
-    ion_key_size_t key_size = sizeof(int);
-    ion_value_size_t value_size = sizeof(int);
-    linear_hash_table_t * linear_hash = malloc(sizeof(linear_hash_table_t));
-    ion_err_t	err					= linear_hash_init(1, dictionary_size, key_type, key_size, value_size, initial_size, split_threshold, records_per_bucket, linear_hash);
-    linear_hash->super.compare = dictionary_compare_signed_value;
+	/* create linear hash */
+	int					dictionary_size		= 20;
+	int					initial_size		= 2;
+	int					split_threshold		= 85;
+	int					records_per_bucket	= 4;
+	ion_key_type_t		key_type			= key_type_numeric_unsigned;
+	ion_key_size_t		key_size			= sizeof(int);
+	ion_value_size_t	value_size			= sizeof(int);
+	linear_hash_table_t *linear_hash		= malloc(sizeof(linear_hash_table_t));
+	ion_err_t			err					= linear_hash_init(1, dictionary_size, key_type, key_size, value_size, initial_size, split_threshold, records_per_bucket, linear_hash);
 
+	linear_hash->super.compare = dictionary_compare_signed_value;
 
-    ion_key_t key;
-    ion_value_t value;
-    int i;
-    clock_t start_clock;
-    clock_t end_clock;
-    double start;
-    double end;
-    double time_elapsed_in_seconds;
+	ion_key_t	key;
+	ion_value_t value;
+	int			i;
+	clock_t		start_clock;
+	clock_t		end_clock;
+	double		start;
+	double		end;
+	double		time_elapsed_in_seconds;
 
-    // INSERTIONS
-    printf("\nINSERTIONS\n");
-    printf("id,key,value,time_start,time_end,time_elapsed\n");
-    for(i = 10000; i > 0; i--) {
+	/* INSERTIONS */
+	printf("\nINSERTIONS\n");
+	printf("id,key,value,time_start,time_end,time_elapsed\n");
 
-        // set up variables for insertion
-        key = IONIZE(i * 13, int);
-        value = IONIZE(i * 13, int);
+	for (i = 10000; i > 0; i--) {
+		/* set up variables for insertion */
+		key			= IONIZE(i * 13, int);
+		value		= IONIZE(i * 13, int);
 
-        // start timer
-        start_clock = clock();
+		/* start timer */
+		start_clock = clock();
 
-        // revolve bucket idx
-        int bucket_idx = insert_hash_to_bucket(key, linear_hash);
-        if (bucket_idx < linear_hash->next_split) {
-            bucket_idx = hash_to_bucket(key, linear_hash);
-        }
+		/* revolve bucket idx */
+		int bucket_idx = insert_hash_to_bucket(key, linear_hash);
 
-        // insert
-        linear_hash_insert(key, value, bucket_idx, linear_hash);
+		if (bucket_idx < linear_hash->next_split) {
+			bucket_idx = hash_to_bucket(key, linear_hash);
+		}
 
-        // measure and produce output
-        end_clock = clock();
-        start = start_clock/(double)CLOCKS_PER_SEC;
-        end = end_clock/(double)CLOCKS_PER_SEC;
-        time_elapsed_in_seconds = end - start;
-        printf("%d, %d, %d, %f, %f, %f\n",-1 * (i - 10000), i * 13, i * 13, start, end, time_elapsed_in_seconds);
-    }
+		/* insert */
+		linear_hash_insert(key, value, bucket_idx, linear_hash);
 
-    printf("\nGETS\n");
-    printf("id,key,value,time_start,time_end,time_elapsed\n");
-    for(i = 10000; i > 0; i--) {
-        // set up variables for insertion
-        key = IONIZE(i * 13, int);
+		/* measure and produce output */
+		end_clock				= clock();
+		start					= start_clock / (double) CLOCKS_PER_SEC;
+		end						= end_clock / (double) CLOCKS_PER_SEC;
+		time_elapsed_in_seconds = end - start;
+		printf("%d, %d, %d, %f, %f, %f\n", -1 * (i - 10000), i * 13, i * 13, start, end, time_elapsed_in_seconds);
+	}
 
-        // start timer
-        start_clock = clock();
+	printf("\nGETS\n");
+	printf("id,key,value,time_start,time_end,time_elapsed\n");
 
-        // gets
-        linear_hash_get(key, value, linear_hash);
+	for (i = 10000; i > 0; i--) {
+		/* set up variables for insertion */
+		key			= IONIZE(i * 13, int);
 
-        // measure and produce output
-        end_clock = clock();
-        start = start_clock/(double)CLOCKS_PER_SEC;
-        end = end_clock/(double)CLOCKS_PER_SEC;
-        time_elapsed_in_seconds = end - start;
-        printf("%d, %d, %f, %f, %f\n", -1 * (i - 10000), i * 13, start, end, time_elapsed_in_seconds);
-    }
+		/* start timer */
+		start_clock = clock();
 
-    ion_status_t status = ION_STATUS_INITIALIZE;
+		/* gets */
+		linear_hash_get(key, value, linear_hash);
 
-    printf("\nDELETES\n");
-    printf("id,key,num_deleted,time_start,time_end,time_elapsed\n");
-    for(i = 10000; i > 0; i--) {
-        // set up variables for insertion
-        key = IONIZE(i * 13, int);
+		/* measure and produce output */
+		end_clock				= clock();
+		start					= start_clock / (double) CLOCKS_PER_SEC;
+		end						= end_clock / (double) CLOCKS_PER_SEC;
+		time_elapsed_in_seconds = end - start;
+		printf("%d, %d, %f, %f, %f\n", -1 * (i - 10000), i * 13, start, end, time_elapsed_in_seconds);
+	}
 
-        // start timer
-        start_clock = clock();
+	ion_status_t status = ION_STATUS_INITIALIZE;
 
-        // gets
-        status = linear_hash_delete(key, linear_hash);
+	printf("\nDELETES\n");
+	printf("id,key,num_deleted,time_start,time_end,time_elapsed\n");
 
-        // measure and produce output
-        end_clock = clock();
-        start = start_clock/(double)CLOCKS_PER_SEC;
-        end = end_clock/(double)CLOCKS_PER_SEC;
-        time_elapsed_in_seconds = end - start;
-        printf("%d, %d, %d, %f, %f, %f\n", -1 * (i - 10000), i * 13, status.count, start, end, time_elapsed_in_seconds);
-    }
+	for (i = 10000; i > 0; i--) {
+		/* set up variables for insertion */
+		key						= IONIZE(i * 13, int);
 
-    linear_hash_destroy(linear_hash);
+		/* start timer */
+		start_clock				= clock();
+
+		/* gets */
+		status					= linear_hash_delete(key, linear_hash);
+
+		/* measure and produce output */
+		end_clock				= clock();
+		start					= start_clock / (double) CLOCKS_PER_SEC;
+		end						= end_clock / (double) CLOCKS_PER_SEC;
+		time_elapsed_in_seconds = end - start;
+		printf("%d, %d, %d, %f, %f, %f\n", -1 * (i - 10000), i * 13, status.count, start, end, time_elapsed_in_seconds);
+	}
+
+	linear_hash_destroy(linear_hash);
 }
 
 planck_unit_suite_t *
