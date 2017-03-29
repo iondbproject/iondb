@@ -355,8 +355,8 @@ split(
 					fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t) + i * record_total_size, SEEK_SET);
 					fread(records + i * record_total_size, record_total_size, linear_hash->records_per_bucket, linear_hash->database);
 					status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
-                    i--;
-                    record_offset	-= record_total_size;
+					i--;
+					record_offset	-= record_total_size;
 				}
 
 				/* record_loc += record_total_size; */
@@ -407,11 +407,11 @@ split(
 				}
 
 				/* refresh cached data and restart iteration */
-                fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t) + i * record_total_size, SEEK_SET);
-                fread(records + i * record_total_size, record_total_size, linear_hash->records_per_bucket, linear_hash->database);
-                status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
-                i--;
-                record_offset	-= record_total_size;
+				fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t) + i * record_total_size, SEEK_SET);
+				fread(records + i * record_total_size, record_total_size, linear_hash->records_per_bucket, linear_hash->database);
+				status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
+				i--;
+				record_offset	-= record_total_size;
 			}
 
 			record_offset += record_total_size;
@@ -887,7 +887,7 @@ linear_hash_delete(
 		fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
 		fread(records, record_total_size, linear_hash->records_per_bucket, linear_hash->database);
 
-		for (i = 0; i < linear_hash->records_per_bucket; i++) {
+		for (i = 0; i < bucket.record_count; i++) {
 			/* read in record */
 			memcpy(&record_status, records + record_offset, sizeof(ion_byte_t));
 			memcpy(record_key, records + record_offset + sizeof(ion_byte_t), linear_hash->super.record.key_size);
@@ -944,7 +944,7 @@ linear_hash_delete(
 	fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
 	fread(records, record_total_size, linear_hash->records_per_bucket, linear_hash->database);
 
-	for (i = 0; i < linear_hash->records_per_bucket; i++) {
+	for (i = 0; i < bucket.record_count; i++) {
 		memcpy(&record_status, records + record_offset, sizeof(ion_byte_t));
 		memcpy(record_key, records + record_offset + sizeof(ion_byte_t), linear_hash->super.record.key_size);
 		memcpy(record_value, records + record_offset + sizeof(ion_byte_t) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);

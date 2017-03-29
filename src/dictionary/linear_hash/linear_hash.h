@@ -230,34 +230,6 @@ array_list_get(
 	array_list_t	*array_list
 );
 
-/* DEBUG METHODS */
-void
-print_array_list_data(
-	array_list_t *array_list
-);
-
-void
-print_all_linear_hash_index_buckets(
-	int					idx,
-	linear_hash_table_t *linear_hash
-);
-
-void
-print_linear_hash_record(
-	linear_hash_record_t record
-);
-
-void
-print_linear_hash_bucket_from_idx(
-	int					idx,
-	linear_hash_table_t *linear_hash
-);
-
-void
-print_linear_hash_state(
-	linear_hash_table_t *linear_hash
-);
-
 ion_err_t
 linear_hash_destroy(
 	linear_hash_table_t *linear_hash
