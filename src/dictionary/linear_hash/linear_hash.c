@@ -318,7 +318,9 @@ split(
 
 	int			i, j;
 	ion_byte_t	*records		= alloca(linear_hash->record_total_size * linear_hash->records_per_bucket);
-	ion_fpos_t	record_offset	= 0;
+    memset(records, 0, linear_hash->record_total_size * linear_hash->records_per_bucket);
+
+    ion_fpos_t	record_offset	= 0;
 
 	while (bucket.overflow_location != -1) {
 		if (bucket.record_count > 0) {
@@ -667,11 +669,12 @@ linear_hash_get(
 	ion_byte_t	record_status;
 
 	int found					= 0;
-
 	int i;
 
 	ion_byte_t	*records		= alloca(linear_hash->record_total_size * linear_hash->records_per_bucket);
-	ion_fpos_t	record_offset	= 0;
+    memset(records, 0, linear_hash->record_total_size * linear_hash->records_per_bucket);
+
+    ion_fpos_t	record_offset	= 0;
 
 	while (bucket.overflow_location != -1 && found == 0) {
 		fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
@@ -870,7 +873,9 @@ linear_hash_delete(
 	int i;
 
 	ion_byte_t	*records		= alloca(linear_hash->record_total_size * linear_hash->records_per_bucket);
-	ion_fpos_t	record_offset	= 0;
+    memset(records, 0, linear_hash->record_total_size * linear_hash->records_per_bucket);
+
+    ion_fpos_t	record_offset	= 0;
 	ion_fpos_t	record_loc;
 
 	/* memory allocated to transfer the terminal records to delete location for swap on delete */
@@ -1320,6 +1325,7 @@ key_bytes_to_int(
 	ion_byte_t			*key,
 	linear_hash_table_t *linear_hash
 ) {
+    UNUSED(linear_hash);
 	/*
 	int i;
 	long key_bytes_as_int = 0;
