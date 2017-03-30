@@ -1321,12 +1321,25 @@ hash(
 }
 
 int
+key_bytes_to_int(
+        ion_byte_t  * key,
+        linear_hash_table_t * linear_hash
+) {
+    int i;
+    int key_bytes_as_int = 0;
+    for(i = 0; i < linear_hash->super.record.key_size; i++) {
+        key_bytes_as_int += *(key + i);
+    }
+    return key_bytes_as_int;
+}
+
+int
 hash_to_bucket(
 	ion_byte_t			*key,
 	linear_hash_table_t *linear_hash
 ) {
 	/* Case the record we are looking for was in a bucket that has already been split and h1 was used */
-	int key_bytes_as_int = *key;
+	int key_bytes_as_int = key_bytes_to_int(key, linear_hash);
 
 	return hash(key_bytes_as_int) & ((2 * linear_hash->initial_size) - 1);
 }
@@ -1337,7 +1350,7 @@ insert_hash_to_bucket(
 	ion_byte_t			*key,
 	linear_hash_table_t *linear_hash
 ) {
-	int key_bytes_as_int = *key;
+    int key_bytes_as_int = key_bytes_to_int(key, linear_hash);
 
 	return hash(key_bytes_as_int) & (linear_hash->initial_size - 1);
 }
