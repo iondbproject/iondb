@@ -999,7 +999,7 @@ linear_hash_delete(
 
 /* returns the struct representing the bucket at the specified index */
 ion_err_t
-linear_hash_get_record(
+linear_hash_get_record_cache(
 	ion_fpos_t			loc,
 	ion_byte_t			*key,
 	ion_byte_t			*value,
@@ -1024,6 +1024,37 @@ linear_hash_get_record(
 	memcpy(value, record + sizeof(ion_byte_t) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);
 
 	return err_ok;
+}
+
+
+/* returns the struct representing the bucket at the specified index */
+ion_err_t
+linear_hash_get_record(
+        ion_fpos_t			loc,
+        ion_byte_t			*key,
+        ion_byte_t			*value,
+        ion_byte_t			*status,
+        linear_hash_table_t *linear_hash
+) {
+    /* seek to location of record in file */
+    if (0 != fseek(linear_hash->database, loc, SEEK_SET)) {
+        return err_file_bad_seek;
+    }
+
+    /* read record data elements */
+    if (1 != fread(status, sizeof(ion_byte_t), 1, linear_hash->database)) {
+        return err_file_read_error;
+    }
+
+    if (1 != fread(key, linear_hash->super.record.key_size, 1, linear_hash->database)) {
+        return err_file_read_error;
+    }
+
+    if (1 != fread(value, linear_hash->super.record.value_size, 1, linear_hash->database)) {
+        return err_file_read_error;
+    }
+
+    return err_ok;
 }
 
 ion_err_t
@@ -1128,7 +1159,7 @@ write_new_bucket(
 
 /* writes the struct representing the bucket at the location to the bucket parameter*/
 ion_err_t
-linear_hash_get_bucket(
+linear_hash_get_bucket_cache(
 	ion_fpos_t				bucket_loc,
 	linear_hash_bucket_t	*bucket,
 	linear_hash_table_t		*linear_hash
@@ -1166,6 +1197,40 @@ linear_hash_get_bucket(
 
 	return err_ok;
 }
+
+
+/* writes the struct representing the bucket at the location to the bucket parameter*/
+ion_err_t
+linear_hash_get_bucket(
+        ion_fpos_t				bucket_loc,
+        linear_hash_bucket_t	*bucket,
+        linear_hash_table_t		*linear_hash
+) {
+    /* check if file is open */
+    if (!linear_hash->database) {
+        return err_file_close_error;
+    }
+
+    /* seek to location of record in file */
+    if (0 != fseek(linear_hash->database, bucket_loc, SEEK_SET)) {
+        return err_file_bad_seek;
+    }
+
+    if (1 != fread(&bucket->idx, sizeof(int), 1, linear_hash->database)) {
+        return err_file_read_error;
+    }
+
+    if (1 != fread(&bucket->record_count, sizeof(int), 1, linear_hash->database)) {
+        return err_file_read_error;
+    }
+
+    if (1 != fread(&bucket->overflow_location, sizeof(ion_fpos_t), 1, linear_hash->database)) {
+        return err_file_read_error;
+    }
+
+    return err_ok;
+}
+
 
 ion_err_t
 linear_hash_update_bucket(
@@ -1320,7 +1385,7 @@ key_bytes_to_int(
 	ion_byte_t			*key,
 	linear_hash_table_t *linear_hash
 ) {
-    /*
+	/*
 	int i;
 	long key_bytes_as_int = 0;
 
@@ -1329,8 +1394,8 @@ key_bytes_to_int(
 	}
 
 	return key_bytes_as_int;
-    */
-    return *key;
+	*/
+	return *key;
 }
 
 int
