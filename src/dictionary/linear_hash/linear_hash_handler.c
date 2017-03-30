@@ -117,8 +117,10 @@ linear_hash_close_dictionary(
 ) {
 	ion_err_t err = linear_hash_close((linear_hash_table_t *) dictionary->instance);
 
-	free(dictionary->instance);
-	dictionary->instance = NULL;
+	if(dictionary->instance != NULL) {
+		free(dictionary->instance);
+		dictionary->instance = NULL;
+	}
 
 	if (err_ok != err) {
 		return err;
