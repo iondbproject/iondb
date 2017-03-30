@@ -1011,18 +1011,16 @@ linear_hash_get_record(
 		return err_file_bad_seek;
 	}
 
-	/* read record data elements */
-	if (1 != fread(status, sizeof(ion_byte_t), 1, linear_hash->database)) {
-		return err_file_read_error;
-	}
+    /* cache record data from file */
+    ion_byte_t * record = alloca(linear_hash->record_total_size);
+    if (1 != fread(record, linear_hash->record_total_size, 1, linear_hash->database)) {
+        return err_file_read_error;
+    }
 
-	if (1 != fread(key, linear_hash->super.record.key_size, 1, linear_hash->database)) {
-		return err_file_read_error;
-	}
-
-	if (1 != fread(value, linear_hash->super.record.value_size, 1, linear_hash->database)) {
-		return err_file_read_error;
-	}
+    /* read record data elements */
+    memcpy(status, record, sizeof(ion_byte_t));
+    memcpy(key, record + sizeof(ion_byte_t), linear_hash->super.record.key_size);
+    memcpy(value, record + sizeof(ion_byte_t) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);
 
 	return err_ok;
 }
@@ -1079,11 +1077,11 @@ write_new_bucket(
 	/* seek to end of file to append new bucket */
 	ion_fpos_t bucket_loc;
 
-    if (0 != fseek(linear_hash->database, 0, SEEK_END)) {
-        return err_file_bad_seek;
-    }
-    
-    bucket_loc = ftell(linear_hash->database);
+	if (0 != fseek(linear_hash->database, 0, SEEK_END)) {
+		return err_file_bad_seek;
+	}
+
+	bucket_loc = ftell(linear_hash->database);
 
 	/* write bucket data to file */
 	if (1 != fwrite(&bucket.idx, sizeof(int), 1, linear_hash->database)) {
@@ -1143,18 +1141,26 @@ linear_hash_get_bucket(
 	if (0 != fseek(linear_hash->database, bucket_loc, SEEK_SET)) {
 		return err_file_bad_seek;
 	}
+    /* check if file is open */
+    if (!linear_hash->database) {
+        return err_file_close_error;
+    }
 
-	if (1 != fread(&bucket->idx, sizeof(int), 1, linear_hash->database)) {
-		return err_file_read_error;
-	}
+    /* seek to location of record in file */
+    if (0 != fseek(linear_hash->database, bucket_loc, SEEK_SET)) {
+        return err_file_bad_seek;
+    }
 
-	if (1 != fread(&bucket->record_count, sizeof(int), 1, linear_hash->database)) {
-		return err_file_read_error;
-	}
+    ion_byte_t * bucket_cache = alloca(sizeof(linear_hash_bucket_t));
 
-	if (1 != fread(&bucket->overflow_location, sizeof(ion_fpos_t), 1, linear_hash->database)) {
-		return err_file_read_error;
-	}
+    if (1 != fread(bucket_cache, sizeof(linear_hash_bucket_t), 1, linear_hash->database)) {
+        return err_file_read_error;
+    }
+
+    /* read record data elements */
+    memcpy(&bucket->idx, bucket_cache, sizeof(int));
+    memcpy(&bucket->record_count, bucket_cache + sizeof(int), sizeof(int));
+    memcpy(&bucket->overflow_location, bucket_cache + 2 * sizeof(int), sizeof(ion_fpos_t));
 
 	return err_ok;
 }
