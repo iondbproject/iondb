@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define GET_BUCKET_RECORDS_LOC(bucket_loc) (bucket_loc) + sizeof(linear_hash_bucket_t)
+
 /* initialization function */
 ion_err_t
 linear_hash_init(
@@ -34,7 +36,7 @@ linear_hash_init(
 	linear_hash->next_split					= 0;
 	linear_hash->split_threshold			= split_threshold;
 	linear_hash->records_per_bucket			= records_per_bucket;
-    linear_hash->record_total_size          = key_size + value_size + sizeof(ion_byte_t);
+	linear_hash->record_total_size			= key_size + value_size + sizeof(ion_byte_t);
 
 	char data_filename[ION_MAX_FILENAME_LENGTH];
 
@@ -306,13 +308,13 @@ split(
 	}
 
 	/* stores for record data */
-	ion_byte_t	*record_key			= alloca(linear_hash->super.record.key_size);
-	ion_byte_t	*record_value		= alloca(linear_hash->super.record.value_size);
+	ion_byte_t	*record_key		= alloca(linear_hash->super.record.key_size);
+	ion_byte_t	*record_value	= alloca(linear_hash->super.record.value_size);
 	ion_byte_t	record_status;
 
-	//ion_fpos_t	linear_hash->record_total_size	= linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(ion_byte_t);
-	int			split_hash_key;
-	int			insert_hash_key;
+	/* ion_fpos_t	linear_hash->record_total_size	= linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(ion_byte_t); */
+	int split_hash_key;
+	int insert_hash_key;
 
 	int			i, j;
 	ion_byte_t	*records		= alloca(linear_hash->record_total_size * linear_hash->records_per_bucket);
@@ -496,10 +498,10 @@ linear_hash_get_bucket_swap_record(
 /*		} */
 /*	} */
 
-	ion_fpos_t	swap_record_loc		= bucket_loc + sizeof(linear_hash_bucket_t) + ((bucket.record_count - 1) * linear_hash->record_total_size);
+	ion_fpos_t swap_record_loc	= bucket_loc + sizeof(linear_hash_bucket_t) + ((bucket.record_count - 1) * linear_hash->record_total_size);
 
 	/* read in the record to swap with next */
-	ion_err_t err					= linear_hash_get_record(swap_record_loc, key, value, status, linear_hash);
+	ion_err_t err				= linear_hash_get_record(swap_record_loc, key, value, status, linear_hash);
 
 	if (err != err_ok) {
 		return err;
@@ -555,9 +557,8 @@ linear_hash_insert(
 	memcpy(record_key, key, linear_hash->super.record.key_size);
 	memcpy(record_value, value, linear_hash->super.record.value_size);
 
-
 	/* get the appropriate bucket for insertion */
-	ion_fpos_t				bucket_loc	= bucket_idx_to_ion_fpos_t(hash_bucket_idx, linear_hash);
+	ion_fpos_t				bucket_loc = bucket_idx_to_ion_fpos_t(hash_bucket_idx, linear_hash);
 	linear_hash_bucket_t	bucket;
 
 	status.error = linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
@@ -661,11 +662,11 @@ linear_hash_get(
 	}
 
 	/* create a linear_hash_record with the desired key, value, and status of full*/
-	ion_byte_t	*record_key			= alloca(linear_hash->super.record.key_size);
-	ion_byte_t	*record_value		= alloca(linear_hash->super.record.value_size);
+	ion_byte_t	*record_key		= alloca(linear_hash->super.record.key_size);
+	ion_byte_t	*record_value	= alloca(linear_hash->super.record.value_size);
 	ion_byte_t	record_status;
 
-	int found						= 0;
+	int found					= 0;
 
 	int i;
 
@@ -764,7 +765,7 @@ linear_hash_update(
 	ion_byte_t	*record_value	= alloca(linear_hash->super.record.value_size);
 	ion_byte_t	record_status;
 
-	ion_fpos_t	record_loc;
+	ion_fpos_t record_loc;
 
 	int i;
 
@@ -862,8 +863,8 @@ linear_hash_delete(
 	}
 
 	/* create a linear_hash_record with the desired key, value, and status of full*/
-	ion_byte_t	*record_key			= alloca(linear_hash->super.record.key_size);
-	ion_byte_t	*record_value		= alloca(linear_hash->super.record.value_size);
+	ion_byte_t	*record_key		= alloca(linear_hash->super.record.key_size);
+	ion_byte_t	*record_value	= alloca(linear_hash->super.record.value_size);
 	ion_byte_t	record_status;
 
 	int i;
@@ -1078,20 +1079,11 @@ write_new_bucket(
 	/* seek to end of file to append new bucket */
 	ion_fpos_t bucket_loc;
 
-	if (idx == 0) {
-		if (0 != fseek(linear_hash->database, 0, SEEK_SET)) {
-			return err_file_bad_seek;
-		}
-
-		bucket_loc = 0;
-	}
-	else {
-		if (0 != fseek(linear_hash->database, 0, SEEK_END)) {
-			return err_file_bad_seek;
-		}
-
-		bucket_loc = ftell(linear_hash->database);
-	}
+    if (0 != fseek(linear_hash->database, 0, SEEK_END)) {
+        return err_file_bad_seek;
+    }
+    
+    bucket_loc = ftell(linear_hash->database);
 
 	/* write bucket data to file */
 	if (1 != fwrite(&bucket.idx, sizeof(int), 1, linear_hash->database)) {
@@ -1201,7 +1193,7 @@ linear_hash_update_bucket(
 	return err_ok;
 }
 
-ion_fpos_t
+ion_err_t
 create_overflow_bucket(
 	int					bucket_idx,
 	ion_fpos_t			*overflow_loc,

@@ -136,7 +136,7 @@ linear_hash_update_bucket(
 	linear_hash_table_t		*linear_hash
 );
 
-ion_fpos_t
+ion_err_t
 create_overflow_bucket(
 	int					bucket_idx,
 	ion_fpos_t			*overflow_location,
