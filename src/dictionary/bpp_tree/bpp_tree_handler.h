@@ -21,8 +21,8 @@ extern "C" {
 
 typedef struct bplusplustree {
 	ion_dictionary_parent_t super;
-	ion_bpp_handle_t		tree;
-	ion_lfb_t				values;
+	/*ion_bpp_handle_t*/ion_bpp*		tree;
+	/*ion_lfb_t				values;*/ //OLD
 } ion_bpptree_t;
 
 typedef struct {

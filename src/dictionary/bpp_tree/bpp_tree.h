@@ -7,262 +7,71 @@ extern "C" {
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdarg.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdbool.h>
+/*
+#include <stdarg.h>
 #include "../../key_value/kv_system.h"
 #include "./../dictionary.h"
 #include "./../../file/ion_file.h"
-
-/****************************
- * implementation dependent *
- ****************************/
-typedef long	ion_bpp_external_address_t;		/* record address for external record */
-typedef long	ion_bpp_address_t;		/* record address for btree node */
-
-#define ION_CC_EQ	0
-#define ION_CC_GT	1
-#define ION_CC_LT	-1
-
-/* compare two keys and return:
- *	CC_LT	 key1 < key2
- *	CC_GT	 key1 > key2
- *	CC_EQ	 key1 = key2
 */
-typedef char (*ion_bpp_comparison_t)(
-	ion_key_t		key1,
-	ion_key_t		key2,
-	ion_key_size_t	size
-);
 
-/* typedef int (*ion_bpp_comparison_t)(const void *key1, const void *key2, unsigned int size); */
+/*
+ *	Header for B+ tree file
+ *	On most systems (short=16bit, long=64bit), sized at 184 bits (23 bytes)
+ */
+typedef struct {
+	unsigned char			revision;	/* Versioning information; incase format ever changes, we can identify, and correct files */
+	unsigned short			keySize;	/* length, in bytes, of key */
+	unsigned short			valueSize;	/* ^^ values */
+	unsigned short			leafCount;	/* number of nodes per leaf; links this+1 */
+	unsigned long			recordCount;/* number of records in tree*/
+	unsigned long			depth;		/* number of levels in the tree */
+	bool					allow_duplicates;
+} ion_bpp_header;
 
-/******************************
- * implementation independent *
- ******************************/
-
-/* statistics */
-int maxHeight;	/* maximum height attained */
-int nNodesIns;	/* number of nodes inserted */
-int nNodesDel;	/* number of nodes deleted */
-int nKeysIns;	/* number of keys inserted */
-int nKeysDel;	/* number of keys deleted */
-int nDiskReads;	/* number of disk reads */
-int nDiskWrites;/* number of disk writes */
-
-/* line number for last IO or memory error */
-int bErrLineNo;
-
-typedef ion_boolean_e ion_bpp_bool_t;
-
-/* typedef enum {false, true} bool; */
-typedef enum ION_BPP_ERR {
-	bErrOk, bErrKeyNotFound, bErrDupKeys, bErrSectorSize, bErrFileNotOpen, bErrFileExists, bErrIO, bErrMemory
-} ion_bpp_err_t;
-
-typedef void *ion_bpp_handle_t;
+/* Since the header is suspected to be 23 bytes, and may change in the future, offset the first data record by 32 bytes; 256 bits */
+#define BPP_FIRST_LEAF_OFFSET 32 
+typedef struct {
+	void*					keys;		/* array of key values; sizeof(ion_bpp_header.keySize)*ion_bpp_header.leafCount; */
+} ion_bpp_leaf;
+typedef ion_bpp_leaf ion_bpp_end_leaf;	/* array of dictionary values; sizeof(ion_bpp_header.valueSize)*ion_bpp_header.leafCount; */
 
 typedef struct {
-	/* info for bOpen() */
-	char					*iName;	/* name of index file */
-	int						keySize;/* length, in bytes, of key */
-	ion_bpp_bool_t			dupKeys;		/* true if duplicate keys allowed */
-	size_t					sectorSize;	/* size of sector on disk */
-	ion_bpp_comparison_t	comp;			/* pointer to compare function */
-} ion_bpp_open_t;
+	char					*fileName;	/* Filename associated with this header */
+	ion_bpp_header			*head;		/* Header of file statistics and information */
+	long					*indices;	/* offsets for where each row of the tree starts in disk */
+	FILE					*file;		/* File on Disk */
+} ion_bpp;
 
-/***********************
- * function prototypes *
- ***********************/
-ion_bpp_err_t
-bOpen(
-	ion_bpp_open_t		info,
-	ion_bpp_handle_t	*handle
-);
+typedef struct {
+	bool				found;			/* Whether the key was at teh destination or not */
+	bool				has_end_offset;	/* Whether there where multiple matching keys; otherwise, end_offset variable is set to NULL */
+	unsigned long		*row_offset;	/* How many records in was it found (or, the leaf searched, and failed leaf loc) */
+	unsigned long		*end_offset;	/* Likely null */
+} ion_bpp_search_record;
 
 /*
- * input:
- *   info				   info for open
- * output:
- *   handle				 handle to btree, used in subsequent calls
- * returns:
- *   bErrOk				 open was successful
- *   bErrMemory			 insufficient memory
- *   bErrSectorSize		 sector size too small or not 0 mod 4
- *   bErrFileNotOpen		unable to open index file
-*/
+static long* getRowIndices(ion_bpp_header *head);
+static void writeHeader(FILE *file, ion_bpp_header *new_head);
+static ion_bpp* openBpp(char *filename, ion_bpp_header *new_file);
+static void* searchRecords(ion_bpp *bpp, void* searchKey);
+static ion_bpp_search_record* searchRecordOffset(ion_bpp *bpp, void* searchKey);
+static void* readRecords(ion_bpp *bpp, ion_bpp_search_record *rec, bool return_all);
+static unsigned char insertRecords(ion_bpp *bpp, void* key, void* value);
+static unsigned char updateRecords(ion_bpp *bpp, void* key, void* value);
+static unsigned char deleteRecords(ion_bpp *bpp, void* key);
+static bool mergeRight(ion_bpp *bpp, int depth, long leaf_offset);
+static bool mergeUp(ion_bpp *bpp, int depth, long leaf_offset);
+static void move(ion_bpp *bpp, unsigned int depth, long source_offset, long dest_offset, bool clear, bool whole_leaf);
+static void* calculateNullNode(unsigned short keySize, unsigned char revision);
 
-ion_bpp_err_t
-bClose(
-	ion_bpp_handle_t handle
-);
+static unsigned short getLeafCount(ion_bpp *bpp, unsigned short elementSize, long absolute_offset);
 
-/*
- * input:
- *   handle				 handle returned by bOpen
- * returns:
- *   bErrOk				 file closed, resources deleted
-*/
-
-ion_bpp_err_t
-bInsertKey(
-	ion_bpp_handle_t			handle,
-	void						*key,
-	ion_bpp_external_address_t	rec
-);
-
-/*
- * input:
- *   handle				 handle returned by bOpen
- *   key					key to insert
- *   rec					record address
- * returns:
- *   bErrOk				 operation successful
- *   bErrDupKeys			duplicate keys (and info.dupKeys = false)
- * notes:
- *   If dupKeys is false, then all records inserted must have a
- *   unique key.  If dupkeys is true, then duplicate keys are
- *   allowed, but they must all have unique record addresses.
- *   In this case, record addresses are included in internal
- *   nodes to generate a "unique" key.
-*/
-
-ion_bpp_err_t
-bUpdateKey(
-	ion_bpp_handle_t			handle,
-	void						*key,
-	ion_bpp_external_address_t	rec
-);
-
-/*
- * input:
- *   handle				 handle returned by bOpen
- *   key					key to update
- *   rec					record address
- * returns:
- *   bErrOk				 operation successful
- *   bErrDupKeys			duplicate keys (and info.dupKeys = false)
- * notes:
- *   If dupKeys is false, then all records updated must have a
- *   unique key.  If dupkeys is true, then duplicate keys are
- *   allowed, but they must all have unique record addresses.
- *   In this case, record addresses are included in internal
- *   nodes to generate a "unique" key.
-*/
-
-ion_bpp_err_t
-bDeleteKey(
-	ion_bpp_handle_t			handle,
-	void						*key,
-	ion_bpp_external_address_t	*rec
-);
-
-/*
- * input:
- *   handle				 handle returned by bOpen
- *   key					key to delete
- *   rec					record address of key to delete
- * output:
- *   rec					record address deleted
- * returns:
- *   bErrOk				 operation successful
- *   bErrKeyNotFound		key not found
- * notes:
- *   If dupKeys is false, all keys are unique, and rec is not used
- *   to determine which key to delete.  If dupKeys is true, then
- *   rec is used to determine which key to delete.
-*/
-
-ion_bpp_err_t
-bFindKey(
-	ion_bpp_handle_t			handle,
-	void						*key,
-	ion_bpp_external_address_t	*rec
-);
-
-/*
- * input:
- *   handle				 handle returned by bOpen
- *   key					key to find
- * output:
- *   rec					record address
- * returns:
- *   bErrOk				 operation successful
- *   bErrKeyNotFound		key not found
-*/
-
-ion_bpp_err_t
-bFindFirstGreaterOrEqual(
-	ion_bpp_handle_t			handle,
-	void						*key,
-	void						*mkey,
-	ion_bpp_external_address_t	*rec
-);
-
-/*
- * input:
- *   handle				 handle returned by bOpen
- *   key					key to find
- * output:
- *   mkey				   key associated with the found offset
- *   rec					record address of least element greater than or equal to
- * returns:
- *   bErrOk				 operation successful
-*/
-
-ion_bpp_err_t
-bFindFirstKey(
-	ion_bpp_handle_t			handle,
-	void						*key,
-	ion_bpp_external_address_t	*rec
-);
-
-/*
- * input:
- *   handle				 handle returned by bOpen
- * output:
- *   key					first key in sequential set
- *   rec					record address
- * returns:
- *   bErrOk				 operation successful
- *   bErrKeyNotFound		key not found
-*/
-
-ion_bpp_err_t
-bFindLastKey(
-	ion_bpp_handle_t			handle,
-	void						*key,
-	ion_bpp_external_address_t	*rec
-);
-
-/*
- * input:
- *   handle				 handle returned by bOpen
- * output:
- *   key					last key in sequential set
- *   rec					record address
- * returns:
- *   bErrOk				 operation successful
- *   bErrKeyNotFound		key not found
-*/
-
-ion_bpp_err_t
-bFindNextKey(
-	ion_bpp_handle_t			handle,
-	void						*key,
-	ion_bpp_external_address_t	*rec
-);
-
-/*
- * input:
- *   handle				 handle returned by bOpen
- * output:
- *   key					key found
- *   rec					record address
- * returns:
- *   bErrOk				 operation successful
- *   bErrKeyNotFound		key not found
-*/
+static void debugPrintHeader(ion_bpp_header *head);
+static void debugPrintTree(ion_bpp *tree);
+*/ //DOESNT WORK WITH ION *shrug*
 
 #if defined(__cplusplus)
 }

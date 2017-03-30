@@ -7,7 +7,7 @@
 /******************************************************************************/
 
 #include "bpp_tree_handler.h"
-
+#include "bpp_tree.c"
 void
 bpptree_get_value_filename(
 	ion_dictionary_id_t id,
@@ -58,26 +58,39 @@ bpptree_create_dictionary(
 /*	if (key_size != sizeof(int)) {
 		return err_invalid_initial_size;
 	}*/
-
+	
 	ion_bpptree_t	*bpptree;
+	/* //OLD BPP Content
 	ion_bpp_open_t	info;
 
+	*/
 	bpptree = malloc(sizeof(ion_bpptree_t));
+		ion_bpp_header *head = NULL;
+		head = (ion_bpp_header *) malloc(sizeof(ion_bpp_header));
+		head->revision = 1;
+		head->keySize = key_size;
+		head->valueSize = value_size;
+		head->leafCount = dictionary_size; //TODO HEATH Verify if this is correct.
+		head->recordCount = 0;
+		head->depth = 0;
+	/*
 
-	if (NULL == bpptree) {
+	if (NULL == bpptree) { //TODO IMPLEMENT IN NEW TREE
 		return err_out_of_memory;
 	}
-
+	*/
 	char value_filename[20];
 
 	bpptree_get_value_filename(id, value_filename);
+	bpptree->tree = openBpp(value_filename, head);
+	/*
 	bpptree->values.file_handle = ion_fopen(value_filename);
 
 	bpptree->values.next_empty	= ION_FILE_NULL;
 
-	/* FIXME: read this from a property bag. */
+	// FIXME: read this from a property bag. //
 
-	/* FIXME: VARIABLE NAMES! */
+	// FIXME: VARIABLE NAMES! //
 	char addr_filename[ION_MAX_FILENAME_LENGTH];
 
 	int actual_filename_length = dictionary_get_filename(id, "bpt", addr_filename);
@@ -89,7 +102,7 @@ bpptree_create_dictionary(
 	info.iName		= addr_filename;
 	info.keySize	= key_size;
 	info.dupKeys	= boolean_false;
-	/* FIXME: HOW DO WE SET BLOCK SIZE? */
+	// FIXME: HOW DO WE SET BLOCK SIZE? //
 	info.sectorSize = 256;
 	info.comp		= compare;
 
@@ -98,15 +111,15 @@ bpptree_create_dictionary(
 	if (bErrOk != bErr) {
 		return err_dictionary_initialization_failed;
 	}
-
+	*/
 	dictionary->instance					= (ion_dictionary_parent_t *) bpptree;
 	dictionary->instance->compare			= compare;
 	dictionary->instance->key_type			= key_type;
 	dictionary->instance->record.key_size	= key_size;
 	dictionary->instance->record.value_size = value_size;
-	/* todo: need to check to make sure that the handler is registered */
+	// todo: need to check to make sure that the handler is registered //
 	dictionary->handler						= handler;
-
+	
 	return err_ok;
 }
 
@@ -127,6 +140,7 @@ bpptree_insert(
 	ion_key_t			key,
 	ion_value_t			value
 ) {
+	/* TODO HEATH
 	ion_bpptree_t		*bpptree;
 	ion_bpp_err_t		bErr;
 	ion_err_t			err;
@@ -152,15 +166,15 @@ bpptree_insert(
 		}
 
 		if (bErrOk != bErr) {
-			/* TODO: lfb_delete from values */
+			// TODO: lfb_delete from values //
 			return ION_STATUS_ERROR(err_unable_to_insert);
 		}
-
+*/
 		return ION_STATUS_OK(1);
-	}
+	/*}
 	else {
 		return ION_STATUS_ERROR(err_unable_to_insert);
-	}
+	}*/
 }
 
 /**
@@ -193,6 +207,9 @@ bpptree_query(
 	ion_key_t			key,
 	ion_value_t			value
 ) {
+	ion_bpp_search_record* record_offset = searchRecordOffset(((ion_bpptree_t *) dictionary->instance)->tree, key);
+	value = readRecords(((ion_bpptree_t *) dictionary->instance)->tree, record_offset, 0);
+	/*
 	ion_bpptree_t		*bpptree;
 	ion_file_offset_t	offset;
 	ion_file_offset_t	next;
@@ -209,11 +226,11 @@ bpptree_query(
 
 	err = lfb_get(&(bpptree->values), offset, bpptree->super.record.value_size, (ion_byte_t *) value, &next);
 
-	if (err_ok == err) {
+	if (err_ok == err) {*/
 		return ION_STATUS_OK(1);
-	}
+	/*}
 
-	return ION_STATUS_ERROR(err);
+	return ION_STATUS_ERROR(err);*/
 }
 
 /**
@@ -231,6 +248,8 @@ bpptree_delete(
 	ion_dictionary_t	*dictionary,
 	ion_key_t			key
 ) {
+	return ION_STATUS_OK(1); //TODO HEATH
+	/*
 	ion_bpptree_t		*bpptree;
 	ion_bpp_err_t		bErr;
 	ion_file_offset_t	offset;
@@ -250,6 +269,7 @@ bpptree_delete(
 	}
 
 	return status;
+	*/
 }
 
 /* TODO Write me doc! */
@@ -257,6 +277,7 @@ ion_err_t
 bpptree_close_dictionary(
 	ion_dictionary_t *dictionary
 ) {
+	/* TODO
 	ion_bpptree_t	*bpptree;
 	ion_bpp_err_t	bErr;
 
@@ -269,7 +290,7 @@ bpptree_close_dictionary(
 	if (bErrOk != bErr) {
 		return err_dictionary_destruction_error;
 	}
-
+	*/
 	return err_ok;
 }
 
@@ -328,6 +349,7 @@ bpptree_update(
 	ion_key_t			key,
 	ion_value_t			value
 ) {
+	/* TODO HEATH
 	ion_bpptree_t		*bpptree;
 	ion_bpp_err_t		bErr;
 	ion_file_offset_t	offset;
@@ -344,8 +366,8 @@ bpptree_update(
 	else {
 		return bpptree_insert(dictionary, key, value);
 	}
-
-	return ION_STATUS_OK(count);
+	*/
+	return ION_STATUS_OK(/*count*/1);
 }
 
 /**
@@ -365,6 +387,7 @@ bpptree_next(
 	ion_dict_cursor_t	*cursor,
 	ion_record_t		*record
 ) {
+	/* TODO HEATH
 	ion_bpp_cursor_t	*bCursor	= (ion_bpp_cursor_t *) cursor;
 	ion_bpptree_t		*bpptree	= (ion_bpptree_t *) cursor->dictionary->instance;
 
@@ -381,7 +404,7 @@ bpptree_next(
 			switch (cursor->predicate->type) {
 				case predicate_equality: {
 					if (-1 == bCursor->offset) {
-						/* End of results, we can quit */
+						// End of results, we can quit //
 						is_valid = boolean_false;
 					}
 
@@ -389,7 +412,7 @@ bpptree_next(
 				}
 
 				case predicate_range: {
-					/*do bFindNextKey then test_predicate */
+					//do bFindNextKey then test_predicate //
 					if (-1 == bCursor->offset) {
 						ion_bpp_err_t bErr = bFindNextKey(bpptree->tree, bCursor->cur_key, &bCursor->offset);
 
@@ -414,10 +437,10 @@ bpptree_next(
 				}
 
 				case predicate_predicate: {
-					/*TODO Not implemented */
+					//TODO Not implemented //
 					break;
 				}
-					/*No default since we can assume the predicate is valid. */
+					//No default since we can assume the predicate is valid. //
 			}
 
 			if (boolean_false == is_valid) {
@@ -426,18 +449,18 @@ bpptree_next(
 			}
 		}
 		else {
-			/* The status is cs_cursor_initialized */
+			// The status is cs_cursor_initialized //
 			cursor->status = cs_cursor_active;
 		}
 
-		/* Get key */
+		// Get key //
 		memcpy(record->key, bCursor->cur_key, cursor->dictionary->instance->record.key_size);
 
-		/* Get value */
+		// Get value //
 		lfb_get(&(bpptree->values), bCursor->offset, cursor->dictionary->instance->record.value_size, record->value, &bCursor->offset);
 		return cursor->status;
 	}
-
+	*/
 	return cs_invalid_cursor;
 }
 
@@ -461,6 +484,7 @@ bpptree_destroy_cursor(
 	free(((ion_bpp_cursor_t *) (*cursor))->cur_key);
 	free((*cursor));
 	*cursor = NULL;
+	
 }
 
 /**
@@ -487,6 +511,7 @@ bpptree_find(
 	ion_predicate_t		*predicate,
 	ion_dict_cursor_t	**cursor
 ) {
+	/* TODO HEATH
 	ion_bpptree_t	*bpptree	= (ion_bpptree_t *) dictionary->instance;
 	ion_key_size_t	key_size	= dictionary->instance->record.key_size;
 
@@ -524,7 +549,7 @@ bpptree_find(
 
 	switch (predicate->type) {
 		case predicate_equality: {
-			/* TODO get ALL these lines within 80 cols */
+			// TODO get ALL these lines within 80 cols //
 			ion_key_t target_key = predicate->statement.equality.equality_value;
 
 			(*cursor)->predicate->statement.equality.equality_value = malloc(key_size);
@@ -543,7 +568,7 @@ bpptree_find(
 			ion_bpp_err_t err = bFindKey(bpptree->tree, target_key, &bCursor->offset);
 
 			if (bErrOk != err) {
-				/* If this happens, that means the target key doesn't exist */
+				// If this happens, that means the target key doesn't exist //
 				(*cursor)->status = cs_end_of_results;
 				return err_ok;
 			}
@@ -579,10 +604,10 @@ bpptree_find(
 
 			memcpy((*cursor)->predicate->statement.range.upper_bound, predicate->statement.range.upper_bound, key_size);
 
-			/* We search for the FGEQ of the Lower bound. */
+			// We search for the FGEQ of the Lower bound. //
 			bFindFirstGreaterOrEqual(bpptree->tree, (*cursor)->predicate->statement.range.lower_bound, bCursor->cur_key, &bCursor->offset);
 
-			/* If the key returned doesn't satisfy the predicate, we can exit */
+			// If the key returned doesn't satisfy the predicate, we can exit //
 			if (boolean_false == test_predicate(*cursor, bCursor->cur_key)) {
 				(*cursor)->status = cs_end_of_results;
 				return err_ok;
@@ -598,7 +623,7 @@ bpptree_find(
 		case predicate_all_records: {
 			ion_bpp_err_t err;
 
-			/* We search for first key in B++ tree. */
+			// We search for first key in B++ tree. //
 			err					= bFindFirstKey(bpptree->tree, bCursor->cur_key, &bCursor->offset);
 
 			(*cursor)->status	= cs_cursor_initialized;
@@ -612,7 +637,7 @@ bpptree_find(
 		}
 
 		case predicate_predicate: {
-			/* TODO not implemented */
+			// TODO not implemented //
 			break;
 		}
 
@@ -621,7 +646,7 @@ bpptree_find(
 			break;
 		}
 	}
-
+	*/
 	return err_ok;
 }
 

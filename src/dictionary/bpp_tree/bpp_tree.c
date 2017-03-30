@@ -1,1715 +1,443 @@
 #include "bpp_tree.h"
+static long* getRowIndices(ion_bpp_header *head);
+static void writeHeader(FILE *file, ion_bpp_header *new_head);
+static ion_bpp* openBpp(char *filename, ion_bpp_header *new_file);
+static void* searchRecords(ion_bpp *bpp, void* searchKey);
+static ion_bpp_search_record* searchRecordOffset(ion_bpp *bpp, void* searchKey);
+static void* readRecords(ion_bpp *bpp, ion_bpp_search_record *rec, bool return_all);
+static unsigned char insertRecords(ion_bpp *bpp, void* key, void* value);
+static unsigned char updateRecords(ion_bpp *bpp, void* key, void* value);
+static unsigned char deleteRecords(ion_bpp *bpp, void* key);
+static bool mergeRight(ion_bpp *bpp, int depth, long leaf_offset);
+static bool mergeUp(ion_bpp *bpp, int depth, long leaf_offset);
+static void move(ion_bpp *bpp, unsigned int depth, long source_offset, long dest_offset, bool clear, bool whole_leaf);
+static unsigned char* calculateNullNode(unsigned short keySize, unsigned char revision);
 
-/*************
- * internals *
- *************/
+static unsigned short getLeafCount(ion_bpp *bpp, unsigned short elementSize, long absolute_offset);
+
+static void debugPrintHeader(ion_bpp_header *head);
+static void debugPrintTree(ion_bpp *tree);
 
 /*
- *  algorithm:
- *	A B+tree implementation, with keys stored in internal nodes,
- *	and keys/record addresses stored in leaf nodes.  Each node is
- *	one sector in length, except the root node whose length is
- *	3 sectors.  When traversing the tree to insert a key, full
- *	children are adjusted to make room for possible new entries.
- *	Similarly, on deletion, half-full nodes are adjusted to allow for
- *	possible deleted entries.  Adjustments are first done by
- *	examining 2 nearest neighbors at the same level, and redistibuting
- *	the keys if possible.  If redistribution won't solve the problem,
- *	nodes are split/joined as needed.  Typically, a node is 3/4 full.
- *	On insertion, if 3 nodes are full, they are split into 4 nodes,
- *	each 3/4 full.  On deletion, if 3 nodes are 1/2 full, they are
- *	joined to create 2 nodes 3/4 full.
- *
- *	A LRR (least-recently-read) buffering scheme for nodes is used to
- *	simplify storage management, and, assuming some locality of reference,
- *	improve performance.
- *
- *	To simplify matters, both internal nodes and leafs contain the
- *	same fields.
- *
-*/
-
-/* macros for addressing fields */
-
-/* primitives */
-#define bAdr(p)		*(ion_bpp_address_t *) (p)
-#define eAdr(p)		*(ion_bpp_external_address_t *) (p)
-
-/* based on k = &[key,rec,childGE] */
-#define childLT(k)	bAdr((char *) k - sizeof(ion_bpp_address_t))
-#define key(k)		(k)
-#define rec(k)		eAdr((char *) (k) + h->keySize)
-#define childGE(k)	bAdr((char *) (k) + h->keySize + sizeof(ion_bpp_external_address_t))
-
-/* based on b = &ion_bpp_buffer_t */
-#define leaf(b)		b->p->leaf
-#define ct(b)		b->p->ct
-#define next(b)		b->p->next
-#define prev(b)		b->p->prev
-#define fkey(b)		& b->p->fkey
-#define lkey(b)		(fkey(b) + ks((ct(b) - 1)))
-#define p(b)		(char *) (b->p)
-
-/* shortcuts */
-#define ks(ct)		((ct) * h->ks)
-
-typedef char ion_bpp_key_t;	/* keys entries are treated as char arrays */
-
-typedef struct {
-#if 0
-
-	char		leaf;			/* first bit = 1 if leaf */
-	uint16_t	ct;				/* count of keys present */
-
-#endif
-
-	unsigned int		leaf : 1;
-	unsigned int		ct : 15;
-	ion_bpp_address_t	prev;			/* prev node in sequence (leaf) */
-	ion_bpp_address_t	next;			/* next node in sequence (leaf) */
-	ion_bpp_address_t	childLT;		/* child LT first key */
-	/* ct occurrences of [key,rec,childGE] */
-	ion_bpp_key_t		fkey;			/* first occurrence */
-} ion_bpp_node_t;
-
-typedef struct ion_bpp_buffer_tag {
-	/* location of node */
-	struct ion_bpp_buffer_tag	*next;	/* next */
-	struct ion_bpp_buffer_tag	*prev;	/* previous */
-	ion_bpp_address_t			adr;	/* on disk */
-	ion_bpp_node_t				*p;	/* in memory */
-	ion_bpp_bool_t				valid;		/* true if buffer contents valid */
-	ion_bpp_bool_t				modified;	/* true if buffer modified */
-} ion_bpp_buffer_t;
-
-/* one node for each open handle */
-typedef struct ion_bpp_h_node_tag {
-	ion_file_handle_t		fp;		/* idx file */
-	int						keySize;/* key length */
-	ion_bpp_bool_t			dupKeys;/* true if duplicate keys */
-	int						sectorSize;	/* block size for idx records */
-	ion_bpp_comparison_t	comp;			/* pointer to compare routine */
-	ion_bpp_buffer_t		root;			/* root of b-tree, room for 3 sets */
-	ion_bpp_buffer_t		bufList;		/* head of buf list */
-	void					*malloc1;	/* malloc'd resources */
-	void					*malloc2;	/* malloc'd resources */
-	ion_bpp_buffer_t		gbuf;			/* gather buffer, room for 3 sets */
-	ion_bpp_buffer_t		*curBuf;		/* current location */
-	ion_bpp_key_t			*curKey;	/* current key in current node */
-	unsigned int			maxCt;	/* minimum # keys in node */
-	int						ks;	/* sizeof key entry */
-	ion_bpp_address_t		nextFreeAdr;/* next free b-tree record address */
-} ion_bpp_h_node_t;
-
-#define error(rc) lineError(__LINE__, rc)
-
-static ion_bpp_err_t
-lineError(
-	int				lineno,
-	ion_bpp_err_t	rc
-) {
-	if ((rc == bErrIO) || (rc == bErrMemory)) {
-		if (!bErrLineNo) {
-			bErrLineNo = lineno;
+ * Determine where to start probing for each level of the B+ Tree on Disk
+ * returns a pointer.
+ */
+static long* getRowIndices(ion_bpp_header *head){
+	if(head->depth > 0) {
+		long* indexes;
+		indexes = (long *) malloc(sizeof(long) * head->depth+1);
+		long records_per_row = head->leafCount;
+		indexes[0] = BPP_FIRST_LEAF_OFFSET;
+		for(unsigned int i = 1; i<head->depth+1; i++){
+			indexes[i] = indexes[i-1] + records_per_row * head->keySize;
+			records_per_row *= head->leafCount + 1;	//Links are Leaf+1, times the number of records in the previous row.
 		}
-	}
-
-	return rc;
+		//if(head->depth > 1){ //Root could be last leaf I guess
+		//	records_per_row /= head->leafCount + 1;
+		//	indexes[head->depth] = indexes[head->depth-1] + records_per_row * head->valueSize;
+		//}
+		return indexes;
+	} else {return NULL;}
 }
-
-static ion_bpp_address_t
-allocAdr(
-	ion_bpp_handle_t handle
-) {
-	ion_bpp_h_node_t	*h = handle;
-	ion_bpp_address_t	adr;
-
-	adr				= h->nextFreeAdr;
-	h->nextFreeAdr	+= h->sectorSize;
-	return adr;
+static void writeHeader(FILE *file, ion_bpp_header *head){
+	fseek(file, 0, SEEK_SET);
+	if(fwrite(&head->revision, sizeof(unsigned char), 1, file) == 0) {
+		printf("ERR: Write of Revision Failed!\n"); //TODO ERROR HANDLING
+	}
+	if(fwrite(&head->keySize, sizeof(unsigned short), 3, file) == 0) { /*Write all 3 shorts */
+		printf("ERR: Write of keySize,valueSize,leafCount Failed!\n");
+	}
+	if(fwrite(&head->recordCount, sizeof(unsigned long), 2, file) == 0) { /*Write both longs */
+		printf("ERR: Write of recordCount, depth Failed!\n");
+	}
+	
+	if(head->revision > 0) {
+		if(fwrite(&head->allow_duplicates, sizeof(bool), 1, file) == 0) {
+			printf("ERR: Write of allow_duplicates Failed!\n");
+		}
+	}
+	//fwrite(&EMPTY,1,9,file);
 }
+static ion_bpp* openBpp(char *filename, ion_bpp_header *new_file){
+	ion_bpp *newTree;
+	newTree = (ion_bpp *) malloc(sizeof(ion_bpp));
+	newTree->fileName = filename;
 
-static ion_bpp_err_t
-flush(
-	ion_bpp_handle_t	handle,
-	ion_bpp_buffer_t	*buf
-) {
-	ion_bpp_h_node_t	*h = handle;
-	int					len;/* number of bytes to write */
-	ion_err_t			err;
-
-	/* flush buffer to disk */
-	len = h->sectorSize;
-
-	if (buf->adr == 0) {
-		len *= 3;	/* root */
+	//Check if exists
+	newTree->file = fopen(filename,"r");
+	if(newTree->file == NULL){
+		newTree->file = fopen(filename, "w+b"); //If it doesnt exist, create.
+	} else {
+		fclose(newTree->file);
+		newTree->file = fopen(filename,"rw+b"); //Otherwise, open for editing.
 	}
+	if(newTree->file == NULL) {printf("EXCEPTION; File load failure!\n");}
 
-	err = ion_fwrite_at(h->fp, buf->adr, len, (ion_byte_t *) buf->p);
 
-	if (err_ok != err) {
-		return error(bErrIO);
-	}
-
-#if 0
-	/* flush buffer to disk */
-	len = 1;
-
-	if (buf->adr == 0) {
-		len = 3;/* root */
-	}
-
-	if (0 != fseek(h->fp, buf->adr, SEEK_SET)) {
-		return error(bErrIO);
-	}
-
-	for (i = 0; i < len; i++) {
-		if (1 != fwrite(&buf[i].p->leaf, sizeof(buf->p->leaf), 1, h->fp)) {
-			return error(bErrIO);
+	newTree->head = (ion_bpp_header *) malloc(sizeof(ion_bpp_header));
+	if(fread(&newTree->head->revision, 1, 1, newTree->file) == 0) {
+		printf("FILE EMPTY\n");
+		free(newTree->head);
+		if(new_file == NULL){
+			printf("FAILURE; FILE EMPTY, AND STARTER HEADER NULL\n");
+			fclose(newTree->file);
+			free(newTree);
+			return NULL;
 		}
-
-		if (1 != fwrite(&buf[i].p->ct, sizeof(buf->p->ct), 1, h->fp)) {
-			return error(bErrIO);
+	//TODO: Add check that leafs/keys/values aren't size 0.
+		newTree->head = new_file;
+		newTree->head->depth = 0;
+		newTree->head->recordCount = 0;
+		writeHeader(newTree->file, newTree->head);
+	} else {
+		if(new_file != NULL) {free(new_file);}
+		if(fread(&newTree->head->keySize, sizeof(unsigned short), 3, newTree->file) == 0) {
+			printf("ERR: Read of keySize,valueSize,leafCount Failed!\n");
 		}
-
-		if (1 != fwrite(&buf[i].p->prev, sizeof(buf->p->prev), 1, h->fp)) {
-			return error(bErrIO);
+		if(fread(&newTree->head->recordCount, sizeof(unsigned long), 2, newTree->file) == 0) {
+			printf("ERR: Read of recordCount, depth Failed!\n");
 		}
-
-		if (1 != fwrite(&buf[i].p->next, sizeof(buf->p->next), 1, h->fp)) {
-			return error(bErrIO);
-		}
-
-		if (1 != fwrite(&buf[i].p->childLT, sizeof(buf->p->childLT), 1, h->fp)) {
-			return error(bErrIO);
-		}
-
-		if (1 != fwrite(&buf[i].p->fkey, sizeof(buf->p->fkey), 1, h->fp)) {
-			return error(bErrIO);
-		}
-	}
-
-#endif
-
-	buf->modified = boolean_false;
-	nDiskWrites++;
-	return bErrOk;
-}
-
-static ion_bpp_err_t
-flushAll(
-	ion_bpp_handle_t handle
-) {
-	ion_bpp_h_node_t	*h = handle;
-	ion_bpp_err_t		rc;			/* return code */
-	ion_bpp_buffer_t	*buf;				/* buffer */
-
-	if (h->root.modified) {
-		if ((rc = flush(handle, &h->root)) != 0) {
-			return rc;
-		}
-	}
-
-	buf = h->bufList.next;
-
-	while (buf != &h->bufList) {
-		if (buf->modified) {
-			if ((rc = flush(handle, buf)) != 0) {
-				return rc;
+		if(newTree->head->revision > 0) {
+			if(fread(&newTree->head->allow_duplicates, sizeof(bool), 1, newTree->file) == 0) {
+				printf("ERR: Read of allow_duplicates Failed!\n");
 			}
+		} else {
+			newTree->head->allow_duplicates = 0;
 		}
-
-		buf = buf->next;
+		
 	}
-
-	return bErrOk;
+	newTree->indices = getRowIndices(newTree->head);
+	return newTree;
 }
-
-static ion_bpp_err_t
-assignBuf(
-	ion_bpp_handle_t	handle,
-	ion_bpp_address_t	adr,
-	ion_bpp_buffer_t	**b
-) {
-	ion_bpp_h_node_t *h = handle;
-	/* assign buf to adr */
-	ion_bpp_buffer_t	*buf;				/* buffer */
-	ion_bpp_err_t		rc;			/* return code */
-
-	if (adr == 0) {
-		*b = &h->root;
-		return bErrOk;
+static void debugPrintHeader(ion_bpp_header *head){
+	if(head==NULL){printf("Header is NULL\n");} else{
+	printf("Revision Version:\t%i\nKey Size (bytes):\t%i\nValue Size (bytes):\t%i\nLeaf Count:\t\t%i\nRecord Count:\t\t%lu\nTree Depth:\t\t%lu\n",head->revision,head->keySize,head->valueSize,head->leafCount,head->recordCount,head->depth);
 	}
-
-	/* search for buf with matching adr */
-	buf = h->bufList.next;
-
-	while (buf->next != &h->bufList) {
-		if (buf->valid && (buf->adr == adr)) {
-			break;
-		}
-
-		buf = buf->next;
-	}
-
-	/* either buf points to a match, or it's last one in list (LRR) */
-	if (buf->valid) {
-		if (buf->adr != adr) {
-			if (buf->modified) {
-				if ((rc = flush(handle, buf)) != 0) {
-					return rc;
+}
+static void* searchRecords(ion_bpp *bpp, void* searchKey){ //TODO CLEANUP, FIXES //PLZ USE OTHER SEARCH
+	int* tmp = (int*) searchKey;
+	printf("Searching for %i\n\n",*tmp);
+	unsigned char* leaf;
+	leaf = malloc(bpp->head->keySize * bpp->head->leafCount);
+	long leaf_offset=0;
+	bool found = 0;
+	bool loc = 0;
+	//Approach Appropriate Bottom Row.
+	for (unsigned int i = 0; i<bpp->head->depth; i++){
+		printf("[I]%i [index] %lu [offset] %lu\n", i,bpp->indices[i],leaf_offset);
+		fseek(bpp->file, bpp->indices[i]+(leaf_offset*bpp->head->keySize),SEEK_SET);
+		fread(leaf,bpp->head->keySize, bpp->head->leafCount, bpp->file);
+		found = 0;
+		for (unsigned int j = 0; j<bpp->head->leafCount;j++){
+			unsigned char* element = leaf + (j * bpp->head->keySize);
+			tmp = (int*) element;
+			printf("|%i|",*tmp);
+			int comp = memcmp(searchKey,element/*leaf[j]*/,bpp->head->keySize);
+			if (comp<0 || comp==0){
+				printf("Modifying Offset-\n");
+				//if (i<bpp->head->depth) {
+				printf("[]");
+				//leaf_offset = (leaf_offset * (bpp->head->leafCount+1))+j +1; //On final row, value is directly bellow.
+				if(comp == 0){
+					leaf_offset+=j;
+					if (i==bpp->head->depth-1){ //TODO Remove when bug fixed
+						loc = 1;
+					} else {leaf_offset = leaf_offset + ((j+1)*(bpp->head->leafCount));}
+				} else {
+					printf("][");
+					leaf_offset += j;
 				}
-			}
-
-			buf->adr	= adr;
-			buf->valid	= boolean_false;
-		}
-	}
-	else {
-		buf->adr = adr;
-	}
-
-	/* remove from current position and place at front of list */
-	buf->next->prev = buf->prev;
-	buf->prev->next = buf->next;
-	buf->next		= h->bufList.next;
-	buf->prev		= &h->bufList;
-	buf->next->prev = buf;
-	buf->prev->next = buf;
-	*b				= buf;
-	return bErrOk;
-}
-
-static ion_bpp_err_t
-writeDisk(
-	ion_bpp_buffer_t *buf
-) {
-	/* write buf to disk */
-	buf->valid		= boolean_true;
-	buf->modified	= boolean_true;
-	return bErrOk;
-}
-
-static ion_bpp_err_t
-readDisk(
-	ion_bpp_handle_t	handle,
-	ion_bpp_address_t	adr,
-	ion_bpp_buffer_t	**b
-) {
-	ion_bpp_h_node_t *h = handle;
-	/* read data into buf */
-	int					len;
-	ion_bpp_buffer_t	*buf;				/* buffer */
-	ion_bpp_err_t		rc;			/* return code */
-
-	if ((rc = assignBuf(handle, adr, &buf)) != 0) {
-		return rc;
-	}
-
-	if (!buf->valid) {
-		len = h->sectorSize;
-
-		if (adr == 0) {
-			len *= 3;	/* root */
-		}
-
-		ion_err_t err = ion_fread_at(h->fp, adr, len, (ion_byte_t *) buf->p);
-
-		if (err_ok != err) {
-			return error(bErrIO);
-		}
-
-		buf->modified	= boolean_false;
-		buf->valid		= boolean_true;
-		nDiskReads++;
-
-#if 0
-		len = 1;
-
-		if (adr == 0) {
-			len = 3;/* root */
-		}
-
-		if (0 != fseek(h->fp, buf->adr, SEEK_SET)) {
-			return error(bErrIO);
-		}
-
-		for (i = 0; i < len; i++) {
-			if (1 != fread(&buf[i].p->leaf, sizeof(buf->p->leaf), 1, h->fp)) {
-				return error(bErrIO);
-			}
-
-			if (1 != fread(&buf[i].p->ct, sizeof(buf->p->ct), 1, h->fp)) {
-				return error(bErrIO);
-			}
-
-			if (1 != fread(&buf[i].p->prev, sizeof(buf->p->prev), 1, h->fp)) {
-				return error(bErrIO);
-			}
-
-			if (1 != fread(&buf[i].p->next, sizeof(buf->p->next), 1, h->fp)) {
-				return error(bErrIO);
-			}
-
-			if (1 != fread(&buf[i].p->childLT, sizeof(buf->p->childLT), 1, h->fp)) {
-				return error(bErrIO);
-			}
-
-			if (1 != fread(&buf[i].p->fkey, sizeof(buf->p->fkey), 1, h->fp)) {
-				return error(bErrIO);
-			}
-		}
-
-#endif
-
-		buf->modified	= boolean_false;
-		buf->valid		= boolean_true;
-		nDiskReads++;
-	}
-
-	*b = buf;
-	return bErrOk;
-}
-
-typedef enum ION_BPP_MODE { MODE_FIRST, MODE_MATCH, MODE_FGEQ, MODE_LLEQ } ion_bpp_mode_e;
-
-static int
-search(
-	ion_bpp_handle_t			handle,
-	ion_bpp_buffer_t			*buf,
-	void						*key,
-	ion_bpp_external_address_t	rec,
-	ion_bpp_key_t				**mkey,
-	ion_bpp_mode_e				mode
-) {
-	/*
-	 * input:
-	 *   p					  pointer to node
-	 *   key					key to find
-	 *   rec					record address (dupkey only)
-	 * output:
-	 *   k					  pointer to ion_bpp_key_t info
-	 * returns:
-	 *   CC_EQ				  key = mkey
-	 *   CC_LT				  key < mkey
-	 *   CC_GT				  key > mkey
-	*/
-	ion_bpp_h_node_t	*h = handle;
-	int					cc;		/* condition code */
-	int					m;		/* midpoint of search */
-	int					lb;		/* lower-bound of binary search */
-	int					ub;		/* upper-bound of binary search */
-	ion_bpp_bool_t		foundDup;			/* true if found a duplicate key */
-
-	/* scan current node for key using binary search */
-	foundDup	= boolean_false;
-	lb			= 0;
-	ub			= ct(buf) - 1;
-
-	while (lb <= ub) {
-		m		= (lb + ub) / 2;
-		*mkey	= fkey(buf) + ks(m);
-		cc		= h->comp(key, key(*mkey), (ion_key_size_t) (h->keySize));
-
-		if ((cc < 0) || ((cc == 0) && (MODE_FGEQ == mode))) {
-			/* key less than key[m] */
-			ub = m - 1;
-		}
-		else if ((cc > 0) || ((cc == 0) && (MODE_LLEQ == mode))) {
-			/* key greater than key[m] */
-			lb = m + 1;
-		}
-		else {
-			/* keys match */
-			if (h->dupKeys) {
-				switch (mode) {
-					case MODE_FIRST:
-						/* backtrack to first key */
-						ub			= m - 1;
-						foundDup	= boolean_true;
-						break;
-
-					case MODE_MATCH:
-
-						/* rec's must also match */
-						if (rec < rec(*mkey)) {
-							ub	= m - 1;
-							cc	= ION_CC_LT;
-						}
-						else if (rec > rec(*mkey)) {
-							lb	= m + 1;
-							cc	= ION_CC_GT;
-						}
-						else {
-							return ION_CC_EQ;
-						}
-
-						break;
-
-					case MODE_FGEQ:
-					case MODE_LLEQ:	/* nop */
-						break;
-				}
-			}
-			else {
-				return cc;
-			}
-		}
-	}
-
-	if (ct(buf) == 0) {
-		/* empty list */
-		*mkey = fkey(buf);
-		return ION_CC_LT;
-	}
-
-	if (h->dupKeys && (mode == MODE_FIRST) && foundDup) {
-		/* next key is first key in set of duplicates */
-		*mkey += ks(1);
-		return ION_CC_EQ;
-	}
-
-	if (MODE_LLEQ == mode) {
-		*mkey	= fkey(buf) + ks(ub + 1);
-		cc		= h->comp(key, key(*mkey), (ion_key_size_t) (h->keySize));
-
-		if ((ub == ct(buf) - 1) || ((ub != -1) && (cc <= 0))) {
-			*mkey	= fkey(buf) + ks(ub);
-			cc		= h->comp(key, key(*mkey), (ion_key_size_t) (h->keySize));
-		}
-
-		return cc;
-	}
-
-	if (MODE_FGEQ == mode) {
-		*mkey	= fkey(buf) + ks(lb);
-		cc		= h->comp(key, key(*mkey), (ion_key_size_t) (h->keySize));
-
-		if ((lb < ct(buf) - 1) && (cc < 0)) {
-			*mkey	= fkey(buf) + ks(lb + 1);
-			cc		= h->comp(key, key(*mkey), (ion_key_size_t) (h->keySize));
-		}
-
-		return cc;
-	}
-
-	/* didn't find key */
-	return cc;
-}
-
-static ion_bpp_err_t
-scatterRoot(
-	ion_bpp_handle_t handle
-) {
-	ion_bpp_h_node_t	*h = handle;
-	ion_bpp_buffer_t	*gbuf;
-	ion_bpp_buffer_t	*root;
-
-	/* scatter gbuf to root */
-
-	root				= &h->root;
-	gbuf				= &h->gbuf;
-	memcpy(fkey(root), fkey(gbuf), ks(ct(gbuf)));
-	childLT(fkey(root)) = childLT(fkey(gbuf));
-	ct(root)			= ct(gbuf);
-	leaf(root)			= leaf(gbuf);
-	return bErrOk;
-}
-
-static ion_bpp_err_t
-scatter(
-	ion_bpp_handle_t	handle,
-	ion_bpp_buffer_t	*pbuf,
-	ion_bpp_key_t		*pkey,
-	int					is,
-	ion_bpp_buffer_t	**tmp
-) {
-	ion_bpp_h_node_t	*h = handle;
-	ion_bpp_buffer_t	*gbuf;				/* gather buf */
-	ion_bpp_key_t		*gkey;			/* gather buf key */
-	ion_bpp_err_t		rc;			/* return code */
-	int					iu;		/* number of tmp's used */
-	int					k0Min;	/* min #keys that can be mapped to tmp[0] */
-	int					knMin;	/* min #keys that can be mapped to tmp[1..3] */
-	int					k0Max;	/* max #keys that can be mapped to tmp[0] */
-	int					knMax;	/* max #keys that can be mapped to tmp[1..3] */
-	int					sw;		/* shift width */
-	int					len;	/* length of remainder of buf */
-	int					base;	/* base count distributed to tmps */
-	int					extra;	/* extra counts */
-	int					ct;
-	int					i;
-
-	/*
-	 * input:
-	 *   pbuf				   parent buffer of gathered keys
-	 *   pkey				   where we insert a key if needed in parent
-	 *   is					 number of supplied tmps
-	 *   tmp					array of tmp's to be used for scattering
-	 * output:
-	 *   tmp					array of tmp's used for scattering
-	*/
-
-	/* scatter gbuf to tmps, placing 3/4 max in each tmp */
-
-	gbuf	= &h->gbuf;
-	gkey	= fkey(gbuf);
-	ct		= ct(gbuf);
-
-	/****************************************
-	 * determine number of tmps to use (iu) *
-	 ****************************************/
-	iu		= is;
-
-	/* determine limits */
-	if (leaf(gbuf)) {
-		/* minus 1 to allow for insertion */
-		k0Max	= h->maxCt - 1;
-		knMax	= h->maxCt - 1;
-		/* plus 1 to allow for deletion */
-		k0Min	= (h->maxCt / 2) + 1;
-		knMin	= (h->maxCt / 2) + 1;
-	}
-	else {
-		/* can hold an extra gbuf key as it's translated to a LT pointer */
-		k0Max	= h->maxCt - 1;
-		knMax	= h->maxCt;
-		k0Min	= (h->maxCt / 2) + 1;
-		knMin	= ((h->maxCt + 1) / 2) + 1;
-	}
-
-	/* calculate iu, number of tmps to use */
-	while (1) {
-		if ((iu == 0) || (ct > (k0Max + (iu - 1) * knMax))) {
-			/* add a buffer */
-			if ((rc = assignBuf(handle, allocAdr(handle), &tmp[iu])) != 0) {
-				return rc;
-			}
-
-			/* update sequential links */
-			if (leaf(gbuf)) {
-				/* adjust sequential links */
-				if (iu == 0) {
-					/* no tmps supplied when splitting root for first time */
-					prev(tmp[0])	= 0;
-					next(tmp[0])	= 0;
-				}
-				else {
-					prev(tmp[iu])		= tmp[iu - 1]->adr;
-					next(tmp[iu])		= next(tmp[iu - 1]);
-					next(tmp[iu - 1])	= tmp[iu]->adr;
-				}
-			}
-
-			iu++;
-			nNodesIns++;
-		}
-		else if ((iu > 1) && (ct < (k0Min + (iu - 1) * knMin))) {
-			/* del a buffer */
-			iu--;
-
-			/* adjust sequential links */
-			if (leaf(gbuf) && tmp[iu - 1]->adr) {
-				next(tmp[iu - 1]) = next(tmp[iu]);
-			}
-
-			next(tmp[iu - 1]) = next(tmp[iu]);
-			nNodesDel++;
-		}
-		else {
-			break;
-		}
-	}
-
-	/* establish count for each tmp used */
-	base	= ct / iu;
-	extra	= ct % iu;
-
-	for (i = 0; i < iu; i++) {
-		int n;
-
-		n = base;
-
-		/* distribute extras, one at a time */
-		/* don't do to 1st node, as it may be internal and can't hold it */
-		if (i && extra) {
-			n++;
-			extra--;
-		}
-
-		ct(tmp[i]) = n;
-	}
-
-	/**************************************
-	 * update sequential links and parent *
-	 **************************************/
-	if (iu != is) {
-		/* link last node to next */
-		if (leaf(gbuf) && next(tmp[iu - 1])) {
-			ion_bpp_buffer_t *buf;
-
-			if ((rc = readDisk(handle, next(tmp[iu - 1]), &buf)) != 0) {
-				return rc;
-			}
-
-			prev(buf) = tmp[iu - 1]->adr;
-
-			if ((rc = writeDisk(buf)) != 0) {
-				return rc;
-			}
-		}
-
-		/* shift keys in parent */
-		sw = ks(iu - is);
-
-		if (sw < 0) {
-			len = ks(ct(pbuf)) - (pkey - fkey(pbuf)) + sw;
-			memmove(pkey, pkey - sw, len);
-		}
-		else {
-			len = ks(ct(pbuf)) - (pkey - fkey(pbuf));
-			memmove(pkey + sw, pkey, len);
-		}
-
-		/* don't count LT buffer for empty parent */
-		if (ct(pbuf)) {
-			ct(pbuf) += iu - is;
-		}
-		else {
-			ct(pbuf) += iu - is - 1;
-		}
-	}
-
-	/*******************************
-	 * distribute keys to children *
-	 *******************************/
-	for (i = 0; i < iu; i++) {
-		/* update LT pointer and parent nodes */
-		if (leaf(gbuf)) {
-			/* update LT, tmp[i] */
-			childLT(fkey(tmp[i])) = 0;
-
-			/* update parent */
-			if (i == 0) {
-				childLT(pkey) = tmp[i]->adr;
-			}
-			else {
-				memcpy(pkey, gkey, ks(1));
-				childGE(pkey)	= tmp[i]->adr;
-				pkey			+= ks(1);
-			}
-		}
-		else {
-			if (i == 0) {
-				/* update LT, tmp[0] */
-				childLT(fkey(tmp[i]))	= childLT(gkey);
-				/* update LT, parent */
-				childLT(pkey)			= tmp[i]->adr;
-			}
-			else {
-				/* update LT, tmp[i] */
-				childLT(fkey(tmp[i]))	= childGE(gkey);
-				/* update parent key */
-				memcpy(pkey, gkey, ks(1));
-				childGE(pkey)			= tmp[i]->adr;
-				gkey					+= ks(1);
-				pkey					+= ks(1);
-				ct(tmp[i])--;
-			}
-		}
-
-		/* install keys, tmp[i] */
-		memcpy(fkey(tmp[i]), gkey, ks(ct(tmp[i])));
-		leaf(tmp[i])	= leaf(gbuf);
-
-		gkey			+= ks(ct(tmp[i]));
-	}
-
-	leaf(pbuf) = boolean_false;
-
-	/************************
-	 * write modified nodes *
-	 ************************/
-	if ((rc = writeDisk(pbuf)) != 0) {
-		return rc;
-	}
-
-	for (i = 0; i < iu; i++) {
-		if ((rc = writeDisk(tmp[i])) != 0) {
-			return rc;
-		}
-	}
-
-	return bErrOk;
-}
-
-static ion_bpp_err_t
-gatherRoot(
-	ion_bpp_handle_t handle
-) {
-	ion_bpp_h_node_t	*h = handle;
-	ion_bpp_buffer_t	*gbuf;
-	ion_bpp_buffer_t	*root;
-
-	/* gather root to gbuf */
-	root		= &h->root;
-	gbuf		= &h->gbuf;
-	memcpy(p(gbuf), root->p, 3 * h->sectorSize);
-	leaf(gbuf)	= leaf(root);
-	ct(root)	= 0;
-	return bErrOk;
-}
-
-static ion_bpp_err_t
-gather(
-	ion_bpp_handle_t	handle,
-	ion_bpp_buffer_t	*pbuf,
-	ion_bpp_key_t		**pkey,
-	ion_bpp_buffer_t	**tmp
-) {
-	ion_bpp_h_node_t	*h = handle;
-	ion_bpp_err_t		rc;			/* return code */
-	ion_bpp_buffer_t	*gbuf;
-	ion_bpp_key_t		*gkey;
-
-	/*
-	 * input:
-	 *   pbuf				   parent buffer
-	 *   pkey				   pointer to match key in parent
-	 * output:
-	 *   tmp					buffers to use for scatter
-	 *   pkey				   pointer to match key in parent
-	 * returns:
-	 *   bErrOk				 operation successful
-	 * notes:
-	 *   Gather 3 buffers to gbuf.  Setup for subsequent scatter by
-	 *   doing the following:
-	 *	 - setup tmp buffer array for scattered buffers
-	 *	 - adjust pkey to point to first key of 3 buffers
-	*/
-
-	/* find 3 adjacent buffers */
-	if (*pkey == lkey(pbuf)) {
-		*pkey -= ks(1);
-	}
-
-	if ((rc = readDisk(handle, childLT(*pkey), &tmp[0])) != 0) {
-		return rc;
-	}
-
-	if ((rc = readDisk(handle, childGE(*pkey), &tmp[1])) != 0) {
-		return rc;
-	}
-
-	if ((rc = readDisk(handle, childGE(*pkey + ks(1)), &tmp[2])) != 0) {
-		return rc;
-	}
-
-	/* gather nodes to gbuf */
-	gbuf			= &h->gbuf;
-	gkey			= fkey(gbuf);
-
-	/* tmp[0] */
-	childLT(gkey)	= childLT(fkey(tmp[0]));
-	memcpy(gkey, fkey(tmp[0]), ks(ct(tmp[0])));
-	gkey			+= ks(ct(tmp[0]));
-	ct(gbuf)		= ct(tmp[0]);
-
-	/* tmp[1] */
-	if (!leaf(tmp[1])) {
-		memcpy(gkey, *pkey, ks(1));
-		childGE(gkey)	= childLT(fkey(tmp[1]));
-		ct(gbuf)++;
-		gkey			+= ks(1);
-	}
-
-	memcpy(gkey, fkey(tmp[1]), ks(ct(tmp[1])));
-	gkey		+= ks(ct(tmp[1]));
-	ct(gbuf)	+= ct(tmp[1]);
-
-	/* tmp[2] */
-	if (!leaf(tmp[2])) {
-		memcpy(gkey, *pkey + ks(1), ks(1));
-		childGE(gkey)	= childLT(fkey(tmp[2]));
-		ct(gbuf)++;
-		gkey			+= ks(1);
-	}
-
-	memcpy(gkey, fkey(tmp[2]), ks(ct(tmp[2])));
-	ct(gbuf)	+= ct(tmp[2]);
-
-	leaf(gbuf)	= leaf(tmp[0]);
-
-	return bErrOk;
-}
-
-ion_bpp_err_t
-bOpen(
-	ion_bpp_open_t		info,
-	ion_bpp_handle_t	*handle
-) {
-	ion_bpp_h_node_t	*h;
-	ion_bpp_err_t		rc;			/* return code */
-	int					bufCt;	/* number of tmp buffers */
-	ion_bpp_buffer_t	*buf;				/* buffer */
-	int					maxCt;	/* maximum number of keys in a node */
-	ion_bpp_buffer_t	*root;
-	int					i;
-	ion_bpp_node_t		*p;
-
-	if ((info.sectorSize < sizeof(ion_bpp_h_node_t)) || (0 != info.sectorSize % 4)) {
-		return bErrSectorSize;
-	}
-
-	/* determine sizes and offsets */
-	/* leaf/n, prev, next, [childLT,key,rec]... childGE */
-	/* ensure that there are at least 3 children/parent for gather/scatter */
-	maxCt	= info.sectorSize - (sizeof(ion_bpp_node_t) - sizeof(ion_bpp_key_t));
-	maxCt	/= sizeof(ion_bpp_address_t) + info.keySize + sizeof(ion_bpp_external_address_t);
-
-	if (maxCt < 6) {
-		return bErrSectorSize;
-	}
-
-	/* copy parms to ion_bpp_h_node_t */
-	if ((h = calloc(1, sizeof(ion_bpp_h_node_t))) == NULL) {
-		return error(bErrMemory);
-	}
-
-	h->keySize		= info.keySize;
-	h->dupKeys		= info.dupKeys;
-	h->sectorSize	= info.sectorSize;
-	h->comp			= info.comp;
-
-	/* childLT, key, rec */
-	h->ks			= sizeof(ion_bpp_address_t) + h->keySize + sizeof(ion_bpp_external_address_t);
-	h->maxCt		= maxCt;
-
-	/* Allocate buflist.
-	 * During insert/delete, need simultaneous access to 7 buffers:
-	 *  - 4 adjacent child bufs
-	 *  - 1 parent buf
-	 *  - 1 next sequential link
-	 *  - 1 lastGE
-	*/
-	bufCt			= 7;
-
-	if ((h->malloc1 = calloc(bufCt, sizeof(ion_bpp_buffer_t))) == NULL) {
-		return error(bErrMemory);
-	}
-
-	buf = h->malloc1;
-
-	/*
-	 * Allocate bufs.
-	 * We need space for the following:
-	 *  - bufCt buffers, of size sectorSize
-	 *  - 1 buffer for root, of size 3*sectorSize
-	 *  - 1 buffer for gbuf, size 3*sectorsize + 2 extra keys
-	 *	to allow for LT pointers in last 2 nodes when gathering 3 full nodes
-	*/
-	if ((h->malloc2 = malloc((bufCt + 6) * h->sectorSize + 2 * h->ks)) == NULL) {
-		return error(bErrMemory);
-	}
-
-	for (i = 0; i < (bufCt + 6) * h->sectorSize + 2 * h->ks; i++) {
-		((char *) h->malloc2)[i] = 0;
-	}
-
-	p				= h->malloc2;
-
-	/* initialize buflist */
-	h->bufList.next = buf;
-	h->bufList.prev = buf + (bufCt - 1);
-
-	for (i = 0; i < bufCt; i++) {
-		buf->next		= buf + 1;
-		buf->prev		= buf - 1;
-		buf->modified	= boolean_false;
-		buf->valid		= boolean_false;
-		buf->p			= p;
-		p				= (ion_bpp_node_t *) ((char *) p + h->sectorSize);
-		buf++;
-	}
-
-	h->bufList.next->prev	= &h->bufList;
-	h->bufList.prev->next	= &h->bufList;
-
-	/* initialize root */
-	root					= &h->root;
-	root->p					= p;
-	p						= (ion_bpp_node_t *) ((char *) p + 3 * h->sectorSize);
-	h->gbuf.p				= p;/* done last to include extra 2 keys */
-
-	h->curBuf				= NULL;
-	h->curKey				= NULL;
-
-	/* initialize root */
-	if (ion_fexists(info.iName)) {
-		/* open an existing database */
-		h->fp = ion_fopen(info.iName);
-
-		if ((rc = readDisk(h, 0, &root)) != 0) {
-			return rc;
-		}
-
-		if (ion_fseek(h->fp, 0, ION_FILE_END)) {
-			return error(bErrIO);
-		}
-
-		if ((h->nextFreeAdr = ion_ftell(h->fp)) == -1) {
-			return error(bErrIO);
-		}
-	}
-
-	/*TODO make this cleaner **/
-#if defined(ARDUINO)
-	else if (NULL != (h->fp = ion_fopen(info.iName)).file) {
-#else
-	else if (NULL != (h->fp = ion_fopen(info.iName))) {
-#endif
-		/* initialize root */
-		memset(root->p, 0, 3 * h->sectorSize);
-		leaf(root)		= 1;
-		h->nextFreeAdr	= 3 * h->sectorSize;
-		root->modified	= 1;
-		flushAll(h);
-	}
-	else {
-		/* something's wrong */
-		free(h);
-		return bErrFileNotOpen;
-	}
-
-	*handle = h;
-	return bErrOk;
-}
-
-ion_bpp_err_t
-bClose(
-	ion_bpp_handle_t handle
-) {
-	ion_bpp_h_node_t *h = handle;
-
-	if (h == NULL) {
-		return bErrOk;
-	}
-
-	/* flush idx */
-/*TODO: Cleanup **/
-#if defined(ARDUINO)
-
-	if (h->fp.file) {
-#else
-
-	if (h->fp) {
-#endif
-		flushAll(handle);
-		ion_fclose(h->fp);
-	}
-
-	if (h->malloc2) {
-		free(h->malloc2);
-	}
-
-	if (h->malloc1) {
-		free(h->malloc1);
-	}
-
-	free(h);
-	return bErrOk;
-}
-
-ion_bpp_err_t
-bFindKey(
-	ion_bpp_handle_t			handle,
-	void						*key,
-	ion_bpp_external_address_t	*rec
-) {
-	ion_bpp_key_t		*mkey;			/* matched key */
-	ion_bpp_buffer_t	*buf;				/* buffer */
-	ion_bpp_err_t		rc;			/* return code */
-
-	ion_bpp_h_node_t *h = handle;
-
-	buf = &h->root;
-
-	/* find key, and return address */
-	while (1) {
-		if (leaf(buf)) {
-			if (search(handle, buf, key, 0, &mkey, MODE_FIRST) == 0) {
-				*rec		= rec(mkey);
-				h->curBuf	= buf;
-				h->curKey	= mkey;
-				return bErrOk;
-			}
-			else {
-				return bErrKeyNotFound;
-			}
-		}
-		else {
-			if (search(handle, buf, key, 0, &mkey, MODE_FIRST) < 0) {
-				if ((rc = readDisk(handle, childLT(mkey), &buf)) != 0) {
-					return rc;
-				}
-			}
-			else {
-				if ((rc = readDisk(handle, childGE(mkey), &buf)) != 0) {
-					return rc;
-				}
-			}
-		}
-	}
-}
-
-ion_bpp_err_t
-bFindFirstGreaterOrEqual(
-	ion_bpp_handle_t			handle,
-	void						*key,
-	void						*mkey,
-	ion_bpp_external_address_t	*rec
-) {
-	ion_bpp_key_t		*lgeqkey;			/* matched key */
-	ion_bpp_buffer_t	*buf;				/* buffer */
-	ion_bpp_err_t		rc;			/* return code */
-	int					cc;
-
-	ion_bpp_h_node_t *h = handle;
-
-	buf = &h->root;
-
-	/* find key, and return address */
-	while (1) {
-		if (leaf(buf)) {
-			if ((cc = search(handle, buf, key, 0, &lgeqkey, MODE_LLEQ)) > 0) {
-				if ((lgeqkey - fkey(buf)) / (h->ks) == (ct(buf))) {
-					return bErrKeyNotFound;
-				}
-
-				lgeqkey += ks(1);
-			}
-
-			h->curBuf	= buf;
-			h->curKey	= lgeqkey;
-			memcpy(mkey, key(lgeqkey), h->keySize);
-			*rec		= rec(lgeqkey);
-
-			return bErrOk;
-		}
-		else {
-			cc = search(handle, buf, key, 0, &lgeqkey, MODE_LLEQ);
-
-			if (cc < 0) {
-				if ((rc = readDisk(handle, childLT(lgeqkey), &buf)) != 0) {
-					return rc;
-				}
-			}
-			else {
-				if ((rc = readDisk(handle, childGE(lgeqkey), &buf)) != 0) {
-					return rc;
-				}
-			}
-		}
-	}
-}
-
-ion_bpp_err_t
-bInsertKey(
-	ion_bpp_handle_t			handle,
-	void						*key,
-	ion_bpp_external_address_t	rec
-) {
-	int					rc;		/* return code */
-	ion_bpp_key_t		*mkey;			/* match key */
-	int					len;	/* length to shift */
-	int					cc;		/* condition code */
-	ion_bpp_buffer_t	*buf, *root;
-	ion_bpp_buffer_t	*tmp[4];
-	unsigned int		keyOff;
-	ion_bpp_bool_t		lastGEvalid;		/* true if GE branch taken */
-	ion_bpp_bool_t		lastLTvalid;		/* true if LT branch taken after GE branch */
-	ion_bpp_address_t	lastGE;			/* last childGE traversed */
-	unsigned int		lastGEkey;	/* last childGE key traversed */
-	int					height;	/* height of tree */
-
-	ion_bpp_h_node_t *h = handle;
-
-	root		= &h->root;
-	lastGEvalid = boolean_false;
-	lastLTvalid = boolean_false;
-
-	/* check for full root */
-	if (ct(root) == 3 * h->maxCt) {
-		/* gather root and scatter to 4 bufs */
-		/* this increases b-tree height by 1 */
-		if ((rc = gatherRoot(handle)) != 0) {
-			return rc;
-		}
-
-		if ((rc = scatter(handle, root, fkey(root), 0, tmp)) != 0) {
-			return rc;
-		}
-	}
-
-	buf		= root;
-	height	= 0;
-
-	while (1) {
-		if (leaf(buf)) {
-			/* in leaf, and there' room guaranteed */
-
-			if (height > maxHeight) {
-				maxHeight = height;
-			}
-
-			/* set mkey to point to insertion point */
-			switch (search(handle, buf, key, rec, &mkey, MODE_MATCH)) {
-				case ION_CC_LT:	/* key < mkey */
-
-					if (!h->dupKeys && (0 != ct(buf)) && (h->comp(key, mkey, (ion_key_size_t) (h->keySize)) == ION_CC_EQ)) {
-						return bErrDupKeys;
-					}
-
+				found = 1;
+				break;
+			} else {
+				unsigned char* nullNode = (unsigned char*) calculateNullNode(0,bpp->head->revision);
+				if(memcmp(nullNode,element,bpp->head->keySize) == 0){
+					printf("|NULL|[J]%i",j);
+					leaf_offset = (leaf_offset * (bpp->head->leafCount+1))+(j+1);
+					found = 1;
 					break;
-
-				case ION_CC_EQ:	/* key = mkey */
-					return bErrDupKeys;
+				}
+			}
+		}
+		printf("\n");
+		if (found == 0){
+			printf("Modifying Offset\n");
+			if(leaf_offset > 0) {
+				leaf_offset = ((leaf_offset * (bpp->head->leafCount+1))-1)*bpp->head->leafCount;
+			} else {
+				leaf_offset = bpp->head->leafCount;
+			}
+		}
+	}
+	//If record was found, return value.
+	if(loc != 0){
+		printf("[Located] %i [index] %lu [offset] %lu\n", loc,bpp->indices[bpp->head->depth],leaf_offset);
+		fseek(bpp->file, bpp->indices[bpp->head->depth]+(leaf_offset*bpp->head->valueSize),SEEK_SET);
+		fread(leaf,bpp->head->valueSize, 1, bpp->file);
+		return leaf;
+	} else {
+		return NULL;
+	}
+}
+static unsigned char insertRecords(ion_bpp *bpp, void* key, void* value){
+	if(key == NULL){return 255;}/*Invalid Key TODO::Check if Key value == 0*/
+	//int depth = 0;
+	
+	//Special case, EMPTY tree
+	if(bpp->head->depth==0){
+		printf("Begin Special case Insertion!\n");
+		if(bpp->file == NULL){printf("Wtf? NULL?\n");}
+		fseek(bpp->file, BPP_FIRST_LEAF_OFFSET, SEEK_SET);
+		if(fwrite(&key, bpp->head->keySize, 1, bpp->file) == 0) {
+			printf("ERR: Insert First Leaf Failed!\n");
+		} else {
+			void *EMPTY = calculateNullNode(bpp->head->keySize, bpp->head->revision);
+			fwrite(&EMPTY,1, (bpp->head->leafCount-1)*bpp->head->keySize, bpp->file); //Create entries for other nodes in leaf.
+			fwrite(&value,bpp->head->valueSize, 1, bpp->file);
+			fwrite(&EMPTY,1, (bpp->head->leafCount-1)*bpp->head->valueSize, bpp->file); //Create entries for other nodes in leaf.
+			bpp->head->depth = 1;
+			bpp->head->recordCount++;
+			writeHeader(bpp->file, bpp->head);
+		}
+	}//TODO :: After mergeRight and mergeUp are built.
+/* else {
+		void* leaf;
+		leaf = malloc(bpp->head->keySize * bpp->head->leafCount);
+		long leaf_offset=0;
+		//Approach Appropriate Bottom Row.
+		for (int i = 0; i<bpp->head->depth-1; i++){
+			fseek(bpp->file, bpp->indices[i]+(leaf_offset*bpp->head->keySize),SEEK_SET);
+			fread(leaf,bpp->head->keySize, bpp->head->leafCount, bpp->file);
+			bool found = 0;
+			for (int j = 0; j<=bpp->head->leafCount;j++){
+				void* element = leaf + (j * bpp->head->keySize);
+				int comp = memcmp(key,element,bpp->head->keySize);
+				if(comp<0 || comp==0){
+					leaf_offset = (leaf_offset * bpp->head->leafCount+1)+j;
+					found = 1;
 					break;
-
-				case ION_CC_GT:	/* key > mkey */
-
-					if (!h->dupKeys && (h->comp(key, mkey, (ion_key_size_t) (h->keySize)) == ION_CC_EQ)) {
-						return bErrDupKeys;
-					}
-
-					mkey += ks(1);
-					break;
-			}
-
-			/* shift items GE key to right */
-			keyOff	= mkey - fkey(buf);
-			len		= ks(ct(buf)) - keyOff;
-
-			if (len) {
-				memmove(mkey + ks(1), mkey, len);
-			}
-
-			/* insert new key */
-			memcpy(key(mkey), key, h->keySize);
-			rec(mkey)		= rec;
-			childGE(mkey)	= 0;
-			ct(buf)++;
-
-			if ((rc = writeDisk(buf)) != 0) {
-				return rc;
-			}
-
-			/* if new key is first key, then fixup lastGE key */
-			if (!keyOff && lastLTvalid) {
-				ion_bpp_buffer_t	*tbuf;
-				ion_bpp_key_t		*tkey;
-
-				if ((rc = readDisk(handle, lastGE, &tbuf)) != 0) {
-					return rc;
-				}
-
-				/* tkey = fkey(tbuf) + lastGEkey; */
-				tkey		= fkey(tbuf);
-				memcpy(key(tkey), key, h->keySize);
-				rec(tkey)	= rec;
-
-				if ((rc = writeDisk(tbuf)) != 0) {
-					return rc;
 				}
 			}
-
-			nKeysIns++;
-			break;
+			if (found == 0) {
+				leaf_offset = (leaf_offset * bpp->head->leafCount+1)+bpp->head->leafCount+1;
+			}
 		}
-		else {
-			/* internal node, descend to child */
-			ion_bpp_buffer_t *cbuf;	/* child buf */
-
-			height++;
-
-			/* read child */
-			if ((cc = search(handle, buf, key, rec, &mkey, MODE_MATCH)) < 0) {
-				if ((rc = readDisk(handle, childLT(mkey), &cbuf)) != 0) {
-					return rc;
-				}
-			}
-			else {
-				if ((rc = readDisk(handle, childGE(mkey), &cbuf)) != 0) {
-					return rc;
-				}
-			}
-
-			/* check for room in child */
-			if (ct(cbuf) == h->maxCt) {
-				/* gather 3 bufs and scatter */
-				if ((rc = gather(handle, buf, &mkey, tmp)) != 0) {
-					return rc;
-				}
-
-				if ((rc = scatter(handle, buf, mkey, 3, tmp)) != 0) {
-					return rc;
-				}
-
-				/* read child */
-				if ((cc = search(handle, buf, key, rec, &mkey, MODE_MATCH)) < 0) {
-					if ((rc = readDisk(handle, childLT(mkey), &cbuf)) != 0) {
-						return rc;
-					}
-				}
-				else {
-					if ((rc = readDisk(handle, childGE(mkey), &cbuf)) != 0) {
-						return rc;
-					}
-				}
-			}
-
-			if ((cc >= 0) || (mkey != fkey(buf))) {
-				lastGEvalid = boolean_true;
-				lastLTvalid = boolean_false;
-				lastGE		= buf->adr;
-				lastGEkey	= mkey - fkey(buf);
-
-				if (cc < 0) {
-					lastGEkey -= ks(1);
-				}
-			}
-			else {
-				if (lastGEvalid) {
-					lastLTvalid = boolean_true;
-				}
-			}
-
-			buf = cbuf;
-		}
-	}
-
-	return bErrOk;
+		//Insert
+		void* bucket = malloc(bpp->head->keySize);
+		fseek(bpp->file, bpp->indices[bpp->head->depth-1]+(leaf_offset*bpp->head->keySize),SEEK_SET);
+		fread(leaf,bpp->head->keySize, bpp->head->leafCount, bpp->file);
+		
+	}*/
+	return 0;
 }
 
-ion_bpp_err_t
-bUpdateKey(
-	ion_bpp_handle_t			handle,
-	void						*key,
-	ion_bpp_external_address_t	rec
-) {
-	int					rc;		/* return code */
-	ion_bpp_key_t		*mkey;	/* match key */
-	int					cc;		/* condition code */
-	ion_bpp_buffer_t	*buf, *root;
-	ion_bpp_buffer_t	*tmp[4];
-	int					height;	/* height of tree */
 
-	ion_bpp_h_node_t *h = handle;
 
-	root = &h->root;
-
-	/* check for full root */
-	if (ct(root) == 3 * h->maxCt) {
-		/* gather root and scatter to 4 bufs */
-		/* this increases b-tree height by 1 */
-		if ((rc = gatherRoot(handle)) != 0) {
-			return rc;
+static ion_bpp_search_record* searchRecordOffset(ion_bpp *bpp, void* searchKey){ //SUPERIOR TO OTHER SEARCH
+	unsigned char* leaf;
+	unsigned char* element;
+	leaf = malloc(bpp->head->keySize * bpp->head->leafCount);
+	bool found = 0;
+	bool next_row = 0;
+	unsigned long offset = 0;
+	void* nullValue = calculateNullNode(bpp->head->keySize, bpp->head->revision);
+	int comp = 0;
+	int isNull = 0;
+	for (unsigned short depth = 0; depth < bpp->head->depth;depth++){
+		found = 0;
+		fseek(bpp->file, bpp->indices[depth]+(offset*bpp->head->keySize),SEEK_SET);
+		fread(leaf,bpp->head->keySize, bpp->head->leafCount, bpp->file);
+		for (unsigned short node = 0; node < bpp->head->leafCount; node++){
+			element = leaf + (node * bpp->head->keySize);
+			comp = memcmp(searchKey,element,bpp->head->keySize);
+			isNull = memcmp(nullValue,element,bpp->head->keySize);
+			printf("cmp: %i",comp);
+			if(comp<0){
+				if(depth == bpp->head->depth-1) {
+					offset = offset + node;
+				} else {
+					offset = offset * (bpp->head->leafCount+1) + node;
+				}
+				next_row = 1;
+				break;
+			}
+			if(comp==0){
+				printf("Found: Depth %i", depth);
+				if(depth == bpp->head->depth-1) {
+					offset = offset + node;
+				} else {
+					offset = offset * (bpp->head->leafCount+1) + node+1;
+				}
+				found=1;
+				next_row = 1;
+				break;
+			}
+			if(isNull == 0){
+				if(depth == bpp->head->depth-1) {
+					offset = offset + node;
+				} else {
+					offset = offset * (bpp->head->leafCount+1) + node+1;
+				}
+				found=0;
+				next_row = 1;
+				break;
+			}
+			//offset * (bpp->head->leafCount+1) + i
 		}
-
-		if ((rc = scatter(handle, root, fkey(root), 0, tmp)) != 0) {
-			return rc;
+		if(next_row == 0){
+			printf("NEXTROW %lu\n", offset);
+			//offset = (offset + (bpp->head->leafCount)) * (bpp->head->leafCount+1);
+			//offset = (offset * (bpp->head->leafCount+1)) + (bpp->head->leafCount);
+			if(depth != bpp->head->depth-1){
+				offset = (offset + (bpp->head->leafCount+1)) * (bpp->head->leafCount);
+			}
+			printf("Off %lu\n",offset);
+		}
+		next_row = 0;
+	}
+	ion_bpp_search_record* rec;
+	rec = (ion_bpp_search_record*) malloc(sizeof(ion_bpp_search_record));
+	rec->row_offset = (unsigned long*) malloc(sizeof(long));
+	(*rec->row_offset) = offset;
+	rec->found = found;
+	rec->has_end_offset = 0;
+	if(found && bpp->head->allow_duplicates){
+		while(true){
+			offset++;
+			fseek(bpp->file, bpp->indices[bpp->head->depth-1]+(offset*bpp->head->keySize),SEEK_SET);
+			if(fread(element,bpp->head->keySize, 1, bpp->file) == 0){
+				break;
+			}
+			if(memcmp(searchKey,element,bpp->head->keySize) == 0){
+				if(rec->has_end_offset == 0){
+					rec->end_offset = (unsigned long*)malloc(sizeof(long));
+					rec->has_end_offset = 1;
+				}
+				(*rec->end_offset) = offset;
+			} else {break;}
 		}
 	}
-
-	buf		= root;
-	height	= 0;
-
-	while (1) {
-		if (leaf(buf)) {
-			/* in leaf, and there' room guaranteed */
-
-			if (height > maxHeight) {
-				maxHeight = height;
-			}
-
-			/* set mkey to point to update point */
-			switch (search(handle, buf, key, rec, &mkey, MODE_MATCH)) {
-				case ION_CC_LT:	/* key < mkey */
-					return bErrKeyNotFound;
-					break;
-
-				case ION_CC_EQ:	/* key = mkey */
-					break;
-
-				case ION_CC_GT:	/* key > mkey */
-					return bErrKeyNotFound;
-					break;
-			}
-
-			/* update key */
-			rec(mkey) = rec;
-			break;
-		}
-		else {
-			/* internal node, descend to child */
-			ion_bpp_buffer_t *cbuf;	/* child buf */
-
-			height++;
-
-			/* read child */
-			if ((cc = search(handle, buf, key, rec, &mkey, MODE_MATCH)) < 0) {
-				if ((rc = readDisk(handle, childLT(mkey), &cbuf)) != 0) {
-					return rc;
-				}
-			}
-			else {
-				if ((rc = readDisk(handle, childGE(mkey), &cbuf)) != 0) {
-					return rc;
-				}
-			}
-
-			/* check for room in child */
-			if (ct(cbuf) == h->maxCt) {
-				/* gather 3 bufs and scatter */
-				if ((rc = gather(handle, buf, &mkey, tmp)) != 0) {
-					return rc;
-				}
-
-				if ((rc = scatter(handle, buf, mkey, 3, tmp)) != 0) {
-					return rc;
-				}
-
-				/* read child */
-				if ((cc = search(handle, buf, key, rec, &mkey, MODE_MATCH)) < 0) {
-					if ((rc = readDisk(handle, childLT(mkey), &cbuf)) != 0) {
-						return rc;
-					}
-				}
-				else {
-					if ((rc = readDisk(handle, childGE(mkey), &cbuf)) != 0) {
-						return rc;
-					}
-				}
-			}
-
-			buf = cbuf;
-		}
+	free(leaf);
+	free(nullValue);
+	return rec;
+}
+static void* readRecords(ion_bpp *bpp, ion_bpp_search_record *rec, bool return_all){
+	if(return_all){
+		void* result = malloc(bpp->head->valueSize * ((*rec->end_offset) - (*rec->row_offset)));
+		fseek(bpp->file, bpp->indices[bpp->head->depth]+((*rec->row_offset) * bpp->head->valueSize),SEEK_SET);
+		fread(result,bpp->head->valueSize, (*rec->end_offset - *rec->row_offset), bpp->file);
+		return result;
+	} else {
+		void* result = malloc(bpp->head->valueSize);
+		fseek(bpp->file, bpp->indices[bpp->head->depth]+((*rec->row_offset) * bpp->head->valueSize),SEEK_SET);
+		fread(result,bpp->head->valueSize, 1, bpp->file);
+		return result;
 	}
-
-	return bErrOk;
 }
 
-ion_bpp_err_t
-bDeleteKey(
-	ion_bpp_handle_t			handle,
-	void						*key,
-	ion_bpp_external_address_t	*rec
-) {
-	int					rc;		/* return code */
-	ion_bpp_key_t		*mkey;			/* match key */
-	int					len;	/* length to shift */
-	int					cc;		/* condition code */
-	ion_bpp_buffer_t	*buf;				/* buffer */
-	ion_bpp_buffer_t	*tmp[4];
-	unsigned int		keyOff;
-	ion_bpp_bool_t		lastGEvalid;		/* true if GE branch taken */
-	ion_bpp_bool_t		lastLTvalid;		/* true if LT branch taken after GE branch */
-	ion_bpp_address_t	lastGE;			/* last childGE traversed */
-	unsigned int		lastGEkey;	/* last childGE key traversed */
-	ion_bpp_buffer_t	*root;
-	ion_bpp_buffer_t	*gbuf;
-
-	ion_bpp_h_node_t *h = handle;
-
-	root		= &h->root;
-	gbuf		= &h->gbuf;
-	lastGEvalid = boolean_false;
-	lastLTvalid = boolean_false;
-
-	buf			= root;
-
-	while (1) {
-		if (leaf(buf)) {
-			/* set mkey to point to deletion point */
-			if (search(handle, buf, key, *rec, &mkey, MODE_MATCH) == 0) {
-				*rec = rec(mkey);
+static unsigned char deleteRecords(ion_bpp *bpp, void* key){ //No support for duplicate keys at this time TODO
+	ion_bpp_search_record* rec = searchRecordOffset(bpp, key);
+	if (rec->found == 0) {
+		return 0;
+	} else {
+		unsigned short depth_in_leaf = (*rec->row_offset) % bpp->head->leafCount;
+		printf("\nDepth in Leaf: %u\n", depth_in_leaf);
+		if(depth_in_leaf < (bpp->head->leafCount)) {
+			//void* nullValue = calculateNullNode(bpp->head->keySize, bpp->head->revision);
+			//void* element = malloc(bpp->head->keySize);
+			//fseek(bpp->file, bpp->indices[bpp->head->depth-1]+((*rec->row_offset) * bpp->head->keySize),SEEK_SET);
+			//fread(element,bpp->head->keySize, 1, bpp->file);
+			for(unsigned short i = 0; i<(bpp->head->leafCount-1);i++){
+				printf("HERE! %lu : %lu",*rec->row_offset + i + 1, *rec->row_offset + i);
+				//fread(element,bpp->head->keySize, 1, bpp->file);
+				//if(memcmp(nullValue,element_b,bpp->head->keySize)==0){
+				move(bpp, bpp->head->depth-1, *rec->row_offset + i + 1, *rec->row_offset + i, i==(bpp->head->leafCount-2),false);
+				//}
 			}
-			else {
-				return bErrKeyNotFound;
-			}
-
-			/* shift items GT key to left */
-			keyOff	= mkey - fkey(buf);
-			len		= ks(ct(buf) - 1) - keyOff;
-
-			if (len) {
-				memmove(mkey, mkey + ks(1), len);
-			}
-
-			ct(buf)--;
-
-			if ((rc = writeDisk(buf)) != 0) {
-				return rc;
-			}
-
-			/* if deleted key is first key, then fixup lastGE key */
-			if (!keyOff && lastLTvalid) {
-				ion_bpp_buffer_t	*tbuf;
-				ion_bpp_key_t		*tkey;
-
-				if ((rc = readDisk(handle, lastGE, &tbuf)) != 0) {
-					return rc;
-				}
-
-				tkey		= fkey(tbuf) + lastGEkey;
-				memcpy(key(tkey), mkey, h->keySize);
-				rec(tkey)	= rec(mkey);
-
-				if ((rc = writeDisk(tbuf)) != 0) {
-					return rc;
-				}
-			}
-
-			nKeysDel++;
-			break;
-		}
-		else {
-			/* internal node, descend to child */
-			ion_bpp_buffer_t *cbuf;	/* child buf */
-
-			/* read child */
-			if ((cc = search(handle, buf, key, *rec, &mkey, MODE_MATCH)) < 0) {
-				if ((rc = readDisk(handle, childLT(mkey), &cbuf)) != 0) {
-					return rc;
-				}
-			}
-			else {
-				if ((rc = readDisk(handle, childGE(mkey), &cbuf)) != 0) {
-					return rc;
-				}
-			}
-
-			/* check for room to delete */
-			if (ct(cbuf) == h->maxCt / 2) {
-				/* gather 3 bufs and scatter */
-				if ((rc = gather(handle, buf, &mkey, tmp)) != 0) {
-					return rc;
-				}
-
-				/* if last 3 bufs in root, and count is low enough... */
-				if ((buf == root) && (ct(root) == 2) && (ct(gbuf) < (3 * (3 * h->maxCt)) / 4)) {
-					/* collapse tree by one level */
-					scatterRoot(handle);
-					nNodesDel += 3;
-					continue;
-				}
-
-				if ((rc = scatter(handle, buf, mkey, 3, tmp)) != 0) {
-					return rc;
-				}
-
-				/* read child */
-				if ((cc = search(handle, buf, key, *rec, &mkey, MODE_MATCH)) < 0) {
-					if ((rc = readDisk(handle, childLT(mkey), &cbuf)) != 0) {
-						return rc;
-					}
-				}
-				else {
-					if ((rc = readDisk(handle, childGE(mkey), &cbuf)) != 0) {
-						return rc;
-					}
-				}
-			}
-
-			if ((cc >= 0) || (mkey != fkey(buf))) {
-				lastGEvalid = boolean_true;
-				lastLTvalid = boolean_false;
-				lastGE		= buf->adr;
-				lastGEkey	= mkey - fkey(buf);
-
-				if (cc < 0) {
-					lastGEkey -= ks(1);
-				}
-			}
-			else {
-				if (lastGEvalid) {
-					lastLTvalid = boolean_true;
-				}
-			}
-
-			buf = cbuf;
+		} else {
+			move(bpp, bpp->head->depth-1, *rec->row_offset+1, *rec->row_offset, 1,0);
 		}
 	}
-
-	return bErrOk;
+	return 1;
 }
 
-ion_bpp_err_t
-bFindFirstKey(
-	ion_bpp_handle_t			handle,
-	void						*key,
-	ion_bpp_external_address_t	*rec
-) {
-	ion_bpp_err_t		rc;			/* return code */
-	ion_bpp_buffer_t	*buf;				/* buffer */
 
-	ion_bpp_h_node_t *h = handle;
-
-	buf = &h->root;
-
-	while (!leaf(buf)) {
-		if ((rc = readDisk(handle, childLT(fkey(buf)), &buf)) != 0) {
-			return rc;
+static void move(ion_bpp *bpp, unsigned int depth, long source_offset, long dest_offset, bool clear, bool whole_leaf){
+	void* leaf;
+	unsigned short* size;
+	unsigned short nodes = 1;
+	if (whole_leaf) {nodes = bpp->head->leafCount;}
+	if(depth != bpp->head->depth){
+		size = &(bpp->head->keySize);
+		leaf = malloc(bpp->head->keySize * nodes);
+	} else {
+		size = &(bpp->head->valueSize);
+		leaf = malloc(bpp->head->valueSize * nodes);
+	}
+	//printf("size: %ui\nnodes: %ui\n", *size, nodes);
+	fseek(bpp->file, bpp->indices[depth]+(source_offset * (*size)),SEEK_SET);
+	fread(leaf,*size, nodes, bpp->file);
+	//int *temp = (int*) leaf;
+	//printf("%i", *temp);
+	fseek(bpp->file, bpp->indices[depth]+(dest_offset * (*size)),SEEK_SET);
+	fwrite(leaf,*size, nodes, bpp->file);
+	if (clear) {
+		//printf("clear\n");
+		leaf = calculateNullNode(*size, bpp->head->revision);
+		fseek(bpp->file, bpp->indices[depth]+(source_offset * (*size)),SEEK_SET);
+		for (unsigned short i = 0; i<nodes;i++){
+			fwrite(leaf,*size, 1, bpp->file);
 		}
 	}
-
-	if (ct(buf) == 0) {
-		return bErrKeyNotFound;
-	}
-
-	memcpy(key, key(fkey(buf)), h->keySize);
-	*rec		= rec(fkey(buf));
-	h->curBuf	= buf;
-	h->curKey	= fkey(buf);
-	return bErrOk;
-}
-
-/*
- * input:
- *   handle				 handle returned by bOpen
- * output:
- *   key					last key in sequential set
- *   rec					record address
- * returns:
- *   bErrOk				 operation successful
- *   bErrKeyNotFound		key not found
-*/
-
-ion_bpp_err_t
-bFindLastKey(
-	ion_bpp_handle_t			handle,
-	void						*key,
-	ion_bpp_external_address_t	*rec
-) {
-	ion_bpp_err_t		rc;			/* return code */
-	ion_bpp_buffer_t	*buf;				/* buffer */
-
-	ion_bpp_h_node_t *h = handle;
-
-	buf = &h->root;
-
-	while (!leaf(buf)) {
-		if ((rc = readDisk(handle, childGE(lkey(buf)), &buf)) != 0) {
-			return rc;
-		}
-	}
-
-	if (ct(buf) == 0) {
-		return bErrKeyNotFound;
-	}
-
-	memcpy(key, key(lkey(buf)), h->keySize);
-	*rec		= rec(lkey(buf));
-	h->curBuf	= buf;
-	h->curKey	= lkey(buf);
-	return bErrOk;
-}
-
-ion_bpp_err_t
-bFindNextKey(
-	ion_bpp_handle_t			handle,
-	void						*key,
-	ion_bpp_external_address_t	*rec
-) {
-	ion_bpp_err_t		rc;			/* return code */
-	ion_bpp_key_t		*nkey;			/* next key */
-	ion_bpp_buffer_t	*buf;				/* buffer */
-
-	ion_bpp_h_node_t *h = handle;
-
-	if ((buf = h->curBuf) == NULL) {
-		return bErrKeyNotFound;
-	}
-
-	if (h->curKey == lkey(buf)) {
-		/* current key is last key in leaf node */
-		if (next(buf)) {
-			/* fetch next set */
-			if ((rc = readDisk(handle, next(buf), &buf)) != 0) {
-				return rc;
+	if(depth != bpp->head->depth){
+		if (!whole_leaf) {nodes = 0; /* Only do left children if only one node; whatever called this will have to do cleanup to shift... or, I could add it here TODO Add left_shift */}
+		for (unsigned short i = 0; i<=nodes; i++){
+			//printf("Recursive\n");
+			if (depth != bpp->head->depth -1) {
+				move(bpp, depth+1, source_offset * (bpp->head->leafCount+1) + i, dest_offset * (bpp->head->leafCount+1)+i, clear, 1);
+			} else{
+				move(bpp, depth+1,source_offset,dest_offset,clear,1);
 			}
-
-			nkey = fkey(buf);
-		}
-		else {
-			/* no more sets */
-			return bErrKeyNotFound;
 		}
 	}
-	else {
-		/* bump to next key */
-		nkey = h->curKey + ks(1);
-	}
-
-	memcpy(key, key(nkey), h->keySize);
-	*rec		= rec(nkey);
-	h->curBuf	= buf;
-	h->curKey	= nkey;
-	return bErrOk;
 }
 
-/*
- * input:
- *   handle				 handle returned by bOpen
- * output:
- *   key					key found
- *   rec					record address
- * returns:
- *   bErrOk				 operation successful
- *   bErrKeyNotFound		key not found
-*/
-ion_bpp_err_t
-bFindPrevKey(
-	ion_bpp_handle_t			handle,
-	void						*key,
-	ion_bpp_external_address_t	*rec
-) {
-	ion_bpp_err_t		rc;			/* return code */
-	ion_bpp_key_t		*pkey;			/* previous key */
-	ion_bpp_key_t		*fkey;			/* first key */
-	ion_bpp_buffer_t	*buf;				/* buffer */
-
-	ion_bpp_h_node_t *h = handle;
-
-	if ((buf = h->curBuf) == NULL) {
-		return bErrKeyNotFound;
+static unsigned short getLeafCount(ion_bpp *bpp, unsigned short elementSize, long absolute_offset){
+	unsigned char* leaf;
+	leaf = malloc(elementSize * bpp->head->leafCount);
+	fseek(bpp->file, absolute_offset,SEEK_SET);
+	fread(leaf,elementSize, bpp->head->leafCount, bpp->file);
+	unsigned char* nullValue = calculateNullNode(elementSize, bpp->head->revision);
+	unsigned short i = 0;
+	unsigned char* element = leaf + (i * bpp->head->keySize);
+	while(i<bpp->head->leafCount && memcmp(nullValue,element,elementSize) != 0){
+		i++;
+		element = leaf + (i * bpp->head->keySize);
 	}
+	return i;
+}
 
-	fkey = fkey(buf);
 
-	if (h->curKey == fkey) {
-		/* current key is first key in leaf node */
-		if (prev(buf)) {
-			/* fetch previous set */
-			if ((rc = readDisk(handle, prev(buf), &buf)) != 0) {
-				return rc;
-			}
 
-			pkey = fkey(buf) + ks((ct(buf) - 1));
+static void debugPrintTree(ion_bpp *bpp){
+	long records = bpp->head->leafCount;
+	if(bpp->file == NULL){printf("Wtf? NULL?\n");}
+	fseek(bpp->file, BPP_FIRST_LEAF_OFFSET, SEEK_SET);
+	long data = 0;
+	for(unsigned short z = 0; z<bpp->head->depth;z++){
+		for(unsigned short i = 0; i<records;i++){
+			fread(&data,bpp->head->keySize, 1, bpp->file);
+			printf("|%lu|",data);
 		}
-		else {
-			/* no more sets */
-			return bErrKeyNotFound;
-		}
-	}
-	else {
-		/* bump to previous key */
-		pkey = h->curKey - ks(1);
+		printf("\n");
+		records *= bpp->head->leafCount + 1;
 	}
 
-	memcpy(key, key(pkey), h->keySize);
-	*rec		= rec(pkey);
-	h->curBuf	= buf;
-	h->curKey	= pkey;
-	return bErrOk;
+}
+
+static unsigned char* calculateNullNode(unsigned short keySize, unsigned char revision){ //TODO
+	unsigned char *value = (unsigned char*) malloc(sizeof(int));
+	*value = keySize + (unsigned int) revision;
+	*value = 0;
+	return value;
 }
