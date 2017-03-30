@@ -322,21 +322,21 @@ split(
 
 	ion_fpos_t record_offset = 0;
 
-    ion_fpos_t record_loc;
+	ion_fpos_t record_loc;
 
 	while (bucket.overflow_location != -1) {
 		if (bucket.record_count > 0) {
-            record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
+			record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 			fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
 			fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
 
 			for (i = 0; i < linear_hash->records_per_bucket; i++) {
-                linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
-                /*
-                memcpy(&record_status, records + record_offset, sizeof(ion_byte_t));
+				linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
+				/*
+				memcpy(&record_status, records + record_offset, sizeof(ion_byte_t));
 				memcpy(record_key, records + record_offset + sizeof(ion_byte_t), linear_hash->super.record.key_size);
 				memcpy(record_value, records + record_offset + sizeof(ion_byte_t) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);
-                */
+				*/
 				insert_hash_key = insert_hash_to_bucket(record_key, linear_hash);
 
 				split_hash_key	= hash_to_bucket(record_key, linear_hash);
@@ -367,11 +367,11 @@ split(
 					status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
 					i--;
 					record_offset	-= linear_hash->record_total_size;
-                    record_loc -= linear_hash->record_total_size;
+					record_loc		-= linear_hash->record_total_size;
+				}
 
-                }
-                record_loc += linear_hash->record_total_size;
-				record_offset += linear_hash->record_total_size;
+				record_loc		+= linear_hash->record_total_size;
+				record_offset	+= linear_hash->record_total_size;
 			}
 
 			record_offset = 0;
@@ -386,17 +386,17 @@ split(
 	}
 
 	if (bucket.record_count > 0) {
-        record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
+		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 		fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
 		fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
 
 		for (i = 0; i < linear_hash->records_per_bucket; i++) {
-            linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
+			linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 			/*
-            memcpy(&record_status, records + record_offset, sizeof(ion_byte_t));
+			memcpy(&record_status, records + record_offset, sizeof(ion_byte_t));
 			memcpy(record_key, records + record_offset + sizeof(ion_byte_t), linear_hash->super.record.key_size);
 			memcpy(record_value, records + record_offset + sizeof(ion_byte_t) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);
-            */
+			*/
 			insert_hash_key = insert_hash_to_bucket(record_key, linear_hash);
 
 			split_hash_key	= hash_to_bucket(record_key, linear_hash);
@@ -426,10 +426,11 @@ split(
 				status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
 				i--;
 				record_offset	-= linear_hash->record_total_size;
-                record_loc -= linear_hash->record_total_size;
+				record_loc		-= linear_hash->record_total_size;
 			}
-            record_loc += linear_hash->record_total_size;
-			record_offset += linear_hash->record_total_size;
+
+			record_loc		+= linear_hash->record_total_size;
+			record_offset	+= linear_hash->record_total_size;
 		}
 	}
 
@@ -1348,7 +1349,7 @@ key_bytes_to_int(
 
 	return key_bytes_as_int;
 	*/
-	return *key;
+	return (int) *key;
 }
 
 int
