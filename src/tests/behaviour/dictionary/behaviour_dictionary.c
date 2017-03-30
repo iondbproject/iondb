@@ -30,7 +30,7 @@
 
 /* This is used to define how complicated to pre-fill a dictionary for testing. */
 typedef enum ION_BEHAVIOUR_FILL_LEVEL {
-	ion_fill_none, ion_fill_low, ion_fill_medium, ion_fill_high, ion_fill_edge_cases
+    ion_fill_none, ion_fill_low, ion_fill_medium, ion_fill_high, ion_fill_edge_cases
 } ion_behaviour_fill_level_e;
 
 #define ION_FILL_LOW_LOOP(var) \
@@ -55,21 +55,21 @@ ion_bhdct_context_t bhdct_context = { 0 };
 */
 void
 bhdct_dictionary_initialization(
-	planck_unit_test_t			*tc,
-	ion_dictionary_handler_t	*handler,
-	ion_dictionary_t			*dict,
-	ion_key_type_t				key_type,
-	ion_key_size_t				key_size,
-	ion_value_size_t			value_size,
-	ion_dictionary_size_t		dictionary_size
+        planck_unit_test_t			*tc,
+        ion_dictionary_handler_t	*handler,
+        ion_dictionary_t			*dict,
+        ion_key_type_t				key_type,
+        ion_key_size_t				key_size,
+        ion_value_size_t			value_size,
+        ion_dictionary_size_t		dictionary_size
 ) {
-	ion_err_t err = ion_master_table_create_dictionary(handler, dict, key_type, key_size, value_size, dictionary_size);
+    ion_err_t err = ion_master_table_create_dictionary(handler, dict, key_type, key_size, value_size, dictionary_size);
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, key_type, dict->instance->key_type);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, key_size, dict->instance->record.key_size);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, value_size, dict->instance->record.value_size);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, key_type, dict->instance->key_type);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, key_size, dict->instance->record.key_size);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, value_size, dict->instance->record.value_size);
 }
 
 /**
@@ -77,11 +77,11 @@ bhdct_dictionary_initialization(
 */
 void
 bhdct_master_table_init(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_err_t err = ion_init_master_table();
+    ion_err_t err = ion_init_master_table();
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 }
 
 /**
@@ -89,12 +89,12 @@ bhdct_master_table_init(
 */
 void
 bhdct_delete_from_master_table(
-	planck_unit_test_t	*tc,
-	ion_dictionary_t	*dict
+        planck_unit_test_t	*tc,
+        ion_dictionary_t	*dict
 ) {
-	ion_err_t err = ion_delete_from_master_table(dict);
+    ion_err_t err = ion_delete_from_master_table(dict);
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 }
 
 /**
@@ -102,13 +102,13 @@ bhdct_delete_from_master_table(
 */
 void
 bhdct_delete_dictionary(
-	planck_unit_test_t	*tc,
-	ion_dictionary_t	*dict
+        planck_unit_test_t	*tc,
+        ion_dictionary_t	*dict
 ) {
-	ion_err_t err = dictionary_delete_dictionary(dict);
+    ion_err_t err = dictionary_delete_dictionary(dict);
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
-	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == dict->instance);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+    PLANCK_UNIT_ASSERT_TRUE(tc, NULL == dict->instance);
 }
 
 /**
@@ -116,11 +116,11 @@ bhdct_delete_dictionary(
 */
 void
 bhdct_close_master_table(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_err_t err = ion_close_master_table();
+    ion_err_t err = ion_close_master_table();
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 }
 
 /**
@@ -128,11 +128,11 @@ bhdct_close_master_table(
 */
 void
 bhdct_delete_master_table(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_err_t err = ion_delete_master_table();
+    ion_err_t err = ion_delete_master_table();
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 }
 
 /**
@@ -140,33 +140,33 @@ bhdct_delete_master_table(
 */
 void
 bhdct_get(
-	planck_unit_test_t	*tc,
-	ion_dictionary_t	*dict,
-	ion_key_t			key,
-	ion_value_t			expected_value,
-	ion_err_t			expected_status,
-	ion_result_count_t	expected_count
+        planck_unit_test_t	*tc,
+        ion_dictionary_t	*dict,
+        ion_key_t			key,
+        ion_value_t			expected_value,
+        ion_err_t			expected_status,
+        ion_result_count_t	expected_count
 ) {
-	ion_value_t defaultval = alloca(dict->instance->record.value_size);
+    ion_value_t defaultval = alloca(dict->instance->record.value_size);
 
-	memset(defaultval, 0x76, dict->instance->record.value_size);
+    memset(defaultval, 0x76, dict->instance->record.value_size);
 
-	ion_value_t retval = alloca(dict->instance->record.value_size);
+    ion_value_t retval = alloca(dict->instance->record.value_size);
 
-	memcpy(retval, defaultval, dict->instance->record.value_size);
+    memcpy(retval, defaultval, dict->instance->record.value_size);
 
-	ion_status_t status = dictionary_get(dict, key, retval);
+    ion_status_t status = dictionary_get(dict, key, retval);
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_status, status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, status.count);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_status, status.error);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, status.count);
 
-	if (err_ok == status.error) {
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, memcmp(expected_value, retval, dict->instance->record.value_size));
-	}
-	else {
-		/* Here, we check to see that the passed in space to write the value remains unchanged, if we have an error condition. */
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, memcmp(defaultval, retval, dict->instance->record.value_size));
-	}
+    if (err_ok == status.error) {
+        PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, memcmp(expected_value, retval, dict->instance->record.value_size));
+    }
+    else {
+        /* Here, we check to see that the passed in space to write the value remains unchanged, if we have an error condition. */
+        PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, memcmp(defaultval, retval, dict->instance->record.value_size));
+    }
 }
 
 /**
@@ -174,20 +174,20 @@ bhdct_get(
 */
 void
 bhdct_insert(
-	planck_unit_test_t	*tc,
-	ion_dictionary_t	*dict,
-	ion_key_t			key,
-	ion_value_t			value,
-	ion_boolean_t		check_result
+        planck_unit_test_t	*tc,
+        ion_dictionary_t	*dict,
+        ion_key_t			key,
+        ion_value_t			value,
+        ion_boolean_t		check_result
 ) {
-	ion_status_t status = dictionary_insert(dict, key, value);
+    ion_status_t status = dictionary_insert(dict, key, value);
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
 
-	if (check_result) {
-		bhdct_get(tc, dict, key, value, err_ok, 1);
-	}
+    if (check_result) {
+        bhdct_get(tc, dict, key, value, err_ok, 1);
+    }
 }
 
 /**
@@ -195,21 +195,21 @@ bhdct_insert(
 */
 void
 bhdct_delete(
-	planck_unit_test_t	*tc,
-	ion_dictionary_t	*dict,
-	ion_key_t			key,
-	ion_err_t			expected_status,
-	ion_result_count_t	expected_count,
-	ion_boolean_t		check_result
+        planck_unit_test_t	*tc,
+        ion_dictionary_t	*dict,
+        ion_key_t			key,
+        ion_err_t			expected_status,
+        ion_result_count_t	expected_count,
+        ion_boolean_t		check_result
 ) {
-	ion_status_t status = dictionary_delete(dict, key);
+    ion_status_t status = dictionary_delete(dict, key);
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_status, status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, status.count);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_status, status.error);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, status.count);
 
-	if (check_result) {
-		bhdct_get(tc, dict, key, NULL, err_item_not_found, 0);
-	}
+    if (check_result) {
+        bhdct_get(tc, dict, key, NULL, err_item_not_found, 0);
+    }
 }
 
 /**
@@ -217,22 +217,22 @@ bhdct_delete(
 */
 void
 bhdct_update(
-	planck_unit_test_t	*tc,
-	ion_dictionary_t	*dict,
-	ion_key_t			key,
-	ion_value_t			value,
-	ion_err_t			expected_status,
-	ion_result_count_t	expected_count,
-	ion_boolean_t		check_result
+        planck_unit_test_t	*tc,
+        ion_dictionary_t	*dict,
+        ion_key_t			key,
+        ion_value_t			value,
+        ion_err_t			expected_status,
+        ion_result_count_t	expected_count,
+        ion_boolean_t		check_result
 ) {
-	ion_status_t status = dictionary_update(dict, key, value);
+    ion_status_t status = dictionary_update(dict, key, value);
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_status, status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, status.count);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_status, status.error);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, status.count);
 
-	if (check_result) {
-		bhdct_get(tc, dict, key, value, err_ok, 1);
-	}
+    if (check_result) {
+        bhdct_get(tc, dict, key, value, err_ok, 1);
+    }
 }
 
 /**
@@ -240,48 +240,48 @@ bhdct_update(
 */
 void
 bhdct_setup(
-	planck_unit_test_t			*tc,
-	ion_dictionary_handler_t	*handler,
-	ion_dictionary_t			*dict,
-	ion_behaviour_fill_level_e	fill_level
+        planck_unit_test_t			*tc,
+        ion_dictionary_handler_t	*handler,
+        ion_dictionary_t			*dict,
+        ion_behaviour_fill_level_e	fill_level
 ) {
-	bhdct_master_table_init(tc);
-	bhdct_context.init_fcn(handler);
-	/* Note most of these are fixed except the dictionary size */
-	bhdct_dictionary_initialization(tc, handler, dict, key_type_numeric_signed, sizeof(int), sizeof(int), bhdct_context.dictionary_size);
+    bhdct_master_table_init(tc);
+    bhdct_context.init_fcn(handler);
+    /* Note most of these are fixed except the dictionary size */
+    bhdct_dictionary_initialization(tc, handler, dict, key_type_numeric_signed, sizeof(int), sizeof(int), bhdct_context.dictionary_size);
 
-	/* This switch statement intentionally doesn't have breaks - we want it to fall through. */
-	int i;
+    /* This switch statement intentionally doesn't have breaks - we want it to fall through. */
+    int i;
 
-	switch (fill_level) {
-		case ion_fill_edge_cases: {
-			ION_FILL_EDGE_LOOP(i) {
-				bhdct_insert(tc, dict, IONIZE(i, int), ION_EDGE_VALUE(i), boolean_true);
-			}
-		}
+    switch (fill_level) {
+        case ion_fill_edge_cases: {
+            ION_FILL_EDGE_LOOP(i) {
+                bhdct_insert(tc, dict, IONIZE(i, int), ION_EDGE_VALUE(i), boolean_true);
+            }
+        }
 
-		case ion_fill_high: {
-			ION_FILL_HIGH_LOOP(i) {
-				bhdct_insert(tc, dict, IONIZE(i, int), ION_HIGH_VALUE(i), boolean_true);
-			}
-		}
+        case ion_fill_high: {
+            ION_FILL_HIGH_LOOP(i) {
+                bhdct_insert(tc, dict, IONIZE(i, int), ION_HIGH_VALUE(i), boolean_true);
+            }
+        }
 
-		case ion_fill_medium: {
-			ION_FILL_MEDIUM_LOOP(i) {
-				bhdct_insert(tc, dict, IONIZE(i, int), ION_MEDIUM_VALUE(i), boolean_true);
-			}
-		}
+        case ion_fill_medium: {
+            ION_FILL_MEDIUM_LOOP(i) {
+                bhdct_insert(tc, dict, IONIZE(i, int), ION_MEDIUM_VALUE(i), boolean_true);
+            }
+        }
 
-		case ion_fill_low: {
-			ION_FILL_LOW_LOOP(i) {
-				bhdct_insert(tc, dict, IONIZE(i, int), ION_LOW_VALUE(i), boolean_true);
-			}
-		}
+        case ion_fill_low: {
+            ION_FILL_LOW_LOOP(i) {
+                bhdct_insert(tc, dict, IONIZE(i, int), ION_LOW_VALUE(i), boolean_true);
+            }
+        }
 
-		case ion_fill_none: {
-			/* Intentionally left blank */
-		}
-	}
+        case ion_fill_none: {
+            /* Intentionally left blank */
+        }
+    }
 }
 
 /**
@@ -289,54 +289,54 @@ bhdct_setup(
 */
 void
 bhdct_setup_string_key(
-	planck_unit_test_t			*tc,
-	ion_dictionary_handler_t	*handler,
-	ion_dictionary_t			*dict,
-	ion_behaviour_fill_level_e	fill_level
+        planck_unit_test_t			*tc,
+        ion_dictionary_handler_t	*handler,
+        ion_dictionary_t			*dict,
+        ion_behaviour_fill_level_e	fill_level
 ) {
-	bhdct_master_table_init(tc);
-	bhdct_context.init_fcn(handler);
-	/* Note most of these are fixed except the dictionary size */
-	bhdct_dictionary_initialization(tc, handler, dict, key_type_null_terminated_string, 7, sizeof(int), bhdct_context.dictionary_size);
+    bhdct_master_table_init(tc);
+    bhdct_context.init_fcn(handler);
+    /* Note most of these are fixed except the dictionary size */
+    bhdct_dictionary_initialization(tc, handler, dict, key_type_null_terminated_string, 7, sizeof(int), bhdct_context.dictionary_size);
 
-	char key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    char key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	/* This switch statement intentionally doesn't have breaks - we want it to fall through. */
-	int i;
+    /* This switch statement intentionally doesn't have breaks - we want it to fall through. */
+    int i;
 
-	switch (fill_level) {
-		case ion_fill_edge_cases: {
-			ION_FILL_EDGE_LOOP(i) {
-				sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
-				bhdct_insert(tc, dict, key, ION_EDGE_VALUE(i), boolean_true);
-			}
-		}
+    switch (fill_level) {
+        case ion_fill_edge_cases: {
+            ION_FILL_EDGE_LOOP(i) {
+                sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
+                bhdct_insert(tc, dict, key, ION_EDGE_VALUE(i), boolean_true);
+            }
+        }
 
-		case ion_fill_high: {
-			ION_FILL_HIGH_LOOP(i) {
-				sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
-				bhdct_insert(tc, dict, key, ION_HIGH_VALUE(i), boolean_true);
-			}
-		}
+        case ion_fill_high: {
+            ION_FILL_HIGH_LOOP(i) {
+                sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
+                bhdct_insert(tc, dict, key, ION_HIGH_VALUE(i), boolean_true);
+            }
+        }
 
-		case ion_fill_medium: {
-			ION_FILL_MEDIUM_LOOP(i) {
-				sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
-				bhdct_insert(tc, dict, key, ION_MEDIUM_VALUE(i), boolean_true);
-			}
-		}
+        case ion_fill_medium: {
+            ION_FILL_MEDIUM_LOOP(i) {
+                sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
+                bhdct_insert(tc, dict, key, ION_MEDIUM_VALUE(i), boolean_true);
+            }
+        }
 
-		case ion_fill_low: {
-			ION_FILL_LOW_LOOP(i) {
-				sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
-				bhdct_insert(tc, dict, key, ION_LOW_VALUE(i), boolean_true);
-			}
-		}
+        case ion_fill_low: {
+            ION_FILL_LOW_LOOP(i) {
+                sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
+                bhdct_insert(tc, dict, key, ION_LOW_VALUE(i), boolean_true);
+            }
+        }
 
-		case ion_fill_none: {
-			/* Intentionally left blank */
-		}
-	}
+        case ion_fill_none: {
+            /* Intentionally left blank */
+        }
+    }
 }
 
 /**
@@ -344,14 +344,14 @@ bhdct_setup_string_key(
 */
 void
 bhdct_takedown(
-	planck_unit_test_t	*tc,
-	ion_dictionary_t	*dict
+        planck_unit_test_t	*tc,
+        ion_dictionary_t	*dict
 ) {
 /*	bhdct_delete_from_master_table(tc, dict); FIXME change when master table is fixed */
-	bhdct_delete_dictionary(tc, dict);
+    bhdct_delete_dictionary(tc, dict);
 
-	bhdct_close_master_table(tc);
-	bhdct_delete_master_table(tc);
+    bhdct_close_master_table(tc);
+    bhdct_delete_master_table(tc);
 }
 
 /* =================================================== TEST CASES =================================================== */
@@ -361,13 +361,13 @@ bhdct_takedown(
 */
 void
 test_bhdct_setup(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_none);
-	bhdct_takedown(tc, &dict);
+    bhdct_setup(tc, &handler, &dict, ion_fill_none);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -375,13 +375,13 @@ test_bhdct_setup(
 */
 void
 test_bhdct_setup_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
-	bhdct_takedown(tc, &dict);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -389,16 +389,16 @@ test_bhdct_setup_string_key(
 */
 void
 test_bhdct_insert_single(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
-	bhdct_insert(tc, &dict, IONIZE(10, int), IONIZE(20, int), boolean_false);
+    bhdct_insert(tc, &dict, IONIZE(10, int), IONIZE(20, int), boolean_false);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -406,18 +406,18 @@ test_bhdct_insert_single(
 */
 void
 test_bhdct_insert_single_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 10);
-	bhdct_insert(tc, &dict, key, IONIZE(20, int), boolean_false);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 10);
+    bhdct_insert(tc, &dict, key, IONIZE(20, int), boolean_false);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -425,20 +425,20 @@ test_bhdct_insert_single_string_key(
 */
 void
 test_bhdct_insert_multiple(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
-	int i;
+    int i;
 
-	for (i = 50; i < 55; i++) {
-		bhdct_insert(tc, &dict, IONIZE(i, int), IONIZE(i * 2, int), boolean_false);
-	}
+    for (i = 50; i < 55; i++) {
+        bhdct_insert(tc, &dict, IONIZE(i, int), IONIZE(i * 2, int), boolean_false);
+    }
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -446,22 +446,22 @@ test_bhdct_insert_multiple(
 */
 void
 test_bhdct_insert_multiple_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
-	int i;
+    int i;
 
-	for (i = 50; i < 55; i++) {
-		sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
-		bhdct_insert(tc, &dict, key, IONIZE(i * 2, int), boolean_false);
-	}
+    for (i = 50; i < 55; i++) {
+        sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
+        bhdct_insert(tc, &dict, key, IONIZE(i * 2, int), boolean_false);
+    }
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -469,16 +469,16 @@ test_bhdct_insert_multiple_string_key(
 */
 void
 test_bhdct_get_single(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
-	bhdct_insert(tc, &dict, IONIZE(99, int), IONIZE(99 * 2, int), boolean_true);
+    bhdct_insert(tc, &dict, IONIZE(99, int), IONIZE(99 * 2, int), boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -486,18 +486,18 @@ test_bhdct_get_single(
 */
 void
 test_bhdct_get_single_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 99);
-	bhdct_insert(tc, &dict, key, IONIZE(99 * 2, int), boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 99);
+    bhdct_insert(tc, &dict, key, IONIZE(99 * 2, int), boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -505,19 +505,19 @@ test_bhdct_get_single_string_key(
 */
 void
 test_bhdct_get_in_many(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
-	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
-	bhdct_insert(tc, &dict, IONIZE(1002, int), IONIZE(1002 * 2, int), boolean_true);
-	bhdct_insert(tc, &dict, IONIZE(55, int), IONIZE(55 * 2, int), boolean_true);
-	bhdct_insert(tc, &dict, IONIZE(-5, int), IONIZE(-5 * 2, int), boolean_true);
+    bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
+    bhdct_insert(tc, &dict, IONIZE(1002, int), IONIZE(1002 * 2, int), boolean_true);
+    bhdct_insert(tc, &dict, IONIZE(55, int), IONIZE(55 * 2, int), boolean_true);
+    bhdct_insert(tc, &dict, IONIZE(-5, int), IONIZE(-5 * 2, int), boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -525,27 +525,27 @@ test_bhdct_get_in_many(
 */
 void
 test_bhdct_get_in_many_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 35);
-	bhdct_insert(tc, &dict, key, IONIZE(35 * 2, int), boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 35);
+    bhdct_insert(tc, &dict, key, IONIZE(35 * 2, int), boolean_true);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 1002);
-	bhdct_insert(tc, &dict, key, IONIZE(1002 * 2, int), boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 1002);
+    bhdct_insert(tc, &dict, key, IONIZE(1002 * 2, int), boolean_true);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 55);
-	bhdct_insert(tc, &dict, key, IONIZE(55 * 2, int), boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 55);
+    bhdct_insert(tc, &dict, key, IONIZE(55 * 2, int), boolean_true);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, -5);
-	bhdct_insert(tc, &dict, key, IONIZE(-5 * 2, int), boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, -5);
+    bhdct_insert(tc, &dict, key, IONIZE(-5 * 2, int), boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -553,24 +553,24 @@ test_bhdct_get_in_many_string_key(
 */
 void
 test_bhdct_get_lots(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
-	int i;
+    int i;
 
-	for (i = 300; i < 1000; i += 15) {
-		bhdct_insert(tc, &dict, IONIZE(i, int), IONIZE(i * 5, int), boolean_true);
-	}
+    for (i = 300; i < 1000; i += 15) {
+        bhdct_insert(tc, &dict, IONIZE(i, int), IONIZE(i * 5, int), boolean_true);
+    }
 
-	for (i = 300; i < 1000; i += 15) {
-		bhdct_get(tc, &dict, IONIZE(i, int), IONIZE(i * 5, int), err_ok, 1);
-	}
+    for (i = 300; i < 1000; i += 15) {
+        bhdct_get(tc, &dict, IONIZE(i, int), IONIZE(i * 5, int), err_ok, 1);
+    }
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -578,27 +578,27 @@ test_bhdct_get_lots(
 */
 void
 test_bhdct_get_lots_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
-	int i;
+    int i;
 
-	for (i = 300; i < 1000; i += 15) {
-		sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
-		bhdct_insert(tc, &dict, key, IONIZE(i * 5, int), boolean_true);
-	}
+    for (i = 300; i < 1000; i += 15) {
+        sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
+        bhdct_insert(tc, &dict, key, IONIZE(i * 5, int), boolean_true);
+    }
 
-	for (i = 300; i < 1000; i += 15) {
-		sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
-		bhdct_get(tc, &dict, key, IONIZE(i * 5, int), err_ok, 1);
-	}
+    for (i = 300; i < 1000; i += 15) {
+        sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
+        bhdct_get(tc, &dict, key, IONIZE(i * 5, int), err_ok, 1);
+    }
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -606,16 +606,16 @@ test_bhdct_get_lots_string_key(
 */
 void
 test_bhdct_get_nonexist_empty(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
-	bhdct_get(tc, &dict, IONIZE(99, int), NULL, err_item_not_found, 0);
+    bhdct_get(tc, &dict, IONIZE(99, int), NULL, err_item_not_found, 0);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -623,18 +623,18 @@ test_bhdct_get_nonexist_empty(
 */
 void
 test_bhdct_get_nonexist_empty_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 99);
-	bhdct_get(tc, &dict, key, NULL, err_item_not_found, 0);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 99);
+    bhdct_get(tc, &dict, key, NULL, err_item_not_found, 0);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -642,16 +642,16 @@ test_bhdct_get_nonexist_empty_string_key(
 */
 void
 test_bhdct_get_nonexist_single(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_low);
+    bhdct_setup(tc, &handler, &dict, ion_fill_low);
 
-	bhdct_get(tc, &dict, IONIZE(99, int), NULL, err_item_not_found, 0);
+    bhdct_get(tc, &dict, IONIZE(99, int), NULL, err_item_not_found, 0);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -659,18 +659,18 @@ test_bhdct_get_nonexist_single(
 */
 void
 test_bhdct_get_nonexist_single_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_low);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_low);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 99);
-	bhdct_get(tc, &dict, key, NULL, err_item_not_found, 0);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 99);
+    bhdct_get(tc, &dict, key, NULL, err_item_not_found, 0);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -678,17 +678,17 @@ test_bhdct_get_nonexist_single_string_key(
 */
 void
 test_bhdct_get_nonexist_many(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_edge_cases);
+    bhdct_setup(tc, &handler, &dict, ion_fill_edge_cases);
 
-	bhdct_get(tc, &dict, IONIZE(-2000, int), NULL, err_item_not_found, 0);
-	bhdct_get(tc, &dict, IONIZE(3000, int), NULL, err_item_not_found, 0);
+    bhdct_get(tc, &dict, IONIZE(-2000, int), NULL, err_item_not_found, 0);
+    bhdct_get(tc, &dict, IONIZE(3000, int), NULL, err_item_not_found, 0);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -696,21 +696,21 @@ test_bhdct_get_nonexist_many(
 */
 void
 test_bhdct_get_nonexist_many_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_edge_cases);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_edge_cases);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, -2000);
-	bhdct_get(tc, &dict, key, NULL, err_item_not_found, 0);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, -2000);
+    bhdct_get(tc, &dict, key, NULL, err_item_not_found, 0);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 3000);
-	bhdct_get(tc, &dict, key, NULL, err_item_not_found, 0);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 3000);
+    bhdct_get(tc, &dict, key, NULL, err_item_not_found, 0);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -719,17 +719,17 @@ test_bhdct_get_nonexist_many_string_key(
 */
 void
 test_bhdct_get_exist_single(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
-	bhdct_insert(tc, &dict, IONIZE(30, int), IONIZE(30, int), boolean_true);
-	bhdct_get(tc, &dict, IONIZE(30, int), IONIZE(30, int), err_ok, 1);
+    bhdct_insert(tc, &dict, IONIZE(30, int), IONIZE(30, int), boolean_true);
+    bhdct_get(tc, &dict, IONIZE(30, int), IONIZE(30, int), err_ok, 1);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -738,19 +738,19 @@ test_bhdct_get_exist_single(
 */
 void
 test_bhdct_get_exist_single_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 30);
-	bhdct_insert(tc, &dict, key, IONIZE(30, int), boolean_true);
-	bhdct_get(tc, &dict, key, IONIZE(30, int), err_ok, 1);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 30);
+    bhdct_insert(tc, &dict, key, IONIZE(30, int), boolean_true);
+    bhdct_get(tc, &dict, key, IONIZE(30, int), err_ok, 1);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -759,17 +759,17 @@ test_bhdct_get_exist_single_string_key(
 */
 void
 test_bhdct_get_populated_single(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_low);
+    bhdct_setup(tc, &handler, &dict, ion_fill_low);
 
-	bhdct_insert(tc, &dict, IONIZE(92, int), IONIZE(92, int), boolean_true);
-	bhdct_get(tc, &dict, IONIZE(92, int), IONIZE(92, int), err_ok, 1);
+    bhdct_insert(tc, &dict, IONIZE(92, int), IONIZE(92, int), boolean_true);
+    bhdct_get(tc, &dict, IONIZE(92, int), IONIZE(92, int), err_ok, 1);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -778,19 +778,19 @@ test_bhdct_get_populated_single(
 */
 void
 test_bhdct_get_populated_single_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_low);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_low);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 92);
-	bhdct_insert(tc, &dict, key, IONIZE(92, int), boolean_true);
-	bhdct_get(tc, &dict, key, IONIZE(92, int), err_ok, 1);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 92);
+    bhdct_insert(tc, &dict, key, IONIZE(92, int), boolean_true);
+    bhdct_get(tc, &dict, key, IONIZE(92, int), err_ok, 1);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -799,20 +799,20 @@ test_bhdct_get_populated_single_string_key(
 */
 void
 test_bhdct_get_populated_multiple(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_low);
+    bhdct_setup(tc, &handler, &dict, ion_fill_low);
 
-	int i;
+    int i;
 
-	ION_FILL_LOW_LOOP(i) {
-		bhdct_get(tc, &dict, IONIZE(i, int), ION_LOW_VALUE(i), err_ok, 1);
-	}
+    ION_FILL_LOW_LOOP(i) {
+        bhdct_get(tc, &dict, IONIZE(i, int), ION_LOW_VALUE(i), err_ok, 1);
+    }
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -821,22 +821,22 @@ test_bhdct_get_populated_multiple(
 */
 void
 test_bhdct_get_populated_multiple_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_low);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_low);
 
-	int i;
+    int i;
 
-	ION_FILL_LOW_LOOP(i) {
-		sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
-		bhdct_get(tc, &dict, key, ION_LOW_VALUE(i), err_ok, 1);
-	}
+    ION_FILL_LOW_LOOP(i) {
+        sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
+        bhdct_get(tc, &dict, key, ION_LOW_VALUE(i), err_ok, 1);
+    }
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -844,29 +844,29 @@ test_bhdct_get_populated_multiple_string_key(
 */
 void
 test_bhdct_get_all(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_edge_cases);
+    bhdct_setup(tc, &handler, &dict, ion_fill_edge_cases);
 
-	int i;
+    int i;
 
-	ION_FILL_LOW_LOOP(i) {
-		bhdct_get(tc, &dict, IONIZE(i, int), ION_LOW_VALUE(i), err_ok, 1);
-	}
-	ION_FILL_MEDIUM_LOOP(i) {
-		bhdct_get(tc, &dict, IONIZE(i, int), ION_MEDIUM_VALUE(i), err_ok, 1);
-	}
-	ION_FILL_HIGH_LOOP(i) {
-		bhdct_get(tc, &dict, IONIZE(i, int), ION_HIGH_VALUE(i), err_ok, 1);
-	}
-	ION_FILL_EDGE_LOOP(i) {
-		bhdct_get(tc, &dict, IONIZE(i, int), ION_EDGE_VALUE(i), err_ok, 1);
-	}
+    ION_FILL_LOW_LOOP(i) {
+        bhdct_get(tc, &dict, IONIZE(i, int), ION_LOW_VALUE(i), err_ok, 1);
+    }
+    ION_FILL_MEDIUM_LOOP(i) {
+        bhdct_get(tc, &dict, IONIZE(i, int), ION_MEDIUM_VALUE(i), err_ok, 1);
+    }
+    ION_FILL_HIGH_LOOP(i) {
+        bhdct_get(tc, &dict, IONIZE(i, int), ION_HIGH_VALUE(i), err_ok, 1);
+    }
+    ION_FILL_EDGE_LOOP(i) {
+        bhdct_get(tc, &dict, IONIZE(i, int), ION_EDGE_VALUE(i), err_ok, 1);
+    }
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -874,34 +874,34 @@ test_bhdct_get_all(
 */
 void
 test_bhdct_get_all_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_edge_cases);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_edge_cases);
 
-	int i;
+    int i;
 
-	ION_FILL_LOW_LOOP(i) {
-		sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
-		bhdct_get(tc, &dict, key, ION_LOW_VALUE(i), err_ok, 1);
-	}
-	ION_FILL_MEDIUM_LOOP(i) {
-		sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
-		bhdct_get(tc, &dict, key, ION_MEDIUM_VALUE(i), err_ok, 1);
-	}
-	ION_FILL_HIGH_LOOP(i) {
-		sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
-		bhdct_get(tc, &dict, key, ION_HIGH_VALUE(i), err_ok, 1);
-	}
-	ION_FILL_EDGE_LOOP(i) {
-		sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
-		bhdct_get(tc, &dict, key, ION_EDGE_VALUE(i), err_ok, 1);
-	}
+    ION_FILL_LOW_LOOP(i) {
+        sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
+        bhdct_get(tc, &dict, key, ION_LOW_VALUE(i), err_ok, 1);
+    }
+    ION_FILL_MEDIUM_LOOP(i) {
+        sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
+        bhdct_get(tc, &dict, key, ION_MEDIUM_VALUE(i), err_ok, 1);
+    }
+    ION_FILL_HIGH_LOOP(i) {
+        sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
+        bhdct_get(tc, &dict, key, ION_HIGH_VALUE(i), err_ok, 1);
+    }
+    ION_FILL_EDGE_LOOP(i) {
+        sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
+        bhdct_get(tc, &dict, key, ION_EDGE_VALUE(i), err_ok, 1);
+    }
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -910,16 +910,16 @@ test_bhdct_get_all_string_key(
 */
 void
 test_bhdct_delete_empty(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
-	bhdct_delete(tc, &dict, IONIZE(3, int), err_item_not_found, 0, boolean_true);
+    bhdct_delete(tc, &dict, IONIZE(3, int), err_item_not_found, 0, boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -928,18 +928,18 @@ test_bhdct_delete_empty(
 */
 void
 test_bhdct_delete_empty_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 3);
-	bhdct_delete(tc, &dict, key, err_item_not_found, 0, boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 3);
+    bhdct_delete(tc, &dict, key, err_item_not_found, 0, boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -949,17 +949,17 @@ test_bhdct_delete_empty_string_key(
 */
 void
 test_bhdct_delete_nonexist_single(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
-	bhdct_insert(tc, &dict, IONIZE(5, int), IONIZE(10, int), boolean_true);
-	bhdct_delete(tc, &dict, IONIZE(3, int), err_item_not_found, 0, boolean_true);
+    bhdct_insert(tc, &dict, IONIZE(5, int), IONIZE(10, int), boolean_true);
+    bhdct_delete(tc, &dict, IONIZE(3, int), err_item_not_found, 0, boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -969,21 +969,21 @@ test_bhdct_delete_nonexist_single(
 */
 void
 test_bhdct_delete_nonexist_single_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 5);
-	bhdct_insert(tc, &dict, key, IONIZE(10, int), boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 5);
+    bhdct_insert(tc, &dict, key, IONIZE(10, int), boolean_true);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 3);
-	bhdct_delete(tc, &dict, key, err_item_not_found, 0, boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 3);
+    bhdct_delete(tc, &dict, key, err_item_not_found, 0, boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -993,16 +993,16 @@ test_bhdct_delete_nonexist_single_string_key(
 */
 void
 test_bhdct_delete_nonexist_several(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_medium);
+    bhdct_setup(tc, &handler, &dict, ion_fill_medium);
 
-	bhdct_delete(tc, &dict, IONIZE(-100, int), err_item_not_found, 0, boolean_true);
+    bhdct_delete(tc, &dict, IONIZE(-100, int), err_item_not_found, 0, boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -1012,18 +1012,18 @@ test_bhdct_delete_nonexist_several(
 */
 void
 test_bhdct_delete_nonexist_several_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_medium);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_medium);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, -100);
-	bhdct_delete(tc, &dict, key, err_item_not_found, 0, boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, -100);
+    bhdct_delete(tc, &dict, key, err_item_not_found, 0, boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -1032,17 +1032,17 @@ test_bhdct_delete_nonexist_several_string_key(
 */
 void
 test_bhdct_delete_single(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
-	bhdct_insert(tc, &dict, IONIZE(3, int), IONIZE(6, int), boolean_true);
-	bhdct_delete(tc, &dict, IONIZE(3, int), err_ok, 1, boolean_true);
+    bhdct_insert(tc, &dict, IONIZE(3, int), IONIZE(6, int), boolean_true);
+    bhdct_delete(tc, &dict, IONIZE(3, int), err_ok, 1, boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -1051,19 +1051,19 @@ test_bhdct_delete_single(
 */
 void
 test_bhdct_delete_single_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 3);
-	bhdct_insert(tc, &dict, key, IONIZE(6, int), boolean_true);
-	bhdct_delete(tc, &dict, key, err_ok, 1, boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 3);
+    bhdct_insert(tc, &dict, key, IONIZE(6, int), boolean_true);
+    bhdct_delete(tc, &dict, key, err_ok, 1, boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -1072,16 +1072,16 @@ test_bhdct_delete_single_string_key(
 */
 void
 test_bhdct_delete_single_several(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_high);
+    bhdct_setup(tc, &handler, &dict, ion_fill_high);
 
-	bhdct_delete(tc, &dict, IONIZE(700, int), err_ok, 1, boolean_true);
+    bhdct_delete(tc, &dict, IONIZE(700, int), err_ok, 1, boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -1090,18 +1090,18 @@ test_bhdct_delete_single_several(
 */
 void
 test_bhdct_delete_single_several_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_high);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_high);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 700);
-	bhdct_delete(tc, &dict, key, err_ok, 1, boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 700);
+    bhdct_delete(tc, &dict, key, err_ok, 1, boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -1109,29 +1109,29 @@ test_bhdct_delete_single_several_string_key(
 */
 void
 test_bhdct_delete_all(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_edge_cases);
+    bhdct_setup(tc, &handler, &dict, ion_fill_edge_cases);
 
-	int i;
+    int i;
 
-	ION_FILL_LOW_LOOP(i) {
-		bhdct_delete(tc, &dict, IONIZE(i, int), err_ok, 1, boolean_true);
-	}
-	ION_FILL_MEDIUM_LOOP(i) {
-		bhdct_delete(tc, &dict, IONIZE(i, int), err_ok, 1, boolean_true);
-	}
-	ION_FILL_HIGH_LOOP(i) {
-		bhdct_delete(tc, &dict, IONIZE(i, int), err_ok, 1, boolean_true);
-	}
-	ION_FILL_EDGE_LOOP(i) {
-		bhdct_delete(tc, &dict, IONIZE(i, int), err_ok, 1, boolean_true);
-	}
+    ION_FILL_LOW_LOOP(i) {
+        bhdct_delete(tc, &dict, IONIZE(i, int), err_ok, 1, boolean_true);
+    }
+    ION_FILL_MEDIUM_LOOP(i) {
+        bhdct_delete(tc, &dict, IONIZE(i, int), err_ok, 1, boolean_true);
+    }
+    ION_FILL_HIGH_LOOP(i) {
+        bhdct_delete(tc, &dict, IONIZE(i, int), err_ok, 1, boolean_true);
+    }
+    ION_FILL_EDGE_LOOP(i) {
+        bhdct_delete(tc, &dict, IONIZE(i, int), err_ok, 1, boolean_true);
+    }
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -1139,34 +1139,34 @@ test_bhdct_delete_all(
 */
 void
 test_bhdct_delete_all_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_edge_cases);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_edge_cases);
 
-	int i;
+    int i;
 
-	ION_FILL_LOW_LOOP(i) {
-		sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
-		bhdct_delete(tc, &dict, key, err_ok, 1, boolean_true);
-	}
-	ION_FILL_MEDIUM_LOOP(i) {
-		sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
-		bhdct_delete(tc, &dict, key, err_ok, 1, boolean_true);
-	}
-	ION_FILL_HIGH_LOOP(i) {
-		sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
-		bhdct_delete(tc, &dict, key, err_ok, 1, boolean_true);
-	}
-	ION_FILL_EDGE_LOOP(i) {
-		sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
-		bhdct_delete(tc, &dict, key, err_ok, 1, boolean_true);
-	}
+    ION_FILL_LOW_LOOP(i) {
+        sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
+        bhdct_delete(tc, &dict, key, err_ok, 1, boolean_true);
+    }
+    ION_FILL_MEDIUM_LOOP(i) {
+        sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
+        bhdct_delete(tc, &dict, key, err_ok, 1, boolean_true);
+    }
+    ION_FILL_HIGH_LOOP(i) {
+        sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
+        bhdct_delete(tc, &dict, key, err_ok, 1, boolean_true);
+    }
+    ION_FILL_EDGE_LOOP(i) {
+        sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
+        bhdct_delete(tc, &dict, key, err_ok, 1, boolean_true);
+    }
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -1174,16 +1174,16 @@ test_bhdct_delete_all_string_key(
 */
 void
 test_bhdct_update_empty_single(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
-	bhdct_update(tc, &dict, IONIZE(3, int), IONIZE(5, int), err_ok, 1, boolean_true);
+    bhdct_update(tc, &dict, IONIZE(3, int), IONIZE(5, int), err_ok, 1, boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -1191,18 +1191,18 @@ test_bhdct_update_empty_single(
 */
 void
 test_bhdct_update_empty_single_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 3);
-	bhdct_update(tc, &dict, key, IONIZE(5, int), err_ok, 1, boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 3);
+    bhdct_update(tc, &dict, key, IONIZE(5, int), err_ok, 1, boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -1211,17 +1211,17 @@ test_bhdct_update_empty_single_string_key(
 */
 void
 test_bhdct_update_nonexist_single(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
-	bhdct_insert(tc, &dict, IONIZE(10, int), IONIZE(4, int), boolean_true);
-	bhdct_update(tc, &dict, IONIZE(3, int), IONIZE(5, int), err_ok, 1, boolean_true);
+    bhdct_insert(tc, &dict, IONIZE(10, int), IONIZE(4, int), boolean_true);
+    bhdct_update(tc, &dict, IONIZE(3, int), IONIZE(5, int), err_ok, 1, boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -1230,21 +1230,21 @@ test_bhdct_update_nonexist_single(
 */
 void
 test_bhdct_update_nonexist_single_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 10);
-	bhdct_insert(tc, &dict, key, IONIZE(4, int), boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 10);
+    bhdct_insert(tc, &dict, key, IONIZE(4, int), boolean_true);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 3);
-	bhdct_update(tc, &dict, key, IONIZE(5, int), err_ok, 1, boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 3);
+    bhdct_update(tc, &dict, key, IONIZE(5, int), err_ok, 1, boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -1253,16 +1253,16 @@ test_bhdct_update_nonexist_single_string_key(
 */
 void
 test_bhdct_update_nonexist_in_many(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_medium);
+    bhdct_setup(tc, &handler, &dict, ion_fill_medium);
 
-	bhdct_update(tc, &dict, IONIZE(63, int), IONIZE(-10, int), err_ok, 1, boolean_true);
+    bhdct_update(tc, &dict, IONIZE(63, int), IONIZE(-10, int), err_ok, 1, boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -1271,18 +1271,18 @@ test_bhdct_update_nonexist_in_many(
 */
 void
 test_bhdct_update_nonexist_in_many_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_medium);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_medium);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 63);
-	bhdct_update(tc, &dict, key, IONIZE(-10, int), err_ok, 1, boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 63);
+    bhdct_update(tc, &dict, key, IONIZE(-10, int), err_ok, 1, boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -1291,17 +1291,17 @@ test_bhdct_update_nonexist_in_many_string_key(
 */
 void
 test_bhdct_update_exist_single(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup(tc, &handler, &dict, ion_fill_none);
 
-	bhdct_insert(tc, &dict, IONIZE(23, int), IONIZE(0, int), boolean_true);
-	bhdct_update(tc, &dict, IONIZE(23, int), IONIZE(44, int), err_ok, 1, boolean_true);
+    bhdct_insert(tc, &dict, IONIZE(23, int), IONIZE(0, int), boolean_true);
+    bhdct_update(tc, &dict, IONIZE(23, int), IONIZE(44, int), err_ok, 1, boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -1310,19 +1310,19 @@ test_bhdct_update_exist_single(
 */
 void
 test_bhdct_update_exist_single_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_none);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 23);
-	bhdct_insert(tc, &dict, key, IONIZE(0, int), boolean_true);
-	bhdct_update(tc, &dict, key, IONIZE(44, int), err_ok, 1, boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 23);
+    bhdct_insert(tc, &dict, key, IONIZE(0, int), boolean_true);
+    bhdct_update(tc, &dict, key, IONIZE(44, int), err_ok, 1, boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -1331,16 +1331,16 @@ test_bhdct_update_exist_single_string_key(
 */
 void
 test_bhdct_update_exist_in_many(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_medium);
+    bhdct_setup(tc, &handler, &dict, ion_fill_medium);
 
-	bhdct_update(tc, &dict, IONIZE(60, int), IONIZE(-23, int), err_ok, 1, boolean_true);
+    bhdct_update(tc, &dict, IONIZE(60, int), IONIZE(-23, int), err_ok, 1, boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -1349,18 +1349,18 @@ test_bhdct_update_exist_in_many(
 */
 void
 test_bhdct_update_exist_in_many_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_medium);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_medium);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 60);
-	bhdct_update(tc, &dict, key, IONIZE(-23, int), err_ok, 1, boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 60);
+    bhdct_update(tc, &dict, key, IONIZE(-23, int), err_ok, 1, boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -1368,29 +1368,29 @@ test_bhdct_update_exist_in_many_string_key(
 */
 void
 test_bhdct_update_all(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_edge_cases);
+    bhdct_setup(tc, &handler, &dict, ion_fill_edge_cases);
 
-	int i;
+    int i;
 
-	ION_FILL_LOW_LOOP(i) {
-		bhdct_update(tc, &dict, IONIZE(i, int), IONIZE(-1337, int), err_ok, 1, boolean_true);
-	}
-	ION_FILL_MEDIUM_LOOP(i) {
-		bhdct_update(tc, &dict, IONIZE(i, int), IONIZE(-1337, int), err_ok, 1, boolean_true);
-	}
-	ION_FILL_HIGH_LOOP(i) {
-		bhdct_update(tc, &dict, IONIZE(i, int), IONIZE(-1337, int), err_ok, 1, boolean_true);
-	}
-	ION_FILL_EDGE_LOOP(i) {
-		bhdct_update(tc, &dict, IONIZE(i, int), IONIZE(-1337, int), err_ok, 1, boolean_true);
-	}
+    ION_FILL_LOW_LOOP(i) {
+        bhdct_update(tc, &dict, IONIZE(i, int), IONIZE(-1337, int), err_ok, 1, boolean_true);
+    }
+    ION_FILL_MEDIUM_LOOP(i) {
+        bhdct_update(tc, &dict, IONIZE(i, int), IONIZE(-1337, int), err_ok, 1, boolean_true);
+    }
+    ION_FILL_HIGH_LOOP(i) {
+        bhdct_update(tc, &dict, IONIZE(i, int), IONIZE(-1337, int), err_ok, 1, boolean_true);
+    }
+    ION_FILL_EDGE_LOOP(i) {
+        bhdct_update(tc, &dict, IONIZE(i, int), IONIZE(-1337, int), err_ok, 1, boolean_true);
+    }
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -1398,34 +1398,34 @@ test_bhdct_update_all(
 */
 void
 test_bhdct_update_all_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_edge_cases);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_edge_cases);
 
-	int i;
+    int i;
 
-	ION_FILL_LOW_LOOP(i) {
-		sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
-		bhdct_update(tc, &dict, key, IONIZE(-1337, int), err_ok, 1, boolean_true);
-	}
-	ION_FILL_MEDIUM_LOOP(i) {
-		sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
-		bhdct_update(tc, &dict, key, IONIZE(-1337, int), err_ok, 1, boolean_true);
-	}
-	ION_FILL_HIGH_LOOP(i) {
-		sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
-		bhdct_update(tc, &dict, key, IONIZE(-1337, int), err_ok, 1, boolean_true);
-	}
-	ION_FILL_EDGE_LOOP(i) {
-		sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
-		bhdct_update(tc, &dict, key, IONIZE(-1337, int), err_ok, 1, boolean_true);
-	}
+    ION_FILL_LOW_LOOP(i) {
+        sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
+        bhdct_update(tc, &dict, key, IONIZE(-1337, int), err_ok, 1, boolean_true);
+    }
+    ION_FILL_MEDIUM_LOOP(i) {
+        sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
+        bhdct_update(tc, &dict, key, IONIZE(-1337, int), err_ok, 1, boolean_true);
+    }
+    ION_FILL_HIGH_LOOP(i) {
+        sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
+        bhdct_update(tc, &dict, key, IONIZE(-1337, int), err_ok, 1, boolean_true);
+    }
+    ION_FILL_EDGE_LOOP(i) {
+        sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, i);
+        bhdct_update(tc, &dict, key, IONIZE(-1337, int), err_ok, 1, boolean_true);
+    }
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -1433,22 +1433,22 @@ test_bhdct_update_all_string_key(
 */
 void
 test_bhdct_delete_then_insert(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
 
-	bhdct_setup(tc, &handler, &dict, ion_fill_edge_cases);
+    bhdct_setup(tc, &handler, &dict, ion_fill_edge_cases);
 
-	bhdct_delete(tc, &dict, IONIZE(60, int), err_ok, 1, boolean_true);
-	bhdct_delete(tc, &dict, IONIZE(4, int), err_ok, 1, boolean_true);
-	bhdct_delete(tc, &dict, IONIZE(505, int), err_ok, 1, boolean_true);
+    bhdct_delete(tc, &dict, IONIZE(60, int), err_ok, 1, boolean_true);
+    bhdct_delete(tc, &dict, IONIZE(4, int), err_ok, 1, boolean_true);
+    bhdct_delete(tc, &dict, IONIZE(505, int), err_ok, 1, boolean_true);
 
-	bhdct_insert(tc, &dict, IONIZE(61, int), IONIZE(44, int), boolean_true);
-	bhdct_insert(tc, &dict, IONIZE(67, int), IONIZE(42, int), boolean_true);
-	bhdct_insert(tc, &dict, IONIZE(73, int), IONIZE(48, int), boolean_true);
+    bhdct_insert(tc, &dict, IONIZE(61, int), IONIZE(44, int), boolean_true);
+    bhdct_insert(tc, &dict, IONIZE(67, int), IONIZE(42, int), boolean_true);
+    bhdct_insert(tc, &dict, IONIZE(73, int), IONIZE(48, int), boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 /**
@@ -1456,125 +1456,125 @@ test_bhdct_delete_then_insert(
 */
 void
 test_bhdct_delete_then_insert_string_key(
-	planck_unit_test_t *tc
+        planck_unit_test_t *tc
 ) {
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
-	char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
+    ion_dictionary_handler_t	handler;
+    ion_dictionary_t			dict;
+    char						key[ION_BHDCT_STRING_KEY_BUFFER_SIZE] = { 0 };
 
-	bhdct_setup_string_key(tc, &handler, &dict, ion_fill_edge_cases);
+    bhdct_setup_string_key(tc, &handler, &dict, ion_fill_edge_cases);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 60);
-	bhdct_delete(tc, &dict, key, err_ok, 1, boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 60);
+    bhdct_delete(tc, &dict, key, err_ok, 1, boolean_true);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 4);
-	bhdct_delete(tc, &dict, key, err_ok, 1, boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 4);
+    bhdct_delete(tc, &dict, key, err_ok, 1, boolean_true);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 505);
-	bhdct_delete(tc, &dict, key, err_ok, 1, boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 505);
+    bhdct_delete(tc, &dict, key, err_ok, 1, boolean_true);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 61);
-	bhdct_insert(tc, &dict, key, IONIZE(44, int), boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 61);
+    bhdct_insert(tc, &dict, key, IONIZE(44, int), boolean_true);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 67);
-	bhdct_insert(tc, &dict, key, IONIZE(42, int), boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 67);
+    bhdct_insert(tc, &dict, key, IONIZE(42, int), boolean_true);
 
-	sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 73);
-	bhdct_insert(tc, &dict, key, IONIZE(48, int), boolean_true);
+    sprintf(key, ION_BHDCT_STRING_KEY_PAYLOAD, 73);
+    bhdct_insert(tc, &dict, key, IONIZE(48, int), boolean_true);
 
-	bhdct_takedown(tc, &dict);
+    bhdct_takedown(tc, &dict);
 }
 
 void
 bhdct_run_tests(
-	ion_handler_initializer_t	init_fcn,
-	ion_dictionary_size_t		dictionary_size,
-	uint32_t					test_classes
+        ion_handler_initializer_t	init_fcn,
+        ion_dictionary_size_t		dictionary_size,
+        uint32_t					test_classes
 ) {
-	bhdct_context.init_fcn			= init_fcn;
-	bhdct_context.dictionary_size	= dictionary_size;
-	bhdct_context.test_classes		= test_classes;
+    bhdct_context.init_fcn			= init_fcn;
+    bhdct_context.dictionary_size	= dictionary_size;
+    bhdct_context.test_classes		= test_classes;
 
-	if (bhdct_context.test_classes & ION_BHDCT_INT_INT) {
-		planck_unit_suite_t *suite = planck_unit_new_suite();
+    if (bhdct_context.test_classes & ION_BHDCT_INT_INT) {
+        planck_unit_suite_t *suite = planck_unit_new_suite();
 
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_setup);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_single);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_multiple);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_setup);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_single);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_multiple);
 
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_single);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_in_many);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_lots);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_single);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_in_many);
 
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_empty);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_single);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_many);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_lots);
 
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_exist_single);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_single);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_multiple);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_all);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_empty);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_single);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_many);
 
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_empty);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_single);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_several);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_exist_single);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_single);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_multiple);
 
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single_several);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_all);
 
-		/* THIS MAY BE FAILING TEST */
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_all);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_empty);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_single);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_several);
 
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_empty_single);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_nonexist_single);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_nonexist_in_many);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_exist_single);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_exist_in_many);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_all);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single_several);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_all);
 
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_then_insert);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_empty_single);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_nonexist_single);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_nonexist_in_many);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_exist_single);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_exist_in_many);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_all);
 
-		planck_unit_run_suite(suite);
-		planck_unit_destroy_suite(suite);
-	}
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_then_insert);
 
-	if (bhdct_context.test_classes & ION_BHDCT_STRING_INT) {
-		planck_unit_suite_t *suite = planck_unit_new_suite();
+        planck_unit_run_suite(suite);
+        planck_unit_destroy_suite(suite);
+    }
 
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_setup_string_key);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_single_string_key);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_multiple_string_key);
+    if (bhdct_context.test_classes & ION_BHDCT_STRING_INT) {
+        planck_unit_suite_t *suite = planck_unit_new_suite();
 
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_single_string_key);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_in_many_string_key);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_lots_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_setup_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_single_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_insert_multiple_string_key);
 
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_empty_string_key);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_single_string_key);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_many_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_single_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_in_many_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_lots_string_key);
 
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_exist_single_string_key);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_single_string_key);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_multiple_string_key);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_all_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_empty_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_single_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_nonexist_many_string_key);
 
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_empty_string_key);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_single_string_key);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_several_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_exist_single_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_single_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_populated_multiple_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_all_string_key);
 
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single_string_key);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single_several_string_key);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_all_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_empty_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_single_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_several_string_key);
 
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_empty_single_string_key);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_nonexist_single_string_key);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_nonexist_in_many_string_key);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_exist_single_string_key);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_exist_in_many_string_key);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_all_string_key);
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_then_insert_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single_several_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_all_string_key);
 
-		planck_unit_run_suite(suite);
-		planck_unit_destroy_suite(suite);
-	}
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_empty_single_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_nonexist_single_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_nonexist_in_many_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_exist_single_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_exist_in_many_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_all_string_key);
+        PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_then_insert_string_key);
+
+        planck_unit_run_suite(suite);
+        planck_unit_destroy_suite(suite);
+    }
 }

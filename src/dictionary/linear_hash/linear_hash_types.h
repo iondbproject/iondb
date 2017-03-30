@@ -42,6 +42,7 @@ typedef struct {
 	int						num_buckets;
 	int						num_records;
 	int						records_per_bucket;
+    ion_fpos_t                    record_total_size;
 	FILE					*database;
 	FILE					*state;
 
