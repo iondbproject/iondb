@@ -1011,16 +1011,17 @@ linear_hash_get_record(
 		return err_file_bad_seek;
 	}
 
-    /* cache record data from file */
-    ion_byte_t * record = alloca(linear_hash->record_total_size);
-    if (1 != fread(record, linear_hash->record_total_size, 1, linear_hash->database)) {
-        return err_file_read_error;
-    }
+	/* cache record data from file */
+	ion_byte_t *record = alloca(linear_hash->record_total_size);
 
-    /* read record data elements */
-    memcpy(status, record, sizeof(ion_byte_t));
-    memcpy(key, record + sizeof(ion_byte_t), linear_hash->super.record.key_size);
-    memcpy(value, record + sizeof(ion_byte_t) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);
+	if (1 != fread(record, linear_hash->record_total_size, 1, linear_hash->database)) {
+		return err_file_read_error;
+	}
+
+	/* read record data elements */
+	memcpy(status, record, sizeof(ion_byte_t));
+	memcpy(key, record + sizeof(ion_byte_t), linear_hash->super.record.key_size);
+	memcpy(value, record + sizeof(ion_byte_t) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);
 
 	return err_ok;
 }
@@ -1141,26 +1142,27 @@ linear_hash_get_bucket(
 	if (0 != fseek(linear_hash->database, bucket_loc, SEEK_SET)) {
 		return err_file_bad_seek;
 	}
-    /* check if file is open */
-    if (!linear_hash->database) {
-        return err_file_close_error;
-    }
 
-    /* seek to location of record in file */
-    if (0 != fseek(linear_hash->database, bucket_loc, SEEK_SET)) {
-        return err_file_bad_seek;
-    }
+	/* check if file is open */
+	if (!linear_hash->database) {
+		return err_file_close_error;
+	}
 
-    ion_byte_t * bucket_cache = alloca(sizeof(linear_hash_bucket_t));
+	/* seek to location of record in file */
+	if (0 != fseek(linear_hash->database, bucket_loc, SEEK_SET)) {
+		return err_file_bad_seek;
+	}
 
-    if (1 != fread(bucket_cache, sizeof(linear_hash_bucket_t), 1, linear_hash->database)) {
-        return err_file_read_error;
-    }
+	ion_byte_t *bucket_cache = alloca(sizeof(linear_hash_bucket_t));
 
-    /* read record data elements */
-    memcpy(&bucket->idx, bucket_cache, sizeof(int));
-    memcpy(&bucket->record_count, bucket_cache + sizeof(int), sizeof(int));
-    memcpy(&bucket->overflow_location, bucket_cache + 2 * sizeof(int), sizeof(ion_fpos_t));
+	if (1 != fread(bucket_cache, sizeof(linear_hash_bucket_t), 1, linear_hash->database)) {
+		return err_file_read_error;
+	}
+
+	/* read record data elements */
+	memcpy(&bucket->idx, bucket_cache, sizeof(int));
+	memcpy(&bucket->record_count, bucket_cache + sizeof(int), sizeof(int));
+	memcpy(&bucket->overflow_location, bucket_cache + 2 * sizeof(int), sizeof(ion_fpos_t));
 
 	return err_ok;
 }
@@ -1318,14 +1320,17 @@ key_bytes_to_int(
 	ion_byte_t			*key,
 	linear_hash_table_t *linear_hash
 ) {
+    /*
 	int i;
-	int key_bytes_as_int = 0;
+	long key_bytes_as_int = 0;
 
 	for (i = 0; i < linear_hash->super.record.key_size; i++) {
 		key_bytes_as_int += *(key + i);
 	}
 
 	return key_bytes_as_int;
+    */
+    return *key;
 }
 
 int
@@ -1336,10 +1341,9 @@ hash_to_bucket(
 	/* Case the record we are looking for was in a bucket that has already been split and h1 was used */
 	int key_bytes_as_int = key_bytes_to_int(key, linear_hash);
 
-	return hash(key_bytes_as_int) & ((2 * linear_hash->initial_size) - 1);
+	return key_bytes_as_int & ((2 * linear_hash->initial_size) - 1);
 }
 
-/* TODO change back to ion_key_t */
 int
 insert_hash_to_bucket(
 	ion_byte_t			*key,
@@ -1347,7 +1351,7 @@ insert_hash_to_bucket(
 ) {
 	int key_bytes_as_int = key_bytes_to_int(key, linear_hash);
 
-	return hash(key_bytes_as_int) & (linear_hash->initial_size - 1);
+	return key_bytes_as_int & (linear_hash->initial_size - 1);
 }
 
 /* Write the offset of bucket idx to the map in linear hash state */
