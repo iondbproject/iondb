@@ -362,8 +362,8 @@ split(
 					}
 
 					/* refresh cached data and restart iteration */
-					fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t) + i * linear_hash->record_total_size, SEEK_SET);
-                    fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
+					fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
+					fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
 					status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
 					i				= -1;
 					record_offset	= -1 * linear_hash->record_total_size;
@@ -426,7 +426,7 @@ split(
 				}
 
 				/* refresh cached data and restart iteration */
-				fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t) + i * linear_hash->record_total_size, SEEK_SET);
+                fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
 				fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
 				status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
 				i				= -1;
