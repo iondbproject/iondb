@@ -362,8 +362,8 @@ split(
 					}
 
 					/* refresh cached data and restart iteration */
-                    fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
-                    fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
+					fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
+					fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
 					status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
 					i				= -1;
 					record_offset	= -1 * linear_hash->record_total_size;
@@ -703,12 +703,9 @@ linear_hash_get(
 		fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
 
 		for (i = 0; i < linear_hash->records_per_bucket; i++) {
-
 			memcpy(&record_status, records + record_offset, sizeof(ion_byte_t));
 			memcpy(record_key, records + record_offset + sizeof(ion_byte_t), linear_hash->super.record.key_size);
 			memcpy(record_value, records + record_offset + sizeof(ion_byte_t) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);
-
-			//linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
 			if (record_status != 0) {
 				if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
@@ -740,12 +737,9 @@ linear_hash_get(
 		fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
 
 		for (i = 0; i < linear_hash->records_per_bucket; i++) {
-
 			memcpy(&record_status, records + record_offset, sizeof(ion_byte_t));
 			memcpy(record_key, records + record_offset + sizeof(ion_byte_t), linear_hash->super.record.key_size);
 			memcpy(record_value, records + record_offset + sizeof(ion_byte_t) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);
-
-			//linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
 			if (record_status != 0) {
 				if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
@@ -925,7 +919,6 @@ linear_hash_delete(
 			memcpy(&record_status, records + record_offset, sizeof(ion_byte_t));
 			memcpy(record_key, records + record_offset + sizeof(ion_byte_t), linear_hash->super.record.key_size);
 			memcpy(record_value, records + record_offset + sizeof(ion_byte_t) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);
-			//linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
 			if (record_status != 0) {
 				if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
@@ -979,12 +972,9 @@ linear_hash_delete(
 	fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
 
 	for (i = 0; i < bucket.record_count; i++) {
-
 		memcpy(&record_status, records + record_offset, sizeof(ion_byte_t));
 		memcpy(record_key, records + record_offset + sizeof(ion_byte_t), linear_hash->super.record.key_size);
 		memcpy(record_value, records + record_offset + sizeof(ion_byte_t) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);
-
-		//linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
 		if (record_status != 0) {
 			if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
@@ -1413,18 +1403,15 @@ key_bytes_to_int(
 	ion_byte_t			*key,
 	linear_hash_table_t *linear_hash
 ) {
-	UNUSED(linear_hash);
-	/*
-	int i;
-	long key_bytes_as_int = 0;
 
-	for (i = 0; i < linear_hash->super.record.key_size; i++) {
+	int i;
+	int key_bytes_as_int = 0;
+
+	for (i = 0; i < linear_hash->super.record.key_size - 1; i++) {
 		key_bytes_as_int += *(key + i);
 	}
 
 	return key_bytes_as_int;
-	*/
-	return (int) *key;
 }
 
 int
