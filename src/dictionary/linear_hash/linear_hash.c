@@ -1026,7 +1026,7 @@ linear_hash_delete(
 
 /* returns the struct representing the bucket at the specified index */
 ion_err_t
-linear_hash_get_record_cache(
+linear_hash_get_record(
 	ion_fpos_t			loc,
 	ion_byte_t			*key,
 	ion_byte_t			*value,
@@ -1055,7 +1055,7 @@ linear_hash_get_record_cache(
 
 /* returns the struct representing the bucket at the specified index */
 ion_err_t
-linear_hash_get_record(
+linear_hash_get_record_file(
 	ion_fpos_t			loc,
 	ion_byte_t			*key,
 	ion_byte_t			*value,
@@ -1185,7 +1185,7 @@ write_new_bucket(
 
 /* writes the struct representing the bucket at the location to the bucket parameter*/
 ion_err_t
-linear_hash_get_bucket_cache(
+linear_hash_get_bucket(
 	ion_fpos_t				bucket_loc,
 	linear_hash_bucket_t	*bucket,
 	linear_hash_table_t		*linear_hash
@@ -1216,7 +1216,7 @@ linear_hash_get_bucket_cache(
 
 /* writes the struct representing the bucket at the location to the bucket parameter*/
 ion_err_t
-linear_hash_get_bucket(
+linear_hash_get_bucket_file(
 	ion_fpos_t				bucket_loc,
 	linear_hash_bucket_t	*bucket,
 	linear_hash_table_t		*linear_hash
@@ -1358,26 +1358,6 @@ bucket_idx_to_ion_fpos_t(
 	int					idx,
 	linear_hash_table_t *linear_hash
 ) {
-/*	if(idx == 0) { */
-/*		return 0; */
-/*	} */
-/*	else { */
-/*  */
-/*		// create a pointer to the file */
-/*		FILE *linear_hash_state; */
-/*		linear_hash_state = fopen("linear_hash_state.bin", "r+"); */
-/*  */
-/*		// seek to the location of the bucket in the map */
-/*		ion_fpos_t loc_in_map = sizeof(linear_hash_table_t) + idx * sizeof(ion_fpos_t); */
-/*		fseek(linear_hash_state, loc_in_map, SEEK_SET); */
-/*  */
-/*		// read ion_fpos_t of bucket from mapping in linear hash */
-/*		ion_fpos_t bucket_loc; */
-/*		fread(&bucket_loc, sizeof(ion_fpos_t), 1, linear_hash_state); */
-/*		fclose(linear_hash_state); */
-/*		return bucket_loc; */
-/*	} */
-
 	return array_list_get(idx, linear_hash->bucket_map);
 }
 
@@ -1385,9 +1365,10 @@ int
 hash(
 	int key
 ) {
-	int hash = 0;
+	int hash		= 0;
 	int i;
-    int size_of_int = (int) sizeof(int);
+	int size_of_int = (int) sizeof(int);
+
 	for (i = 0; i < size_of_int; i++) {
 		hash += *(&key + i);
 	}
