@@ -321,12 +321,9 @@ split(
 	memset(records, 0, linear_hash->record_total_size * linear_hash->records_per_bucket);
 
 	ion_fpos_t record_offset = 0;
-
-	ion_fpos_t record_loc;
-
+    
 	while (bucket.overflow_location != -1) {
 		if (bucket.record_count > 0) {
-			record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 			fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
 			fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
 
@@ -365,15 +362,8 @@ split(
 					status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
 					i				= -1;
 					record_offset	= -1 * linear_hash->record_total_size;
-					record_loc		= bucket_loc + sizeof(linear_hash_bucket_t) - linear_hash->record_total_size;
-					/*
-					i--;
-					record_offset	-= linear_hash->record_total_size;
-					record_loc		-= linear_hash->record_total_size;
-					 */
 				}
 
-				record_loc		+= linear_hash->record_total_size;
 				record_offset	+= linear_hash->record_total_size;
 			}
 
@@ -389,7 +379,6 @@ split(
 	}
 
 	if (bucket.record_count > 0) {
-		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 		fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
 		fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
 
@@ -427,13 +416,7 @@ split(
 				status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
 				i				= -1;
 				record_offset	= -1 * linear_hash->record_total_size;
-				record_loc		= bucket_loc + sizeof(linear_hash_bucket_t) - linear_hash->record_total_size;
-				/*i--;
-				record_offset	-= linear_hash->record_total_size;
-				record_loc		-= linear_hash->record_total_size;*/
 			}
-
-			record_loc		+= linear_hash->record_total_size;
 			record_offset	+= linear_hash->record_total_size;
 		}
 	}
