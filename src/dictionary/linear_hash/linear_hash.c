@@ -1053,36 +1053,6 @@ linear_hash_get_record(
 	return err_ok;
 }
 
-/* returns the struct representing the bucket at the specified index */
-ion_err_t
-linear_hash_get_record_file(
-	ion_fpos_t			loc,
-	ion_byte_t			*key,
-	ion_byte_t			*value,
-	ion_byte_t			*status,
-	linear_hash_table_t *linear_hash
-) {
-	/* seek to location of record in file */
-	if (0 != fseek(linear_hash->database, loc, SEEK_SET)) {
-		return err_file_bad_seek;
-	}
-
-	/* read record data elements */
-	if (1 != fread(status, sizeof(ion_byte_t), 1, linear_hash->database)) {
-		return err_file_read_error;
-	}
-
-	if (1 != fread(key, linear_hash->super.record.key_size, 1, linear_hash->database)) {
-		return err_file_read_error;
-	}
-
-	if (1 != fread(value, linear_hash->super.record.value_size, 1, linear_hash->database)) {
-		return err_file_read_error;
-	}
-
-	return err_ok;
-}
-
 ion_err_t
 linear_hash_write_record(
 	ion_fpos_t			record_loc,
@@ -1210,38 +1180,6 @@ linear_hash_get_bucket(
 	memcpy(&bucket->idx, bucket_cache, sizeof(int));
 	memcpy(&bucket->record_count, bucket_cache + sizeof(int), sizeof(int));
 	memcpy(&bucket->overflow_location, bucket_cache + 2 * sizeof(int), sizeof(ion_fpos_t));
-
-	return err_ok;
-}
-
-/* writes the struct representing the bucket at the location to the bucket parameter*/
-ion_err_t
-linear_hash_get_bucket_file(
-	ion_fpos_t				bucket_loc,
-	linear_hash_bucket_t	*bucket,
-	linear_hash_table_t		*linear_hash
-) {
-	/* check if file is open */
-	if (!linear_hash->database) {
-		return err_file_close_error;
-	}
-
-	/* seek to location of record in file */
-	if (0 != fseek(linear_hash->database, bucket_loc, SEEK_SET)) {
-		return err_file_bad_seek;
-	}
-
-	if (1 != fread(&bucket->idx, sizeof(int), 1, linear_hash->database)) {
-		return err_file_read_error;
-	}
-
-	if (1 != fread(&bucket->record_count, sizeof(int), 1, linear_hash->database)) {
-		return err_file_read_error;
-	}
-
-	if (1 != fread(&bucket->overflow_location, sizeof(ion_fpos_t), 1, linear_hash->database)) {
-		return err_file_read_error;
-	}
 
 	return err_ok;
 }
