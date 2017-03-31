@@ -328,16 +328,15 @@ split(
 		if (bucket.record_count > 0) {
 			record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 			fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
-			/* fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database); */
+			fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
 
 			for (i = 0; i < bucket.record_count; i++) {
-				linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
+				//linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
-                /*
 				memcpy(&record_status, records + record_offset, sizeof(ion_byte_t));
 				memcpy(record_key, records + record_offset + sizeof(ion_byte_t), linear_hash->super.record.key_size);
 				memcpy(record_value, records + record_offset + sizeof(ion_byte_t) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);
-				*/
+
 
 				insert_hash_key = insert_hash_to_bucket(record_key, linear_hash);
 
@@ -390,16 +389,17 @@ split(
 	if (bucket.record_count > 0) {
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 		fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
-		/* fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database); */
+		fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
 
 		for (i = 0; i < bucket.record_count; i++) {
-			linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
+		//	linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
 
-			/*
+
 			memcpy(&record_status, records + record_offset, sizeof(ion_byte_t));
 			memcpy(record_key, records + record_offset + sizeof(ion_byte_t), linear_hash->super.record.key_size);
 			memcpy(record_value, records + record_offset + sizeof(ion_byte_t) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);
-			*/
+			
+
 			insert_hash_key = insert_hash_to_bucket(record_key, linear_hash);
 
 			split_hash_key	= hash_to_bucket(record_key, linear_hash);
