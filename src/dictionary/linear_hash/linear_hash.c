@@ -321,7 +321,7 @@ split(
 	memset(records, 0, linear_hash->record_total_size * linear_hash->records_per_bucket);
 
 	ion_fpos_t record_offset = 0;
-    
+
 	while (bucket.overflow_location != -1) {
 		if (bucket.record_count > 0) {
 			fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
@@ -364,7 +364,7 @@ split(
 					record_offset	= -1 * linear_hash->record_total_size;
 				}
 
-				record_offset	+= linear_hash->record_total_size;
+				record_offset += linear_hash->record_total_size;
 			}
 
 			record_offset = 0;
@@ -417,7 +417,8 @@ split(
 				i				= -1;
 				record_offset	= -1 * linear_hash->record_total_size;
 			}
-			record_offset	+= linear_hash->record_total_size;
+
+			record_offset += linear_hash->record_total_size;
 		}
 	}
 
@@ -509,6 +510,7 @@ linear_hash_get_bucket_swap_record(
 
 	ion_byte_t deleted_status = 0;
 
+	/* TODO JUST NEED TO WRITE STATUS HERE */
 	err = linear_hash_write_record(swap_record_loc, key, value, &deleted_status, linear_hash);
 
 	if (err != err_ok) {
@@ -517,6 +519,7 @@ linear_hash_get_bucket_swap_record(
 
 	*record_loc = swap_record_loc;
 
+	/* TODO FIX YOU BUCKET RECORD TRACKING */
 	bucket.record_count--;
 
 	/* garuntee the bucket in the bucket map has records in it - THIS LEAVES EMPTY BUCKETS FLOATING ABOUT */
@@ -524,8 +527,9 @@ linear_hash_get_bucket_swap_record(
 		array_list_insert(bucket.idx, bucket.overflow_location, linear_hash->bucket_map);
 	}
 
-	/* no need to update bucket when using this strategy */
-	/* err			= linear_hash_update_bucket(bucket_loc, &bucket, linear_hash); */
+	/* only to update bucket if not becoming junk bucket */
+	err = linear_hash_update_bucket(bucket_loc, &bucket, linear_hash);
+	linear_hash_decrement_num_records(linear_hash);
 
 	if (err != err_ok) {
 		return err;
@@ -598,6 +602,7 @@ linear_hash_insert(
 				return status;
 			}
 
+			/* TODO PASS OVERFLOW LOCATION INTO CREATE_OVERFLOW_BUCKET */
 			record_loc		= overflow_records_loc;
 			bucket_loc		= *overflow_location;
 			status.error	= linear_hash_update_bucket(*overflow_location, &bucket, linear_hash);
@@ -910,11 +915,19 @@ linear_hash_delete(
 
 					/* delete all swap records which are going to be deleted anyways */
 					while (linear_hash->super.compare(terminal_record_key, key, linear_hash->super.record.key_size) == 0) {
+						/* if we are not trying to swap a record with itself */
+						if (record_loc == swap_record_loc) {
+							/* write the swapped record to record_loc */
+							break;
+						}
+
 						linear_hash_get_bucket_swap_record(bucket_idx, &swap_record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
 
 						if (terminal_record_status == 0) {
 							break;
 						}
+
+						status.count++;
 					}
 
 					/* if we are not trying to swap a record with itself */
@@ -929,7 +942,7 @@ linear_hash_delete(
 						return status;
 					}
 
-					linear_hash_decrement_num_records(linear_hash);
+					linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
 				}
 			}
 
@@ -966,11 +979,19 @@ linear_hash_delete(
 
 				/* delete all swap records which are going to be deleted anyways */
 				while (linear_hash->super.compare(terminal_record_key, key, linear_hash->super.record.key_size) == 0) {
+					/* if we are not trying to swap a record with itself */
+					if (record_loc == swap_record_loc) {
+						/* write the swapped record to record_loc */
+						break;
+					}
+
 					linear_hash_get_bucket_swap_record(bucket_idx, &swap_record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
 
 					if (terminal_record_status == 0) {
 						break;
 					}
+
+					status.count++;
 				}
 
 				/* if we are not trying to swap a record with itself */
@@ -989,7 +1010,7 @@ linear_hash_delete(
 					return status;
 				}
 
-				linear_hash_decrement_num_records(linear_hash);
+				linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
 			}
 		}
 
@@ -1465,4 +1486,33 @@ linear_hash_destroy(
 	}
 
 	return err_ok;
+}
+
+void
+print_linear_hash_distribution(
+	linear_hash_table_t *linear_hash
+) {
+	int						num_records		= 0;
+	int						num_overflows	= 0;
+	int						i;
+	linear_hash_bucket_t	*bucket			= alloca(sizeof(linear_hash_bucket_t));
+	ion_fpos_t				bucket_loc;
+
+	printf("\nBUCKET_DISTRIBUTION\n");
+	printf("\nbucket_idx,num_overflowsn,num_records,global_num_records\n");
+
+	for (i = 0; i < linear_hash->num_buckets; i++) {
+		bucket_loc = array_list_get(i, linear_hash->bucket_map);
+		linear_hash_get_bucket(bucket_loc, bucket, linear_hash);
+
+		while (bucket->overflow_location != -1) {
+			num_overflows++;
+			num_records += bucket->record_count;
+			linear_hash_get_bucket(bucket->overflow_location, bucket, linear_hash);
+		}
+
+		num_records += bucket->record_count;
+		printf("%d, %d, %d, %d\n", bucket->idx, num_overflows, num_records, linear_hash->num_records);
+		num_records = 0;
+	}
 }

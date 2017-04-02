@@ -239,3 +239,8 @@ ion_err_t
 linear_hash_close(
 	linear_hash_table_t *linear_hash
 );
+
+void
+print_linear_hash_distribution(
+	linear_hash_table_t *linear_hash
+);

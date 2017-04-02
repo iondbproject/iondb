@@ -460,13 +460,42 @@ test_linear_hash_create_destroy(
 }
 
 void
+linear_hash_distribution(
+	linear_hash_table_t *linear_hash
+) {
+	int						num_records		= 0;
+	int						num_overflows	= 0;
+	int						i;
+	linear_hash_bucket_t	*bucket			= alloca(sizeof(linear_hash_bucket_t));
+	ion_fpos_t				bucket_loc;
+
+	printf("\nBUCKET_DISTRIBUTION\n");
+	printf("\nbucket_idx,num_overflowsn,num_records,global_num_records\n");
+
+	for (i = 0; i < linear_hash->num_buckets; i++) {
+		bucket_loc = array_list_get(i, linear_hash->bucket_map);
+		linear_hash_get_bucket(bucket_loc, bucket, linear_hash);
+
+		while (bucket->overflow_location != -1) {
+			num_overflows++;
+			num_records += bucket->record_count;
+			linear_hash_get_bucket(bucket->overflow_location, bucket, linear_hash);
+		}
+
+		num_records += bucket->record_count;
+		printf("%d, %d, %d, %d\n", bucket->idx, num_overflows, num_records, linear_hash->num_records);
+		num_records = 0;
+	}
+}
+
+void
 test_linear_hash_benchmark(
 ) {
 	/* create linear hash */
 	int					dictionary_size		= 20;
 	int					initial_size		= 2;
 	int					split_threshold		= 85;
-	int					records_per_bucket	= 4;
+	int					records_per_bucket	= 20;
 	ion_key_type_t		key_type			= key_type_numeric_unsigned;
 	ion_key_size_t		key_size			= sizeof(int);
 	ion_value_size_t	value_size			= sizeof(int);
@@ -484,23 +513,25 @@ test_linear_hash_benchmark(
 
 	int num_records = 50;
 	int n;
-    int k;
+	int k;
 
 	/* INSERTIONS */
 	printf("\nINSERTIONS\n");
 	printf("num_records,records_in_table,buckets_in_table,initial_size,next_split_pointer,time_start,time_end,time_elapsed,avg_time\n");
-	for(n = 0; n < 100; n++) {
-		start					= ion_time();
+
+	for (n = 0; n < 10; n++) {
+		start = ion_time();
+
 		for (i = 0; i < num_records; i++) {
 			/* set up variables for insertion */
-            k = rand();
+			k		= rand();
 
-            /* set up variables for insertion */
-            key			= IONIZE(k, int);
-            value		= IONIZE(k, int);
+			/* set up variables for insertion */
+			key		= IONIZE(k, int);
+			value	= IONIZE(k, int);
 
 			/* start timer */
-			start = ion_time();
+			start	= ion_time();
 
 			/* revolve bucket idx */
 			int bucket_idx = insert_hash_to_bucket(key, linear_hash);
@@ -511,83 +542,85 @@ test_linear_hash_benchmark(
 
 			/* insert */
 			linear_hash_insert(key, value, bucket_idx, linear_hash);
-
 		}
+
 		/* measure and produce output */
 		end						= ion_time();
 		time_elapsed_in_seconds = end - start;
-		printf("%d, %d, %d, %d, %d, %lu, %lu, %lu, %lu\n", num_records, linear_hash->num_records, linear_hash->num_buckets, linear_hash->initial_size, linear_hash->next_split, start, end, time_elapsed_in_seconds, time_elapsed_in_seconds / num_records);
+		/* printf("%d, %d, %d, %d, %d, %lu, %lu, %lu, %lu\n", num_records, linear_hash->num_records, linear_hash->num_buckets, linear_hash->initial_size, linear_hash->next_split, start, end, time_elapsed_in_seconds, time_elapsed_in_seconds / num_records); */
 	}
 
-//	printf("\nGETS\n");
-//	printf("num_records,records_in_table,time_start,time_end,time_elapsed,avg_time\n");
-//	for(n = 0; n < 200; n++) {
-//		start					= ion_time();
-//		for (i = 0; i < num_records; i++) {
-//			/* set up variables for insertion */
-//            k = rand();
-//
-//            /* set up variables for insertion */
-//            key			= IONIZE(k, int);
-//            value		= IONIZE(k, int);
-//
-//            /* gets */
-//			linear_hash_get(key, value, linear_hash);
-//
-//
-//		}
-//        /* measure and produce output */
-//        end				= ion_time();
-//        time_elapsed_in_seconds = end - start;
-//        printf("%d, %d,%lu, %lu, %lu, %lu\n", num_records, linear_hash->num_records, start, end, time_elapsed_in_seconds, time_elapsed_in_seconds / num_records);
-//
-//		for (i = 0; i < 500; i++) {
-//            k = rand();
-//
-//			/* set up variables for insertion */
-//			key			= IONIZE(k, int);
-//			value		= IONIZE(k, int);
-//
-//			/* revolve bucket idx */
-//			int bucket_idx = insert_hash_to_bucket(key, linear_hash);
-//
-//			if (bucket_idx < linear_hash->next_split) {
-//				bucket_idx = hash_to_bucket(key, linear_hash);
-//			}
-//
-//			/* insert */
-//			linear_hash_insert(key, value, bucket_idx, linear_hash);
-//		}
-//
-//
-//	}
+	linear_hash_distribution(linear_hash);
 
+	printf("\nGETS\n");
+	printf("num_records,records_in_table,time_start,time_end,time_elapsed,avg_time\n");
 
+	for (n = 0; n < 200; n++) {
+		start = ion_time();
+
+		for (i = 0; i < num_records; i++) {
+			/* set up variables for insertion */
+			k		= rand();
+
+			/* set up variables for insertion */
+			key		= IONIZE(k, int);
+			value	= IONIZE(k, int);
+
+			/* gets */
+			linear_hash_get(key, value, linear_hash);
+		}
+
+		/* measure and produce output */
+		end						= ion_time();
+		time_elapsed_in_seconds = end - start;
+		/* printf("%d, %d,%lu, %lu, %lu, %lu\n", num_records, linear_hash->num_records, start, end, time_elapsed_in_seconds, time_elapsed_in_seconds / num_records); */
+
+		for (i = 0; i < 10; i++) {
+			k		= rand();
+
+			/* set up variables for insertion */
+			key		= IONIZE(k, int);
+			value	= IONIZE(k, int);
+
+			/* revolve bucket idx */
+			int bucket_idx = insert_hash_to_bucket(key, linear_hash);
+
+			if (bucket_idx < linear_hash->next_split) {
+				bucket_idx = hash_to_bucket(key, linear_hash);
+			}
+
+			/* insert */
+			linear_hash_insert(key, value, bucket_idx, linear_hash);
+		}
+	}
+
+	linear_hash_distribution(linear_hash);
 
 	printf("\nDELETES\n");
 	printf("num_records,records_in_table,buckets_in_table,initial_size,next_split_pointer,time_start,time_end,time_elapsed,avg_time\n");
 
-	for(n = 0; n < 200; n++) {
+	for (n = 0; n < 10; n++) {
 		for (i = 0; i < num_records; i++) {
 			/* set up variables for insertion */
-			key						= IONIZE(i * 13, int);
+			key		= IONIZE(i * 13, int);
 
 			/* start timer */
-			start				= ion_time();
+			start	= ion_time();
 
 			/* deletes */
 			linear_hash_delete(key, linear_hash);
 		}
+
 		/* measure and produce output */
-		end				= ion_time();
+		end						= ion_time();
 
 		time_elapsed_in_seconds = end - start;
-		printf("%d, %d, %d, %d, %d, %lu, %lu, %lu, %lu\n", num_records, linear_hash->num_records, linear_hash->num_buckets, linear_hash->initial_size, linear_hash->next_split, start, end, time_elapsed_in_seconds, time_elapsed_in_seconds / num_records);
+		/* printf("%d, %d, %d, %d, %d, %lu, %lu, %lu, %lu\n", num_records, linear_hash->num_records, linear_hash->num_buckets, linear_hash->initial_size, linear_hash->next_split, start, end, time_elapsed_in_seconds, time_elapsed_in_seconds / num_records); */
 
 		for (i = 0; i < 500; i++) {
 			/* set up variables for insertion */
-			key			= IONIZE(hash(i), int);
-			value		= IONIZE(hash(i), int);
+			key		= IONIZE(hash(i), int);
+			value	= IONIZE(hash(i), int);
 
 			/* revolve bucket idx */
 			int bucket_idx = insert_hash_to_bucket(key, linear_hash);
@@ -601,6 +634,7 @@ test_linear_hash_benchmark(
 		}
 	}
 
+	linear_hash_distribution(linear_hash);
 
 	linear_hash_destroy(linear_hash);
 }
@@ -610,15 +644,14 @@ linear_hash_getsuite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_create_destroy);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_basic_operations);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_bucket_map_head_updates);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_increment_buckets);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_correct_hash_function);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_correct_bucket_after_split);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_global_record_increments_decrements);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_local_record_increments_decrements);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_benchmark);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_create_destroy);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_basic_operations);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_bucket_map_head_updates);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_increment_buckets);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_correct_hash_function);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_correct_bucket_after_split);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_global_record_increments_decrements);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_local_record_increments_decrements);
 	return suite;
 }
 
