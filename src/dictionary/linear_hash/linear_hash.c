@@ -297,11 +297,14 @@ split(
 
 	ion_fpos_t record_offset = 0;
 
-	while (bucket.overflow_location != -1) {
+	while (bucket.overflow_location != linear_hash_end_of_list) {
+		// if the bucket is not empty
 		if (bucket.record_count > 0) {
+			// read all records into memory
 			fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
 			fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
 
+			// scan records for records that should be placed in the new bucket
 			for (i = 0; i < bucket.record_count; i++) {
 				memcpy(&record_status, records + record_offset, sizeof(ion_byte_t));
 				memcpy(record_key, records + record_offset + sizeof(ion_byte_t), linear_hash->super.record.key_size);
@@ -311,11 +314,10 @@ split(
 
 				split_hash_key	= hash_to_bucket(record_key, linear_hash);
 
+				// if the record is not a tombstone and h0(k) != h1(k)
 				if ((record_status == linear_hash_record_status_full) && (insert_hash_key != split_hash_key)) {
+					// delete all records with this key from the table
 					status = linear_hash_delete(record_key, linear_hash);
-
-					/* tombstone the status of all the records with this key currently in the buffer */
-/*					invalidate_buffer_records(record_key, bucket.record_count, records, linear_hash); */
 
 					if (status.error != err_ok) {
 						return status.error;
@@ -323,7 +325,10 @@ split(
 
 					int num_deleted = status.count;
 
+					// insert that many records into the table
 					for (j = 0; j < num_deleted; j++) {
+
+						// THIS IS BROKEN -- ALL VALUES OF OTHER KEYS ARE LOST!
 						status = linear_hash_insert(record_key, record_value, hash_to_bucket(record_key, linear_hash), linear_hash);
 
 						if (status.error != err_ok) {
@@ -331,7 +336,7 @@ split(
 						}
 					}
 
-					/* refresh cached data and restart iteration */
+					/* refresh cached data and restart iteration and offset tracker */
 					fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
 					fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
 					status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
@@ -339,9 +344,11 @@ split(
 					record_offset	= -1 * linear_hash->record_total_size;
 				}
 
+				// track offset from locations of records in memory the next record is at
 				record_offset += linear_hash->record_total_size;
 			}
 
+			// reset offset
 			record_offset = 0;
 		}
 
@@ -464,7 +471,7 @@ linear_hash_get_bucket_swap_record(
 
 /*	/ * tail bucket may be empty get to the first bucket with records available THIS DOES NOT LEAVE EMPTY BUCKETS FLOATING ABOUT * / */
 /*	if (bucket.record_count == 0) { */
-/*		while (bucket.overflow_location != -1) { */
+/*		while (bucket.overflow_location != linear_hash_end_of_list) { */
 /*			bucket_loc = bucket.overflow_location; */
 /*			linear_hash_get_bucket(bucket.overflow_location, &bucket, linear_hash); */
 /*  */
@@ -483,7 +490,7 @@ linear_hash_get_bucket_swap_record(
 		return err;
 	}
 
-	ion_byte_t deleted_status = 0;
+	ion_byte_t deleted_status = linear_hash_record_status_empty;
 
 	/* TODO JUST NEED TO WRITE STATUS HERE */
 	err = linear_hash_write_record(swap_record_loc, key, value, &deleted_status, linear_hash);
@@ -498,7 +505,7 @@ linear_hash_get_bucket_swap_record(
 	bucket.record_count--;
 
 	/* garuntee the bucket in the bucket map has records in it - THIS LEAVES EMPTY BUCKETS FLOATING ABOUT */
-	if ((bucket.record_count == 0) && (bucket.overflow_location != -1)) {
+	if ((bucket.record_count == 0) && (bucket.overflow_location != linear_hash_end_of_list)) {
 		array_list_insert(bucket.idx, bucket.overflow_location, linear_hash->bucket_map);
 	}
 
@@ -656,7 +663,7 @@ linear_hash_get(
 	ion_fpos_t	record_offset = 0;
 	ion_fpos_t	record_loc;
 
-	while (bucket.overflow_location != -1 && found == 0) {
+	while (bucket.overflow_location != linear_hash_end_of_list && found == 0) {
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 		fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
 		fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
@@ -756,7 +763,7 @@ linear_hash_update(
 
 	int i;
 
-	while (bucket.overflow_location != -1) {
+	while (bucket.overflow_location != linear_hash_end_of_list) {
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
 		for (i = 0; i < linear_hash->records_per_bucket; i++) {
@@ -868,7 +875,7 @@ linear_hash_delete(
 	ion_byte_t	*terminal_record_value	= alloca(linear_hash->super.record.value_size);
 	ion_byte_t	terminal_record_status	= 0;
 
-	while (bucket.overflow_location != -1) {
+	while (bucket.overflow_location != linear_hash_end_of_list) {
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 		fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
 		fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
@@ -1079,7 +1086,7 @@ write_new_bucket(
 	/* initialize bucket fields */
 	bucket.idx					= idx;
 	bucket.record_count			= 0;
-	bucket.overflow_location	= -1;
+	bucket.overflow_location	= linear_hash_end_of_list;
 
 	/* seek to end of file to append new bucket */
 	ion_fpos_t bucket_loc;
@@ -1104,7 +1111,7 @@ write_new_bucket(
 	}
 
 	/* write bucket data to file */
-	ion_byte_t	record_status = 0;
+	ion_byte_t	record_status = linear_hash_record_status_empty;
 	ion_byte_t	record_blank[linear_hash->super.record.key_size + linear_hash->super.record.value_size];
 
 	memset(record_blank, 0, linear_hash->super.record.key_size + linear_hash->super.record.value_size);
@@ -1210,7 +1217,6 @@ create_overflow_bucket(
 
 	bucket.idx					= bucket_idx;
 	bucket.record_count			= 0;
-	/* bucket.overflow_location = -1; */
 	bucket.overflow_location	= array_list_get(bucket_idx, linear_hash->bucket_map);
 
 	/* seek to end of file to append new bucket */
@@ -1241,7 +1247,7 @@ create_overflow_bucket(
 	}
 
 	/* write bucket data to file */
-	ion_byte_t record_status = 0;
+	ion_byte_t record_status = linear_hash_record_status_empty;
 
 	ion_byte_t record_blank[linear_hash->super.record.key_size + linear_hash->super.record.value_size];
 
@@ -1390,7 +1396,7 @@ array_list_get(
 ) {
 	/* case bucket_idx is outside of current size of array */
 	if (bucket_idx >= array_list->current_size) {
-		return -1;
+		return linear_hash_end_of_list;
 	}
 	/* case bucket_idx is inside array */
 	else {
@@ -1473,7 +1479,7 @@ print_linear_hash_distribution(
 		bucket_loc = array_list_get(i, linear_hash->bucket_map);
 		linear_hash_get_bucket(bucket_loc, bucket, linear_hash);
 
-		while (bucket->overflow_location != -1) {
+		while (bucket->overflow_location != linear_hash_end_of_list) {
 			num_overflows++;
 			num_records += bucket->record_count;
 			linear_hash_get_bucket(bucket->overflow_location, bucket, linear_hash);
