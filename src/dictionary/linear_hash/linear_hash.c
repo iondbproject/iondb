@@ -434,19 +434,6 @@ linear_hash_get_bucket_swap_record(
 	linear_hash_bucket_t	bucket;
 
 	linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
-
-/*	/ * tail bucket may be empty get to the first bucket with records available THIS DOES NOT LEAVE EMPTY BUCKETS FLOATING ABOUT * / */
-/*	if (bucket.record_count == 0) { */
-/*		while (bucket.overflow_location != linear_hash_end_of_list) { */
-/*			bucket_loc = bucket.overflow_location; */
-/*			linear_hash_get_bucket(bucket.overflow_location, &bucket, linear_hash); */
-/*  */
-/*			if (bucket.record_count > 0) { */
-/*				break; */
-/*			} */
-/*		} */
-/*	} */
-
 	ion_fpos_t swap_record_loc	= bucket_loc + sizeof(linear_hash_bucket_t) + ((bucket.record_count - 1) * linear_hash->record_total_size);
 
 	/* read in the record to swap with next */
@@ -466,8 +453,6 @@ linear_hash_get_bucket_swap_record(
 	}
 
 	*record_loc = swap_record_loc;
-
-	/* TODO FIX YOU BUCKET RECORD TRACKING */
 	bucket.record_count--;
 
 	/* garuntee the bucket in the bucket map has records in it - THIS LEAVES EMPTY BUCKETS FLOATING ABOUT */
@@ -1012,7 +997,8 @@ linear_hash_write_record(
 		return err_file_bad_seek;
 	}
 
-	ion_byte_t * record = alloca(linear_hash->record_total_size);
+	ion_byte_t *record = alloca(linear_hash->record_total_size);
+
 	memcpy(record, status, sizeof(*status));
 	memcpy(record + sizeof(*status), key, linear_hash->super.record.key_size);
 	memcpy(record + linear_hash->super.record.key_size + sizeof(*status), value, linear_hash->super.record.value_size);
@@ -1055,7 +1041,7 @@ write_new_bucket(
 	}
 
 	/* write bucket data to file */
-	ion_byte_t	record_blank[linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(linear_hash_record_status_empty)];
+	ion_byte_t record_blank[linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(linear_hash_record_status_empty)];
 
 	memset(record_blank, 0, linear_hash->super.record.key_size + linear_hash->super.record.value_size);
 
@@ -1125,18 +1111,8 @@ linear_hash_update_bucket(
 		return err_file_bad_seek;
 	}
 
-	fseek(linear_hash->database, bucket_loc, SEEK_SET);
-
 	/* write bucket data to file */
-	if (1 != fwrite(&bucket->idx, sizeof(int), 1, linear_hash->database)) {
-		return err_file_incomplete_write;
-	}
-
-	if (1 != fwrite(&bucket->record_count, sizeof(int), 1, linear_hash->database)) {
-		return err_file_incomplete_write;
-	}
-
-	if (1 != fwrite(&bucket->overflow_location, sizeof(ion_fpos_t), 1, linear_hash->database)) {
+	if (1 != fwrite(bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database)) {
 		return err_file_incomplete_write;
 	}
 
@@ -1178,7 +1154,7 @@ create_overflow_bucket(
 	}
 
 	/* write bucket data to file */
-	ion_byte_t	record_blank[linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(linear_hash_record_status_empty)];
+	ion_byte_t record_blank[linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(linear_hash_record_status_empty)];
 
 	memset(record_blank, 0, linear_hash->super.record.key_size + linear_hash->super.record.value_size);
 
