@@ -406,39 +406,6 @@ split(
 	return linear_hash_increment_next_split(linear_hash);
 }
 
-ion_err_t
-invalidate_buffer_records(
-	ion_byte_t			*key,
-	int					record_count,
-	ion_byte_t			*records,
-	linear_hash_table_t *linear_hash
-) {
-	/* TODO IMPLEMENT PROPER ERROR HANDLING */
-	/* buffers for reading records */
-	ion_byte_t	*record_key			= alloca(linear_hash->super.record.key_size);
-	ion_byte_t	record_status;
-	ion_byte_t	tombstone_status	= 0;
-	ion_fpos_t	record_offset		= 0;
-
-	/* iterate over all records in the buffer */
-	int i;
-
-	for (i = 0; i < record_count; i++) {
-		memcpy(&record_status, records + record_offset, sizeof(record_status));
-		memcpy(record_key, records + record_offset + sizeof(record_status), linear_hash->super.record.key_size);
-
-		/* if record is not tombstoned and has a matching key */
-		if ((record_status == linear_hash_record_status_full) && (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0)) {
-			/* overwrite its status with a tombstone */
-			memcpy(records + record_offset, &tombstone_status, sizeof(record_status));
-		}
-
-		record_offset += linear_hash->record_total_size;
-	}
-
-	return err_ok;
-}
-
 int
 linear_hash_above_threshold(
 	linear_hash_table_t *linear_hash
