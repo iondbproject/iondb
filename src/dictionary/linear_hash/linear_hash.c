@@ -1012,15 +1012,12 @@ linear_hash_write_record(
 		return err_file_bad_seek;
 	}
 
-	if (1 != fwrite(status, sizeof(*status), 1, linear_hash->database)) {
-		return err_file_write_error;
-	}
+	ion_byte_t * record = alloca(linear_hash->record_total_size);
+	memcpy(record, status, sizeof(*status));
+	memcpy(record + sizeof(*status), key, linear_hash->super.record.key_size);
+	memcpy(record + linear_hash->super.record.key_size + sizeof(*status), value, linear_hash->super.record.value_size);
 
-	if (1 != fwrite(key, linear_hash->super.record.key_size, 1, linear_hash->database)) {
-		return err_file_write_error;
-	}
-
-	if (1 != fwrite(value, linear_hash->super.record.value_size, 1, linear_hash->database)) {
+	if (1 != fwrite(record, linear_hash->record_total_size, 1, linear_hash->database)) {
 		return err_file_write_error;
 	}
 
@@ -1053,32 +1050,19 @@ write_new_bucket(
 	bucket_loc = ftell(linear_hash->database);
 
 	/* write bucket data to file */
-	if (1 != fwrite(&bucket.idx, sizeof(int), 1, linear_hash->database)) {
-		return err_file_incomplete_write;
-	}
-
-	if (1 != fwrite(&bucket.record_count, sizeof(int), 1, linear_hash->database)) {
-		return err_file_incomplete_write;
-	}
-
-	if (1 != fwrite(&bucket.overflow_location, sizeof(ion_fpos_t), 1, linear_hash->database)) {
+	if (1 != fwrite(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database)) {
 		return err_file_incomplete_write;
 	}
 
 	/* write bucket data to file */
-	ion_byte_t	record_status = linear_hash_record_status_empty;
-	ion_byte_t	record_blank[linear_hash->super.record.key_size + linear_hash->super.record.value_size];
+	ion_byte_t	record_blank[linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(linear_hash_record_status_empty)];
 
 	memset(record_blank, 0, linear_hash->super.record.key_size + linear_hash->super.record.value_size);
 
 	int i;
 
 	for (i = 0; i < linear_hash->records_per_bucket; i++) {
-		if (1 != fwrite(&record_status, sizeof(record_status), 1, linear_hash->database)) {
-			return err_file_incomplete_write;
-		}
-
-		if (1 != fwrite(record_blank, linear_hash->super.record.key_size + linear_hash->super.record.value_size, 1, linear_hash->database)) {
+		if (1 != fwrite(record_blank, linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(linear_hash_record_status_empty), 1, linear_hash->database)) {
 			return err_file_incomplete_write;
 		}
 	}
@@ -1189,34 +1173,20 @@ create_overflow_bucket(
 	}
 
 	/* write to file */
-	if (1 != fwrite(&bucket.idx, sizeof(int), 1, linear_hash->database)) {
-		return err_file_incomplete_write;
-	}
-
-	if (1 != fwrite(&bucket.record_count, sizeof(int), 1, linear_hash->database)) {
-		return err_file_incomplete_write;
-	}
-
-	if (1 != fwrite(&bucket.overflow_location, sizeof(ion_fpos_t), 1, linear_hash->database)) {
+	if (1 != fwrite(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database)) {
 		return err_file_incomplete_write;
 	}
 
 	/* write bucket data to file */
-	ion_byte_t record_status = linear_hash_record_status_empty;
-
-	ion_byte_t record_blank[linear_hash->super.record.key_size + linear_hash->super.record.value_size];
+	ion_byte_t	record_blank[linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(linear_hash_record_status_empty)];
 
 	memset(record_blank, 0, linear_hash->super.record.key_size + linear_hash->super.record.value_size);
 
 	int i;
 
 	for (i = 0; i < linear_hash->records_per_bucket; i++) {
-		if (1 != fwrite(&record_status, sizeof(record_status), 1, linear_hash->database)) {
-			return err_file_write_error;
-		}
-
-		if (1 != fwrite(record_blank, linear_hash->super.record.key_size + linear_hash->super.record.value_size, 1, linear_hash->database)) {
-			return err_file_write_error;
+		if (1 != fwrite(record_blank, linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(linear_hash_record_status_empty), 1, linear_hash->database)) {
+			return err_file_incomplete_write;
 		}
 	}
 
