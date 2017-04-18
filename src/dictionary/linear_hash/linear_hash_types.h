@@ -8,7 +8,7 @@
 
 typedef ion_byte_t *linear_hash_record_status_t;
 
-#define linear_hash_end_of_list -1
+#define linear_hash_end_of_list			-1
 #define linear_hash_record_status_empty 0
 #define linear_hash_record_status_full	1
 
