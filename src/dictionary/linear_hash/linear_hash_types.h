@@ -8,8 +8,8 @@
 
 typedef ion_byte_t *linear_hash_record_status_t;
 
-#define linear_hash_record_status_empty 0;
-#define linear_hash_record_status_full	1;
+#define linear_hash_record_status_empty 0
+#define linear_hash_record_status_full	1
 
 /* SIMPLE ARRAY_LIST FOR BUCKET MAP */
 typedef struct {

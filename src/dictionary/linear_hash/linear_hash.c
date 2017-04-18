@@ -66,29 +66,6 @@ linear_hash_init(
 	}
 
 	linear_hash->bucket_map = bucket_map;
-	linear_hash->database	= fopen(data_filename, "w+b");
-
-	int i;
-
-	for (i = 0; i < linear_hash->initial_size; i++) {
-		err = write_new_bucket(i, linear_hash);
-
-		if (err != err_ok) {
-			linear_hash_close(linear_hash);
-			return err;
-		}
-	}
-
-	linear_hash->swap_bucket_loc	= array_list_get(0, linear_hash->bucket_map);
-
-	linear_hash->state				= fopen(state_filename, "w+b");
-	err								= linear_hash_write_state(linear_hash);
-
-	if (err != err_ok) {
-		return err;
-	}
-
-	/*
 	linear_hash->database	= fopen(data_filename, "r+b");
 
 	if (NULL == linear_hash->database) {
@@ -119,8 +96,8 @@ linear_hash_init(
 			return err_file_open_error;
 		}
 
-
 		err = linear_hash_write_state(linear_hash);
+
 		if (err != err_ok) {
 			return err;
 		}
@@ -133,13 +110,11 @@ linear_hash_init(
 		}
 	}
 
-
 	err = linear_hash_write_state(linear_hash);
 
 	if (err != err_ok) {
 		return err;
 	}
-	 */
 
 	/* return pointer to the linear_hash that is sitting in memory */
 	return err_ok;
@@ -336,7 +311,7 @@ split(
 
 				split_hash_key	= hash_to_bucket(record_key, linear_hash);
 
-				if ((record_status == 1) && (insert_hash_key != split_hash_key)) {
+				if ((record_status == linear_hash_record_status_full) && (insert_hash_key != split_hash_key)) {
 					status = linear_hash_delete(record_key, linear_hash);
 
 					/* tombstone the status of all the records with this key currently in the buffer */
@@ -391,7 +366,7 @@ split(
 
 			split_hash_key	= hash_to_bucket(record_key, linear_hash);
 
-			if ((record_status == 1) && (insert_hash_key != split_hash_key)) {
+			if ((record_status == linear_hash_record_status_full) && (insert_hash_key != split_hash_key)) {
 				status = linear_hash_delete(record_key, linear_hash);
 				/* tombstone the status of all the records with this key currently in the buffer */
 				/*			invalidate_buffer_records(record_key, bucket.record_count, records, linear_hash); */
@@ -447,7 +422,7 @@ invalidate_buffer_records(
 		memcpy(record_key, records + record_offset + sizeof(ion_byte_t), linear_hash->super.record.key_size);
 
 		/* if record is not tombstoned and has a matching key */
-		if ((record_status == 1) && (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0)) {
+		if ((record_status == linear_hash_record_status_full) && (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0)) {
 			/* overwrite its status with a tombstone */
 			memcpy(records + record_offset, &tombstone_status, sizeof(ion_byte_t));
 		}
@@ -572,7 +547,7 @@ linear_hash_insert(
 	}
 
 	/* location of the records in the bucket to be stored in */
-	ion_fpos_t	bucket_records_loc = get_bucket_records_location(bucket_loc);
+	ion_fpos_t	bucket_records_loc = GET_BUCKET_RECORDS_LOC(bucket_loc);
 	ion_fpos_t	record_loc;
 
 	/* Case the bucket is empty */
@@ -594,7 +569,7 @@ linear_hash_insert(
 
 			/* Set the location of the anchor record on the new overflow bucket and update the record_loc for storing
 			 * the new record to be this location */
-			ion_fpos_t overflow_records_loc = get_bucket_records_location(*overflow_location);
+			ion_fpos_t overflow_records_loc = GET_BUCKET_RECORDS_LOC(*overflow_location);
 
 			status.error = linear_hash_get_bucket(*overflow_location, &bucket, linear_hash);
 
@@ -791,7 +766,7 @@ linear_hash_update(
 				return status;
 			}
 
-			if (record_status == 1) {
+			if (record_status == linear_hash_record_status_full) {
 				if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
 					status.error = linear_hash_write_record(record_loc, record_key, value, &record_status, linear_hash);
 
@@ -823,7 +798,7 @@ linear_hash_update(
 			return status;
 		}
 
-		if (record_status == 1) {
+		if (record_status == linear_hash_record_status_full) {
 			if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
 				status.error = linear_hash_write_record(record_loc, record_key, value, &record_status, linear_hash);
 
@@ -923,7 +898,7 @@ linear_hash_delete(
 
 						linear_hash_get_bucket_swap_record(bucket_idx, &swap_record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
 
-						if (terminal_record_status == 0) {
+						if (terminal_record_status == linear_hash_record_status_empty) {
 							break;
 						}
 
@@ -987,7 +962,7 @@ linear_hash_delete(
 
 					linear_hash_get_bucket_swap_record(bucket_idx, &swap_record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
 
-					if (terminal_record_status == 0) {
+					if (terminal_record_status == linear_hash_record_status_empty) {
 						break;
 					}
 
@@ -1285,13 +1260,6 @@ create_overflow_bucket(
 	}
 
 	return err_ok;
-}
-
-ion_fpos_t
-get_bucket_records_location(
-	ion_fpos_t bucket_loc
-) {
-	return bucket_loc + sizeof(linear_hash_bucket_t);
 }
 
 /* Returns the file offset where bucket with index idx begins */
