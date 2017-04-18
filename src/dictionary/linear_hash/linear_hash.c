@@ -608,7 +608,7 @@ linear_hash_get(
 	ion_byte_t	*record_value	= alloca(linear_hash->super.record.value_size);
 	ion_byte_t	record_status	= linear_hash_record_status_empty;
 
-	int found					= 0;
+	int found					= boolean_false;
 	int i;
 
 	ion_byte_t *records			= alloca(linear_hash->record_total_size * linear_hash->records_per_bucket);
@@ -618,7 +618,7 @@ linear_hash_get(
 	ion_fpos_t	record_offset = 0;
 	ion_fpos_t	record_loc;
 
-	while (bucket.overflow_location != linear_hash_end_of_list && found == 0) {
+	while (bucket.overflow_location != linear_hash_end_of_list && found == boolean_false) {
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 		fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
 		fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
@@ -641,7 +641,7 @@ linear_hash_get(
 			record_loc		+= linear_hash->record_total_size;
 		}
 
-		if (found == 0) {
+		if (found == boolean_false) {
 			record_offset	= 0;
 			bucket_loc		= bucket.overflow_location;
 			status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
@@ -652,7 +652,7 @@ linear_hash_get(
 		}
 	}
 
-	if (found == 0) {
+	if (found == boolean_false) {
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 		fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
 		fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
