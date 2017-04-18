@@ -573,24 +573,13 @@ linear_hash_insert(
 				return status;
 			}
 
-			/* Set the location of the anchor record on the new overflow bucket and update the record_loc for storing
-			 * the new record to be this location */
-			ion_fpos_t overflow_records_loc = GET_BUCKET_RECORDS_LOC(*overflow_location);
+			// update parameters of bucket to match that of overflow just created
+			bucket.record_count = 0;
+			bucket.overflow_location = bucket_loc;
 
-			status.error = linear_hash_get_bucket(*overflow_location, &bucket, linear_hash);
-
-			if (status.error != err_ok) {
-				return status;
-			}
-
-			/* TODO PASS OVERFLOW LOCATION INTO CREATE_OVERFLOW_BUCKET */
-			record_loc		= overflow_records_loc;
+			// update the locations to write to in the file for the record and bucket
+			record_loc		= GET_BUCKET_RECORDS_LOC(*overflow_location);
 			bucket_loc		= *overflow_location;
-			status.error	= linear_hash_update_bucket(*overflow_location, &bucket, linear_hash);
-
-			if (status.error != err_ok) {
-				return status;
-			}
 		}
 		/* case there is >= 1 record in the bucket but it is not full */
 		else {
