@@ -37,6 +37,7 @@ linear_hash_init(
 	linear_hash->split_threshold			= split_threshold;
 	linear_hash->records_per_bucket			= records_per_bucket;
 	linear_hash->record_total_size			= key_size + value_size + sizeof(ion_byte_t);
+    linear_hash->cache = malloc(128);
 
 	char data_filename[ION_MAX_FILENAME_LENGTH];
 
@@ -324,11 +325,15 @@ split(
 					}
 
 					int num_deleted = status.count;
+                    linear_hash->last_cache_idx = 0;
 
-					/* insert that many records into the table */
+                    /* insert that many records into the table */
 					for (j = 0; j < num_deleted; j++) {
 						/* THIS IS BROKEN -- ALL VALUES OF OTHER KEYS ARE LOST! */
-						status = linear_hash_insert(record_key, record_value, hash_to_bucket(record_key, linear_hash), linear_hash);
+                        memcpy(record_value, linear_hash->cache + linear_hash->last_cache_idx * linear_hash->super.record.value_size, linear_hash->super.record.value_size);
+                        linear_hash->last_cache_idx++;
+
+                        status = linear_hash_insert(record_key, record_value, hash_to_bucket(record_key, linear_hash), linear_hash);
 
 						if (status.error != err_ok) {
 							return status.error;
@@ -382,9 +387,13 @@ split(
 				}
 
 				int num_deleted = status.count;
+                linear_hash->last_cache_idx = 0;
 
 				for (j = 0; j < num_deleted; j++) {
-					status = linear_hash_insert(record_key, record_value, hash_to_bucket(record_key, linear_hash), linear_hash);
+                    memcpy(record_value, linear_hash->cache + linear_hash->last_cache_idx * linear_hash->super.record.value_size, linear_hash->super.record.value_size);
+                    linear_hash->last_cache_idx++;
+
+                    status = linear_hash_insert(record_key, record_value, hash_to_bucket(record_key, linear_hash), linear_hash);
 
 					if (status.error != err_ok) {
 						return status.error;
@@ -434,6 +443,7 @@ linear_hash_get_bucket_swap_record(
 	linear_hash_bucket_t	bucket;
 
 	linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
+
 	ion_fpos_t swap_record_loc	= bucket_loc + sizeof(linear_hash_bucket_t) + ((bucket.record_count - 1) * linear_hash->record_total_size);
 
 	/* read in the record to swap with next */
@@ -815,6 +825,7 @@ linear_hash_delete(
 	ion_byte_t	*terminal_record_value	= alloca(linear_hash->super.record.value_size);
 	ion_byte_t	terminal_record_status	= linear_hash_record_status_empty;
 
+    linear_hash->last_cache_idx = 0;
 	while (bucket.overflow_location != linear_hash_end_of_list) {
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 		fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
@@ -829,7 +840,11 @@ linear_hash_delete(
 			if (record_status != 0) {
 				if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
 					/* TODO Create wrapper methods and implement proper error propagation */
-					/* store the record_loc in a write back paramter that is used before being overwritten */
+					// cache the record being deleted's value
+                    memcpy(linear_hash->cache + linear_hash->last_cache_idx * linear_hash->super.record.value_size, record_value, linear_hash->super.record.value_size);
+                    linear_hash->last_cache_idx++;
+
+                    /* store the record_loc in a write back paramter that is used before being overwritten */
 					ion_fpos_t swap_record_loc = record_loc;
 
 					/* obtain the swap record */
@@ -837,7 +852,10 @@ linear_hash_delete(
 
 					/* delete all swap records which are going to be deleted anyways */
 					while (linear_hash->super.compare(terminal_record_key, key, linear_hash->super.record.key_size) == 0) {
-						/* if we are not trying to swap a record with itself */
+                        memcpy(linear_hash->cache + linear_hash->last_cache_idx * linear_hash->super.record.value_size, terminal_record_value, linear_hash->super.record.value_size);
+                        linear_hash->last_cache_idx++;
+
+                        /* if we are not trying to swap a record with itself */
 						if (record_loc == swap_record_loc) {
 							/* write the swapped record to record_loc */
 							break;
@@ -893,6 +911,9 @@ linear_hash_delete(
 		if (record_status != 0) {
 			if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
 				/* TODO Create wrapper methods and implement proper error propagation */
+                memcpy(linear_hash->cache + linear_hash->last_cache_idx * linear_hash->super.record.value_size, record_value, linear_hash->super.record.value_size);
+                linear_hash->last_cache_idx++;
+
 				/* store the record_loc in a write back paramter that is used before being overwritten */
 				ion_fpos_t swap_record_loc = record_loc;
 
@@ -901,6 +922,9 @@ linear_hash_delete(
 
 				/* delete all swap records which are going to be deleted anyways */
 				while (linear_hash->super.compare(terminal_record_key, key, linear_hash->super.record.key_size) == 0) {
+                    memcpy(linear_hash->cache + linear_hash->last_cache_idx * linear_hash->super.record.value_size, terminal_record_value, linear_hash->super.record.value_size);
+                    linear_hash->last_cache_idx++;
+
 					/* if we are not trying to swap a record with itself */
 					if (record_loc == swap_record_loc) {
 						/* write the swapped record to record_loc */
@@ -946,7 +970,6 @@ linear_hash_delete(
 	else {
 		status.error = err_ok;
 	}
-
 	return status;
 }
 
@@ -1071,6 +1094,10 @@ linear_hash_get_bucket(
 	linear_hash_bucket_t	*bucket,
 	linear_hash_table_t		*linear_hash
 ) {
+	if(bucket_loc == -1) {
+
+	}
+
 	/* check if file is open */
 	if (!linear_hash->database) {
 		return err_file_close_error;

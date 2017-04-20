@@ -50,6 +50,10 @@ typedef struct {
 	/* maps the location of the head of the linked list of buckets corresponding to its index */
 	array_list_t			*bucket_map;
 
+    // generic cache
+    ion_byte_t * cache;
+    int last_cache_idx;
+
 	/* pointer location of the next record to swap-on-delete*/
 	ion_fpos_t				swap_bucket_loc;
 } linear_hash_table_t;
