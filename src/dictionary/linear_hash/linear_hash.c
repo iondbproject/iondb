@@ -296,9 +296,10 @@ split(
 
 	memset(records, 0, linear_hash->record_total_size * linear_hash->records_per_bucket);
 
-	ion_fpos_t record_offset = 0;
+	ion_fpos_t		record_offset	= 0;
+	ion_boolean_t	terminal		= boolean_false;
 
-	while (bucket.overflow_location != linear_hash_end_of_list) {
+	while (terminal == boolean_false) {
 		/* if the bucket is not empty */
 		if (bucket.record_count > 0) {
 			/* read all records into memory */
@@ -330,7 +331,6 @@ split(
 
 					/* insert that many records into the table */
 					for (j = 0; j < num_deleted; j++) {
-						/* THIS IS BROKEN -- ALL VALUES OF OTHER KEYS ARE LOST! */
 						memcpy(record_value, linear_hash->cache + linear_hash->last_cache_idx * linear_hash->super.record.value_size, linear_hash->super.record.value_size);
 						linear_hash->last_cache_idx++;
 
@@ -357,60 +357,16 @@ split(
 			record_offset = 0;
 		}
 
-		bucket_loc		= bucket.overflow_location;
-		status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
-
-		if (status.error != err_ok) {
-			return status.error;
+		if (bucket.overflow_location == linear_hash_end_of_list) {
+			terminal = boolean_true;
 		}
-	}
+		else {
+			bucket_loc		= bucket.overflow_location;
+			status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
 
-	if (bucket.record_count > 0) {
-		fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
-		fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
-
-		for (i = 0; i < bucket.record_count; i++) {
-			memcpy(&record_status, records + record_offset, sizeof(record_status));
-			memcpy(record_key, records + record_offset + sizeof(record_status), linear_hash->super.record.key_size);
-			memcpy(record_value, records + record_offset + sizeof(record_status) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);
-
-			insert_hash_key = insert_hash_to_bucket(record_key, linear_hash);
-
-			split_hash_key	= hash_to_bucket(record_key, linear_hash);
-
-			if ((record_status == linear_hash_record_status_full) && (insert_hash_key != split_hash_key)) {
-				status = linear_hash_delete(record_key, linear_hash);
-				/* tombstone the status of all the records with this key currently in the buffer */
-				/*			invalidate_buffer_records(record_key, bucket.record_count, records, linear_hash); */
-
-				if (status.error != err_ok) {
-					return status.error;
-				}
-
-				int num_deleted = status.count;
-
-				linear_hash->last_cache_idx = 0;
-
-				for (j = 0; j < num_deleted; j++) {
-					memcpy(record_value, linear_hash->cache + linear_hash->last_cache_idx * linear_hash->super.record.value_size, linear_hash->super.record.value_size);
-					linear_hash->last_cache_idx++;
-
-					status = linear_hash_insert(record_key, record_value, hash_to_bucket(record_key, linear_hash), linear_hash);
-
-					if (status.error != err_ok) {
-						return status.error;
-					}
-				}
-
-				/* refresh cached data and restart iteration */
-				fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
-				fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
-				status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
-				i				= -1;
-				record_offset	= -1 * linear_hash->record_total_size;
+			if (status.error != err_ok) {
+				return status.error;
 			}
-
-			record_offset += linear_hash->record_total_size;
 		}
 	}
 
@@ -612,10 +568,11 @@ linear_hash_get(
 
 	memset(records, 0, linear_hash->record_total_size * linear_hash->records_per_bucket);
 
-	ion_fpos_t	record_offset = 0;
-	ion_fpos_t	record_loc;
+	ion_fpos_t		record_offset	= 0;
+	ion_fpos_t		record_loc;
+	ion_boolean_t	terminal		= boolean_false;
 
-	while (bucket.overflow_location != linear_hash_end_of_list && found == boolean_false) {
+	while (terminal == boolean_false && found == boolean_false) {
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 		fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
 		fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
@@ -639,36 +596,18 @@ linear_hash_get(
 		}
 
 		if (found == boolean_false) {
-			record_offset	= 0;
-			bucket_loc		= bucket.overflow_location;
-			status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
-
-			if (status.error != err_ok) {
-				return status;
+			if (bucket.overflow_location == linear_hash_end_of_list) {
+				terminal = boolean_true;
 			}
-		}
-	}
+			else {
+				record_offset	= 0;
+				bucket_loc		= bucket.overflow_location;
+				status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
 
-	if (found == boolean_false) {
-		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
-		fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
-		fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
-
-		for (i = 0; i < linear_hash->records_per_bucket; i++) {
-			memcpy(&record_status, records + record_offset, sizeof(record_status));
-			memcpy(record_key, records + record_offset + sizeof(record_status), linear_hash->super.record.key_size);
-			memcpy(record_value, records + record_offset + sizeof(record_status) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);
-
-			if (record_status != 0) {
-				if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
-					status.count++;
-					memcpy(value, record_value, linear_hash->super.record.value_size);
-					break;
+				if (status.error != err_ok) {
+					return status;
 				}
 			}
-
-			record_offset	+= linear_hash->record_total_size;
-			record_loc		+= linear_hash->record_total_size;
 		}
 	}
 
@@ -713,9 +652,10 @@ linear_hash_update(
 
 	ion_fpos_t record_loc;
 
-	int i;
+	int				i;
+	ion_boolean_t	terminal = boolean_false;
 
-	while (bucket.overflow_location != linear_hash_end_of_list) {
+	while (terminal == boolean_false) {
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 
 		for (i = 0; i < linear_hash->records_per_bucket; i++) {
@@ -740,36 +680,17 @@ linear_hash_update(
 			record_loc += linear_hash->record_total_size;
 		}
 
-		bucket_loc		= bucket.overflow_location;
-		status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
-
-		if (status.error != err_ok) {
-			return status;
+		if (bucket.overflow_location == linear_hash_end_of_list) {
+			terminal = boolean_true;
 		}
-	}
+		else {
+			bucket_loc		= bucket.overflow_location;
+			status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
 
-	record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
-
-	for (i = 0; i < linear_hash->records_per_bucket; i++) {
-		status.error = linear_hash_get_record(record_loc, record_key, record_value, &record_status, linear_hash);
-
-		if (status.error != err_ok) {
-			return status;
-		}
-
-		if (record_status == linear_hash_record_status_full) {
-			if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
-				status.error = linear_hash_write_record(record_loc, record_key, value, &record_status, linear_hash);
-
-				if (status.error != err_ok) {
-					return status;
-				}
-
-				status.count++;
+			if (status.error != err_ok) {
+				return status;
 			}
 		}
-
-		record_loc += linear_hash->record_total_size;
 	}
 
 	if (status.count == 0) {
@@ -829,7 +750,9 @@ linear_hash_delete(
 
 	linear_hash->last_cache_idx = 0;
 
-	while (bucket.overflow_location != linear_hash_end_of_list) {
+	ion_boolean_t terminal = boolean_false;
+
+	while (terminal == boolean_false) {
 		record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
 		fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
 		fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
@@ -893,78 +816,18 @@ linear_hash_delete(
 			record_offset	+= linear_hash->record_total_size;
 		}
 
-		record_offset	= 0;
-		bucket_loc		= bucket.overflow_location;
-		status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
-
-		if (status.error != err_ok) {
-			return status;
+		if (bucket.overflow_location == linear_hash_end_of_list) {
+			terminal = boolean_true;
 		}
-	}
+		else {
+			record_offset	= 0;
+			bucket_loc		= bucket.overflow_location;
+			status.error	= linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
 
-	record_loc = bucket_loc + sizeof(linear_hash_bucket_t);
-	fseek(linear_hash->database, bucket_loc + sizeof(linear_hash_bucket_t), SEEK_SET);
-	fread(records, linear_hash->record_total_size, linear_hash->records_per_bucket, linear_hash->database);
-
-	for (i = 0; i < bucket.record_count; i++) {
-		memcpy(&record_status, records + record_offset, sizeof(record_status));
-		memcpy(record_key, records + record_offset + sizeof(record_status), linear_hash->super.record.key_size);
-		memcpy(record_value, records + record_offset + sizeof(record_status) + linear_hash->super.record.key_size, linear_hash->super.record.value_size);
-
-		if (record_status != 0) {
-			if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
-				/* TODO Create wrapper methods and implement proper error propagation */
-				memcpy(linear_hash->cache + linear_hash->last_cache_idx * linear_hash->super.record.value_size, record_value, linear_hash->super.record.value_size);
-				linear_hash->last_cache_idx++;
-
-				/* store the record_loc in a write back paramter that is used before being overwritten */
-				ion_fpos_t swap_record_loc = record_loc;
-
-				/* obtain the swap record */
-				linear_hash_get_bucket_swap_record(bucket_idx, &swap_record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
-
-				/* delete all swap records which are going to be deleted anyways */
-				while (linear_hash->super.compare(terminal_record_key, key, linear_hash->super.record.key_size) == 0) {
-					memcpy(linear_hash->cache + linear_hash->last_cache_idx * linear_hash->super.record.value_size, terminal_record_value, linear_hash->super.record.value_size);
-					linear_hash->last_cache_idx++;
-
-					/* if we are not trying to swap a record with itself */
-					if (record_loc == swap_record_loc) {
-						/* write the swapped record to record_loc */
-						break;
-					}
-
-					linear_hash_get_bucket_swap_record(bucket_idx, &swap_record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
-
-					if (terminal_record_status == linear_hash_record_status_empty) {
-						break;
-					}
-
-					status.count++;
-				}
-
-				/* if we are not trying to swap a record with itself */
-				if (record_loc != swap_record_loc) {
-					/* write the swapped record to record_loc */
-					linear_hash_write_record(record_loc, terminal_record_key, terminal_record_value, &terminal_record_status, linear_hash);
-				}
-
-				if (status.error != err_ok) {
-					return status;
-				}
-
-				status.count++;
-
-				if (status.error != err_ok) {
-					return status;
-				}
-
-				linear_hash_get_bucket(bucket_loc, &bucket, linear_hash);
+			if (status.error != err_ok) {
+				return status;
 			}
 		}
-
-		record_loc		+= linear_hash->record_total_size;
-		record_offset	+= linear_hash->record_total_size;
 	}
 
 	if (status.count == 0) {
