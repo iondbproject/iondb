@@ -109,7 +109,7 @@ linear_hash_write_record(
 );
 
 /* check if linear hash is above its split threshold */
-int
+ion_boolean_t
 linear_hash_above_threshold(
 	linear_hash_table_t *linear_hash
 );

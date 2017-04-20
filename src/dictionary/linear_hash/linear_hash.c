@@ -373,7 +373,7 @@ split(
 	return linear_hash_increment_next_split(linear_hash);
 }
 
-int
+ion_boolean_t
 linear_hash_above_threshold(
 	linear_hash_table_t *linear_hash
 ) {
@@ -382,7 +382,7 @@ linear_hash_above_threshold(
 
 	double load			= numerator / denominator;
 
-	int above_threshold = (load > linear_hash->split_threshold);
+	ion_boolean_t above_threshold = (load > linear_hash->split_threshold);
 
 	return above_threshold;
 }
