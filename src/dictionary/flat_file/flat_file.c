@@ -49,7 +49,7 @@ flat_file_initialize(
 	}
 
 	flat_file->sorted_mode				= boolean_false;/* By default, we don't use sorted mode */
-	flat_file->num_buffered				= dictionary_size;	/* TODO: Sorted mode needs to be written out as a header? */
+	flat_file->num_buffered				= dictionary_size;
 	flat_file->current_loaded_region	= -1;	/* No loaded region yet */
 
 	flat_file->data_file				= fopen(filename, "r+b");
@@ -186,7 +186,7 @@ flat_file_scan(
 			/* It's possible for this to do a partial read (if you're close to EOF), calculate how many we need to read */
 			size_t records_left = (end_offset - cur_offset) / flat_file->row_size;
 
-			num_records_to_process = records_left > (unsigned) /* TODO HACK: remove this */ flat_file->num_buffered ? (unsigned) flat_file->num_buffered : records_left;
+			num_records_to_process = records_left > (unsigned) flat_file->num_buffered ? (unsigned) flat_file->num_buffered : records_left;
 
 			if (num_records_to_process != fread(flat_file->buffer, flat_file->row_size, num_records_to_process, flat_file->data_file)) {
 				return err_file_incomplete_read;

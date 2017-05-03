@@ -21,10 +21,10 @@ extern "C" {
 typedef int ion_hash_t;
 
 typedef struct oafdict_cursor {
-	ion_dict_cursor_t	super;			/**< Cursor supertype this type inherits from */
-	ion_hash_t			first;			/**<First visited spot*/
-	ion_hash_t			current;		/**<Currently visited spot*/
-	char				status;		/*todo what is this for again as there are two status */
+	ion_dict_cursor_t	super;						/**< Cursor supertype this type inherits from */
+	ion_hash_t			first;						/**<First visited spot*/
+	ion_hash_t			current;					/**<Currently visited spot*/
+	ion_cursor_status_t status;	/**<Status of last cursor call*/
 } ion_oafdict_cursor_t;
 
 #if defined(__cplusplus)
