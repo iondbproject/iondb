@@ -7,7 +7,7 @@
 */
 /******************************************************************************/
 
-#include "../../planckunit/src/planck_unit.h"
+#include "../../planck-unit/src/planck_unit.h"
 #include "../../../cpp_wrapper/Dictionary.h"
 #include "../../../cpp_wrapper/BppTree.h"
 #include "../../../cpp_wrapper/FlatFile.h"
@@ -16,12 +16,26 @@
 #include "../../../cpp_wrapper/SkipList.h"
 #include "test_cpp_wrapper.h"
 
+/* This is used to define how complicated to pre-fill a dictionary for testing. */
+typedef enum ION_BEHAVIOUR_FILL_LEVEL {
+	ion_fill_none, ion_fill_low, ion_fill_medium, ion_fill_high, ion_fill_edge_cases
+} ion_behaviour_fill_level_e;
+
+#define ION_FILL_LOW_LOOP(var) \
+	for (var = 0; var<10;var ++)
+#define ION_FILL_MEDIUM_LOOP(var) \
+	for (var = 50; var<100;var += 2)
+#define ION_FILL_HIGH_LOOP(var) \
+	for (var = 500; var<1000;var += 5)
+#define ION_FILL_EDGE_LOOP(var) \
+	for (var = -100; var<-50;var += 2)
+
 /**
 @brief	Tests the creation of a B+ Tree (arbitrarily chosen) dictionary and asserts
 		the validity of some dictionary parameters.
 */
-void
-test_cpp_wrapper_create_and_destroy(
+Dictionary<int, int> *
+cpp_wrapper_create(
 	planck_unit_test_t *tc
 ) {
 	Dictionary<int, int> *dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
@@ -31,272 +45,1288 @@ test_cpp_wrapper_create_and_destroy(
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict->dict.instance->record.key_size == sizeof(int));
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict->dict.instance->record.value_size == sizeof(int));
 
-	delete dict;
+	return dict;
 }
 
 /**
-@brief	Tests an insertion and then attempts to retrieve.
+@brief	Tests the creation of a B+ Tree (arbitrarily chosen) dictionary and asserts
+		the validity of some dictionary parameters.
 */
 void
-test_cpp_wrapper_insert_get(
+cpp_wrapper_destroy(
 	planck_unit_test_t *tc,
 	Dictionary<int, int> *dict
 ) {
-	for (int i = 0; i < 10; i++) {
-		dict->insert(i, i * 2);
-		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
+	ion_err_t err = dict->destroy();
 
-		int ret_val = dict->get(i);
+	delete dict;
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, i * 2, ret_val);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+}
+
+/**
+@brief	This function performs a get on a dictionary.
+*/
+void
+cpp_wrapper_get(
+	planck_unit_test_t *tc,
+	Dictionary<int, int>	*dict,
+	int key,
+	int expected_value,
+	ion_err_t expected_status,
+	ion_result_count_t expected_count
+) {
+	int				retval = dict->get(key);
+	ion_status_t	status = dict->last_status;
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_status, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, status.count);
+
+	if (err_ok == status.error) {
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_value, retval);
 	}
 }
 
 /**
-@brief	Tests insert/get edge cases such as negative keys and big-digit keys.
+@brief	This function does an insert into a dictionary.
 */
 void
-test_cpp_wrapper_insert_get_edge_cases(
+cpp_wrapper_insert(
 	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict
+	Dictionary<int, int>	*dict,
+	int key,
+	int value,
+	ion_boolean_t check_result
 ) {
-	int ret_val;
+	ion_status_t status = dict->insert(key, value);
 
-	dict->insert(-10, 3);
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
 
-	ret_val = dict->get(-10);
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, ret_val);
-
-	dict->insert(1000, 99);
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
-
-	ret_val = dict->get(1000);
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 99, ret_val);
-}
-
-/**
-@brief	Aggregate test to test insertion on all implementations.
-*/
-void
-test_cpp_wrapper_insert_on_all_implementations(
-	planck_unit_test_t *tc
-) {
-	Dictionary<int, int> *dict;
-
-	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
-	test_cpp_wrapper_insert_get(tc, dict);
-	test_cpp_wrapper_insert_get_edge_cases(tc, dict);
-	delete dict;
-
-	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
-	test_cpp_wrapper_insert_get(tc, dict);
-	test_cpp_wrapper_insert_get_edge_cases(tc, dict);
-	delete dict;
-
-	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
-	test_cpp_wrapper_insert_get(tc, dict);
-	test_cpp_wrapper_insert_get_edge_cases(tc, dict);
-	delete dict;
-
-	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
-	test_cpp_wrapper_insert_get(tc, dict);
-	test_cpp_wrapper_insert_get_edge_cases(tc, dict);
-	delete dict;
-
-	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
-	test_cpp_wrapper_insert_get(tc, dict);
-	test_cpp_wrapper_insert_get_edge_cases(tc, dict);
-	delete dict;
-}
-
-/**
-@brief	Tests an insertion and then attempts to delete the record.
-*/
-void
-test_cpp_wrapper_insert_delete(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict
-) {
-	for (int i = 0; i < 10; i++) {
-		dict->insert(i, i * 2);
-		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
-
-		dict->deleteRecord(i);
-		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
-
-		dict->get(i);
-		PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == dict->last_status.error);
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, dict->last_status.count);
+	if (check_result) {
+		cpp_wrapper_get(tc, dict, key, value, err_ok, 1);
 	}
 }
 
 /**
-@brief	Tests insert/delete edge cases such as negative keys and big-digit keys.
+@brief	This function performs a delete on a dictionary.
 */
 void
-test_cpp_wrapper_insert_delete_edge_cases(
+cpp_wrapper_delete(
 	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict
+	Dictionary<int, int>	*dict,
+	int key,
+	ion_err_t expected_status,
+	ion_result_count_t expected_count,
+	ion_boolean_t check_result
 ) {
-	dict->insert(-10, 3);
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
+	ion_status_t status = dict->deleteRecord(key);
 
-	dict->deleteRecord(-10);
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_status, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, status.count);
 
-	dict->get(-10);
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == dict->last_status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, dict->last_status.count);
-
-	dict->insert(1000, 99);
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
-
-	dict->deleteRecord(1000);
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
-
-	dict->get(1000);
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == dict->last_status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, dict->last_status.count);
-}
-
-/**
-@brief	Aggregate test to test deletion on all implementations.
-*/
-void
-test_cpp_wrapper_delete_on_all_implementations(
-	planck_unit_test_t *tc
-) {
-	Dictionary<int, int> *dict;
-
-	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
-	test_cpp_wrapper_insert_delete(tc, dict);
-	test_cpp_wrapper_insert_delete_edge_cases(tc, dict);
-	delete dict;
-
-	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
-	test_cpp_wrapper_insert_delete(tc, dict);
-	test_cpp_wrapper_insert_delete_edge_cases(tc, dict);
-	delete dict;
-
-	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
-	test_cpp_wrapper_insert_delete(tc, dict);
-	test_cpp_wrapper_insert_delete_edge_cases(tc, dict);
-	delete dict;
-
-	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
-	test_cpp_wrapper_insert_delete(tc, dict);
-	test_cpp_wrapper_insert_delete_edge_cases(tc, dict);
-	delete dict;
-
-	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
-	test_cpp_wrapper_insert_delete(tc, dict);
-	test_cpp_wrapper_insert_delete_edge_cases(tc, dict);
-	delete dict;
-}
-
-/**
-@brief	Tests an insertion and then attempts to update the record.
-*/
-void
-test_cpp_wrapper_insert_update(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict
-) {
-	for (int i = 0; i < 10; i++) {
-		dict->insert(i, i * 2);
-		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
-
-		dict->update(i, i);
-
-		int ret_val = dict->get(i);
-
-		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, i, ret_val);
+	if (check_result) {
+		cpp_wrapper_get(tc, dict, key, NULL, err_item_not_found, 0);
 	}
 }
 
 /**
-@brief	Tests insert/update edge cases such as negative keys and big-digit keys.
+@brief	This function performs an update on a dictionary.
 */
 void
-test_cpp_wrapper_insert_update_edge_cases(
+cpp_wrapper_update(
 	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict
+	Dictionary<int, int>	*dict,
+	int key,
+	int value,
+	ion_err_t expected_status,
+	ion_result_count_t expected_count,
+	ion_boolean_t check_result
 ) {
-	int ret_val;
+	ion_status_t status = dict->update(key, value);
 
-	dict->insert(-10, 3);
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_status, status.error);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, status.count);
 
-	dict->update(-10, 30);
-	ret_val = dict->get(-10);
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 30, ret_val);
-
-	dict->insert(1000, 99);
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
-
-	dict->update(1000, 9);
-	ret_val = dict->get(1000);
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == dict->last_status.error);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, dict->last_status.count);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 9, ret_val);
+	if (check_result) {
+		cpp_wrapper_get(tc, dict, key, value, err_ok, 1);
+	}
 }
 
 /**
-@brief	Aggregate test to test update on all implementations.
+@brief	This function performs the setup required for a test case.
 */
 void
-test_cpp_wrapper_update_on_all_implementations(
+cpp_wrapper_setup(
+	planck_unit_test_t *tc,
+	Dictionary<int, int>			*dict,
+	ion_behaviour_fill_level_e fill_level
+) {
+	/* This switch statement intentionally doesn't have breaks - we want it to fall through. */
+	int i;
+
+	switch (fill_level) {
+		case ion_fill_edge_cases: {
+			ION_FILL_EDGE_LOOP(i) {
+				cpp_wrapper_insert(tc, dict, i, i * 3, boolean_true);
+			}
+		}
+
+		case ion_fill_high: {
+			ION_FILL_HIGH_LOOP(i) {
+				cpp_wrapper_insert(tc, dict, i, i * 10, boolean_true);
+			}
+		}
+
+		case ion_fill_medium: {
+			ION_FILL_MEDIUM_LOOP(i) {
+				cpp_wrapper_insert(tc, dict, i, i * 5, boolean_true);
+			}
+		}
+
+		case ion_fill_low: {
+			ION_FILL_LOW_LOOP(i) {
+				cpp_wrapper_insert(tc, dict, i, i * 2, boolean_true);
+			}
+		}
+
+		case ion_fill_none: {
+			/* Intentionally left blank */
+		}
+	}
+}
+
+/* =================================================== TEST CASES =================================================== */
+
+/**
+@brief	This function tests whether or not we can build and teardown a dictionary.
+*/
+void
+test_cpp_wrapper_create(
 	planck_unit_test_t *tc
 ) {
 	Dictionary<int, int> *dict;
 
-	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
-	test_cpp_wrapper_insert_update(tc, dict);
-	test_cpp_wrapper_insert_update_edge_cases(tc, dict);
-	delete dict;
+	dict = cpp_wrapper_create(tc);
+	cpp_wrapper_setup(tc, dict, ion_fill_none);
+	cpp_wrapper_destroy(tc, dict);
+}
 
-	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
-	test_cpp_wrapper_insert_update(tc, dict);
-	test_cpp_wrapper_insert_update_edge_cases(tc, dict);
-	delete dict;
+/**
+@brief	This function tests whether or not we can build and teardown a dictionary.
+*/
+void
+test_cpp_wrapper_setup(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_none);
+	cpp_wrapper_destroy(tc, dict);
+}
 
-	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
-	test_cpp_wrapper_insert_update(tc, dict);
-	test_cpp_wrapper_insert_update_edge_cases(tc, dict);
-	delete dict;
+/**
+@brief	This function tests whether or not we can build and teardown a dictionary
+		on all dictionary implementations.
+*/
+void
+test_cpp_wrapper_setup_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
 
-	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
-	test_cpp_wrapper_insert_update(tc, dict);
-	test_cpp_wrapper_insert_update_edge_cases(tc, dict);
-	delete dict;
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_setup(tc, dict);
 
-	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
-	test_cpp_wrapper_insert_update(tc, dict);
-	test_cpp_wrapper_insert_update_edge_cases(tc, dict);
-	delete dict;
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_setup(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_setup(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_setup(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_setup(tc, dict);
+}
+
+/**
+@brief	This function tests a single insertion into a dictionary.
+*/
+void
+test_cpp_wrapper_insert_single(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_none);
+	cpp_wrapper_insert(tc, dict, 10, 20, boolean_false);
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests a single insertion into a dictionary on all
+		dictionary implementations.
+*/
+void
+test_cpp_wrapper_insert_single_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_insert_single(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_insert_single(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_insert_single(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_insert_single(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_insert_single(tc, dict);
+}
+
+/**
+@brief	This function tests multiple insertions into a dictionary.
+*/
+void
+test_cpp_wrapper_insert_multiple(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_none);
+
+	int i;
+
+	for (i = 50; i < 55; i++) {
+		cpp_wrapper_insert(tc, dict, i, i * 2, boolean_false);
+	}
+
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests multiple insertions into a dictionary on all
+		dictionary implementations.
+*/
+void
+test_cpp_wrapper_insert_multiple_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_insert_multiple(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_insert_multiple(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_insert_multiple(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_insert_multiple(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_insert_multiple(tc, dict);
+}
+
+/**
+@brief	This function tests a retrieval on a dictionary that only has one record in it.
+*/
+void
+test_cpp_wrapper_get_single(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_none);
+	cpp_wrapper_insert(tc, dict, 99, 99 * 2, boolean_true);
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests a retrieval on a dictionary that only has one record
+		in it on all dictionary implementations.
+*/
+void
+test_cpp_wrapper_get_single_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_get_single(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_get_single(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_get_single(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_single(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_single(tc, dict);
+}
+
+/**
+@brief	This function tests retrieval on a dictionary with many records in it.
+*/
+void
+test_cpp_wrapper_get_in_many(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_none);
+	cpp_wrapper_insert(tc, dict, 35, 35 * 2, boolean_true);
+	cpp_wrapper_insert(tc, dict, 1002, 1002 * 2, boolean_true);
+	cpp_wrapper_insert(tc, dict, 55, 55 * 2, boolean_true);
+	cpp_wrapper_insert(tc, dict, -5, -5 * 2, boolean_true);
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests retrieval on a dictionary with many records in it
+		on all dictionary implementations.
+*/
+void
+test_cpp_wrapper_get_in_many_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_get_in_many(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_get_in_many(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_get_in_many(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_in_many(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_in_many(tc, dict);
+}
+
+/**
+@brief	This function tests retrieval on a dictionary with a whole bunch of records in it.
+*/
+void
+test_cpp_wrapper_get_lots(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_none);
+
+	int i;
+
+	for (i = 300; i < 1000; i += 15) {
+		cpp_wrapper_insert(tc, dict, i, i * 5, boolean_true);
+	}
+
+	for (i = 300; i < 1000; i += 15) {
+		cpp_wrapper_get(tc, dict, i, i * 5, err_ok, 1);
+	}
+
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests retrieval on a dictionary with a whole bunch of
+		records in it on all dictionary implementations.
+*/
+void
+test_cpp_wrapper_get_lots_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_get_lots(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_get_lots(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_get_lots(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_lots(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_lots(tc, dict);
+}
+
+/**
+@brief	This function tests retrieval on an empty dictionary for a key that doesn't exist.
+*/
+void
+test_cpp_wrapper_get_nonexist_empty(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_none);
+	cpp_wrapper_get(tc, dict, 99, NULL, err_item_not_found, 0);
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests retrieval on an empty dictionary for a key that
+		doesn't exist on all dictionary implementations.
+*/
+void
+test_cpp_wrapper_get_nonexist_empty_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_get_nonexist_empty(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_get_nonexist_empty(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_get_nonexist_empty(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_nonexist_empty(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_nonexist_empty(tc, dict);
+}
+
+/**
+@brief	This function tests retrieval on a dictionary for a single key that doesn't exist.
+*/
+void
+test_cpp_wrapper_get_nonexist_single(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_low);
+	cpp_wrapper_get(tc, dict, 99, NULL, err_item_not_found, 0);
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests retrieval on a dictionary for a single key that
+		doesn't exist on all implementations.
+*/
+void
+test_cpp_wrapper_get_nonexist_single_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_get_nonexist_single(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_get_nonexist_single(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_get_nonexist_single(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_nonexist_single(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_nonexist_single(tc, dict);
+}
+
+/**
+@brief	This function tests retrieval on a dictionary for many keys that don't exist.
+*/
+void
+test_cpp_wrapper_get_nonexist_many(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_edge_cases);
+	cpp_wrapper_get(tc, dict, -2000, NULL, err_item_not_found, 0);
+	cpp_wrapper_get(tc, dict, 3000, NULL, err_item_not_found, 0);
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests retrieval on a dictionary for many keys that don't
+		exist on all dictionary implementations.
+*/
+void
+test_cpp_wrapper_get_nonexist_many_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_get_nonexist_many(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_get_nonexist_many(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_get_nonexist_many(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_nonexist_many(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_nonexist_many(tc, dict);
+}
+
+/**
+@brief	This function tests retrieval on a dictionary that has one record in it.
+		We search for a key that exists, and expect that we get a positive response back.
+*/
+void
+test_cpp_wrapper_get_exist_single(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_none);
+	cpp_wrapper_insert(tc, dict, 30, 30, boolean_true);
+	cpp_wrapper_get(tc, dict, 30, 30, err_ok, 1);
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests retrieval on a dictionary that has one record in it
+		on all dictionary implementations. We search for a key that exists, and
+		expect that we get a positive response back.
+*/
+void
+test_cpp_wrapper_get_exist_single_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_get_exist_single(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_get_exist_single(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_get_exist_single(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_exist_single(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_exist_single(tc, dict);
+}
+
+/**
+@brief	This function tests retrieval on a dictionary that has many records in it.
+		We expect a positive result.
+*/
+void
+test_cpp_wrapper_get_populated_single(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_low);
+	cpp_wrapper_insert(tc, dict, 92, 92, boolean_true);
+	cpp_wrapper_get(tc, dict, 92, 92, err_ok, 1);
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests retrieval on a dictionary that has many records in it
+		on all dictionary implementations. We expect a positive result.
+*/
+void
+test_cpp_wrapper_get_populated_single_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_get_populated_single(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_get_populated_single(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_get_populated_single(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_populated_single(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_populated_single(tc, dict);
+}
+
+/**
+@brief	This function tests retrieval on a dictionary that has many records in it.
+		We expect a positive result on all gets run.
+*/
+void
+test_cpp_wrapper_get_populated_multiple(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_low);
+
+	int i;
+
+	ION_FILL_LOW_LOOP(i) {
+		cpp_wrapper_get(tc, dict, i, i * 2, err_ok, 1);
+	}
+
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests retrieval on a dictionary that has many records in it
+		on all dictionary implementations. We expect a positive result on all
+		gets run.
+*/
+void
+test_cpp_wrapper_get_populated_multiple_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_get_populated_multiple(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_get_populated_multiple(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_get_populated_multiple(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_populated_multiple(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_populated_multiple(tc, dict);
+}
+
+/**
+@brief	This function tests a get of everything within a dictionary.
+*/
+void
+test_cpp_wrapper_get_all(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_edge_cases);
+
+	int i;
+
+	ION_FILL_LOW_LOOP(i) {
+		cpp_wrapper_get(tc, dict, i, i * 2, err_ok, 1);
+	}
+	ION_FILL_MEDIUM_LOOP(i) {
+		cpp_wrapper_get(tc, dict, i, i * 5, err_ok, 1);
+	}
+	ION_FILL_HIGH_LOOP(i) {
+		cpp_wrapper_get(tc, dict, i, i * 10, err_ok, 1);
+	}
+	ION_FILL_EDGE_LOOP(i) {
+		cpp_wrapper_get(tc, dict, i, i * 3, err_ok, 1);
+	}
+
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests a get of everything within a dictionary on all
+		dictionary implementations.
+*/
+void
+test_cpp_wrapper_get_all_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_get_all(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_get_all(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_get_all(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_all(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_all(tc, dict);
+}
+
+/**
+@brief	This function tests deletion on an empty dictionary.
+		We expect to receive err_item_not_found and for everything to remain as-is.
+*/
+void
+test_cpp_wrapper_delete_empty(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_none);
+	cpp_wrapper_delete(tc, dict, 3, err_item_not_found, 0, boolean_true);
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests deletion on an empty dictionary on all dictionary
+		implementations. We expect to receive err_item_not_found and for everything
+		else to remain as-is.
+*/
+void
+test_cpp_wrapper_delete_empty_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_delete_empty(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_delete_empty(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_delete_empty(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_delete_empty(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_delete_empty(tc, dict);
+}
+
+/**
+@brief	This function tests deletion on a dictionary that has one element,
+		but not the one we are looking for. We expect to receive err_item_not_found
+		and for everything to remain as-is.
+*/
+void
+test_cpp_wrapper_delete_nonexist_single(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_none);
+	cpp_wrapper_insert(tc, dict, 5, 10, boolean_true);
+	cpp_wrapper_delete(tc, dict, 3, err_item_not_found, 0, boolean_true);
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests deletion on a dictionary that has one element, but not
+		the one we are looking for on all dictionary implementations. We expect to
+		receive err_item_not_found and for everything else to remain as-is.
+*/
+void
+test_cpp_wrapper_delete_nonexist_single_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_delete_nonexist_single(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_delete_nonexist_single(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_delete_nonexist_single(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_delete_nonexist_single(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_delete_nonexist_single(tc, dict);
+}
+
+/**
+@brief	This function tests deletion on a dictionary that has many elements,
+		but not the one we are looking for. We expect to receive err_item_not_found
+		and for everything to remain as-is.
+*/
+void
+test_cpp_wrapper_delete_nonexist_several(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_medium);
+	cpp_wrapper_delete(tc, dict, -100, err_item_not_found, 0, boolean_true);
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests deletion on a dictionary that has many elements, but not
+		the one we are looking for on all dictionary implementations. We expect to
+		receive err_item_not_found and for everything else to remain as-is.
+*/
+void
+test_cpp_wrapper_delete_nonexist_several_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_delete_nonexist_several(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_delete_nonexist_several(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_delete_nonexist_several(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_delete_nonexist_several(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_delete_nonexist_several(tc, dict);
+}
+
+/**
+@brief	This function tests deletion on a dictionary that has a single element,
+		which is the one we're looking for.
+*/
+void
+test_cpp_wrapper_delete_single(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_none);
+	cpp_wrapper_insert(tc, dict, 3, 6, boolean_true);
+	cpp_wrapper_delete(tc, dict, 3, err_ok, 1, boolean_true);
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests deletion on a dictionary that has a single element,
+		which is the one we are looking for on all dictionary implementations.
+*/
+void
+test_cpp_wrapper_delete_single_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_delete_single(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_delete_single(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_delete_single(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_delete_single(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_delete_single(tc, dict);
+}
+
+/**
+@brief	This function tests deletion on a dictionary that has many elements,
+		of which contains the one we choose to delete.
+*/
+void
+test_cpp_wrapper_delete_single_several(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_high);
+	cpp_wrapper_delete(tc, dict, 700, err_ok, 1, boolean_true);
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests deletion on a dictionary that has many elements, of
+		which contains the one we choose to delete on all dictionary implementations.
+*/
+void
+test_cpp_wrapper_delete_single_several_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_delete_single_several(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_delete_single_several(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_delete_single_several(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_delete_single_several(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_delete_single_several(tc, dict);
+}
+
+/**
+@brief	This function tests deletion of everything within a dictionary.
+*/
+void
+test_cpp_wrapper_delete_all(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_edge_cases);
+
+	int i;
+
+	ION_FILL_LOW_LOOP(i) {
+		cpp_wrapper_delete(tc, dict, i, err_ok, 1, boolean_true);
+	}
+	ION_FILL_MEDIUM_LOOP(i) {
+		cpp_wrapper_delete(tc, dict, i, err_ok, 1, boolean_true);
+	}
+	ION_FILL_HIGH_LOOP(i) {
+		cpp_wrapper_delete(tc, dict, i, err_ok, 1, boolean_true);
+	}
+	ION_FILL_EDGE_LOOP(i) {
+		cpp_wrapper_delete(tc, dict, i, err_ok, 1, boolean_true);
+	}
+}
+
+/**
+@brief	This function tests deletion of everything within a dictionary on all
+		dictionary implementations.
+*/
+void
+test_cpp_wrapper_delete_all_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_delete_all(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_delete_all(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_delete_all(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_delete_all(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_delete_all(tc, dict);
+}
+
+/**
+@brief	This function tests an update on a dictionary that is empty. We expect an upsert to occur.
+*/
+void
+test_cpp_wrapper_update_empty_single(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_none);
+	cpp_wrapper_update(tc, dict, 3, 5, err_ok, 1, boolean_true);
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests an update on a dictionary that is empty on all dictionary
+		implementations. We expect an upsert to occur.
+*/
+void
+test_cpp_wrapper_update_empty_single_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_update_empty_single(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_update_empty_single(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_update_empty_single(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_update_empty_single(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_update_empty_single(tc, dict);
+}
+
+/**
+@brief	This function tests an update on a dictionary that has one element,
+		but not the one we are looking for. We expect an upsert to occur.
+*/
+void
+test_cpp_wrapper_update_nonexist_single(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_none);
+	cpp_wrapper_insert(tc, dict, 10, 4, boolean_true);
+	cpp_wrapper_update(tc, dict, 3, 5, err_ok, 1, boolean_true);
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests an update on a dictionary that has one element,
+		but not the one we are looking for on all dictionary implementations.
+		We expect an upsert to occur.
+*/
+void
+test_cpp_wrapper_update_nonexist_single_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_update_nonexist_single(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_update_nonexist_single(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_update_nonexist_single(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_update_nonexist_single(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_update_nonexist_single(tc, dict);
+}
+
+/**
+@brief	This function tests an update on a dictionary that has many elements,
+		but not the one we are looking for. We expect an upsert to occur.
+*/
+void
+test_cpp_wrapper_update_nonexist_in_many(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_medium);
+	cpp_wrapper_update(tc, dict, 63, -10, err_ok, 1, boolean_true);
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests an update on a dictionary that has many elements,
+		but not the one we are looking for on all dictionary implementations.
+		We expect an upsert to occur.
+*/
+void
+test_cpp_wrapper_update_nonexist_in_many_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_update_nonexist_in_many(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_update_nonexist_in_many(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_update_nonexist_in_many(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_update_nonexist_in_many(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_update_nonexist_in_many(tc, dict);
+}
+
+/**
+@brief	This function tests an update on a dictionary that has one element,
+		which is the one we are looking for.
+*/
+void
+test_cpp_wrapper_update_exist_single(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_none);
+	cpp_wrapper_insert(tc, dict, 23, 0, boolean_true);
+	cpp_wrapper_update(tc, dict, 23, 44, err_ok, 1, boolean_true);
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests an update on a dictionary that has one element,
+		which is the one we are looking for on all dictionary implementations.
+*/
+void
+test_cpp_wrapper_update_exist_single_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_update_exist_single(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_update_exist_single(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_update_exist_single(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_update_exist_single(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_update_exist_single(tc, dict);
+}
+
+/**
+@brief	This function tests an update on a dictionary that has many elements,
+		which includes the one we are looking for.
+*/
+void
+test_cpp_wrapper_update_exist_in_many(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_medium);
+	cpp_wrapper_update(tc, dict, 60, -23, err_ok, 1, boolean_true);
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests an update on a dictionary that has many elements,
+		which includes the one we are looking for on all dictionary implementations.
+*/
+void
+test_cpp_wrapper_update_exist_in_many_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_update_exist_in_many(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_update_exist_in_many(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_update_exist_in_many(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_update_exist_in_many(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_update_exist_in_many(tc, dict);
+}
+
+/**
+@brief	This function tests update of everything within a dictionary.
+*/
+void
+test_cpp_wrapper_update_all(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_edge_cases);
+
+	int i;
+
+	ION_FILL_LOW_LOOP(i) {
+		cpp_wrapper_update(tc, dict, i, -1337, err_ok, 1, boolean_true);
+	}
+	ION_FILL_MEDIUM_LOOP(i) {
+		cpp_wrapper_update(tc, dict, i, -1337, err_ok, 1, boolean_true);
+	}
+	ION_FILL_HIGH_LOOP(i) {
+		cpp_wrapper_update(tc, dict, i, -1337, err_ok, 1, boolean_true);
+	}
+	ION_FILL_EDGE_LOOP(i) {
+		cpp_wrapper_update(tc, dict, i, -1337, err_ok, 1, boolean_true);
+	}
+
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests an update of everything within a dictionary on all
+		dictionary implementations.
+*/
+void
+test_cpp_wrapper_update_all_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_update_all(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_update_all(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_update_all(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_update_all(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_update_all(tc, dict);
+}
+
+/**
+@brief	This function tests some deletes, followed by an insert. Nothing should go wrong.
+*/
+void
+test_cpp_wrapper_delete_then_insert(
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
+) {
+	cpp_wrapper_setup(tc, dict, ion_fill_edge_cases);
+
+	cpp_wrapper_delete(tc, dict, 60, err_ok, 1, boolean_true);
+	cpp_wrapper_delete(tc, dict, 4, err_ok, 1, boolean_true);
+	cpp_wrapper_delete(tc, dict, 505, err_ok, 1, boolean_true);
+
+	cpp_wrapper_insert(tc, dict, 61, 44, boolean_true);
+	cpp_wrapper_insert(tc, dict, 67, 42, boolean_true);
+	cpp_wrapper_insert(tc, dict, 73, 48, boolean_true);
+
+	cpp_wrapper_destroy(tc, dict);
+}
+
+/**
+@brief	This function tests some deletes, followed by an insert on all dictionary
+		implementations. Nothing should go wrong.
+*/
+void
+test_cpp_wrapper_delete_then_insert_all(
+	planck_unit_test_t *tc
+) {
+	Dictionary<int, int> *dict;
+
+	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	test_cpp_wrapper_delete_then_insert(tc, dict);
+
+	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	test_cpp_wrapper_delete_then_insert(tc, dict);
+
+	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	test_cpp_wrapper_delete_then_insert(tc, dict);
+
+	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_delete_then_insert(tc, dict);
+
+	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_delete_then_insert(tc, dict);
 }
 
 /**
@@ -1123,19 +2153,24 @@ test_cpp_wrapper_open_close_on_all_implementations(
 	planck_unit_test_t *tc
 ) {
 	Dictionary<int, int> *dict;
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_open_close(tc, dict, 66, 12);
 	delete dict;
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 15);
+
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 15);
 	test_cpp_wrapper_open_close(tc, dict, 45, 14);
 	delete dict;
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_open_close(tc, dict, 3, 15);
 	delete dict;
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_open_close(tc, dict, 5, 12);
 	delete dict;
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_open_close(tc, dict, 1, 13);
 	delete dict;
 }
@@ -1149,10 +2184,34 @@ cpp_wrapper_getsuite_1(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_create_and_destroy);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_insert_on_all_implementations);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_delete_on_all_implementations);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_update_on_all_implementations);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_create);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_setup_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_insert_single_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_insert_multiple_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_get_single_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_get_in_many_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_get_lots_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_get_nonexist_empty_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_get_nonexist_single_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_get_nonexist_many_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_get_exist_single_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_get_populated_single_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_get_populated_multiple_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_get_all_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_delete_empty_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_delete_nonexist_single_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_delete_nonexist_several_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_delete_single_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_delete_single_several_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_delete_all_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_update_empty_single_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_update_nonexist_single_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_update_nonexist_in_many_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_update_exist_single_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_update_exist_in_many_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_update_all_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_delete_then_insert_all);
+
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_equality_on_all_implementations);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_equality_edge_case1_on_all_implementations);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_range_simple_on_all_implementations);
