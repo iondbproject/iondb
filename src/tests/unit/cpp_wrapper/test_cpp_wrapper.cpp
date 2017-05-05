@@ -21,7 +21,7 @@ typedef enum ION_BEHAVIOUR_FILL_LEVEL {
 } ion_behaviour_fill_level_e;
 
 #define ION_FILL_LOW_LOOP(var) \
-	for (var = 0; var<10;var ++)
+	for (var = 0; var<10;var++)
 #define ION_FILL_MEDIUM_LOOP(var) \
 	for (var = 50; var<100;var += 2)
 #define ION_FILL_HIGH_LOOP(var) \
@@ -35,7 +35,7 @@ typedef enum ION_BEHAVIOUR_FILL_LEVEL {
 @brief	Tests the creation of a B+ Tree (arbitrarily chosen) dictionary and asserts
 		the validity of some dictionary parameters.
 */
-Dictionary<int, int> *
+void
 cpp_wrapper_create(
 	planck_unit_test_t *tc
 ) {
@@ -46,21 +46,7 @@ cpp_wrapper_create(
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict->dict.instance->record.key_size == sizeof(int));
 	PLANCK_UNIT_ASSERT_TRUE(tc, dict->dict.instance->record.value_size == sizeof(int));
 
-	return dict;
-}
-
-/**
-@brief	Tests the creation of a B+ Tree (arbitrarily chosen) dictionary and asserts
-		the validity of some dictionary parameters.
-*/
-void
-cpp_wrapper_destroy(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict
-) {
-	ion_err_t err = dict->destroy();
-
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+	delete dict;
 }
 
 /**
@@ -204,11 +190,7 @@ void
 test_cpp_wrapper_create(
 	planck_unit_test_t *tc
 ) {
-	Dictionary<int, int> *dict;
-
-	dict = cpp_wrapper_create(tc);
-	cpp_wrapper_setup(tc, dict, ion_fill_none);
-	cpp_wrapper_destroy(tc, dict);
+	cpp_wrapper_create(tc);
 }
 
 /**
@@ -220,7 +202,6 @@ test_cpp_wrapper_setup(
 	Dictionary<int, int> *dict
 ) {
 	cpp_wrapper_setup(tc, dict, ion_fill_none);
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -233,20 +214,25 @@ test_cpp_wrapper_setup_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_setup(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_setup(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_setup(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_setup(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_setup(tc, dict);
+	delete dict;
 }
 
 /**
@@ -259,7 +245,6 @@ test_cpp_wrapper_insert_single(
 ) {
 	cpp_wrapper_setup(tc, dict, ion_fill_none);
 	cpp_wrapper_insert(tc, dict, 10, 20, boolean_false);
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -272,20 +257,25 @@ test_cpp_wrapper_insert_single_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_insert_single(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_insert_single(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_insert_single(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_insert_single(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_insert_single(tc, dict);
+	delete dict;
 }
 
 /**
@@ -303,8 +293,6 @@ test_cpp_wrapper_insert_multiple(
 	for (i = 50; i < 55; i++) {
 		cpp_wrapper_insert(tc, dict, i, i * 2, boolean_false);
 	}
-
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -317,20 +305,25 @@ test_cpp_wrapper_insert_multiple_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_insert_multiple(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_insert_multiple(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_insert_multiple(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_insert_multiple(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_insert_multiple(tc, dict);
+	delete dict;
 }
 
 /**
@@ -343,7 +336,6 @@ test_cpp_wrapper_get_single(
 ) {
 	cpp_wrapper_setup(tc, dict, ion_fill_none);
 	cpp_wrapper_insert(tc, dict, 99, 99 * 2, boolean_true);
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -356,20 +348,25 @@ test_cpp_wrapper_get_single_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_get_single(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_get_single(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_get_single(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_single(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_single(tc, dict);
+	delete dict;
 }
 
 /**
@@ -385,7 +382,6 @@ test_cpp_wrapper_get_in_many(
 	cpp_wrapper_insert(tc, dict, 1002, 1002 * 2, boolean_true);
 	cpp_wrapper_insert(tc, dict, 55, 55 * 2, boolean_true);
 	cpp_wrapper_insert(tc, dict, -5, -5 * 2, boolean_true);
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -398,20 +394,25 @@ test_cpp_wrapper_get_in_many_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_get_in_many(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_get_in_many(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_get_in_many(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_in_many(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_in_many(tc, dict);
+	delete dict;
 }
 
 /**
@@ -433,8 +434,6 @@ test_cpp_wrapper_get_lots(
 	for (i = 300; i < 1000; i += 15) {
 		cpp_wrapper_get(tc, dict, i, i * 5, err_ok, 1);
 	}
-
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -447,20 +446,25 @@ test_cpp_wrapper_get_lots_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_get_lots(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_get_lots(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_get_lots(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_lots(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_lots(tc, dict);
+	delete dict;
 }
 
 /**
@@ -473,7 +477,6 @@ test_cpp_wrapper_get_nonexist_empty(
 ) {
 	cpp_wrapper_setup(tc, dict, ion_fill_none);
 	cpp_wrapper_get(tc, dict, 99, NULL_VALUE, err_item_not_found, 0);
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -486,20 +489,25 @@ test_cpp_wrapper_get_nonexist_empty_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_get_nonexist_empty(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_get_nonexist_empty(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_get_nonexist_empty(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_nonexist_empty(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_nonexist_empty(tc, dict);
+	delete dict;
 }
 
 /**
@@ -512,7 +520,6 @@ test_cpp_wrapper_get_nonexist_single(
 ) {
 	cpp_wrapper_setup(tc, dict, ion_fill_low);
 	cpp_wrapper_get(tc, dict, 99, NULL_VALUE, err_item_not_found, 0);
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -525,20 +532,25 @@ test_cpp_wrapper_get_nonexist_single_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_get_nonexist_single(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_get_nonexist_single(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_get_nonexist_single(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_nonexist_single(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_nonexist_single(tc, dict);
+	delete dict;
 }
 
 /**
@@ -552,7 +564,6 @@ test_cpp_wrapper_get_nonexist_many(
 	cpp_wrapper_setup(tc, dict, ion_fill_edge_cases);
 	cpp_wrapper_get(tc, dict, -2000, NULL_VALUE, err_item_not_found, 0);
 	cpp_wrapper_get(tc, dict, 3000, NULL_VALUE, err_item_not_found, 0);
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -565,20 +576,25 @@ test_cpp_wrapper_get_nonexist_many_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_get_nonexist_many(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_nonexist_many(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_nonexist_many(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
 	test_cpp_wrapper_get_nonexist_many(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
 	test_cpp_wrapper_get_nonexist_many(tc, dict);
+	delete dict;
 }
 
 /**
@@ -593,7 +609,6 @@ test_cpp_wrapper_get_exist_single(
 	cpp_wrapper_setup(tc, dict, ion_fill_none);
 	cpp_wrapper_insert(tc, dict, 30, 30, boolean_true);
 	cpp_wrapper_get(tc, dict, 30, 30, err_ok, 1);
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -607,20 +622,25 @@ test_cpp_wrapper_get_exist_single_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_get_exist_single(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_get_exist_single(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_get_exist_single(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_exist_single(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_exist_single(tc, dict);
+	delete dict;
 }
 
 /**
@@ -635,7 +655,6 @@ test_cpp_wrapper_get_populated_single(
 	cpp_wrapper_setup(tc, dict, ion_fill_low);
 	cpp_wrapper_insert(tc, dict, 92, 92, boolean_true);
 	cpp_wrapper_get(tc, dict, 92, 92, err_ok, 1);
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -648,20 +667,25 @@ test_cpp_wrapper_get_populated_single_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_get_populated_single(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_get_populated_single(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_get_populated_single(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_populated_single(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_populated_single(tc, dict);
+	delete dict;
 }
 
 /**
@@ -680,8 +704,6 @@ test_cpp_wrapper_get_populated_multiple(
 	ION_FILL_LOW_LOOP(i) {
 		cpp_wrapper_get(tc, dict, i, i * 2, err_ok, 1);
 	}
-
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -695,20 +717,25 @@ test_cpp_wrapper_get_populated_multiple_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_get_populated_multiple(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_get_populated_multiple(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_get_populated_multiple(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_populated_multiple(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_populated_multiple(tc, dict);
+	delete dict;
 }
 
 /**
@@ -735,8 +762,6 @@ test_cpp_wrapper_get_all(
 	ION_FILL_EDGE_LOOP(i) {
 		cpp_wrapper_get(tc, dict, i, i * 3, err_ok, 1);
 	}
-
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -749,20 +774,25 @@ test_cpp_wrapper_get_all_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_get_all(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_all(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_all(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
 	test_cpp_wrapper_get_all(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
 	test_cpp_wrapper_get_all(tc, dict);
+	delete dict;
 }
 
 /**
@@ -776,7 +806,6 @@ test_cpp_wrapper_delete_empty(
 ) {
 	cpp_wrapper_setup(tc, dict, ion_fill_none);
 	cpp_wrapper_delete(tc, dict, 3, err_item_not_found, 0, boolean_true);
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -790,20 +819,25 @@ test_cpp_wrapper_delete_empty_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_delete_empty(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_delete_empty(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_delete_empty(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_delete_empty(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_delete_empty(tc, dict);
+	delete dict;
 }
 
 /**
@@ -819,7 +853,6 @@ test_cpp_wrapper_delete_nonexist_single(
 	cpp_wrapper_setup(tc, dict, ion_fill_none);
 	cpp_wrapper_insert(tc, dict, 5, 10, boolean_true);
 	cpp_wrapper_delete(tc, dict, 3, err_item_not_found, 0, boolean_true);
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -833,20 +866,25 @@ test_cpp_wrapper_delete_nonexist_single_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_delete_nonexist_single(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_delete_nonexist_single(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_delete_nonexist_single(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_delete_nonexist_single(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_delete_nonexist_single(tc, dict);
+	delete dict;
 }
 
 /**
@@ -861,7 +899,6 @@ test_cpp_wrapper_delete_nonexist_several(
 ) {
 	cpp_wrapper_setup(tc, dict, ion_fill_medium);
 	cpp_wrapper_delete(tc, dict, -100, err_item_not_found, 0, boolean_true);
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -875,20 +912,25 @@ test_cpp_wrapper_delete_nonexist_several_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_delete_nonexist_several(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_delete_nonexist_several(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_delete_nonexist_several(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_delete_nonexist_several(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_delete_nonexist_several(tc, dict);
+	delete dict;
 }
 
 /**
@@ -903,7 +945,6 @@ test_cpp_wrapper_delete_single(
 	cpp_wrapper_setup(tc, dict, ion_fill_none);
 	cpp_wrapper_insert(tc, dict, 3, 6, boolean_true);
 	cpp_wrapper_delete(tc, dict, 3, err_ok, 1, boolean_true);
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -916,20 +957,25 @@ test_cpp_wrapper_delete_single_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_delete_single(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_delete_single(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_delete_single(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_delete_single(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_delete_single(tc, dict);
+	delete dict;
 }
 
 /**
@@ -943,7 +989,6 @@ test_cpp_wrapper_delete_single_several(
 ) {
 	cpp_wrapper_setup(tc, dict, ion_fill_high);
 	cpp_wrapper_delete(tc, dict, 700, err_ok, 1, boolean_true);
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -956,20 +1001,25 @@ test_cpp_wrapper_delete_single_several_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_delete_single_several(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_delete_single_several(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_delete_single_several(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
 	test_cpp_wrapper_delete_single_several(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
 	test_cpp_wrapper_delete_single_several(tc, dict);
+	delete dict;
 }
 
 /**
@@ -1008,20 +1058,25 @@ test_cpp_wrapper_delete_all_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_delete_all(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_delete_all(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_delete_all(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
 	test_cpp_wrapper_delete_all(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
 	test_cpp_wrapper_delete_all(tc, dict);
+	delete dict;
 }
 
 /**
@@ -1034,7 +1089,6 @@ test_cpp_wrapper_update_empty_single(
 ) {
 	cpp_wrapper_setup(tc, dict, ion_fill_none);
 	cpp_wrapper_update(tc, dict, 3, 5, err_ok, 1, boolean_true);
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -1047,20 +1101,25 @@ test_cpp_wrapper_update_empty_single_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_update_empty_single(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_update_empty_single(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_update_empty_single(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_update_empty_single(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_update_empty_single(tc, dict);
+	delete dict;
 }
 
 /**
@@ -1075,7 +1134,6 @@ test_cpp_wrapper_update_nonexist_single(
 	cpp_wrapper_setup(tc, dict, ion_fill_none);
 	cpp_wrapper_insert(tc, dict, 10, 4, boolean_true);
 	cpp_wrapper_update(tc, dict, 3, 5, err_ok, 1, boolean_true);
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -1089,20 +1147,25 @@ test_cpp_wrapper_update_nonexist_single_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_update_nonexist_single(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_update_nonexist_single(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_update_nonexist_single(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_update_nonexist_single(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_update_nonexist_single(tc, dict);
+	delete dict;
 }
 
 /**
@@ -1116,7 +1179,6 @@ test_cpp_wrapper_update_nonexist_in_many(
 ) {
 	cpp_wrapper_setup(tc, dict, ion_fill_medium);
 	cpp_wrapper_update(tc, dict, 63, -10, err_ok, 1, boolean_true);
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -1130,20 +1192,25 @@ test_cpp_wrapper_update_nonexist_in_many_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_update_nonexist_in_many(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_update_nonexist_in_many(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_update_nonexist_in_many(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_update_nonexist_in_many(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_update_nonexist_in_many(tc, dict);
+	delete dict;
 }
 
 /**
@@ -1158,7 +1225,6 @@ test_cpp_wrapper_update_exist_single(
 	cpp_wrapper_setup(tc, dict, ion_fill_none);
 	cpp_wrapper_insert(tc, dict, 23, 0, boolean_true);
 	cpp_wrapper_update(tc, dict, 23, 44, err_ok, 1, boolean_true);
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -1171,20 +1237,25 @@ test_cpp_wrapper_update_exist_single_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_update_exist_single(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_update_exist_single(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_update_exist_single(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_update_exist_single(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_update_exist_single(tc, dict);
+	delete dict;
 }
 
 /**
@@ -1198,7 +1269,6 @@ test_cpp_wrapper_update_exist_in_many(
 ) {
 	cpp_wrapper_setup(tc, dict, ion_fill_medium);
 	cpp_wrapper_update(tc, dict, 60, -23, err_ok, 1, boolean_true);
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -1211,20 +1281,25 @@ test_cpp_wrapper_update_exist_in_many_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_update_exist_in_many(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	test_cpp_wrapper_update_exist_in_many(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 30);
 	test_cpp_wrapper_update_exist_in_many(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_update_exist_in_many(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_update_exist_in_many(tc, dict);
+	delete dict;
 }
 
 /**
@@ -1251,8 +1326,6 @@ test_cpp_wrapper_update_all(
 	ION_FILL_EDGE_LOOP(i) {
 		cpp_wrapper_update(tc, dict, i, -1337, err_ok, 1, boolean_true);
 	}
-
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -1265,20 +1338,25 @@ test_cpp_wrapper_update_all_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_update_all(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_update_all(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_update_all(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
 	test_cpp_wrapper_update_all(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
 	test_cpp_wrapper_update_all(tc, dict);
+	delete dict;
 }
 
 /**
@@ -1298,8 +1376,6 @@ test_cpp_wrapper_delete_then_insert(
 	cpp_wrapper_insert(tc, dict, 61, 44, boolean_true);
 	cpp_wrapper_insert(tc, dict, 67, 42, boolean_true);
 	cpp_wrapper_insert(tc, dict, 73, 48, boolean_true);
-
-	cpp_wrapper_destroy(tc, dict);
 }
 
 /**
@@ -1312,20 +1388,25 @@ test_cpp_wrapper_delete_then_insert_all(
 ) {
 	Dictionary<int, int> *dict;
 
-	dict	= new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
+	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
 	test_cpp_wrapper_delete_then_insert(tc, dict);
+	delete dict;
 
-	dict	= new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_delete_then_insert(tc, dict);
+	delete dict;
 
-	dict	= new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	dict = new FlatFile<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_delete_then_insert(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
+	dict = new OpenAddressHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
 	test_cpp_wrapper_delete_then_insert(tc, dict);
+	delete dict;
 
-	dict	= new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
+	dict = new OpenAddressFileHash<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 160);
 	test_cpp_wrapper_delete_then_insert(tc, dict);
+	delete dict;
 }
 
 /**
