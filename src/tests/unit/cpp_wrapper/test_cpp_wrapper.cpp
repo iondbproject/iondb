@@ -123,7 +123,15 @@ cpp_wrapper_delete(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, status.count);
 
 	if (check_result) {
-		cpp_wrapper_get(tc, dict, key, NULL, err_item_not_found, 0);
+		int				retval			= dict->get(key);
+		ion_status_t	check_status	= dict->last_status;
+
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_item_not_found, check_status.error);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, check_status.count);
+
+		if (err_ok == check_status.error) {
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, NULL, retval);
+		}
 	}
 }
 
