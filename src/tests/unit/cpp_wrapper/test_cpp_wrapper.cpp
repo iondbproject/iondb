@@ -29,6 +29,8 @@ typedef enum ION_BEHAVIOUR_FILL_LEVEL {
 #define ION_FILL_EDGE_LOOP(var) \
 	for (var = -100; var<-50;var += 2)
 
+#define NULL_VALUE 999	/** Value arbitrarily chosen to represent NULL */
+
 /**
 @brief	Tests the creation of a B+ Tree (arbitrarily chosen) dictionary and asserts
 		the validity of some dictionary parameters.
@@ -123,15 +125,7 @@ cpp_wrapper_delete(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, status.count);
 
 	if (check_result) {
-		int				retval			= dict->get(key);
-		ion_status_t	check_status	= dict->last_status;
-
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_item_not_found, check_status.error);
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, check_status.count);
-
-		if (err_ok == check_status.error) {
-			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, NULL, retval);
-		}
+		cpp_wrapper_get(tc, dict, key, NULL_VALUE, err_item_not_found, 0);
 	}
 }
 
@@ -478,7 +472,7 @@ test_cpp_wrapper_get_nonexist_empty(
 	Dictionary<int, int> *dict
 ) {
 	cpp_wrapper_setup(tc, dict, ion_fill_none);
-	cpp_wrapper_get(tc, dict, 99, NULL, err_item_not_found, 0);
+	cpp_wrapper_get(tc, dict, 99, NULL_VALUE, err_item_not_found, 0);
 	cpp_wrapper_destroy(tc, dict);
 }
 
@@ -517,7 +511,7 @@ test_cpp_wrapper_get_nonexist_single(
 	Dictionary<int, int> *dict
 ) {
 	cpp_wrapper_setup(tc, dict, ion_fill_low);
-	cpp_wrapper_get(tc, dict, 99, NULL, err_item_not_found, 0);
+	cpp_wrapper_get(tc, dict, 99, NULL_VALUE, err_item_not_found, 0);
 	cpp_wrapper_destroy(tc, dict);
 }
 
@@ -556,8 +550,8 @@ test_cpp_wrapper_get_nonexist_many(
 	Dictionary<int, int> *dict
 ) {
 	cpp_wrapper_setup(tc, dict, ion_fill_edge_cases);
-	cpp_wrapper_get(tc, dict, -2000, NULL, err_item_not_found, 0);
-	cpp_wrapper_get(tc, dict, 3000, NULL, err_item_not_found, 0);
+	cpp_wrapper_get(tc, dict, -2000, NULL_VALUE, err_item_not_found, 0);
+	cpp_wrapper_get(tc, dict, 3000, NULL_VALUE, err_item_not_found, 0);
 	cpp_wrapper_destroy(tc, dict);
 }
 
