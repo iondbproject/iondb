@@ -377,12 +377,12 @@ ion_boolean_t
 linear_hash_above_threshold(
 	linear_hash_table_t *linear_hash
 ) {
-	double	numerator	= (double) (100 * (linear_hash->num_records));
-	double	denominator = (double) (linear_hash->num_buckets * linear_hash->records_per_bucket);
+	double	numerator				= (double) (100 * (linear_hash->num_records));
+	double	denominator				= (double) (linear_hash->num_buckets * linear_hash->records_per_bucket);
 
-	double load			= numerator / denominator;
+	double load						= numerator / denominator;
 
-	ion_boolean_t above_threshold = (load > linear_hash->split_threshold);
+	ion_boolean_t above_threshold	= (load > linear_hash->split_threshold);
 
 	return above_threshold;
 }
@@ -1077,12 +1077,13 @@ hash(
 	int hash		= 0;
 	int i;
 	int size_of_int = (int) sizeof(int);
+    int coefficients[] = {0, 3, 7, 9, 53, 67, 5, 99};
 
 	for (i = 0; i < size_of_int; i++) {
-		hash += *(&key + i);
+		hash += *(&key + i) + (i * coefficients[i]);
 	}
-
-	return key;
+    
+	return hash;
 }
 
 int
@@ -1108,7 +1109,7 @@ hash_to_bucket(
 	/* Case the record we are looking for was in a bucket that has already been split and h1 was used */
 	int key_bytes_as_int = key_bytes_to_int(key, linear_hash);
 
-	return hash(key_bytes_as_int & ((2 * linear_hash->initial_size) - 1));
+	return key_bytes_as_int & ((2 * linear_hash->initial_size) - 1);
 }
 
 int

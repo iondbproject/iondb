@@ -323,12 +323,12 @@ test_linear_hash_correct_hash_function(
 	/* test inserting push above threshold - linear_hash.num_buckets should increase by one */
 	test_linear_hash_insert(tc, IONIZE(2, int), IONIZE(5, int), err_ok, 1, boolean_true, linear_hash);
 
-	expected_hash_bucket	= 2;
+	expected_hash_bucket	= 0;
 
 	/* resolve key 5 hashes to given the current linear_hash state - should be 5 */
 	hash_idx				= insert_hash_to_bucket(hash_key, linear_hash);
 
-	if (hash_idx < linear_hash->next_split) {
+    if (hash_idx < linear_hash->next_split) {
 		hash_idx = hash_to_bucket(hash_key, linear_hash);
 	}
 
@@ -382,7 +382,7 @@ test_linear_hash_correct_bucket_after_split(
 	/* test inserting push above threshold - linear_hash.num_buckets should increase by one */
 	test_linear_hash_insert(tc, IONIZE(2, int), IONIZE(5, int), err_ok, 1, boolean_true, linear_hash);
 
-	expected_hash_bucket		= 2;
+    expected_hash_bucket		= 0;
 	expected_bucket_location	= array_list_get(expected_hash_bucket, linear_hash->bucket_map);
 
 	/* resolve key 2 hashes to given the current linear_hash state - should be 2 */
