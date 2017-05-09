@@ -1077,13 +1077,12 @@ hash(
 	int hash		= 0;
 	int i;
 	int size_of_int = (int) sizeof(int);
-    int coefficients[] = {0, 3, 7, 9, 53, 67, 5, 99};
 
 	for (i = 0; i < size_of_int; i++) {
-		hash += *(&key + i) + (i * coefficients[i]);
+		hash += *(&key + i);
 	}
-    
-	return hash;
+
+	return key;
 }
 
 int
@@ -1109,7 +1108,7 @@ hash_to_bucket(
 	/* Case the record we are looking for was in a bucket that has already been split and h1 was used */
 	int key_bytes_as_int = key_bytes_to_int(key, linear_hash);
 
-	return key_bytes_as_int & ((2 * linear_hash->initial_size) - 1);
+	return hash(key_bytes_as_int & ((2 * linear_hash->initial_size) - 1));
 }
 
 int
