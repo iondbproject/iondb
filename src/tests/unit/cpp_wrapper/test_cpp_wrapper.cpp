@@ -168,10 +168,10 @@ cpp_wrapper_setup(
 */
 void
 cpp_wrapper_open_close(
-		planck_unit_test_t *tc,
-		Dictionary<int, int> *dict,
-		int key,
-		int value
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict,
+	int key,
+	int value
 ) {
 	ion_err_t				error;
 	ion_dictionary_id_t		gdict_id	= dict->dict.instance->id;
@@ -191,7 +191,7 @@ cpp_wrapper_open_close(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
 
 	ion_dictionary_config_info_t config = {
-			gdict_id, 0, key_type, key_size, val_size, dict_size
+		gdict_id, 0, key_type, key_size, val_size, dict_size
 	};
 
 	error = dict->open(config);
@@ -262,13 +262,13 @@ cpp_wrapper_equality(
 */
 void
 cpp_wrapper_range(
-		planck_unit_test_t *tc,
-		Dictionary<int, int> *dict,
-		int min_key,
-		int max_key,
-		int expected_records[],
-		int expected_num_records,
-		ion_boolean_t records_exist
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict,
+	int min_key,
+	int max_key,
+	int expected_records[],
+	int expected_num_records,
+	ion_boolean_t records_exist
 ) {
 	PLANCK_UNIT_ASSERT_TRUE(tc, min_key < max_key);
 
@@ -285,10 +285,10 @@ cpp_wrapper_range(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, cursor->hasNext());
 
-	int records_found	= 0;
-	int curr_pos		= 0;
+	int records_found			= 0;
+	int curr_pos				= 0;
 
-	ion_cursor_status_t status = cursor->next();
+	ion_cursor_status_t status	= cursor->next();
 
 	while (status) {
 		for (int i = 0; i < expected_num_records; i++) {
@@ -320,11 +320,11 @@ cpp_wrapper_range(
 */
 void
 cpp_wrapper_all_records(
-		planck_unit_test_t *tc,
-		Dictionary<int, int> *dict,
-		int expected_records[],
-		int expected_num_records,
-		ion_boolean_t records_exist
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict,
+	int expected_records[],
+	int expected_num_records,
+	ion_boolean_t records_exist
 ) {
 	Cursor<int, int> *cursor = dict->allRecords();
 
@@ -339,10 +339,10 @@ cpp_wrapper_all_records(
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, cursor->hasNext());
 
-	int records_found	= 0;
-	int curr_pos		= 0;
+	int records_found			= 0;
+	int curr_pos				= 0;
 
-	ion_cursor_status_t status = cursor->next();
+	ion_cursor_status_t status	= cursor->next();
 
 	while (status) {
 		for (int i = 0; i < expected_num_records; i++) {
@@ -1632,8 +1632,8 @@ test_cpp_wrapper_equality_no_duplicates(
 */
 void
 test_cpp_wrapper_equality(
-		planck_unit_test_t	*tc,
-		int					key
+	planck_unit_test_t	*tc,
+	int					key
 ) {
 	Dictionary<int, int> *dict;
 
@@ -1663,7 +1663,7 @@ test_cpp_wrapper_equality(
 */
 void
 test_cpp_wrapper_equality_all(
-		planck_unit_test_t *tc
+	planck_unit_test_t *tc
 ) {
 	test_cpp_wrapper_equality(tc, 10);
 	test_cpp_wrapper_equality(tc, 4);
@@ -1673,14 +1673,14 @@ test_cpp_wrapper_equality_all(
 
 /**
 @brief	This function tests an equality cursor query on an empty dictionary for a key
- 		that doesn't exist.
+		that doesn't exist.
 */
 void
 test_cpp_wrapper_equality_nonexist_empty(
-		planck_unit_test_t *tc,
-		Dictionary<int, int> *dict
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
 ) {
-	int values[1] = {0};
+	int values[1] = { 0 };
 
 	cpp_wrapper_setup(tc, dict, ion_fill_none);
 	cpp_wrapper_equality(tc, dict, NULL_VALUE, values, 0, boolean_false);
@@ -1688,11 +1688,11 @@ test_cpp_wrapper_equality_nonexist_empty(
 
 /**
 @brief	Aggregate test to test equality cursor query on an empty dictionary
- 		for a key that doesn't exist on all dictionary implementations.
+		for a key that doesn't exist on all dictionary implementations.
 */
 void
 test_cpp_wrapper_equality_nonexist_empty_all(
-		planck_unit_test_t *tc
+	planck_unit_test_t *tc
 ) {
 	Dictionary<int, int> *dict;
 
@@ -1737,11 +1737,11 @@ test_cpp_wrapper_equality_nonexist(
 
 /**
 @brief	Aggregate test to test equality cursor query when the desired key is not
- 		present on all dictionary implementations.
+		present on all dictionary implementations.
 */
 void
 test_cpp_wrapper_equality_nonexist_all(
-		planck_unit_test_t *tc
+	planck_unit_test_t *tc
 ) {
 	Dictionary<int, int> *dict;
 
@@ -1799,7 +1799,7 @@ test_cpp_wrapper_range(
 */
 void
 test_cpp_wrapper_range_single_all(
-		planck_unit_test_t *tc
+	planck_unit_test_t *tc
 ) {
 	Dictionary<int, int> *dict;
 
@@ -1829,7 +1829,7 @@ test_cpp_wrapper_range_single_all(
 */
 void
 test_cpp_wrapper_range_multiple_all(
-		planck_unit_test_t *tc
+	planck_unit_test_t *tc
 ) {
 	Dictionary<int, int> *dict;
 
@@ -1856,14 +1856,14 @@ test_cpp_wrapper_range_multiple_all(
 
 /**
 @brief	Tests a range cursor on an empty dictionary where clearly no keys within
- 		the range exist.
+		the range exist.
 */
 void
 test_cpp_wrapper_range_nonexist_empty(
-		planck_unit_test_t *tc,
-		Dictionary<int, int> *dict
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
 ) {
-	int values[1] = {NULL_VALUE};
+	int values[1] = { NULL_VALUE };
 
 	cpp_wrapper_setup(tc, dict, ion_fill_none);
 	cpp_wrapper_range(tc, dict, 0, 50, values, 0, boolean_false);
@@ -1871,19 +1871,19 @@ test_cpp_wrapper_range_nonexist_empty(
 
 /**
 @brief	Aggregate test to test a range cursor query on an empty dictionary on all
- 		dictionary implementations.
+		dictionary implementations.
 */
 void
 test_cpp_wrapper_range_nonexist_empty_all(
-		planck_unit_test_t *tc
+	planck_unit_test_t *tc
 ) {
 	Dictionary<int, int> *dict;
 
-	//This test has been excluded as the BppTree range query functionality
-	//needs to be revised.
-//	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int));
-//	test_cpp_wrapper_range_nonexist_empty(tc, dict);
-//	delete dict;
+	/* This test has been excluded as the BppTree range query functionality */
+	/* needs to be revised. */
+/*	dict = new BppTree<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int)); */
+/*	test_cpp_wrapper_range_nonexist_empty(tc, dict); */
+/*	delete dict; */
 
 	dict = new SkipList<int, int>(key_type_numeric_signed, sizeof(int), sizeof(int), 10);
 	test_cpp_wrapper_range_nonexist_empty(tc, dict);
@@ -1911,8 +1911,8 @@ test_cpp_wrapper_range_nonexist(
 	planck_unit_test_t *tc,
 	Dictionary<int, int> *dict
 ) {
-	int records[5]			= { 3, 10, 25, 50, 70 };
-	int records_length		= sizeof(records) / sizeof(int);
+	int records[5]		= { 3, 10, 25, 50, 70 };
+	int records_length	= sizeof(records) / sizeof(int);
 
 	for (int i = 0; i < records_length; i++) {
 		cpp_wrapper_insert(tc, dict, records[i], records[i], boolean_true);
@@ -1923,11 +1923,11 @@ test_cpp_wrapper_range_nonexist(
 
 /**
 @brief	Aggregate test to test range cursor query of nonexistent values on all
- 		implementations.
+		implementations.
 */
 void
 test_cpp_wrapper_range_nonexist_all(
-		planck_unit_test_t *tc
+	planck_unit_test_t *tc
 ) {
 	Dictionary<int, int> *dict;
 
@@ -1961,9 +1961,9 @@ test_cpp_wrapper_range_exist_single(
 	planck_unit_test_t *tc,
 	Dictionary<int, int> *dict
 ) {
-	int records[5]				= { 3, 10, 25, 50, 70 };
-	int expected_records[2]	= { 25, 50 };
-	int records_length			= sizeof(records) / sizeof(int);
+	int records[5]			= { 3, 10, 25, 50, 70 };
+	int expected_records[2] = { 25, 50 };
+	int records_length		= sizeof(records) / sizeof(int);
 
 	for (int i = 0; i < records_length; i++) {
 		cpp_wrapper_insert(tc, dict, records[i], records[i], boolean_true);
@@ -1977,7 +1977,7 @@ test_cpp_wrapper_range_exist_single(
 */
 void
 test_cpp_wrapper_range_exist_single_all(
-		planck_unit_test_t *tc
+	planck_unit_test_t *tc
 ) {
 	Dictionary<int, int> *dict;
 
@@ -2011,8 +2011,8 @@ test_cpp_wrapper_range_all(
 	planck_unit_test_t *tc,
 	Dictionary<int, int> *dict
 ) {
-	int records[5]			= { 1, 2, 3, 4, 5 };
-	int records_length		= sizeof(records) / sizeof(int);
+	int records[5]		= { 1, 2, 3, 4, 5 };
+	int records_length	= sizeof(records) / sizeof(int);
 
 	for (int i = 0; i < records_length; i++) {
 		cpp_wrapper_insert(tc, dict, records[i], records[i], boolean_true);
@@ -2023,7 +2023,7 @@ test_cpp_wrapper_range_all(
 
 /**
 @brief	Aggregate test to test range cursor query of entire dictionary on all
- 		dictionary implementations.
+		dictionary implementations.
 */
 void
 test_cpp_wrapper_range_all_all(
@@ -2073,11 +2073,11 @@ test_cpp_wrapper_all_records(
 
 /**
 @brief	Aggregate test to test an all records cursor query on all dictionary
- 		implementations.
+		implementations.
 */
 void
 test_cpp_wrapper_all_records_all(
-		planck_unit_test_t *tc
+	planck_unit_test_t *tc
 ) {
 	Dictionary<int, int> *dict;
 
@@ -2107,10 +2107,10 @@ test_cpp_wrapper_all_records_all(
 */
 void
 test_cpp_wrapper_all_records_nonexist_empty(
-		planck_unit_test_t *tc,
-		Dictionary<int, int> *dict
+	planck_unit_test_t *tc,
+	Dictionary<int, int> *dict
 ) {
-	int values[1] = {NULL_VALUE};
+	int values[1] = { NULL_VALUE };
 
 	cpp_wrapper_setup(tc, dict, ion_fill_none);
 	cpp_wrapper_all_records(tc, dict, values, 0, boolean_false);
@@ -2118,11 +2118,11 @@ test_cpp_wrapper_all_records_nonexist_empty(
 
 /**
 @brief	Aggregate test to test an all records cursor query of an empty dictionary
- 		on all dictionary implementations.
+		on all dictionary implementations.
 */
 void
 test_cpp_wrapper_all_records_nonexist_empty_all(
-		planck_unit_test_t *tc
+	planck_unit_test_t *tc
 ) {
 	Dictionary<int, int> *dict;
 
@@ -2155,8 +2155,8 @@ test_cpp_wrapper_all_records_populated(
 	planck_unit_test_t *tc,
 	Dictionary<int, int> *dict
 ) {
-	int records[5]			= { 3, 10, 25, 50, 70 };
-	int records_length		= sizeof(records) / sizeof(int);
+	int records[5]		= { 3, 10, 25, 50, 70 };
+	int records_length	= sizeof(records) / sizeof(int);
 
 	for (int i = 0; i < records_length; i++) {
 		cpp_wrapper_insert(tc, dict, records[i], records[i], boolean_true);
@@ -2167,11 +2167,11 @@ test_cpp_wrapper_all_records_populated(
 
 /**
 @brief	Aggregate test to test all records cursor query of a sparsely populated
- 		dictionary on all dictionary implementations.
+		dictionary on all dictionary implementations.
 */
 void
 test_cpp_wrapper_all_records_populated_all(
-		planck_unit_test_t *tc
+	planck_unit_test_t *tc
 ) {
 	Dictionary<int, int> *dict;
 
@@ -2198,15 +2198,15 @@ test_cpp_wrapper_all_records_populated_all(
 
 /**
 @brief	Tests an all records cursor query where keys are not inserted in
- 		increasing order and include a wide range.
+		increasing order and include a wide range.
 */
 void
 test_cpp_wrapper_all_records_random(
 	planck_unit_test_t *tc,
 	Dictionary<int, int> *dict
 ) {
-	int records[5]			= { -111, 113, 5, 50, -225 };
-	int records_length		= sizeof(records) / sizeof(int);
+	int records[5]		= { -111, 113, 5, 50, -225 };
+	int records_length	= sizeof(records) / sizeof(int);
 
 	for (int i = 0; i < records_length; i++) {
 		cpp_wrapper_insert(tc, dict, records[i], records[i], boolean_true);
@@ -2217,7 +2217,7 @@ test_cpp_wrapper_all_records_random(
 
 /**
 @brief	Aggregate test to test an all records cursor query on all dictionary implementations
- 		where keys are not inserted in increasing order and include a wide range.
+		where keys are not inserted in increasing order and include a wide range.
 */
 void
 test_cpp_wrapper_all_records_random_all(
