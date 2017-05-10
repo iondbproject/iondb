@@ -23,7 +23,7 @@ extern "C" {
 #include "../../key_value/kv_system.h"
 
 /*edefines file operations for arduino */
-#include "./../../file/SD_stdio_c_iface.h"
+#include "../../file/sd_stdio_c_iface.h"
 
 #define ION_EMPTY	-1
 #define ION_DELETED -2

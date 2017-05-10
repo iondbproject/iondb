@@ -20,7 +20,7 @@ extern "C" {
 #include "open_address_file_hash_dictionary.h"
 
 /*edefines file operations for arduino */
-#include "./../../file/SD_stdio_c_iface.h"
+#include "../../file/sd_stdio_c_iface.h"
 
 /**
 @brief Struct used to for instance of a given dictionary.

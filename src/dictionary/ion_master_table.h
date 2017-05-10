@@ -39,7 +39,7 @@ extern "C" {
 #endif
 
 #include "dictionary.h"
-#include "../file/SD_stdio_c_iface.h"
+#include "../file/sd_stdio_c_iface.h"
 #include "../file/kv_stdio_intercept.h"
 
 #if ION_USING_MASTER_TABLE
