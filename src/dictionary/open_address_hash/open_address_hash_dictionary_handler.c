@@ -33,12 +33,12 @@
 @return	 The status of the query.
 */
 ion_status_t
-oadict_query(
+oadict_get(
 	ion_dictionary_t	*dictionary,
 	ion_key_t			key,
 	ion_value_t			value
 ) {
-	return oah_query((ion_hashmap_t *) dictionary->instance, key, value);
+	return oah_get((ion_hashmap_t *) dictionary->instance, key, value);
 }
 
 /**
@@ -56,7 +56,7 @@ oadict_query(
 */
 ion_err_t
 oadict_scan(
-	ion_oadict_cursor_t *cursor		/* don't need to pass in the cursor */
+	ion_oadict_cursor_t *cursor	/* don't need to pass in the cursor */
 ) {
 	/* need to scan hashmap fully looking for values that satisfy - need to think about */
 	ion_hashmap_t *hash_map = (ion_hashmap_t *) (cursor->super.dictionary->instance);
@@ -301,7 +301,7 @@ oadict_init(
 ) {
 	handler->insert				= oadict_insert;
 	handler->create_dictionary	= oadict_create_dictionary;
-	handler->get				= oadict_query;
+	handler->get				= oadict_get;
 	handler->update				= oadict_update;
 	handler->find				= oadict_find;
 	handler->remove				= oadict_delete;

@@ -36,12 +36,12 @@
 @return		The status of the query.
 */
 ion_status_t
-oafdict_query(
+oafdict_get(
 	ion_dictionary_t	*dictionary,
 	ion_key_t			key,
 	ion_value_t			value
 ) {
-	return oafh_query((ion_file_hashmap_t *) dictionary->instance, key, value);
+	return oafh_get((ion_file_hashmap_t *) dictionary->instance, key, value);
 }
 
 /**
@@ -376,7 +376,7 @@ oafdict_init(
 ) {
 	handler->insert				= oafdict_insert;
 	handler->create_dictionary	= oafdict_create_dictionary;
-	handler->get				= oafdict_query;
+	handler->get				= oafdict_get;
 	handler->update				= oafdict_update;
 	handler->find				= oafdict_find;
 	handler->remove				= oafdict_delete;

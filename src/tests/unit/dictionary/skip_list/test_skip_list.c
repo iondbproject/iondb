@@ -546,7 +546,7 @@ test_skiplist_query_nonexist_empty(
 	int			key			= 3;
 	ion_byte_t	value[10]	= "NULL";
 
-	ion_status_t status		= sl_query(&skiplist, (ion_key_t) &key, value);
+	ion_status_t status		= sl_get(&skiplist, (ion_key_t) &key, value);
 
 #if ION_DEBUG
 	print_skiplist(&skip_list);
@@ -595,7 +595,7 @@ test_skiplist_query_nonexist_populated_single(
 	int			key			= 10;
 	ion_byte_t	value[10]	= "NULL";
 
-	status = sl_query(&skiplist, (ion_key_t) &key, value);
+	status = sl_get(&skiplist, (ion_key_t) &key, value);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
@@ -645,7 +645,7 @@ test_skiplist_query_nonexist_populated_several(
 	int			key			= 10;
 	ion_byte_t	value[10]	= "NULL";
 
-	ion_status_t status		= sl_query(&skiplist, (ion_key_t) &key, value);
+	ion_status_t status		= sl_get(&skiplist, (ion_key_t) &key, value);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
@@ -690,7 +690,7 @@ test_skiplist_query_exist_single(
 	int			key = 11;
 	ion_byte_t	value[10];
 
-	status = sl_query(&skiplist, (ion_key_t) &key, value);
+	status = sl_get(&skiplist, (ion_key_t) &key, value);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
@@ -738,7 +738,7 @@ test_skiplist_query_exist_populated_single(
 	int			key		= 24;
 	ion_byte_t	value[10];
 
-	ion_status_t status = sl_query(&skiplist, (ion_key_t) &key, value);
+	ion_status_t status = sl_get(&skiplist, (ion_key_t) &key, value);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
@@ -789,7 +789,7 @@ test_skiplist_query_exist_populated_several(
 	for (i = 0; i < 100; i++) {
 		sprintf(find_value, "Find %d", i);
 
-		ion_status_t status = sl_query(&skiplist, (ion_key_t) &i, value);
+		ion_status_t status = sl_get(&skiplist, (ion_key_t) &i, value);
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
@@ -1827,17 +1827,17 @@ test_skiplist_different_size(
 	ion_byte_t		value[10];
 	ion_status_t	status;
 
-	status = sl_query(&skiplist, (ion_key_t) &(long long) { 64 }, value);
+	status = sl_get(&skiplist, (ion_key_t) &(long long) { 64 }, value);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) value, "pop");
 
-	status = sl_query(&skiplist, (ion_key_t) &(long long) { 32 }, value);
+	status = sl_get(&skiplist, (ion_key_t) &(long long) { 32 }, value);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) value, "bep");
 
-	status = sl_query(&skiplist, (ion_key_t) &(long long) { 16 }, value);
+	status = sl_get(&skiplist, (ion_key_t) &(long long) { 16 }, value);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) value, "tot");

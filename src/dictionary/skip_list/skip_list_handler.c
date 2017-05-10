@@ -29,12 +29,12 @@
 @return	 Status of query.
 */
 ion_status_t
-sldict_query(
+sldict_get(
 	ion_dictionary_t	*dictionary,
 	ion_key_t			key,
 	ion_value_t			value
 ) {
-	return sl_query((ion_skiplist_t *) dictionary->instance, key, value);
+	return sl_get((ion_skiplist_t *) dictionary->instance, key, value);
 }
 
 /**
@@ -326,7 +326,7 @@ sldict_init(
 	ion_dictionary_handler_t *handler
 ) {
 	handler->insert				= sldict_insert;
-	handler->get				= sldict_query;
+	handler->get				= sldict_get;
 	handler->create_dictionary	= sldict_create_dictionary;
 	handler->remove				= sldict_delete;
 	handler->delete_dictionary	= sldict_delete_dictionary;
