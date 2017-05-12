@@ -99,12 +99,15 @@ bpptree_create_dictionary(
 		return err_dictionary_initialization_failed;
 	}
 
+	if (NULL == handler) {
+		return err_dictionary_initialization_failed;
+	}
+
 	dictionary->instance					= (ion_dictionary_parent_t *) bpptree;
 	dictionary->instance->compare			= compare;
 	dictionary->instance->key_type			= key_type;
 	dictionary->instance->record.key_size	= key_size;
 	dictionary->instance->record.value_size = value_size;
-	/* todo: need to check to make sure that the handler is registered */
 	dictionary->handler						= handler;
 
 	return err_ok;

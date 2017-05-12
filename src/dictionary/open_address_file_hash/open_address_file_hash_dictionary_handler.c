@@ -418,8 +418,12 @@ oafdict_create_dictionary(
 	 * based on the type of key defined
 	*/
 
+	if (NULL == handler) {
+		return err_dictionary_initialization_failed;
+	}
+
 	/* register the correct handler */
-	dictionary->handler = handler;	/* todo: need to check to make sure that the handler is registered */
+	dictionary->handler = handler;
 
 	return 0;
 }
