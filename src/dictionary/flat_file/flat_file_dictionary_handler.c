@@ -401,7 +401,8 @@ ffdict_create_dictionary(
 		return err_out_of_memory;
 	}
 
-	dictionary->instance->compare = compare;
+	dictionary->instance->compare	= compare;
+	dictionary->instance->type		= dictionary_type_flat_file_t;
 
 	ion_err_t result = flat_file_initialize((ion_flat_file_t *) dictionary->instance, id, key_type, key_size, value_size, dictionary_size);
 

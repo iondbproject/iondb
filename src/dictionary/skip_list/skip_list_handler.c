@@ -367,6 +367,7 @@ sldict_create_dictionary(
 	}
 
 	dictionary->instance->compare	= compare;
+	dictionary->instance->type		= dictionary_type_skip_list_t;
 
 	pnum							= 1;
 	pden							= 4;

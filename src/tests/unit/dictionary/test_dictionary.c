@@ -6,6 +6,7 @@
 */
 
 #include "test_dictionary.h"
+#include "../../../dictionary/dictionary_types.h"
 
 void
 test_dictionary_compare_numerics(
@@ -206,6 +207,7 @@ test_dictionary_master_table(
 	PLANCK_UNIT_ASSERT_TRUE(tc, sizeof(int) == config.key_size);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 10 == config.value_size);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 20 == config.dictionary_size);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dictionary_type_flat_file_t == config.dictionary_type);
 
 	/******************************/
 
@@ -229,6 +231,7 @@ test_dictionary_master_table(
 	PLANCK_UNIT_ASSERT_TRUE(tc, sizeof(short) == config.key_size);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 7 == config.value_size);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 14 == config.dictionary_size);
+	PLANCK_UNIT_ASSERT_TRUE(tc, dictionary_type_flat_file_t == config.dictionary_type);
 	/*******************/
 
 	/* Test delete */

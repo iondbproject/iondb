@@ -22,6 +22,7 @@
 /******************************************************************************/
 
 #include "ion_master_table.h"
+#include "dictionary_types.h"
 
 FILE				*ion_master_table_file		= NULL;
 ion_dictionary_id_t ion_master_table_next_id	= 1;
@@ -91,6 +92,10 @@ ion_master_table_write(
 		return err_file_write_error;
 	}
 
+	if (1 != fwrite(&(config->dictionary_type), sizeof(config->dictionary_type), 1, ion_master_table_file)) {
+		return err_file_write_error;
+	}
+
 	if (0 != fseek(ion_master_table_file, old_pos, SEEK_SET)) {
 		return err_file_bad_seek;
 	}
@@ -149,6 +154,10 @@ ion_master_table_read(
 	}
 
 	if (1 != fread(&(config->dictionary_size), sizeof(config->dictionary_size), 1, ion_master_table_file)) {
+		return err_file_write_error;
+	}
+
+	if (1 != fread(&(config->dictionary_type), sizeof(config->dictionary_type), 1, ion_master_table_file)) {
 		return err_file_write_error;
 	}
 

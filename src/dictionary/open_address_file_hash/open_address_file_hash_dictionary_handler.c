@@ -410,6 +410,7 @@ oafdict_create_dictionary(
 	dictionary->instance			= malloc(sizeof(ion_file_hashmap_t));
 
 	dictionary->instance->compare	= compare;
+	dictionary->instance->type		= dictionary_type_open_address_file_hash_t;
 
 	/* this registers the dictionary the dictionary */
 	oafh_initialize((ion_file_hashmap_t *) dictionary->instance, oafh_compute_simple_hash, key_type, key_size, value_size, dictionary_size, id);/* just pick an arbitary size for testing atm */

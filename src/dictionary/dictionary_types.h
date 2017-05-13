@@ -62,6 +62,8 @@ typedef struct {
 													 parameter. Dependent on
 													 the dictionary
 													 implementation used. */
+	ion_dictionary_type_t dictionary_type;	/**< The type of dictionary
+													 implementation used. */
 } ion_dictionary_config_info_t;
 
 /**
@@ -263,6 +265,7 @@ struct dictionary_parent {
 	ion_dictionary_compare_t	compare;/**< Comparison function for
 											  instance of map. */
 	ion_dictionary_id_t			id;		/**< ID of dictionary instance. */
+	ion_dictionary_type_t		type;	/**< Type of dictionary implementation used. */
 };
 
 /**

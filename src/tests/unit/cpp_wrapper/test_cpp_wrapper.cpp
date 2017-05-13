@@ -7,7 +7,7 @@
 */
 /******************************************************************************/
 
-#include "../../planckunit/src/planck_unit.h"
+#include "../../planck-unit/src/planck_unit.h"
 #include "../../../cpp_wrapper/Dictionary.h"
 #include "../../../cpp_wrapper/BppTree.h"
 #include "../../../cpp_wrapper/FlatFile.h"
@@ -1081,6 +1081,7 @@ test_cpp_wrapper_open_close(
 	ion_value_size_t		val_size	= dict->dict.instance->record.value_size;
 	ion_key_type_t			key_type	= dict->dict.instance->key_type;
 	ion_dictionary_size_t	dict_size	= dict->dict_size;
+	ion_dictionary_type_t	dict_type	= dict->dict.instance->type;
 
 	/* Insert test record so we can check data integrity after we close/open */
 	status = dict->insert(key, value);
@@ -1099,13 +1100,14 @@ test_cpp_wrapper_open_close(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
 
 	ion_dictionary_config_info_t config = {
-		gdict_id, 0, key_type, key_size, val_size, dict_size
+		gdict_id, 0, key_type, key_size, val_size, dict_size, dict_type
 	};
 
 	error = dict->open(config);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, dict->dict.instance->record.key_size, key_size);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, dict->dict.instance->record.value_size, val_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, dict->dict.instance->type, dict_type);
 
 	/* Check the test record */
 	ret_val = dict->get(key);
