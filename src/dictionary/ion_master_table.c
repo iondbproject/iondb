@@ -22,14 +22,13 @@
 /******************************************************************************/
 
 #include "ion_master_table.h"
-#include "dictionary_types.h"
 
 FILE				*ion_master_table_file		= NULL;
 ion_dictionary_id_t ion_master_table_next_id	= 1;
 
 #define ION_MASTER_TABLE_CALCULATE_POS	-1
 #define ION_MASTER_TABLE_WRITE_FROM_END -2
-#define ION_MASTER_TABLE_RECORD_SIZE(cp) (sizeof((cp)->id) + sizeof((cp)->use_type) + sizeof((cp)->type) + sizeof((cp)->key_size) + sizeof((cp)->value_size) + sizeof((cp)->dictionary_size))
+#define ION_MASTER_TABLE_RECORD_SIZE(cp) (sizeof((cp)->id) + sizeof((cp)->use_type) + sizeof((cp)->type) + sizeof((cp)->key_size) + sizeof((cp)->value_size) + sizeof((cp)->dictionary_size) + sizeof((cp)->dictionary_type))
 
 /**
 @brief		Write a record to the master table.
@@ -282,7 +281,7 @@ ion_add_to_master_table(
 	ion_dictionary_size_t	dictionary_size
 ) {
 	ion_dictionary_config_info_t config = {
-		.id = dictionary->instance->id, .use_type = 0, .type = dictionary->instance->key_type, .key_size = dictionary->instance->record.key_size, .value_size = dictionary->instance->record.value_size, .dictionary_size = dictionary_size
+		.id = dictionary->instance->id, .use_type = 0, .type = dictionary->instance->key_type, .key_size = dictionary->instance->record.key_size, .value_size = dictionary->instance->record.value_size, .dictionary_size = dictionary_size, .dictionary_type = dictionary->instance->type
 	};
 
 	return ion_master_table_write(&config, ION_MASTER_TABLE_WRITE_FROM_END);
