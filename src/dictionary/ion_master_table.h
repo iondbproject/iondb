@@ -199,7 +199,7 @@ ion_delete_from_master_table(
 */
 ion_err_t
 ion_open_dictionary(
-	ion_dictionary_t	*dictionary,
+	ion_dictionary_t	dictionary,
 	ion_dictionary_id_t id
 );
 

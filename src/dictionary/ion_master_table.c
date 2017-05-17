@@ -22,6 +22,12 @@
 /******************************************************************************/
 
 #include "ion_master_table.h"
+#include "dictionary_types.h"
+#include "bpp_tree/bpp_tree_handler.h"
+#include "flat_file/flat_file_dictionary_handler.h"
+#include "open_address_file_hash/open_address_file_hash_dictionary_handler.h"
+#include "open_address_hash/open_address_hash_dictionary_handler.h"
+#include "skip_list/skip_list_handler.h"
 
 FILE				*ion_master_table_file		= NULL;
 ion_dictionary_id_t ion_master_table_next_id	= 1;
@@ -393,12 +399,12 @@ ion_delete_from_master_table(
 
 ion_err_t
 ion_open_dictionary(
-	ion_dictionary_t	*dictionary,			/* Passed in empty, to be set. */
+	ion_dictionary_t	dictionary,			/* Passed in empty, to be set. */
 	ion_dictionary_id_t id
 ) {
-	ion_err_t err;
-
-	ion_dictionary_config_info_t config;
+	ion_err_t						err;
+	ion_dictionary_handler_t		handler;
+	ion_dictionary_config_info_t	config;
 
 	err = ion_lookup_in_master_table(id, &config);
 
@@ -407,7 +413,34 @@ ion_open_dictionary(
 		return err_dictionary_initialization_failed;
 	}
 
-	err = dictionary_open(dictionary->handler, dictionary, &config);
+	switch (config.dictionary_type) {
+		case dictionary_type_bpp_tree_t: {
+			bpptree_init(&handler);
+			break;
+		}
+
+		case dictionary_type_flat_file_t: {
+			ffdict_init(&handler);
+			break;
+		}
+
+		case dictionary_type_open_address_file_hash_t: {
+			oafdict_init(&handler);
+			break;
+		}
+
+		case dictionary_type_open_address_hash_t: {
+			oadict_init(&handler);
+			break;
+		}
+
+		case dictionary_type_skip_list_t: {
+			sldict_init(&handler);
+			break;
+		}
+	}
+
+	err = dictionary_open(&handler, &dictionary, &config);
 	return err;
 }
 
