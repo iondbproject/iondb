@@ -46,6 +46,11 @@ typedef unsigned int ion_dictionary_id_t;
 typedef ion_byte_t ion_dict_use_t;
 
 /**
+@brief		The position in the hashmap.
+*/
+typedef int ion_hash_t;
+
+/**
 @brief		Struct containing details for opening a dictionary previously
 			created.
 */

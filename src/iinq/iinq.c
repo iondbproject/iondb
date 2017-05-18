@@ -95,7 +95,7 @@ iinq_open_source(
 			return err_file_incomplete_read;
 		}
 
-		error = ion_open_dictionary(*dictionary, id);
+		error = ion_open_dictionary(handler, dictionary, id);
 
 		if (err_ok != error) {
 			return error;

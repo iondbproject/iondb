@@ -187,9 +187,7 @@ ion_delete_from_master_table(
 /**
 @brief		Finds the target dictionary and opens it.
 @param		handler
-				A pointer to an initialized dictionary handler object
-				containing the implementation specific data and function
-				pointers for the dictionary to open.
+				A pointer to the handler object to be initialized.
 @param		dictionary
 				A pointer to the dictionary object to open.
 @param		id
@@ -199,8 +197,9 @@ ion_delete_from_master_table(
 */
 ion_err_t
 ion_open_dictionary(
-	ion_dictionary_t	dictionary,
-	ion_dictionary_id_t id
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dictionary,
+	ion_dictionary_id_t			id
 );
 
 /**

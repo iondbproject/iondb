@@ -399,11 +399,11 @@ ion_delete_from_master_table(
 
 ion_err_t
 ion_open_dictionary(
-	ion_dictionary_t	dictionary,			/* Passed in empty, to be set. */
-	ion_dictionary_id_t id
+	ion_dictionary_handler_t	*handler,		/* Passed in empty, to be set. */
+	ion_dictionary_t			*dictionary,	/* Passed in empty, to be set. */
+	ion_dictionary_id_t			id
 ) {
 	ion_err_t						err;
-	ion_dictionary_handler_t		handler;
 	ion_dictionary_config_info_t	config;
 
 	err = ion_lookup_in_master_table(id, &config);
@@ -415,32 +415,34 @@ ion_open_dictionary(
 
 	switch (config.dictionary_type) {
 		case dictionary_type_bpp_tree_t: {
-			bpptree_init(&handler);
+			bpptree_init(handler);
 			break;
 		}
 
 		case dictionary_type_flat_file_t: {
-			ffdict_init(&handler);
+			ffdict_init(handler);
 			break;
 		}
 
 		case dictionary_type_open_address_file_hash_t: {
-			oafdict_init(&handler);
+			oafdict_init(handler);
 			break;
 		}
 
 		case dictionary_type_open_address_hash_t: {
-			oadict_init(&handler);
+			oadict_init(handler);
 			break;
 		}
 
 		case dictionary_type_skip_list_t: {
-			sldict_init(&handler);
+			sldict_init(handler);
 			break;
 		}
 	}
 
-	err = dictionary_open(&handler, &dictionary, &config);
+	dictionary->handler = handler;
+
+	err					= dictionary_open(handler, dictionary, &config);
 	return err;
 }
 
