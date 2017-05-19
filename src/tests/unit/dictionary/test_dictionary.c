@@ -264,6 +264,11 @@ test_dictionary_master_table(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 7, temp_dict.instance->record.value_size);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, dictionary_type_flat_file_t, temp_dict.instance->type);
 
+	/* Test close dictionary */
+
+	err = ion_close_dictionary(&temp_dict);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+
 	/* Test close master table */
 
 	err = ion_close_master_table();
