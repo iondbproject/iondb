@@ -256,13 +256,13 @@ test_dictionary_master_table(
 	ion_dictionary_handler_t	temp_handler;
 
 	err = ion_open_dictionary(&temp_handler, &temp_dict, 2);
+
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, temp_dict.instance->id);
 	PLANCK_UNIT_ASSERT_TRUE(tc, key_type_numeric_signed == temp_dict.instance->key_type);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(short), temp_dict.instance->record.key_size);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 7, temp_dict.instance->record.value_size);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, dictionary_type_flat_file_t, temp_dict.instance->type);
-	PLANCK_UNIT_ASSERT_TRUE(tc, NULL != &temp_handler);
 
 	/* Test close master table */
 

@@ -440,9 +440,7 @@ ion_open_dictionary(
 		}
 	}
 
-	dictionary->handler = handler;
-
-	err					= dictionary_open(handler, dictionary, &config);
+	err = dictionary_open(handler, dictionary, &config);
 	return err;
 }
 
