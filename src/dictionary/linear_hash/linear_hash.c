@@ -121,6 +121,13 @@ linear_hash_init(
 	return err_ok;
 }
 
+/**
+@brief		Writes the current state of the linear hash to a .lhs file.
+@details	Each instace of a linear hash has an associated .lhs file which stores its state in non-volatile storage. The name of a linear hash's .lhs file is the id of linear hash in the master table.
+@param[in]	linear hash
+				Which linear hash instance to write.
+@return		Resulting status of the several file operations used to commit the write.
+*/
 ion_err_t
 linear_hash_write_state(
 	linear_hash_table_t *linear_hash
@@ -439,7 +446,6 @@ linear_hash_get_bucket_swap_record(
 	return err;
 }
 
-/* TODO it may not be necesarry to copy the key to a location */
 /* linear hash operations */
 ion_status_t
 linear_hash_insert(
