@@ -165,7 +165,7 @@ linear_hash_write_state(
 @brief		Read the state of a linear hash from a .lhs file.
 @details	Each instace of a linear hash has an associated .lhs file which stores its state in non-volatile storage. The name of a linear hash's .lhs file is the id of linear hash in the master table. This is the file the state is read from.
 @param[in]	linear_hash
-Pointer to a linear hash instance to read the data to.
+                Pointer to a linear hash instance to read the data to.
 @return		Resulting status of the several file operations used to commit the write.
 */
 ion_err_t
@@ -220,7 +220,7 @@ linear_hash_bucket_is_full(
 }
 
 /**
-@brief		Helper method to increment the number of buckets in the linear hash.
+@brief		Helper method to increment the number of records in the linear hash.
 @details	When a record is inserted into a linear hash, the load of the linear hash increases. If this pushes the load above the split threshold, then a new bucket is created and a split is performed.
 @param[in]	linear_hash
 				Pointer to a linear hash instance.
@@ -248,7 +248,13 @@ linear_hash_increment_num_records(
 	return err;
 }
 
-/* decrement the count of the records stored in the linear hash */
+
+/**
+@brief		Helper method to decrement the number of records in the linear hash.
+@param[in]	linear_hash
+				Pointer to a linear hash instance.
+@return		err_ok.
+*/
 ion_err_t
 linear_hash_decrement_num_records(
 	linear_hash_table_t *linear_hash
@@ -257,6 +263,13 @@ linear_hash_decrement_num_records(
 	return err_ok;
 }
 
+/**
+@brief		Helper method to increment the number of buckets in the linear hash.
+@details	The new bucket is written to the end of the .lhd file associated with the linear hash. When a bucket is added to a linear hash, the inital_size parameter used in the hash functions is doubled and the pointer is reset to the first bucket. This helps the linear hash's distribution remains constant over time.
+@param[in]	linear_hash
+				Pointer to a linear hash instance.
+@return		err_ok.
+*/
 ion_err_t
 linear_hash_increment_num_buckets(
 	linear_hash_table_t *linear_hash
@@ -271,6 +284,14 @@ linear_hash_increment_num_buckets(
 	return err_ok;
 }
 
+
+/**
+@brief		Helper method to increment the split linear hash.
+@details	The new bucket is written to the end of the .lhd file associated with the linear hash. When a bucket is added to a linear hash, the inital_size parameter used in the hash functions is doubled and the pointer is reset to the first bucket. This helps the linear hash's distribution remains constant over time.
+@param[in]	linear_hash
+				Pointer to a linear hash instance.
+@return		err_ok.
+*/
 ion_err_t
 linear_hash_increment_next_split(
 	linear_hash_table_t *linear_hash
@@ -279,24 +300,14 @@ linear_hash_increment_next_split(
 	return err_ok;
 }
 
-ion_err_t
-linear_hash_update_state(
-	linear_hash_table_t *linear_hash
-) {
-	/* write to file */
-	if (0 != fseek(linear_hash->state, 0, SEEK_SET)) {
-		return err_file_bad_seek;
-	}
 
-	ion_err_t err = linear_hash_write_state(linear_hash);
-
-	if (err != err_ok) {
-		return err;
-	}
-
-	return err_ok;
-}
-
+/**
+@brief		Performs the split operation on a linear hash instance.
+@details    A split is triggered when the load of the linear hash surpasses the split_threshold. A new bucket is created and the bucket currently pointed to by the split pointer has all of its records checked against a condition. If this condition passes, the record is deleted from the current bucket and inserted to the new bucket. This operation may require several several calls to linear_hash_insert and linear_hash_delete methods. To avoid data loss caused by the swap-on-delete strategy used in the linear_hash_delete deleting multiple records per call potentially, a cache is used to store the values associated with records which are deleted.
+@param[in]	linear_hash
+				Pointer to a linear hash instance.
+@return		err_ok.
+*/
 ion_err_t
 split(
 	linear_hash_table_t *linear_hash
