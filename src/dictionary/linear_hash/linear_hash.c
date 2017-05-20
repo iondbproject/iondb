@@ -67,42 +67,44 @@ linear_hash_init(
 	}
 
 	linear_hash->bucket_map = bucket_map;
-	//linear_hash->database	= fopen(data_filename, "r+b");
+	/* linear_hash->database	= fopen(data_filename, "r+b"); */
 
-	//if (NULL == linear_hash->database) {
-		linear_hash->database = fopen(data_filename, "w+b");
+	/* if (NULL == linear_hash->database) { */
+	linear_hash->database = fopen(data_filename, "w+b");
 
-		if (NULL == linear_hash->database) {
-			return err_file_open_error;
-		}
+	if (NULL == linear_hash->database) {
+		return err_file_open_error;
+	}
 
-		int i;
+	int i;
 
-		for (i = 0; i < linear_hash->initial_size; i++) {
-			err = write_new_bucket(i, linear_hash);
-
-			if (err != err_ok) {
-				linear_hash_close(linear_hash);
-				return err;
-			}
-		}
-	//}
-
-	//linear_hash->state = fopen(state_filename, "r+b");
-
-	//if (NULL == linear_hash->state) {
-		linear_hash->state = fopen(state_filename, "w+b");
-
-		if (NULL == linear_hash->state) {
-			return err_file_open_error;
-		}
-
-		err = linear_hash_write_state(linear_hash);
+	for (i = 0; i < linear_hash->initial_size; i++) {
+		err = write_new_bucket(i, linear_hash);
 
 		if (err != err_ok) {
+			linear_hash_close(linear_hash);
 			return err;
 		}
-	//}
+	}
+
+	/* } */
+
+	/* linear_hash->state = fopen(state_filename, "r+b"); */
+
+	/* if (NULL == linear_hash->state) { */
+	linear_hash->state = fopen(state_filename, "w+b");
+
+	if (NULL == linear_hash->state) {
+		return err_file_open_error;
+	}
+
+	err = linear_hash_write_state(linear_hash);
+
+	if (err != err_ok) {
+		return err;
+	}
+
+	/* } */
 	/*else {
 		err = linear_hash_read_state(linear_hash);
 
@@ -124,7 +126,7 @@ linear_hash_init(
 /**
 @brief		Writes the current state of the linear hash to a .lhs file.
 @details	Each instace of a linear hash has an associated .lhs file which stores its state in non-volatile storage. The name of a linear hash's .lhs file is the id of linear hash in the master table. This is the file the state is written to.
-@param[in]	linear hash
+@param[in]	linear_hash
 Which linear hash instance to write.
 @return		Resulting status of the several file operations used to commit the write.
 */
@@ -162,7 +164,7 @@ linear_hash_write_state(
 /**
 @brief		Read the state of a linear hash from a .lhs file.
 @details	Each instace of a linear hash has an associated .lhs file which stores its state in non-volatile storage. The name of a linear hash's .lhs file is the id of linear hash in the master table. This is the file the state is read from.
-@param[in]	linear hash
+@param[in]	linear_hash
 Pointer to a linear hash instance to read the data to.
 @return		Resulting status of the several file operations used to commit the write.
 */
@@ -204,10 +206,10 @@ linear_hash_read_state(
 /**
 @brief		Helper method to check if a linear hash bucket is full.
 @param[in]	bucket
-                Pointer to a bucket.
-@param[in]	linear hash
-                Pointer to a linear hash instance.
-@return		true if the bucket is full, false if it is not.
+				Pointer to a bucket.
+@param[in]	linear_hash
+				Pointer to a linear hash instance.
+@return		True if the bucket is full, false if it is not.
 */
 int
 linear_hash_bucket_is_full(
@@ -219,9 +221,10 @@ linear_hash_bucket_is_full(
 
 /**
 @brief		Helper method to increment the number of buckets in the linear hash.
-@param[in]	linear hash
-                Pointer to a linear hash instance.
-@return		Resulting status of the several file operations used to commit the write.
+@details	When a record is inserted into a linear hash, the load of the linear hash increases. If this pushes the load above the split threshold, then a new bucket is created and a split is performed.
+@param[in]	linear_hash
+				Pointer to a linear hash instance.
+@return		err_ok or the resulting status of the several file operations used to create a new bucket.
 */
 ion_err_t
 linear_hash_increment_num_records(
