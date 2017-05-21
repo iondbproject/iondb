@@ -165,7 +165,7 @@ linear_hash_write_state(
 @brief		Read the state of a linear hash from a .lhs file.
 @details	Each instace of a linear hash has an associated .lhs file which stores its state in non-volatile storage. The name of a linear hash's .lhs file is the id of linear hash in the master table. This is the file the state is read from.
 @param[in]	linear_hash
-                Pointer to a linear hash instance to read the data to.
+				Pointer to a linear hash instance to read the data to.
 @return		Resulting status of the several file operations used to commit the write.
 */
 ion_err_t
@@ -248,7 +248,6 @@ linear_hash_increment_num_records(
 	return err;
 }
 
-
 /**
 @brief		Helper method to decrement the number of records in the linear hash.
 @param[in]	linear_hash
@@ -284,7 +283,6 @@ linear_hash_increment_num_buckets(
 	return err_ok;
 }
 
-
 /**
 @brief		Helper method to increment the split linear hash.
 @details	The new bucket is written to the end of the .lhd file associated with the linear hash. When a bucket is added to a linear hash, the inital_size parameter used in the hash functions is doubled and the pointer is reset to the first bucket. This helps the linear hash's distribution remains constant over time.
@@ -300,10 +298,9 @@ linear_hash_increment_next_split(
 	return err_ok;
 }
 
-
 /**
 @brief		Performs the split operation on a linear hash instance.
-@details    A split is triggered when the load of the linear hash surpasses the split_threshold. A new bucket is created and the bucket currently pointed to by the split pointer has all of its records checked against a condition. If this condition passes, the record is deleted from the current bucket and inserted to the new bucket. This operation may require several several calls to linear_hash_insert and linear_hash_delete methods. To avoid data loss caused by the swap-on-delete strategy used in the linear_hash_delete deleting multiple records per call potentially, a cache is used to store the values associated with records which are deleted.
+@details	A split is triggered when the load of the linear hash surpasses the split_threshold. A new bucket is created and the bucket currently pointed to by the split pointer has all of its records checked against a condition. If this condition passes, the record is deleted from the current bucket and inserted to the new bucket. This operation may require several several calls to linear_hash_insert and linear_hash_delete methods. To avoid data loss caused by the swap-on-delete strategy used in the linear_hash_delete deleting multiple records per call potentially, a cache is used to store the values associated with records which are deleted.
 @param[in]	linear_hash
 				Pointer to a linear hash instance.
 @return		err_ok.
@@ -415,6 +412,12 @@ split(
 	return linear_hash_increment_next_split(linear_hash);
 }
 
+/**
+@brief		Helper method to increment check if a linear hash's load is above its split threshold.
+@param[in]	linear_hash
+				Pointer to a linear hash instance.
+@return		True if the linear hash's load is above its split threshold.
+*/
 ion_boolean_t
 linear_hash_above_threshold(
 	linear_hash_table_t *linear_hash
@@ -429,6 +432,22 @@ linear_hash_above_threshold(
 	return above_threshold;
 }
 
+/**
+@brief		Obtains the data associated with the last record the bucket chain associated with bucket_idx and deletes the original copy at its current location.
+@param[in]	bucket_idx
+				The index of the bucket to obtain a the swap record for.
+@param[in]	record_loc
+				Pointer which receives the location of the swap_record in the .lhd file.
+@param[in]	key
+				Write back parameter for the record key.
+@param[in]	value
+				Write back parameter for the record value.
+@param[in]	status
+				Write back parameter for the record status.
+@param[in]	linear_hash
+				Pointer to a linear hash instance.
+@return		Resulting status of the several file operations used to commit the write.
+*/
 ion_err_t
 linear_hash_get_bucket_swap_record(
 	int					bucket_idx,
@@ -482,6 +501,19 @@ linear_hash_get_bucket_swap_record(
 }
 
 /* linear hash operations */
+/**
+@brief		Insert a record into the linear hash.
+@details	Insert a new record into the linear hash table. If the bucket at hash_bucket_idx is full, a new bucket is written and the record is inserted there. If inserting the record pushes the load of the linear hash above the split threshold, a split is performed.
+@param[in]	key
+				Pointer to the key of the record to insert.
+@param[in]	value
+				Pointer to the value of the record to insert.
+@param[in]	hash_bucket_idx
+				Index of the bucket to insert the record to.
+@param[in]	linear_hash
+				Pointer to a linear hash instance.
+@return		Resulting status of the several file operations used to commit the write.
+*/
 ion_status_t
 linear_hash_insert(
 	ion_key_t			key,
@@ -572,6 +604,16 @@ linear_hash_insert(
 }
 
 /* linear hash operations */
+/**
+@brief		Retrieve a record from the linear hash. The key and value will be written to the key and value pointers passed in.
+@param[in]	key
+				Pointer where the key of the record is written back to.
+@param[in]	value
+				Pointer where the value of the record is written back to.
+@param[in]	linear_hash
+				Pointer to a linear hash instance.
+@return		Resulting status of the several file operations used to commit the write.
+*/
 ion_status_t
 linear_hash_get(
 	ion_byte_t			*key,
@@ -662,6 +704,17 @@ linear_hash_get(
 	return status;
 }
 
+/* linear hash operations */
+/**
+@brief		Update the value of the first record matching the key specified in the linear hash.
+@param[in]	key
+				Pointer to the key of the record to update.
+@param[in]	value
+				Pointer to the value to set this record to.
+@param[in]	linear_hash
+				Pointer to a linear hash instance.
+@return		Resulting status of the several file operations used to commit the write.
+*/
 ion_status_t
 linear_hash_update(
 	ion_key_t			key,
@@ -746,6 +799,15 @@ linear_hash_update(
 }
 
 /* linear hash operations */
+/**
+@brief		Delete all records with keys matching the key specified in the linear hash.
+@details	The delete operation of this implementation deletes all records with keys matching the key specified. To improve the overall performance of the linear hash, particularly the insert method, a swap-on-delete strategy is used. When a record is deleted, the last record in the terminal bucket of the bucket moved from its current location to the now empty location where the record just deleted was previously. This garuantees that if there is empty space in a bucket chain, it will be in the terminal bucket.
+@param[in]	key
+				Pointer to the key of the record to insert.
+@param[in]	linear_hash
+				Pointer to a linear hash instance.
+@return		Resulting status of the several file operations used to commit the write.
+*/
 ion_status_t
 linear_hash_delete(
 	ion_byte_t			*key,
@@ -882,6 +944,20 @@ linear_hash_delete(
 }
 
 /* returns the struct representing the bucket at the specified index */
+/**
+@brief		Read the record data at the location specified from the linear hash's .lhd file.
+@param[in]	loc
+				Location of the record in the linear hash's data file.
+@param[in]	key
+				Pointer where the key of the record is written back to.
+@param[in]	value
+				Pointer where the value of the record is written back to.
+@param[in]	value
+				Pointer where the status of the record is written back to.
+@param[in]	linear_hash
+				Pointer to a linear hash instance.
+@return		Resulting status of the several file operations used to commit the write.
+*/
 ion_err_t
 linear_hash_get_record(
 	ion_fpos_t			loc,
@@ -910,6 +986,20 @@ linear_hash_get_record(
 	return err_ok;
 }
 
+/**
+@brief		Write record data to the location specified from the linear hash's .lhd file.
+@param[in]	loc
+				Location to write the record data in the linear hash's data file.
+@param[in]	key
+				Pointer to the key to be written.
+@param[in]	value
+				Pointer to the value to be written.
+@param[in]	value
+				Pointer to the status to be written.
+@param[in]	linear_hash
+				Pointer to a linear hash instance.
+@return		Resulting status of the several file operations used to commit the write.
+*/
 ion_err_t
 linear_hash_write_record(
 	ion_fpos_t			record_loc,
@@ -941,6 +1031,15 @@ linear_hash_write_record(
 	return err_ok;
 }
 
+/**
+@brief		Write a new bucket to the linear hash's .lhd file.
+@details	The new bucket is intialized with empty memory, including space for all its record. The bucket is appended to the end of the .lhd file.
+@param[in]	idx
+				Index of the new bucket to be written
+@param[in]	linear_hash
+				Pointer to a linear hash instance.
+@return		Resulting status of the several file operations used to commit the write.
+*/
 ion_err_t
 write_new_bucket(
 	int					idx,
@@ -995,7 +1094,16 @@ write_new_bucket(
 	return err_ok;
 }
 
-/* writes the struct representing the bucket at the location to the bucket parameter*/
+/**
+@brief		Read the bucket at the location specified from the linear hash's .lhd file.
+@param[in]	bucket_loc
+				Location to read the bucket from
+@param[in]	bucket
+				Pointer to the location the bucket is written back to
+@param[in]	linear_hash
+				Pointer to a linear hash instance.
+@return		Resulting status of the several file operations used to commit the write.
+*/
 ion_err_t
 linear_hash_get_bucket(
 	ion_fpos_t				bucket_loc,
@@ -1028,6 +1136,16 @@ linear_hash_get_bucket(
 	return err_ok;
 }
 
+/**
+@brief		Write the bucket provided at the location specified from in linear hash's .lhd file.
+@param[in]	bucket_loc
+				Location to write the bucket to
+@param[in]	bucket
+				Pointer to the bucket data to write to the file
+@param[in]	linear_hash
+				Pointer to a linear hash instance.
+@return		Resulting status of the several file operations used to commit the write.
+*/
 ion_err_t
 linear_hash_update_bucket(
 	ion_fpos_t				bucket_loc,
@@ -1052,6 +1170,17 @@ linear_hash_update_bucket(
 	return err_ok;
 }
 
+/**
+@brief		Create an overflow bucket and write it to the linear hash's .lhd file.
+@details	Create a new overflow bucket and add it to the end of the bucket chain. The location of the overflow bucket is created at is saved in a write back parameter so that the bucket map of the linear hash points to the end of the linked list of overflow buckets. This saves on disk writes as previous tail does not need to be updated. As with write_new_bucket, the new bucket is intialized with empty memory, including space for all its record, and is appended to the end of the .lhd file.
+@param[in]	idx
+				Index of the new bucket to be written
+@param[in]	overflow_loc
+				Pointer to the location the location of the new overflow bucket is written back to.
+@param[in]	linear_hash
+				Pointer to a linear hash instance.
+@return		Resulting status of the several file operations used to commit the write.
+*/
 ion_err_t
 create_overflow_bucket(
 	int					bucket_idx,
@@ -1102,7 +1231,14 @@ create_overflow_bucket(
 	return err_ok;
 }
 
-/* Returns the file offset where bucket with index idx begins */
+/**
+@brief		Helper method to get the location of a bucket chain from the linear hash's bucket map.
+@param[in]	idx
+				Index of the bucket chain to retrieve the location of
+@param[in]	linear_hash
+				Pointer to a linear hash instance.
+@return		An ion_fpos_t file position where the bucket chain specified begins.
+*/
 ion_fpos_t
 bucket_idx_to_ion_fpos_t(
 	int					idx,
