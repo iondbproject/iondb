@@ -169,11 +169,6 @@ insert_hash_to_bucket(
 	linear_hash_table_t *linear_hash
 );
 
-int
-hash(
-	int key
-);
-
 /* returns the struct representing the bucket at the specified index */
 linear_hash_bucket_t
 linear_hash_get_overflow_bucket(

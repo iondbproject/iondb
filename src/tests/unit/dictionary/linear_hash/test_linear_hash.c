@@ -323,7 +323,7 @@ test_linear_hash_correct_hash_function(
 	/* test inserting push above threshold - linear_hash.num_buckets should increase by one */
 	test_linear_hash_insert(tc, IONIZE(2, int), IONIZE(5, int), err_ok, 1, boolean_true, linear_hash);
 
-	expected_hash_bucket	= 2;
+	expected_hash_bucket	= 0;
 
 	/* resolve key 5 hashes to given the current linear_hash state - should be 5 */
 	hash_idx				= insert_hash_to_bucket(hash_key, linear_hash);
@@ -382,7 +382,7 @@ test_linear_hash_correct_bucket_after_split(
 	/* test inserting push above threshold - linear_hash.num_buckets should increase by one */
 	test_linear_hash_insert(tc, IONIZE(2, int), IONIZE(5, int), err_ok, 1, boolean_true, linear_hash);
 
-	expected_hash_bucket		= 2;
+	expected_hash_bucket		= 0;
 	expected_bucket_location	= array_list_get(expected_hash_bucket, linear_hash->bucket_map);
 
 	/* resolve key 2 hashes to given the current linear_hash state - should be 2 */
@@ -391,7 +391,6 @@ test_linear_hash_correct_bucket_after_split(
 	if (hash_idx < linear_hash->next_split) {
 		hash_idx = hash_to_bucket(hash_key, linear_hash);
 	}
-
 	/* assuming initial size of 2 so that key 2 hashes to bucket 2 using h1 */
 	PLANCK_UNIT_ASSERT_TRUE(tc, expected_bucket_location == array_list_get(hash_idx, linear_hash->bucket_map));
 
@@ -457,35 +456,6 @@ test_linear_hash_create_destroy(
 
 	test_linear_hash_setup(tc, linear_hash);
 	test_linear_hash_takedown(tc, linear_hash);
-}
-
-void
-linear_hash_distribution(
-	linear_hash_table_t *linear_hash
-) {
-	int						num_records		= 0;
-	int						num_overflows	= 0;
-	int						i;
-	linear_hash_bucket_t	*bucket			= alloca(sizeof(linear_hash_bucket_t));
-	ion_fpos_t				bucket_loc;
-
-	printf("\nBUCKET_DISTRIBUTION\n");
-	printf("\nbucket_idx,num_overflowsn,num_records,global_num_records\n");
-
-	for (i = 0; i < linear_hash->num_buckets; i++) {
-		bucket_loc = array_list_get(i, linear_hash->bucket_map);
-		linear_hash_get_bucket(bucket_loc, bucket, linear_hash);
-
-		while (bucket->overflow_location != -1) {
-			num_overflows++;
-			num_records += bucket->record_count;
-			linear_hash_get_bucket(bucket->overflow_location, bucket, linear_hash);
-		}
-
-		num_records += bucket->record_count;
-		printf("%d, %d, %d, %d\n", bucket->idx, num_overflows, num_records, linear_hash->num_records);
-		num_records = 0;
-	}
 }
 
 planck_unit_suite_t *

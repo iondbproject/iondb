@@ -67,9 +67,9 @@ linear_hash_init(
 	}
 
 	linear_hash->bucket_map = bucket_map;
-	/* linear_hash->database	= fopen(data_filename, "r+b"); */
+	linear_hash->database	= fopen(data_filename, "r+b");
 
-	/* if (NULL == linear_hash->database) { */
+	if (NULL == linear_hash->database) {
 	linear_hash->database = fopen(data_filename, "w+b");
 
 	if (NULL == linear_hash->database) {
@@ -87,11 +87,11 @@ linear_hash_init(
 		}
 	}
 
-	/* } */
+	}
 
-	/* linear_hash->state = fopen(state_filename, "r+b"); */
+	linear_hash->state = fopen(state_filename, "r+b");
 
-	/* if (NULL == linear_hash->state) { */
+	if (NULL == linear_hash->state) {
 	linear_hash->state = fopen(state_filename, "w+b");
 
 	if (NULL == linear_hash->state) {
@@ -104,14 +104,14 @@ linear_hash_init(
 		return err;
 	}
 
-	/* } */
-	/*else {
+	}
+	else {
 		err = linear_hash_read_state(linear_hash);
 
 		if (err != err_ok) {
 			return err;
 		}
-	} */
+	}
 
 	err = linear_hash_write_state(linear_hash);
 
@@ -158,6 +158,14 @@ linear_hash_write_state(
 		return err_file_write_error;
 	}
 
+	if (1 != fwrite(&linear_hash->bucket_map->current_size, sizeof(int), 1, linear_hash->state)) {
+		return err_file_write_error;
+	}
+
+	if (1 != fwrite(&linear_hash->bucket_map->data,  sizeof(ion_fpos_t) * linear_hash->num_buckets, 1, linear_hash->state)) {
+		return err_file_write_error;
+	}
+
 	return err_ok;
 }
 
@@ -199,6 +207,14 @@ linear_hash_read_state(
 	if (1 != fread(&linear_hash->records_per_bucket, sizeof(linear_hash->records_per_bucket), 1, linear_hash->state)) {
 		return err_file_read_error;
 	}
+
+    if (1 != fread(&linear_hash->bucket_map->current_size, sizeof(int), 1, linear_hash->state)) {
+        return err_file_read_error;
+    }
+
+    if (1 != fwrite(&linear_hash->bucket_map->data,  sizeof(ion_fpos_t) * linear_hash->num_buckets, 1, linear_hash->state)) {
+        return err_file_read_error;
+    }
 
 	return err_ok;
 }
@@ -1247,21 +1263,13 @@ bucket_idx_to_ion_fpos_t(
 	return array_list_get(idx, linear_hash->bucket_map);
 }
 
-int
-hash(
-	int key
-) {
-	int hash		= 0;
-	int i;
-	int size_of_int = (int) sizeof(int);
-
-	for (i = 0; i < size_of_int; i++) {
-		hash += *(&key + i);
-	}
-
-	return key;
-}
-
+/**
+@brief		Transform a key to an integer.
+@details	Applies a polynomial hash to the byte-string representation of the key to transform the key to an integer.
+@param[in]	key
+				Pointer to the key to hash
+@return		The result of applying the polynomial hash to the key as an integer.
+*/
 int
 key_bytes_to_int(
 	ion_byte_t			*key,
@@ -1269,14 +1277,21 @@ key_bytes_to_int(
 ) {
 	int i;
 	int key_bytes_as_int = 0;
-
+    static int coefficients[] = {3, 5, 7, 11, 13, 17, 19};
 	for (i = 0; i < linear_hash->super.record.key_size - 1; i++) {
-		key_bytes_as_int += *(key + i);
+		key_bytes_as_int += *(key + i) * coefficients[i + 1] - *(key + i) * coefficients[i];
 	}
-
-	return hash(key_bytes_as_int);
+	return key_bytes_as_int;
 }
 
+/**
+@brief		Map a key to the address space of the linear hash. Used to map records to buckets with an index greater than or equal to the split pointer.
+@param[in]	key
+				Pointer to the key to hash
+@param[in]	linear_hash
+				Pointer to the linear hash instance (required for knowledge of the key-size)
+@return		An integer in the address space of the linear hash.
+*/
 int
 hash_to_bucket(
 	ion_byte_t			*key,
@@ -1284,10 +1299,18 @@ hash_to_bucket(
 ) {
 	/* Case the record we are looking for was in a bucket that has already been split and h1 was used */
 	int key_bytes_as_int = key_bytes_to_int(key, linear_hash);
-
-	return hash(key_bytes_as_int & ((2 * linear_hash->initial_size) - 1));
+	return key_bytes_as_int & ((2 * linear_hash->initial_size) - 1);
 }
 
+
+/**
+@brief		Map a key to the address space of the linear hash. Used to map records to buckets with an index less than the split pointer.
+@param[in]	key
+				Pointer to the key to hash
+@param[in]	linear_hash
+				Pointer to the linear hash instance (required for knowledge of the key-size)
+@return		An integer in the address space of the linear hash.
+*/
 int
 insert_hash_to_bucket(
 	ion_byte_t			*key,
@@ -1298,29 +1321,15 @@ insert_hash_to_bucket(
 	return key_bytes_as_int & (linear_hash->initial_size - 1);
 }
 
-/* Write the offset of bucket idx to the map in linear hash state */
-ion_err_t
-store_bucket_loc_in_map(
-	int					idx,
-	ion_fpos_t			bucket_loc,
-	linear_hash_table_t *linear_hash
-) {
-	/* seek to the location of the bucket in the map */
-	ion_fpos_t loc_in_map = sizeof(linear_hash_table_t) + idx * sizeof(ion_fpos_t);
-
-	if (0 != fseek(linear_hash->state, loc_in_map, SEEK_SET)) {
-		return err_file_bad_seek;
-	}
-
-	/* read ion_fpos_t of bucket from mapping in linear hash */
-	if (1 != fwrite(&bucket_loc, sizeof(ion_fpos_t), 1, linear_hash->state)) {
-		return err_file_write_error;
-	}
-
-	return err_ok;
-}
-
 /* ARRAY LIST METHODS */
+/**
+@brief		Initialize an array list
+@param[in]	init_size
+				The number of indexes to initialize the array list with
+@param[in]	array_list
+				Pointer to the array list location in memory
+@return		err_ok if successful, err_out_of_memory if array list cannot be created with init_size.
+*/
 ion_err_t
 array_list_init(
 	int				init_size,
@@ -1336,6 +1345,17 @@ array_list_init(
 	return err_ok;
 }
 
+/**
+@brief		Insert a value into an array list.
+@details	If the index specified for insertion is larger than the size of the table, the array list size is doubled.
+@param[in]	bucket_idx
+				The index in the array list to insert the value at.
+@param[in]	bucket_loc
+				The value to insert.
+@param[in]	array_list
+				The array list to insert the value into.
+@return		err_ok if successful, err_out_of_memory if array list cannot be created doubled in size.
+*/
 ion_err_t
 array_list_insert(
 	int				bucket_idx,
@@ -1359,6 +1379,14 @@ array_list_insert(
 	return err_ok;
 }
 
+/**
+@brief		Retreive a value from an array list.
+@param[in]	bucket_idx
+				The index in the array list to retireve the value from.
+@param[in]	array_list
+				The array list to retrieve the value from.
+@return		An ion_fpos_t if successful, linear_hash_end_of_list if array bucket idx is outside of array list bounds.
+*/
 ion_fpos_t
 array_list_get(
 	int				bucket_idx,
@@ -1374,12 +1402,23 @@ array_list_get(
 	}
 }
 
-/* CLOSE, OPEN, CREATE, DESTROY METHODS */
+/**
+@brief		Close a linear hash instance with proper resource clean-up.
+@brief		This will free all the references related to the linear hash in memory and writes it state to its associated .lhs file.
+@param[in]	linear_hash
+				The linear hash instance to close.
+@return		Resulting status of the several file operations used to commit the write.
+*/
 ion_err_t
 linear_hash_close(
 	linear_hash_table_t *linear_hash
 ) {
-	if (linear_hash->bucket_map->data != NULL) {
+    if (0 != fclose(linear_hash->state)) {
+        linear_hash_write_state(linear_hash);
+        return err_file_close_error;
+    }
+
+    if (linear_hash->bucket_map->data != NULL) {
 		free(linear_hash->bucket_map->data);
 		linear_hash->bucket_map->data = NULL;
 	}
@@ -1400,16 +1439,17 @@ linear_hash_close(
 
 	linear_hash->database = NULL;
 
-	if (0 != fclose(linear_hash->state)) {
-		linear_hash_write_state(linear_hash);
-		return err_file_close_error;
-	}
-
 	linear_hash->state = NULL;
 
 	return err_ok;
 }
 
+/**
+@brief		Close a linear hash instance and delete its associated .lhs and .lhd files.
+@param[in]	linear_hash
+				The linear hash instance to close.
+@return		Resulting status of the several file operations used to commit the write.
+*/
 ion_err_t
 linear_hash_destroy(
 	linear_hash_table_t *linear_hash
@@ -1435,33 +1475,4 @@ linear_hash_destroy(
 	}
 
 	return err_ok;
-}
-
-void
-print_linear_hash_distribution(
-	linear_hash_table_t *linear_hash
-) {
-	int						num_records		= 0;
-	int						num_overflows	= 0;
-	int						i;
-	linear_hash_bucket_t	*bucket			= alloca(sizeof(linear_hash_bucket_t));
-	ion_fpos_t				bucket_loc;
-
-	printf("\nBUCKET_DISTRIBUTION\n");
-	printf("\nbucket_idx,num_overflowsn,num_records,global_num_records\n");
-
-	for (i = 0; i < linear_hash->num_buckets; i++) {
-		bucket_loc = array_list_get(i, linear_hash->bucket_map);
-		linear_hash_get_bucket(bucket_loc, bucket, linear_hash);
-
-		while (bucket->overflow_location != linear_hash_end_of_list) {
-			num_overflows++;
-			num_records += bucket->record_count;
-			linear_hash_get_bucket(bucket->overflow_location, bucket, linear_hash);
-		}
-
-		num_records += bucket->record_count;
-		printf("%d, %d, %d, %d\n", bucket->idx, num_overflows, num_records, linear_hash->num_records);
-		num_records = 0;
-	}
 }
