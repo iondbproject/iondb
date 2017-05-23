@@ -160,7 +160,12 @@ linear_hash_write_state(
 		return err_file_write_error;
 	}
 
-	if (1 != fwrite(&linear_hash->bucket_map->data, sizeof(ion_fpos_t) * (linear_hash->bucket_map->current_size - 1), 1, linear_hash->state)) {
+	ion_byte_t *cached_bucket_map = alloca(sizeof(ion_fpos_t) * linear_hash->bucket_map->current_size);
+
+	memset(cached_bucket_map, 0, sizeof(ion_fpos_t) * linear_hash->bucket_map->current_size);
+	memcpy(cached_bucket_map, linear_hash->bucket_map->data, linear_hash->num_buckets * sizeof(ion_fpos_t));
+
+	if (1 != fwrite(cached_bucket_map, sizeof(linear_hash->bucket_map->data), 1, linear_hash->state)) {
 		return err_file_write_error;
 	}
 
@@ -1367,10 +1372,17 @@ array_list_insert(
 ) {
 	/* case we need to expand array */
 	if (bucket_idx >= array_list->current_size) {
-		array_list->current_size	= array_list->current_size * 2;
+		int old_size = array_list->current_size;
 
-		array_list->data			= (ion_fpos_t *) realloc(array_list->data, array_list->current_size * sizeof(ion_fpos_t));
-		memset(array_list->data + sizeof(ion_fpos_t) * bucket_idx, 0, sizeof(ion_fpos_t) * array_list->current_size - bucket_idx);
+		array_list->current_size = array_list->current_size * 2;
+
+		int i;
+
+		for (i = old_size; i < array_list->current_size; i++) {
+			memset(array_list->data[i], 0, sizeof(ion_fpos_t));
+		}
+
+		array_list->data = (ion_fpos_t *) realloc(array_list->data, array_list->current_size * sizeof(long));
 
 		if (NULL == array_list->data) {
 			free(array_list->data);
