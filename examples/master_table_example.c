@@ -8,11 +8,11 @@ int
 main(
 	void
 ) {
-	int						key_size, value_size;
+	int							key_size, value_size;
 	ion_key_type_t				key_type;
 	ion_dictionary_handler_t	bpp_tree_handler;
 	ion_dictionary_t			dictionary;
-	ion_status_t			status;
+	ion_status_t				status;
 
 	/* These sizes are given in units of bytes. */
 	key_type	= key_type_numeric_signed;
@@ -169,7 +169,7 @@ main(
 	/* Clean-up the dictionary. Must be done through the master table to erase the table record we kept. */
 	printf("Deleting dictionary...\n");
 
-	if (ion_delete_from_master_table(&dictionary)) {
+	if (ion_delete_from_master_table(dictionary.instance->id)) {
 		printf("Failed to delete the dictionary\n");
 		return 1;
 	}

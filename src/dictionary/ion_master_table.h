@@ -181,7 +181,7 @@ ion_find_by_use_master_table(
 */
 ion_err_t
 ion_delete_from_master_table(
-	ion_dictionary_t *dictionary
+	ion_dictionary_id_t id
 );
 
 /**

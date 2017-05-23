@@ -92,7 +92,7 @@ bhdct_delete_from_master_table(
 	planck_unit_test_t	*tc,
 	ion_dictionary_t	*dict
 ) {
-	ion_err_t err = ion_delete_from_master_table(dict);
+	ion_err_t err = ion_delete_from_master_table(dict->instance->id);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 }
@@ -347,7 +347,7 @@ bhdct_takedown(
 	planck_unit_test_t	*tc,
 	ion_dictionary_t	*dict
 ) {
-/*	bhdct_delete_from_master_table(tc, dict); FIXME change when master table is fixed */
+	bhdct_delete_from_master_table(tc, dict);	/* FIXME change when master table is fixed */
 	bhdct_delete_dictionary(tc, dict);
 
 	bhdct_close_master_table(tc);

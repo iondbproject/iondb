@@ -410,13 +410,21 @@ ion_find_by_use_master_table(
 
 ion_err_t
 ion_delete_from_master_table(
-	ion_dictionary_t *dictionary
+	ion_dictionary_id_t id
 ) {
 	ion_err_t						error;
+	ion_dictionary_t				dictionary;
+	ion_dictionary_handler_t		handler;
 	ion_dictionary_config_info_t	blank	= { 0 };
-	long							where	= (dictionary->instance->id * ION_MASTER_TABLE_RECORD_SIZE(&blank));
+	long							where	= (id * ION_MASTER_TABLE_RECORD_SIZE(&blank));
 
-	error = ion_close_dictionary(dictionary);
+	error = ion_open_dictionary(&handler, &dictionary, id);
+
+	if (err_ok != error) {
+		return error;
+	}
+
+	error = ion_close_dictionary(&dictionary);
 
 	if (err_ok != error) {
 		return error;

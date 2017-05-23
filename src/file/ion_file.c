@@ -189,7 +189,13 @@ ion_fread(
 	return err_ok;
 #else
 
-	if (1 != fread(write_to, num_bytes, 1, file)) {
+/*	printf("%zu SIZE HAVE\n", sizeof(write_to)); */
+/*	printf("%zu SIZE WANT\n", sizeof(num_bytes)); */
+	size_t num = fread(write_to, num_bytes, 1, file);
+
+	printf("%zu NUM ITEMS READ\n", num);
+
+	if (1 != num) {
 		return err_file_incomplete_read;
 	}
 

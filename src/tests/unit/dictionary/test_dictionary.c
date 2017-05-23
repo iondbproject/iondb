@@ -234,7 +234,7 @@ test_dictionary_master_table(
 	/*******************/
 
 	/* Test delete */
-	err = ion_delete_from_master_table(&dictionary);
+	err = ion_delete_from_master_table(dictionary.instance->id);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 	/***************/
