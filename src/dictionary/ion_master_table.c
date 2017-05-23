@@ -247,7 +247,35 @@ ion_err_t
 ion_close_master_table(
 	void
 ) {
+	ion_err_t					err;
+	ion_dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+
+	ion_dictionary_id_t id = ion_master_table_next_id;
+
 	if (NULL != ion_master_table_file) {
+		id--;
+
+		while (id > 0) {
+			err = ion_open_dictionary(&handler, &dict, id);
+
+			if (err_ok != err) {
+				/* Dictionary not found, continue search. */
+				if (err_dictionary_initialization_failed != err) {
+					return err;
+				}
+			}
+			else {
+				err = ion_close_dictionary(&dict);
+
+				if (err_ok != err) {
+					return err;
+				}
+			}
+
+			id--;
+		}
+
 		if (0 != fclose(ion_master_table_file)) {
 			return err_file_close_error;
 		}

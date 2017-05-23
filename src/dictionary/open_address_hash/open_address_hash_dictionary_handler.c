@@ -230,7 +230,12 @@ oadict_find(
 			ion_err_t err = oadict_scan(oadict_cursor);
 
 			if (cs_valid_data != err) {
-				(*cursor)->status = cs_cursor_uninitialized;
+				if (cs_end_of_results == err) {
+					(*cursor)->status = cs_end_of_results;
+				}
+				else {
+					(*cursor)->status = cs_cursor_uninitialized;
+				}
 			}
 
 			return err_ok;
