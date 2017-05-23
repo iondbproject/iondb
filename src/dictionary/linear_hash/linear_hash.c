@@ -1379,7 +1379,7 @@ array_list_insert(
 		int i;
 
 		for (i = old_size; i < array_list->current_size; i++) {
-			memset(array_list->data[i], 0, sizeof(ion_fpos_t));
+			memset(&(array_list->data[i]), 0, sizeof(ion_fpos_t));
 		}
 
 		array_list->data = (ion_fpos_t *) realloc(array_list->data, array_list->current_size * sizeof(long));
