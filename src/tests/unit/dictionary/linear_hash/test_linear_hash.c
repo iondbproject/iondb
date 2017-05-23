@@ -391,6 +391,7 @@ test_linear_hash_correct_bucket_after_split(
 	if (hash_idx < linear_hash->next_split) {
 		hash_idx = hash_to_bucket(hash_key, linear_hash);
 	}
+
 	/* assuming initial size of 2 so that key 2 hashes to bucket 2 using h1 */
 	PLANCK_UNIT_ASSERT_TRUE(tc, expected_bucket_location == array_list_get(hash_idx, linear_hash->bucket_map));
 

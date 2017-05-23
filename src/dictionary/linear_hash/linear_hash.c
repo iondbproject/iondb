@@ -70,40 +70,38 @@ linear_hash_init(
 	linear_hash->database	= fopen(data_filename, "r+b");
 
 	if (NULL == linear_hash->database) {
-	linear_hash->database = fopen(data_filename, "w+b");
+		linear_hash->database = fopen(data_filename, "w+b");
 
-	if (NULL == linear_hash->database) {
-		return err_file_open_error;
-	}
-
-	int i;
-
-	for (i = 0; i < linear_hash->initial_size; i++) {
-		err = write_new_bucket(i, linear_hash);
-
-		if (err != err_ok) {
-			linear_hash_close(linear_hash);
-			return err;
+		if (NULL == linear_hash->database) {
+			return err_file_open_error;
 		}
-	}
 
+		int i;
+
+		for (i = 0; i < linear_hash->initial_size; i++) {
+			err = write_new_bucket(i, linear_hash);
+
+			if (err != err_ok) {
+				linear_hash_close(linear_hash);
+				return err;
+			}
+		}
 	}
 
 	linear_hash->state = fopen(state_filename, "r+b");
 
 	if (NULL == linear_hash->state) {
-	linear_hash->state = fopen(state_filename, "w+b");
+		linear_hash->state = fopen(state_filename, "w+b");
 
-	if (NULL == linear_hash->state) {
-		return err_file_open_error;
-	}
+		if (NULL == linear_hash->state) {
+			return err_file_open_error;
+		}
 
-	err = linear_hash_write_state(linear_hash);
+		err = linear_hash_write_state(linear_hash);
 
-	if (err != err_ok) {
-		return err;
-	}
-
+		if (err != err_ok) {
+			return err;
+		}
 	}
 	else {
 		err = linear_hash_read_state(linear_hash);
@@ -162,7 +160,7 @@ linear_hash_write_state(
 		return err_file_write_error;
 	}
 
-	if (1 != fwrite(&linear_hash->bucket_map->data,  sizeof(ion_fpos_t) * linear_hash->num_buckets, 1, linear_hash->state)) {
+	if (1 != fwrite(&linear_hash->bucket_map->data, sizeof(ion_fpos_t) * linear_hash->num_buckets, 1, linear_hash->state)) {
 		return err_file_write_error;
 	}
 
@@ -208,13 +206,13 @@ linear_hash_read_state(
 		return err_file_read_error;
 	}
 
-    if (1 != fread(&linear_hash->bucket_map->current_size, sizeof(int), 1, linear_hash->state)) {
-        return err_file_read_error;
-    }
+	if (1 != fread(&linear_hash->bucket_map->current_size, sizeof(int), 1, linear_hash->state)) {
+		return err_file_read_error;
+	}
 
-    if (1 != fwrite(&linear_hash->bucket_map->data,  sizeof(ion_fpos_t) * linear_hash->num_buckets, 1, linear_hash->state)) {
-        return err_file_read_error;
-    }
+	if (1 != fwrite(&linear_hash->bucket_map->data, sizeof(ion_fpos_t) * linear_hash->num_buckets, 1, linear_hash->state)) {
+		return err_file_read_error;
+	}
 
 	return err_ok;
 }
@@ -968,7 +966,7 @@ linear_hash_delete(
 				Pointer where the key of the record is written back to.
 @param[in]	value
 				Pointer where the value of the record is written back to.
-@param[in]	value
+@param[in]	status
 				Pointer where the status of the record is written back to.
 @param[in]	linear_hash
 				Pointer to a linear hash instance.
@@ -1004,13 +1002,13 @@ linear_hash_get_record(
 
 /**
 @brief		Write record data to the location specified from the linear hash's .lhd file.
-@param[in]	loc
+@param[in]	record_loc
 				Location to write the record data in the linear hash's data file.
 @param[in]	key
 				Pointer to the key to be written.
 @param[in]	value
 				Pointer to the value to be written.
-@param[in]	value
+@param[in]	status
 				Pointer to the status to be written.
 @param[in]	linear_hash
 				Pointer to a linear hash instance.
@@ -1189,7 +1187,7 @@ linear_hash_update_bucket(
 /**
 @brief		Create an overflow bucket and write it to the linear hash's .lhd file.
 @details	Create a new overflow bucket and add it to the end of the bucket chain. The location of the overflow bucket is created at is saved in a write back parameter so that the bucket map of the linear hash points to the end of the linked list of overflow buckets. This saves on disk writes as previous tail does not need to be updated. As with write_new_bucket, the new bucket is intialized with empty memory, including space for all its record, and is appended to the end of the .lhd file.
-@param[in]	idx
+@param[in]	bucket_idx
 				Index of the new bucket to be written
 @param[in]	overflow_loc
 				Pointer to the location the location of the new overflow bucket is written back to.
@@ -1268,6 +1266,8 @@ bucket_idx_to_ion_fpos_t(
 @details	Applies a polynomial hash to the byte-string representation of the key to transform the key to an integer.
 @param[in]	key
 				Pointer to the key to hash
+@param[in]	linear_hash
+				Pointer to a linear hash instance.
 @return		The result of applying the polynomial hash to the key as an integer.
 */
 int
@@ -1275,12 +1275,14 @@ key_bytes_to_int(
 	ion_byte_t			*key,
 	linear_hash_table_t *linear_hash
 ) {
-	int i;
-	int key_bytes_as_int = 0;
-    static int coefficients[] = {3, 5, 7, 11, 13, 17, 19};
+	int			i;
+	int			key_bytes_as_int	= 0;
+	static int	coefficients[]		= { 3, 5, 7, 11, 13, 17, 19 };
+
 	for (i = 0; i < linear_hash->super.record.key_size - 1; i++) {
 		key_bytes_as_int += *(key + i) * coefficients[i + 1] - *(key + i) * coefficients[i];
 	}
+
 	return key_bytes_as_int;
 }
 
@@ -1299,9 +1301,9 @@ hash_to_bucket(
 ) {
 	/* Case the record we are looking for was in a bucket that has already been split and h1 was used */
 	int key_bytes_as_int = key_bytes_to_int(key, linear_hash);
+
 	return key_bytes_as_int & ((2 * linear_hash->initial_size) - 1);
 }
-
 
 /**
 @brief		Map a key to the address space of the linear hash. Used to map records to buckets with an index less than the split pointer.
@@ -1337,8 +1339,9 @@ array_list_init(
 ) {
 	array_list->current_size	= init_size;
 	array_list->data			= malloc(init_size * sizeof(ion_fpos_t));
+    memset(array_list->data, 0, sizeof(ion_fpos_t) * init_size);
 
-	if (NULL == array_list->data) {
+    if (NULL == array_list->data) {
 		return err_out_of_memory;
 	}
 
@@ -1367,6 +1370,7 @@ array_list_insert(
 		array_list->current_size	= array_list->current_size * 2;
 
 		array_list->data			= (ion_fpos_t *) realloc(array_list->data, array_list->current_size * sizeof(ion_fpos_t));
+        memset(array_list->data + sizeof(ion_fpos_t) * bucket_idx, 0, sizeof(ion_fpos_t) * array_list->current_size - bucket_idx);
 
 		if (NULL == array_list->data) {
 			free(array_list->data);
@@ -1413,12 +1417,12 @@ ion_err_t
 linear_hash_close(
 	linear_hash_table_t *linear_hash
 ) {
-    if (0 != fclose(linear_hash->state)) {
-        linear_hash_write_state(linear_hash);
-        return err_file_close_error;
-    }
+	if (0 != fclose(linear_hash->state)) {
+		linear_hash_write_state(linear_hash);
+		return err_file_close_error;
+	}
 
-    if (linear_hash->bucket_map->data != NULL) {
+	if (linear_hash->bucket_map->data != NULL) {
 		free(linear_hash->bucket_map->data);
 		linear_hash->bucket_map->data = NULL;
 	}
@@ -1437,9 +1441,9 @@ linear_hash_close(
 		linear_hash->bucket_map = NULL;
 	}
 
-	linear_hash->database = NULL;
+	linear_hash->database	= NULL;
 
-	linear_hash->state = NULL;
+	linear_hash->state		= NULL;
 
 	return err_ok;
 }
