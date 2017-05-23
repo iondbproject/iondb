@@ -160,7 +160,7 @@ linear_hash_write_state(
 		return err_file_write_error;
 	}
 
-	if (1 != fwrite(&linear_hash->bucket_map->data, sizeof(ion_fpos_t) * linear_hash->num_buckets, 1, linear_hash->state)) {
+	if (1 != fwrite(&linear_hash->bucket_map->data, sizeof(ion_fpos_t) * (linear_hash->bucket_map->current_size - 1), 1, linear_hash->state)) {
 		return err_file_write_error;
 	}
 
@@ -1339,9 +1339,9 @@ array_list_init(
 ) {
 	array_list->current_size	= init_size;
 	array_list->data			= malloc(init_size * sizeof(ion_fpos_t));
-    memset(array_list->data, 0, sizeof(ion_fpos_t) * init_size);
+	memset(array_list->data, 0, sizeof(ion_fpos_t) * init_size);
 
-    if (NULL == array_list->data) {
+	if (NULL == array_list->data) {
 		return err_out_of_memory;
 	}
 
@@ -1370,7 +1370,7 @@ array_list_insert(
 		array_list->current_size	= array_list->current_size * 2;
 
 		array_list->data			= (ion_fpos_t *) realloc(array_list->data, array_list->current_size * sizeof(ion_fpos_t));
-        memset(array_list->data + sizeof(ion_fpos_t) * bucket_idx, 0, sizeof(ion_fpos_t) * array_list->current_size - bucket_idx);
+		memset(array_list->data + sizeof(ion_fpos_t) * bucket_idx, 0, sizeof(ion_fpos_t) * array_list->current_size - bucket_idx);
 
 		if (NULL == array_list->data) {
 			free(array_list->data);
