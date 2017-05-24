@@ -149,7 +149,7 @@ test_dictionary_compare_numerics(
 }
 
 void
-test_dictionary_master_table(
+test_dictionary_master_table_flat_file(
 	planck_unit_test_t *tc
 ) {
 	ion_err_t err;
@@ -292,7 +292,7 @@ dictionary_getsuite(
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_dictionary_compare_numerics);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_dictionary_master_table);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_dictionary_master_table_flat_file);
 
 	return suite;
 }

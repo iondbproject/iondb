@@ -290,10 +290,8 @@ ion_err_t
 ion_delete_master_table(
 	void
 ) {
-	if (NULL != ion_master_table_file) {
-		if (0 != fremove(ION_MASTER_TABLE_FILENAME)) {
-			return err_file_delete_error;
-		}
+	if (0 != fremove(ION_MASTER_TABLE_FILENAME)) {
+		return err_file_delete_error;
 	}
 
 	return err_ok;
@@ -497,6 +495,12 @@ ion_delete_dictionary(
 		ion_switch_handler(type, &handler);
 
 		err = dictionary_destroy_dictionary(&handler, id);
+
+		if (err_ok != err) {
+			return err;
+		}
+
+		err = ion_delete_from_master_table(id);
 	}
 
 	return err;
