@@ -1373,10 +1373,13 @@ array_list_insert(
 	/* case we need to expand array */
 	if (bucket_idx >= array_list->current_size) {
 		int old_size = array_list->current_size;
-		array_list->current_size = array_list->current_size * 2;
-        array_list->data = (ion_fpos_t *) realloc(array_list->data, array_list->current_size * sizeof(long));
-        int i;
-        for (i = old_size; i < array_list->current_size; i++) {
+
+		array_list->current_size	= array_list->current_size * 2;
+		array_list->data			= (ion_fpos_t *) realloc(array_list->data, array_list->current_size * sizeof(ion_fpos_t));
+
+		int i;
+
+		for (i = old_size + 1; i < array_list->current_size - 1; i++) {
 			memset(array_list->data + i * sizeof(ion_fpos_t), 0, sizeof(ion_fpos_t));
 		}
 
