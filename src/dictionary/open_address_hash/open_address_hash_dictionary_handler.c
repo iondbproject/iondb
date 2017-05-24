@@ -311,6 +311,7 @@ oadict_init(
 	handler->find				= oadict_find;
 	handler->remove				= oadict_delete;
 	handler->delete_dictionary	= oadict_delete_dictionary;
+	handler->destroy_dictionary = oadict_destroy_dictionary;
 	handler->close_dictionary	= oadict_close_dictionary;
 	handler->open_dictionary	= oadict_open_dictionary;
 }
@@ -372,6 +373,14 @@ oadict_delete_dictionary(
 	free(dictionary->instance);
 	dictionary->instance = NULL;/* When releasing memory, set pointer to NULL */
 	return result;
+}
+
+ion_err_t
+oadict_destroy_dictionary(
+	ion_dictionary_id_t id
+) {
+	UNUSED(id);
+	return err_not_implemented;
 }
 
 ion_status_t

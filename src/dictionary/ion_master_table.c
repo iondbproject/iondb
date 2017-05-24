@@ -412,25 +412,26 @@ ion_err_t
 ion_delete_from_master_table(
 	ion_dictionary_id_t id
 ) {
-	ion_err_t						error;
-	ion_dictionary_t				dictionary;
-	ion_dictionary_handler_t		handler;
 	ion_dictionary_config_info_t	blank	= { 0 };
 	long							where	= (id * ION_MASTER_TABLE_RECORD_SIZE(&blank));
 
-	error = ion_open_dictionary(&handler, &dictionary, id);
-
-	if (err_ok != error) {
-		return error;
-	}
-
-	error = ion_close_dictionary(&dictionary);
-
-	if (err_ok != error) {
-		return error;
-	}
-
 	return ion_master_table_write(&blank, where);
+}
+
+ion_err_t
+ion_get_dictionary_type(
+	ion_dictionary_id_t		id,
+	ion_dictionary_type_t	*type				/* Passed in empty, to be set. */
+) {
+	ion_err_t						err;
+	ion_dictionary_config_info_t	config;
+
+	err		= ion_lookup_in_master_table(id, &config);
+
+	type	= (ion_dictionary_type_t *) config.dictionary_type;
+	UNUSED(type);
+
+	return err;
 }
 
 ion_err_t
@@ -449,7 +450,64 @@ ion_open_dictionary(
 		return err_dictionary_initialization_failed;
 	}
 
-	switch (config.dictionary_type) {
+	ion_switch_handler(config.dictionary_type, handler);
+
+	err = dictionary_open(handler, dictionary, &config);
+	return err;
+}
+
+ion_err_t
+ion_close_dictionary(
+	ion_dictionary_t *dictionary
+) {
+	ion_err_t err;
+
+	err = dictionary_close(dictionary);
+
+	return err;
+}
+
+ion_err_t
+ion_delete_dictionary(
+	ion_dictionary_t	*dictionary,
+	ion_dictionary_id_t id
+) {
+	ion_err_t				err;
+	ion_dictionary_type_t	type;
+
+	if (ion_dictionary_status_closed != dictionary->status) {
+		id	= dictionary->instance->id;
+		err = dictionary_delete_dictionary(dictionary);
+
+		if (err_ok != err) {
+			return err_dictionary_destruction_error;
+		}
+
+		err = ion_delete_from_master_table(id);
+	}
+	else {
+		err = ion_get_dictionary_type(id, &type);
+
+		if (err_ok != err) {
+			return err_dictionary_destruction_error;
+		}
+
+		ion_dictionary_handler_t handler;
+
+		ion_switch_handler(type, &handler);
+
+		err = dictionary_destroy_dictionary(&handler, id);
+	}
+
+	return err;
+}
+
+ion_err_t
+ion_switch_handler(
+	ion_dictionary_type_t		type,
+	ion_dictionary_handler_t	*handler
+) {
+	switch (type) {
 		case dictionary_type_bpp_tree_t: {
 			bpptree_init(handler);
 			break;
@@ -476,16 +534,5 @@ ion_open_dictionary(
 		}
 	}
 
-	err = dictionary_open(handler, dictionary, &config);
-	return err;
-}
-
-ion_err_t
-ion_close_dictionary(
-	ion_dictionary_t *dictionary
-) {
-	ion_err_t err;
-
-	err = dictionary_close(dictionary);
-	return err;
+	return err_ok;
 }

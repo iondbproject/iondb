@@ -215,6 +215,10 @@ struct dictionary_handler {
 		ion_dictionary_t *
 	);
 	/**< A pointer to the dictionaries dictionary removal function. */
+	ion_err_t (*destroy_dictionary)(
+		ion_dictionary_id_t id
+	);
+	/**< A pointer to the dictionaries dictionary destroy function. */
 	ion_err_t (*open_dictionary)(
 		ion_dictionary_handler_t *,
 		ion_dictionary_t *,

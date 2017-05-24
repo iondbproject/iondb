@@ -362,6 +362,7 @@ ffdict_init(
 	handler->find				= ffdict_find;
 	handler->remove				= ffdict_delete;
 	handler->delete_dictionary	= ffdict_delete_dictionary;
+	handler->destroy_dictionary = ffdict_destroy_dictionary;
 	handler->open_dictionary	= ffdict_open_dictionary;
 	handler->close_dictionary	= ffdict_close_dictionary;
 }
@@ -430,6 +431,21 @@ ffdict_delete_dictionary(
 	free(dictionary->instance);
 	dictionary->instance = NULL;
 	return result;
+}
+
+ion_err_t
+ffdict_destroy_dictionary(
+	ion_dictionary_id_t id
+) {
+	char filename[ION_MAX_FILENAME_LENGTH];
+
+	dictionary_get_filename(id, "ffs", filename);
+
+	if (0 != fremove(filename)) {
+		return err_file_delete_error;
+	}
+
+	return err_ok;
 }
 
 ion_status_t
