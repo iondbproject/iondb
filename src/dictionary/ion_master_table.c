@@ -418,20 +418,20 @@ ion_delete_from_master_table(
 	return ion_master_table_write(&blank, where);
 }
 
-ion_err_t
+ion_dictionary_type_t
 ion_get_dictionary_type(
-	ion_dictionary_id_t		id,
-	ion_dictionary_type_t	*type				/* Passed in empty, to be set. */
+	ion_dictionary_id_t id
 ) {
 	ion_err_t						err;
 	ion_dictionary_config_info_t	config;
 
-	err		= ion_lookup_in_master_table(id, &config);
+	err = ion_lookup_in_master_table(id, &config);
 
-	type	= (ion_dictionary_type_t *) config.dictionary_type;
-	UNUSED(type);
+	if (err_ok != err) {
+		return dictionary_type_error_t;
+	}
 
-	return err;
+	return config.dictionary_type;
 }
 
 ion_err_t
@@ -486,9 +486,9 @@ ion_delete_dictionary(
 		err = ion_delete_from_master_table(id);
 	}
 	else {
-		err = ion_get_dictionary_type(id, &type);
+		type = ion_get_dictionary_type(id);
 
-		if (err_ok != err) {
+		if (dictionary_type_error_t == type) {
 			return err_dictionary_destruction_error;
 		}
 
@@ -531,6 +531,10 @@ ion_switch_handler(
 		case dictionary_type_skip_list_t: {
 			sldict_init(handler);
 			break;
+		}
+
+		case dictionary_type_error_t: {
+			return err_dictionary_initialization_failed;
 		}
 	}
 

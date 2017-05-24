@@ -190,14 +190,11 @@ ion_delete_from_master_table(
 @param		id
 				The identifier identifying the dictionary metadata in the
 				master table.
-@param		type
-				A pointer to the dictionary type to be set.
-@returns	An error code describing the result of the operation.
+@returns	The type of dictionary implementation corresponding to the id.
 */
-ion_err_t
+ion_dictionary_type_t
 ion_get_dictionary_type(
-	ion_dictionary_id_t		id,
-	ion_dictionary_type_t	*type				/* Passed in empty, to be set. */
+	ion_dictionary_id_t id
 );
 
 /**
