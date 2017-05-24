@@ -1373,10 +1373,16 @@ array_list_insert(
 	/* case we need to expand array */
 	if (bucket_idx >= array_list->current_size) {
 		int old_size = array_list->current_size;
-
-		array_list->current_size	= array_list->current_size * 2;
-		array_list->data			= (ion_fpos_t *) realloc(array_list->data, array_list->current_size * sizeof(ion_fpos_t));
-        memset(array_list->data + old_size * sizeof(ion_fpos_t), 0, sizeof(ion_fpos_t) * old_size);
+        array_list->current_size	= array_list->current_size * 2;
+        ion_byte_t * bucket_map_cache = alloca(old_size * sizeof(ion_fpos_t));
+        memcpy(bucket_map_cache, array_list->data, old_size * sizeof(ion_fpos_t));
+        array_list->data			= NULL;
+        array_list->data			= malloc(2 * old_size * sizeof(ion_fpos_t));
+        memset(array_list->data, 0, array_list->current_size * sizeof(ion_fpos_t));
+        memcpy(array_list->data, bucket_map_cache, old_size * sizeof(ion_fpos_t));
+//
+//		array_list->data			= (ion_fpos_t *) realloc(array_list->data, array_list->current_size * sizeof(ion_fpos_t));
+//		memset(array_list->data + old_size * sizeof(ion_fpos_t), 0, sizeof(ion_fpos_t) * old_size);
 
 		if (NULL == array_list->data) {
 			free(array_list->data);
