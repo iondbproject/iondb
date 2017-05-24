@@ -233,8 +233,8 @@ test_dictionary_master_table(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, dictionary_type_flat_file_t, config.dictionary_type);
 	/*******************/
 
-	/* Test delete from master table */
-	err = ion_delete_from_master_table(dictionary.instance->id);
+	/* Test delete */
+	err = ion_delete_dictionary(&dictionary, dictionary.instance->id);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 	/***************/
@@ -264,9 +264,14 @@ test_dictionary_master_table(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 7, temp_dict.instance->record.value_size);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, dictionary_type_flat_file_t, temp_dict.instance->type);
 
-	/* Test delete dictionary */
+	/* Test close dictionary */
 
-	err = ion_delete_dictionary(&temp_dict, temp_dict.instance->id);
+	err = ion_close_dictionary(&dictionary2);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+
+	/* Test delete closed dictionary */
+
+	err = ion_delete_dictionary(&dictionary2, 2);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 
 	/* Test close master table */
