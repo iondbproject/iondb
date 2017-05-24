@@ -1379,7 +1379,7 @@ array_list_insert(
 		ion_byte_t *bucket_map_cache = alloca(old_size * sizeof(ion_fpos_t));
 
 		memcpy(bucket_map_cache, array_list->data, old_size * sizeof(ion_fpos_t));
-        free(array_list->data);
+		free(array_list->data);
 		array_list->data	= NULL;
 		array_list->data	= malloc(2 * old_size * sizeof(ion_fpos_t));
 		memset(array_list->data, 0, array_list->current_size * sizeof(ion_fpos_t));
