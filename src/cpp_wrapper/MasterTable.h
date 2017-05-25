@@ -50,13 +50,6 @@ deleteMasterTable(
 
 /**
 @brief		Creates a dictionary through use of the master table.
-@param		handler
-				A pointer to an allocated and initialized dictionary handler
-				object that contains all implementation specific data
-				and function pointers.
-@param		dictionary
-				A pointer to an allocated dictionary object, which will be
-				written into when opened.
 @param		key_type
 				The type of key to be used with this dictionary, which
 				determines the key comparison operator.
