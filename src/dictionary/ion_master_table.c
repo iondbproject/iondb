@@ -22,7 +22,6 @@
 /******************************************************************************/
 
 #include "ion_master_table.h"
-#include "dictionary_types.h"
 #include "bpp_tree/bpp_tree_handler.h"
 #include "flat_file/flat_file_dictionary_handler.h"
 #include "open_address_file_hash/open_address_file_hash_dictionary_handler.h"
