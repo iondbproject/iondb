@@ -67,6 +67,8 @@ deleteMasterTable(
 @param		dictionary_size
 				The dictionary implementation specific dictionary size
 				parameter.
+@param		dictionary_type
+				The kind of dictionary instance to be created.
 @returns	An error code describing the result of the operation.
 */
 ion_err_t
@@ -75,9 +77,9 @@ createDictionary(
 	ion_key_size_t			key_size,
 	ion_value_size_t		value_size,
 	ion_dictionary_size_t	dictionary_size,
-	ion_dictionary_type_t	type
+	ion_dictionary_type_t	dictionary_type
 ) {
-	ion_err_t err = initializeHandler(type);
+	ion_err_t err = initializeHandler(dictionary_type);
 
 	if (err_ok != err) {
 		return err;
@@ -91,8 +93,6 @@ createDictionary(
 			master table.
 @param		type
 				The type of dictionary instance to initialize the handler to.
-@param		handler
-				A pointer to the handler to be set.
 @returns	An error code describing the result of the operation.
 */
 ion_err_t
