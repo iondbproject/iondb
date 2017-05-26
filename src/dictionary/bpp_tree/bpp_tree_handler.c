@@ -104,6 +104,8 @@ bpptree_create_dictionary(
 	dictionary->instance->key_type			= key_type;
 	dictionary->instance->record.key_size	= key_size;
 	dictionary->instance->record.value_size = value_size;
+	dictionary->instance->type				= dictionary_type_bpp_tree_t;
+	dictionary->instance->id				= id;
 	/* todo: need to check to make sure that the handler is registered */
 	dictionary->handler						= handler;
 

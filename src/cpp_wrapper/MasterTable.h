@@ -10,12 +10,19 @@
 #if !defined(PROJECT_CPP_MASTERTABLE_H)
 #define PROJECT_CPP_MASTERTABLE_H
 
+#include "../dictionary/ion_master_table.h"
+
 class MasterTable {
 public:
 
 ion_dictionary_handler_t		handler;
 ion_dictionary_t				dict;
 ion_dictionary_config_info_t	config;
+
+~MasterTable(
+) {
+	deleteMasterTable();
+}
 
 /**
 @brief	  Opens the master table.
@@ -67,9 +74,32 @@ createDictionary(
 	ion_key_type_t			key_type,
 	ion_key_size_t			key_size,
 	ion_value_size_t		value_size,
-	ion_dictionary_size_t	dictionary_size
+	ion_dictionary_size_t	dictionary_size,
+	ion_dictionary_type_t	type
 ) {
+	ion_err_t err = initializeHandler(type);
+
+	if (err_ok != err) {
+		return err;
+	}
+
 	return ion_master_table_create_dictionary(&handler, &dict, key_type, key_size, value_size, dictionary_size);
+}
+
+/**
+@brief		Retrieves the type of dictionary stored under a particular id in the
+			master table.
+@param		type
+				The type of dictionary instance to initialize the handler to.
+@param		handler
+				A pointer to the handler to be set.
+@returns	An error code describing the result of the operation.
+*/
+ion_err_t
+initializeHandler(
+	ion_dictionary_type_t type
+) {
+	return ion_switch_handler(type, &handler);
 }
 
 /**
@@ -114,8 +144,20 @@ findByUse(
 */
 ion_err_t
 deleteFromMasterTable(
+	ion_dictionary_id_t id
 ) {
-	return ion_delete_from_master_table(&dict);
+	return ion_delete_from_master_table(id);
+}
+
+/**
+@brief		Deletes a dictionary instance and erases it from the master table.
+@returns	An error code describing the result of the operation.
+*/
+ion_err_t
+deleteDictionary(
+	ion_dictionary_id_t id
+) {
+	return ion_delete_dictionary(&dict, id);
 }
 
 /**

@@ -162,7 +162,7 @@ test_dictionary_master_table(
 	/* Test init */
 	err = ion_init_master_table();
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 	PLANCK_UNIT_ASSERT_TRUE(tc, NULL != ion_master_table_file);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, ion_master_table_next_id);
 
@@ -175,23 +175,23 @@ test_dictionary_master_table(
 	ffdict_init(&handler);
 	err = ion_master_table_create_dictionary(&handler, &dictionary, key_type_numeric_signed, sizeof(int), 10, 20);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
-	PLANCK_UNIT_ASSERT_TRUE(tc, 2 == ion_master_table_next_id);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, ion_master_table_next_id);
 	/***************/
 
 	/* Test close */
 	err = ion_close_master_table();
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == ion_master_table_file);
 	/**************/
 
 	/* Test re-open */
 	err = ion_init_master_table();
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 	PLANCK_UNIT_ASSERT_TRUE(tc, NULL != ion_master_table_file);
-	PLANCK_UNIT_ASSERT_TRUE(tc, 2 == ion_master_table_next_id);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, ion_master_table_next_id);
 
 	/****************/
 
@@ -200,12 +200,13 @@ test_dictionary_master_table(
 
 	err = ion_lookup_in_master_table(1, &config);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
-	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == config.id);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, config.id);
 	PLANCK_UNIT_ASSERT_TRUE(tc, key_type_numeric_signed == config.type);
-	PLANCK_UNIT_ASSERT_TRUE(tc, sizeof(int) == config.key_size);
-	PLANCK_UNIT_ASSERT_TRUE(tc, 10 == config.value_size);
-	PLANCK_UNIT_ASSERT_TRUE(tc, 20 == config.dictionary_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(int), config.key_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 10, config.value_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 20, config.dictionary_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, dictionary_type_flat_file_t, config.dictionary_type);
 
 	/******************************/
 
@@ -216,42 +217,72 @@ test_dictionary_master_table(
 	ffdict_init(&handler2);
 	err = ion_master_table_create_dictionary(&handler2, &dictionary2, key_type_numeric_signed, sizeof(short), 7, 14);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
-	PLANCK_UNIT_ASSERT_TRUE(tc, 3 == ion_master_table_next_id);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, ion_master_table_next_id);
 	/******************************/
 
 	/* Test 2nd lookup */
 	err = ion_lookup_in_master_table(2, &config);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
-	PLANCK_UNIT_ASSERT_TRUE(tc, 2 == config.id);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, config.id);
 	PLANCK_UNIT_ASSERT_TRUE(tc, key_type_numeric_signed == config.type);
-	PLANCK_UNIT_ASSERT_TRUE(tc, sizeof(short) == config.key_size);
-	PLANCK_UNIT_ASSERT_TRUE(tc, 7 == config.value_size);
-	PLANCK_UNIT_ASSERT_TRUE(tc, 14 == config.dictionary_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(short), config.key_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 7, config.value_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 14, config.dictionary_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, dictionary_type_flat_file_t, config.dictionary_type);
 	/*******************/
 
 	/* Test delete */
-	err = ion_delete_from_master_table(&dictionary);
+	err = ion_delete_dictionary(&dictionary, dictionary.instance->id);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 	/***************/
 
 	/* Test lookup on non-existent row */
 	err = ion_lookup_in_master_table(1, &config);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == err);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_item_not_found, err);
 	/***********************************/
 
-	/* Test close */
+	/* Test close dictionary */
 
 	err = ion_close_dictionary(&dictionary2);
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+
+	/* Test open dictionary */
+
+	err = ion_open_dictionary(&handler2, &dictionary2, 2);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, dictionary2.instance->id);
+	PLANCK_UNIT_ASSERT_TRUE(tc, key_type_numeric_signed == dictionary2.instance->key_type);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(short), dictionary2.instance->record.key_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 7, dictionary2.instance->record.value_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, dictionary_type_flat_file_t, dictionary2.instance->type);
+
+	/* Test close dictionary */
+
+	err = ion_close_dictionary(&dictionary2);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+
+	/* Test delete closed dictionary */
+
+	err = ion_delete_dictionary(&dictionary2, 2);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+
+	/* Test close master table */
 
 	err = ion_close_master_table();
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == ion_master_table_file);
+
+	/* Test delete master table */
+
+	err = ion_delete_master_table();
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 	/**************/
 }
 
