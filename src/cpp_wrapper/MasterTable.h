@@ -57,6 +57,9 @@ deleteMasterTable(
 
 /**
 @brief		Creates a dictionary through use of the master table.
+@param		dictionary
+				A pointer to an allocated dictionary object, which will be
+				written into when opened.
 @param		key_type
 				The type of key to be used with this dictionary, which
 				determines the key comparison operator.
@@ -73,6 +76,7 @@ deleteMasterTable(
 */
 ion_err_t
 createDictionary(
+	ion_dictionary_t		*dictionary,
 	ion_key_type_t			key_type,
 	ion_key_size_t			key_size,
 	ion_value_size_t		value_size,
@@ -85,7 +89,7 @@ createDictionary(
 		return err;
 	}
 
-	return ion_master_table_create_dictionary(&handler, &dict, key_type, key_size, value_size, dictionary_size);
+	return ion_master_table_create_dictionary(&handler, dictionary, key_type, key_size, value_size, dictionary_size);
 }
 
 /**
@@ -157,6 +161,9 @@ ion_err_t
 deleteDictionary(
 	ion_dictionary_id_t id
 ) {
+	dict.status		= ion_dictionary_status_closed;
+	dict.handler	= &handler;
+
 	return ion_delete_dictionary(&dict, id);
 }
 

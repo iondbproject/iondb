@@ -474,6 +474,7 @@ ion_delete_dictionary(
 
 	if (ion_dictionary_status_closed != dictionary->status) {
 		id	= dictionary->instance->id;
+
 		err = dictionary_delete_dictionary(dictionary);
 
 		if (err_ok != err) {
