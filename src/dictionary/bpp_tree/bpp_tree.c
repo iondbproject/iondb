@@ -426,6 +426,8 @@ search(
 					case MODE_FIRST:
 						/* backtrack to first key */
 						ub			= m - 1;
+						if (lb > ub)
+                            				return ION_CC_EQ;
 						foundDup	= boolean_true;
 						break;
 
@@ -1048,7 +1050,7 @@ bFindKey(
 			}
 		}
 		else {
-			if (search(handle, buf, key, 0, &mkey, MODE_FIRST) < 0) {
+			if (search(handle, buf, key, 0, &mkey, MODE_MATCH) < 0) {
 				if ((rc = readDisk(handle, childLT(mkey), &buf)) != 0) {
 					return rc;
 				}
