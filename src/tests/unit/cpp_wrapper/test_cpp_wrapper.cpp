@@ -101,9 +101,10 @@ void
 master_table_open_dictionary(
 	planck_unit_test_t	*tc,
 	MasterTable			*master_table,
+	ion_dictionary_t	*dictionary,
 	ion_dictionary_id_t id
 ) {
-	ion_err_t err = master_table->openDictionary(id);
+	ion_err_t err = master_table->openDictionary(dictionary, id);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 }
@@ -2479,7 +2480,7 @@ test_master_table_dictionary_open_close(
 	id = dictionary.instance->id;
 
 	master_table_close_dictionary(tc, master_table, &dictionary);
-	master_table_open_dictionary(tc, master_table, id);
+	master_table_open_dictionary(tc, master_table, &dictionary, id);
 	master_table_delete_dictionary(tc, master_table, &dictionary, id);
 	delete master_table;
 }
@@ -2617,7 +2618,7 @@ cpp_wrapper_getsuite_3(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_delete);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_close);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_create_delete_all);
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all); */
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all);
 /*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_close_delete_all); */
 
 	return suite;

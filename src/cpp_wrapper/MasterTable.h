@@ -173,6 +173,9 @@ deleteDictionary(
 
 /**
 @brief		Finds the target dictionary and opens it.
+@param		dictionary
+				A pointer to an allocated dictionary object, which will be
+				opened.
 @param		id
 				The identifier identifying the dictionary metadata in the
 				master table.
@@ -180,9 +183,10 @@ deleteDictionary(
 */
 ion_err_t
 openDictionary(
+	ion_dictionary_t	*dictionary,
 	ion_dictionary_id_t id
 ) {
-	return ion_open_dictionary(&handler, &dict, id);
+	return ion_open_dictionary(&handler, dictionary, id);
 }
 
 /**
