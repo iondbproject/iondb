@@ -114,9 +114,10 @@ master_table_open_dictionary(
 void
 master_table_close_dictionary(
 	planck_unit_test_t	*tc,
-	MasterTable			*master_table
+	MasterTable			*master_table,
+	ion_dictionary_t	*dictionary
 ) {
-	ion_err_t err = master_table->closeDictionary();
+	ion_err_t err = master_table->closeDictionary(dictionary);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 }
@@ -128,12 +129,12 @@ void
 master_table_delete_dictionary(
 	planck_unit_test_t	*tc,
 	MasterTable			*master_table,
+	ion_dictionary_t	*dictionary,
 	ion_dictionary_id_t id
 ) {
-	ion_err_t err = master_table->deleteDictionary(id);
+	ion_err_t err = master_table->deleteDictionary(dictionary, id);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
-	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == master_table->dict.instance);
 }
 
 /**
@@ -2439,7 +2440,7 @@ test_master_table_dictionary_create_delete(
 
 	master_table_init(tc, master_table);
 	master_table_dictionary_create(tc, master_table, &dictionary, key_type_numeric_signed, sizeof(int), sizeof(int), dictionary_size, dictionary_type);
-	master_table_delete_dictionary(tc, master_table, dictionary.instance->id);
+	master_table_delete_dictionary(tc, master_table, &dictionary, dictionary.instance->id);
 	delete master_table;
 }
 
@@ -2452,9 +2453,9 @@ test_master_table_dictionary_create_delete_all(
 	planck_unit_test_t *tc
 ) {
 	test_master_table_dictionary_create_delete(tc, 5, dictionary_type_bpp_tree_t);
-/*	test_master_table_dictionary_create_delete(tc, 7, dictionary_type_skip_list_t); */
+	test_master_table_dictionary_create_delete(tc, 7, dictionary_type_skip_list_t);
 	test_master_table_dictionary_create_delete(tc, 30, dictionary_type_flat_file_t);
-/*	test_master_table_dictionary_create_delete(tc, 50, dictionary_type_open_address_hash_t); */
+	test_master_table_dictionary_create_delete(tc, 50, dictionary_type_open_address_hash_t);
 	test_master_table_dictionary_create_delete(tc, 50, dictionary_type_open_address_file_hash_t);
 }
 
@@ -2475,11 +2476,11 @@ test_master_table_dictionary_open_close(
 	master_table_init(tc, master_table);
 	master_table_dictionary_create(tc, master_table, &dictionary, key_type_numeric_signed, sizeof(int), sizeof(int), dictionary_size, dictionary_type);
 
-	id = master_table->dict.instance->id;
+	id = dictionary.instance->id;
 
-	master_table_close_dictionary(tc, master_table);
+	master_table_close_dictionary(tc, master_table, &dictionary);
 	master_table_open_dictionary(tc, master_table, id);
-	master_table_delete_dictionary(tc, master_table, id);
+	master_table_delete_dictionary(tc, master_table, &dictionary, id);
 	delete master_table;
 }
 
@@ -2516,8 +2517,8 @@ test_master_table_dictionary_close_delete(
 
 	id = master_table->dict.instance->id;
 
-	master_table_close_dictionary(tc, master_table);
-	master_table_delete_dictionary(tc, master_table, id);
+	master_table_close_dictionary(tc, master_table, &dictionary);
+	master_table_delete_dictionary(tc, master_table, &dictionary, id);
 	delete master_table;
 }
 

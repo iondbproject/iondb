@@ -155,16 +155,20 @@ deleteFromMasterTable(
 
 /**
 @brief		Deletes a dictionary instance and erases it from the master table.
+@param		dictionary
+				A pointer to an allocated dictionary object, which will be
+				deleted.
+@param		id
+				The identifier identifying the dictionary metadata in the
+				master table.
 @returns	An error code describing the result of the operation.
 */
 ion_err_t
 deleteDictionary(
+	ion_dictionary_t	*dictionary,
 	ion_dictionary_id_t id
 ) {
-	dict.status		= ion_dictionary_status_closed;
-	dict.handler	= &handler;
-
-	return ion_delete_dictionary(&dict, id);
+	return ion_delete_dictionary(dictionary, id);
 }
 
 /**
@@ -183,12 +187,16 @@ openDictionary(
 
 /**
 @brief		Closes a given dictionary.
+@param		dictionary
+				A pointer to an allocated dictionary object, which will be
+				closed.
 @returns	An error code describing the result of the operation.
 */
 ion_err_t
 closeDictionary(
+	ion_dictionary_t *dictionary
 ) {
-	return ion_close_dictionary(&dict);
+	return ion_close_dictionary(dictionary);
 }
 };
 
