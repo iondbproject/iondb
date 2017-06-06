@@ -21,7 +21,7 @@ ion_dictionary_config_info_t	config;
 
 ~MasterTable(
 ) {
-	deleteMasterTable();
+	this->deleteMasterTable();
 }
 
 /**

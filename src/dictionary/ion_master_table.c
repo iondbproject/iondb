@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file
-@author		Eric Huang, Graeme Douglas, Scott Fazackerley, Wade Penson
+@author		Eric Huang, Graeme Douglas, Scott Fazackerley, Wade Penson, Dana Klamut
 @brief		Master table handling.
 @copyright	Copyright 2016
 				The University of British Columbia,
