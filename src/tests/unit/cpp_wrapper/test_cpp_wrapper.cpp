@@ -2509,14 +2509,15 @@ test_master_table_dictionary_close_delete(
 	ion_dictionary_size_t	dictionary_size,
 	ion_dictionary_type_t	dictionary_type
 ) {
-	MasterTable			*master_table = new MasterTable();
+	MasterTable *master_table = new MasterTable();
+
 	ion_dictionary_t	dictionary;
 	ion_dictionary_id_t id;
 
 	master_table_init(tc, master_table);
 	master_table_dictionary_create(tc, master_table, &dictionary, key_type_numeric_signed, sizeof(int), sizeof(int), dictionary_size, dictionary_type);
 
-	id = master_table->dict.instance->id;
+	id = dictionary.instance->id;
 
 	master_table_close_dictionary(tc, master_table, &dictionary);
 	master_table_delete_dictionary(tc, master_table, &dictionary, id);
@@ -2619,7 +2620,7 @@ cpp_wrapper_getsuite_3(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_close);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_create_delete_all);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all);
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_close_delete_all); */
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_close_delete_all);
 
 	return suite;
 }
