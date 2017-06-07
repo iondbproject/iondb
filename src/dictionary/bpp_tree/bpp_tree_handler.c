@@ -83,7 +83,7 @@ bpptree_create_dictionary(
 	int actual_filename_length = dictionary_get_filename(id, "bpt", addr_filename);
 
 	if (actual_filename_length >= ION_MAX_FILENAME_LENGTH) {
-		return err_dictionary_initialization_failed;
+		return err_uninitialized;
 	}
 
 	info.iName		= addr_filename;
@@ -96,7 +96,7 @@ bpptree_create_dictionary(
 	ion_bpp_err_t bErr = bOpen(info, &(bpptree->tree));
 
 	if (bErrOk != bErr) {
-		return err_dictionary_initialization_failed;
+		return err_uninitialized;
 	}
 
 	dictionary->instance					= (ion_dictionary_parent_t *) bpptree;
@@ -104,8 +104,6 @@ bpptree_create_dictionary(
 	dictionary->instance->key_type			= key_type;
 	dictionary->instance->record.key_size	= key_size;
 	dictionary->instance->record.value_size = value_size;
-	dictionary->instance->type				= dictionary_type_bpp_tree_t;
-	dictionary->instance->id				= id;
 	/* todo: need to check to make sure that the handler is registered */
 	dictionary->handler						= handler;
 
@@ -302,33 +300,6 @@ bpptree_delete_dictionary(
 
 	if (err_ok != error) {
 		return error;
-	}
-
-	ion_fremove(addr_filename);
-	ion_fremove(value_filename);
-
-	return err_ok;
-}
-
-/**
-@brief	  Deletes a closed instance of the dictionary and associated data.
-
-@param	  id
-				The identifier identifying the dictionary to delete.
-@return		The status of the dictionary deletion.
-*/
-ion_err_t
-bpptree_destroy_dictionary(
-	ion_dictionary_id_t id
-) {
-	char	addr_filename[ION_MAX_FILENAME_LENGTH];
-	char	value_filename[ION_MAX_FILENAME_LENGTH];
-
-	int actual_addr_filename_length		= dictionary_get_filename(id, "bpt", addr_filename);
-	int actual_value_filename_length	= dictionary_get_filename(id, "val", value_filename);
-
-	if ((actual_addr_filename_length >= ION_MAX_FILENAME_LENGTH) || (actual_value_filename_length >= ION_MAX_FILENAME_LENGTH)) {
-		return err_dictionary_destruction_error;
 	}
 
 	ion_fremove(addr_filename);
@@ -676,7 +647,6 @@ bpptree_init(
 	handler->find				= bpptree_find;
 	handler->remove				= bpptree_delete;
 	handler->delete_dictionary	= bpptree_delete_dictionary;
-	handler->destroy_dictionary = bpptree_destroy_dictionary;
 	handler->open_dictionary	= bpptree_open_dictionary;
 	handler->close_dictionary	= bpptree_close_dictionary;
 }

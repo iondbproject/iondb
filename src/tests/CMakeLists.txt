@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION 3.5)
 project(planck_unit)
 
 set(SOURCE_FILES
-    planck-unit/src/planck_unit.h
-    planck-unit/src/planck_unit.c
-    planck-unit/src/ion_time/ion_time.c
-    planck-unit/src/ion_time/ion_time.h
+    planckunit/src/planck_unit.h
+    planckunit/src/planck_unit.c
+    planckunit/src/ion_time/ion_time.c
+    planckunit/src/ion_time/ion_time.h
     )
 
 if(USE_ARDUINO)

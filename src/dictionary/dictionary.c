@@ -168,20 +168,6 @@ dictionary_delete_dictionary(
 	return dictionary->handler->delete_dictionary(dictionary);
 }
 
-ion_err_t
-dictionary_destroy_dictionary(
-	ion_dictionary_handler_t	*handler,
-	ion_dictionary_id_t			id
-) {
-	ion_err_t error = handler->destroy_dictionary(id);
-
-	if (err_not_implemented == error) {
-		error = ffdict_destroy_dictionary(id);
-	}
-
-	return error;
-}
-
 ion_status_t
 dictionary_delete(
 	ion_dictionary_t	*dictionary,
@@ -332,7 +318,7 @@ dictionary_open(
 		}
 
 		if (cursor_status != cs_end_of_results) {
-			return err_dictionary_initialization_failed;
+			return err_uninitialized;
 		}
 
 		cursor->destroy(&cursor);
@@ -411,7 +397,7 @@ dictionary_close(
 		}
 
 		if (cs_end_of_results != cursor_status) {
-			return err_dictionary_initialization_failed;
+			return err_uninitialized;
 		}
 
 		cursor->destroy(&cursor);

@@ -132,7 +132,7 @@ oah_insert(
 					return ION_STATUS_OK(1);
 				}
 				else {
-					return ION_STATUS_ERROR(err_write_concern);	/* there is a configuration issue with write concern */
+					return ION_STATUS_ERROR(err_file_write_error);	/* there is a configuration issue with write concern */
 				}
 			}
 		}

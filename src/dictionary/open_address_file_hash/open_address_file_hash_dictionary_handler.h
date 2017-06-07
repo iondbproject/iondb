@@ -170,18 +170,6 @@ oafdict_delete_dictionary(
 );
 
 /**
-@brief		Cleans up all files created by the dictionary, and frees any allocated memory,
-			for an already closed dictionary.
-@param		id
-				The identifier identifying the dictionary to delete.
-@return		The resulting status of the operation.
-*/
-ion_err_t
-oafdict_destroy_dictionary(
-	ion_dictionary_id_t id
-);
-
-/**
 @brief		Updates the value for a given key.
 
 @details	Updates the value for a given @p key.  If the key does not currently
