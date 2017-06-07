@@ -360,3 +360,27 @@ SD_File_Exists(
 ) {
 	return (int) (SD.exists(filepath));
 }
+
+int
+SD_File_Delete_All(
+) {
+	File root = SD.open("/");
+
+	while (true) {
+		File entry = root.openNextFile();
+
+		if (!entry) {
+			break;
+		}
+
+		entry.close();
+
+		bool is_ok = SD.remove(entry.name());
+
+		if (!is_ok) {
+			return false;
+		}
+	}
+
+	return true;
+}

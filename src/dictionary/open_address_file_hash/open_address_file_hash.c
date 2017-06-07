@@ -53,7 +53,7 @@ oafh_initialize(
 	int actual_filename_length = dictionary_get_filename(id, "oaf", addr_filename);
 
 	if (actual_filename_length >= ION_MAX_FILENAME_LENGTH) {
-		return err_dictionary_initialization_failed;
+		return err_uninitialized;
 	}
 
 	hashmap->file = fopen(addr_filename, "r+b");
@@ -200,7 +200,7 @@ oafh_insert(
 				}
 				else {
 					free(item);
-					return ION_STATUS_ERROR(err_write_concern);	/* there is a configuration issue with write concern */
+					return ION_STATUS_ERROR(err_file_write_error);	/* there is a configuration issue with write concern */
 				}
 			}
 		}

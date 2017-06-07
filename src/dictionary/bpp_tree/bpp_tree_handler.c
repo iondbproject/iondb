@@ -79,7 +79,7 @@ bpptree_create_dictionary(
 	int actual_filename_length = dictionary_get_filename(id, "bpt", addr_filename);
 
 	if (actual_filename_length >= ION_MAX_FILENAME_LENGTH) {
-		return err_dictionary_initialization_failed;
+		return err_uninitialized;
 	}
 
 	info.iName		= addr_filename;
@@ -91,7 +91,7 @@ bpptree_create_dictionary(
 	ion_bpp_err_t bErr = bOpen(info, &(bpptree->tree));
 
 	if (bErrOk != bErr) {
-		return err_dictionary_initialization_failed;
+		return err_uninitialized;
 	}
 
 	dictionary->instance					= (ion_dictionary_parent_t *) bpptree;

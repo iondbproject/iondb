@@ -275,6 +275,14 @@ SD_File_Exists(
 	char *filepath
 );
 
+/**
+@brief		Deletes all files on the Arduino device.
+@returns	@p 1 if all deletes were successful, @c 0 otherwise.
+*/
+int
+SD_File_Delete_All(
+);
+
 #if defined(__cplusplus)
 }
 #endif
