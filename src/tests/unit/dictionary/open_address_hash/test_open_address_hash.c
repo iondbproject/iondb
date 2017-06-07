@@ -248,7 +248,6 @@ test_open_address_hashmap_simple_insert(
 
 			ion_status_t status = oah_insert(&map, (&i), str);	/* this is will wrap */
 
-			/* FIXME: Why are we inserting inside two loops?!? */
 			if ((offset == 0) || (wc_duplicate == map.write_concern)) {
 				PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 				PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);

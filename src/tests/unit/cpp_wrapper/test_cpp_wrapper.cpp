@@ -3,7 +3,6 @@
 @file
 @author		Kris Wallperington, Dana Klamut
 @brief		Unit test for the C++ Wrapper
-@todo		These tests need to be fully fleshed out.
 */
 /******************************************************************************/
 

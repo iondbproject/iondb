@@ -51,6 +51,8 @@ extern "C" {
 #define ION_IS_GREATER			1
 #define ION_IS_LESS				-1
 #define ION_ZERO				0
+#define ION_RETURN_VALUE		0x73/* Magic default return value to be easy to spot */
+
 /**
 @brief		Since the arduino conforms to 8.3 syntax, that's 8 + 3 = 11 + 1 (null terminator) characters.
 */

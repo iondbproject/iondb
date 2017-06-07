@@ -4,12 +4,6 @@
 @author		Scott Ronald Fazackerley
 @brief		Open Address Hash Map
 @details	The open address hash map allows non-colliding entries into a hash table
-
-@todo   capture size of map
-@todo   prevent duplicate insertions
-@todo   When creating the hash-map, need to know something about what is going in it.
-		What we need to know if the the size of the key and the size of the data.
-		That is all.  Nothing else.
 */
 /******************************************************************************/
 
@@ -89,7 +83,6 @@ oah_update(
 	ion_key_t		key,
 	ion_value_t		value
 ) {
-	/* TODO: lock potentially required */
 	ion_write_concern_t current_write_concern = hash_map->write_concern;
 
 	hash_map->write_concern = wc_update;/* change write concern to allow update */
@@ -190,10 +183,6 @@ oah_find_item_loc(
 			/* calculate if there is a match */
 
 			if (item->status != ION_DELETED) {
-				/*@todo correct compare to use proper returen type*/
-				/*@todo An error exisits with the comparitor from the dictionary and will need to be
-				 * revisitied onced fixed */
-
 				int key_is_equal = hash_map->super.compare(item->data, key, hash_map->super.record.key_size);
 
 				if (ION_IS_EQUAL == key_is_equal) {
@@ -319,8 +308,6 @@ oah_compute_simple_hash(
 ) {
 	UNUSED(size_of_key);
 
-	/* convert to a hashable value */
-	/*@todo int will cause an issues depending on sizeof int */
 	ion_hash_t hash = (ion_hash_t) (((*(int *) key) % hashmap->map_size) + hashmap->map_size) % hashmap->map_size;
 
 	return hash;

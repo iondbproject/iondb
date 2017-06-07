@@ -170,7 +170,6 @@ sldict_find(
 
 	switch (predicate->type) {
 		case predicate_equality: {
-			/* TODO get ALL these lines within 80 cols */
 			ion_key_t target_key = predicate->statement.equality.equality_value;
 
 			(*cursor)->predicate->statement.equality.equality_value = malloc(key_size);
@@ -279,7 +278,6 @@ sldict_find(
 		}
 
 		case predicate_predicate: {
-			/* TODO not implemented */
 			break;
 		}
 
@@ -371,8 +369,6 @@ sldict_create_dictionary(
 	pnum							= 1;
 	pden							= 4;
 
-	/* TODO Should we handle the possible error code returned by this?
-	 * If yes, what sorts of errors does it return? */
 	ion_err_t result = sl_initialize((ion_skiplist_t *) dictionary->instance, key_type, key_size, value_size, dictionary_size, pnum, pden);
 
 	if (err_ok == result) {
