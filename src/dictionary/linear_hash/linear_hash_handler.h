@@ -45,10 +45,8 @@ linear_hash_dict_insert(
 @brief	  Creates an instance of a dictionary.
 
 @details	Creates an instance of a dictionary given a @p key_size and
-			@p value_size, in bytes as well as the @p dictionary_size, which
-			is the maximum number of levels in the skiplist. By nature of the
-			structure, the maximum number of elements is bounded only by memory
-			use.
+			@p value_size, in bytes. Given an By nature of the
+			structure, the maximum number of elements is bounded only by memory.
 
 @param		id
 @param		key_type
@@ -152,7 +150,7 @@ linear_hash_dict_update(
 }
 #endif
 
-#endif /* SKIP_LIST_HANDLER_H_ */
+#endif /* LINEAR_HASH_HANDLER */
 
 ion_status_t
 linear_hash_dict_find(
