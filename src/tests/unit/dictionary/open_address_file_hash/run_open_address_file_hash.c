@@ -4,6 +4,7 @@
 int
 main(
 ) {
+	fdeleteall();
 	runalltests_open_address_file_hash();
 	runalltests_open_address_file_hash_handler();
 	return 0;
