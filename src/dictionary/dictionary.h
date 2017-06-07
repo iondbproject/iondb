@@ -165,21 +165,6 @@ dictionary_delete_dictionary(
 );
 
 /**
-@brief	  Destroys dictionary
-
-@param	  handler
-				A pointer to the implementation of dictionary to destroy.
-@param	  id
-				The identifier identifying the dictionary to destroy.
-@return		The status of the total destruction of the dictionary.
-*/
-ion_err_t
-dictionary_destroy_dictionary(
-	ion_dictionary_handler_t	*handler,
-	ion_dictionary_id_t			id
-);
-
-/**
 @brief		Compares two unsigned integer numeric keys
 @details	Compares two ion_key_t assuming that they are of arbitrary
 			length and integer, unsigned and numeric (ie not a char[]). The

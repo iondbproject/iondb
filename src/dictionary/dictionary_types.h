@@ -46,11 +46,6 @@ typedef unsigned int ion_dictionary_id_t;
 typedef ion_byte_t ion_dict_use_t;
 
 /**
-@brief		The position in the hashmap.
-*/
-typedef int ion_hash_t;
-
-/**
 @brief		Struct containing details for opening a dictionary previously
 			created.
 */
@@ -66,8 +61,6 @@ typedef struct {
 	ion_dictionary_size_t	dictionary_size;	/**< The dictionary size
 													 parameter. Dependent on
 													 the dictionary
-													 implementation used. */
-	ion_dictionary_type_t dictionary_type;	/**< The type of dictionary
 													 implementation used. */
 } ion_dictionary_config_info_t;
 
@@ -215,10 +208,6 @@ struct dictionary_handler {
 		ion_dictionary_t *
 	);
 	/**< A pointer to the dictionaries dictionary removal function. */
-	ion_err_t (*destroy_dictionary)(
-		ion_dictionary_id_t id
-	);
-	/**< A pointer to the dictionaries dictionary destroy function. */
 	ion_err_t (*open_dictionary)(
 		ion_dictionary_handler_t *,
 		ion_dictionary_t *,
@@ -274,7 +263,6 @@ struct dictionary_parent {
 	ion_dictionary_compare_t	compare;/**< Comparison function for
 											  instance of map. */
 	ion_dictionary_id_t			id;		/**< ID of dictionary instance. */
-	ion_dictionary_type_t		type;	/**< Type of dictionary implementation used. */
 };
 
 /**
