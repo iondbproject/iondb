@@ -318,7 +318,7 @@ dictionary_open(
 		}
 
 		if (cursor_status != cs_end_of_results) {
-			return err_dictionary_initialization_failed;
+			return err_uninitialized;
 		}
 
 		cursor->destroy(&cursor);
@@ -397,7 +397,7 @@ dictionary_close(
 		}
 
 		if (cs_end_of_results != cursor_status) {
-			return err_dictionary_initialization_failed;
+			return err_uninitialized;
 		}
 
 		cursor->destroy(&cursor);
