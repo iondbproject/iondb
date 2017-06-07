@@ -3,7 +3,6 @@
 @file
 @author		Graeme Douglas
 @brief		A file API for the ionDB.
-@todo		Include support for other file systems (Arduino, Contiki).
 */
 /******************************************************************************/
 
@@ -23,7 +22,7 @@ typedef long ion_file_offset_t;
 
 #if defined(ARDUINO)
 
-#include "SD_stdio_c_iface.h"
+#include "sd_stdio_c_iface.h"
 
 #define ION_NOFILE \
 	((ion_file_handle_t) { NULL, -1 } \

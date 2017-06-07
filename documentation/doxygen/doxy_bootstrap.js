@@ -66,7 +66,6 @@ $( document ).ready(function() {
     $("div.ttname a").css("color", 'white');
     $("div.ttdef,div.ttdoc,div.ttdeci").addClass("panel-body");
 
-    //TODO
     $('#MSearchBox').parent().remove();
 
     $('div.fragment.well div.line:first').css('margin-top', '15px');

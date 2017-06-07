@@ -37,7 +37,6 @@ typedef struct sl_node {
 		into the skiplist.
 */
 typedef struct skiplist {
-	/* TODO yuck */
 	ion_dictionary_parent_t super;	/**< Parent structure holding dictionary level
 									information */
 	ion_sl_node_t			*head;	/**< Entry point into the skiplist. Does not hold

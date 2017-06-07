@@ -45,11 +45,11 @@ flat_file_initialize(
 	int		actual_filename_length = dictionary_get_filename(id, "ffs", filename);
 
 	if (actual_filename_length >= ION_MAX_FILENAME_LENGTH) {
-		return err_dictionary_initialization_failed;
+		return err_uninitialized;
 	}
 
 	flat_file->sorted_mode				= boolean_false;/* By default, we don't use sorted mode */
-	flat_file->num_buffered				= dictionary_size;	/* TODO: Sorted mode needs to be written out as a header? */
+	flat_file->num_buffered				= dictionary_size;
 	flat_file->current_loaded_region	= -1;	/* No loaded region yet */
 
 	flat_file->data_file				= fopen(filename, "r+b");
@@ -186,10 +186,10 @@ flat_file_scan(
 			/* It's possible for this to do a partial read (if you're close to EOF), calculate how many we need to read */
 			size_t records_left = (end_offset - cur_offset) / flat_file->row_size;
 
-			num_records_to_process = records_left > (unsigned) /* TODO HACK: remove this */ flat_file->num_buffered ? (unsigned) flat_file->num_buffered : records_left;
+			num_records_to_process = records_left > (unsigned) flat_file->num_buffered ? (unsigned) flat_file->num_buffered : records_left;
 
 			if (num_records_to_process != fread(flat_file->buffer, flat_file->row_size, num_records_to_process, flat_file->data_file)) {
-				return err_file_incomplete_read;
+				return err_file_read_error;
 			}
 
 			if (-1 == (cur_offset = ftell(flat_file->data_file))) {
@@ -211,7 +211,7 @@ flat_file_scan(
 			}
 
 			if (num_records_to_process != fread(flat_file->buffer, flat_file->row_size, num_records_to_process, flat_file->data_file)) {
-				return err_file_incomplete_read;
+				return err_file_read_error;
 			}
 
 			/* In this case, the prev_offset is actually the cur_offset. */
@@ -319,15 +319,15 @@ flat_file_write_row(
 	}
 
 	if (1 != fwrite(&row->row_status, sizeof(row->row_status), 1, flat_file->data_file)) {
-		return err_file_incomplete_write;
+		return err_file_write_error;
 	}
 
 	if ((NULL != row->key) && (1 != fwrite(row->key, flat_file->super.record.key_size, 1, flat_file->data_file))) {
-		return err_file_incomplete_write;
+		return err_file_write_error;
 	}
 
 	if ((NULL != row->value) && (1 != fwrite(row->value, flat_file->super.record.value_size, 1, flat_file->data_file))) {
-		return err_file_incomplete_write;
+		return err_file_write_error;
 	}
 
 	return err_ok;
@@ -352,15 +352,15 @@ flat_file_read_row(
 		}
 
 		if (1 != fread(flat_file->buffer, sizeof(row->row_status), 1, flat_file->data_file)) {
-			return err_file_incomplete_write;
+			return err_file_write_error;
 		}
 
 		if (1 != fread(flat_file->buffer + sizeof(row->row_status), flat_file->super.record.key_size, 1, flat_file->data_file)) {
-			return err_file_incomplete_write;
+			return err_file_write_error;
 		}
 
 		if (1 != fread(flat_file->buffer + sizeof(row->row_status) + flat_file->super.record.key_size, flat_file->super.record.value_size, 1, flat_file->data_file)) {
-			return err_file_incomplete_write;
+			return err_file_write_error;
 		}
 	}
 
