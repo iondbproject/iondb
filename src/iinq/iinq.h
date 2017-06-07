@@ -510,6 +510,7 @@ iinq_sort_compare(
 	source.dictionary.handler	= &source.handler; \
 	error						= iinq_open_source( # source ".inq", &(source.dictionary), &(source.handler)); \
 	if (err_ok != error) { \
+		printf("*** fail _FROM_SOURCE_SINGLE open source: %d\n", error); \
 		break; \
 	} \
 	result.raw_record_size	+= source.dictionary.instance->record.key_size; \
@@ -518,9 +519,14 @@ iinq_sort_compare(
 	result.num_bytes		+= source.dictionary.instance->record.value_size; \
 	error					= dictionary_build_predicate(&(source.predicate), predicate_all_records); \
 	if (err_ok != error) { \
+		printf("*** fail _FROM_SOURCE_SINGLE dict build predicate: %d\n", error); \
 		break; \
 	} \
-	dictionary_find(&source.dictionary, &source.predicate, &source.cursor);
+	error = dictionary_find(&source.dictionary, &source.predicate, &source.cursor); \
+	if (err_ok != error) { \
+		printf("*** fail _FROM_SOURCE_SINGLE dict find: %d\n", error); \
+		break; \
+	}
 
 #define _FROM_WITH_SCHEMA_SINGLE(source) \
 	struct iinq_ ## source ## _schema *source ## _tuple; \

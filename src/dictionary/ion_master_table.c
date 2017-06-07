@@ -129,27 +129,33 @@ ion_master_table_read(
 	}
 
 	if (1 != fread(&(config->id), sizeof(config->id), 1, ion_master_table_file)) {
-		return err_file_write_error;
+		printf("*** Error on master tab read, ID\n");
+		return err_file_read_error;
 	}
 
 	if (1 != fread(&(config->use_type), sizeof(config->use_type), 1, ion_master_table_file)) {
-		return err_file_write_error;
+		printf("*** Error on master tab read, use type\n");
+		return err_file_read_error;
 	}
 
 	if (1 != fread(&(config->type), sizeof(config->type), 1, ion_master_table_file)) {
-		return err_file_write_error;
+		printf("*** Error on master tab read, type\n");
+		return err_file_read_error;
 	}
 
 	if (1 != fread(&(config->key_size), sizeof(config->key_size), 1, ion_master_table_file)) {
-		return err_file_write_error;
+		printf("*** Error on master tab read, key size\n");
+		return err_file_read_error;
 	}
 
 	if (1 != fread(&(config->value_size), sizeof(config->value_size), 1, ion_master_table_file)) {
-		return err_file_write_error;
+		printf("*** Error on master tab read, value size\n");
+		return err_file_read_error;
 	}
 
 	if (1 != fread(&(config->dictionary_size), sizeof(config->dictionary_size), 1, ion_master_table_file)) {
-		return err_file_write_error;
+		printf("*** Error on master tab read, dictionary size\n");
+		return err_file_read_error;
 	}
 
 	if (0 != fseek(ion_master_table_file, old_pos, SEEK_SET)) {
@@ -249,9 +255,13 @@ ion_delete_master_table(
 	void
 ) {
 	if (NULL != ion_master_table_file) {
-		if (0 != fremove(ION_MASTER_TABLE_FILENAME)) {
-			return err_file_delete_error;
+		if (0 != fclose(ion_master_table_file)) {
+			return err_file_close_error;
 		}
+	}
+
+	if (0 != fremove(ION_MASTER_TABLE_FILENAME)) {
+		return err_file_delete_error;
 	}
 
 	return err_ok;
@@ -393,7 +403,7 @@ ion_open_dictionary(
 
 	/* Lookup for id failed. */
 	if (err_ok != err) {
-		printf("*** Error in master tab open dict, lookup");
+		printf("*** Error in master tab open dict, lookup\n");
 		return err;
 	}
 
