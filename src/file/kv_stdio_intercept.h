@@ -54,7 +54,7 @@ extern "C" {
 #define  ftell(x)			sd_ftell(x)
 #define  fremove(x)			sd_remove(x)
 #define  frewind(x)			sd_rewind(x)
-
+#define  fdeleteall()		SD_File_Delete_All()
 #if defined(__cplusplus)
 }
 #endif

@@ -54,7 +54,6 @@ bpptree_create_dictionary(
 ) {
 	UNUSED(dictionary_size);
 
-	/* TODO: Uncomment this when IINQ has been merged into development */
 /*	if (key_size != sizeof(int)) {
 		return err_invalid_initial_size;
 	}*/
@@ -75,28 +74,24 @@ bpptree_create_dictionary(
 
 	bpptree->values.next_empty	= ION_FILE_NULL;
 
-	/* FIXME: read this from a property bag. */
-
-	/* FIXME: VARIABLE NAMES! */
 	char addr_filename[ION_MAX_FILENAME_LENGTH];
 
 	int actual_filename_length = dictionary_get_filename(id, "bpt", addr_filename);
 
 	if (actual_filename_length >= ION_MAX_FILENAME_LENGTH) {
-		return err_dictionary_initialization_failed;
+		return err_uninitialized;
 	}
 
 	info.iName		= addr_filename;
 	info.keySize	= key_size;
 	info.dupKeys	= boolean_false;
-	/* FIXME: HOW DO WE SET BLOCK SIZE? */
 	info.sectorSize = 256;
 	info.comp		= compare;
 
 	ion_bpp_err_t bErr = bOpen(info, &(bpptree->tree));
 
 	if (bErrOk != bErr) {
-		return err_dictionary_initialization_failed;
+		return err_uninitialized;
 	}
 
 	dictionary->instance					= (ion_dictionary_parent_t *) bpptree;
@@ -104,7 +99,6 @@ bpptree_create_dictionary(
 	dictionary->instance->key_type			= key_type;
 	dictionary->instance->record.key_size	= key_size;
 	dictionary->instance->record.value_size = value_size;
-	/* todo: need to check to make sure that the handler is registered */
 	dictionary->handler						= handler;
 
 	return err_ok;
@@ -152,7 +146,6 @@ bpptree_insert(
 		}
 
 		if (bErrOk != bErr) {
-			/* TODO: lfb_delete from values */
 			return ION_STATUS_ERROR(err_unable_to_insert);
 		}
 
@@ -217,7 +210,7 @@ bpptree_query(
 }
 
 /**
-@brief		Deletes the @p key and assoicated value from the dictionary
+@brief		Deletes the @p key and associated value from the dictionary
 			instance.
 
 @param	  dictionary
@@ -252,7 +245,14 @@ bpptree_delete(
 	return status;
 }
 
-/* TODO Write me doc! */
+/**
+@brief			Closes a BppTree instance of a dictionary.
+
+@param			dictionary
+					A pointer to the specific dictionary instance to be closed.
+
+@return			The status of closing the dictionary.
+ */
 ion_err_t
 bpptree_close_dictionary(
 	ion_dictionary_t *dictionary
@@ -414,7 +414,6 @@ bpptree_next(
 				}
 
 				case predicate_predicate: {
-					/*TODO Not implemented */
 					break;
 				}
 					/*No default since we can assume the predicate is valid. */
@@ -524,7 +523,6 @@ bpptree_find(
 
 	switch (predicate->type) {
 		case predicate_equality: {
-			/* TODO get ALL these lines within 80 cols */
 			ion_key_t target_key = predicate->statement.equality.equality_value;
 
 			(*cursor)->predicate->statement.equality.equality_value = malloc(key_size);
@@ -612,7 +610,6 @@ bpptree_find(
 		}
 
 		case predicate_predicate: {
-			/* TODO not implemented */
 			break;
 		}
 
@@ -625,7 +622,21 @@ bpptree_find(
 	return err_ok;
 }
 
-/* TODO Write me doc! */
+/**
+@brief			Opens a specific BppTree instance of a dictionary.
+
+@param			handler
+					A pointer to the handler for the specific dictionary being opened.
+@param			dictionary
+					The pointer declared by the caller that will reference
+					the instance of the dictionary opened.
+@param			config
+					The configuration info of the specific dictionary to be opened.
+@param			compare
+					Function pointer for the comparison function for the dictionary.
+
+@return			The status of opening the dictionary.
+ */
 ion_err_t
 bpptree_open_dictionary(
 	ion_dictionary_handler_t		*handler,

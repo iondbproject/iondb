@@ -92,7 +92,6 @@ sd_fgetpos(
 	return 0;
 }
 
-/* todo update to handle other modes */
 SD_FILE *
 sd_fopen(
 	char	*filename,
@@ -360,4 +359,28 @@ SD_File_Exists(
 	char *filepath
 ) {
 	return (int) (SD.exists(filepath));
+}
+
+int
+SD_File_Delete_All(
+) {
+	File root = SD.open("/");
+
+	while (true) {
+		File entry = root.openNextFile();
+
+		if (!entry) {
+			break;
+		}
+
+		entry.close();
+
+		bool is_ok = SD.remove(entry.name());
+
+		if (!is_ok) {
+			return false;
+		}
+	}
+
+	return true;
 }
