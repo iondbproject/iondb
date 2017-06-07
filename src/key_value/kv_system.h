@@ -41,6 +41,7 @@ extern "C" {
 #if !defined(ARDUINO)
 #define fremove(x)	remove(x)
 #define frewind(x)	rewind(x)
+#define fdeleteall()
 #endif
 
 #define ION_USING_MASTER_TABLE	1
@@ -88,7 +89,7 @@ typedef unsigned char byte;
 	((ion_status_t) { (error), (count) } \
 	)
 #define ION_STATUS_INITIALIZE \
-	((ion_status_t) { err_status_uninitialized, 0 } \
+	((ion_status_t) { err_uninitialized, 0 } \
 	)
 #define ION_STATUS_ERROR(error) \
 	((ion_status_t) { (error), 0 } \
@@ -120,21 +121,15 @@ typedef enum ION_KEY_TYPE {
 enum ION_ERROR {
 	/**> An error code describing the situation where everything is OK. */
 	err_ok,
-	/**> An error code describing the situation where the status has not
-		 been initialized yet. */
-	err_status_uninitialized,
 	/**> An error code describing the situation where an item is not found. */
 	err_item_not_found,
 	/**> An error code describing the situation where duplicate key is used
-		 inappropariately. */
+		 inappropriately. */
 	err_duplicate_key,
 	/**> An error code describing the situation where a structure is asked
 		 to grow beyond it's capacity. */
 	err_max_capacity,
-	/**> An error code describing the situation where a configuration setting
-		 for a write concern is problematic. */
-	err_write_concern,
-	/**> An error code describing the situation where an error occured in
+	/**> An error code describing the situation where an error occurred in
 		 destroying a dictionary. */
 	err_dictionary_destruction_error,
 	/**> An error code describing the situation where a predicate is invalid. */
@@ -157,41 +152,26 @@ enum ION_ERROR {
 	/**> An error code describing the situation where an delete operation
 		 has failed. */
 	err_file_delete_error,
-	/**> An error code describing the situation where a dictionary has failed
-		 has failed to initialize. */
-	err_dictionary_initialization_failed,
 	/**> An error code describing the situation where an insert operation could
 		 not be completed. */
 	err_unable_to_insert,
-	/**> An error code describing the situation where a write operation could
-		 not be made to completion. */
-	err_file_incomplete_write,
-	/**> An error code describing the situation where a read operation could
-		 not be made to completion. */
-	err_file_incomplete_read,
 	/**> An error code describing the situation where a seek operation could
 		 not be made to completion. */
 	err_file_bad_seek,
 	/**> An error code describing the situation where a file operation hit
 		 the EOF. */
 	err_file_hit_eof,
-	/**> An error code describing the situation where a requested item could
-		 not be found in the primary page. */
-	err_not_in_primary_page,
 	/**> An error code describing the situation where a requested operation
 		 is not implemented. */
 	err_not_implemented,
-	/**> An error code describing the situation where a system object has
-		 been encountered in an illegal state. */
-	err_illegal_state,
 	/**> An error code describing the situation where specified size is
 		 illegal, invalid, or otherwise unreasonable. */
 	err_invalid_initial_size,
 	/**> An error code returned when a dictionary of the same name as
 		 an existing dictionary is attempted to be created. */
 	err_duplicate_dictionary_error,
-	/**> An error code describing the situation a system object was not
-		 properly initialized. */
+	/**> An error code describing the situation a system object or dictionary
+		 was not properly initialized. */
 	err_uninitialized,
 	/**> An error code describing the situation where something is out of
 		 valid bounds. */
