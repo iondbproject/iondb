@@ -381,6 +381,7 @@ oafdict_init(
 	handler->find				= oafdict_find;
 	handler->remove				= oafdict_delete;
 	handler->delete_dictionary	= oafdict_delete_dictionary;
+	handler->destroy_dictionary = oafdict_destroy_dictionary;
 	handler->open_dictionary	= oafdict_open_dictionary;
 	handler->close_dictionary	= oafdict_close_dictionary;
 }
@@ -410,6 +411,7 @@ oafdict_create_dictionary(
 	dictionary->instance			= malloc(sizeof(ion_file_hashmap_t));
 
 	dictionary->instance->compare	= compare;
+	dictionary->instance->type		= dictionary_type_open_address_file_hash_t;
 
 	/* this registers the dictionary the dictionary */
 	oafh_initialize((ion_file_hashmap_t *) dictionary->instance, oafh_compute_simple_hash, key_type, key_size, value_size, dictionary_size, id);/* just pick an arbitary size for testing atm */
@@ -441,6 +443,23 @@ oafdict_delete_dictionary(
 	free(dictionary->instance);
 	dictionary->instance = NULL;/* When releasing memory, set pointer to NULL */
 	return result;
+}
+
+ion_err_t
+oafdict_destroy_dictionary(
+	ion_dictionary_id_t id
+) {
+	char addr_filename[ION_MAX_FILENAME_LENGTH];
+
+	int actual_filename_length = dictionary_get_filename(id, "oaf", addr_filename);
+
+	if (actual_filename_length >= ION_MAX_FILENAME_LENGTH) {
+		return err_dictionary_destruction_error;
+	}
+
+	fremove(addr_filename);
+
+	return err_ok;
 }
 
 ion_status_t
