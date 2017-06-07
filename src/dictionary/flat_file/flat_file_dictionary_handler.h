@@ -148,18 +148,6 @@ ffdict_delete_dictionary(
 );
 
 /**
-@brief		Cleans up all files created by the dictionary, and frees any allocated memory,
-			for an already closed dictionary.
-@param[in]	id
-				The identifier identifying the dictionary to delete.
-@return		The resulting status of the operation.
-*/
-ion_err_t
-ffdict_destroy_dictionary(
-	ion_dictionary_id_t id
-);
-
-/**
 @brief		Updates all records stored at @p key to have value equal to @p value.
 @details	If no records are stored at @p key, then an "upsert" (insert instead of update)
 			is performed.

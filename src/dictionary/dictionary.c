@@ -168,20 +168,6 @@ dictionary_delete_dictionary(
 	return dictionary->handler->delete_dictionary(dictionary);
 }
 
-ion_err_t
-dictionary_destroy_dictionary(
-	ion_dictionary_handler_t	*handler,
-	ion_dictionary_id_t			id
-) {
-	ion_err_t error = handler->destroy_dictionary(id);
-
-	if (err_not_implemented == error) {
-		error = ffdict_destroy_dictionary(id);
-	}
-
-	return error;
-}
-
 ion_status_t
 dictionary_delete(
 	ion_dictionary_t	*dictionary,

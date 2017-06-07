@@ -194,7 +194,6 @@ ion_fread(
 	}
 
 	return err_ok;
-
 #endif
 }
 

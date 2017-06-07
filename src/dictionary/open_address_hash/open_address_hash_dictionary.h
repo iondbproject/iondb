@@ -12,6 +12,11 @@ extern "C" {
 
 #include "../dictionary_types.h"
 
+/**
+@brief		The position in the hashmap.
+*/
+typedef int ion_hash_t;
+
 typedef struct oadict_cursor {
 	ion_dict_cursor_t	super;			/**< Cursor supertype this type inherits from */
 	ion_hash_t			first;			/**<First visited spot*/

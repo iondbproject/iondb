@@ -8,7 +8,7 @@ extern "C" {
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
-#include "../../planck-unit/src/planck_unit.h"
+#include "../../planckunit/src/planck_unit.h"
 #include "../../../iinq/iinq.h"
 
 void

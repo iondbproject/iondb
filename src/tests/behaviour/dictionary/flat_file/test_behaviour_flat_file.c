@@ -21,7 +21,7 @@
 */
 /******************************************************************************/
 
-#include "../../../planck-unit/src/planck_unit.h"
+#include "../../../planckunit/src/planck_unit.h"
 #include "../behaviour_dictionary.h"
 #include "../../../../dictionary/flat_file/flat_file_dictionary_handler.h"
 #include "test_behaviour_flat_file.h"

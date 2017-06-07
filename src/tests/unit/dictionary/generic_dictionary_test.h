@@ -7,7 +7,7 @@ extern "C" {
 
 #include <stdlib.h>
 #include <limits.h>
-#include "../../planck-unit/src/planck_unit.h"
+#include "../../planckunit/src/planck_unit.h"
 #include "../../../key_value/kv_system.h"
 #include "../../../dictionary/dictionary_types.h"
 #include "./../../../dictionary/dictionary.h"

@@ -330,7 +330,6 @@ sldict_init(
 	handler->create_dictionary	= sldict_create_dictionary;
 	handler->remove				= sldict_delete;
 	handler->delete_dictionary	= sldict_delete_dictionary;
-	handler->destroy_dictionary = sldict_destroy_dictionary;
 	handler->update				= sldict_update;
 	handler->find				= sldict_find;
 	handler->close_dictionary	= sldict_close_dictionary;
@@ -368,7 +367,6 @@ sldict_create_dictionary(
 	}
 
 	dictionary->instance->compare	= compare;
-	dictionary->instance->type		= dictionary_type_skip_list_t;
 
 	pnum							= 1;
 	pden							= 4;
@@ -401,14 +399,6 @@ sldict_delete_dictionary(
 	free(dictionary->instance);
 	dictionary->instance = NULL;
 	return result;
-}
-
-ion_err_t
-sldict_destroy_dictionary(
-	ion_dictionary_id_t id
-) {
-	UNUSED(id);
-	return err_not_implemented;
 }
 
 ion_status_t
