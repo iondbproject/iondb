@@ -7,7 +7,7 @@
 */
 /******************************************************************************/
 
-#include "../../planckunit/src/planck_unit.h"
+#include "../../planck-unit/src/planck_unit.h"
 #include "../../../cpp_wrapper/Dictionary.h"
 #include "../../../cpp_wrapper/BppTree.h"
 #include "../../../cpp_wrapper/FlatFile.h"
