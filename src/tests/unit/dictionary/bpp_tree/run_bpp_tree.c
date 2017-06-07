@@ -4,6 +4,7 @@ int
 main(
 	void
 ) {
+	fdeleteall();
 	run_all_tests_bpptreehandler();
 	return 0;
 }

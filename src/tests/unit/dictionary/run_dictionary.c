@@ -3,6 +3,7 @@
 int
 main(
 ) {
+	fdeleteall();
 	runalltests_dictionary();
 	return 0;
 }

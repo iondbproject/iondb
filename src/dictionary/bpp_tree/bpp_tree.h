@@ -75,7 +75,7 @@ typedef struct {
  * function prototypes *
  ***********************/
 ion_bpp_err_t
-bOpen(
+b_open(
 	ion_bpp_open_t		info,
 	ion_bpp_handle_t	*handle
 );
@@ -93,7 +93,7 @@ bOpen(
 */
 
 ion_bpp_err_t
-bClose(
+b_close(
 	ion_bpp_handle_t handle
 );
 
@@ -105,7 +105,7 @@ bClose(
 */
 
 ion_bpp_err_t
-bInsertKey(
+b_insert(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	rec
@@ -128,7 +128,7 @@ bInsertKey(
 */
 
 ion_bpp_err_t
-bUpdateKey(
+b_update(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	rec
@@ -151,7 +151,7 @@ bUpdateKey(
 */
 
 ion_bpp_err_t
-bDeleteKey(
+b_delete(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	*rec
@@ -174,7 +174,7 @@ bDeleteKey(
 */
 
 ion_bpp_err_t
-bFindKey(
+b_get(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	*rec
@@ -192,7 +192,7 @@ bFindKey(
 */
 
 ion_bpp_err_t
-bFindFirstGreaterOrEqual(
+b_find_first_greater_or_equal(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	void						*mkey,
@@ -211,7 +211,7 @@ bFindFirstGreaterOrEqual(
 */
 
 ion_bpp_err_t
-bFindFirstKey(
+b_find_first_key(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	*rec
@@ -229,7 +229,7 @@ bFindFirstKey(
 */
 
 ion_bpp_err_t
-bFindLastKey(
+b_find_last_key(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	*rec
@@ -247,7 +247,7 @@ bFindLastKey(
 */
 
 ion_bpp_err_t
-bFindNextKey(
+b_find_next_key(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	*rec

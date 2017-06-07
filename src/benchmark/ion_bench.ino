@@ -10,7 +10,7 @@
 /* #include "dictionary/bpp_tree/bpptreehandler.h" */
 
 #include <SD.h>
-#include "SD_stdio_c_iface.h"
+#include "sd_stdio_c_iface.h"
 
 #include "lfsr.h"
 
