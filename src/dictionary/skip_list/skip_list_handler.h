@@ -116,6 +116,17 @@ sldict_delete_dictionary(
 );
 
 /**
+@brief	  Deletes an instance of a closed dictionary.
+@param	  id
+				The identifier identifying the dictionary to destroy.
+@return	 Status of dictionary deletion.
+*/
+ion_err_t
+sldict_destroy_dictionary(
+	ion_dictionary_id_t id
+);
+
+/**
 @brief	  Updates the value stored at a given key.
 
 @details	Updates the value for a given @p key. If the key doesn't exist,
