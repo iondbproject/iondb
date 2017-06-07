@@ -345,7 +345,7 @@ oafh_delete(
 }
 
 ion_status_t
-oafh_query(
+oafh_get(
 	ion_file_hashmap_t	*hash_map,
 	ion_key_t			key,
 	ion_value_t			value

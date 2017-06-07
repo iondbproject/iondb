@@ -24,7 +24,7 @@
 */
 /******************************************************************************/
 
-#include "SD_stdio_c_iface.h"
+#include "sd_stdio_c_iface.h"
 #include <SD.h>
 
 /**

@@ -175,7 +175,7 @@ sl_insert(
 }
 
 ion_status_t
-sl_query(
+sl_get(
 	ion_skiplist_t	*skiplist,
 	ion_key_t		key,
 	ion_value_t		value
