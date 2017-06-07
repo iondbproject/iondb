@@ -257,7 +257,6 @@ sd_rewind(
 @param		csPin
 				The pin connected to the chip select line of the SD
 				card.
-@todo		Is there a safe number to use as a signal to use the default pin?
 */
 int
 SD_File_Begin(
@@ -274,6 +273,14 @@ SD_File_Begin(
 int
 SD_File_Exists(
 	char *filepath
+);
+
+/**
+@brief		Deletes all files on the Arduino device.
+@returns	@p 1 if all deletes were successful, @c 0 otherwise.
+*/
+int
+SD_File_Delete_All(
 );
 
 #if defined(__cplusplus)

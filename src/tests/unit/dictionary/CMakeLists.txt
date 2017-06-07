@@ -24,13 +24,13 @@ if(USE_ARDUINO)
             ../../../file/sd_stdio_c_iface.h
             ../../../file/sd_stdio_c_iface.cpp)
 
-    set(${PROJECT_NAME}_LIBS        planck_unit skip_list flat_file bpp_tree open_address_file_hash open_address_hash)
+    set(${PROJECT_NAME}_LIBS        planck_unit skip_list flat_file)
 
     generate_arduino_firmware(${PROJECT_NAME})
 else()
     add_executable(${PROJECT_NAME}          ${SOURCE_FILES} run_dictionary.c)
 
-    target_link_libraries(${PROJECT_NAME}   planck_unit skip_list flat_file bpp_tree open_address_file_hash open_address_hash)
+    target_link_libraries(${PROJECT_NAME}   planck_unit skip_list flat_file)
 
     # Use cmake -DCOVERAGE_TESTING=ON to include coverage testing information.
     if (CMAKE_COMPILER_IS_GNUCC AND COVERAGE_TESTING)

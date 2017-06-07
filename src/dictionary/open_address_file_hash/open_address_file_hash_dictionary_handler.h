@@ -34,13 +34,12 @@ typedef struct oaf_dictionary {
 
 /**
  @brief Cursor for dictionary specific implementations
- @todo What happens to the cursor if the dictionary instance is modified during traversal?
 */
 /*typedef struct oadict_cursor
 {
-	ion_hash_t				first;		*<First visited spot
-	ion_hash_t				current;	*<Currently visited spot
-	char				status;		*@todo what is this for again as there are two status
+	ion_hash_t						first;		*<First visited spot
+	ion_hash_t						current;	*<Currently visited spot
+	ion_cursor_status_t				status;		*<Status of last cursor call
 } ion_oadict_cursor_t;*/
 
 /*
@@ -170,18 +169,6 @@ oafdict_delete_dictionary(
 );
 
 /**
-@brief		Cleans up all files created by the dictionary, and frees any allocated memory,
-			for an already closed dictionary.
-@param		id
-				The identifier identifying the dictionary to delete.
-@return		The resulting status of the operation.
-*/
-ion_err_t
-oafdict_destroy_dictionary(
-	ion_dictionary_id_t id
-);
-
-/**
 @brief		Updates the value for a given key.
 
 @details	Updates the value for a given @p key.  If the key does not currently
@@ -213,13 +200,11 @@ oafdict_update(
 			@p second_key.  If the return value is 0 then @p first_key is
 			equal to @p second_key.
 
-			If the key type is @p key_type_char_array then
-			@todo fix this commemt!
-			The function memcmp compares the size bytes of memory beginning at
-			a1 against the size bytes of memory beginning at a2. The value
-			returned has the same sign as the difference between the first
-			differing pair of bytes (interpreted as unsigned char objects,
-			then promoted to int).
+			If the key type is key_type_char_array then the function memcmp
+			compares the size bytes of memory beginning at a1 against the size
+			bytes of memory beginning at a2. The value returned has the same sign
+			as the difference between the first differing pair of bytes (interpreted
+			as unsigned char objects, then promoted to int).
 
 @param	  first_key
 				The first key in the comparison.

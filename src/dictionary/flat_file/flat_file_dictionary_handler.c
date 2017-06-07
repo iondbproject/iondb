@@ -55,7 +55,6 @@ ffdict_next(
 			ion_flat_file_row_t throwaway_row;
 			ion_err_t			err = err_uninitialized;
 
-			/* TODO: Implement sorted mode search */
 			switch (cursor->predicate->type) {
 				case predicate_equality: {
 					err = flat_file_scan(flat_file, flat_file_cursor->current_location + 1, &flat_file_cursor->current_location, &throwaway_row, ION_FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, cursor->predicate->statement.equality.equality_value);
@@ -76,7 +75,6 @@ ffdict_next(
 				}
 
 				case predicate_predicate: {
-					/* TODO not implemented */
 					break;
 				}
 			}
@@ -226,7 +224,6 @@ ffdict_find(
 
 	ion_key_size_t key_size = dictionary->instance->record.key_size;
 
-	/* TODO: Implement sorted mode search here */
 	switch (predicate->type) {
 		case predicate_equality: {
 			ion_key_t target_key = predicate->statement.equality.equality_value;
@@ -338,7 +335,6 @@ ffdict_find(
 		}
 
 		case predicate_predicate: {
-			/* TODO not implemented */
 			break;
 		}
 
@@ -362,7 +358,6 @@ ffdict_init(
 	handler->find				= ffdict_find;
 	handler->remove				= ffdict_delete;
 	handler->delete_dictionary	= ffdict_delete_dictionary;
-	handler->destroy_dictionary = ffdict_destroy_dictionary;
 	handler->open_dictionary	= ffdict_open_dictionary;
 	handler->close_dictionary	= ffdict_close_dictionary;
 }
@@ -402,8 +397,7 @@ ffdict_create_dictionary(
 		return err_out_of_memory;
 	}
 
-	dictionary->instance->compare	= compare;
-	dictionary->instance->type		= dictionary_type_flat_file_t;
+	dictionary->instance->compare = compare;
 
 	ion_err_t result = flat_file_initialize((ion_flat_file_t *) dictionary->instance, id, key_type, key_size, value_size, dictionary_size);
 
@@ -431,21 +425,6 @@ ffdict_delete_dictionary(
 	free(dictionary->instance);
 	dictionary->instance = NULL;
 	return result;
-}
-
-ion_err_t
-ffdict_destroy_dictionary(
-	ion_dictionary_id_t id
-) {
-	char filename[ION_MAX_FILENAME_LENGTH];
-
-	dictionary_get_filename(id, "ffs", filename);
-
-	if (0 != fremove(filename)) {
-		return err_file_delete_error;
-	}
-
-	return err_ok;
 }
 
 ion_status_t

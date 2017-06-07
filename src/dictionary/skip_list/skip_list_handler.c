@@ -170,7 +170,6 @@ sldict_find(
 
 	switch (predicate->type) {
 		case predicate_equality: {
-			/* TODO get ALL these lines within 80 cols */
 			ion_key_t target_key = predicate->statement.equality.equality_value;
 
 			(*cursor)->predicate->statement.equality.equality_value = malloc(key_size);
@@ -279,7 +278,6 @@ sldict_find(
 		}
 
 		case predicate_predicate: {
-			/* TODO not implemented */
 			break;
 		}
 
@@ -330,7 +328,6 @@ sldict_init(
 	handler->create_dictionary	= sldict_create_dictionary;
 	handler->remove				= sldict_delete;
 	handler->delete_dictionary	= sldict_delete_dictionary;
-	handler->destroy_dictionary = sldict_destroy_dictionary;
 	handler->update				= sldict_update;
 	handler->find				= sldict_find;
 	handler->close_dictionary	= sldict_close_dictionary;
@@ -368,13 +365,10 @@ sldict_create_dictionary(
 	}
 
 	dictionary->instance->compare	= compare;
-	dictionary->instance->type		= dictionary_type_skip_list_t;
 
 	pnum							= 1;
 	pden							= 4;
 
-	/* TODO Should we handle the possible error code returned by this?
-	 * If yes, what sorts of errors does it return? */
 	ion_err_t result = sl_initialize((ion_skiplist_t *) dictionary->instance, key_type, key_size, value_size, dictionary_size, pnum, pden);
 
 	if (err_ok == result) {
@@ -401,14 +395,6 @@ sldict_delete_dictionary(
 	free(dictionary->instance);
 	dictionary->instance = NULL;
 	return result;
-}
-
-ion_err_t
-sldict_destroy_dictionary(
-	ion_dictionary_id_t id
-) {
-	UNUSED(id);
-	return err_not_implemented;
 }
 
 ion_status_t

@@ -127,7 +127,7 @@ ion_fwrite(
 #if defined(ARDUINO)
 
 	if (num_bytes != (fwrite(to_write, num_bytes, 1, file.file) * num_bytes)) {
-		return err_file_incomplete_write;
+		return err_file_write_error;
 	}
 
 	return err_ok;
@@ -183,18 +183,17 @@ ion_fread(
 #if defined(ARDUINO)
 
 	if (num_bytes != (fread(write_to, num_bytes, 1, file.file) * num_bytes)) {
-		return err_file_incomplete_read;
+		return err_file_read_error;
 	}
 
 	return err_ok;
 #else
 
 	if (1 != fread(write_to, num_bytes, 1, file)) {
-		return err_file_incomplete_read;
+		return err_file_read_error;
 	}
 
 	return err_ok;
-
 #endif
 }
 

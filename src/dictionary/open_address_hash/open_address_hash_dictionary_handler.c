@@ -79,13 +79,11 @@ oadict_scan(
 		else {
 			/* check to see if the current key value satisfies the predicate */
 
-			/* TODO need to check key match; what's the most efficient way? */
-
 			ion_boolean_t key_satisfies_predicate = test_predicate(&(cursor->super), item->data);	/* assumes that the key is first */
 
 			if (key_satisfies_predicate == boolean_true) {
 				cursor->current = loc;	/* this is the next index for value */
-				return cs_valid_data;
+				return cs_cursor_active;
 			}
 
 			/* If valid bucket is not found, advance current position. */
@@ -102,7 +100,6 @@ oadict_scan(
 	return cs_end_of_results;
 }
 
-/*@todo What do we do if the cursor is already active? */
 /**
 @brief	  Finds multiple instances of a keys that satisfy the provided
 			 predicate in the dictionary.
@@ -211,7 +208,7 @@ oadict_find(
 
 			ion_err_t err = oadict_scan(oadict_cursor);
 
-			if (cs_valid_data != err) {
+			if (cs_end_of_results == err) {
 				(*cursor)->status = cs_cursor_uninitialized;
 			}
 
@@ -229,13 +226,8 @@ oadict_find(
 
 			ion_err_t err = oadict_scan(oadict_cursor);
 
-			if (cs_valid_data != err) {
-				if (cs_end_of_results == err) {
-					(*cursor)->status = cs_end_of_results;
-				}
-				else {
-					(*cursor)->status = cs_cursor_uninitialized;
-				}
+			if (cs_end_of_results == err) {
+				(*cursor)->status = cs_cursor_uninitialized;
 			}
 
 			return err_ok;
@@ -311,7 +303,6 @@ oadict_init(
 	handler->find				= oadict_find;
 	handler->remove				= oadict_delete;
 	handler->delete_dictionary	= oadict_delete_dictionary;
-	handler->destroy_dictionary = oadict_destroy_dictionary;
 	handler->close_dictionary	= oadict_close_dictionary;
 	handler->open_dictionary	= oadict_open_dictionary;
 }
@@ -341,17 +332,12 @@ oadict_create_dictionary(
 	dictionary->instance			= malloc(sizeof(ion_hashmap_t));
 
 	dictionary->instance->compare	= compare;
-	dictionary->instance->type		= dictionary_type_open_address_hash_t;
 
 	/* this registers the dictionary the dictionary */
 	oah_initialize((ion_hashmap_t *) dictionary->instance, oah_compute_simple_hash, key_type, key_size, value_size, dictionary_size);	/* just pick an arbitary size for testing atm */
 
-	/*TODO The correct comparison operator needs to be bound at run time
-	 * based on the type of key defined
-	*/
-
 	/* register the correct handler */
-	dictionary->handler = handler;	/* todo: need to check to make sure that the handler is registered */
+	dictionary->handler = handler;
 
 	return 0;
 }
@@ -375,14 +361,6 @@ oadict_delete_dictionary(
 	return result;
 }
 
-ion_err_t
-oadict_destroy_dictionary(
-	ion_dictionary_id_t id
-) {
-	UNUSED(id);
-	return err_not_implemented;
-}
-
 ion_status_t
 oadict_update(
 	ion_dictionary_t	*dictionary,
@@ -397,7 +375,6 @@ oadict_next(
 	ion_dict_cursor_t	*cursor,
 	ion_record_t		*record
 ) {
-	/* @todo if the dictionary instance changes, then the status of the cursor needs to change */
 	ion_oadict_cursor_t *oadict_cursor = (ion_oadict_cursor_t *) cursor;
 
 	/* check the status of the cursor and if it is not valid or at the end, just exit */
@@ -423,7 +400,6 @@ oadict_next(
 			if (cs_end_of_results == oadict_scan(oadict_cursor)) {
 				/* Then this is the end and there are no more results */
 				cursor->status = cs_end_of_results;
-				/*@todo need to do something with cursor? - done? */
 				return cursor->status;
 			}
 		}
@@ -434,9 +410,6 @@ oadict_next(
 
 		/* the results are now ready //reference item at given position */
 		ion_hash_bucket_t *item = (((ion_hash_bucket_t *) ((hash_map->entry + (data_length + SIZEOF(STATUS)) * oadict_cursor->current /*idx*/))));
-
-		/*@todo A discussion needs to be had regarding ion_record_t and its format in memory etc */
-		/* and copy key and value in */
 
 		memcpy(record->key, (item->data), hash_map->super.record.key_size);
 
@@ -451,7 +424,7 @@ oadict_next(
 }
 
 ion_boolean_t
-is_equal(
+oadict_is_equal(
 	ion_dictionary_t	*dict,
 	ion_key_t			key1,
 	ion_key_t			key2

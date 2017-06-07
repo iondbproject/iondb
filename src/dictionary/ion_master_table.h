@@ -174,33 +174,22 @@ ion_find_by_use_master_table(
 
 /**
 @brief		Deletes a dictionary from the master table.
-@param		id
-				The identifier identifying the dictionary metadata in the
-				master table.
+@param		dictionary
+				A pointer to the dictionary object to delete (it contains its
+				own identifier info for the master table).
 @returns	An error code describing the result of the operation.
 */
 ion_err_t
 ion_delete_from_master_table(
-	ion_dictionary_id_t id
-);
-
-/**
-@brief		Retrieves the type of dictionary stored under a particular id in the
-			master table.
-@param		id
-				The identifier identifying the dictionary metadata in the
-				master table.
-@returns	The type of dictionary implementation corresponding to the id.
-*/
-ion_dictionary_type_t
-ion_get_dictionary_type(
-	ion_dictionary_id_t id
+	ion_dictionary_t *dictionary
 );
 
 /**
 @brief		Finds the target dictionary and opens it.
 @param		handler
-				A pointer to the handler object to be initialized.
+				A pointer to an initialized dictionary handler object
+				containing the implementation specific data and function
+				pointers for the dictionary to open.
 @param		dictionary
 				A pointer to the dictionary object to open.
 @param		id
@@ -223,37 +212,6 @@ ion_open_dictionary(
 ion_err_t
 ion_close_dictionary(
 	ion_dictionary_t *dictionary
-);
-
-/**
-@brief		Deletes a given dictionary instance and deletes it from the master
-			table.
-@param		dictionary
-				A pointer to the dictionary object to delete.
-@param		id
-				The identifier identifying the dictionary metadata in the
-				master table. Required to delete a closed dictionary without
-				reopening it.
-*/
-ion_err_t
-ion_delete_dictionary(
-	ion_dictionary_t	*dictionary,
-	ion_dictionary_id_t id
-);
-
-/**
-@brief		Retrieves the type of dictionary stored under a particular id in the
-			master table.
-@param		type
-				The type of dictionary instance to initialize the handler to.
-@param		handler
-				A pointer to the handler to be set.
-@returns	An error code describing the result of the operation.
-*/
-ion_err_t
-ion_switch_handler(
-	ion_dictionary_type_t		type,
-	ion_dictionary_handler_t	*handler
 );
 
 #if defined(__cplusplus)
