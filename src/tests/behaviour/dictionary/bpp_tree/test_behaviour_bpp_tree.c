@@ -21,7 +21,7 @@
 */
 /******************************************************************************/
 
-#include "../../../planckunit/src/planck_unit.h"
+#include "../../../planck-unit/src/planck_unit.h"
 #include "../behaviour_dictionary.h"
 #include "../../../../dictionary/bpp_tree/bpp_tree_handler.h"
 #include "test_behaviour_bpp_tree.h"
