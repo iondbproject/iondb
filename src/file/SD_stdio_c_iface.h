@@ -95,7 +95,7 @@ sd_fflush(
 */
 int
 sd_fgetpos(
-	SD_FILE *stream,
+	SD_FILE		*stream,
 	ion_fpos_t	*pos
 );
 
@@ -175,7 +175,7 @@ sd_fseek(
 */
 int
 sd_fsetpos(
-	SD_FILE *stream,
+	SD_FILE		*stream,
 	ion_fpos_t	*pos
 );
 
@@ -274,6 +274,14 @@ SD_File_Begin(
 int
 SD_File_Exists(
 	char *filepath
+);
+
+/**
+@brief		Deletes all files on the Arduino device.
+@returns	@p 1 if all deletes were successful, @c 0 otherwise.
+*/
+int
+SD_File_Delete_All(
 );
 
 #if defined(__cplusplus)
