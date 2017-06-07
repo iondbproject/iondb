@@ -22,13 +22,18 @@
 /******************************************************************************/
 
 #include "ion_master_table.h"
+#include "bpp_tree/bpp_tree_handler.h"
+#include "flat_file/flat_file_dictionary_handler.h"
+#include "open_address_file_hash/open_address_file_hash_dictionary_handler.h"
+#include "open_address_hash/open_address_hash_dictionary_handler.h"
+#include "skip_list/skip_list_handler.h"
 
 FILE				*ion_master_table_file		= NULL;
 ion_dictionary_id_t ion_master_table_next_id	= 1;
 
 #define ION_MASTER_TABLE_CALCULATE_POS	-1
 #define ION_MASTER_TABLE_WRITE_FROM_END -2
-#define ION_MASTER_TABLE_RECORD_SIZE(cp) (sizeof((cp)->id) + sizeof((cp)->use_type) + sizeof((cp)->type) + sizeof((cp)->key_size) + sizeof((cp)->value_size) + sizeof((cp)->dictionary_size))
+#define ION_MASTER_TABLE_RECORD_SIZE(cp) (sizeof((cp)->id) + sizeof((cp)->use_type) + sizeof((cp)->type) + sizeof((cp)->key_size) + sizeof((cp)->value_size) + sizeof((cp)->dictionary_size) + sizeof((cp)->dictionary_type))
 
 /**
 @brief		Write a record to the master table.
@@ -91,6 +96,10 @@ ion_master_table_write(
 		return err_file_write_error;
 	}
 
+	if (1 != fwrite(&(config->dictionary_type), sizeof(config->dictionary_type), 1, ion_master_table_file)) {
+		return err_file_write_error;
+	}
+
 	if (0 != fseek(ion_master_table_file, old_pos, SEEK_SET)) {
 		return err_file_bad_seek;
 	}
@@ -149,6 +158,10 @@ ion_master_table_read(
 	}
 
 	if (1 != fread(&(config->dictionary_size), sizeof(config->dictionary_size), 1, ion_master_table_file)) {
+		return err_file_write_error;
+	}
+
+	if (1 != fread(&(config->dictionary_type), sizeof(config->dictionary_type), 1, ion_master_table_file)) {
 		return err_file_write_error;
 	}
 
@@ -233,7 +246,35 @@ ion_err_t
 ion_close_master_table(
 	void
 ) {
+	ion_err_t					err;
+	ion_dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+
+	ion_dictionary_id_t id = ion_master_table_next_id;
+
 	if (NULL != ion_master_table_file) {
+		id--;
+
+		while (id > 0) {
+			err = ion_open_dictionary(&handler, &dict, id);
+
+			if (err_ok != err) {
+				/* Dictionary not found, continue search. */
+				if (err_dictionary_initialization_failed != err) {
+					return err;
+				}
+			}
+			else {
+				err = ion_close_dictionary(&dict);
+
+				if (err_ok != err) {
+					return err;
+				}
+			}
+
+			id--;
+		}
+
 		if (0 != fclose(ion_master_table_file)) {
 			return err_file_close_error;
 		}
@@ -248,10 +289,8 @@ ion_err_t
 ion_delete_master_table(
 	void
 ) {
-	if (NULL != ion_master_table_file) {
-		if (0 != fremove(ION_MASTER_TABLE_FILENAME)) {
-			return err_file_delete_error;
-		}
+	if (0 != fremove(ION_MASTER_TABLE_FILENAME)) {
+		return err_file_delete_error;
 	}
 
 	return err_ok;
@@ -273,7 +312,7 @@ ion_add_to_master_table(
 	ion_dictionary_size_t	dictionary_size
 ) {
 	ion_dictionary_config_info_t config = {
-		.id = dictionary->instance->id, .use_type = 0, .type = dictionary->instance->key_type, .key_size = dictionary->instance->record.key_size, .value_size = dictionary->instance->record.value_size, .dictionary_size = dictionary_size
+		.id = dictionary->instance->id, .use_type = 0, .type = dictionary->instance->key_type, .key_size = dictionary->instance->record.key_size, .value_size = dictionary->instance->record.value_size, .dictionary_size = dictionary_size, .dictionary_type = dictionary->instance->type
 	};
 
 	return ion_master_table_write(&config, ION_MASTER_TABLE_WRITE_FROM_END);
@@ -368,30 +407,38 @@ ion_find_by_use_master_table(
 
 ion_err_t
 ion_delete_from_master_table(
-	ion_dictionary_t *dictionary
+	ion_dictionary_id_t id
 ) {
-	ion_err_t						error;
 	ion_dictionary_config_info_t	blank	= { 0 };
-	long							where	= (dictionary->instance->id * ION_MASTER_TABLE_RECORD_SIZE(&blank));
-
-	error = ion_close_dictionary(dictionary);
-
-	if (err_ok != error) {
-		return error;
-	}
+	long							where	= (id * ION_MASTER_TABLE_RECORD_SIZE(&blank));
 
 	return ion_master_table_write(&blank, where);
 }
 
+ion_dictionary_type_t
+ion_get_dictionary_type(
+	ion_dictionary_id_t id
+) {
+	ion_err_t						err;
+	ion_dictionary_config_info_t	config;
+
+	err = ion_lookup_in_master_table(id, &config);
+
+	if (err_ok != err) {
+		return dictionary_type_error_t;
+	}
+
+	return config.dictionary_type;
+}
+
 ion_err_t
 ion_open_dictionary(
-	ion_dictionary_handler_t	*handler,	/* This is already initialized. */
+	ion_dictionary_handler_t	*handler,		/* Passed in empty, to be set. */
 	ion_dictionary_t			*dictionary,	/* Passed in empty, to be set. */
 	ion_dictionary_id_t			id
 ) {
-	ion_err_t err;
-
-	ion_dictionary_config_info_t config;
+	ion_err_t						err;
+	ion_dictionary_config_info_t	config;
 
 	err = ion_lookup_in_master_table(id, &config);
 
@@ -399,6 +446,8 @@ ion_open_dictionary(
 	if (err_ok != err) {
 		return err_dictionary_initialization_failed;
 	}
+
+	ion_switch_handler(config.dictionary_type, handler);
 
 	err = dictionary_open(handler, dictionary, &config);
 	return err;
@@ -411,5 +460,86 @@ ion_close_dictionary(
 	ion_err_t err;
 
 	err = dictionary_close(dictionary);
+
 	return err;
+}
+
+ion_err_t
+ion_delete_dictionary(
+	ion_dictionary_t	*dictionary,
+	ion_dictionary_id_t id
+) {
+	ion_err_t				err;
+	ion_dictionary_type_t	type;
+
+	if (ion_dictionary_status_closed != dictionary->status) {
+		id	= dictionary->instance->id;
+		err = dictionary_delete_dictionary(dictionary);
+
+		if (err_ok != err) {
+			return err_dictionary_destruction_error;
+		}
+
+		err = ion_delete_from_master_table(id);
+	}
+	else {
+		type = ion_get_dictionary_type(id);
+
+		if (dictionary_type_error_t == type) {
+			return err_dictionary_destruction_error;
+		}
+
+		ion_dictionary_handler_t handler;
+
+		ion_switch_handler(type, &handler);
+
+		err = dictionary_destroy_dictionary(&handler, id);
+
+		if (err_ok != err) {
+			return err;
+		}
+
+		err = ion_delete_from_master_table(id);
+	}
+
+	return err;
+}
+
+ion_err_t
+ion_switch_handler(
+	ion_dictionary_type_t		type,
+	ion_dictionary_handler_t	*handler
+) {
+	switch (type) {
+		case dictionary_type_bpp_tree_t: {
+			bpptree_init(handler);
+			break;
+		}
+
+		case dictionary_type_flat_file_t: {
+			ffdict_init(handler);
+			break;
+		}
+
+		case dictionary_type_open_address_file_hash_t: {
+			oafdict_init(handler);
+			break;
+		}
+
+		case dictionary_type_open_address_hash_t: {
+			oadict_init(handler);
+			break;
+		}
+
+		case dictionary_type_skip_list_t: {
+			sldict_init(handler);
+			break;
+		}
+
+		case dictionary_type_error_t: {
+			return err_dictionary_initialization_failed;
+		}
+	}
+
+	return err_ok;
 }

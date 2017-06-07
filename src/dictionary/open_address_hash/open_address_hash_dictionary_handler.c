@@ -230,7 +230,12 @@ oadict_find(
 			ion_err_t err = oadict_scan(oadict_cursor);
 
 			if (cs_valid_data != err) {
-				(*cursor)->status = cs_cursor_uninitialized;
+				if (cs_end_of_results == err) {
+					(*cursor)->status = cs_end_of_results;
+				}
+				else {
+					(*cursor)->status = cs_cursor_uninitialized;
+				}
 			}
 
 			return err_ok;
@@ -306,6 +311,7 @@ oadict_init(
 	handler->find				= oadict_find;
 	handler->remove				= oadict_delete;
 	handler->delete_dictionary	= oadict_delete_dictionary;
+	handler->destroy_dictionary = oadict_destroy_dictionary;
 	handler->close_dictionary	= oadict_close_dictionary;
 	handler->open_dictionary	= oadict_open_dictionary;
 }
@@ -335,6 +341,7 @@ oadict_create_dictionary(
 	dictionary->instance			= malloc(sizeof(ion_hashmap_t));
 
 	dictionary->instance->compare	= compare;
+	dictionary->instance->type		= dictionary_type_open_address_hash_t;
 
 	/* this registers the dictionary the dictionary */
 	oah_initialize((ion_hashmap_t *) dictionary->instance, oah_compute_simple_hash, key_type, key_size, value_size, dictionary_size);	/* just pick an arbitary size for testing atm */
@@ -366,6 +373,14 @@ oadict_delete_dictionary(
 	free(dictionary->instance);
 	dictionary->instance = NULL;/* When releasing memory, set pointer to NULL */
 	return result;
+}
+
+ion_err_t
+oadict_destroy_dictionary(
+	ion_dictionary_id_t id
+) {
+	UNUSED(id);
+	return err_not_implemented;
 }
 
 ion_status_t
