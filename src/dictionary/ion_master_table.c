@@ -213,7 +213,6 @@ ion_init_master_table(
 	/* File may not exist. */
 	if (NULL == ion_master_table_file) {
 		ion_master_table_file = fopen(ION_MASTER_TABLE_FILENAME, "w+b");
-		printf("hello\n");
 
 		if (NULL == ion_master_table_file) {
 			return err_file_open_error;
@@ -221,6 +220,10 @@ ion_init_master_table(
 
 		/* Clean fresh file was opened. */
 		/* Write master row. */
+/*		printf("id: %u\n", ion_master_table_next_id); */
+/*		ion_dictionary_config_info_t master_config = { .id = ion_master_table_next_id }; */
+		ion_master_table_next_id = 1;
+
 		ion_dictionary_config_info_t master_config = { .id = ion_master_table_next_id };
 
 		if (err_ok != (error = ion_master_table_write(&master_config, 0))) {
@@ -355,20 +358,10 @@ ion_lookup_in_master_table(
 ) {
 	ion_err_t error = err_ok;
 
-	if (NULL == ion_master_table_file) {
-		printf("bad file1");
-	}
-
 	config->id	= id;
 	error		= ion_master_table_read(config, ION_MASTER_TABLE_CALCULATE_POS);
 
-	if (NULL == ion_master_table_file) {
-		printf("bad file2");
-	}
-
 	if (err_ok != error) {
-		perror("lookup_mastertable");
-		printf("error, id was %d\n", id);
 		return error;
 	}
 
@@ -485,7 +478,6 @@ ion_delete_dictionary(
 
 	if (ion_dictionary_status_closed != dictionary->status) {
 		id	= dictionary->instance->id;
-
 		err = dictionary_delete_dictionary(dictionary);
 
 		if (err_ok != err) {

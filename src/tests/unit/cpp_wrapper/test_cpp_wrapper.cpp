@@ -79,17 +79,16 @@ master_table_delete(
 */
 void
 master_table_dictionary_create(
-	planck_unit_test_t			*tc,
-	MasterTable					*master_table,
-	ion_dictionary_t			*dictionary,
-	ion_dictionary_handler_t	*handler,
-	ion_key_type_t				key_type,
-	ion_key_size_t				key_size,
-	ion_value_size_t			value_size,
-	ion_dictionary_size_t		dictionary_size,
-	ion_dictionary_type_t		dictionary_type
+	planck_unit_test_t		*tc,
+	MasterTable				*master_table,
+	ion_dictionary_t		*dictionary,
+	ion_key_type_t			key_type,
+	ion_key_size_t			key_size,
+	ion_value_size_t		value_size,
+	ion_dictionary_size_t	dictionary_size,
+	ion_dictionary_type_t	dictionary_type
 ) {
-	ion_err_t err = master_table->createDictionary(handler, dictionary, key_type, key_size, value_size, dictionary_size, dictionary_type);
+	ion_err_t err = master_table->createDictionary(dictionary, key_type, key_size, value_size, dictionary_size, dictionary_type);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 
@@ -104,13 +103,12 @@ master_table_dictionary_create(
 */
 void
 master_table_open_dictionary(
-	planck_unit_test_t			*tc,
-	MasterTable					*master_table,
-	ion_dictionary_t			*dictionary,
-	ion_dictionary_handler_t	*handler,
-	ion_dictionary_id_t			id
+	planck_unit_test_t	*tc,
+	MasterTable			*master_table,
+	ion_dictionary_t	*dictionary,
+	ion_dictionary_id_t id
 ) {
-	ion_err_t err = master_table->openDictionary(handler, dictionary, id);
+	ion_err_t err = master_table->openDictionary(dictionary, id);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 }
@@ -2461,11 +2459,10 @@ test_master_table_dictionary_create_delete(
 ) {
 	MasterTable *master_table = new MasterTable();
 
-	ion_dictionary_t			dictionary;
-	ion_dictionary_handler_t	handler;
+	ion_dictionary_t dictionary;
 
 	master_table_init(tc, master_table);
-	master_table_dictionary_create(tc, master_table, &dictionary, &handler, key_type_numeric_signed, sizeof(int), sizeof(int), dictionary_size, dictionary_type);
+	master_table_dictionary_create(tc, master_table, &dictionary, key_type_numeric_signed, sizeof(int), sizeof(int), dictionary_size, dictionary_type);
 	master_table_delete_dictionary(tc, master_table, &dictionary, dictionary.instance->id);
 	delete master_table;
 }
@@ -2496,17 +2493,16 @@ test_master_table_dictionary_open_close(
 ) {
 	MasterTable *master_table = new MasterTable();
 
-	ion_dictionary_t			dictionary;
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_id_t			id;
+	ion_dictionary_t	dictionary;
+	ion_dictionary_id_t id;
 
 	master_table_init(tc, master_table);
-	master_table_dictionary_create(tc, master_table, &dictionary, &handler, key_type_numeric_signed, sizeof(int), sizeof(int), dictionary_size, dictionary_type);
+	master_table_dictionary_create(tc, master_table, &dictionary, key_type_numeric_signed, sizeof(int), sizeof(int), dictionary_size, dictionary_type);
 
 	id = dictionary.instance->id;
 
 	master_table_close_dictionary(tc, master_table, &dictionary);
-	master_table_open_dictionary(tc, master_table, &dictionary, &handler, id);
+	master_table_open_dictionary(tc, master_table, &dictionary, id);
 	master_table_delete_dictionary(tc, master_table, &dictionary, id);
 	delete master_table;
 }
@@ -2537,12 +2533,11 @@ test_master_table_dictionary_close_delete(
 ) {
 	MasterTable *master_table = new MasterTable();
 
-	ion_dictionary_t			dictionary;
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_id_t			id;
+	ion_dictionary_t	dictionary;
+	ion_dictionary_id_t id;
 
 	master_table_init(tc, master_table);
-	master_table_dictionary_create(tc, master_table, &dictionary, &handler, key_type_numeric_signed, sizeof(int), sizeof(int), dictionary_size, dictionary_type);
+	master_table_dictionary_create(tc, master_table, &dictionary, key_type_numeric_signed, sizeof(int), sizeof(int), dictionary_size, dictionary_type);
 
 	id = dictionary.instance->id;
 
@@ -2566,59 +2561,6 @@ test_master_table_dictionary_close_delete_all(
 	test_master_table_dictionary_close_delete(tc, 50, dictionary_type_open_address_file_hash_t);
 }
 
-void
-test(
-	planck_unit_test_t		*tc,
-	ion_dictionary_type_t	dictionary_type
-) {
-	MasterTable *master_table = new MasterTable();
-
-	ion_dictionary_t				dictionary;
-	ion_dictionary_handler_t		handler;
-	ion_dictionary_config_info_t	config;
-
-	master_table_init(tc, master_table);
-	master_table_dictionary_create(tc, master_table, &dictionary, &handler, key_type_numeric_signed, sizeof(int), 10, 20, dictionary_type);
-
-	ion_dictionary_id_t id = dictionary.instance->id;
-
-/*	master_table_close(tc, master_table); */
-/*	master_table_init(tc, master_table); */
-
-	master_table_lookup_dictionary(tc, master_table, id, key_type_numeric_signed, sizeof(int), 10, 20, dictionary_type, &config, boolean_true);
-
-/*	ion_dictionary_handler_t	handler2; */
-/*	ion_dictionary_t			dictionary2; */
-/*  */
-/*	master_table_dictionary_create(tc, master_table, &dictionary2, &handler2, key_type_numeric_signed, sizeof(short), 7, 14, dictionary_type); */
-/*	ion_dictionary_id_t id2 = dictionary2.instance->id; */
-
-/*	master_table_lookup_dictionary(tc, master_table, id2, key_type_numeric_signed, sizeof(short), 7, 14, dictionary_type, &config, boolean_true); */
-
-	master_table_delete_dictionary(tc, master_table, &dictionary, id);
-	master_table_lookup_dictionary(tc, master_table, id, key_type_numeric_signed, sizeof(int), 10, 20, dictionary_type, &config, boolean_false);
-
-/*	master_table_close_dictionary(tc, master_table, &dictionary2); */
-
-/*	master_table_open_dictionary(tc, master_table, &dictionary2, &handler2, id2); */
-/*	master_table_delete_dictionary(tc, master_table, &dictionary2, id2); */
-
-	master_table_close(tc, master_table);
-
-	delete master_table;
-}
-
-void
-test_all(
-	planck_unit_test_t *tc
-) {
-/*	test(tc, dictionary_type_bpp_tree_t); */
-/*	test(tc, dictionary_type_skip_list_t); */
-/*	test(tc, dictionary_type_flat_file_t); */
-/*	test(tc, dictionary_type_open_address_hash_t); */
-/*	test(tc, dictionary_type_open_address_file_hash_t); */
-}
-
 /**
 @brief Tests all functionality of the master table.
 */
@@ -2639,10 +2581,9 @@ test_master_table(
 	/*************/
 
 	/* Test create */
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dictionary;
+	ion_dictionary_t dictionary;
 
-	master_table_dictionary_create(tc, master_table, &dictionary, &handler, key_type_numeric_signed, sizeof(int), 10, 20, dictionary_type);
+	master_table_dictionary_create(tc, master_table, &dictionary, key_type_numeric_signed, sizeof(int), 10, 20, dictionary_type);
 
 	ion_dictionary_id_t id = dictionary.instance->id;
 
@@ -2669,10 +2610,9 @@ test_master_table(
 	/******************************/
 
 	/* Test create 2nd dictionary */
-	ion_dictionary_handler_t	handler2;
-	ion_dictionary_t			dictionary2;
+	ion_dictionary_t dictionary2;
 
-	master_table_dictionary_create(tc, master_table, &dictionary2, &handler2, key_type_numeric_signed, sizeof(short), 7, 14, dictionary_type);
+	master_table_dictionary_create(tc, master_table, &dictionary2, key_type_numeric_signed, sizeof(short), 7, 14, dictionary_type);
 
 	ion_dictionary_id_t id2 = dictionary2.instance->id;
 
@@ -2700,7 +2640,7 @@ test_master_table(
 
 	/* Test open dictionary */
 
-	master_table_open_dictionary(tc, master_table, &dictionary2, &handler2, id2);
+	master_table_open_dictionary(tc, master_table, &dictionary2, id2);
 
 	/* Test close dictionary */
 
@@ -2728,10 +2668,10 @@ test_master_table_all(
 	planck_unit_test_t *tc
 ) {
 	test_master_table(tc, dictionary_type_bpp_tree_t);
-/*	test_master_table(tc, dictionary_type_skip_list_t); */
-/*	test_master_table(tc, dictionary_type_flat_file_t); */
-/*	test_master_table(tc, dictionary_type_open_address_hash_t); */
-/*	test_master_table(tc, dictionary_type_open_address_file_hash_t); */
+	test_master_table(tc, dictionary_type_skip_list_t);
+	test_master_table(tc, dictionary_type_flat_file_t);
+	test_master_table(tc, dictionary_type_open_address_hash_t);
+	test_master_table(tc, dictionary_type_open_address_file_hash_t);
 }
 
 /**
@@ -2816,8 +2756,6 @@ cpp_wrapper_getsuite_3(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_close_delete_all);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_all);
-
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_all);
 
 	return suite;
 }

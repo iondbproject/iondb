@@ -161,7 +161,6 @@ test_dictionary_master_table(
 	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == ion_master_table_file);
 
 	/* Test init */
-	printf("expect hello\n");
 	err = ion_init_master_table();
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
@@ -305,7 +304,6 @@ test_dictionary_master_table2(
 	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == ion_master_table_file);
 
 	/* Test init */
-	printf("expect hello\n");
 	err = ion_init_master_table();
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
