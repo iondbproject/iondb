@@ -114,6 +114,9 @@ initializeHandler(
 @param		id
 				The identifier identifying the dictionary metadata in the
 				master table which is to be looked up.
+@param		config
+				A pointer to an already allocated configuration object
+				that will be read into from the master table.
 @returns	An error code describing the result of the operation.
 */
 ion_err_t
@@ -126,6 +129,9 @@ lookupMasterTable(
 
 /**
 @brief		Find first or last dictionary in master table with a given use.
+@param		config
+				A pointer to an already allocated configuration object
+				that will be used to open the found dictionary.
 @param		use_type
 				The integral usage type for the dictionary. This is
 				user defined.
