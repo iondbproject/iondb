@@ -371,7 +371,7 @@ sldict_create_dictionary(
 
 	ion_err_t result = sl_initialize((ion_skiplist_t *) dictionary->instance, key_type, key_size, value_size, dictionary_size, pnum, pden);
 
-	if (err_ok == result) {
+	if ((err_ok == result) && (NULL != handler)) {
 		dictionary->handler = handler;
 	}
 

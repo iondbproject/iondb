@@ -401,7 +401,7 @@ ffdict_create_dictionary(
 
 	ion_err_t result = flat_file_initialize((ion_flat_file_t *) dictionary->instance, id, key_type, key_size, value_size, dictionary_size);
 
-	if (err_ok == result) {
+	if ((err_ok == result) && (NULL != handler)) {
 		dictionary->handler = handler;
 	}
 

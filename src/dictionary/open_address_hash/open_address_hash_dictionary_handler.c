@@ -336,6 +336,14 @@ oadict_create_dictionary(
 	/* this registers the dictionary the dictionary */
 	oah_initialize((ion_hashmap_t *) dictionary->instance, oah_compute_simple_hash, key_type, key_size, value_size, dictionary_size);	/* just pick an arbitary size for testing atm */
 
+	/*TODO The correct comparison operator needs to be bound at run time
+	 * based on the type of key defined
+	*/
+
+	if (NULL == handler) {
+		return err_uninitialized;
+	}
+
 	/* register the correct handler */
 	dictionary->handler = handler;
 

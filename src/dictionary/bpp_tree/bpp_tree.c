@@ -425,10 +425,13 @@ search(
 				switch (mode) {
 					case MODE_FIRST:
 						/* backtrack to first key */
-						ub			= m - 1;
-						if (lb > ub)
-                            				return ION_CC_EQ;
-						foundDup	= boolean_true;
+						ub = m - 1;
+
+						if (lb > ub) {
+							return ION_CC_EQ;
+						}
+
+						foundDup = boolean_true;
 						break;
 
 					case MODE_MATCH:

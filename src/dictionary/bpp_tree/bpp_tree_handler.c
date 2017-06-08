@@ -94,6 +94,10 @@ bpptree_create_dictionary(
 		return err_uninitialized;
 	}
 
+	if (NULL == handler) {
+		return err_uninitialized;
+	}
+
 	dictionary->instance					= (ion_dictionary_parent_t *) bpptree;
 	dictionary->instance->compare			= compare;
 	dictionary->instance->key_type			= key_type;
