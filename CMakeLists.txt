@@ -82,3 +82,5 @@ add_subdirectory(src/tests/behaviour/dictionary/open_address_file_hash)
 add_subdirectory(src/cpp_wrapper)
 add_subdirectory(src/tests/unit/cpp_wrapper)
 add_subdirectory(src/tests/integration/cpp_wrapper)
+
+add_subdirectory(src/tests/mock_build)

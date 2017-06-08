@@ -20,7 +20,6 @@
 			License.
 */
 /******************************************************************************/
-
 #include "dictionary.h"
 #include "flat_file/flat_file_dictionary_handler.h"
 
@@ -274,7 +273,7 @@ dictionary_open(
 		ion_dictionary_t			fallback_dict;
 		ion_err_t					err;
 
-		ffdict_init(&fallback_handler);
+		/*ffdict_init(&fallback_handler);*/
 
 		ion_dictionary_config_info_t fallback_config = {
 			config->id, 0, config->type, config->key_size, config->value_size, 1
@@ -374,7 +373,7 @@ dictionary_close(
 		ion_dictionary_handler_t	fallback_handler;
 		ion_dictionary_t			fallback_dict;
 
-		ffdict_init(&fallback_handler);
+		/*ffdict_init(&fallback_handler);*/
 
 		err = dictionary_create(&fallback_handler, &fallback_dict, dictionary->instance->id, key_type, key_size, value_size, 1);
 
