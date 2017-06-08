@@ -15,9 +15,10 @@
 class MasterTable {
 public:
 
-ion_dictionary_handler_t		handler;
-ion_dictionary_t				dict;
-ion_dictionary_config_info_t	config;
+MasterTable(
+) {
+	this->initializeMasterTable();
+}
 
 ~MasterTable(
 ) {
@@ -76,20 +77,21 @@ deleteMasterTable(
 */
 ion_err_t
 createDictionary(
-	ion_dictionary_t		*dictionary,
-	ion_key_type_t			key_type,
-	ion_key_size_t			key_size,
-	ion_value_size_t		value_size,
-	ion_dictionary_size_t	dictionary_size,
-	ion_dictionary_type_t	dictionary_type
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dictionary,
+	ion_key_type_t				key_type,
+	ion_key_size_t				key_size,
+	ion_value_size_t			value_size,
+	ion_dictionary_size_t		dictionary_size,
+	ion_dictionary_type_t		dictionary_type
 ) {
-	ion_err_t err = initializeHandler(dictionary_type);
+	ion_err_t err = initializeHandler(handler, dictionary_type);
 
 	if (err_ok != err) {
 		return err;
 	}
 
-	return ion_master_table_create_dictionary(&handler, dictionary, key_type, key_size, value_size, dictionary_size);
+	return ion_master_table_create_dictionary(handler, dictionary, key_type, key_size, value_size, dictionary_size);
 }
 
 /**
@@ -101,9 +103,10 @@ createDictionary(
 */
 ion_err_t
 initializeHandler(
-	ion_dictionary_type_t type
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_type_t		type
 ) {
-	return ion_switch_handler(type, &handler);
+	return ion_switch_handler(type, handler);
 }
 
 /**
@@ -115,9 +118,10 @@ initializeHandler(
 */
 ion_err_t
 lookupMasterTable(
-	ion_dictionary_id_t id
+	ion_dictionary_id_t				id,
+	ion_dictionary_config_info_t	*config
 ) {
-	return ion_lookup_in_master_table(id, &config);
+	return ion_lookup_in_master_table(id, config);
 }
 
 /**
@@ -136,10 +140,11 @@ lookupMasterTable(
 */
 ion_err_t
 findByUse(
-	ion_dict_use_t	use_type,
-	char			whence
+	ion_dictionary_config_info_t	*config,
+	ion_dict_use_t					use_type,
+	char							whence
 ) {
-	return ion_find_by_use_master_table(&config, use_type, whence);
+	return ion_find_by_use_master_table(config, use_type, whence);
 }
 
 /**
@@ -183,10 +188,11 @@ deleteDictionary(
 */
 ion_err_t
 openDictionary(
-	ion_dictionary_t	*dictionary,
-	ion_dictionary_id_t id
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_t			*dictionary,
+	ion_dictionary_id_t			id
 ) {
-	return ion_open_dictionary(&handler, dictionary, id);
+	return ion_open_dictionary(handler, dictionary, id);
 }
 
 /**

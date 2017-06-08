@@ -213,6 +213,7 @@ ion_init_master_table(
 	/* File may not exist. */
 	if (NULL == ion_master_table_file) {
 		ion_master_table_file = fopen(ION_MASTER_TABLE_FILENAME, "w+b");
+		printf("hello\n");
 
 		if (NULL == ion_master_table_file) {
 			return err_file_open_error;
@@ -354,10 +355,20 @@ ion_lookup_in_master_table(
 ) {
 	ion_err_t error = err_ok;
 
+	if (NULL == ion_master_table_file) {
+		printf("bad file1");
+	}
+
 	config->id	= id;
 	error		= ion_master_table_read(config, ION_MASTER_TABLE_CALCULATE_POS);
 
+	if (NULL == ion_master_table_file) {
+		printf("bad file2");
+	}
+
 	if (err_ok != error) {
+		perror("lookup_mastertable");
+		printf("error, id was %d\n", id);
 		return error;
 	}
 
