@@ -419,6 +419,14 @@ ion_delete_from_master_table(
 	return ion_master_table_write(&blank, where);
 }
 
+/**
+@brief		Retrieves the type of dictionary stored under a particular id in the
+			master table.
+@param		id
+				The identifier identifying the dictionary metadata in the
+				master table.
+@returns	The type of dictionary implementation corresponding to the id.
+*/
 ion_dictionary_type_t
 ion_get_dictionary_type(
 	ion_dictionary_id_t id
