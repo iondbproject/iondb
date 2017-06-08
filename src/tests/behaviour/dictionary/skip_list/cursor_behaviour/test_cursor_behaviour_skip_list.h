@@ -1,8 +1,8 @@
 /******************************************************************************/
 /**
 @file
-@author		Kris Wallperington
-@brief		Main file for flat file behaviour tests.
+@author		Spencer MacBeth
+@brief		Entry point for flat file behaviour tests.
 @copyright	Copyright 2016
 				The University of British Columbia,
 				IonDB Project Contributors (see AUTHORS.md)
@@ -20,12 +20,21 @@
 			License.
 */
 /******************************************************************************/
-#include "test_behaviour_flat_file.h"
 
-int
-main(
+#if !defined(TEST_BEHAVIOUR_FLAT_FILE_H)
+#define TEST_BEHAVIOUR_FLAT_FILE_H
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+void
+runalltests_cursor_behaviour_skip_list(
 	void
-) {
-	runalltests_behaviour_flat_file();
-	return 0;
+);
+
+#if defined(__cplusplus)
 }
+#endif
+
+#endif

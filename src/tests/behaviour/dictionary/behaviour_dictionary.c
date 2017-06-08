@@ -28,25 +28,6 @@
 
 #include "behaviour_dictionary.h"
 
-/* This is used to define how complicated to pre-fill a dictionary for testing. */
-typedef enum ION_BEHAVIOUR_FILL_LEVEL {
-	ion_fill_none, ion_fill_low, ion_fill_medium, ion_fill_high, ion_fill_edge_cases
-} ion_behaviour_fill_level_e;
-
-#define ION_FILL_LOW_LOOP(var) \
-	for (var = 0; var < 10; var++)
-#define ION_FILL_MEDIUM_LOOP(var) \
-	for (var = 50; var < 100; var += 2)
-#define ION_FILL_HIGH_LOOP(var) \
-	for (var = 500; var < 1000; var += 5)
-#define ION_FILL_EDGE_LOOP(var) \
-	for (var = -100; var < -50; var += 2)
-
-#define ION_LOW_VALUE(var)		IONIZE((var) * 2, int)
-#define ION_MEDIUM_VALUE(var)	IONIZE((var) * 5, int)
-#define ION_HIGH_VALUE(var)		IONIZE((var) * 10, int)
-#define ION_EDGE_VALUE(var)		IONIZE((var) * 3, int)
-
 /* This is a private struct we use to track metadata about the dictionary. */
 ion_bhdct_context_t bhdct_context = { 0 };
 
@@ -169,9 +150,6 @@ bhdct_get(
 	}
 }
 
-/**
-@brief	This function does an insert into a dictionary.
-*/
 void
 bhdct_insert(
 	planck_unit_test_t	*tc,
@@ -339,9 +317,6 @@ bhdct_setup_string_key(
 	}
 }
 
-/**
-@brief	This function tears down a test case and cleans everything up.
-*/
 void
 bhdct_takedown(
 	planck_unit_test_t	*tc,
@@ -356,9 +331,6 @@ bhdct_takedown(
 
 /* =================================================== TEST CASES =================================================== */
 
-/**
-@brief	This function tests whether or not we can build and teardown a dictionary.
-*/
 void
 test_bhdct_setup(
 	planck_unit_test_t *tc
@@ -1443,7 +1415,6 @@ test_bhdct_delete_then_insert(
 	bhdct_delete(tc, &dict, IONIZE(60, int), err_ok, 1, boolean_true);
 	bhdct_delete(tc, &dict, IONIZE(4, int), err_ok, 1, boolean_true);
 	bhdct_delete(tc, &dict, IONIZE(505, int), err_ok, 1, boolean_true);
-
 	bhdct_insert(tc, &dict, IONIZE(61, int), IONIZE(44, int), boolean_true);
 	bhdct_insert(tc, &dict, IONIZE(67, int), IONIZE(42, int), boolean_true);
 	bhdct_insert(tc, &dict, IONIZE(73, int), IONIZE(48, int), boolean_true);
@@ -1485,6 +1456,268 @@ test_bhdct_delete_then_insert_string_key(
 	bhdct_takedown(tc, &dict);
 }
 
+/**
+@brief	This function performs a find of the type specified on the predictate in a dictionary.
+*/
+void
+test_bhdct_find(
+	planck_unit_test_t	*tc,
+	ion_dictionary_t	*dict,
+	ion_predicate_t		*predicate,
+	int					expected_result_count
+) {
+	ion_dict_cursor_t *cursor = NULL;
+
+	dictionary_find(dict, predicate, &cursor);
+
+	ion_record_t ion_record;
+
+	ion_record.key		= malloc(dict->instance->record.key_size);
+	ion_record.value	= malloc(dict->instance->record.value_size);
+
+	int					result_count = 0;
+	ion_cursor_status_t cursor_status;
+
+	while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, NEUTRALIZE(ion_record.key, int) * 2, NEUTRALIZE(ion_record.value, int));
+		result_count++;
+	}
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_result_count, result_count);
+
+	/* Clean-up everything by removing the cursor. Also free the ion_record space we allocated. */
+	cursor->destroy(&cursor);
+	free(ion_record.key);
+	free(ion_record.value);
+}
+
+/**
+@brief	This function tests an equality find on a dictionary with a single record in it.
+*/
+void
+test_bhdct_find_equality_single(
+	planck_unit_test_t *tc
+) {
+	ion_dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+	ion_predicate_t				predicate;
+
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(55, int));
+
+	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+
+	bhdct_insert(tc, &dict, IONIZE(55, int), IONIZE(55 * 2, int), boolean_true);
+
+	test_bhdct_find(tc, &dict, &predicate, 1);
+	bhdct_takedown(tc, &dict);
+}
+
+/**
+@brief	This function tests an equality find on a dictionary with many records in it.
+*/
+void
+test_bhdct_find_equality_in_many(
+	planck_unit_test_t *tc
+) {
+	ion_dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+	ion_predicate_t				predicate;
+
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(55, int));
+
+	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+
+	bhdct_insert(tc, &dict, IONIZE(55, int), IONIZE(55 * 2, int), boolean_true);
+	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
+	bhdct_insert(tc, &dict, IONIZE(-5, int), IONIZE(-5 * 2, int), boolean_true);
+	bhdct_insert(tc, &dict, IONIZE(99, int), IONIZE(99 * 2, int), boolean_true);
+
+	test_bhdct_find(tc, &dict, &predicate, 1);
+	bhdct_takedown(tc, &dict);
+}
+
+/**
+@brief	This function tests an equality find on a dictionary with many records in it with duplicate keys of the queried value.
+*/
+void
+test_bhdct_find_equality_duplicate_key(
+	planck_unit_test_t *tc
+) {
+	ion_dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+	ion_predicate_t				predicate;
+
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(35, int));
+
+	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+
+	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
+	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
+	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
+	bhdct_insert(tc, &dict, IONIZE(-5, int), IONIZE(-5 * 2, int), boolean_true);
+
+	test_bhdct_find(tc, &dict, &predicate, 3);
+	bhdct_takedown(tc, &dict);
+}
+
+/**
+@brief	This function tests an equality find on a dictionary with no keys of the queried value.
+*/
+void
+test_bhdct_find_equality_no_result(
+	planck_unit_test_t *tc
+) {
+	ion_dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+	ion_predicate_t				predicate;
+
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(60, int));
+
+	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+
+	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
+	bhdct_insert(tc, &dict, IONIZE(-5, int), IONIZE(-5 * 2, int), boolean_true);
+
+	test_bhdct_find(tc, &dict, &predicate, 0);
+	bhdct_takedown(tc, &dict);
+}
+
+/**
+@brief	This function tests an equality find on an empty dictionary.
+*/
+void
+test_bhdct_find_equality_empty_dict(
+	planck_unit_test_t *tc
+) {
+	ion_dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+	ion_predicate_t				predicate;
+
+	dictionary_build_predicate(&predicate, predicate_equality, IONIZE(60, int));
+
+	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+
+	test_bhdct_find(tc, &dict, &predicate, 0);
+	bhdct_takedown(tc, &dict);
+}
+
+/**
+@brief	This function tests a range find on a dictionary with a single record in it.
+*/
+void
+test_bhdct_find_range_single(
+	planck_unit_test_t *tc
+) {
+	ion_dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+	ion_predicate_t				predicate;
+
+	dictionary_build_predicate(&predicate, predicate_range, IONIZE(25, int), IONIZE(100, int));
+
+	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+
+	bhdct_insert(tc, &dict, IONIZE(55, int), IONIZE(55 * 2, int), boolean_true);
+
+	test_bhdct_find(tc, &dict, &predicate, 1);
+	bhdct_takedown(tc, &dict);
+}
+
+/**
+@brief	This function tests a range find on a dictionary with many records in it.
+*/
+void
+test_bhdct_find_range_in_many(
+	planck_unit_test_t *tc
+) {
+	ion_dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+	ion_predicate_t				predicate;
+
+	dictionary_build_predicate(&predicate, predicate_range, IONIZE(25, int), IONIZE(100, int));
+
+	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+
+	bhdct_insert(tc, &dict, IONIZE(55, int), IONIZE(55 * 2, int), boolean_true);
+	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
+	bhdct_insert(tc, &dict, IONIZE(-5, int), IONIZE(-5 * 2, int), boolean_true);
+
+	test_bhdct_find(tc, &dict, &predicate, 2);
+	bhdct_takedown(tc, &dict);
+}
+
+/**
+@brief	This function tests an equality find on a dictionary with duplicate keys in the queried range.
+*/
+void
+test_bhdct_find_range_duplicate_key(
+	planck_unit_test_t *tc
+) {
+	ion_dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+	ion_predicate_t				predicate;
+
+	dictionary_build_predicate(&predicate, predicate_range, IONIZE(25, int), IONIZE(100, int));
+
+	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+
+	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
+	bhdct_insert(tc, &dict, IONIZE(55, int), IONIZE(55 * 2, int), boolean_true);
+	bhdct_insert(tc, &dict, IONIZE(55, int), IONIZE(55 * 2, int), boolean_true);
+	bhdct_insert(tc, &dict, IONIZE(-5, int), IONIZE(-5 * 2, int), boolean_true);
+
+	test_bhdct_find(tc, &dict, &predicate, 3);
+	bhdct_takedown(tc, &dict);
+}
+
+/**
+@brief	This function tests an equality find on a dictionary with no keys in the queried range.
+*/
+void
+test_bhdct_find_range_no_result(
+	planck_unit_test_t *tc
+) {
+	ion_dictionary_handler_t	handler;
+	ion_dictionary_t			dict;
+	ion_predicate_t				predicate;
+
+	dictionary_build_predicate(&predicate, predicate_range, IONIZE(0, int), IONIZE(10, int));
+
+	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+
+	bhdct_insert(tc, &dict, IONIZE(35, int), IONIZE(35 * 2, int), boolean_true);
+	bhdct_insert(tc, &dict, IONIZE(-5, int), IONIZE(-5 * 2, int), boolean_true);
+
+	test_bhdct_find(tc, &dict, &predicate, 0);
+	bhdct_takedown(tc, &dict);
+}
+
+/**
+@brief	This function tests an equality find on an empty dictionary.
+*/
+void
+test_bhdct_find_range_empty_dict(
+	planck_unit_test_t *tc
+) {
+	ion_dictionary_handler_t	handler;/* handler binds functions of the dictionary to correct implemention */
+	ion_dictionary_t			dict;
+	ion_predicate_t				predicate;
+
+	dictionary_build_predicate(&predicate, predicate_range, IONIZE(0, int), IONIZE(10, int));
+
+	bhdct_setup(tc, &handler, &dict, ion_fill_none);
+	test_bhdct_find(tc, &dict, &predicate, 0);
+	bhdct_takedown(tc, &dict);
+}
+
+/**
+@brief		Executes the behaviour test suite, given the testing parameters.
+@param		init_fcn
+				A function pointer that designates the initializer for a specific dictionary implementation.
+@param		dictionary_size
+				The specified dictionary size to use for tests.
+@param		test_classes
+				A supplied bit mask used to determine which tests to run.
+*/
 void
 bhdct_run_tests(
 	ion_handler_initializer_t	init_fcn,
@@ -1517,11 +1750,11 @@ bhdct_run_tests(
 
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_get_all);
 
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_empty);
+		/*PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_empty);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_single);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_nonexist_several);
 
-		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single);*/
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_single_several);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_all);
 
@@ -1573,6 +1806,61 @@ bhdct_run_tests(
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_exist_in_many_string_key);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_update_all_string_key);
 		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_delete_then_insert_string_key);
+
+		planck_unit_run_suite(suite);
+		planck_unit_destroy_suite(suite);
+	}
+}
+
+void
+bhdct_run_cursor_tests(
+	ion_handler_initializer_t	init_fcn,
+	ion_dictionary_size_t		dictionary_size,
+	uint32_t					test_classes
+) {
+	bhdct_context.init_fcn			= init_fcn;
+	bhdct_context.dictionary_size	= dictionary_size;
+	bhdct_context.test_classes		= test_classes;
+
+	if (bhdct_context.test_classes & ION_BHDCT_INT_INT) {
+		planck_unit_suite_t *suite = planck_unit_new_suite();
+
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_single);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_in_many);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_no_result);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_empty_dict);
+
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_single);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_in_many);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_no_result);
+		/*PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_empty_dict);*/
+
+		planck_unit_run_suite(suite);
+		planck_unit_destroy_suite(suite);
+	}
+
+	if (bhdct_context.test_classes & ION_BHDCT_STRING_INT) {
+		planck_unit_suite_t *suite = planck_unit_new_suite();
+
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_single);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_in_many);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_no_result);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_empty_dict);
+
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_single);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_in_many);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_no_result);
+		/*PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_empty_dict);*/
+
+		planck_unit_run_suite(suite);
+		planck_unit_destroy_suite(suite);
+	}
+
+	if (bhdct_context.test_classes & ION_BHDCT_DUPLICATES) {
+		planck_unit_suite_t *suite = planck_unit_new_suite();
+
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_range_duplicate_key);
+		PLANCK_UNIT_ADD_TO_SUITE(suite, test_bhdct_find_equality_duplicate_key);
 
 		planck_unit_run_suite(suite);
 		planck_unit_destroy_suite(suite);
