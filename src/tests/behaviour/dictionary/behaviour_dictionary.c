@@ -347,7 +347,7 @@ bhdct_takedown(
 	planck_unit_test_t	*tc,
 	ion_dictionary_t	*dict
 ) {
-/*	bhdct_delete_from_master_table(tc, dict); FIXME change when master table is fixed */
+/*	bhdct_delete_from_master_table(tc, dict); */
 	bhdct_delete_dictionary(tc, dict);
 
 	bhdct_close_master_table(tc);

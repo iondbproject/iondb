@@ -20,7 +20,7 @@ extern "C" {
 #include "open_address_file_hash_dictionary.h"
 
 /*edefines file operations for arduino */
-#include "./../../file/SD_stdio_c_iface.h"
+#include "../../file/sd_stdio_c_iface.h"
 
 /**
 @brief Struct used to for instance of a given dictionary.
@@ -34,13 +34,12 @@ typedef struct oaf_dictionary {
 
 /**
  @brief Cursor for dictionary specific implementations
- @todo What happens to the cursor if the dictionary instance is modified during traversal?
 */
 /*typedef struct oadict_cursor
 {
-	ion_hash_t				first;		*<First visited spot
-	ion_hash_t				current;	*<Currently visited spot
-	char				status;		*@todo what is this for again as there are two status
+	ion_hash_t						first;		*<First visited spot
+	ion_hash_t						current;	*<Currently visited spot
+	ion_cursor_status_t				status;		*<Status of last cursor call
 } ion_oadict_cursor_t;*/
 
 /*
@@ -201,13 +200,11 @@ oafdict_update(
 			@p second_key.  If the return value is 0 then @p first_key is
 			equal to @p second_key.
 
-			If the key type is @p key_type_char_array then
-			@todo fix this commemt!
-			The function memcmp compares the size bytes of memory beginning at
-			a1 against the size bytes of memory beginning at a2. The value
-			returned has the same sign as the difference between the first
-			differing pair of bytes (interpreted as unsigned char objects,
-			then promoted to int).
+			If the key type is key_type_char_array then the function memcmp
+			compares the size bytes of memory beginning at a1 against the size
+			bytes of memory beginning at a2. The value returned has the same sign
+			as the difference between the first differing pair of bytes (interpreted
+			as unsigned char objects, then promoted to int).
 
 @param	  first_key
 				The first key in the comparison.

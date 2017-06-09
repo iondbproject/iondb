@@ -397,7 +397,7 @@ ion_open_dictionary(
 
 	/* Lookup for id failed. */
 	if (err_ok != err) {
-		return err_dictionary_initialization_failed;
+		return err_uninitialized;
 	}
 
 	err = dictionary_open(handler, dictionary, &config);

@@ -19,7 +19,6 @@ sl_initialize(
 	int				pnum,
 	int				pden
 ) {
-	/* TODO srand may need to be changed */
 	/* srand(time(NULL)); */
 
 	skiplist->super.key_type			= key_type;
@@ -27,7 +26,6 @@ sl_initialize(
 	skiplist->super.record.value_size	= value_size;
 	skiplist->maxheight					= maxheight;
 
-	/* TODO potentially check if pden and pnum are invalid (0) */
 	skiplist->pden						= pden;
 	skiplist->pnum						= pnum;
 
@@ -91,24 +89,23 @@ sl_insert(
 	ion_key_t		key,
 	ion_value_t		value
 ) {
-	/* TODO Should this be refactored to be size_t? */
-	int key_size			= skiplist->super.record.key_size;
-	int value_size			= skiplist->super.record.value_size;
+	ion_key_size_t		key_size	= skiplist->super.record.key_size;
+	ion_value_size_t	value_size	= skiplist->super.record.value_size;
 
-	ion_sl_node_t *newnode	= malloc(sizeof(ion_sl_node_t));
+	ion_sl_node_t *newnode			= malloc(sizeof(ion_sl_node_t));
 
 	if (NULL == newnode) {
 		return ION_STATUS_ERROR(err_out_of_memory);
 	}
 
-	newnode->key = malloc(key_size);
+	newnode->key = malloc((size_t) key_size);
 
 	if (NULL == newnode->key) {
 		free(newnode);
 		return ION_STATUS_ERROR(err_out_of_memory);
 	}
 
-	newnode->value = malloc(value_size);
+	newnode->value = malloc((size_t) value_size);
 
 	if (NULL == newnode->value) {
 		free(newnode->key);
@@ -120,8 +117,7 @@ sl_insert(
 	memcpy(newnode->value, value, value_size);
 
 	/* First we check if there's already a duplicate node. If there is, we're
-	 * going to do a modified insert instead. TODO write unit cpp_wrapper to check this
-	*/
+	   going to do a modified insert instead. */
 	ion_sl_node_t *duplicate = sl_find_node(skiplist, key);
 
 	if ((NULL != duplicate->key) && (skiplist->super.compare(duplicate->key, key, key_size) == 0)) {
@@ -179,15 +175,14 @@ sl_insert(
 }
 
 ion_status_t
-sl_query(
+sl_get(
 	ion_skiplist_t	*skiplist,
 	ion_key_t		key,
 	ion_value_t		value
 ) {
-	/* TODO These should be size_t */
-	int				key_size	= skiplist->super.record.key_size;
-	int				value_size	= skiplist->super.record.value_size;
-	ion_sl_node_t	*cursor		= sl_find_node(skiplist, key);
+	ion_key_size_t		key_size	= skiplist->super.record.key_size;
+	ion_value_size_t	value_size	= skiplist->super.record.value_size;
+	ion_sl_node_t		*cursor		= sl_find_node(skiplist, key);
 
 	if ((NULL == cursor->key) || (skiplist->super.compare(cursor->key, key, key_size) != 0)) {
 		return ION_STATUS_ERROR(err_item_not_found);
@@ -208,16 +203,14 @@ sl_update(
 
 	status = ION_STATUS_INITIALIZE;
 
-	/* TODO size_t */
-	int				key_size	= skiplist->super.record.key_size;
-	int				value_size	= skiplist->super.record.value_size;
-	ion_sl_node_t	*cursor		= sl_find_node(skiplist, key);
+	ion_key_size_t		key_size	= skiplist->super.record.key_size;
+	ion_value_size_t	value_size	= skiplist->super.record.value_size;
+	ion_sl_node_t		*cursor		= sl_find_node(skiplist, key);
 
 	/* If the key doesn't exist in the skiplist... */
 	if ((NULL == cursor->key) || (skiplist->super.compare(cursor->key, key, key_size) != 0)) {
-		/* Insert it. TODO Possibly return different error code */
-		sl_insert(skiplist, key, value);
-		status.error	= err_ok;
+		/* Insert it. */
+		status.error	= sl_insert(skiplist, key, value).error;
 		status.count	= 1;
 		return status;
 	}
@@ -241,8 +234,7 @@ sl_delete(
 	ion_skiplist_t	*skiplist,
 	ion_key_t		key
 ) {
-	/* TODO size_t this */
-	int key_size = skiplist->super.record.key_size;
+	ion_key_size_t key_size = skiplist->super.record.key_size;
 	/* Default return is no item */
 	ion_status_t status;
 
@@ -303,7 +295,6 @@ sl_find_node(
 	ion_sl_level_t	h;
 
 	for (h = skiplist->head->height; h >= 0; h--) {
-		/* TODO Step through this and verify its integrity for all cases */
 		while (NULL != cursor->next[h] && skiplist->super.compare(cursor->next[h]->key, key, key_size) <= 0) {
 			if ((NULL != cursor->next[h]) && (skiplist->super.compare(cursor->next[h]->key, key, key_size) == 0)) {
 				return cursor->next[h];

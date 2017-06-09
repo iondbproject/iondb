@@ -21,7 +21,7 @@
 */
 /******************************************************************************/
 
-#include "../../../planckunit/src/planck_unit.h"
+#include "../../../planck-unit/src/planck_unit.h"
 #include "../behaviour_dictionary.h"
 #include "../../../../dictionary/flat_file/flat_file_dictionary_handler.h"
 #include "test_behaviour_flat_file.h"
@@ -30,5 +30,6 @@ void
 runalltests_behaviour_flat_file(
 	void
 ) {
+	fdeleteall();
 	bhdct_run_tests(ffdict_init, 15, ION_BHDCT_ALL_TESTS);
 }

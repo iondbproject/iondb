@@ -4,12 +4,6 @@
 @author		Scott Ronald Fazackerley
 @brief		Open Address Hash Map
 @details	The open address hash map allows non-colliding entries into a hash table
-
-@todo   capture size of map
-@todo   prevent duplicate insertions
-@todo   When creating the hash-map, need to know something about what is going in it.
-		What we need to know if the the size of the key and the size of the data.
-		That is all.  Nothing else.
 */
 /******************************************************************************/
 
@@ -59,7 +53,7 @@ oafh_initialize(
 	int actual_filename_length = dictionary_get_filename(id, "oaf", addr_filename);
 
 	if (actual_filename_length >= ION_MAX_FILENAME_LENGTH) {
-		return err_dictionary_initialization_failed;
+		return err_uninitialized;
 	}
 
 	hashmap->file = fopen(addr_filename, "r+b");
@@ -145,7 +139,6 @@ oafh_update(
 	ion_key_t			key,
 	ion_value_t			value
 ) {
-	/* TODO: lock potentially required */
 	ion_write_concern_t current_write_concern = hash_map->write_concern;
 
 	hash_map->write_concern = wc_update;/* change write concern to allow update */
@@ -207,7 +200,7 @@ oafh_insert(
 				}
 				else {
 					free(item);
-					return ION_STATUS_ERROR(err_write_concern);	/* there is a configuration issue with write concern */
+					return ION_STATUS_ERROR(err_file_write_error);	/* there is a configuration issue with write concern */
 				}
 			}
 		}
@@ -285,7 +278,6 @@ oafh_find_item_loc(
 			/* calculate if there is a match */
 
 			if (item->status != ION_DELETED) {
-				/*@todo correct compare to use proper return type*/
 				int key_is_equal = hash_map->super.compare(item->data, key, hash_map->super.record.key_size);
 
 				if (ION_IS_EQUAL == key_is_equal) {
@@ -353,7 +345,7 @@ oafh_delete(
 }
 
 ion_status_t
-oafh_query(
+oafh_get(
 	ion_file_hashmap_t	*hash_map,
 	ion_key_t			key,
 	ion_value_t			value

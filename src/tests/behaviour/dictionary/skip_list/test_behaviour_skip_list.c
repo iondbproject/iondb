@@ -21,7 +21,7 @@
 */
 /******************************************************************************/
 
-#include "../../../planckunit/src/planck_unit.h"
+#include "../../../planck-unit/src/planck_unit.h"
 #include "../behaviour_dictionary.h"
 #include "../../../../dictionary/skip_list/skip_list_handler.h"
 #include "test_behaviour_skip_list.h"
@@ -31,6 +31,7 @@ runalltests_behaviour_skip_list(
 	void
 ) {
 #if defined(ARDUINO)
+	fdeleteall();
 	bhdct_run_tests(sldict_init, 7, ION_BHDCT_ALL_TESTS & ~ION_BHDCT_STRING_INT);
 #else
 	bhdct_run_tests(sldict_init, 7, ION_BHDCT_ALL_TESTS);

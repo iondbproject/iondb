@@ -46,7 +46,7 @@ iinq_create_source(
 		}
 
 		if (1 != fwrite(&dictionary.instance->id, sizeof(dictionary.instance->id), 1, schema_file)) {
-			return err_file_incomplete_read;
+			return err_file_read_error;
 		}
 
 		if (0 != fclose(schema_file)) {
@@ -92,7 +92,7 @@ iinq_open_source(
 		}
 
 		if (1 != fread(&id, sizeof(id), 1, schema_file)) {
-			return err_file_incomplete_read;
+			return err_file_read_error;
 		}
 
 		error = ion_open_dictionary(handler, dictionary, id);
