@@ -35,23 +35,6 @@ ion_dictionary_id_t ion_master_table_next_id	= 1;
 #define ION_MASTER_TABLE_WRITE_FROM_END -2
 #define ION_MASTER_TABLE_RECORD_SIZE(cp) (sizeof((cp)->id) + sizeof((cp)->use_type) + sizeof((cp)->type) + sizeof((cp)->key_size) + sizeof((cp)->value_size) + sizeof((cp)->dictionary_size) + sizeof((cp)->dictionary_type))
 
-/**
-@brief		Write a record to the master table.
-@details	Automatically, this call will reposition the file position
-			back to where it was once the call is complete.
-@param[in]	config
-				A pointer to a previously allocated config object to write from.
-@param[in]	where
-				An integral value representing where to write to in the file.
-				This file offset is byte-aligned, not record aligned, in general.
-
-				Two special flags can be passed in here:
-					- @c ION_MASTER_TABLE_CALCULATE_POS
-						Calculate the position based on the passed-in config id.
-					- @c ION_MASTER_TABLE_WRITE_FROM_END
-						Write the record at the end of the file.
-@returns	An error code describing the result of the call.
-*/
 ion_err_t
 ion_master_table_write(
 	ion_dictionary_config_info_t	*config,
@@ -420,14 +403,6 @@ ion_delete_from_master_table(
 	return ion_master_table_write(&blank, where);
 }
 
-/**
-@brief		Retrieves the type of dictionary stored under a particular id in the
-			master table.
-@param		id
-				The identifier identifying the dictionary metadata in the
-				master table.
-@returns	The type of dictionary implementation corresponding to the id.
-*/
 ion_dictionary_type_t
 ion_get_dictionary_type(
 	ion_dictionary_id_t id

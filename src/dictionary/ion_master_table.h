@@ -78,6 +78,29 @@ extern ion_dictionary_id_t ion_master_table_next_id;
 extern FILE *ion_master_table_file;
 
 /**
+@brief		Write a record to the master table.
+@details	Automatically, this call will reposition the file position
+			back to where it was once the call is complete.
+@param[in]	config
+				A pointer to a previously allocated config object to write from.
+@param[in]	where
+				An integral value representing where to write to in the file.
+				This file offset is byte-aligned, not record aligned, in general.
+
+				Two special flags can be passed in here:
+					- @c ION_MASTER_TABLE_CALCULATE_POS
+						Calculate the position based on the passed-in config id.
+					- @c ION_MASTER_TABLE_WRITE_FROM_END
+						Write the record at the end of the file.
+@returns	An error code describing the result of the call.
+*/
+ion_err_t
+ion_master_table_write(
+	ion_dictionary_config_info_t	*config,
+	long							where
+);
+
+/**
 @brief	  Opens the master table.
 @details	Can be safely called multiple times without closing.
 */
@@ -241,6 +264,31 @@ ion_err_t
 ion_switch_handler(
 	ion_dictionary_type_t		type,
 	ion_dictionary_handler_t	*handler
+);
+
+/**
+@brief		Returns the next dictionary ID, then increments.
+@param		id
+				An identifier pointer to be written into.
+@returns	An error code describing the result of the operation.
+*/
+/* Returns the next dictionary ID, then increments. */
+ion_err_t
+ion_master_table_get_next_id(
+	ion_dictionary_id_t *id
+);
+
+/**
+@brief		Retrieves the type of dictionary stored under a particular id in the
+			master table.
+@param		id
+				The identifier identifying the dictionary metadata in the
+				master table.
+@returns	The type of dictionary implementation corresponding to the id.
+*/
+ion_dictionary_type_t
+ion_get_dictionary_type(
+	ion_dictionary_id_t id
 );
 
 #if defined(__cplusplus)

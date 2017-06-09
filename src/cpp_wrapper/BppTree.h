@@ -21,7 +21,7 @@ public:
 
 @details	Registers functions for dictionary.
 
-@param		type_key
+@param		key_type
 				The type of keys to be stored in the dictionary.
 @param		key_size
 				The size of keys to be stored in the dictionary.
@@ -29,13 +29,16 @@ public:
 				The size of the values to be stored in the dictionary.
 */
 BppTree(
-	ion_key_type_t	type_key,
-	int				key_size,
-	int				value_size
+	ion_dictionary_id_t id,
+	ion_key_type_t		key_type,
+	int					key_size,
+	int					value_size
 ) {
+	this->dict_type = dictionary_type_bpp_tree_t;
+
 	bpptree_init(&this->handler);
 
-	this->initializeDictionary(type_key, key_size, value_size, 0);
+	this->initializeDictionary(id, key_type, key_size, value_size, 0);
 }
 };
 

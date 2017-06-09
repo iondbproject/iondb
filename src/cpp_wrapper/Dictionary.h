@@ -11,6 +11,7 @@
 #define PROJECT_CPP_DICTIONARY_H
 
 #include "../dictionary/dictionary.h"
+#include "../dictionary/flat_file/flat_file_dictionary_handler.h"
 #include "../dictionary/dictionary_types.h"
 #include "../key_value/kv_system.h"
 
@@ -22,27 +23,53 @@ public:
 
 ion_dictionary_handler_t	handler;
 ion_dictionary_t			dict;
-ion_key_size_t				size_k;
-ion_value_size_t			size_v;
+ion_dictionary_id_t			id;
+ion_key_type_t				key_type;
+ion_key_size_t				key_size;
+ion_value_size_t			value_size;
 ion_dictionary_size_t		dict_size;
+ion_dictionary_type_t		dict_type;
+ion_dictionary_status_t		status;
 ion_status_t				last_status;
 
 ~Dictionary(
 ) {
-	this->destroy();
+	this->deleteDictionary();
 }
 
+/**
+@brief		Creates a dictionary with a specific identifier (for use through
+			the master table).
+@param		dict_id
+				A unique identifier important for use of the dictionary through
+				the master table. If the dictionary is being created without
+				the master table, this identifier can be 0.
+@param		k_type
+				The type of key to be used with this dictionary, which
+				determines the key comparison operator.
+@param		k_size
+				The size of the key type to be used with this dictionary.
+@param		v_size
+				The size of the value type to be used with this dictionary.
+@param		dictionary_size
+				The dictionary implementation specific dictionary size
+				parameter.
+@returns	An error code describing the result of the operation.
+*/
 ion_err_t
 initializeDictionary(
-	ion_key_type_t			type_key,
-	ion_key_size_t			key_size,
-	ion_value_size_t		value_size,
+	ion_dictionary_id_t		dict_id,
+	ion_key_type_t			k_type,
+	ion_key_size_t			k_size,
+	ion_value_size_t		v_size,
 	ion_dictionary_size_t	dictionary_size
 ) {
-	ion_err_t err = dictionary_create(&handler, &dict, 0, type_key, key_size, value_size, dictionary_size);
+	ion_err_t err = dictionary_create(&handler, &dict, id, key_type, key_size, value_size, dictionary_size);
 
-	size_k		= key_size;
-	size_v		= value_size;
+	id			= dict_id;
+	key_type	= k_type;
+	key_size	= k_size;
+	value_size	= v_size;
 	dict_size	= dictionary_size;
 
 	return err;
@@ -127,16 +154,39 @@ update(
 }
 
 /**
-@brief	  Destroys dictionary.
+@brief	  Deletes dictionary.
 
 @return		An error message describing the total destruction of the dictionary.
 */
 ion_err_t
-destroy(
+deleteDictionary(
 ) {
 	ion_err_t err = dictionary_delete_dictionary(&dict);
 
 	return err;
+}
+
+/**
+@brief	  Destroys dictionary
+
+@param	  handler
+				A pointer to the implementation of dictionary to destroy.
+@param	  id
+				The identifier identifying the dictionary to destroy.
+@return		The status of the total destruction of the dictionary.
+*/
+ion_err_t
+destroyDictionary(
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_id_t			id
+) {
+	ion_err_t error = handler->destroy_dictionary(id);
+
+	if (err_not_implemented == error) {
+		error = ffdict_destroy_dictionary(id);
+	}
+
+	return error;
 }
 
 /**

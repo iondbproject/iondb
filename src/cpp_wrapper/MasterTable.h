@@ -11,6 +11,13 @@
 #define PROJECT_CPP_MASTERTABLE_H
 
 #include "../dictionary/ion_master_table.h"
+#include "../dictionary/ion_master_table.c"
+#include "Dictionary.h"
+#include "BppTree.h"
+#include "FlatFile.h"
+#include "OpenAddressFileHash.h"
+#include "OpenAddressHash.h"
+#include "SkipList.h"
 
 class MasterTable {
 public:
@@ -59,6 +66,29 @@ deleteMasterTable(
 }
 
 /**
+@brief		Adds the given dictionary to the master table.
+@param		dictionary
+				A pointer to the dictionary object to add to the master table.
+@param		dictionary_size
+				The implementation specific size parameter used when
+				creating the dictionary. This parameter must be passed
+				to this function by @ref ion_master_table_create_dictionary,
+				since not all implementations track the dictionary size.
+*/
+template<typename K, typename V>
+ion_err_t
+addToMasterTable(
+	Dictionary<K, V>		*dictionary,
+	ion_dictionary_size_t dictionary_size
+) {
+	ion_dictionary_config_info_t config = {
+		.id = dictionary->id, .use_type = 0, .type = dictionary->key_type, .key_size = dictionary->key_size, .value_size = dictionary->value_size, .dictionary_size = dictionary_size, .dictionary_type = dictionary->dict_type
+	};
+
+	return ion_master_table_write(&config, ION_MASTER_TABLE_WRITE_FROM_END);
+}
+
+/**
 @brief		Creates a dictionary through use of the master table.
 @param		dictionary
 				A pointer to an allocated dictionary object, which will be
@@ -77,22 +107,33 @@ deleteMasterTable(
 				The kind of dictionary instance to be created.
 @returns	An error code describing the result of the operation.
 */
+template<typename K, typename V>
 ion_err_t
 createDictionary(
-	ion_dictionary_t		*dictionary,
-	ion_key_type_t			key_type,
-	ion_key_size_t			key_size,
-	ion_value_size_t		value_size,
-	ion_dictionary_size_t	dictionary_size,
-	ion_dictionary_type_t	dictionary_type
+	Dictionary<K, V>		 *dictionary,
+	ion_key_type_t key_type,
+	ion_key_size_t key_size,
+	ion_value_size_t value_size,
+	ion_dictionary_size_t dictionary_size,
+	ion_dictionary_type_t dictionary_type
 ) {
-	ion_err_t err = initializeHandler(dictionary_type);
+	ion_dictionary_id_t id;
+
+	ion_err_t err = ion_master_table_get_next_id(&id);
 
 	if (err_ok != err) {
 		return err;
 	}
 
-	return ion_master_table_create_dictionary(&handler, dictionary, key_type, key_size, value_size, dictionary_size);
+	err = initializeDictionary(dictionary, id, key_type, key_size, value_size, dictionary_size, dictionary_type);
+
+	if (err_ok != err) {
+		return err;
+	}
+
+	err = addToMasterTable(dictionary, dictionary_size);
+
+	return err;
 }
 
 /**
@@ -174,12 +215,47 @@ deleteFromMasterTable(
 				master table.
 @returns	An error code describing the result of the operation.
 */
+template<typename K, typename V>
 ion_err_t
 deleteDictionary(
-	ion_dictionary_t	*dictionary,
+	Dictionary<K, V>	*dictionary,
 	ion_dictionary_id_t id
 ) {
-	return ion_delete_dictionary(dictionary, id);
+	ion_err_t				err;
+	ion_dictionary_type_t	type;
+
+	if (ion_dictionary_status_closed != dictionary->status) {
+		id	= dictionary->id;
+
+		err = dictionary->deleteDictionary();
+
+		if (err_ok != err) {
+			return err_dictionary_destruction_error;
+		}
+
+		err = ion_delete_from_master_table(id);
+	}
+	else {
+		type = ion_get_dictionary_type(id);
+
+		if (dictionary_type_error_t == type) {
+			return err_dictionary_destruction_error;
+		}
+
+		ion_dictionary_handler_t handler;
+
+		ion_switch_handler(type, &handler);
+
+		err = dictionary->destroyDictionary(&handler, id);
+
+		if (err_ok != err) {
+			return err;
+		}
+
+		err = ion_delete_from_master_table(id);
+	}
+
+	return err;
 }
 
 /**
@@ -192,12 +268,26 @@ deleteDictionary(
 				master table.
 @returns	An error code describing the result of the operation.
 */
+template<typename K, typename V>
 ion_err_t
 openDictionary(
-	ion_dictionary_t	*dictionary,
+	Dictionary<K, V>	*dictionary,
 	ion_dictionary_id_t id
 ) {
-	return ion_open_dictionary(&handler, dictionary, id);
+	ion_err_t						err;
+	ion_dictionary_config_info_t	config;
+
+	err = ion_lookup_in_master_table(id, &config);
+
+	/* Lookup for id failed. */
+	if (err_ok != err) {
+		return err_dictionary_initialization_failed;
+	}
+
+	ion_switch_handler(config.dictionary_type, &handler);
+
+	err = dictionary->open(config);
+	return err;
 }
 
 /**
@@ -207,12 +297,76 @@ openDictionary(
 				closed.
 @returns	An error code describing the result of the operation.
 */
+template<typename K, typename V>
 ion_err_t
 closeDictionary(
-	ion_dictionary_t *dictionary
+	Dictionary<K, V> *dictionary
 ) {
-	return ion_close_dictionary(dictionary);
+	return dictionary->close();
 }
 };
+
+/**
+@brief		Creates a dictionary of a specified implementation.
+@param		dictionary
+				A pointer to an allocated dictionary object to be initialized.
+@param		key_type
+				The type of key to be used with this dictionary, which
+				determines the key comparison operator.
+@param		key_size
+				The size of the key type to be used with this dictionary.
+@param		value_size
+				The size of the value type to be used with this dictionary.
+@param		dictionary_size
+				The dictionary implementation specific dictionary size
+				parameter.
+@param		dictionary_type
+				The type of dictionary to be created.
+@returns	An error code describing the result of the operation.
+*/
+template<typename K, typename V>
+ion_err_t
+initializeDictionary(
+	Dictionary<K, V>		*dictionary,
+	ion_dictionary_id_t id,
+	ion_key_type_t key_type,
+	ion_key_size_t key_size,
+	ion_value_size_t value_size,
+	ion_dictionary_size_t dictionary_size,
+	ion_dictionary_type_t dictionary_type
+) {
+	switch (dictionary_type) {
+		case dictionary_type_bpp_tree_t: {
+			dictionary = new BppTree<K, V>(id, key_type, key_size, value_size);
+			break;
+		}
+
+		case dictionary_type_flat_file_t: {
+			dictionary = new FlatFile<K, V>(id, key_type, key_size, value_size, dictionary_size);
+			break;
+		}
+
+		case dictionary_type_open_address_file_hash_t: {
+			dictionary = new OpenAddressFileHash<K, V>(id, key_type, key_size, value_size, dictionary_size);
+			break;
+		}
+
+		case dictionary_type_open_address_hash_t: {
+			dictionary = new OpenAddressHash<K, V>(id, key_type, key_size, value_size, dictionary_size);
+			break;
+		}
+
+		case dictionary_type_skip_list_t: {
+			dictionary = new SkipList<K, V>(id, key_type, key_size, value_size, dictionary_size);
+			break;
+		}
+
+		case dictionary_type_error_t: {
+			return err_dictionary_initialization_failed;
+		}
+	}
+
+	return err_ok;
+}
 
 #endif /* PROJECT_CPP_MASTERTABLE_H */

@@ -23,7 +23,7 @@ public:
 
 @details	Registers functions for dictionary.
 
-@param		type_key
+@param		key_type
 				The type of keys to be stored in the dictionary.
 @param		key_size
 				The size of keys to be stored in the dictionary.
@@ -33,14 +33,17 @@ public:
 				The size desired for the dictionary.
 */
 OpenAddressFileHash(
-	ion_key_type_t			type_key,
+	ion_dictionary_id_t		id,
+	ion_key_type_t			key_type,
 	ion_key_size_t			key_size,
 	ion_value_size_t		value_size,
 	ion_dictionary_size_t	dictionary_size
 ) {
+	this->dict_type = dictionary_type_open_address_file_hash_t;
+
 	oafdict_init(&this->handler);
 
-	this->initializeDictionary(type_key, key_size, value_size, dictionary_size);
+	this->initializeDictionary(id, key_type, key_size, value_size, dictionary_size);
 }
 };
 
