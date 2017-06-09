@@ -219,11 +219,9 @@ ion_init_master_table(
 		}
 
 		/* Clean fresh file was opened. */
-		/* Write master row. */
-/*		printf("id: %u\n", ion_master_table_next_id); */
-/*		ion_dictionary_config_info_t master_config = { .id = ion_master_table_next_id }; */
 		ion_master_table_next_id = 1;
 
+		/* Write master row. */
 		ion_dictionary_config_info_t master_config = { .id = ion_master_table_next_id };
 
 		if (err_ok != (error = ion_master_table_write(&master_config, 0))) {
@@ -296,6 +294,9 @@ ion_delete_master_table(
 	if (0 != fremove(ION_MASTER_TABLE_FILENAME)) {
 		return err_file_delete_error;
 	}
+
+	/* Reset master table ID as master table has been deleted. */
+	ion_master_table_next_id = 1;
 
 	return err_ok;
 }
