@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include "../../key_value/kv_system.h"
 #include "../dictionary.h"
-#include "../../file/SD_stdio_c_iface.h"
+#include "../../file/sd_stdio_c_iface.h"
 
 typedef ion_byte_t *linear_hash_record_status_t;
 
