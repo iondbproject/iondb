@@ -1,8 +1,8 @@
 /******************************************************************************/
 /**
 @file
-@author		Kris Wallperington
-@brief		Header declarations for the flat file dictionary level unit tests.
+@author		Spencer MacBeth
+@brief		Header declarations for the linear hash dictionary level unit tests.
 @copyright	Copyright 2016
 				The University of British Columbia,
 				IonDB Project Contributors (see AUTHORS.md)
@@ -21,8 +21,8 @@
 */
 /******************************************************************************/
 
-#if !defined(TEST_FLAT_FILE_HANDLER_H)
-#define TEST_FLAT_FILE_HANDLER_H
+#if !defined(TEST_LINEAR_HASH_HANDLER_H)
+#define TEST_LINEAR_HASH_HANDLER_H
 
 #if defined(__cplusplus)
 extern "C" {
