@@ -21,7 +21,7 @@
 */
 /******************************************************************************/
 
-#include "../../../planckunit/src/planck_unit.h"
+#include "../../../planck-unit/src/planck_unit.h"
 #include "../behaviour_dictionary.h"
 #include "../../../../dictionary/linear_hash/linear_hash_handler.h"
 #include "test_behaviour_linear_hash.h"

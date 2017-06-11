@@ -1086,7 +1086,7 @@ write_new_bucket(
 
 	/* write bucket data to file */
 	if (1 != fwrite(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database)) {
-		return err_file_incomplete_write;
+		return err_file_write_error;
 	}
 
 	/* write bucket data to file */
@@ -1098,7 +1098,7 @@ write_new_bucket(
 
 	for (i = 0; i < linear_hash->records_per_bucket; i++) {
 		if (1 != fwrite(record_blank, linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(linear_hash_record_status_empty), 1, linear_hash->database)) {
-			return err_file_incomplete_write;
+			return err_file_write_error;
 		}
 	}
 
@@ -1183,7 +1183,7 @@ linear_hash_update_bucket(
 
 	/* write bucket data to file */
 	if (1 != fwrite(bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database)) {
-		return err_file_incomplete_write;
+		return err_file_write_error;
 	}
 
 	return err_ok;
@@ -1231,7 +1231,7 @@ create_overflow_bucket(
 
 	/* write to file */
 	if (1 != fwrite(&bucket, sizeof(linear_hash_bucket_t), 1, linear_hash->database)) {
-		return err_file_incomplete_write;
+		return err_file_write_error;
 	}
 
 	/* write bucket data to file */
@@ -1243,7 +1243,7 @@ create_overflow_bucket(
 
 	for (i = 0; i < linear_hash->records_per_bucket; i++) {
 		if (1 != fwrite(record_blank, linear_hash->super.record.key_size + linear_hash->super.record.value_size + sizeof(linear_hash_record_status_empty), 1, linear_hash->database)) {
-			return err_file_incomplete_write;
+			return err_file_write_error;
 		}
 	}
 
