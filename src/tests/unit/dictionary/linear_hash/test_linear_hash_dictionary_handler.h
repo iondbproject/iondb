@@ -30,7 +30,7 @@ extern "C" {
 
 #include <stdio.h>
 #include <string.h>
-#include "../../../planckunit/src/planck_unit.h"
+#include "../../../planck-unit/src/planck_unit.h"
 #include "../../../../dictionary/linear_hash/linear_hash_handler.h"
 
 void
