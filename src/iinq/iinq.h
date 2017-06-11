@@ -55,42 +55,42 @@ struct iinq_source {
 
 ion_err_t
 iinq_create_source(
-	char					*schema_file_name,
-	ion_key_type_t				key_type,
-	ion_key_size_t			key_size,
-	ion_value_size_t		value_size
+		char					*schema_file_name,
+		ion_key_type_t				key_type,
+		ion_key_size_t			key_size,
+		ion_value_size_t		value_size
 );
 
 ion_err_t
 iinq_open_source(
-	char					*schema_file_name,
-	ion_dictionary_t			*dictionary,
-	ion_dictionary_handler_t	*handler
+		char					*schema_file_name,
+		ion_dictionary_t			*dictionary,
+		ion_dictionary_handler_t	*handler
 );
 
 ion_status_t
 iinq_insert(
-	char 		*schema_file_name,
-	ion_key_t	key,
-	ion_value_t value
+		char 		*schema_file_name,
+		ion_key_t	key,
+		ion_value_t value
 );
 
 ion_status_t
 iinq_update(
-	char 		*schema_file_name,
-	ion_key_t	key,
-	ion_value_t value
+		char 		*schema_file_name,
+		ion_key_t	key,
+		ion_value_t value
 );
 
 ion_status_t
 iinq_delete(
-	char 		*schema_file_name,
-	ion_key_t	key
+		char 		*schema_file_name,
+		ion_key_t	key
 );
 
 ion_err_t
 iinq_drop(
-	char *schema_file_name
+		char *schema_file_name
 );
 
 #define CREATE_DICTIONARY(schema_name, key_type, key_size, value_size) \
@@ -219,7 +219,7 @@ while (NULL != copyer) { \
 	ref_cursor	= last; \
 	while (1) { \
 		_FROM_ADVANCE_CURSORS
-		/*if (!_FROM_CHECK_CURSOR(__VA_ARGS__)) {*/ \
+/*if (!_FROM_CHECK_CURSOR(__VA_ARGS__)) {*/ \
 		/*	break; */ \
 		/*}*/
 

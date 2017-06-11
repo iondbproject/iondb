@@ -1,8 +1,7 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <SD.h>
-#include "test_skip_list.h"
-#include "test_skip_list_handler.h"
+#include "test_behaviour_linear_hash.h"
 
 void
 setup(
@@ -10,8 +9,7 @@ setup(
 	SPI.begin();
 	SD.begin(SD_CS_PIN);
 	Serial.begin(BAUD_RATE);
-	runalltests_skiplist();
-	runalltests_skiplist_handler();
+	runalltests_behaviour_linear_hash();
 }
 
 void
