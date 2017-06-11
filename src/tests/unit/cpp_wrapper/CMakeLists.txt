@@ -4,8 +4,7 @@ project(test_cpp_wrapper)
 set(SOURCE_FILES
 	test_cpp_wrapper.cpp
 	test_cpp_wrapper.h
-    ../../../dictionary/ion_master_table.c
-    ../../../dictionary/ion_master_table.h)
+    ../../../cpp_wrapper/MasterTable.h)
 
 if(USE_ARDUINO)
     set(${PROJECT_NAME}_BOARD       ${BOARD})

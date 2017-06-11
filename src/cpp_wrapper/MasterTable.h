@@ -246,7 +246,11 @@ deleteDictionary(
 
 		ion_switch_handler(type, &handler);
 
-		err = dictionary->destroyDictionary(&handler, id);
+		err = dictionary_destroy_dictionary(&handler, id);
+
+		if (err_not_implemented == err) {
+			err = ffdict_destroy_dictionary(id);
+		}
 
 		if (err_ok != err) {
 			return err;

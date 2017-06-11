@@ -64,7 +64,7 @@ initializeDictionary(
 	ion_value_size_t		v_size,
 	ion_dictionary_size_t	dictionary_size
 ) {
-	ion_err_t err = dictionary_create(&handler, &dict, id, key_type, key_size, value_size, dictionary_size);
+	ion_err_t err = dictionary_create(&handler, &dict, id, k_type, k_size, v_size, dictionary_size);
 
 	id			= dict_id;
 	key_type	= k_type;
@@ -177,10 +177,9 @@ deleteDictionary(
 */
 ion_err_t
 destroyDictionary(
-	ion_dictionary_handler_t	*handler,
-	ion_dictionary_id_t			id
+	ion_dictionary_id_t id
 ) {
-	ion_err_t error = handler->destroy_dictionary(id);
+	ion_err_t error = dictionary_destroy_dictionary(&handler, id);
 
 	if (err_not_implemented == error) {
 		error = ffdict_destroy_dictionary(id);
