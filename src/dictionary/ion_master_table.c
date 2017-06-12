@@ -167,7 +167,7 @@ ion_master_table_get_next_id(
 	ion_err_t error								= err_ok;
 
 	/* Flush master row. This writes the next ID to be used, so add 1. */
-	ion_dictionary_config_info_t master_config	= { .id = ion_master_table_next_id + 1 };
+	ion_dictionary_config_info_t master_config	= { .id = ion_master_table_next_id + 1, .use_type = 0, .type = 0, .key_size = 0, .value_size = 0, .dictionary_size = 0, .dictionary_type = dictionary_type_error_t };
 
 	error = ion_master_table_write(&master_config, 0);
 

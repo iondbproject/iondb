@@ -374,6 +374,7 @@ initializeDictionary(
 		}
 	}
 
+	UNUSED(dictionary);
 	return err_ok;
 }
 
