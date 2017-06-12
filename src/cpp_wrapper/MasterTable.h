@@ -81,8 +81,18 @@ addToMasterTable(
 	Dictionary<K, V>		*dictionary,
 	ion_dictionary_size_t dictionary_size
 ) {
+	ion_dictionary_id_t id;
+
+	ion_err_t err = ion_master_table_get_next_id(&id);
+
+	if (err_ok != err) {
+		return err;
+	}
+
+	dictionary->dict.instance->id = id;
+
 	ion_dictionary_config_info_t config = {
-		.id = dictionary->id, .use_type = 0, .type = dictionary->key_type, .key_size = dictionary->key_size, .value_size = dictionary->value_size, .dictionary_size = dictionary_size, .dictionary_type = dictionary->dict_type
+		.id = dictionary->dict.instance->id, .use_type = 0, .type = dictionary->dict.instance->key_type, .key_size = dictionary->dict.instance->record.key_size, .value_size = dictionary->dict.instance->record.value_size, .dictionary_size = dictionary_size, .dictionary_type = dictionary->dict.instance->type
 	};
 
 	return ion_master_table_write(&config, ION_MASTER_TABLE_WRITE_FROM_END);
@@ -126,6 +136,10 @@ createDictionary(
 	}
 
 	err = initializeDictionary(dictionary, id, key_type, key_size, value_size, dictionary_size, dictionary_type);
+
+	if (dictionary->dict.instance->key_type != key_type) {
+		printf("wrong key type");
+	}
 
 	if (err_ok != err) {
 		return err;
@@ -346,26 +360,51 @@ initializeDictionary(
 	switch (dictionary_type) {
 		case dictionary_type_bpp_tree_t: {
 			dictionary = new BppTree<K, V>(id, key_type, key_size, value_size);
+
+			if (err_ok != dictionary->last_status.error) {
+				return dictionary->last_status.error;
+			}
+
 			break;
 		}
 
 		case dictionary_type_flat_file_t: {
 			dictionary = new FlatFile<K, V>(id, key_type, key_size, value_size, dictionary_size);
+
+			if (err_ok != dictionary->last_status.error) {
+				return dictionary->last_status.error;
+			}
+
 			break;
 		}
 
 		case dictionary_type_open_address_file_hash_t: {
 			dictionary = new OpenAddressFileHash<K, V>(id, key_type, key_size, value_size, dictionary_size);
+
+			if (err_ok != dictionary->last_status.error) {
+				return dictionary->last_status.error;
+			}
+
 			break;
 		}
 
 		case dictionary_type_open_address_hash_t: {
 			dictionary = new OpenAddressHash<K, V>(id, key_type, key_size, value_size, dictionary_size);
+
+			if (err_ok != dictionary->last_status.error) {
+				return dictionary->last_status.error;
+			}
+
 			break;
 		}
 
 		case dictionary_type_skip_list_t: {
 			dictionary = new SkipList<K, V>(id, key_type, key_size, value_size, dictionary_size);
+
+			if (err_ok != dictionary->last_status.error) {
+				return dictionary->last_status.error;
+			}
+
 			break;
 		}
 

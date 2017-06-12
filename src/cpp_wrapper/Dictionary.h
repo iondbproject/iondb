@@ -64,13 +64,13 @@ initializeDictionary(
 	ion_value_size_t		v_size,
 	ion_dictionary_size_t	dictionary_size
 ) {
-	ion_err_t err = dictionary_create(&handler, &dict, id, k_type, k_size, v_size, dictionary_size);
-
 	id			= dict_id;
 	key_type	= k_type;
 	key_size	= k_size;
 	value_size	= v_size;
 	dict_size	= dictionary_size;
+
+	ion_err_t err = dictionary_create(&handler, &dict, dict_id, k_type, k_size, v_size, dictionary_size);
 
 	return err;
 }

@@ -397,17 +397,8 @@ ion_err_t
 ion_delete_from_master_table(
 	ion_dictionary_id_t id
 ) {
-#if defined(__cplusplus)
-
-	ion_dictionary_config_info_t blank = ion_dictionary_config_info_t();
-
-#else
-
-	ion_dictionary_config_info_t blank = { 0 };
-
-#endif
-
-	long where = (id * ION_MASTER_TABLE_RECORD_SIZE(&blank));
+	ion_dictionary_config_info_t	blank	= { 0 };
+	long							where	= (id * ION_MASTER_TABLE_RECORD_SIZE(&blank));
 
 	return ion_master_table_write(&blank, where);
 }
