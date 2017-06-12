@@ -168,9 +168,6 @@ deleteDictionary(
 
 /**
 @brief	  Destroys dictionary
-
-@param	  handler
-				A pointer to the implementation of dictionary to destroy.
 @param	  id
 				The identifier identifying the dictionary to destroy.
 @return		The status of the total destruction of the dictionary.

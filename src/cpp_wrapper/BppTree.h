@@ -20,7 +20,10 @@ public:
 @brief		Registers a specific B+ tree dictionary instance.
 
 @details	Registers functions for dictionary.
-
+@param		id
+				A unique identifier important for use of the dictionary through
+				the master table. If the dictionary is being created without
+				the master table, this identifier can be 0.
 @param		key_type
 				The type of keys to be stored in the dictionary.
 @param		key_size
