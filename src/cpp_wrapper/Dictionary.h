@@ -99,6 +99,14 @@ insert(
 	return status;
 }
 
+/**
+@brief		Retrieve a value given a key.
+
+@param		key
+				The key to retrieve the value for.
+@return		value
+				A pointer to the value byte array to copy data into.
+*/
 V
 get(
 	K key

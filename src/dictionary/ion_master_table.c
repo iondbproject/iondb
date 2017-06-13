@@ -27,6 +27,7 @@
 #include "open_address_file_hash/open_address_file_hash_dictionary_handler.h"
 #include "open_address_hash/open_address_hash_dictionary_handler.h"
 #include "skip_list/skip_list_handler.h"
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 
 FILE				*ion_master_table_file		= NULL;
 ion_dictionary_id_t ion_master_table_next_id	= 1;

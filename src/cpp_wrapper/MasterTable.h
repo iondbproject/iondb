@@ -336,6 +336,8 @@ closeDictionary(
 
 /**
 @brief		Creates a dictionary of a specified implementation.
+@details	This method is not currently used for creation of a C++ dictionary.
+			Modifications to be made in the future for full use.
 @param		dictionary
 				A pointer to an allocated dictionary object to be initialized.
 @param		id
