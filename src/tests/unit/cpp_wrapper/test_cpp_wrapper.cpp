@@ -2464,7 +2464,9 @@ test_master_table_dictionary_create_delete(
 ) {
 	master_table_init(tc, master_table);
 	master_table_dictionary_add(tc, master_table, dictionary, key_type_numeric_signed, sizeof(int), sizeof(int), dictionary_size, dictionary_type);
-	master_table_delete_dictionary(tc, master_table, dictionary, dictionary->dict.instance->id);
+/*	master_table_delete_dictionary(tc, master_table, dictionary, dictionary->dict.instance->id); */
+	master_table->deleteFromMasterTable(dictionary->dict.instance->id);
+	delete dictionary;
 }
 
 /**
@@ -2645,7 +2647,8 @@ test_master_table(
 
 	ion_dictionary_id_t id = dictionary->dict.instance->id;
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, id + 1, ion_master_table_next_id);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, id);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, ion_master_table_next_id);
 
 	/***************/
 
@@ -2656,7 +2659,7 @@ test_master_table(
 
 	/* Test re-open */
 	master_table_init(tc, master_table);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, id + 1, ion_master_table_next_id);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, ion_master_table_next_id);
 
 	/****************/
 
@@ -2672,7 +2675,8 @@ test_master_table(
 
 	ion_dictionary_id_t id2 = dictionary2->dict.instance->id;
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, id + 2, ion_master_table_next_id);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, id2);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, ion_master_table_next_id);
 	/******************************/
 
 	/* Test 2nd lookup */
