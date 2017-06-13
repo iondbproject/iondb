@@ -16,6 +16,7 @@
 #include "../../../cpp_wrapper/SkipList.h"
 #include "test_cpp_wrapper.h"
 #include "../../../dictionary/dictionary_types.h"
+#include "../../../key_value/kv_system.h"
 
 /* This is used to define how complicated to pre-fill a dictionary for testing. */
 typedef enum ION_BEHAVIOUR_FILL_LEVEL {
@@ -124,6 +125,7 @@ master_table_close_dictionary(
 ) {
 	ion_err_t err = master_table->closeDictionary(dictionary);
 
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_closed, dictionary->dict.status);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 }
 
@@ -2455,16 +2457,14 @@ test_master_table_delete(
 void
 test_master_table_dictionary_create_delete(
 	planck_unit_test_t *tc,
+	MasterTable *master_table,
 	Dictionary<int, int>	*dictionary,
 	ion_dictionary_size_t dictionary_size,
 	ion_dictionary_type_t dictionary_type
 ) {
-	MasterTable *master_table = new MasterTable();
-
 	master_table_init(tc, master_table);
 	master_table_dictionary_add(tc, master_table, dictionary, key_type_numeric_signed, sizeof(int), sizeof(int), dictionary_size, dictionary_type);
 	master_table_delete_dictionary(tc, master_table, dictionary, dictionary->dict.instance->id);
-	delete master_table;
 }
 
 /**
@@ -2477,20 +2477,30 @@ test_master_table_dictionary_create_delete_all(
 ) {
 	Dictionary<int, int> *dictionary;
 
-	dictionary = new BppTree<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int));
-	test_master_table_dictionary_create_delete(tc, dictionary, 0, dictionary_type_bpp_tree_t);
+	MasterTable			*master_table	= new MasterTable();
+	ion_dictionary_id_t id				= master_table->getNextID();
 
-/*	dictionary = new FlatFile<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 30); */
-/*	test_master_table_dictionary_create_delete(tc, dictionary, 30, dictionary_type_flat_file_t); */
+	dictionary = new BppTree<int, int>(id, key_type_numeric_signed, sizeof(int), sizeof(int));
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	test_master_table_dictionary_create_delete(tc, master_table, dictionary, 0, dictionary_type_bpp_tree_t);
 
-/*	dictionary = new OpenAddressHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50); */
-/*	test_master_table_dictionary_create_delete(tc, dictionary, 50, dictionary_type_open_address_hash_t); */
-/*  */
-/*	dictionary = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50); */
-/*	test_master_table_dictionary_create_delete(tc, dictionary, 50, dictionary_type_open_address_file_hash_t); */
-/*  */
-/*	dictionary = new SkipList<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 7); */
-/*	test_master_table_dictionary_create_delete(tc, dictionary, 7, dictionary_type_skip_list_t); */
+	dictionary = new FlatFile<int, int>(id + 1, key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	test_master_table_dictionary_create_delete(tc, master_table, dictionary, 30, dictionary_type_flat_file_t);
+
+	dictionary = new OpenAddressHash<int, int>(id + 2, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	test_master_table_dictionary_create_delete(tc, master_table, dictionary, 50, dictionary_type_open_address_hash_t);
+
+	dictionary = new OpenAddressFileHash<int, int>(id + 3, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	test_master_table_dictionary_create_delete(tc, master_table, dictionary, 50, dictionary_type_open_address_file_hash_t);
+
+	dictionary = new SkipList<int, int>(id + 4, key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	test_master_table_dictionary_create_delete(tc, master_table, dictionary, 7, dictionary_type_skip_list_t);
+
+	delete master_table;
 }
 
 /**
@@ -2499,12 +2509,11 @@ test_master_table_dictionary_create_delete_all(
 void
 test_master_table_dictionary_open_close(
 	planck_unit_test_t *tc,
+	MasterTable *master_table,
 	Dictionary<int, int>	*dictionary,
 	ion_dictionary_size_t dictionary_size,
 	ion_dictionary_type_t dictionary_type
 ) {
-	MasterTable *master_table = new MasterTable();
-
 	ion_dictionary_id_t id;
 
 	master_table_init(tc, master_table);
@@ -2515,7 +2524,6 @@ test_master_table_dictionary_open_close(
 	master_table_close_dictionary(tc, master_table, dictionary);
 	master_table_open_dictionary(tc, master_table, dictionary, id);
 	master_table_delete_dictionary(tc, master_table, dictionary, id);
-	delete master_table;
 }
 
 /**
@@ -2528,25 +2536,30 @@ test_master_table_dictionary_open_close_all(
 ) {
 	Dictionary<int, int> *dictionary;
 
-	dictionary = new BppTree<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int));
-	test_master_table_dictionary_open_close(tc, dictionary, 0, dictionary_type_bpp_tree_t);
-	delete dictionary;
+	MasterTable			*master_table	= new MasterTable();
+	ion_dictionary_id_t id				= master_table->getNextID();
 
-	dictionary = new FlatFile<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 30);
-	test_master_table_dictionary_open_close(tc, dictionary, 30, dictionary_type_flat_file_t);
-	delete dictionary;
+	dictionary = new BppTree<int, int>(id, key_type_numeric_signed, sizeof(int), sizeof(int));
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	test_master_table_dictionary_open_close(tc, master_table, dictionary, 0, dictionary_type_bpp_tree_t);
 
-	dictionary = new OpenAddressHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
-	test_master_table_dictionary_open_close(tc, dictionary, 50, dictionary_type_open_address_hash_t);
-	delete dictionary;
+	dictionary = new FlatFile<int, int>(id + 1, key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	test_master_table_dictionary_open_close(tc, master_table, dictionary, 30, dictionary_type_flat_file_t);
 
-	dictionary = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
-	test_master_table_dictionary_open_close(tc, dictionary, 50, dictionary_type_open_address_file_hash_t);
-	delete dictionary;
+	dictionary = new OpenAddressHash<int, int>(id + 2, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	test_master_table_dictionary_open_close(tc, master_table, dictionary, 50, dictionary_type_open_address_hash_t);
 
-	dictionary = new SkipList<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 7);
-	test_master_table_dictionary_open_close(tc, dictionary, 7, dictionary_type_skip_list_t);
-	delete dictionary;
+	dictionary = new OpenAddressFileHash<int, int>(id + 3, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	test_master_table_dictionary_open_close(tc, master_table, dictionary, 50, dictionary_type_open_address_file_hash_t);
+
+	dictionary = new SkipList<int, int>(id + 4, key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	test_master_table_dictionary_open_close(tc, master_table, dictionary, 7, dictionary_type_skip_list_t);
+
+	delete master_table;
 }
 
 /**
@@ -2555,12 +2568,11 @@ test_master_table_dictionary_open_close_all(
 void
 test_master_table_dictionary_close_delete(
 	planck_unit_test_t *tc,
+	MasterTable *master_table,
 	Dictionary<int, int>	*dictionary,
 	ion_dictionary_size_t dictionary_size,
 	ion_dictionary_type_t dictionary_type
 ) {
-	MasterTable *master_table = new MasterTable();
-
 	ion_dictionary_id_t id;
 
 	master_table_init(tc, master_table);
@@ -2570,7 +2582,6 @@ test_master_table_dictionary_close_delete(
 
 	master_table_close_dictionary(tc, master_table, dictionary);
 	master_table_delete_dictionary(tc, master_table, dictionary, id);
-	delete master_table;
 }
 
 /**
@@ -2583,25 +2594,30 @@ test_master_table_dictionary_close_delete_all(
 ) {
 	Dictionary<int, int> *dictionary;
 
-	dictionary = new BppTree<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int));
-	test_master_table_dictionary_close_delete(tc, dictionary, 0, dictionary_type_bpp_tree_t);
-	delete dictionary;
+	MasterTable			*master_table	= new MasterTable();
+	ion_dictionary_id_t id				= master_table->getNextID();
 
-	dictionary = new FlatFile<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 30);
-	test_master_table_dictionary_close_delete(tc, dictionary, 30, dictionary_type_flat_file_t);
-	delete dictionary;
+	dictionary = new BppTree<int, int>(id, key_type_numeric_signed, sizeof(int), sizeof(int));
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	test_master_table_dictionary_close_delete(tc, master_table, dictionary, 0, dictionary_type_bpp_tree_t);
 
-	dictionary = new OpenAddressHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
-	test_master_table_dictionary_close_delete(tc, dictionary, 50, dictionary_type_open_address_hash_t);
-	delete dictionary;
+	dictionary = new FlatFile<int, int>(id + 1, key_type_numeric_signed, sizeof(int), sizeof(int), 30);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	test_master_table_dictionary_close_delete(tc, master_table, dictionary, 30, dictionary_type_flat_file_t);
 
-	dictionary = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
-	test_master_table_dictionary_close_delete(tc, dictionary, 50, dictionary_type_open_address_file_hash_t);
-	delete dictionary;
+	dictionary = new OpenAddressHash<int, int>(id + 2, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	test_master_table_dictionary_close_delete(tc, master_table, dictionary, 50, dictionary_type_open_address_hash_t);
 
-	dictionary = new SkipList<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 7);
-	test_master_table_dictionary_close_delete(tc, dictionary, 7, dictionary_type_skip_list_t);
-	delete dictionary;
+	dictionary = new OpenAddressFileHash<int, int>(id + 3, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	test_master_table_dictionary_close_delete(tc, master_table, dictionary, 50, dictionary_type_open_address_file_hash_t);
+
+	dictionary = new SkipList<int, int>(id + 4, key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	test_master_table_dictionary_close_delete(tc, master_table, dictionary, 7, dictionary_type_skip_list_t);
+
+	delete master_table;
 }
 
 /**
@@ -2610,12 +2626,11 @@ test_master_table_dictionary_close_delete_all(
 void
 test_master_table(
 	planck_unit_test_t *tc,
+	MasterTable *master_table,
 	Dictionary<int, int>	*dictionary,
 	Dictionary<int, int>	*dictionary2,
 	ion_dictionary_type_t dictionary_type
 ) {
-	MasterTable *master_table = new MasterTable();
-
 	/* Cleanup, just in case */
 	master_table_close(tc, master_table);
 	fremove(ION_MASTER_TABLE_FILENAME);
@@ -2694,10 +2709,6 @@ test_master_table(
 	/* Test close master table */
 
 	master_table_close(tc, master_table);
-
-	/* Test delete master table */
-
-	master_table_delete(tc, master_table);
 	/**************/
 }
 
@@ -2711,35 +2722,37 @@ test_master_table_all(
 	Dictionary<int, int>	*dictionary;
 	Dictionary<int, int>	*dictionary2;
 
-	dictionary	= new BppTree<int, int>(0, key_type_numeric_signed, sizeof(int), 10);
-	dictionary2 = new BppTree<int, int>(0, key_type_numeric_signed, sizeof(short), 7);
-	test_master_table(tc, dictionary, dictionary2, dictionary_type_bpp_tree_t);
-	delete dictionary;
-	delete dictionary2;
+	MasterTable *master_table;
 
-	dictionary	= new FlatFile<int, int>(0, key_type_numeric_signed, sizeof(int), 10, 20);
-	dictionary2 = new FlatFile<int, int>(0, key_type_numeric_signed, sizeof(short), 7, 14);
-	test_master_table(tc, dictionary, dictionary2, dictionary_type_flat_file_t);
-	delete dictionary;
-	delete dictionary2;
+	master_table	= new MasterTable();
+	dictionary		= new BppTree<int, int>(1, key_type_numeric_signed, sizeof(int), 10);
+	dictionary2		= new BppTree<int, int>(2, key_type_numeric_signed, sizeof(short), 7);
+	test_master_table(tc, master_table, dictionary, dictionary2, dictionary_type_bpp_tree_t);
+	delete master_table;
 
-	dictionary	= new OpenAddressHash<int, int>(0, key_type_numeric_signed, sizeof(int), 10, 20);
-	dictionary2 = new OpenAddressHash<int, int>(0, key_type_numeric_signed, sizeof(short), 7, 14);
-	test_master_table(tc, dictionary, dictionary2, dictionary_type_open_address_hash_t);
-	delete dictionary;
-	delete dictionary2;
+	master_table	= new MasterTable();
+	dictionary		= new FlatFile<int, int>(1, key_type_numeric_signed, sizeof(int), 10, 20);
+	dictionary2		= new FlatFile<int, int>(2, key_type_numeric_signed, sizeof(short), 7, 14);
+	test_master_table(tc, master_table, dictionary, dictionary2, dictionary_type_flat_file_t);
+	delete master_table;
 
-	dictionary	= new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), 10, 20);
-	dictionary2 = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(short), 7, 14);
-	test_master_table(tc, dictionary, dictionary2, dictionary_type_open_address_file_hash_t);
-	delete dictionary;
-	delete dictionary2;
+	master_table	= new MasterTable();
+	dictionary		= new OpenAddressHash<int, int>(1, key_type_numeric_signed, sizeof(int), 10, 20);
+	dictionary2		= new OpenAddressHash<int, int>(2, key_type_numeric_signed, sizeof(short), 7, 14);
+	test_master_table(tc, master_table, dictionary, dictionary2, dictionary_type_open_address_hash_t);
+	delete master_table;
 
-	dictionary	= new SkipList<int, int>(0, key_type_numeric_signed, sizeof(int), 10, 20);
-	dictionary2 = new SkipList<int, int>(0, key_type_numeric_signed, sizeof(short), 7, 14);
-	test_master_table(tc, dictionary, dictionary2, dictionary_type_skip_list_t);
-	delete dictionary;
-	delete dictionary2;
+	master_table	= new MasterTable();
+	dictionary		= new OpenAddressFileHash<int, int>(1, key_type_numeric_signed, sizeof(int), 10, 20);
+	dictionary2		= new OpenAddressFileHash<int, int>(2, key_type_numeric_signed, sizeof(short), 7, 14);
+	test_master_table(tc, master_table, dictionary, dictionary2, dictionary_type_open_address_file_hash_t);
+	delete master_table;
+
+	master_table	= new MasterTable();
+	dictionary		= new SkipList<int, int>(1, key_type_numeric_signed, sizeof(int), 10, 20);
+	dictionary2		= new SkipList<int, int>(2, key_type_numeric_signed, sizeof(short), 7, 14);
+	test_master_table(tc, master_table, dictionary, dictionary2, dictionary_type_skip_list_t);
+	delete master_table;
 }
 
 /**
@@ -2821,9 +2834,9 @@ cpp_wrapper_getsuite_3(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_open_close);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_delete);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_create_delete_all);
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_close_delete_all); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_all); */
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_close_delete_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_all);
 
 	return suite;
 }

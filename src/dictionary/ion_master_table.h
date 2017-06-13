@@ -272,7 +272,6 @@ ion_switch_handler(
 				An identifier pointer to be written into.
 @returns	An error code describing the result of the operation.
 */
-/* Returns the next dictionary ID, then increments. */
 ion_err_t
 ion_master_table_get_next_id(
 	ion_dictionary_id_t *id

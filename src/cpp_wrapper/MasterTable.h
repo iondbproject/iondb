@@ -99,6 +99,16 @@ addToMasterTable(
 }
 
 /**
+@brief		Returns the next dictionary ID.
+@returns	The next ID to be used by the master table.
+*/
+ion_dictionary_id_t
+getNextID(
+) {
+	return ion_master_table_next_id;
+}
+
+/**
 @brief		Creates a dictionary through use of the master table.
 @param		dictionary
 				A pointer to an allocated dictionary object, which will be
@@ -238,7 +248,7 @@ deleteDictionary(
 	ion_err_t				err;
 	ion_dictionary_type_t	type;
 
-	if (ion_dictionary_status_closed != dictionary->status) {
+	if (ion_dictionary_status_closed != dictionary->dict.status) {
 		id	= dictionary->id;
 
 		err = dictionary->deleteDictionary();
