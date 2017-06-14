@@ -63,6 +63,19 @@ master_table_close(
 }
 
 /**
+@brief	This function performs cleanup if the master table was not previously
+		destroyed properly.
+*/
+void
+master_table_setup(
+	planck_unit_test_t	*tc,
+	MasterTable			*master_table
+) {
+	master_table_close(tc, master_table);
+	fremove(ION_MASTER_TABLE_FILENAME);
+}
+
+/**
 @brief	This function deletes the master table.
 */
 void
@@ -2453,6 +2466,7 @@ test_master_table_open_close(
 ) {
 	MasterTable *master_table = new MasterTable();
 
+	master_table_setup(tc, master_table);
 	master_table_init(tc, master_table);
 	master_table_close(tc, master_table);
 	delete master_table;
@@ -2467,6 +2481,7 @@ test_master_table_delete(
 ) {
 	MasterTable *master_table = new MasterTable();
 
+	master_table_setup(tc, master_table);
 	master_table_init(tc, master_table);
 	delete master_table;
 }
@@ -2483,6 +2498,7 @@ test_master_table_dictionary_create_delete(
 ) {
 	MasterTable *master_table = new MasterTable();
 
+	master_table_setup(tc, master_table);
 	master_table_init(tc, master_table);
 	master_table_dictionary_add(tc, master_table, dictionary, key_type_numeric_signed, sizeof(int), sizeof(int), dictionary_size, dictionary_type);
 
@@ -2540,6 +2556,7 @@ test_master_table_dictionary_open_close(
 
 	ion_dictionary_id_t id;
 
+	master_table_setup(tc, master_table);
 	master_table_init(tc, master_table);
 	master_table_dictionary_add(tc, master_table, dictionary, key_type_numeric_signed, sizeof(int), sizeof(int), dictionary_size, dictionary_type);
 
@@ -2600,6 +2617,7 @@ test_master_table_dictionary_close_delete(
 
 	ion_dictionary_id_t id;
 
+	master_table_setup(tc, master_table);
 	master_table_init(tc, master_table);
 	master_table_dictionary_add(tc, master_table, dictionary, key_type_numeric_signed, sizeof(int), sizeof(int), dictionary_size, dictionary_type);
 
@@ -2608,8 +2626,7 @@ test_master_table_dictionary_close_delete(
 	master_table_close_dictionary(tc, master_table, dictionary);
 
 	master_table_delete_dictionary(tc, master_table, dictionary, id);
-
-	master_table_delete_from_master_table(tc, master_table, id);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == dictionary->dict.instance);
 
 	delete master_table;
 }
@@ -2657,8 +2674,7 @@ test_master_table(
 	ion_dictionary_type_t dictionary_type
 ) {
 	/* Cleanup, just in case */
-	master_table_close(tc, master_table);
-	fremove(ION_MASTER_TABLE_FILENAME);
+	master_table_setup(tc, master_table);
 
 	/* Test init */
 	master_table_init(tc, master_table);
