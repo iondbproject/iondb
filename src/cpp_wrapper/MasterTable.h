@@ -147,15 +147,13 @@ createDictionary(
 
 	err = initializeDictionary(dictionary, id, key_type, key_size, value_size, dictionary_size, dictionary_type);
 
-	if (dictionary->dict.instance->key_type != key_type) {
-		printf("wrong key type");
-	}
-
 	if (err_ok != err) {
 		return err;
 	}
 
-	err = addToMasterTable(dictionary, dictionary_size);
+	dictionary->dict.open_status	= boolean_true;
+
+	err								= addToMasterTable(dictionary, dictionary_size);
 
 	return err;
 }
@@ -315,6 +313,11 @@ openDictionary(
 	ion_switch_handler(config.dictionary_type, &handler);
 
 	err = dictionary->open(config);
+
+	if (err_ok == err) {
+		dictionary->dict.open_status = boolean_true;
+	}
+
 	return err;
 }
 
@@ -330,9 +333,14 @@ ion_err_t
 closeDictionary(
 	Dictionary<K, V> *dictionary
 ) {
-	return dictionary->close();
+	ion_err_t err = dictionary->close();
+
+	if (err_ok == err) {
+		dictionary->dict.open_status = boolean_false;
+	}
+
+	return err;
 }
-};
 
 /**
 @brief		Creates a dictionary of a specified implementation.
@@ -428,5 +436,6 @@ initializeDictionary(
 	UNUSED(dictionary);
 	return err_ok;
 }
+};
 
 #endif /* PROJECT_CPP_MASTERTABLE_H */
