@@ -239,7 +239,7 @@ ion_close_master_table(
 	ion_dictionary_id_t id = ion_master_table_next_id;
 
 	if (NULL != ion_master_table_file) {
-		id--;
+		/*	id--; */
 
 		while (id > 0) {
 			err = ion_open_dictionary(&handler, &dict, id);
