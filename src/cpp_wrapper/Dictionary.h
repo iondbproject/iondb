@@ -186,10 +186,6 @@ destroyDictionary(
 ) {
 	ion_err_t error = dictionary_destroy_dictionary(&handler, id);
 
-	if (err_not_implemented == error) {
-		error = ffdict_destroy_dictionary(id);
-	}
-
 	return error;
 }
 
