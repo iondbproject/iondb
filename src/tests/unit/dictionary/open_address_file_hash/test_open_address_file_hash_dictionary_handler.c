@@ -340,7 +340,7 @@ test_open_address_file_dictionary_predicate_equality(
 	free(key_under_test);
 	free(cursor);
 
-	/* destroy cursor for cleanup TODO TODO memory leak cannot free here!! */
+	/* destroy cursor for cleanup */
 	/* cursor->destroy(&cursor); */
 	/* and destroy the dictionary instance */
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -406,7 +406,7 @@ test_open_address_file_dictionary_predicate_range_signed(
 
 	free(cursor);
 
-	/* destroy cursor for cleanup TODO TODO memory leak CANNOT free here!! */
+	/* destroy cursor for cleanup */
 	/* cursor->destroy(&cursor); */
 	/* and destroy the dictionary instance */
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -472,7 +472,7 @@ test_open_address_file_dictionary_predicate_range_unsigned(
 
 	free(cursor);
 
-	/* destroy cursor for cleanup TODO TODO Memory leak here CANNOT free!!! */
+	/* destroy cursor for cleanup */
 	/* cursor->destroy(&cursor); */
 	/* and destroy the dictionary instance */
 	test_dictionary.handler->delete_dictionary(&test_dictionary);

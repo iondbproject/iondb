@@ -68,7 +68,6 @@ ffdict_next(
 			ion_flat_file_row_t throwaway_row;
 			ion_err_t			err = err_uninitialized;
 
-			/* TODO: Implement sorted mode search */
 			switch (cursor->predicate->type) {
 				case predicate_equality: {
 					err = flat_file_scan(flat_file, flat_file_cursor->current_location + 1, &flat_file_cursor->current_location, &throwaway_row, ION_FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, cursor->predicate->statement.equality.equality_value);
@@ -89,7 +88,6 @@ ffdict_next(
 				}
 
 				case predicate_predicate: {
-					/* TODO not implemented */
 					break;
 				}
 			}
@@ -239,7 +237,6 @@ ffdict_find(
 
 	ion_key_size_t key_size = dictionary->instance->record.key_size;
 
-	/* TODO: Implement sorted mode search here */
 	switch (predicate->type) {
 		case predicate_equality: {
 			ion_key_t target_key = predicate->statement.equality.equality_value;
@@ -351,7 +348,6 @@ ffdict_find(
 		}
 
 		case predicate_predicate: {
-			/* TODO not implemented */
 			break;
 		}
 
@@ -418,7 +414,7 @@ ffdict_create_dictionary(
 
 	ion_err_t result = flat_file_initialize((ion_flat_file_t *) dictionary->instance, id, key_type, key_size, value_size, dictionary_size);
 
-	if (err_ok == result) {
+	if ((err_ok == result) && (NULL != handler)) {
 		dictionary->handler = handler;
 	}
 

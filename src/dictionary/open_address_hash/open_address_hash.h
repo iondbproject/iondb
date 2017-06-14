@@ -244,7 +244,7 @@ oah_delete(
 				The value associated in the map.
 */
 ion_status_t
-oah_query(
+oah_get(
 	ion_hashmap_t	*hash_map,
 	ion_key_t		key,
 	ion_value_t		value

@@ -37,7 +37,7 @@
 #include "bpp_tree_handler.h"
 
 void
-bpptree_get_value_filename(
+bpptree_get_filename(
 	ion_dictionary_id_t id,
 	char				*str
 ) {
@@ -82,7 +82,6 @@ bpptree_create_dictionary(
 ) {
 	UNUSED(dictionary_size);
 
-	/* TODO: Uncomment this when IINQ has been merged into development */
 /*	if (key_size != sizeof(int)) {
 		return err_invalid_initial_size;
 	}*/
@@ -98,33 +97,33 @@ bpptree_create_dictionary(
 
 	char value_filename[20];
 
-	bpptree_get_value_filename(id, value_filename);
+	bpptree_get_filename(id, value_filename);
 	bpptree->values.file_handle = ion_fopen(value_filename);
 
 	bpptree->values.next_empty	= ION_FILE_NULL;
 
-	/* FIXME: read this from a property bag. */
-
-	/* FIXME: VARIABLE NAMES! */
 	char addr_filename[ION_MAX_FILENAME_LENGTH];
 
 	int actual_filename_length = dictionary_get_filename(id, "bpt", addr_filename);
 
 	if (actual_filename_length >= ION_MAX_FILENAME_LENGTH) {
-		return err_dictionary_initialization_failed;
+		return err_uninitialized;
 	}
 
 	info.iName		= addr_filename;
 	info.keySize	= key_size;
 	info.dupKeys	= boolean_false;
-	/* FIXME: HOW DO WE SET BLOCK SIZE? */
 	info.sectorSize = 256;
 	info.comp		= compare;
 
-	ion_bpp_err_t bErr = bOpen(info, &(bpptree->tree));
+	ion_bpp_err_t bErr = b_open(info, &(bpptree->tree));
 
 	if (bErrOk != bErr) {
-		return err_dictionary_initialization_failed;
+		return err_uninitialized;
+	}
+
+	if (NULL == handler) {
+		return err_uninitialized;
 	}
 
 	dictionary->instance					= (ion_dictionary_parent_t *) bpptree;
@@ -132,7 +131,6 @@ bpptree_create_dictionary(
 	dictionary->instance->key_type			= key_type;
 	dictionary->instance->record.key_size	= key_size;
 	dictionary->instance->record.value_size = value_size;
-	/* todo: need to check to make sure that the handler is registered */
 	dictionary->handler						= handler;
 
 	return err_ok;
@@ -163,7 +161,7 @@ bpptree_insert(
 	bpptree = (ion_bpptree_t *) dictionary->instance;
 
 	offset	= ION_FILE_NULL;
-	bErr	= bFindKey(bpptree->tree, key, &offset);
+	bErr	= b_get(bpptree->tree, key, &offset);
 
 	if (bErrKeyNotFound == bErr) {
 		offset = ION_FILE_NULL;
@@ -173,14 +171,13 @@ bpptree_insert(
 
 	if (err_ok == err) {
 		if (bErrKeyNotFound == bErr) {
-			bErr = bInsertKey(bpptree->tree, key, offset);
+			bErr = b_insert(bpptree->tree, key, offset);
 		}
 		else {
-			bErr = bUpdateKey(bpptree->tree, key, offset);
+			bErr = b_update(bpptree->tree, key, offset);
 		}
 
 		if (bErrOk != bErr) {
-			/* TODO: lfb_delete from values */
 			return ION_STATUS_ERROR(err_unable_to_insert);
 		}
 
@@ -216,7 +213,7 @@ bpptree_insert(
 @return		The status of the query.
 */
 ion_status_t
-bpptree_query(
+bpptree_get(
 	ion_dictionary_t	*dictionary,
 	ion_key_t			key,
 	ion_value_t			value
@@ -229,7 +226,7 @@ bpptree_query(
 
 	bpptree = (ion_bpptree_t *) dictionary->instance;
 
-	bErr	= bFindKey(bpptree->tree, key, &offset);
+	bErr	= b_get(bpptree->tree, key, &offset);
 
 	if (bErrOk != bErr) {
 		return ION_STATUS_ERROR(err_item_not_found);
@@ -245,7 +242,7 @@ bpptree_query(
 }
 
 /**
-@brief		Deletes the @p key and assoicated value from the dictionary
+@brief		Deletes the @p key and associated value from the dictionary
 			instance.
 
 @param	  dictionary
@@ -268,7 +265,7 @@ bpptree_delete(
 
 	bpptree = (ion_bpptree_t *) dictionary->instance;
 
-	bErr	= bDeleteKey(bpptree->tree, key, &offset);
+	bErr	= b_delete(bpptree->tree, key, &offset);
 
 	if (bErrKeyNotFound != bErr) {
 		status.error = lfb_delete_all(&(bpptree->values), offset, &(status.count));
@@ -280,7 +277,14 @@ bpptree_delete(
 	return status;
 }
 
-/* TODO Write me doc! */
+/**
+@brief			Closes a BppTree instance of a dictionary.
+
+@param			dictionary
+					A pointer to the specific dictionary instance to be closed.
+
+@return			The status of closing the dictionary.
+ */
 ion_err_t
 bpptree_close_dictionary(
 	ion_dictionary_t *dictionary
@@ -289,7 +293,7 @@ bpptree_close_dictionary(
 	ion_bpp_err_t	bErr;
 
 	bpptree					= (ion_bpptree_t *) dictionary->instance;
-	bErr					= bClose(bpptree->tree);
+	bErr					= b_close(bpptree->tree);
 	ion_fclose(bpptree->values.file_handle);
 	free(dictionary->instance);
 	dictionary->instance	= NULL;
@@ -364,7 +368,7 @@ bpptree_update(
 	count	= 0;
 	bpptree = (ion_bpptree_t *) dictionary->instance;
 
-	bErr	= bFindKey(bpptree->tree, key, &offset);
+	bErr	= b_get(bpptree->tree, key, &offset);
 
 	if (bErrKeyNotFound != bErr) {
 		lfb_update_all(&(bpptree->values), offset, bpptree->super.record.value_size, (ion_byte_t *) value, &count);
@@ -417,9 +421,9 @@ bpptree_next(
 				}
 
 				case predicate_range: {
-					/*do bFindNextKey then test_predicate */
+					/*do b_find_next_key then test_predicate */
 					if (-1 == bCursor->offset) {
-						ion_bpp_err_t bErr = bFindNextKey(bpptree->tree, bCursor->cur_key, &bCursor->offset);
+						ion_bpp_err_t bErr = b_find_next_key(bpptree->tree, bCursor->cur_key, &bCursor->offset);
 
 						if ((bErrOk != bErr) || (boolean_false == test_predicate(cursor, bCursor->cur_key))) {
 							is_valid = boolean_false;
@@ -431,7 +435,7 @@ bpptree_next(
 
 				case predicate_all_records: {
 					if (-1 == bCursor->offset) {
-						ion_bpp_err_t bErr = bFindNextKey(bpptree->tree, bCursor->cur_key, &bCursor->offset);
+						ion_bpp_err_t bErr = b_find_next_key(bpptree->tree, bCursor->cur_key, &bCursor->offset);
 
 						if (bErrOk != bErr) {
 							is_valid = boolean_false;
@@ -442,7 +446,6 @@ bpptree_next(
 				}
 
 				case predicate_predicate: {
-					/*TODO Not implemented */
 					break;
 				}
 					/*No default since we can assume the predicate is valid. */
@@ -552,7 +555,6 @@ bpptree_find(
 
 	switch (predicate->type) {
 		case predicate_equality: {
-			/* TODO get ALL these lines within 80 cols */
 			ion_key_t target_key = predicate->statement.equality.equality_value;
 
 			(*cursor)->predicate->statement.equality.equality_value = malloc(key_size);
@@ -568,7 +570,7 @@ bpptree_find(
 
 			memcpy(bCursor->cur_key, target_key, key_size);
 
-			ion_bpp_err_t err = bFindKey(bpptree->tree, target_key, &bCursor->offset);
+			ion_bpp_err_t err = b_get(bpptree->tree, target_key, &bCursor->offset);
 
 			if (bErrOk != err) {
 				/* If this happens, that means the target key doesn't exist */
@@ -608,7 +610,7 @@ bpptree_find(
 			memcpy((*cursor)->predicate->statement.range.upper_bound, predicate->statement.range.upper_bound, key_size);
 
 			/* We search for the FGEQ of the Lower bound. */
-			bFindFirstGreaterOrEqual(bpptree->tree, (*cursor)->predicate->statement.range.lower_bound, bCursor->cur_key, &bCursor->offset);
+			b_find_first_greater_or_equal(bpptree->tree, (*cursor)->predicate->statement.range.lower_bound, bCursor->cur_key, &bCursor->offset);
 
 			/* If the key returned doesn't satisfy the predicate, we can exit */
 			if (boolean_false == test_predicate(*cursor, bCursor->cur_key)) {
@@ -627,7 +629,7 @@ bpptree_find(
 			ion_bpp_err_t err;
 
 			/* We search for first key in B++ tree. */
-			err					= bFindFirstKey(bpptree->tree, bCursor->cur_key, &bCursor->offset);
+			err					= b_find_first_key(bpptree->tree, bCursor->cur_key, &bCursor->offset);
 
 			(*cursor)->status	= cs_cursor_initialized;
 
@@ -640,7 +642,6 @@ bpptree_find(
 		}
 
 		case predicate_predicate: {
-			/* TODO not implemented */
 			break;
 		}
 
@@ -653,7 +654,21 @@ bpptree_find(
 	return err_ok;
 }
 
-/* TODO Write me doc! */
+/**
+@brief			Opens a specific BppTree instance of a dictionary.
+
+@param			handler
+					A pointer to the handler for the specific dictionary being opened.
+@param			dictionary
+					The pointer declared by the caller that will reference
+					the instance of the dictionary opened.
+@param			config
+					The configuration info of the specific dictionary to be opened.
+@param			compare
+					Function pointer for the comparison function for the dictionary.
+
+@return			The status of opening the dictionary.
+ */
 ion_err_t
 bpptree_open_dictionary(
 	ion_dictionary_handler_t		*handler,
@@ -670,7 +685,7 @@ bpptree_init(
 ) {
 	handler->insert				= bpptree_insert;
 	handler->create_dictionary	= bpptree_create_dictionary;
-	handler->get				= bpptree_query;
+	handler->get				= bpptree_get;
 	handler->update				= bpptree_update;
 	handler->find				= bpptree_find;
 	handler->remove				= bpptree_delete;

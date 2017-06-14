@@ -196,7 +196,7 @@ dictionary_compare_unsigned_value(
 	ion_key_size_t	key_size
 ) {
 	int		idx;
-	char	return_value = 0x73;/* Magic default return value to be easy to spot */
+	char	return_value = ION_RETURN_VALUE;
 
 	/*
 	 * In this case, the endianness of the process does matter as the code does
@@ -207,7 +207,6 @@ dictionary_compare_unsigned_value(
 	for (idx = key_size - 1; idx >= 0; idx--) {
 #else
 
-	/*@todo This is a potential issue and needs to be tested on SAMD3 */
 	for (idx = 0; idx < key_size; idx++) {
 #endif
 
@@ -229,7 +228,7 @@ dictionary_compare_signed_value(
 	ion_key_size_t	key_size
 ) {
 	int		idx;
-	char	return_value = 0x73;/* Magic default return value to be easy to spot TODO refactor out into macro */
+	char	return_value = ION_RETURN_VALUE;
 
 	/*
 	 * In this case, the endianness of the process does matter as the code does
@@ -257,7 +256,6 @@ dictionary_compare_signed_value(
 	for (; idx >= 0; idx--) {
 #else
 
-	/*@todo This is a potential issue and needs to be tested on SAMD3 */
 	for (; idx < key_size; idx++) {
 #endif
 		firstbyte	= *((ion_byte_t *) first_key + idx);
@@ -331,7 +329,7 @@ dictionary_open(
 		}
 
 		if (cursor_status != cs_end_of_results) {
-			return err_dictionary_initialization_failed;
+			return err_uninitialized;
 		}
 
 		cursor->destroy(&cursor);
@@ -410,7 +408,7 @@ dictionary_close(
 		}
 
 		if (cs_end_of_results != cursor_status) {
-			return err_dictionary_initialization_failed;
+			return err_uninitialized;
 		}
 
 		cursor->destroy(&cursor);
@@ -531,7 +529,6 @@ dictionary_build_predicate(
 		}
 
 		case predicate_predicate: {
-			/* TODO not implemented */
 			return err_invalid_predicate;
 		}
 

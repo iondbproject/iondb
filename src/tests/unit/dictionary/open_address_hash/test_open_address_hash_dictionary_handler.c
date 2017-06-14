@@ -135,8 +135,6 @@ test_open_address_hashmap_handler_create_destroy(
 	PLANCK_UNIT_ASSERT_TRUE(tc, (((ion_hashmap_t *) test_dictionary.instance)->write_concern) == wc_insert_unique);
 	PLANCK_UNIT_ASSERT_TRUE(tc, test_dictionary.handler->delete_dictionary(&test_dictionary) == err_ok);
 	PLANCK_UNIT_ASSERT_TRUE(tc, test_dictionary.instance == NULL);
-
-	/* todo fix free value status */
 }
 
 void
@@ -336,7 +334,7 @@ test_open_address_dictionary_predicate_equality(
 
 	free(key_under_test);
 
-	/* destroy cursor for cleanup TODO TODO memory leak here CANNOT free!!! */
+	/* destroy cursor for cleanup */
 	/* cursor->destroy(&cursor); */
 	/* and destroy the dictionary instance */
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -399,7 +397,7 @@ test_open_address_dictionary_predicate_range_signed(
 
 	free(key_under_test);
 
-	/* destroy cursor for cleanup TODO TODO CANNOT free here!!! */
+	/* destroy cursor for cleanup */
 	/* cursor->destroy(&cursor); */
 	/* and destroy the dictionary instance */
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -462,7 +460,7 @@ test_open_address_dictionary_predicate_range_unsigned(
 
 	free(key_under_test);
 
-	/* destroy cursor for cleanup TODO TODO Memory leak here CANNOT free!!! */
+	/* destroy cursor for cleanup */
 	/* cursor->destroy(&cursor); */
 	/* and destroy the dictionary instance */
 	test_dictionary.handler->delete_dictionary(&test_dictionary);

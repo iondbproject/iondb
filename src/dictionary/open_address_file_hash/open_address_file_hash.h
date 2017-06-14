@@ -51,7 +51,7 @@ extern "C" {
 #include "../../key_value/kv_system.h"
 
 /*edefines file operations for arduino */
-#include "./../../file/SD_stdio_c_iface.h"
+#include "../../file/sd_stdio_c_iface.h"
 
 #define ION_EMPTY	-1
 #define ION_DELETED -2
@@ -273,7 +273,7 @@ oafh_delete(
 				The value associated in the map.
 */
 ion_status_t
-oafh_query(
+oafh_get(
 	ion_file_hashmap_t	*hash_map,
 	ion_key_t			key,
 	ion_value_t			value

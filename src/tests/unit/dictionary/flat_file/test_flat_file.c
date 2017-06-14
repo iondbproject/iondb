@@ -132,7 +132,6 @@ ftest_insert(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, status.count);
 
 	if (check_result) {
-		/* TODO: This makes a big assumption on the layout of the data file. Is there a way to eliminate this? */
 		ion_byte_t expected_result[flat_file->row_size];
 
 		memset(expected_result, ION_FLAT_FILE_STATUS_OCCUPIED, sizeof(ion_flat_file_row_status_t));

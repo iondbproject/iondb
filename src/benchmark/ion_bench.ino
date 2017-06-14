@@ -48,7 +48,7 @@
 /* #include "dictionary/bpp_tree/bpptreehandler.h" */
 
 #include <SD.h>
-#include "SD_stdio_c_iface.h"
+#include "sd_stdio_c_iface.h"
 
 #include "lfsr.h"
 
@@ -70,7 +70,7 @@ static int _keyswap;
 /* void			  (*handler_fptr)(ion_dictionary_handler_t*)  = bpptree_init; */
 
 /**< Type of key to test. */
-ion_key_type_t key_type			= key_type_numeric_signed;
+ion_key_type_t key_type		= key_type_numeric_signed;
 /**< Size of key to test. (Default = 2) */
 ion_key_size_t key_size		= 2;
 /**< Size of value to test. (Default = 8) */
@@ -263,13 +263,13 @@ bench_equality(
 	benchmark_start();
 
 	for (i = 0; i < count; i++) {
-		ion_key_t		key		= MAKE_ION_KEY(lfsr_get_next(&keygen));
+		ion_key_t			key		= MAKE_ION_KEY(lfsr_get_next(&keygen));
 		ion_dict_cursor_t	*cursor = NULL;
 		ion_predicate_t		predicate;
 
 		dictionary_build_predicate(&predicate, predicate_equality, key);
 
-		ion_err_t			status = dictionary_find(&dict, &predicate, &cursor);
+		ion_err_t		status = dictionary_find(&dict, &predicate, &cursor);
 		ion_record_t	record;
 
 		record.key		= malloc(dict.instance->record.key_size);
@@ -345,7 +345,7 @@ bench_range(
 
 	dictionary_build_predicate(&predicate, predicate_range, lower_bound, upper_bound);
 
-	ion_err_t			status = dictionary_find(&dict, &predicate, &cursor);
+	ion_err_t		status = dictionary_find(&dict, &predicate, &cursor);
 	ion_record_t	record;
 
 	record.key		= malloc(dict.instance->record.key_size);

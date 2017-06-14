@@ -460,10 +460,13 @@ search(
 				switch (mode) {
 					case MODE_FIRST:
 						/* backtrack to first key */
-						ub			= m - 1;
-						if (lb > ub)
-                            				return ION_CC_EQ;
-						foundDup	= boolean_true;
+						ub = m - 1;
+
+						if (lb > ub) {
+							return ION_CC_EQ;
+						}
+
+						foundDup = boolean_true;
 						break;
 
 					case MODE_MATCH:
@@ -881,7 +884,7 @@ gather(
 }
 
 ion_bpp_err_t
-bOpen(
+b_open(
 	ion_bpp_open_t		info,
 	ion_bpp_handle_t	*handle
 ) {
@@ -999,7 +1002,6 @@ bOpen(
 		}
 	}
 
-	/*TODO make this cleaner **/
 #if defined(ARDUINO)
 	else if (NULL != (h->fp = ion_fopen(info.iName)).file) {
 #else
@@ -1023,7 +1025,7 @@ bOpen(
 }
 
 ion_bpp_err_t
-bClose(
+b_close(
 	ion_bpp_handle_t handle
 ) {
 	ion_bpp_h_node_t *h = handle;
@@ -1033,7 +1035,6 @@ bClose(
 	}
 
 	/* flush idx */
-/*TODO: Cleanup **/
 #if defined(ARDUINO)
 
 	if (h->fp.file) {
@@ -1058,7 +1059,7 @@ bClose(
 }
 
 ion_bpp_err_t
-bFindKey(
+b_get(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	*rec
@@ -1100,7 +1101,7 @@ bFindKey(
 }
 
 ion_bpp_err_t
-bFindFirstGreaterOrEqual(
+b_find_first_greater_or_equal(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	void						*mkey,
@@ -1151,7 +1152,7 @@ bFindFirstGreaterOrEqual(
 }
 
 ion_bpp_err_t
-bInsertKey(
+b_insert(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	rec
@@ -1329,7 +1330,7 @@ bInsertKey(
 }
 
 ion_bpp_err_t
-bUpdateKey(
+b_update(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	rec
@@ -1437,7 +1438,7 @@ bUpdateKey(
 }
 
 ion_bpp_err_t
-bDeleteKey(
+b_delete(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	*rec
@@ -1582,7 +1583,7 @@ bDeleteKey(
 }
 
 ion_bpp_err_t
-bFindFirstKey(
+b_find_first_key(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	*rec
@@ -1613,7 +1614,7 @@ bFindFirstKey(
 
 /*
  * input:
- *   handle				 handle returned by bOpen
+ *   handle				 handle returned by b_open
  * output:
  *   key					last key in sequential set
  *   rec					record address
@@ -1623,7 +1624,7 @@ bFindFirstKey(
 */
 
 ion_bpp_err_t
-bFindLastKey(
+b_find_last_key(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	*rec
@@ -1653,7 +1654,7 @@ bFindLastKey(
 }
 
 ion_bpp_err_t
-bFindNextKey(
+b_find_next_key(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	*rec
@@ -1697,7 +1698,7 @@ bFindNextKey(
 
 /*
  * input:
- *   handle				 handle returned by bOpen
+ *   handle				 handle returned by b_open
  * output:
  *   key					key found
  *   rec					record address
@@ -1706,7 +1707,7 @@ bFindNextKey(
  *   bErrKeyNotFound		key not found
 */
 ion_bpp_err_t
-bFindPrevKey(
+b_find_prev_key(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	*rec

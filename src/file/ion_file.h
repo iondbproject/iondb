@@ -3,6 +3,7 @@
 @file		ion_file.h
 @author		Graeme Douglas
 @brief		A file API for the ionDB.
+<<<<<<< HEAD
 @todo		Include support for other file systems (Arduino, Contiki).
 @copyright	Copyright 2017
 			The University of British Columbia,
@@ -32,6 +33,8 @@
 	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
 	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 	POSSIBILITY OF SUCH DAMAGE.
+=======
+>>>>>>> ba0d64f8a9b3bec61713b857b9b66049e6ff5b91
 */
 /******************************************************************************/
 
@@ -51,7 +54,7 @@ typedef long ion_file_offset_t;
 
 #if defined(ARDUINO)
 
-#include "SD_stdio_c_iface.h"
+#include "sd_stdio_c_iface.h"
 
 #define ION_NOFILE \
 	((ion_file_handle_t) { NULL, -1 } \

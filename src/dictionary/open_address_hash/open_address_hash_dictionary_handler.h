@@ -206,13 +206,11 @@ oadict_update(
 			@p second_key.  If the return value is 0 then @p first_key is
 			equal to @p second_key.
 
-			If the key type is @p key_type_char_array then
-			@todo fix this commemt!
-			The function memcmp compares the size bytes of memory beginning at
-			a1 against the size bytes of memory beginning at a2. The value
-			returned has the same sign as the difference between the first
-			differing pair of bytes (interpreted as unsigned char objects,
-			then promoted to int).
+			If the key type is key_type_char_array then the function memcmp compares
+			the size bytes of memory beginning at a1 against the size bytes of memory
+			beginning at a2. The value returned has the same sign as the difference
+			between the first differing pair of bytes (interpreted as unsigned char
+			objects, then promoted to int).
 
 @param	  first_key
 				The first key in the comparison.
@@ -268,8 +266,7 @@ oadict_next(
 @return	 If the keys are equal.
 */
 ion_boolean_t
-/*TODO Fix name of function */
-is_equal(
+oadict_is_equal(
 	ion_dictionary_t	*dict,
 	ion_key_t			key1,
 	ion_key_t			key2

@@ -161,7 +161,6 @@ enum ION_CURSOR_STATUS {
 											 data in the underlying dictionary
 											 has been changed, making the cursor
 											 invalid. */
-	cs_valid_data	/**< The data in the cursor is valid. @todo we should delete this. */
 };
 
 /**

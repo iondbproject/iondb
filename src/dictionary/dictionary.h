@@ -279,7 +279,7 @@ dictionary_close(
 				Range:		  1st vparam is lower bound, 2nd vparam is upper
 								bound.
 				All_records:	No vparams used.
-				Predicate:	  TODO to be implemented
+				Predicate:	  Not yet implemented
 @returns	An error describing the result of open operation.
 */
 ion_err_t

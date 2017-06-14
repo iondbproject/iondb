@@ -118,7 +118,6 @@ flat_file_insert(
 				Value portion of the record to insert.
 @return		Resulting status of the operation.
 @see		ffdict_get
-@todo		Write tests for sorted mode get.
 */
 ion_status_t
 flat_file_get(
@@ -152,7 +151,6 @@ flat_file_delete(
 				New value to replace old values with.
 @return		Resulting status of the operation.
 @see		ffdict_update
-@todo		Write tests for sorted mode update.
 */
 ion_status_t
 flat_file_update(
@@ -200,10 +198,6 @@ flat_file_close(
 					returns true, the scan is terminated and the found location and row
 					are written back to their respective output parameters.
 @return			Resulting status of scan.
-@todo			Try changing the predicate to be an enum-and-switch to eliminate the function
-				call. Benchmark the performance gain and decide which strategy to use.
-@todo			Consider changing to @p SEEK_CUR whenever possible. Benchmark this and see
-				if the performance gain (if any) is worth it.
 */
 ion_err_t
 flat_file_scan(
