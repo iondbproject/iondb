@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		dictionary.c
+@file		dictionary_types.h
 @author		Graeme Douglas, Scott Fazackerley
 @brief		Types used for dictionaries.
 @details	This file exists mostly to avoid circular dependencies.

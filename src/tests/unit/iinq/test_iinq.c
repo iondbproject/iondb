@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		test_iinq.c
-@author		IonDB Project
+@author		Dana Klamut
 @brief		iinq tests.
 @copyright	Copyright 2017
 			The University of British Columbia,

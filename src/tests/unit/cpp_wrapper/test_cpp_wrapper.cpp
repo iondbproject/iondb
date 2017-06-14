@@ -3,7 +3,6 @@
 @file		test_cpp_wrapper.cpp
 @author		Kris Wallperington, Dana Klamut
 @brief		Unit test for the C++ Wrapper
-<<<<<<< HEAD
 @todo		These tests need to be fully fleshed out.
 @copyright	Copyright 2017
 			The University of British Columbia,
@@ -33,8 +32,6 @@
 	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
 	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 	POSSIBILITY OF SUCH DAMAGE.
-=======
->>>>>>> ba0d64f8a9b3bec61713b857b9b66049e6ff5b91
 */
 /******************************************************************************/
 

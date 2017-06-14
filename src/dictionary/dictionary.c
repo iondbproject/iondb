@@ -2,7 +2,7 @@
 /**
 @file		dictionary.c
 @author		Graeme Douglas, Scott Fazackerley
-@see		For more information, refer to @ref dictionary.h.
+@see		For more information, refer to dictionary.h.
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)

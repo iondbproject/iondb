@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		bbp_tree.h
-@author		IonDB Project
+@author		public domain code
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)

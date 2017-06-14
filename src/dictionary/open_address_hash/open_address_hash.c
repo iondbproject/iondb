@@ -4,7 +4,6 @@
 @author		Scott Ronald Fazackerley
 @brief		Open Address Hash Map
 @details	The open address hash map allows non-colliding entries into a hash table
-<<<<<<< HEAD
 @todo   capture size of map
 @todo   prevent duplicate insertions
 @todo   When creating the hash-map, need to know something about what is going in it.
@@ -38,8 +37,6 @@
 	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
 	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 	POSSIBILITY OF SUCH DAMAGE.
-=======
->>>>>>> ba0d64f8a9b3bec61713b857b9b66049e6ff5b91
 */
 /******************************************************************************/
 

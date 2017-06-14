@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		runalltests_behaviour_flat_file.c
+@file		run_behaviour_flat_file.c
 @author		Kris Wallperington
 @brief		Main file for flat file behaviour tests.
 @copyright	Copyright 2017

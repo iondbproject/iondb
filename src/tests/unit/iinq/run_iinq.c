@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		run_iinq.c
-@author		IonDB Project
+@author		Dana Klamut
 @brief		Entry point for iinq tests.
 @copyright	Copyright 2017
 			The University of British Columbia,

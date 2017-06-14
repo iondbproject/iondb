@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file
+@file       lfsr.h
 @author		Scott Fazackerley
 @brief		A linear-feedback shift register pseudo-random number generator.
 @details	This code implements a simple random number generator that

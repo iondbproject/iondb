@@ -1,5 +1,7 @@
 /******************************************************************************/
 /**
+@file		master_table_example.c
+@author		IonDB Project
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
