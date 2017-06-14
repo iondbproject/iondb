@@ -2489,7 +2489,6 @@ test_master_table_dictionary_create_delete(
 	ion_dictionary_id_t id = dictionary->dict.instance->id;
 
 	delete dictionary;
-	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == dictionary->dict.instance);
 
 	master_table_delete_from_master_table(tc, master_table, id);
 
