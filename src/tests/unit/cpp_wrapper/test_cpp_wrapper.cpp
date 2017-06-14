@@ -2691,6 +2691,8 @@ test_master_table(
 
 	master_table_close(tc, master_table);
 	/**************/
+
+	delete master_table;
 }
 
 /**
