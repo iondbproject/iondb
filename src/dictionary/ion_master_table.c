@@ -29,14 +29,12 @@
 #include "skip_list/skip_list_handler.h"
 #include "dictionary_types.h"
 
-#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-
 FILE				*ion_master_table_file		= NULL;
 ion_dictionary_id_t ion_master_table_next_id	= 1;
 
 #define ION_MASTER_TABLE_CALCULATE_POS	-1
 #define ION_MASTER_TABLE_WRITE_FROM_END -2
-#define ION_MASTER_TABLE_RECORD_SIZE(cp) (sizeof((cp)->id) + sizeof((cp)->use_type) + sizeof((cp)->type) + sizeof((cp)->key_size) + sizeof((cp)->value_size) + sizeof((cp)->dictionary_size) + sizeof((cp)->dictionary_type))
+#define ION_MASTER_TABLE_RECORD_SIZE(cp) (sizeof((cp)->id) + sizeof((cp)->use_type) + sizeof((cp)->type) + sizeof((cp)->key_size) + sizeof((cp)->value_size) + sizeof((cp)->dictionary_size) + sizeof((cp)->dictionary_type) + sizeof((cp)->open_status))
 
 ion_err_t
 ion_master_table_write(
@@ -83,6 +81,10 @@ ion_master_table_write(
 	}
 
 	if (1 != fwrite(&(config->dictionary_type), sizeof(config->dictionary_type), 1, ion_master_table_file)) {
+		return err_file_write_error;
+	}
+
+	if (1 != fwrite(&(config->open_status), sizeof(config->open_status), 1, ion_master_table_file)) {
 		return err_file_write_error;
 	}
 
@@ -148,6 +150,10 @@ ion_master_table_read(
 	}
 
 	if (1 != fread(&(config->dictionary_type), sizeof(config->dictionary_type), 1, ion_master_table_file)) {
+		return err_file_read_error;
+	}
+
+	if (1 != fread(&(config->open_status), sizeof(config->open_status), 1, ion_master_table_file)) {
 		return err_file_read_error;
 	}
 
@@ -333,7 +339,9 @@ ion_master_table_create_dictionary(
 		return err;
 	}
 
-	err = ion_add_to_master_table(dictionary, dictionary_size);
+	dictionary->open_status = boolean_true;
+
+	err						= ion_add_to_master_table(dictionary, dictionary_size);
 
 	return err;
 }
@@ -438,9 +446,18 @@ ion_open_dictionary(
 		return err_dictionary_initialization_failed;
 	}
 
+	if (boolean_true == config.open_status) {
+		return err_ok;
+	}
+
 	ion_switch_handler(config.dictionary_type, handler);
 
 	err = dictionary_open(handler, dictionary, &config);
+
+	if (err_ok == err) {
+		dictionary->open_status = boolean_true;
+	}
+
 	return err;
 }
 
@@ -451,6 +468,10 @@ ion_close_dictionary(
 	ion_err_t err;
 
 	err = dictionary_close(dictionary);
+
+	if (err_ok == err) {
+		dictionary->open_status = boolean_false;
+	}
 
 	return err;
 }

@@ -126,6 +126,7 @@ dictionary_create(
 	if (err_ok == err) {
 		dictionary->instance->id	= id;
 		dictionary->status			= ion_dictionary_status_ok;
+		dictionary->open_status		= boolean_true;
 	}
 	else {
 		dictionary->status = ion_dictionary_status_error;
@@ -349,6 +350,7 @@ dictionary_open(
 	if (err_ok == error) {
 		dictionary->status			= ion_dictionary_status_ok;
 		dictionary->instance->id	= config->id;
+		dictionary->open_status		= boolean_true;
 	}
 	else {
 		dictionary->status = ion_dictionary_status_error;
@@ -432,7 +434,8 @@ dictionary_close(
 	}
 
 	if (err_ok == error) {
-		dictionary->status = ion_dictionary_status_closed;
+		dictionary->status		= ion_dictionary_status_closed;
+		dictionary->open_status = boolean_false;
 	}
 
 	return error;
