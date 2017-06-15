@@ -1,5 +1,5 @@
-Copyright (c)(2017) Lawrence, Fazackerley, Douglas, Huang, Klamut, Penson,
-Wardle, MacBeth. All rights reserved.
+Copyright (c)(2017) Lawrence, Fazackerley, Douglas, Huang, Penson, Klamut, MacBeth, Wardle. 
+All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
 modification, are permitted provided that the following conditions are met:
