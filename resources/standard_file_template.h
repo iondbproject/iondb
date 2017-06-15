@@ -1,8 +1,7 @@
 /******************************************************************************/
 /**
 @file		standard_file_template.h
-@author		Lawrence, Fazackerley, Douglas, Huang, Klamut, Penson,
-Wallperington, Wardle . All rights reserved.
+@author		Lawrence, Fazackerley, Douglas, Huang, Klamut, Penson, Wardle. All rights reserved.
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
