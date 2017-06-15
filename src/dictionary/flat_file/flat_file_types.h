@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		flat_file_types.h
-@author		Kris Wallperington
+@author		Eric Huang
 @brief		Implementation specific type definitions for the flat file store.
 @copyright	Copyright 2017
 			The University of British Columbia,

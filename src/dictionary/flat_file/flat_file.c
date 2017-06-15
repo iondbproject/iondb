@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		flat_file.c
-@author		Kris Wallperington
+@author		Eric Huang
 @brief		Implementation specific definitions for the flat file store.
 @copyright	Copyright 2017
 			The University of British Columbia,

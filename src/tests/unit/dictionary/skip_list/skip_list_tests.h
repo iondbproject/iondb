@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**	
 @file		skip_list_test.h
-@author		Kris Wallperington
+@author		Eric Huang
 @brief		Contains test defines and constants unique to skiplist tests.
 @copyright	Copyright 2017
 			The University of British Columbia,

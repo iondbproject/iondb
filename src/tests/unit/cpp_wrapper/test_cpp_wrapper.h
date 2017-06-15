@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		test_cpp_wrapper.h
-@author		Kris Wallperington, Dana Klamut
+@author		Eric Huang, Dana Klamut
 @brief		Unit test for the C++ Wrapper
 @todo		These tests need to be fully fleshed out.
 @copyright	Copyright 2017

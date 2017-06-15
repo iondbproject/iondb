@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		ram_util.c
-@author		Kris Wallperington
+@author		Eric Huang
 @brief		Source file for ram check utility function.
 @copyright	Copyright 2017
 			The University of British Columbia,

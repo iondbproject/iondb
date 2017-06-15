@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		test_behaviour_skip_list.c
-@author		Kris Wallperington
+@author		Eric Huang
 @brief		Behaviour tests for the skip list implementation.
 @copyright	Copyright 2017
 			The University of British Columbia,

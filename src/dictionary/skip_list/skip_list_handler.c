@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		skip_list_handler.c
-@author		Kris Wallperington
+@author		Eric Huang
 @brief		Handler liaison between dictionary API and skiplist implementation
 @copyright	Copyright 2017
 			The University of British Columbia,

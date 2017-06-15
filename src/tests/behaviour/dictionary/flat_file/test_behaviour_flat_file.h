@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		test_behaviour_flat_file.h
-@author		Kris Wallperington
+@author		Eric Huang
 @brief		Entry point for flat file behaviour tests.
 @copyright	Copyright 2017
 			The University of British Columbia,

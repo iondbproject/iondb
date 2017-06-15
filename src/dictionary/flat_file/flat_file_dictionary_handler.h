@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		flat_file_dictionary_handler.h
-@author		Kris Wallperington
+@author		Eric Huang
 @brief		Function declarations at the dictionary interface level for the
 			flat file store.
 @details	These functions are not intended to be used directly. The entry

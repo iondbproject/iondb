@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		test_behaviour_open_address_hash.c
-@author		Kris Wallperington
+@author		Eric Huang
 @brief		Behaviour tests for the Open Address Hash implementation.
 @copyright	Copyright 2017
 			The University of British Columbia,

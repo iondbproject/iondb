@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		run_cpp_wrapper.cpp
-@author		Kris Wallperington
+@author		Eric Huang
 @brief		Entry point for C++ Wrapper unit tests
 @copyright	Copyright 2017
 			The University of British Columbia,

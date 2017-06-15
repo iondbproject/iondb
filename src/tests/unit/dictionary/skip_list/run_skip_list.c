@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		run_skip_list.c
-@author		Kris Wallperington
+@author		Eric Huang
 @brief		Entry point for Skiplist unit tests
 @copyright	Copyright 2017
 			The University of British Columbia,

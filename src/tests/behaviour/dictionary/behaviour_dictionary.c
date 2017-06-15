@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		behaviour_dictionnary.c
-@author		Kris Wallperington
+@author		Eric Huang
 @brief		Behaviour tests for all dictionary implementations.
 @details	The behaviour tests represent a "black box" approach to the
 			dictionary implementations. These tests simply assert that the

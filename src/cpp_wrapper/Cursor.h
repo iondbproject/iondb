@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		Cursor.h
-@author		Kris Wallperington
+@author		Eric Huang
 @brief		A simple implementation of an iterator for the C++ Wrapper interface
 			of IonDB.
 @copyright	Copyright 2017

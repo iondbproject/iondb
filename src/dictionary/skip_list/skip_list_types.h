@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		skip_list_types.h
-@author		Kris Wallperington
+@author		Eric Huang
 @brief		Contains all types local to the skiplist data structure
 @copyright	Copyright 2017
 			The University of British Columbia,

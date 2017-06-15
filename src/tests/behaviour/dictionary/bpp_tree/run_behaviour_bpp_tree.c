@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		run_behaviour_bpp_tree.c
-@author		Kris Wallperington
+@author		Eric Huang
 @brief		Main file for B+ Tree behaviour tests.
 @copyright	Copyright 2017
 			The University of British Columbia,

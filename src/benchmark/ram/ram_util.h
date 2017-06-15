@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		ram_util.h
-@author		Kris Wallperington
+@author		Eric Huang
 @brief		Utility function to check how many bytes of available RAM remains.
 @copyright	Copyright 2017
 			The University of British Columbia,

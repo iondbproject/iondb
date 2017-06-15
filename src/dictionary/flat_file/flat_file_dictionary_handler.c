@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		flat_file_dictionary_handler.c
-@author		Kris Wallperington
+@author		Eric Huang
 @brief		Function definitions at the dictionary interface level for the
 			flat file store.
 @copyright	Copyright 2017

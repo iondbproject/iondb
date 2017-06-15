@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		test_behaviour_bpp_tree.h
-@author		Kris Wallperington
+@author		Eric Huang
 @brief		Entry point for B+ Tree behaviour tests.
 @copyright	Copyright 2017
 			The University of British Columbia,

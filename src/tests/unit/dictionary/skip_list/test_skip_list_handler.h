@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		test_skip_list_handler.h
-@author		Kris Wallperington
+@author		Eric Huang
 @brief		Unit test for skiplist handler interface.
 @copyright	Copyright 2017
 			The University of British Columbia,

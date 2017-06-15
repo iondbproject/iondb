@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		skip_list.h
-@author		Kris Wallperington
+@author		Eric Huang
 @brief		Implementation of a Skiplist data store
 @copyright	Copyright 2017
 			The University of British Columbia,

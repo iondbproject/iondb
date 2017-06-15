@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		behaviour_dictionnary.h
-@author		Kris Wallperington
+@author		Eric Huang
 @brief		Entry point for dictionary level behaviour tests.
 @details	Note that the tests assume a minimum capacity of 160 simultaneous
 			records being present in the dictionary at any given time. A max

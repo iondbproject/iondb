@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		test_flat_file.h
-@author		Kris Wallperington
+@author		Eric Huang
 @brief		Header declarations for the flat file store unit tests.
 @copyright	Copyright 2017
 			The University of British Columbia,
