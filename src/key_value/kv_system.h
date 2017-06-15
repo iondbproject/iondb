@@ -1,25 +1,39 @@
 /******************************************************************************/
 /**
-@file
+@file		kv_system.h
 @author		Scott Fazackerley, Eric Huang, Graeme Douglas
 @brief		This file contains commonly used types and some helpful macros.
-@copyright	Copyright 2016
-				The University of British Columbia,
-				IonDB Project Contributors (see AUTHORS.md)
-@par
-			Licensed under the Apache License, Version 2.0 (the "License");
-			you may not use this file except in compliance with the License.
-			You may obtain a copy of the License at
-					http://www.apache.org/licenses/LICENSE-2.0
-@par
-			Unless required by applicable law or agreed to in writing,
-			software distributed under the License is distributed on an
-			"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
-			either express or implied. See the License for the specific
-			language governing permissions and limitations under the
-			License.
+@copyright	Copyright 2017
+			The University of British Columbia,
+			IonDB Project Contributors (see AUTHORS.md)
+@par Redistribution and use in source and binary forms, with or without 
+	modification, are permitted provided that the following conditions are met:
+	
+@par 1.Redistributions of source code must retain the above copyright notice, 
+	this list of conditions and the following disclaimer.
+	
+@par 2.Redistributions in binary form must reproduce the above copyright notice,
+	this list of conditions and the following disclaimer in the documentation 
+	and/or other materials provided with the distribution.
+	
+@par 3.Neither the name of the copyright holder nor the names of its contributors
+	may be used to endorse or promote products derived from this software without
+	specific prior written permission. 
+	
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
+
 #if !defined(KV_SYSTEM_H_)
 #define KV_SYSTEM_H_
 
@@ -41,6 +55,7 @@ extern "C" {
 #if !defined(ARDUINO)
 #define fremove(x)	remove(x)
 #define frewind(x)	rewind(x)
+#define fdeleteall()
 #endif
 
 #define ION_USING_MASTER_TABLE	1
@@ -50,6 +65,8 @@ extern "C" {
 #define ION_IS_GREATER			1
 #define ION_IS_LESS				-1
 #define ION_ZERO				0
+#define ION_RETURN_VALUE		0x73/* Magic default return value to be easy to spot */
+
 /**
 @brief		Since the arduino conforms to 8.3 syntax, that's 8 + 3 = 11 + 1 (null terminator) characters.
 */
@@ -88,7 +105,7 @@ typedef unsigned char byte;
 	((ion_status_t) { (error), (count) } \
 	)
 #define ION_STATUS_INITIALIZE \
-	((ion_status_t) { err_status_uninitialized, 0 } \
+	((ion_status_t) { err_uninitialized, 0 } \
 	)
 #define ION_STATUS_ERROR(error) \
 	((ion_status_t) { (error), 0 } \
@@ -120,21 +137,15 @@ typedef enum ION_KEY_TYPE {
 enum ION_ERROR {
 	/**> An error code describing the situation where everything is OK. */
 	err_ok,
-	/**> An error code describing the situation where the status has not
-		 been initialized yet. */
-	err_status_uninitialized,
 	/**> An error code describing the situation where an item is not found. */
 	err_item_not_found,
 	/**> An error code describing the situation where duplicate key is used
-		 inappropariately. */
+		 inappropriately. */
 	err_duplicate_key,
 	/**> An error code describing the situation where a structure is asked
 		 to grow beyond it's capacity. */
 	err_max_capacity,
-	/**> An error code describing the situation where a configuration setting
-		 for a write concern is problematic. */
-	err_write_concern,
-	/**> An error code describing the situation where an error occured in
+	/**> An error code describing the situation where an error occurred in
 		 destroying a dictionary. */
 	err_dictionary_destruction_error,
 	/**> An error code describing the situation where a predicate is invalid. */
@@ -157,41 +168,26 @@ enum ION_ERROR {
 	/**> An error code describing the situation where an delete operation
 		 has failed. */
 	err_file_delete_error,
-	/**> An error code describing the situation where a dictionary has failed
-		 has failed to initialize. */
-	err_dictionary_initialization_failed,
 	/**> An error code describing the situation where an insert operation could
 		 not be completed. */
 	err_unable_to_insert,
-	/**> An error code describing the situation where a write operation could
-		 not be made to completion. */
-	err_file_incomplete_write,
-	/**> An error code describing the situation where a read operation could
-		 not be made to completion. */
-	err_file_incomplete_read,
 	/**> An error code describing the situation where a seek operation could
 		 not be made to completion. */
 	err_file_bad_seek,
 	/**> An error code describing the situation where a file operation hit
 		 the EOF. */
 	err_file_hit_eof,
-	/**> An error code describing the situation where a requested item could
-		 not be found in the primary page. */
-	err_not_in_primary_page,
 	/**> An error code describing the situation where a requested operation
 		 is not implemented. */
 	err_not_implemented,
-	/**> An error code describing the situation where a system object has
-		 been encountered in an illegal state. */
-	err_illegal_state,
 	/**> An error code describing the situation where specified size is
 		 illegal, invalid, or otherwise unreasonable. */
 	err_invalid_initial_size,
 	/**> An error code returned when a dictionary of the same name as
 		 an existing dictionary is attempted to be created. */
 	err_duplicate_dictionary_error,
-	/**> An error code describing the situation a system object was not
-		 properly initialized. */
+	/**> An error code describing the situation a system object or dictionary
+		 was not properly initialized. */
 	err_uninitialized,
 	/**> An error code describing the situation where something is out of
 		 valid bounds. */

@@ -1,8 +1,36 @@
 /******************************************************************************/
 /**
- @file
- @author		Scott Ronald Fazackerley
- @brief		The handler for a hash table using linear probing.
+@file		open_address_file_hash_dictionary_handler.c
+@author		Scott Ronald Fazackerley
+@brief		The handler for a hash table using linear probing.
+@copyright	Copyright 2017
+			The University of British Columbia,
+			IonDB Project Contributors (see AUTHORS.md)
+@par Redistribution and use in source and binary forms, with or without 
+	modification, are permitted provided that the following conditions are met:
+	
+@par 1.Redistributions of source code must retain the above copyright notice, 
+	this list of conditions and the following disclaimer.
+	
+@par 2.Redistributions in binary form must reproduce the above copyright notice,
+	this list of conditions and the following disclaimer in the documentation 
+	and/or other materials provided with the distribution.
+	
+@par 3.Neither the name of the copyright holder nor the names of its contributors
+	may be used to endorse or promote products derived from this software without
+	specific prior written permission. 
+	
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
 
@@ -36,12 +64,12 @@
 @return		The status of the query.
 */
 ion_status_t
-oafdict_query(
+oafdict_get(
 	ion_dictionary_t	*dictionary,
 	ion_key_t			key,
 	ion_value_t			value
 ) {
-	return oafh_query((ion_file_hashmap_t *) dictionary->instance, key, value);
+	return oafh_get((ion_file_hashmap_t *) dictionary->instance, key, value);
 }
 
 /**
@@ -87,14 +115,12 @@ oafdict_scan(
 		else {
 			/* check to see if the current key value satisfies the predicate */
 
-			/* TODO need to check key match; what's the most efficient way? */
-
 			ion_boolean_t key_satisfies_predicate = test_predicate(&(cursor->super), item->data);	/* assumes that the key is first */
 
 			if (key_satisfies_predicate == boolean_true) {
 				cursor->current = loc;	/* this is the next index for value */
 				free(item);
-				return cs_valid_data;
+				return cs_cursor_active;
 			}
 
 			/* If valid bucket is not found, advance current position. */
@@ -126,7 +152,6 @@ oafdict_next(
 	ion_dict_cursor_t	*cursor,
 	ion_record_t		*record
 ) {
-	/* @todo if the dictionary instance changes, then the status of the cursor needs to change */
 	ion_oafdict_cursor_t *oafdict_cursor = (ion_oafdict_cursor_t *) cursor;
 
 	/* check the status of the cursor and if it is not valid or at the end, just exit */
@@ -150,10 +175,8 @@ oafdict_next(
 
 			/* scan and determine what to do? */
 			if (cs_end_of_results == oafdict_scan(oafdict_cursor)) {
-				/* todo - need to read and updat file position */
 				/* Then this is the end and there are no more results */
 				cursor->status = cs_end_of_results;
-				/*@todo need to do something with cursor? - done? */
 				return cursor->status;
 			}
 		}
@@ -168,8 +191,6 @@ oafdict_next(
 		fseek(hash_map->file, (SIZEOF(STATUS) + data_length) * oafdict_cursor->current	/* position is based on indexes (not abs file pos) */
 			+ SIZEOF(STATUS), SEEK_SET);
 
-/*@todo this needs to be addressed in terms of return type
-*/
 		fread(record->key, hash_map->super.record.key_size, 1, hash_map->file);
 		fread(record->value, hash_map->super.record.value_size, 1, hash_map->file);
 
@@ -181,7 +202,6 @@ oafdict_next(
 	return cs_invalid_cursor;
 }
 
-/*@todo What do we do if the cursor is already active? */
 /**
 @brief	  Finds multiple instances of a keys that satisfy the provided
 			 predicate in the dictionary.
@@ -294,7 +314,7 @@ oafdict_find(
 
 			ion_err_t err = oafdict_scan(oafdict_cursor);
 
-			if (cs_valid_data != err) {
+			if (cs_end_of_results == err) {
 				(*cursor)->status = cs_end_of_results;
 			}
 
@@ -376,7 +396,7 @@ oafdict_init(
 ) {
 	handler->insert				= oafdict_insert;
 	handler->create_dictionary	= oafdict_create_dictionary;
-	handler->get				= oafdict_query;
+	handler->get				= oafdict_get;
 	handler->update				= oafdict_update;
 	handler->find				= oafdict_find;
 	handler->remove				= oafdict_delete;
@@ -418,8 +438,12 @@ oafdict_create_dictionary(
 	 * based on the type of key defined
 	*/
 
+	if (NULL == handler) {
+		return err_uninitialized;
+	}
+
 	/* register the correct handler */
-	dictionary->handler = handler;	/* todo: need to check to make sure that the handler is registered */
+	dictionary->handler = handler;
 
 	return 0;
 }
@@ -465,7 +489,6 @@ oafdict_update(
 @return		If the keys are equal.
 */
 ion_boolean_t
-/*TODO Fix name of function */
 oafdict_is_equal(
 	ion_dictionary_t	*dict,
 	ion_key_t			key1,

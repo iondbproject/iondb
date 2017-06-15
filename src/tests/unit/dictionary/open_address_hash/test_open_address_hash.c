@@ -1,9 +1,39 @@
+/******************************************************************************/
 /**
-@file
+@file		test_open_adress_hash.c
 @author		Scott Ronald Fazackerley
-
-@details	Tests base operations for open address hash map
+@brief		Tests base operations for open address hash map
+@copyright	Copyright 2017
+			The University of British Columbia,
+			IonDB Project Contributors (see AUTHORS.md)
+@par Redistribution and use in source and binary forms, with or without 
+	modification, are permitted provided that the following conditions are met:
+	
+@par 1.Redistributions of source code must retain the above copyright notice, 
+	this list of conditions and the following disclaimer.
+	
+@par 2.Redistributions in binary form must reproduce the above copyright notice,
+	this list of conditions and the following disclaimer in the documentation 
+	and/or other materials provided with the distribution.
+	
+@par 3.Neither the name of the copyright holder nor the names of its contributors
+	may be used to endorse or promote products derived from this software without
+	specific prior written permission. 
+	
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+	POSSIBILITY OF SUCH DAMAGE.
 */
+/******************************************************************************/
+
 
 #include "test_open_address_hash.h"
 #include "../../../../key_value/kv_system.h"
@@ -248,7 +278,6 @@ test_open_address_hashmap_simple_insert(
 
 			ion_status_t status = oah_insert(&map, (&i), str);	/* this is will wrap */
 
-			/* FIXME: Why are we inserting inside two loops?!? */
 			if ((offset == 0) || (wc_duplicate == map.write_concern)) {
 				PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 				PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
@@ -310,7 +339,7 @@ test_open_address_hashmap_simple_insert_and_query(
 	value = malloc(10);
 
 	for (i = 0; i < map.map_size; i++) {
-		status = oah_query(&map, &i, value);
+		status = oah_get(&map, &i, value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -365,13 +394,13 @@ test_open_address_hashmap_simple_delete(
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
-		status = oah_query(&map, (&i), value);
+		status = oah_get(&map, (&i), value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	}
 
 	i		= 0;
-	status	= oah_query(&map, (&i), value);
+	status	= oah_get(&map, (&i), value);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -382,7 +411,7 @@ test_open_address_hashmap_simple_delete(
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
 		/* check to make sure that the record has been deleted */
-		status = oah_query(&map, (&j), value);
+		status = oah_get(&map, (&j), value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
 
@@ -393,7 +422,7 @@ test_open_address_hashmap_simple_delete(
 */
 			/*value	 = malloc(10);*/
 
-			status = oah_query(&map, &i, value);
+			status = oah_get(&map, &i, value);
 			PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 			PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -508,7 +537,7 @@ test_open_address_hashmap_duplicate_insert_2(
 		ion_value_t value;
 
 		value	= malloc(10);
-		status	= oah_query(&map, &i, value);
+		status	= oah_get(&map, &i, value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -541,7 +570,7 @@ test_open_address_hashmap_duplicate_insert_2(
 		ion_value_t value;
 
 		value	= malloc(10);
-		status	= oah_query(&map, &i, value);
+		status	= oah_get(&map, &i, value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -598,7 +627,7 @@ test_open_address_hashmap_update_1(
 		ion_value_t value;
 
 		value	= malloc(10);
-		status	= oah_query(&map, &i, value);
+		status	= oah_get(&map, &i, value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -630,7 +659,7 @@ test_open_address_hashmap_update_1(
 		ion_value_t value;
 
 		value	= malloc(10);
-		status	= oah_query(&map, &i, value);
+		status	= oah_get(&map, &i, value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -688,7 +717,7 @@ test_open_address_hashmap_update_2(
 		ion_value_t value;
 
 		value	= malloc(10);
-		status	= oah_query(&map, &i, value);
+		status	= oah_get(&map, &i, value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -720,7 +749,7 @@ test_open_address_hashmap_update_2(
 		ion_value_t value;
 
 		value	= malloc(10);
-		status	= oah_query(&map, &i, value);
+		status	= oah_get(&map, &i, value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -769,7 +798,7 @@ test_open_address_hashmap_delete_1(
 	ion_value_t value;
 
 	value	= malloc(10);
-	status	= oah_query(&map, (&i), value);
+	status	= oah_get(&map, (&i), value);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
 
@@ -823,7 +852,7 @@ test_open_address_hashmap_delete_2(
 		ion_value_t value;
 
 		value	= malloc(10);
-		status	= oah_query(&map, &i, value);
+		status	= oah_get(&map, &i, value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -852,7 +881,7 @@ test_open_address_hashmap_delete_2(
 		ion_value_t value;
 
 		value	= malloc(10);
-		status	= oah_query(&map, (&i), value);
+		status	= oah_get(&map, (&i), value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
 
@@ -865,7 +894,7 @@ test_open_address_hashmap_delete_2(
 			ion_value_t value;
 
 			value	= malloc(10);
-			status	= oah_query(&map, &j, value);
+			status	= oah_get(&map, &j, value);
 			PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 			PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -887,7 +916,7 @@ test_open_address_hashmap_delete_2(
 		ion_value_t value;
 
 		value	= malloc(10);
-		status	= oah_query(&map, &i, value);
+		status	= oah_get(&map, &i, value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
 
@@ -933,7 +962,7 @@ test_open_address_hashmap_capacity(
 	value = malloc(10);
 
 	for (i = 0; i < map.map_size; i++) {
-		status = oah_query(&map, &i, value);
+		status = oah_get(&map, &i, value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 
@@ -958,7 +987,7 @@ test_open_address_hashmap_capacity(
 	/* check status of <K,V> */
 
 	for (i = 0; i < map.map_size; i++) {
-		status = oah_query(&map, &i, value);
+		status = oah_get(&map, &i, value);
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 

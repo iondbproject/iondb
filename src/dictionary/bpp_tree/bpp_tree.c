@@ -1,3 +1,38 @@
+/******************************************************************************/
+/**
+@file		bbp_tree.c
+@author		public domain code
+@copyright	Copyright 2017
+			The University of British Columbia,
+			IonDB Project Contributors (see AUTHORS.md)
+@par Redistribution and use in source and binary forms, with or without 
+	modification, are permitted provided that the following conditions are met:
+	
+@par 1.Redistributions of source code must retain the above copyright notice, 
+	this list of conditions and the following disclaimer.
+	
+@par 2.Redistributions in binary form must reproduce the above copyright notice,
+	this list of conditions and the following disclaimer in the documentation 
+	and/or other materials provided with the distribution.
+	
+@par 3.Neither the name of the copyright holder nor the names of its contributors
+	may be used to endorse or promote products derived from this software without
+	specific prior written permission. 
+	
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+	POSSIBILITY OF SUCH DAMAGE.
+*/
+/******************************************************************************/
+
 #include "bpp_tree.h"
 
 /*************
@@ -425,10 +460,13 @@ search(
 				switch (mode) {
 					case MODE_FIRST:
 						/* backtrack to first key */
-						ub			= m - 1;
-						if (lb > ub)
-                            				return ION_CC_EQ;
-						foundDup	= boolean_true;
+						ub = m - 1;
+
+						if (lb > ub) {
+							return ION_CC_EQ;
+						}
+
+						foundDup = boolean_true;
 						break;
 
 					case MODE_MATCH:
@@ -846,7 +884,7 @@ gather(
 }
 
 ion_bpp_err_t
-bOpen(
+b_open(
 	ion_bpp_open_t		info,
 	ion_bpp_handle_t	*handle
 ) {
@@ -964,7 +1002,6 @@ bOpen(
 		}
 	}
 
-	/*TODO make this cleaner **/
 #if defined(ARDUINO)
 	else if (NULL != (h->fp = ion_fopen(info.iName)).file) {
 #else
@@ -988,7 +1025,7 @@ bOpen(
 }
 
 ion_bpp_err_t
-bClose(
+b_close(
 	ion_bpp_handle_t handle
 ) {
 	ion_bpp_h_node_t *h = handle;
@@ -998,7 +1035,6 @@ bClose(
 	}
 
 	/* flush idx */
-/*TODO: Cleanup **/
 #if defined(ARDUINO)
 
 	if (h->fp.file) {
@@ -1023,7 +1059,7 @@ bClose(
 }
 
 ion_bpp_err_t
-bFindKey(
+b_get(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	*rec
@@ -1065,7 +1101,7 @@ bFindKey(
 }
 
 ion_bpp_err_t
-bFindFirstGreaterOrEqual(
+b_find_first_greater_or_equal(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	void						*mkey,
@@ -1116,7 +1152,7 @@ bFindFirstGreaterOrEqual(
 }
 
 ion_bpp_err_t
-bInsertKey(
+b_insert(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	rec
@@ -1294,7 +1330,7 @@ bInsertKey(
 }
 
 ion_bpp_err_t
-bUpdateKey(
+b_update(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	rec
@@ -1402,7 +1438,7 @@ bUpdateKey(
 }
 
 ion_bpp_err_t
-bDeleteKey(
+b_delete(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	*rec
@@ -1547,7 +1583,7 @@ bDeleteKey(
 }
 
 ion_bpp_err_t
-bFindFirstKey(
+b_find_first_key(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	*rec
@@ -1578,7 +1614,7 @@ bFindFirstKey(
 
 /*
  * input:
- *   handle				 handle returned by bOpen
+ *   handle				 handle returned by b_open
  * output:
  *   key					last key in sequential set
  *   rec					record address
@@ -1588,7 +1624,7 @@ bFindFirstKey(
 */
 
 ion_bpp_err_t
-bFindLastKey(
+b_find_last_key(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	*rec
@@ -1618,7 +1654,7 @@ bFindLastKey(
 }
 
 ion_bpp_err_t
-bFindNextKey(
+b_find_next_key(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	*rec
@@ -1662,7 +1698,7 @@ bFindNextKey(
 
 /*
  * input:
- *   handle				 handle returned by bOpen
+ *   handle				 handle returned by b_open
  * output:
  *   key					key found
  *   rec					record address
@@ -1671,7 +1707,7 @@ bFindNextKey(
  *   bErrKeyNotFound		key not found
 */
 ion_bpp_err_t
-bFindPrevKey(
+b_find_prev_key(
 	ion_bpp_handle_t			handle,
 	void						*key,
 	ion_bpp_external_address_t	*rec

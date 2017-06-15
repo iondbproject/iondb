@@ -1,23 +1,36 @@
 /******************************************************************************/
 /**
-@file
+@file		flat_file.h
 @author		Kris Wallperington
 @brief		Implementation specific declarations for the flat file store.
-@copyright	Copyright 2016
-				The University of British Columbia,
-				IonDB Project Contributors (see AUTHORS.md)
-@par
-			Licensed under the Apache License, Version 2.0 (the "License");
-			you may not use this file except in compliance with the License.
-			You may obtain a copy of the License at
-					http://www.apache.org/licenses/LICENSE-2.0
-@par
-			Unless required by applicable law or agreed to in writing,
-			software distributed under the License is distributed on an
-			"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
-			either express or implied. See the License for the specific
-			language governing permissions and limitations under the
-			License.
+@copyright	Copyright 2017
+			The University of British Columbia,
+			IonDB Project Contributors (see AUTHORS.md)
+@par Redistribution and use in source and binary forms, with or without 
+	modification, are permitted provided that the following conditions are met:
+	
+@par 1.Redistributions of source code must retain the above copyright notice, 
+	this list of conditions and the following disclaimer.
+	
+@par 2.Redistributions in binary form must reproduce the above copyright notice,
+	this list of conditions and the following disclaimer in the documentation 
+	and/or other materials provided with the distribution.
+	
+@par 3.Neither the name of the copyright holder nor the names of its contributors
+	may be used to endorse or promote products derived from this software without
+	specific prior written permission. 
+	
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
 
@@ -105,7 +118,6 @@ flat_file_insert(
 				Value portion of the record to insert.
 @return		Resulting status of the operation.
 @see		ffdict_get
-@todo		Write tests for sorted mode get.
 */
 ion_status_t
 flat_file_get(
@@ -139,7 +151,6 @@ flat_file_delete(
 				New value to replace old values with.
 @return		Resulting status of the operation.
 @see		ffdict_update
-@todo		Write tests for sorted mode update.
 */
 ion_status_t
 flat_file_update(
@@ -187,10 +198,6 @@ flat_file_close(
 					returns true, the scan is terminated and the found location and row
 					are written back to their respective output parameters.
 @return			Resulting status of scan.
-@todo			Try changing the predicate to be an enum-and-switch to eliminate the function
-				call. Benchmark the performance gain and decide which strategy to use.
-@todo			Consider changing to @p SEEK_CUR whenever possible. Benchmark this and see
-				if the performance gain (if any) is worth it.
 */
 ion_err_t
 flat_file_scan(

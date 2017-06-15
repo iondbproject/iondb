@@ -1,8 +1,36 @@
 /******************************************************************************/
 /**
-@file
-@author	 Scott Ronald Fazackerley
-@brief	  The handler for a hash table using linear probing.
+@file		open_address_hash_dictionary_handler.h
+@author		Scott Ronald Fazackerley
+@brief		The handler for a hash table using linear probing.
+@copyright	Copyright 2017
+			The University of British Columbia,
+			IonDB Project Contributors (see AUTHORS.md)
+@par Redistribution and use in source and binary forms, with or without 
+	modification, are permitted provided that the following conditions are met:
+	
+@par 1.Redistributions of source code must retain the above copyright notice, 
+	this list of conditions and the following disclaimer.
+	
+@par 2.Redistributions in binary form must reproduce the above copyright notice,
+	this list of conditions and the following disclaimer in the documentation 
+	and/or other materials provided with the distribution.
+	
+@par 3.Neither the name of the copyright holder nor the names of its contributors
+	may be used to endorse or promote products derived from this software without
+	specific prior written permission. 
+	
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
 
@@ -178,13 +206,11 @@ oadict_update(
 			@p second_key.  If the return value is 0 then @p first_key is
 			equal to @p second_key.
 
-			If the key type is @p key_type_char_array then
-			@todo fix this commemt!
-			The function memcmp compares the size bytes of memory beginning at
-			a1 against the size bytes of memory beginning at a2. The value
-			returned has the same sign as the difference between the first
-			differing pair of bytes (interpreted as unsigned char objects,
-			then promoted to int).
+			If the key type is key_type_char_array then the function memcmp compares
+			the size bytes of memory beginning at a1 against the size bytes of memory
+			beginning at a2. The value returned has the same sign as the difference
+			between the first differing pair of bytes (interpreted as unsigned char
+			objects, then promoted to int).
 
 @param	  first_key
 				The first key in the comparison.
@@ -240,8 +266,7 @@ oadict_next(
 @return	 If the keys are equal.
 */
 ion_boolean_t
-/*TODO Fix name of function */
-is_equal(
+oadict_is_equal(
 	ion_dictionary_t	*dict,
 	ion_key_t			key1,
 	ion_key_t			key2

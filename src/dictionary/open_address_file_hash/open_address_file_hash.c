@@ -1,15 +1,42 @@
 /******************************************************************************/
 /**
-@file
+@file		open_address_file_hash.c
 @author		Scott Ronald Fazackerley
 @brief		Open Address Hash Map
 @details	The open address hash map allows non-colliding entries into a hash table
-
 @todo   capture size of map
 @todo   prevent duplicate insertions
 @todo   When creating the hash-map, need to know something about what is going in it.
 		What we need to know if the the size of the key and the size of the data.
 		That is all.  Nothing else.
+@copyright	Copyright 2017
+			The University of British Columbia,
+			IonDB Project Contributors (see AUTHORS.md)
+@par Redistribution and use in source and binary forms, with or without 
+	modification, are permitted provided that the following conditions are met:
+	
+@par 1.Redistributions of source code must retain the above copyright notice, 
+	this list of conditions and the following disclaimer.
+	
+@par 2.Redistributions in binary form must reproduce the above copyright notice,
+	this list of conditions and the following disclaimer in the documentation 
+	and/or other materials provided with the distribution.
+	
+@par 3.Neither the name of the copyright holder nor the names of its contributors
+	may be used to endorse or promote products derived from this software without
+	specific prior written permission. 
+	
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
 
@@ -59,7 +86,7 @@ oafh_initialize(
 	int actual_filename_length = dictionary_get_filename(id, "oaf", addr_filename);
 
 	if (actual_filename_length >= ION_MAX_FILENAME_LENGTH) {
-		return err_dictionary_initialization_failed;
+		return err_uninitialized;
 	}
 
 	hashmap->file = fopen(addr_filename, "r+b");
@@ -145,7 +172,6 @@ oafh_update(
 	ion_key_t			key,
 	ion_value_t			value
 ) {
-	/* TODO: lock potentially required */
 	ion_write_concern_t current_write_concern = hash_map->write_concern;
 
 	hash_map->write_concern = wc_update;/* change write concern to allow update */
@@ -207,7 +233,7 @@ oafh_insert(
 				}
 				else {
 					free(item);
-					return ION_STATUS_ERROR(err_write_concern);	/* there is a configuration issue with write concern */
+					return ION_STATUS_ERROR(err_file_write_error);	/* there is a configuration issue with write concern */
 				}
 			}
 		}
@@ -285,7 +311,6 @@ oafh_find_item_loc(
 			/* calculate if there is a match */
 
 			if (item->status != ION_DELETED) {
-				/*@todo correct compare to use proper return type*/
 				int key_is_equal = hash_map->super.compare(item->data, key, hash_map->super.record.key_size);
 
 				if (ION_IS_EQUAL == key_is_equal) {
@@ -353,7 +378,7 @@ oafh_delete(
 }
 
 ion_status_t
-oafh_query(
+oafh_get(
 	ion_file_hashmap_t	*hash_map,
 	ion_key_t			key,
 	ion_value_t			value

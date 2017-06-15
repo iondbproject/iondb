@@ -1,8 +1,38 @@
+/******************************************************************************/
 /**
-@file
-
+@file		test_open_adress_hash_dictionnary_handler.c
 @author		Scott Ronald Fazackerley
+@brief		Tests base operations for open address hash dict
+@copyright	Copyright 2017
+			The University of British Columbia,
+			IonDB Project Contributors (see AUTHORS.md)
+@par Redistribution and use in source and binary forms, with or without 
+	modification, are permitted provided that the following conditions are met:
+	
+@par 1.Redistributions of source code must retain the above copyright notice, 
+	this list of conditions and the following disclaimer.
+	
+@par 2.Redistributions in binary form must reproduce the above copyright notice,
+	this list of conditions and the following disclaimer in the documentation 
+	and/or other materials provided with the distribution.
+	
+@par 3.Neither the name of the copyright holder nor the names of its contributors
+	may be used to endorse or promote products derived from this software without
+	specific prior written permission. 
+	
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+	POSSIBILITY OF SUCH DAMAGE.
 */
+/******************************************************************************/
 
 #if defined(__cplusplus)
 extern "C" {
@@ -105,8 +135,6 @@ test_open_address_hashmap_handler_create_destroy(
 	PLANCK_UNIT_ASSERT_TRUE(tc, (((ion_hashmap_t *) test_dictionary.instance)->write_concern) == wc_insert_unique);
 	PLANCK_UNIT_ASSERT_TRUE(tc, test_dictionary.handler->delete_dictionary(&test_dictionary) == err_ok);
 	PLANCK_UNIT_ASSERT_TRUE(tc, test_dictionary.instance == NULL);
-
-	/* todo fix free value status */
 }
 
 void
@@ -306,7 +334,7 @@ test_open_address_dictionary_predicate_equality(
 
 	free(key_under_test);
 
-	/* destroy cursor for cleanup TODO TODO memory leak here CANNOT free!!! */
+	/* destroy cursor for cleanup */
 	/* cursor->destroy(&cursor); */
 	/* and destroy the dictionary instance */
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -369,7 +397,7 @@ test_open_address_dictionary_predicate_range_signed(
 
 	free(key_under_test);
 
-	/* destroy cursor for cleanup TODO TODO CANNOT free here!!! */
+	/* destroy cursor for cleanup */
 	/* cursor->destroy(&cursor); */
 	/* and destroy the dictionary instance */
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -432,7 +460,7 @@ test_open_address_dictionary_predicate_range_unsigned(
 
 	free(key_under_test);
 
-	/* destroy cursor for cleanup TODO TODO Memory leak here CANNOT free!!! */
+	/* destroy cursor for cleanup */
 	/* cursor->destroy(&cursor); */
 	/* and destroy the dictionary instance */
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
