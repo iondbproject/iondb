@@ -309,7 +309,7 @@ ion_add_to_master_table(
 	ion_dictionary_size_t	dictionary_size
 ) {
 	ion_dictionary_config_info_t config = {
-		.id = dictionary->instance->id, .use_type = 0, .type = dictionary->instance->key_type, .key_size = dictionary->instance->record.key_size, .value_size = dictionary->instance->record.value_size, .dictionary_size = dictionary_size, .dictionary_type = dictionary->instance->type
+		.id = dictionary->instance->id, .use_type = 0, .type = dictionary->instance->key_type, .key_size = dictionary->instance->record.key_size, .value_size = dictionary->instance->record.value_size, .dictionary_size = dictionary_size, .dictionary_type = dictionary->instance->type, .open_status = dictionary->open_status
 	};
 
 	return ion_master_table_write(&config, ION_MASTER_TABLE_WRITE_FROM_END);

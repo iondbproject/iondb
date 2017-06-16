@@ -145,6 +145,7 @@ master_table_open_dictionary(
 	ion_err_t err = master_table->openDictionary(dictionary, id);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == dictionary->dict.open_status);
 }
 
 /**
@@ -159,6 +160,7 @@ master_table_close_dictionary(
 	ion_err_t err = master_table->closeDictionary(dictionary);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_closed, dictionary->dict.status);
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == dictionary->dict.open_status);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 }
 
@@ -2624,6 +2626,7 @@ test_master_table(
 
 	/* Test create */
 	master_table_dictionary_add(tc, master_table, dictionary, key_type_numeric_signed, sizeof(int), 10, 20, dictionary_type);
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == dictionary->dict.open_status);
 
 	ion_dictionary_id_t id = dictionary->dict.instance->id;
 
