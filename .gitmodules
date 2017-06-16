@@ -1,3 +1,7 @@
+[submodule "src/tests/planckunit"]
+	path = src/tests/planckunit
+	url = https://github.com/iondbproject/planck-unit
+	branch = iondb-sub
 [submodule "dotfiles"]
 	path = dotfiles
 	url = https://github.com/iondbproject/utility-scripts

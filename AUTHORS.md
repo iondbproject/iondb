@@ -2,9 +2,7 @@ Graeme Douglas
 
 Scott Fazackerley
 
-Eric Huang 
-
-Kris Wallperington
+Eric Huang
 
 Dana Klamut
 
@@ -12,6 +10,7 @@ Ramon Lawrence
 
 Wade Penson
 
+Spencer MacBeth
+
 Eliana Wardle
 
-Spencer MacBeth

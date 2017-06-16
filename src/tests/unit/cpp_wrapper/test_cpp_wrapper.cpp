@@ -1,36 +1,36 @@
 /******************************************************************************/
 /**
 @file		test_cpp_wrapper.cpp
-@author		Kris Wallperington, Dana Klamut
+@author		Eric Huang, Dana Klamut
 @brief		Unit test for the C++ Wrapper
 @todo		These tests need to be fully fleshed out.
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
-@par Redistribution and use in source and binary forms, with or without 
+@par Redistribution and use in source and binary forms, with or without
 	modification, are permitted provided that the following conditions are met:
-	
-@par 1.Redistributions of source code must retain the above copyright notice, 
+
+@par 1.Redistributions of source code must retain the above copyright notice,
 	this list of conditions and the following disclaimer.
-	
+
 @par 2.Redistributions in binary form must reproduce the above copyright notice,
-	this list of conditions and the following disclaimer in the documentation 
+	this list of conditions and the following disclaimer in the documentation
 	and/or other materials provided with the distribution.
-	
+
 @par 3.Neither the name of the copyright holder nor the names of its contributors
 	may be used to endorse or promote products derived from this software without
-	specific prior written permission. 
-	
-@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
-	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+	specific prior written permission.
+
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
@@ -50,13 +50,13 @@ typedef enum ION_BEHAVIOUR_FILL_LEVEL {
 } ion_behaviour_fill_level_e;
 
 #define ION_FILL_LOW_LOOP(var) \
-	for (var = 0; var<10;var++)
+	for (var = 0; var < 10; var++)
 #define ION_FILL_MEDIUM_LOOP(var) \
-	for (var = 50; var<100;var += 2)
+	for (var = 50; var < 100; var += 2)
 #define ION_FILL_HIGH_LOOP(var) \
-	for (var = 500; var<1000;var += 5)
+	for (var = 500; var < 1000; var += 5)
 #define ION_FILL_EDGE_LOOP(var) \
-	for (var = -100; var<-50;var += 2)
+	for (var = -100; var < -50; var += 2)
 
 #define NULL_VALUE 999	/** Value arbitrarily chosen to represent NULL */
 
@@ -72,8 +72,8 @@ cpp_wrapper_get(
 	ion_err_t expected_status,
 	ion_result_count_t expected_count
 ) {
-	int				retval = dict->get(key);
-	ion_status_t	status = dict->last_status;
+	int				retval	= dict->get(key);
+	ion_status_t	status	= dict->last_status;
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_status, status.error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, status.count);
