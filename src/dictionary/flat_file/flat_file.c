@@ -1,23 +1,36 @@
 /******************************************************************************/
 /**
-@file
-@author		Kris Wallperington
+@file		flat_file.c
+@author		Eric Huang
 @brief		Implementation specific definitions for the flat file store.
-@copyright	Copyright 2016
-				The University of British Columbia,
-				IonDB Project Contributors (see AUTHORS.md)
-@par
-			Licensed under the Apache License, Version 2.0 (the "License");
-			you may not use this file except in compliance with the License.
-			You may obtain a copy of the License at
-					http://www.apache.org/licenses/LICENSE-2.0
-@par
-			Unless required by applicable law or agreed to in writing,
-			software distributed under the License is distributed on an
-			"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
-			either express or implied. See the License for the specific
-			language governing permissions and limitations under the
-			License.
+@copyright	Copyright 2017
+			The University of British Columbia,
+			IonDB Project Contributors (see AUTHORS.md)
+@par Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions are met:
+
+@par 1.Redistributions of source code must retain the above copyright notice,
+	this list of conditions and the following disclaimer.
+
+@par 2.Redistributions in binary form must reproduce the above copyright notice,
+	this list of conditions and the following disclaimer in the documentation
+	and/or other materials provided with the distribution.
+
+@par 3.Neither the name of the copyright holder nor the names of its contributors
+	may be used to endorse or promote products derived from this software without
+	specific prior written permission.
+
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
 
@@ -45,11 +58,11 @@ flat_file_initialize(
 	int		actual_filename_length = dictionary_get_filename(id, "ffs", filename);
 
 	if (actual_filename_length >= ION_MAX_FILENAME_LENGTH) {
-		return err_dictionary_initialization_failed;
+		return err_uninitialized;
 	}
 
 	flat_file->sorted_mode				= boolean_false;/* By default, we don't use sorted mode */
-	flat_file->num_buffered				= dictionary_size;	/* TODO: Sorted mode needs to be written out as a header? */
+	flat_file->num_buffered				= dictionary_size;
 	flat_file->current_loaded_region	= -1;	/* No loaded region yet */
 
 	flat_file->data_file				= fopen(filename, "r+b");
@@ -186,10 +199,10 @@ flat_file_scan(
 			/* It's possible for this to do a partial read (if you're close to EOF), calculate how many we need to read */
 			size_t records_left = (end_offset - cur_offset) / flat_file->row_size;
 
-			num_records_to_process = records_left > (unsigned) /* TODO HACK: remove this */ flat_file->num_buffered ? (unsigned) flat_file->num_buffered : records_left;
+			num_records_to_process = records_left > (unsigned) flat_file->num_buffered ? (unsigned) flat_file->num_buffered : records_left;
 
 			if (num_records_to_process != fread(flat_file->buffer, flat_file->row_size, num_records_to_process, flat_file->data_file)) {
-				return err_file_incomplete_read;
+				return err_file_read_error;
 			}
 
 			if (-1 == (cur_offset = ftell(flat_file->data_file))) {
@@ -211,7 +224,7 @@ flat_file_scan(
 			}
 
 			if (num_records_to_process != fread(flat_file->buffer, flat_file->row_size, num_records_to_process, flat_file->data_file)) {
-				return err_file_incomplete_read;
+				return err_file_read_error;
 			}
 
 			/* In this case, the prev_offset is actually the cur_offset. */
@@ -319,15 +332,15 @@ flat_file_write_row(
 	}
 
 	if (1 != fwrite(&row->row_status, sizeof(row->row_status), 1, flat_file->data_file)) {
-		return err_file_incomplete_write;
+		return err_file_write_error;
 	}
 
 	if ((NULL != row->key) && (1 != fwrite(row->key, flat_file->super.record.key_size, 1, flat_file->data_file))) {
-		return err_file_incomplete_write;
+		return err_file_write_error;
 	}
 
 	if ((NULL != row->value) && (1 != fwrite(row->value, flat_file->super.record.value_size, 1, flat_file->data_file))) {
-		return err_file_incomplete_write;
+		return err_file_write_error;
 	}
 
 	return err_ok;
@@ -352,15 +365,15 @@ flat_file_read_row(
 		}
 
 		if (1 != fread(flat_file->buffer, sizeof(row->row_status), 1, flat_file->data_file)) {
-			return err_file_incomplete_write;
+			return err_file_write_error;
 		}
 
 		if (1 != fread(flat_file->buffer + sizeof(row->row_status), flat_file->super.record.key_size, 1, flat_file->data_file)) {
-			return err_file_incomplete_write;
+			return err_file_write_error;
 		}
 
 		if (1 != fread(flat_file->buffer + sizeof(row->row_status) + flat_file->super.record.key_size, flat_file->super.record.value_size, 1, flat_file->data_file)) {
-			return err_file_incomplete_write;
+			return err_file_write_error;
 		}
 	}
 

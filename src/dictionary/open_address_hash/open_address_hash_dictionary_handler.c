@@ -1,8 +1,36 @@
 /******************************************************************************/
 /**
- @file
- @author		Scott Ronald Fazackerley
- @brief		The handler for a hash table using linear probing.
+@file		open_address_hash_dictionary_handler.c
+@author		Scott Ronald Fazackerley
+@brief		The handler for a hash table using linear probing.
+@copyright	Copyright 2017
+			The University of British Columbia,
+			IonDB Project Contributors (see AUTHORS.md)
+@par Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions are met:
+
+@par 1.Redistributions of source code must retain the above copyright notice,
+	this list of conditions and the following disclaimer.
+
+@par 2.Redistributions in binary form must reproduce the above copyright notice,
+	this list of conditions and the following disclaimer in the documentation
+	and/or other materials provided with the distribution.
+
+@par 3.Neither the name of the copyright holder nor the names of its contributors
+	may be used to endorse or promote products derived from this software without
+	specific prior written permission.
+
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
 
@@ -33,12 +61,12 @@
 @return	 The status of the query.
 */
 ion_status_t
-oadict_query(
+oadict_get(
 	ion_dictionary_t	*dictionary,
 	ion_key_t			key,
 	ion_value_t			value
 ) {
-	return oah_query((ion_hashmap_t *) dictionary->instance, key, value);
+	return oah_get((ion_hashmap_t *) dictionary->instance, key, value);
 }
 
 /**
@@ -79,13 +107,11 @@ oadict_scan(
 		else {
 			/* check to see if the current key value satisfies the predicate */
 
-			/* TODO need to check key match; what's the most efficient way? */
-
 			ion_boolean_t key_satisfies_predicate = test_predicate(&(cursor->super), item->data);	/* assumes that the key is first */
 
 			if (key_satisfies_predicate == boolean_true) {
 				cursor->current = loc;	/* this is the next index for value */
-				return cs_valid_data;
+				return cs_cursor_active;
 			}
 
 			/* If valid bucket is not found, advance current position. */
@@ -102,7 +128,6 @@ oadict_scan(
 	return cs_end_of_results;
 }
 
-/*@todo What do we do if the cursor is already active? */
 /**
 @brief	  Finds multiple instances of a keys that satisfy the provided
 			 predicate in the dictionary.
@@ -211,7 +236,7 @@ oadict_find(
 
 			ion_err_t err = oadict_scan(oadict_cursor);
 
-			if (cs_valid_data != err) {
+			if (cs_end_of_results == err) {
 				(*cursor)->status = cs_cursor_uninitialized;
 			}
 
@@ -229,13 +254,8 @@ oadict_find(
 
 			ion_err_t err = oadict_scan(oadict_cursor);
 
-			if (cs_valid_data != err) {
-				if (cs_end_of_results == err) {
-					(*cursor)->status = cs_end_of_results;
-				}
-				else {
-					(*cursor)->status = cs_cursor_uninitialized;
-				}
+			if (cs_end_of_results == err) {
+				(*cursor)->status = cs_cursor_uninitialized;
 			}
 
 			return err_ok;
@@ -306,7 +326,7 @@ oadict_init(
 ) {
 	handler->insert				= oadict_insert;
 	handler->create_dictionary	= oadict_create_dictionary;
-	handler->get				= oadict_query;
+	handler->get				= oadict_get;
 	handler->update				= oadict_update;
 	handler->find				= oadict_find;
 	handler->remove				= oadict_delete;
@@ -350,8 +370,12 @@ oadict_create_dictionary(
 	 * based on the type of key defined
 	*/
 
+	if (NULL == handler) {
+		return err_uninitialized;
+	}
+
 	/* register the correct handler */
-	dictionary->handler = handler;	/* todo: need to check to make sure that the handler is registered */
+	dictionary->handler = handler;
 
 	return 0;
 }
@@ -397,7 +421,6 @@ oadict_next(
 	ion_dict_cursor_t	*cursor,
 	ion_record_t		*record
 ) {
-	/* @todo if the dictionary instance changes, then the status of the cursor needs to change */
 	ion_oadict_cursor_t *oadict_cursor = (ion_oadict_cursor_t *) cursor;
 
 	/* check the status of the cursor and if it is not valid or at the end, just exit */
@@ -423,7 +446,6 @@ oadict_next(
 			if (cs_end_of_results == oadict_scan(oadict_cursor)) {
 				/* Then this is the end and there are no more results */
 				cursor->status = cs_end_of_results;
-				/*@todo need to do something with cursor? - done? */
 				return cursor->status;
 			}
 		}
@@ -434,9 +456,6 @@ oadict_next(
 
 		/* the results are now ready //reference item at given position */
 		ion_hash_bucket_t *item = (((ion_hash_bucket_t *) ((hash_map->entry + (data_length + SIZEOF(STATUS)) * oadict_cursor->current /*idx*/))));
-
-		/*@todo A discussion needs to be had regarding ion_record_t and its format in memory etc */
-		/* and copy key and value in */
 
 		memcpy(record->key, (item->data), hash_map->super.record.key_size);
 
@@ -451,7 +470,7 @@ oadict_next(
 }
 
 ion_boolean_t
-is_equal(
+oadict_is_equal(
 	ion_dictionary_t	*dict,
 	ion_key_t			key1,
 	ion_key_t			key2
