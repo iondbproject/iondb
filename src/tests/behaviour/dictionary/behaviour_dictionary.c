@@ -98,20 +98,7 @@ bhdct_master_table_init(
 }
 
 /**
-@brief	This function un-registers a dictionary from the master table.
-*/
-void
-bhdct_delete_from_master_table(
-	planck_unit_test_t	*tc,
-	ion_dictionary_t	*dict
-) {
-	ion_err_t err = ion_delete_from_master_table(dict);
-
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
-}
-
-/**
-@brief	This function deletes a dictionary.
+@brief	This function un-registers a dictionary from the master table and deletes it.
 */
 void
 bhdct_delete_dictionary(
@@ -360,7 +347,6 @@ bhdct_takedown(
 	planck_unit_test_t	*tc,
 	ion_dictionary_t	*dict
 ) {
-/*	bhdct_delete_from_master_table(tc, dict); */
 	bhdct_delete_dictionary(tc, dict);
 
 	bhdct_close_master_table(tc);

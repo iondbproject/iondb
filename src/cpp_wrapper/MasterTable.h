@@ -92,7 +92,7 @@ addToMasterTable(
 	dictionary->dict.instance->id = id;
 
 	ion_dictionary_config_info_t config = {
-		.id = dictionary->dict.instance->id, .use_type = 0, .type = dictionary->dict.instance->key_type, .key_size = dictionary->dict.instance->record.key_size, .value_size = dictionary->dict.instance->record.value_size, .dictionary_size = dictionary_size, .dictionary_type = dictionary->dict.instance->type, .open_status = dictionary->dict.open_status
+		.id = dictionary->dict.instance->id, .use_type = 0, .type = dictionary->dict.instance->key_type, .key_size = dictionary->dict.instance->record.key_size, .value_size = dictionary->dict.instance->record.value_size, .dictionary_size = dictionary_size, .dictionary_type = dictionary->dict.instance->type
 	};
 
 	return ion_master_table_write(&config, ION_MASTER_TABLE_WRITE_FROM_END);
@@ -247,7 +247,7 @@ deleteDictionary(
 	ion_dictionary_type_t	type;
 
 	if (ion_dictionary_status_closed != dictionary->dict.status) {
-		id	= dictionary->id;
+		id	= dictionary->dict.instance->id;
 
 		err = dictionary->deleteDictionary();
 
@@ -307,16 +307,18 @@ openDictionary(
 
 	/* Lookup for id failed. */
 	if (err_ok != err) {
-		return err_dictionary_initialization_failed;
+		return err_uninitialized;
 	}
 
-	ion_switch_handler(config.dictionary_type, &handler);
+	err = ion_switch_handler(config.dictionary_type, &handler);
 
-	err = dictionary->open(config);
-
-	if (err_ok == err) {
-		dictionary->dict.open_status = boolean_true;
+	if (err_ok != err) {
+		return err;
 	}
+
+	dictionary->dict.handler	= &handler;
+
+	err							= dictionary->open(config);
 
 	return err;
 }
@@ -334,10 +336,6 @@ closeDictionary(
 	Dictionary<K, V> *dictionary
 ) {
 	ion_err_t err = dictionary->close();
-
-	if (err_ok == err) {
-		dictionary->dict.open_status = boolean_false;
-	}
 
 	return err;
 }
@@ -429,7 +427,7 @@ initializeDictionary(
 		}
 
 		case dictionary_type_error_t: {
-			return err_dictionary_initialization_failed;
+			return err_uninitialized;
 		}
 	}
 

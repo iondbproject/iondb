@@ -80,10 +80,8 @@ typedef struct {
 													 parameter. Dependent on
 													 the dictionary
 													 implementation used. */
-	ion_dictionary_type_t	dictionary_type;/**< The type of dictionary
+	ion_dictionary_type_t dictionary_type;	/**< The type of dictionary
 													 implementation used. */
-	ion_boolean_t			open_status;	/**< The open/close status of
-													 the dictionary. */
 } ion_dictionary_config_info_t;
 
 /**
@@ -273,8 +271,6 @@ typedef char ion_dictionary_status_t;
 struct dictionary {
 	ion_dictionary_status_t		status;	/**< A status describing the state
 											 of the dictionary. */
-	ion_boolean_t				open_status;/**< The open/close status of
-											 the dictionary. */
 	ion_dictionary_parent_t		*instance;	/**< Specific instance of a
 											 dictionary (but we don't
 											 know type). */

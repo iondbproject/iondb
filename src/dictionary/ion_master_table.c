@@ -1,7 +1,8 @@
 /******************************************************************************/
 /**
 @file		ion_master_table.c
-@author		Eric Huang, Graeme Douglas, Scott Fazackerley, Wade Penson
+@author		Eric Huang, Graeme Douglas, Scott Fazackerley, Wade Penson,
+			Dana Klamut
 @brief		Master table handling.
 @copyright	Copyright 2017
 			The University of British Columbia,
@@ -40,14 +41,13 @@
 #include "open_address_file_hash/open_address_file_hash_dictionary_handler.h"
 #include "open_address_hash/open_address_hash_dictionary_handler.h"
 #include "skip_list/skip_list_handler.h"
-#include "dictionary_types.h"
 
 FILE				*ion_master_table_file		= NULL;
 ion_dictionary_id_t ion_master_table_next_id	= 1;
 
 #define ION_MASTER_TABLE_CALCULATE_POS	-1
 #define ION_MASTER_TABLE_WRITE_FROM_END -2
-#define ION_MASTER_TABLE_RECORD_SIZE(cp) (sizeof((cp)->id) + sizeof((cp)->use_type) + sizeof((cp)->type) + sizeof((cp)->key_size) + sizeof((cp)->value_size) + sizeof((cp)->dictionary_size) + sizeof((cp)->dictionary_type) + sizeof((cp)->open_status))
+#define ION_MASTER_TABLE_RECORD_SIZE(cp) (sizeof((cp)->id) + sizeof((cp)->use_type) + sizeof((cp)->type) + sizeof((cp)->key_size) + sizeof((cp)->value_size) + sizeof((cp)->dictionary_size) + sizeof((cp)->dictionary_type))
 
 ion_err_t
 ion_master_table_write(
@@ -94,10 +94,6 @@ ion_master_table_write(
 	}
 
 	if (1 != fwrite(&(config->dictionary_type), sizeof(config->dictionary_type), 1, ion_master_table_file)) {
-		return err_file_write_error;
-	}
-
-	if (1 != fwrite(&(config->open_status), sizeof(config->open_status), 1, ion_master_table_file)) {
 		return err_file_write_error;
 	}
 
@@ -163,10 +159,6 @@ ion_master_table_read(
 	}
 
 	if (1 != fread(&(config->dictionary_type), sizeof(config->dictionary_type), 1, ion_master_table_file)) {
-		return err_file_read_error;
-	}
-
-	if (1 != fread(&(config->open_status), sizeof(config->open_status), 1, ion_master_table_file)) {
 		return err_file_read_error;
 	}
 
@@ -253,9 +245,25 @@ ion_err_t
 ion_close_master_table(
 	void
 ) {
-	ion_err_t					err;
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+	if (NULL != ion_master_table_file) {
+		if (0 != fclose(ion_master_table_file)) {
+			return err_file_close_error;
+		}
+	}
+
+	ion_master_table_file = NULL;
+
+	return err_ok;
+}
+
+ion_err_t
+ion_close_all_master_table(
+	void
+) {
+	ion_err_t						err;
+	ion_dictionary_handler_t		handler;
+	ion_dictionary_t				dict;
+	ion_dictionary_config_info_t	config;
 
 	ion_dictionary_id_t id = ion_master_table_next_id;
 
@@ -263,16 +271,27 @@ ion_close_master_table(
 		id--;
 
 		while (id > 0) {
-			err = ion_open_dictionary(&handler, &dict, id);
+			err = ion_lookup_in_master_table(id, &config);
 
-			if (err_ok != err) {
-				/* Dictionary not found, continue search. */
-				if (err_uninitialized != err) {
+			/* Dictionary corresponding to ID has been found. */
+			if (err_ok == err) {
+				err = ion_switch_handler(config.dictionary_type, &handler);
+
+				if (err_ok != err) {
 					return err;
 				}
-			}
-			else {
-				err = ion_close_dictionary(&dict);
+
+				dict.handler	= &handler;
+
+				/* Initialize dictionary instance. */
+				err				= dictionary_open(&handler, &dict, &config);
+
+				if (err_ok != err) {
+					return err;
+				}
+
+				/* Close the dictionary instance. */
+				err = dictionary_close(&dict);
 
 				if (err_ok != err) {
 					return err;
@@ -322,7 +341,7 @@ ion_add_to_master_table(
 	ion_dictionary_size_t	dictionary_size
 ) {
 	ion_dictionary_config_info_t config = {
-		.id = dictionary->instance->id, .use_type = 0, .type = dictionary->instance->key_type, .key_size = dictionary->instance->record.key_size, .value_size = dictionary->instance->record.value_size, .dictionary_size = dictionary_size, .dictionary_type = dictionary->instance->type, .open_status = dictionary->open_status
+		.id = dictionary->instance->id, .use_type = 0, .type = dictionary->instance->key_type, .key_size = dictionary->instance->record.key_size, .value_size = dictionary->instance->record.value_size, .dictionary_size = dictionary_size, .dictionary_type = dictionary->instance->type
 	};
 
 	return ion_master_table_write(&config, ION_MASTER_TABLE_WRITE_FROM_END);
@@ -352,9 +371,7 @@ ion_master_table_create_dictionary(
 		return err;
 	}
 
-	dictionary->open_status = boolean_true;
-
-	err						= ion_add_to_master_table(dictionary, dictionary_size);
+	err = ion_add_to_master_table(dictionary, dictionary_size);
 
 	return err;
 }
@@ -459,17 +476,9 @@ ion_open_dictionary(
 		return err_uninitialized;
 	}
 
-	if (boolean_true == config.open_status) {
-		return err_ok;
-	}
-
 	ion_switch_handler(config.dictionary_type, handler);
 
 	err = dictionary_open(handler, dictionary, &config);
-
-	if (err_ok == err) {
-		dictionary->open_status = boolean_true;
-	}
 
 	return err;
 }
@@ -481,11 +490,6 @@ ion_close_dictionary(
 	ion_err_t err;
 
 	err = dictionary_close(dictionary);
-
-	if (err_ok == err) {
-		dictionary->open_status = boolean_false;
-	}
-
 	return err;
 }
 

@@ -71,8 +71,6 @@ OpenAddressFileHash(
 	ion_value_size_t		value_size,
 	ion_dictionary_size_t	dictionary_size
 ) {
-	this->dict_type = dictionary_type_open_address_file_hash_t;
-
 	oafdict_init(&this->handler);
 
 	this->initializeDictionary(id, key_type, key_size, value_size, dictionary_size);

@@ -139,7 +139,6 @@ dictionary_create(
 	if (err_ok == err) {
 		dictionary->instance->id	= id;
 		dictionary->status			= ion_dictionary_status_ok;
-		dictionary->open_status		= boolean_true;
 	}
 	else {
 		dictionary->status = ion_dictionary_status_error;
@@ -361,7 +360,6 @@ dictionary_open(
 	if (err_ok == error) {
 		dictionary->status			= ion_dictionary_status_ok;
 		dictionary->instance->id	= config->id;
-		dictionary->open_status		= boolean_true;
 	}
 	else {
 		dictionary->status = ion_dictionary_status_error;
@@ -423,7 +421,9 @@ dictionary_close(
 			}
 		}
 
-		if (cs_end_of_results != cursor_status) {
+		/* Cursor has either reached the end of the result set or there was no
+		   result set, and the cursor remains uninitialized. */
+		if ((cs_end_of_results != cursor_status) && (cs_cursor_uninitialized != cursor_status)) {
 			return err_uninitialized;
 		}
 
@@ -445,8 +445,7 @@ dictionary_close(
 	}
 
 	if (err_ok == error) {
-		dictionary->status		= ion_dictionary_status_closed;
-		dictionary->open_status = boolean_false;
+		dictionary->status = ion_dictionary_status_closed;
 	}
 
 	return error;

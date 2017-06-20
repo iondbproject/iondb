@@ -65,8 +65,6 @@ BppTree(
 	int					key_size,
 	int					value_size
 ) {
-	this->dict_type = dictionary_type_bpp_tree_t;
-
 	bpptree_init(&this->handler);
 
 	this->initializeDictionary(id, key_type, key_size, value_size, 0);
