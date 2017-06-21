@@ -1,8 +1,36 @@
 /******************************************************************************/
 /**
-@file
-@author		Kris Wallperington
+@file		test_skip_list.c
+@author		Eric Huang
 @brief		Unit test for Skiplist data store
+@copyright	Copyright 2017
+			The University of British Columbia,
+			IonDB Project Contributors (see AUTHORS.md)
+@par Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions are met:
+
+@par 1.Redistributions of source code must retain the above copyright notice,
+	this list of conditions and the following disclaimer.
+
+@par 2.Redistributions in binary form must reproduce the above copyright notice,
+	this list of conditions and the following disclaimer in the documentation
+	and/or other materials provided with the distribution.
+
+@par 3.Neither the name of the copyright holder nor the names of its contributors
+	may be used to endorse or promote products derived from this software without
+	specific prior written permission.
+
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
 
@@ -546,7 +574,7 @@ test_skiplist_query_nonexist_empty(
 	int			key			= 3;
 	ion_byte_t	value[10]	= "NULL";
 
-	ion_status_t status		= sl_query(&skiplist, (ion_key_t) &key, value);
+	ion_status_t status		= sl_get(&skiplist, (ion_key_t) &key, value);
 
 #if ION_DEBUG
 	print_skiplist(&skip_list);
@@ -595,7 +623,7 @@ test_skiplist_query_nonexist_populated_single(
 	int			key			= 10;
 	ion_byte_t	value[10]	= "NULL";
 
-	status = sl_query(&skiplist, (ion_key_t) &key, value);
+	status = sl_get(&skiplist, (ion_key_t) &key, value);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
@@ -645,7 +673,7 @@ test_skiplist_query_nonexist_populated_several(
 	int			key			= 10;
 	ion_byte_t	value[10]	= "NULL";
 
-	ion_status_t status		= sl_query(&skiplist, (ion_key_t) &key, value);
+	ion_status_t status		= sl_get(&skiplist, (ion_key_t) &key, value);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_item_not_found == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 0 == status.count);
@@ -690,7 +718,7 @@ test_skiplist_query_exist_single(
 	int			key = 11;
 	ion_byte_t	value[10];
 
-	status = sl_query(&skiplist, (ion_key_t) &key, value);
+	status = sl_get(&skiplist, (ion_key_t) &key, value);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
@@ -738,7 +766,7 @@ test_skiplist_query_exist_populated_single(
 	int			key		= 24;
 	ion_byte_t	value[10];
 
-	ion_status_t status = sl_query(&skiplist, (ion_key_t) &key, value);
+	ion_status_t status = sl_get(&skiplist, (ion_key_t) &key, value);
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
@@ -789,7 +817,7 @@ test_skiplist_query_exist_populated_several(
 	for (i = 0; i < 100; i++) {
 		sprintf(find_value, "Find %d", i);
 
-		ion_status_t status = sl_query(&skiplist, (ion_key_t) &i, value);
+		ion_status_t status = sl_get(&skiplist, (ion_key_t) &i, value);
 
 		PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 		PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
@@ -1827,17 +1855,17 @@ test_skiplist_different_size(
 	ion_byte_t		value[10];
 	ion_status_t	status;
 
-	status = sl_query(&skiplist, (ion_key_t) &(long long) { 64 }, value);
+	status = sl_get(&skiplist, (ion_key_t) &(long long) { 64 }, value);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) value, "pop");
 
-	status = sl_query(&skiplist, (ion_key_t) &(long long) { 32 }, value);
+	status = sl_get(&skiplist, (ion_key_t) &(long long) { 32 }, value);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) value, "bep");
 
-	status = sl_query(&skiplist, (ion_key_t) &(long long) { 16 }, value);
+	status = sl_get(&skiplist, (ion_key_t) &(long long) { 16 }, value);
 	PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
 	PLANCK_UNIT_ASSERT_TRUE(tc, 1 == status.count);
 	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, (char *) value, "tot");

@@ -1,23 +1,36 @@
 /******************************************************************************/
 /**
-@file
-@author		Eric Huang, Graeme Douglas, Scott Fazackerley, Wade Penson, Dana Klamut
+@file		ion_master_table.c
+@author		Eric Huang, Graeme Douglas, Scott Fazackerley, Wade Penson
 @brief		Master table handling.
-@copyright	Copyright 2016
-				The University of British Columbia,
-				IonDB Project Contributors (see AUTHORS.md)
-@par
-			Licensed under the Apache License, Version 2.0 (the "License");
-			you may not use this file except in compliance with the License.
-			You may obtain a copy of the License at
-					http://www.apache.org/licenses/LICENSE-2.0
-@par
-			Unless required by applicable law or agreed to in writing,
-			software distributed under the License is distributed on an
-			"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
-			either express or implied. See the License for the specific
-			language governing permissions and limitations under the
-			License.
+@copyright	Copyright 2017
+			The University of British Columbia,
+			IonDB Project Contributors (see AUTHORS.md)
+@par Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions are met:
+
+@par 1.Redistributions of source code must retain the above copyright notice,
+	this list of conditions and the following disclaimer.
+
+@par 2.Redistributions in binary form must reproduce the above copyright notice,
+	this list of conditions and the following disclaimer in the documentation
+	and/or other materials provided with the distribution.
+
+@par 3.Neither the name of the copyright holder nor the names of its contributors
+	may be used to endorse or promote products derived from this software without
+	specific prior written permission.
+
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
 
@@ -27,14 +40,13 @@
 #include "open_address_file_hash/open_address_file_hash_dictionary_handler.h"
 #include "open_address_hash/open_address_hash_dictionary_handler.h"
 #include "skip_list/skip_list_handler.h"
-#include "dictionary_types.h"
 
 FILE				*ion_master_table_file		= NULL;
 ion_dictionary_id_t ion_master_table_next_id	= 1;
 
 #define ION_MASTER_TABLE_CALCULATE_POS	-1
 #define ION_MASTER_TABLE_WRITE_FROM_END -2
-#define ION_MASTER_TABLE_RECORD_SIZE(cp) (sizeof((cp)->id) + sizeof((cp)->use_type) + sizeof((cp)->type) + sizeof((cp)->key_size) + sizeof((cp)->value_size) + sizeof((cp)->dictionary_size) + sizeof((cp)->dictionary_type) + sizeof((cp)->open_status))
+#define ION_MASTER_TABLE_RECORD_SIZE(cp) (sizeof((cp)->id) + sizeof((cp)->use_type) + sizeof((cp)->type) + sizeof((cp)->key_size) + sizeof((cp)->value_size) + sizeof((cp)->dictionary_size) + sizeof((cp)->dictionary_type))
 
 ion_err_t
 ion_master_table_write(
@@ -81,10 +93,6 @@ ion_master_table_write(
 	}
 
 	if (1 != fwrite(&(config->dictionary_type), sizeof(config->dictionary_type), 1, ion_master_table_file)) {
-		return err_file_write_error;
-	}
-
-	if (1 != fwrite(&(config->open_status), sizeof(config->open_status), 1, ion_master_table_file)) {
 		return err_file_write_error;
 	}
 
@@ -150,10 +158,6 @@ ion_master_table_read(
 	}
 
 	if (1 != fread(&(config->dictionary_type), sizeof(config->dictionary_type), 1, ion_master_table_file)) {
-		return err_file_read_error;
-	}
-
-	if (1 != fread(&(config->open_status), sizeof(config->open_status), 1, ion_master_table_file)) {
 		return err_file_read_error;
 	}
 
@@ -254,7 +258,7 @@ ion_close_master_table(
 
 			if (err_ok != err) {
 				/* Dictionary not found, continue search. */
-				if (err_dictionary_initialization_failed != err) {
+				if (err_uninitialized != err) {
 					return err;
 				}
 			}
@@ -339,9 +343,7 @@ ion_master_table_create_dictionary(
 		return err;
 	}
 
-	dictionary->open_status = boolean_true;
-
-	err						= ion_add_to_master_table(dictionary, dictionary_size);
+	err = ion_add_to_master_table(dictionary, dictionary_size);
 
 	return err;
 }
@@ -443,21 +445,12 @@ ion_open_dictionary(
 
 	/* Lookup for id failed. */
 	if (err_ok != err) {
-		return err_dictionary_initialization_failed;
-	}
-
-	if (boolean_true == config.open_status) {
-		return err_ok;
+		return err_uninitialized;
 	}
 
 	ion_switch_handler(config.dictionary_type, handler);
 
 	err = dictionary_open(handler, dictionary, &config);
-
-	if (err_ok == err) {
-		dictionary->open_status = boolean_true;
-	}
-
 	return err;
 }
 
@@ -468,10 +461,6 @@ ion_close_dictionary(
 	ion_err_t err;
 
 	err = dictionary_close(dictionary);
-
-	if (err_ok == err) {
-		dictionary->open_status = boolean_false;
-	}
 
 	return err;
 }
@@ -549,7 +538,7 @@ ion_switch_handler(
 		}
 
 		case dictionary_type_error_t: {
-			return err_dictionary_initialization_failed;
+			return err_uninitialized;
 		}
 	}
 

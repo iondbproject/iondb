@@ -151,9 +151,7 @@ createDictionary(
 		return err;
 	}
 
-	dictionary->dict.open_status	= boolean_true;
-
-	err								= addToMasterTable(dictionary, dictionary_size);
+	err = addToMasterTable(dictionary, dictionary_size);
 
 	return err;
 }
@@ -247,7 +245,7 @@ deleteDictionary(
 	ion_dictionary_type_t	type;
 
 	if (ion_dictionary_status_closed != dictionary->dict.status) {
-		id	= dictionary->id;
+		id	= dictionary->dict.instance->id;
 
 		err = dictionary->deleteDictionary();
 
@@ -307,16 +305,12 @@ openDictionary(
 
 	/* Lookup for id failed. */
 	if (err_ok != err) {
-		return err_dictionary_initialization_failed;
+		return err_uninitialized;
 	}
 
 	ion_switch_handler(config.dictionary_type, &handler);
 
 	err = dictionary->open(config);
-
-	if (err_ok == err) {
-		dictionary->dict.open_status = boolean_true;
-	}
 
 	return err;
 }
@@ -334,10 +328,6 @@ closeDictionary(
 	Dictionary<K, V> *dictionary
 ) {
 	ion_err_t err = dictionary->close();
-
-	if (err_ok == err) {
-		dictionary->dict.open_status = boolean_false;
-	}
 
 	return err;
 }
@@ -429,7 +419,7 @@ initializeDictionary(
 		}
 
 		case dictionary_type_error_t: {
-			return err_dictionary_initialization_failed;
+			return err_uninitialized;
 		}
 	}
 
