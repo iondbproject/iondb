@@ -42,6 +42,7 @@
 #include "open_address_hash/open_address_hash_dictionary_handler.h"
 #include "skip_list/skip_list_handler.h"
 #include "linear_hash/linear_hash_handler.h"
+#include "dictionary_types.h"
 
 FILE				*ion_master_table_file		= NULL;
 ion_dictionary_id_t ion_master_table_next_id	= 1;
@@ -246,21 +247,6 @@ ion_err_t
 ion_close_master_table(
 	void
 ) {
-	if (NULL != ion_master_table_file) {
-		if (0 != fclose(ion_master_table_file)) {
-			return err_file_close_error;
-		}
-	}
-
-	ion_master_table_file = NULL;
-
-	return err_ok;
-}
-
-ion_err_t
-ion_close_all_master_table(
-	void
-) {
 	ion_err_t						err;
 	ion_dictionary_handler_t		handler;
 	ion_dictionary_t				dict;
@@ -275,7 +261,9 @@ ion_close_all_master_table(
 			err = ion_lookup_in_master_table(id, &config);
 
 			/* Dictionary corresponding to ID has been found. */
-			if (err_ok == err) {
+			/* ion_close_master_table() does not currently support the closing
+			   of BppTree dictionary instances. They must be closed separately. */
+			if ((err_ok == err) && (dictionary_type_bpp_tree_t != config.dictionary_type)) {
 				err = ion_switch_handler(config.dictionary_type, &handler);
 
 				if (err_ok != err) {
