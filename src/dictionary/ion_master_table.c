@@ -49,7 +49,7 @@ ion_dictionary_id_t ion_master_table_next_id	= 1;
 
 #define ION_MASTER_TABLE_CALCULATE_POS	-1
 #define ION_MASTER_TABLE_WRITE_FROM_END -2
-#define ION_MASTER_TABLE_RECORD_SIZE(cp) (sizeof((cp)->id) + sizeof((cp)->use_type) + sizeof((cp)->type) + sizeof((cp)->key_size) + sizeof((cp)->value_size) + sizeof((cp)->dictionary_size) + sizeof((cp)->dictionary_type))
+#define ION_MASTER_TABLE_RECORD_SIZE(cp) (sizeof((cp)->id) + sizeof((cp)->use_type) + sizeof((cp)->type) + sizeof((cp)->key_size) + sizeof((cp)->value_size) + sizeof((cp)->dictionary_size) + sizeof((cp)->dictionary_type) + sizeof((cp)->dictionary_status))
 
 ion_err_t
 ion_master_table_write(
@@ -96,6 +96,10 @@ ion_master_table_write(
 	}
 
 	if (1 != fwrite(&(config->dictionary_type), sizeof(config->dictionary_type), 1, ion_master_table_file)) {
+		return err_file_write_error;
+	}
+
+	if (1 != fwrite(&(config->dictionary_status), sizeof(config->dictionary_status), 1, ion_master_table_file)) {
 		return err_file_write_error;
 	}
 
@@ -161,6 +165,10 @@ ion_master_table_read(
 	}
 
 	if (1 != fread(&(config->dictionary_type), sizeof(config->dictionary_type), 1, ion_master_table_file)) {
+		return err_file_read_error;
+	}
+
+	if (1 != fread(&(config->dictionary_status), sizeof(config->dictionary_status), 1, ion_master_table_file)) {
 		return err_file_read_error;
 	}
 
@@ -260,10 +268,10 @@ ion_close_master_table(
 		while (id > 0) {
 			err = ion_lookup_in_master_table(id, &config);
 
-			/* Dictionary corresponding to ID has been found. */
+			/* Dictionary corresponding to ID has been found and dictionary is open. */
 			/* ion_close_master_table() does not currently support the closing
 			   of BppTree dictionary instances. They must be closed separately. */
-			if ((err_ok == err) && (dictionary_type_bpp_tree_t != config.dictionary_type)) {
+			if ((err_ok == err) && (ion_dictionary_status_closed != config.dictionary_status) && (dictionary_type_bpp_tree_t != config.dictionary_type)) {
 				err = ion_switch_handler(config.dictionary_type, &handler);
 
 				if (err_ok != err) {
@@ -330,7 +338,7 @@ ion_add_to_master_table(
 	ion_dictionary_size_t	dictionary_size
 ) {
 	ion_dictionary_config_info_t config = {
-		.id = dictionary->instance->id, .use_type = 0, .type = dictionary->instance->key_type, .key_size = dictionary->instance->record.key_size, .value_size = dictionary->instance->record.value_size, .dictionary_size = dictionary_size, .dictionary_type = dictionary->instance->type
+		.id = dictionary->instance->id, .use_type = 0, .type = dictionary->instance->key_type, .key_size = dictionary->instance->record.key_size, .value_size = dictionary->instance->record.value_size, .dictionary_size = dictionary_size, .dictionary_type = dictionary->instance->type, .dictionary_status = dictionary->status
 	};
 
 	return ion_master_table_write(&config, ION_MASTER_TABLE_WRITE_FROM_END);

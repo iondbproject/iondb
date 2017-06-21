@@ -64,27 +64,6 @@ typedef ion_byte_t ion_dict_use_t;
 typedef int ion_hash_t;
 
 /**
-@brief		Struct containing details for opening a dictionary previously
-			created.
-*/
-typedef struct {
-	ion_dictionary_id_t		id;					/**< The identifier used to
-													 identify the dictionary. */
-	ion_dict_use_t			use_type;			/**< How the dictionary will be
-													 used. Ignore if N/A. */
-	ion_key_type_t			type;					/**< The type of key to store.
-													*/
-	ion_key_size_t			key_size;			/**< The size of the key. */
-	ion_value_size_t		value_size;			/**< The size of the value. */
-	ion_dictionary_size_t	dictionary_size;	/**< The dictionary size
-													 parameter. Dependent on
-													 the dictionary
-													 implementation used. */
-	ion_dictionary_type_t dictionary_type;	/**< The type of dictionary
-													 implementation used. */
-} ion_dictionary_config_info_t;
-
-/**
 @brief		A dictionary instance variable.
 @details	Does not describe the function pointers of a dictionary
 			implementation.
@@ -178,6 +157,49 @@ enum ION_CURSOR_STATUS {
 typedef char ion_cursor_status_t;
 
 /**
+@brief		The status codes describing various states a dictionary can be
+			in.
+*/
+enum ION_DICTIONARY_STATUS {
+	/**> A status describing the situation when a dictionary is ready to be used. */
+	ion_dictionary_status_ok,
+	/**> A status describing the situation when a dictionary has been closed. */
+	ion_dictionary_status_closed,
+	/**> A status describing the situation when a dictionary operation modifying
+		 the dictionary has failed. */
+	ion_dictionary_status_error,
+};
+
+/**
+@brief		A short status describing the current status of a
+			dictionary.
+*/
+typedef char ion_dictionary_status_t;
+
+/**
+@brief		Struct containing details for opening a dictionary previously
+			created.
+*/
+typedef struct {
+	ion_dictionary_id_t		id;					/**< The identifier used to
+													 identify the dictionary. */
+	ion_dict_use_t			use_type;			/**< How the dictionary will be
+													 used. Ignore if N/A. */
+	ion_key_type_t			type;					/**< The type of key to store.
+													*/
+	ion_key_size_t			key_size;			/**< The size of the key. */
+	ion_value_size_t		value_size;			/**< The size of the value. */
+	ion_dictionary_size_t	dictionary_size;	/**< The dictionary size
+													 parameter. Dependent on
+													 the dictionary
+													 implementation used. */
+	ion_dictionary_type_t	dictionary_type;	/**< The type of dictionary
+													 implementation used. */
+	ion_dictionary_status_t dictionary_status;	/**< The current status of the
+													dictionary, either closed or ok. */
+} ion_dictionary_config_info_t;
+
+/**
 @brief		A dictionary_handler is responsible for dealing with the specific
 			interface for an underlying dictionary, but is decoupled from a
 			specific implementation.
@@ -243,26 +265,6 @@ struct dictionary_handler {
 	);
 	/**< A pointer to the dictionaries close function */
 };
-
-/**
-@brief		The status codes describing various states a dictionary can be
-			in.
-*/
-enum ION_DICTIONARY_STATUS {
-	/**> A status describing the situation when a dictionary is ready to be used. */
-	ion_dictionary_status_ok,
-	/**> A status describing the situation when a dictionary has been closed. */
-	ion_dictionary_status_closed,
-	/**> A status describing the situation when a dictionary operation modifying
-		 the dictionary has failed. */
-	ion_dictionary_status_error,
-};
-
-/**
-@brief		A short status describing the current status of a
-			dictionary.
-*/
-typedef char ion_dictionary_status_t;
 
 /**
 @brief		A dictionary contains information regarding an instance of the
