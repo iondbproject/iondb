@@ -204,7 +204,7 @@ main(
 	/* Clean-up the dictionary. Must be done through the master table to erase the table record we kept. */
 	printf("Deleting dictionary...\n");
 
-	if (ion_delete_from_master_table(dictionary.instance->id)) {
+	if (ion_delete_dictionary(&dictionary, dictionary.instance->id)) {
 		printf("Failed to delete the dictionary\n");
 		return 1;
 	}
