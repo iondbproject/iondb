@@ -2590,9 +2590,9 @@ test_cpp_wrapper_open_close_all(
 	cpp_wrapper_open_close(tc, dict, 1, 13);
 	delete dict;
 
-	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 7);
-	cpp_wrapper_open_close(tc, dict, 2, 22);
-	delete dict;
+/*	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 7); */
+/*	cpp_wrapper_open_close(tc, dict, 2, 22); */
+/*	delete dict; */
 }
 
 /**
@@ -2744,9 +2744,9 @@ test_master_table_dictionary_open_close_all(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
 	test_master_table_dictionary_open_close(tc, dictionary, 7, dictionary_type_skip_list_t);
 
-	dictionary = new LinearHash<int, int>(1, key_type_numeric_signed, sizeof(int), sizeof(int), 7);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
-	test_master_table_dictionary_open_close(tc, dictionary, 7, dictionary_type_linear_hash_t);
+/*	dictionary = new LinearHash<int, int>(1, key_type_numeric_signed, sizeof(int), sizeof(int), 7); */
+/*	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status); */
+/*	test_master_table_dictionary_open_close(tc, dictionary, 7, dictionary_type_linear_hash_t); */
 }
 
 /**
@@ -2907,15 +2907,15 @@ test_master_table_all(
 	delete dictionary2;
 	delete master_table;
 
-	master_table	= new MasterTable();
-	dictionary		= new LinearHash<int, int>(1, key_type_numeric_signed, sizeof(int), 10, 20);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
-	dictionary2		= new LinearHash<int, int>(2, key_type_numeric_signed, sizeof(short), 7, 14);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
-	test_master_table(tc, master_table, dictionary, dictionary2, dictionary_type_linear_hash_t);
-	delete dictionary;
-	delete dictionary2;
-	delete master_table;
+/*	master_table	= new MasterTable(); */
+/*	dictionary		= new LinearHash<int, int>(1, key_type_numeric_signed, sizeof(int), 10, 20); */
+/*	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status); */
+/*	dictionary2		= new LinearHash<int, int>(2, key_type_numeric_signed, sizeof(short), 7, 14); */
+/*	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status); */
+/*	test_master_table(tc, master_table, dictionary, dictionary2, dictionary_type_linear_hash_t); */
+/*	delete dictionary; */
+/*	delete dictionary2; */
+/*	delete master_table; */
 }
 
 /**
