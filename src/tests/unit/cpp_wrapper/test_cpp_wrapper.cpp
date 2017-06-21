@@ -38,6 +38,7 @@
 #include "../../planck-unit/src/planck_unit.h"
 #include "../../../cpp_wrapper/Dictionary.h"
 #include "../../../cpp_wrapper/MasterTable.h"
+#include "../../../cpp_wrapper/LinearHash.h"
 #include "../../../cpp_wrapper/BppTree.h"
 #include "../../../cpp_wrapper/FlatFile.h"
 #include "../../../cpp_wrapper/OpenAddressFileHash.h"
@@ -619,6 +620,10 @@ test_cpp_wrapper_setup_all(
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_setup(tc, dict);
 	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_setup(tc, dict);
+	delete dict;
 }
 
 /**
@@ -660,6 +665,10 @@ test_cpp_wrapper_insert_single_all(
 	delete dict;
 
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_insert_single(tc, dict);
+	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_insert_single(tc, dict);
 	delete dict;
 }
@@ -710,6 +719,10 @@ test_cpp_wrapper_insert_multiple_all(
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_insert_multiple(tc, dict);
 	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_insert_multiple(tc, dict);
+	delete dict;
 }
 
 /**
@@ -751,6 +764,10 @@ test_cpp_wrapper_get_single_all(
 	delete dict;
 
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_single(tc, dict);
+	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_single(tc, dict);
 	delete dict;
 }
@@ -797,6 +814,10 @@ test_cpp_wrapper_get_in_many_all(
 	delete dict;
 
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_in_many(tc, dict);
+	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_in_many(tc, dict);
 	delete dict;
 }
@@ -851,6 +872,10 @@ test_cpp_wrapper_get_lots_all(
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_lots(tc, dict);
 	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_lots(tc, dict);
+	delete dict;
 }
 
 /**
@@ -892,6 +917,10 @@ test_cpp_wrapper_get_nonexist_empty_all(
 	delete dict;
 
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_nonexist_empty(tc, dict);
+	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_nonexist_empty(tc, dict);
 	delete dict;
 }
@@ -937,6 +966,10 @@ test_cpp_wrapper_get_nonexist_single_all(
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_nonexist_single(tc, dict);
 	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_nonexist_single(tc, dict);
+	delete dict;
 }
 
 /**
@@ -979,6 +1012,10 @@ test_cpp_wrapper_get_nonexist_many_all(
 	delete dict;
 
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 160);
+	test_cpp_wrapper_get_nonexist_many(tc, dict);
+	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_nonexist_many(tc, dict);
 	delete dict;
 }
@@ -1027,6 +1064,10 @@ test_cpp_wrapper_get_exist_single_all(
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_exist_single(tc, dict);
 	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_exist_single(tc, dict);
+	delete dict;
 }
 
 /**
@@ -1070,6 +1111,10 @@ test_cpp_wrapper_get_populated_single_all(
 	delete dict;
 
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_populated_single(tc, dict);
+	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_populated_single(tc, dict);
 	delete dict;
 }
@@ -1120,6 +1165,10 @@ test_cpp_wrapper_get_populated_multiple_all(
 	delete dict;
 
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_get_populated_multiple(tc, dict);
+	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_get_populated_multiple(tc, dict);
 	delete dict;
 }
@@ -1179,6 +1228,10 @@ test_cpp_wrapper_get_all_all(
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 160);
 	test_cpp_wrapper_get_all(tc, dict);
 	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 160);
+	test_cpp_wrapper_get_all(tc, dict);
+	delete dict;
 }
 
 /**
@@ -1222,6 +1275,10 @@ test_cpp_wrapper_delete_empty_all(
 	delete dict;
 
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_delete_empty(tc, dict);
+	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_delete_empty(tc, dict);
 	delete dict;
 }
@@ -1271,6 +1328,10 @@ test_cpp_wrapper_delete_nonexist_single_all(
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_delete_nonexist_single(tc, dict);
 	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_delete_nonexist_single(tc, dict);
+	delete dict;
 }
 
 /**
@@ -1315,6 +1376,10 @@ test_cpp_wrapper_delete_nonexist_several_all(
 	delete dict;
 
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_delete_nonexist_several(tc, dict);
+	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_delete_nonexist_several(tc, dict);
 	delete dict;
 }
@@ -1362,6 +1427,10 @@ test_cpp_wrapper_delete_single_all(
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_delete_single(tc, dict);
 	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_delete_single(tc, dict);
+	delete dict;
 }
 
 /**
@@ -1404,6 +1473,10 @@ test_cpp_wrapper_delete_single_several_all(
 	delete dict;
 
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 160);
+	test_cpp_wrapper_delete_single_several(tc, dict);
+	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 160);
 	test_cpp_wrapper_delete_single_several(tc, dict);
 	delete dict;
 }
@@ -1463,6 +1536,10 @@ test_cpp_wrapper_delete_all_all(
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 160);
 	test_cpp_wrapper_delete_all(tc, dict);
 	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 160);
+	test_cpp_wrapper_delete_all(tc, dict);
+	delete dict;
 }
 
 /**
@@ -1504,6 +1581,10 @@ test_cpp_wrapper_update_empty_single_all(
 	delete dict;
 
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_update_empty_single(tc, dict);
+	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_update_empty_single(tc, dict);
 	delete dict;
 }
@@ -1552,6 +1633,10 @@ test_cpp_wrapper_update_nonexist_single_all(
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_update_nonexist_single(tc, dict);
 	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_update_nonexist_single(tc, dict);
+	delete dict;
 }
 
 /**
@@ -1595,6 +1680,10 @@ test_cpp_wrapper_update_nonexist_in_many_all(
 	delete dict;
 
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_update_nonexist_in_many(tc, dict);
+	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_update_nonexist_in_many(tc, dict);
 	delete dict;
 }
@@ -1642,6 +1731,10 @@ test_cpp_wrapper_update_exist_single_all(
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_update_exist_single(tc, dict);
 	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_update_exist_single(tc, dict);
+	delete dict;
 }
 
 /**
@@ -1684,6 +1777,10 @@ test_cpp_wrapper_update_exist_in_many_all(
 	delete dict;
 
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+	test_cpp_wrapper_update_exist_in_many(tc, dict);
+	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
 	test_cpp_wrapper_update_exist_in_many(tc, dict);
 	delete dict;
 }
@@ -1743,6 +1840,10 @@ test_cpp_wrapper_update_all_all(
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 160);
 	test_cpp_wrapper_update_all(tc, dict);
 	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 160);
+	test_cpp_wrapper_update_all(tc, dict);
+	delete dict;
 }
 
 /**
@@ -1791,6 +1892,10 @@ test_cpp_wrapper_delete_then_insert_all(
 	delete dict;
 
 	dict = new OpenAddressFileHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 160);
+	test_cpp_wrapper_delete_then_insert(tc, dict);
+	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 160);
 	test_cpp_wrapper_delete_then_insert(tc, dict);
 	delete dict;
 }
@@ -2484,6 +2589,10 @@ test_cpp_wrapper_open_close_all(
 	dict = new SkipList<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	cpp_wrapper_open_close(tc, dict, 1, 13);
 	delete dict;
+
+	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	cpp_wrapper_open_close(tc, dict, 2, 22);
+	delete dict;
 }
 
 /**
@@ -2569,6 +2678,10 @@ test_master_table_dictionary_create_delete_all(
 	dictionary = new SkipList<int, int>(1, key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
 	test_master_table_dictionary_create_delete(tc, dictionary, 7, dictionary_type_skip_list_t);
+
+	dictionary = new LinearHash<int, int>(1, key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	test_master_table_dictionary_create_delete(tc, dictionary, 7, dictionary_type_linear_hash_t);
 }
 
 /**
@@ -2630,6 +2743,10 @@ test_master_table_dictionary_open_close_all(
 	dictionary = new SkipList<int, int>(1, key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
 	test_master_table_dictionary_open_close(tc, dictionary, 7, dictionary_type_skip_list_t);
+
+	dictionary = new LinearHash<int, int>(1, key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	test_master_table_dictionary_open_close(tc, dictionary, 7, dictionary_type_linear_hash_t);
 }
 
 /**
@@ -2786,6 +2903,16 @@ test_master_table_all(
 	dictionary2		= new SkipList<int, int>(2, key_type_numeric_signed, sizeof(short), 7, 14);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
 	test_master_table(tc, master_table, dictionary, dictionary2, dictionary_type_skip_list_t);
+	delete dictionary;
+	delete dictionary2;
+	delete master_table;
+
+	master_table	= new MasterTable();
+	dictionary		= new LinearHash<int, int>(1, key_type_numeric_signed, sizeof(int), 10, 20);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	dictionary2		= new LinearHash<int, int>(2, key_type_numeric_signed, sizeof(short), 7, 14);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	test_master_table(tc, master_table, dictionary, dictionary2, dictionary_type_linear_hash_t);
 	delete dictionary;
 	delete dictionary2;
 	delete master_table;
