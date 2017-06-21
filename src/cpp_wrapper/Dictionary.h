@@ -39,7 +39,6 @@
 #define PROJECT_CPP_DICTIONARY_H
 
 #include "../dictionary/dictionary.h"
-#include "../dictionary/flat_file/flat_file_dictionary_handler.h"
 #include "../dictionary/dictionary_types.h"
 #include "../key_value/kv_system.h"
 

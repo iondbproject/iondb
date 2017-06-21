@@ -90,14 +90,9 @@ linear_hash_create_dictionary(
 	ion_dictionary_handler_t	*handler,
 	ion_dictionary_t			*dictionary
 ) {
-	/* UNUSED(id); */
 	int initial_size, split_threshold, records_per_bucket;
 
 	dictionary->instance = malloc(sizeof(linear_hash_table_t));
-
-	if (NULL == dictionary->instance) {
-		return err_out_of_memory;
-	}
 
 	if (NULL == dictionary->instance) {
 		return err_out_of_memory;
@@ -112,7 +107,7 @@ linear_hash_create_dictionary(
 	/* TODO Should we handle the possible error code returned by this? If yes, what sorts of errors does it return? */
 	ion_err_t result = linear_hash_init(id, dictionary_size, key_type, key_size, value_size, initial_size, split_threshold, records_per_bucket, (linear_hash_table_t *) dictionary->instance);
 
-	if (err_ok == result) {
+	if ((err_ok == result) && (NULL != handler)) {
 		dictionary->handler			= handler;
 		dictionary->instance->type	= dictionary_type_linear_hash_t;
 	}

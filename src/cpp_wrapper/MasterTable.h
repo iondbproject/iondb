@@ -18,6 +18,7 @@
 #include "OpenAddressFileHash.h"
 #include "OpenAddressHash.h"
 #include "SkipList.h"
+#include "LinearHash.h"
 
 class MasterTable {
 public:
@@ -425,7 +426,12 @@ initializeDictionary(
 		}
 
 		case dictionary_type_linear_hash_t: {
-			/* To be implemented here */
+			dictionary = new LinearHash<K, V>(id, key_type, key_size, value_size, dictionary_size);
+
+			if (err_ok != dictionary->last_status.error) {
+				return dictionary->last_status.error;
+			}
+
 			break;
 		}
 

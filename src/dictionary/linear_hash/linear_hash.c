@@ -210,7 +210,7 @@ linear_hash_write_state(
 
 /**
 @brief		Read the state of a linear hash from a .lhs file.
-@details	Each instace of a linear hash has an associated .lhs file which stores its state in non-volatile storage. The name of a linear hash's .lhs file is the id of linear hash in the master table. This is the file the state is read from.
+@details	Each instance of a linear hash has an associated .lhs file which stores its state in non-volatile storage. The name of a linear hash's .lhs file is the id of linear hash in the master table. This is the file the state is read from.
 @param[in]	linear_hash
 				Pointer to a linear hash instance to read the data to.
 @return		Resulting status of the several file operations used to commit the write.
