@@ -187,8 +187,8 @@ master_table_close_dictionary(
 ) {
 	ion_err_t err = master_table->closeDictionary(dictionary);
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_closed, dictionary->dict.status);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_closed, dictionary->dict.status);
 }
 
 /**
@@ -2659,6 +2659,10 @@ test_master_table(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, id);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, ion_master_table_next_id);
 
+	/* Close dictionary before closing master table */
+
+	master_table_close_dictionary(tc, master_table, dictionary);
+
 	/***************/
 
 	/* Test close */
@@ -2666,11 +2670,14 @@ test_master_table(
 
 	/**************/
 
-	/* Test re-open */
+	/* Test re-open master table */
 	master_table_init(tc, master_table);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, ion_master_table_next_id);
 
 	/****************/
+
+	/* Test re-open dictionary */
+	master_table_open_dictionary(tc, master_table, dictionary, 1);
 
 	/* Test lookup 1st dictionary */
 	ion_dictionary_config_info_t config;

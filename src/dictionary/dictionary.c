@@ -448,10 +448,6 @@ dictionary_close(
 		dictionary->status = ion_dictionary_status_closed;
 	}
 
-	if (err_ok != error) {
-		printf("ERROR: %u\n", error);
-	}
-
 	return error;
 }
 

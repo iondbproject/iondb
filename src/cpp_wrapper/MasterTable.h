@@ -308,9 +308,15 @@ openDictionary(
 		return err_uninitialized;
 	}
 
-	ion_switch_handler(config.dictionary_type, &handler);
+	err = ion_switch_handler(config.dictionary_type, &handler);
 
-	err = dictionary->open(config);
+	if (err_ok != err) {
+		return err;
+	}
+
+	dictionary->dict.handler	= &handler;
+
+	err							= dictionary->open(config);
 
 	return err;
 }

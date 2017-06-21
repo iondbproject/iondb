@@ -1,7 +1,8 @@
 /******************************************************************************/
 /**
 @file		ion_master_table.c
-@author		Eric Huang, Graeme Douglas, Scott Fazackerley, Wade Penson
+@author		Eric Huang, Graeme Douglas, Scott Fazackerley, Wade Penson,
+			Dana Klamut
 @brief		Master table handling.
 @copyright	Copyright 2017
 			The University of British Columbia,
@@ -244,9 +245,25 @@ ion_err_t
 ion_close_master_table(
 	void
 ) {
-	ion_err_t					err;
-	ion_dictionary_handler_t	handler;
-	ion_dictionary_t			dict;
+	if (NULL != ion_master_table_file) {
+		if (0 != fclose(ion_master_table_file)) {
+			return err_file_close_error;
+		}
+	}
+
+	ion_master_table_file = NULL;
+
+	return err_ok;
+}
+
+ion_err_t
+ion_close_all_master_table(
+	void
+) {
+	ion_err_t						err;
+	ion_dictionary_handler_t		handler;
+	ion_dictionary_t				dict;
+	ion_dictionary_config_info_t	config;
 
 	ion_dictionary_id_t id = ion_master_table_next_id;
 
@@ -254,16 +271,27 @@ ion_close_master_table(
 		id--;
 
 		while (id > 0) {
-			err = ion_open_dictionary(&handler, &dict, id);
+			err = ion_lookup_in_master_table(id, &config);
 
-			if (err_ok != err) {
-				/* Dictionary not found, continue search. */
-				if (err_uninitialized != err) {
+			/* Dictionary corresponding to ID has been found. */
+			if (err_ok == err) {
+				err = ion_switch_handler(config.dictionary_type, &handler);
+
+				if (err_ok != err) {
 					return err;
 				}
-			}
-			else {
-				err = ion_close_dictionary(&dict);
+
+				dict.handler	= &handler;
+
+				/* Initialize dictionary instance. */
+				err				= dictionary_open(&handler, &dict, &config);
+
+				if (err_ok != err) {
+					return err;
+				}
+
+				/* Close the dictionary instance. */
+				err = dictionary_close(&dict);
 
 				if (err_ok != err) {
 					return err;
@@ -451,6 +479,7 @@ ion_open_dictionary(
 	ion_switch_handler(config.dictionary_type, handler);
 
 	err = dictionary_open(handler, dictionary, &config);
+
 	return err;
 }
 
@@ -461,7 +490,6 @@ ion_close_dictionary(
 	ion_err_t err;
 
 	err = dictionary_close(dictionary);
-
 	return err;
 }
 

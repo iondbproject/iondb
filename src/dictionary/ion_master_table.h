@@ -131,6 +131,14 @@ ion_close_master_table(
 );
 
 /**
+@brief		Closes the master table and every dictionary instance within it.
+*/
+ion_err_t
+ion_close_all_master_table(
+	void
+);
+
+/**
 @brief		Deletes the master table.
 */
 ion_err_t

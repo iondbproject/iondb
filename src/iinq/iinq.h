@@ -126,7 +126,7 @@ iinq_delete(
 
 ion_err_t
 iinq_drop(
-	char *schema_file_name
+		char *schema_file_name
 );
 
 #define CREATE_DICTIONARY(schema_name, key_type, key_size, value_size) \

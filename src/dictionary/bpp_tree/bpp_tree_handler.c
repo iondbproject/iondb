@@ -132,7 +132,6 @@ bpptree_create_dictionary(
 	dictionary->instance->record.key_size	= key_size;
 	dictionary->instance->record.value_size = value_size;
 	dictionary->instance->type				= dictionary_type_bpp_tree_t;
-	dictionary->instance->id				= id;
 	dictionary->handler						= handler;
 
 	return err_ok;
