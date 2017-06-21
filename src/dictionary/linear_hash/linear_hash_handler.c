@@ -45,6 +45,7 @@ linear_hash_dict_init(
 	handler->create_dictionary	= linear_hash_create_dictionary;
 	handler->remove				= linear_hash_dict_delete;
 	handler->delete_dictionary	= linear_hash_delete_dictionary;
+	handler->destroy_dictionary = linear_hash_destroy_dictionary;
 	handler->update				= linear_hash_dict_update;
 	/* handler->find				= linear_hash_dict_find; */
 	handler->close_dictionary	= linear_hash_close_dictionary;
@@ -112,7 +113,8 @@ linear_hash_create_dictionary(
 	ion_err_t result = linear_hash_init(id, dictionary_size, key_type, key_size, value_size, initial_size, split_threshold, records_per_bucket, (linear_hash_table_t *) dictionary->instance);
 
 	if (err_ok == result) {
-		dictionary->handler = handler;
+		dictionary->handler			= handler;
+		dictionary->instance->type	= dictionary_type_linear_hash_t;
 	}
 
 	return result;
@@ -124,6 +126,27 @@ linear_hash_dict_delete(
 	ion_key_t			key
 ) {
 	return linear_hash_delete(key, (linear_hash_table_t *) dictionary->instance);
+}
+
+ion_err_t
+linear_hash_destroy_dictionary(
+	ion_dictionary_id_t id
+) {
+	char filename[ION_MAX_FILENAME_LENGTH];
+
+	dictionary_get_filename(id, "lhs", filename);
+
+	if (0 != fremove(filename)) {
+		return err_file_delete_error;
+	}
+
+	dictionary_get_filename(id, "lhd", filename);
+
+	if (0 != fremove(filename)) {
+		return err_file_delete_error;
+	}
+
+	return err_ok;
 }
 
 ion_err_t

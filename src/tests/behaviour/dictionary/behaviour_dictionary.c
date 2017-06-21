@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		behaviour_dictionnary.c
+@file		behaviour_dictionary.c
 @author		Eric Huang
 @brief		Behaviour tests for all dictionary implementations.
 @details	The behaviour tests represent a "black box" approach to the

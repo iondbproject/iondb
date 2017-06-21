@@ -41,6 +41,7 @@
 #include "open_address_file_hash/open_address_file_hash_dictionary_handler.h"
 #include "open_address_hash/open_address_hash_dictionary_handler.h"
 #include "skip_list/skip_list_handler.h"
+#include "linear_hash/linear_hash_handler.h"
 
 FILE				*ion_master_table_file		= NULL;
 ion_dictionary_id_t ion_master_table_next_id	= 1;
@@ -562,6 +563,11 @@ ion_switch_handler(
 
 		case dictionary_type_skip_list_t: {
 			sldict_init(handler);
+			break;
+		}
+
+		case dictionary_type_linear_hash_t: {
+			linear_hash_dict_init(handler);
 			break;
 		}
 

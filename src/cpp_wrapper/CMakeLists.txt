@@ -10,4 +10,5 @@ target_link_libraries(
 		flat_file
 		open_address_file_hash
 		open_address_hash
-		skip_list)
+		skip_list
+		linear_hash)

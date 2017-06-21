@@ -424,6 +424,11 @@ initializeDictionary(
 			break;
 		}
 
+		case dictionary_type_linear_hash_t: {
+			/* To be implemented here */
+			break;
+		}
+
 		case dictionary_type_error_t: {
 			return err_uninitialized;
 		}

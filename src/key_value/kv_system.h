@@ -145,6 +145,8 @@ typedef enum ION_DICTIONARY_TYPE {
 	dictionary_type_open_address_hash_t,
 	/**> Dictionary type is a Skip List implementation. */
 	dictionary_type_skip_list_t,
+	/**> Dictionary type is a Linear Hash implementation. */
+	dictionary_type_linear_hash_t,
 	/**> Dictionary type is not initialized. */
 	dictionary_type_error_t
 } ion_dictionary_type_t;
