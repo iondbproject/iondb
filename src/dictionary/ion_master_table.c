@@ -47,10 +47,6 @@
 FILE				*ion_master_table_file		= NULL;
 ion_dictionary_id_t ion_master_table_next_id	= 1;
 
-#define ION_MASTER_TABLE_CALCULATE_POS	-1
-#define ION_MASTER_TABLE_WRITE_FROM_END -2
-#define ION_MASTER_TABLE_RECORD_SIZE(cp) (sizeof((cp)->id) + sizeof((cp)->use_type) + sizeof((cp)->type) + sizeof((cp)->key_size) + sizeof((cp)->value_size) + sizeof((cp)->dictionary_size) + sizeof((cp)->dictionary_type) + sizeof((cp)->dictionary_status))
-
 ion_err_t
 ion_master_table_write(
 	ion_dictionary_config_info_t	*config,

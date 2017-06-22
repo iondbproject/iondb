@@ -55,6 +55,10 @@ extern "C" {
 #include "../file/sd_stdio_c_iface.h"
 #include "../file/kv_stdio_intercept.h"
 
+#define ION_MASTER_TABLE_CALCULATE_POS	-1
+#define ION_MASTER_TABLE_WRITE_FROM_END -2
+#define ION_MASTER_TABLE_RECORD_SIZE(cp) (sizeof((cp)->id) + sizeof((cp)->use_type) + sizeof((cp)->type) + sizeof((cp)->key_size) + sizeof((cp)->value_size) + sizeof((cp)->dictionary_size) + sizeof((cp)->dictionary_type) + sizeof((cp)->dictionary_status))
+
 #if ION_USING_MASTER_TABLE
 
 /**

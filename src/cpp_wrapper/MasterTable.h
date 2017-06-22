@@ -11,7 +11,6 @@
 #define PROJECT_CPP_MASTERTABLE_H
 
 #include "../dictionary/ion_master_table.h"
-#include "../dictionary/ion_master_table.c"
 #include "Dictionary.h"
 #include "BppTree.h"
 #include "FlatFile.h"
