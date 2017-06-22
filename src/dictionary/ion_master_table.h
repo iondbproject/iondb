@@ -54,6 +54,12 @@ extern "C" {
 #include "dictionary.h"
 #include "../file/sd_stdio_c_iface.h"
 #include "../file/kv_stdio_intercept.h"
+#include "bpp_tree/bpp_tree_handler.h"
+#include "flat_file/flat_file_dictionary_handler.h"
+#include "open_address_file_hash/open_address_file_hash_dictionary_handler.h"
+#include "open_address_hash/open_address_hash_dictionary_handler.h"
+#include "skip_list/skip_list_handler.h"
+#include "linear_hash/linear_hash_handler.h"
 
 #define ION_MASTER_TABLE_CALCULATE_POS	-1
 #define ION_MASTER_TABLE_WRITE_FROM_END -2
