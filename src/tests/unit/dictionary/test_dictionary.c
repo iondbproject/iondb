@@ -211,6 +211,12 @@ test_dictionary_master_table(
 	/***************/
 
 	/* Test close */
+	err = ion_close_dictionary(&dictionary);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+
+	err = ion_open_dictionary(&handler, &dictionary, 1);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+
 	err = ion_close_master_table();
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);

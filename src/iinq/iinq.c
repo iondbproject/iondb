@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		iinq.c
-@author		Dana Klamut
+@author		IonDB Project
 @brief		This code contains definitions for iinq functions
 @copyright	Copyright 2017
 			The University of British Columbia,

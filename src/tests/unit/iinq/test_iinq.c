@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		test_iinq.c
-@author		Dana Klamut
+@author		IonDB Project
 @brief		iinq tests.
 @copyright	Copyright 2017
 			The University of British Columbia,
@@ -288,4 +288,14 @@ run_all_tests_iinq(
 	planck_unit_destroy_suite(suite);
 
 	fremove(ION_MASTER_TABLE_FILENAME);
+	fremove("1.bpt");
+	fremove("1.val");
+	fremove("2.bpt");
+	fremove("2.val");
+	fremove("3.bpt");
+	fremove("3.val");
+	fremove("4.bpt");
+	fremove("4.val");
+	fremove("5.bpt");
+	fremove("5.val");
 }

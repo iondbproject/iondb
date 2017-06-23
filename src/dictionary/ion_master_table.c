@@ -258,9 +258,7 @@ ion_close_master_table(
 			err = ion_lookup_in_master_table(id, &config);
 
 			/* Dictionary corresponding to ID has been found and dictionary is open. */
-			/* ion_close_master_table() does not currently support the closing
-			   of BppTree dictionary instances. They must be closed separately. */
-			if ((err_ok == err) && (ion_dictionary_status_closed != config.dictionary_status) && (dictionary_type_bpp_tree_t != config.dictionary_type)) {
+			if ((err_ok == err) && (ion_dictionary_status_closed != config.dictionary_status)) {
 				err = ion_switch_handler(config.dictionary_type, &handler);
 
 				if (err_ok != err) {

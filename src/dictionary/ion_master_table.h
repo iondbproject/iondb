@@ -133,8 +133,9 @@ ion_init_master_table(
 );
 
 /**
-@brief		Closes the master table and all dictionary instances within it,
-			except for BppTree instances.
+@brief		Closes the master table and all dictionary instances within it.
+@details	For this method to work properly, all dictionary instances must already
+			be closed or must have been closed previously and are now re-opened.
 */
 ion_err_t
 ion_close_master_table(
