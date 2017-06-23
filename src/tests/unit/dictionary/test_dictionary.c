@@ -35,7 +35,6 @@
 /******************************************************************************/
 
 #include "test_dictionary.h"
-#include "../../../dictionary/bpp_tree/bpp_tree_handler.h"
 
 void
 test_dictionary_compare_numerics(

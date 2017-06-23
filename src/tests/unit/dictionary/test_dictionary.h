@@ -44,7 +44,6 @@
 #include "../../../dictionary/dictionary_types.h"
 #include "./../../../dictionary/dictionary.h"
 #include "./../../../dictionary/ion_master_table.h"
-#include "../../../dictionary/flat_file/flat_file_dictionary_handler.h"
 
 #ifdef  __cplusplus
 extern "C" {
