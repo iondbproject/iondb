@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		test_open_address_file_hash_dictionnary_handler.c
+@file		test_open_address_file_hash_dictionary_handler.c
 @author		Scott Ronald Fazackerley
 @brief		Tests base operations for hash dict
 @copyright	Copyright 2017

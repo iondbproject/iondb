@@ -2,7 +2,7 @@
 /**
 @file		test_dictionary.h
 @author		IonDB Project
-@brief		Entry point for dictionnary tests.
+@brief		Entry point for dictionary tests.
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
