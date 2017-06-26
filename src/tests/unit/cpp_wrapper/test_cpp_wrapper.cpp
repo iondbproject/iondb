@@ -2736,6 +2736,7 @@ test_master_table_dictionary_open_close_all(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
 	test_master_table_dictionary_open_close(tc, dictionary, 7, dictionary_type_skip_list_t);
 
+	/* Uncomment when LinearHash dictionary open memory issue fixed. */
 /*	dictionary = new LinearHash<int, int>(1, key_type_numeric_signed, sizeof(int), sizeof(int), 7); */
 /*	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status); */
 /*	test_master_table_dictionary_open_close(tc, dictionary, 7, dictionary_type_linear_hash_t); */
@@ -2771,25 +2772,27 @@ test_master_table(
 
 	/* Close dictionary before closing master table  or ensure dictionary
 	   instance has been closed previously to initialize it. */
+	/* Remove if-statement when linear hash dictionary open memory issue fixed. */
+	if (dictionary_type_linear_hash_t != dictionary_type) {
+		master_table_close_dictionary(tc, master_table, dictionary);
+		master_table_open_dictionary(tc, master_table, dictionary, id);
 
-	master_table_close_dictionary(tc, master_table, dictionary);
-	master_table_open_dictionary(tc, master_table, dictionary, id);
+		/***************/
 
-	/***************/
+		/* Test close */
+		master_table_close(tc, master_table);
 
-	/* Test close */
-	master_table_close(tc, master_table);
+		/**************/
 
-	/**************/
+		/* Test re-open master table */
+		master_table_init(tc, master_table);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, ion_master_table_next_id);
 
-	/* Test re-open master table */
-	master_table_init(tc, master_table);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, ion_master_table_next_id);
+		/****************/
 
-	/****************/
-
-	/* Test re-open dictionary */
-	master_table_open_dictionary(tc, master_table, dictionary, 1);
+		/* Test re-open dictionary */
+		master_table_open_dictionary(tc, master_table, dictionary, 1);
+	}
 
 	/* Test lookup 1st dictionary */
 	ion_dictionary_config_info_t config;
@@ -2822,13 +2825,16 @@ test_master_table(
 
 	/***********************************/
 
-	/* Test close dictionary */
+	/* Remove if-statement when linear hash dictionary open memory issue fixed. */
+	if (dictionary_type_linear_hash_t != dictionary_type) {
+		/* Test close dictionary */
 
-	master_table_close_dictionary(tc, master_table, dictionary2);
+		master_table_close_dictionary(tc, master_table, dictionary2);
 
-	/* Test open dictionary */
+		/* Test open dictionary */
 
-	master_table_open_dictionary(tc, master_table, dictionary2, id2);
+		master_table_open_dictionary(tc, master_table, dictionary2, id2);
+	}
 
 	/* Test delete dictionary */
 
@@ -2892,13 +2898,13 @@ test_master_table_all(
 	delete dictionary;
 	delete dictionary2;
 
-/*	dictionary		= new LinearHash<int, int>(1, key_type_numeric_signed, sizeof(int), 10, 20); */
-/*	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status); */
-/*	dictionary2		= new LinearHash<int, int>(2, key_type_numeric_signed, sizeof(short), 7, 14); */
-/*	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status); */
-/*	test_master_table(tc, dictionary, dictionary2, dictionary_type_linear_hash_t); */
-/*	delete dictionary; */
-/*	delete dictionary2; */
+	dictionary	= new LinearHash<int, int>(1, key_type_numeric_signed, sizeof(int), 10, 20);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	dictionary2 = new LinearHash<int, int>(2, key_type_numeric_signed, sizeof(short), 7, 14);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	test_master_table(tc, dictionary, dictionary2, dictionary_type_linear_hash_t);
+	delete dictionary;
+	delete dictionary2;
 }
 
 /**
