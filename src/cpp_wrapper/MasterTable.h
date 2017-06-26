@@ -226,63 +226,6 @@ deleteFromMasterTable(
 }
 
 /**
-@brief		Deletes a dictionary instance and erases it from the master table.
-@param		dictionary
-				A pointer to an allocated dictionary object, which will be
-				deleted.
-@param		id
-				The identifier identifying the dictionary metadata in the
-				master table.
-@returns	An error code describing the result of the operation.
-*/
-template<typename K, typename V>
-ion_err_t
-deleteDictionary(
-	Dictionary<K, V>	*dictionary,
-	ion_dictionary_id_t id
-) {
-	ion_err_t				err;
-	ion_dictionary_type_t	type;
-
-	if (ion_dictionary_status_closed != dictionary->dict.status) {
-		id	= dictionary->dict.instance->id;
-
-		err = dictionary->deleteDictionary();
-
-		if (err_ok != err) {
-			return err_dictionary_destruction_error;
-		}
-
-		err = ion_delete_from_master_table(id);
-	}
-	else {
-		type = ion_get_dictionary_type(id);
-
-		if (dictionary_type_error_t == type) {
-			return err_dictionary_destruction_error;
-		}
-
-		ion_dictionary_handler_t handler;
-
-		ion_switch_handler(type, &handler);
-
-		err = dictionary_destroy_dictionary(&handler, id);
-
-		if (err_not_implemented == err) {
-			err = ffdict_destroy_dictionary(id);
-		}
-
-		if (err_ok != err) {
-			return err;
-		}
-
-		err = ion_delete_from_master_table(id);
-	}
-
-	return err;
-}
-
-/**
 @brief		Finds the target dictionary and opens it.
 @param		dictionary
 				A pointer to an allocated dictionary object, which will be
@@ -351,6 +294,10 @@ closeDictionary(
 @param		key_type
 				The type of key to be used with this dictionary, which
 				determines the key comparison operator.
+@param		k
+				The type of key to be used with this dictionary.
+@param		v
+				The type of value to be used with this dictionary.
 @param		key_size
 				The size of the key type to be used with this dictionary.
 @param		value_size
@@ -363,23 +310,26 @@ closeDictionary(
 @returns	An error code describing the result of the operation.
 */
 template<typename K, typename V>
-ion_err_t
+Dictionary<K, V> *
 initializeDictionary(
-	Dictionary<K, V>		*dictionary,
-	ion_dictionary_id_t id,
-	ion_key_type_t key_type,
-	ion_key_size_t key_size,
-	ion_value_size_t value_size,
-	ion_dictionary_size_t dictionary_size,
-	ion_dictionary_type_t dictionary_type
+	ion_key_type_t			key_type,
+	K						k,
+	V						v,
+	ion_key_size_t			key_size,
+	ion_value_size_t		value_size,
+	ion_dictionary_size_t	dictionary_size,
+	ion_dictionary_type_t	dictionary_type
 ) {
+	UNUSED(k);
+	UNUSED(v);
+
+	Dictionary<K, V> *dictionary;
+
+	ion_dictionary_id_t id = ion_master_table_next_id;
+
 	switch (dictionary_type) {
 		case dictionary_type_bpp_tree_t: {
 			dictionary = new BppTree<K, V>(id, key_type, key_size, value_size);
-
-			if (err_ok != dictionary->last_status.error) {
-				return dictionary->last_status.error;
-			}
 
 			break;
 		}
@@ -387,19 +337,11 @@ initializeDictionary(
 		case dictionary_type_flat_file_t: {
 			dictionary = new FlatFile<K, V>(id, key_type, key_size, value_size, dictionary_size);
 
-			if (err_ok != dictionary->last_status.error) {
-				return dictionary->last_status.error;
-			}
-
 			break;
 		}
 
 		case dictionary_type_open_address_file_hash_t: {
 			dictionary = new OpenAddressFileHash<K, V>(id, key_type, key_size, value_size, dictionary_size);
-
-			if (err_ok != dictionary->last_status.error) {
-				return dictionary->last_status.error;
-			}
 
 			break;
 		}
@@ -407,19 +349,11 @@ initializeDictionary(
 		case dictionary_type_open_address_hash_t: {
 			dictionary = new OpenAddressHash<K, V>(id, key_type, key_size, value_size, dictionary_size);
 
-			if (err_ok != dictionary->last_status.error) {
-				return dictionary->last_status.error;
-			}
-
 			break;
 		}
 
 		case dictionary_type_skip_list_t: {
 			dictionary = new SkipList<K, V>(id, key_type, key_size, value_size, dictionary_size);
-
-			if (err_ok != dictionary->last_status.error) {
-				return dictionary->last_status.error;
-			}
 
 			break;
 		}
@@ -427,21 +361,34 @@ initializeDictionary(
 		case dictionary_type_linear_hash_t: {
 			dictionary = new LinearHash<K, V>(id, key_type, key_size, value_size, dictionary_size);
 
-			if (err_ok != dictionary->last_status.error) {
-				return dictionary->last_status.error;
-			}
-
 			break;
 		}
 
 		case dictionary_type_error_t: {
-			return err_uninitialized;
+			dictionary				= new SkipList<K, V>(id, key_type, key_size, value_size, dictionary_size);
+			dictionary->dict.status = ion_dictionary_status_error;
+			break;
 		}
 	}
 
-	UNUSED(dictionary);
-	return err_ok;
+	if ((dictionary_type != dictionary_type_error_t) && (ion_dictionary_status_error != dictionary->dict.status)) {
+		addToMasterTable(dictionary, dictionary_size);
+	}
+
+	return dictionary;
 }
+
+template<typename K, typename V>
+ion_err_t
+deleteDictionary(
+	Dictionary<K, V>		*dictionary
+) {
+	ion_dictionary_id_t id = dictionary->dict.instance->id;
+
+	delete dictionary;
+
+	return ion_delete_from_master_table(id);
+};
 };
 
 #endif /* PROJECT_CPP_MASTERTABLE_H */

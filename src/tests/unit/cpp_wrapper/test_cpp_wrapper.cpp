@@ -185,21 +185,6 @@ master_table_close_dictionary(
 }
 
 /**
-@brief	This function deletes a dictionary using the master table.
-*/
-void
-master_table_delete_dictionary(
-	planck_unit_test_t *tc,
-	MasterTable *master_table,
-	Dictionary<int, int>	*dictionary,
-	ion_dictionary_id_t id
-) {
-	ion_err_t err = master_table->deleteDictionary(dictionary, id);
-
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
-}
-
-/**
 @brief	This function looks up a dictionary in the master table using the
 		dictionary's ID and configurations.
 */
@@ -230,6 +215,55 @@ master_table_lookup_dictionary(
 	else {
 		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_item_not_found, err);
 	}
+}
+
+/**
+@brief	This function creates a dictionary using the master table.
+*/
+void
+master_table_create_dictionary(
+	planck_unit_test_t *tc,
+	MasterTable *master_table,
+	Dictionary<int, int>	*dictionary,
+	ion_dictionary_id_t id,
+	ion_key_type_t key_type,
+	ion_key_size_t key_size,
+	ion_value_size_t value_size,
+	ion_dictionary_size_t dictionary_size,
+	ion_dictionary_type_t dictionary_type
+) {
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, id, dictionary->dict.instance->id);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, key_type, dictionary->dict.instance->key_type);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, key_size, dictionary->dict.instance->record.key_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, value_size, dictionary->dict.instance->record.value_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, dictionary_size, dictionary->dict_size);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, dictionary_type, dictionary->dict.instance->type);
+
+	ion_dictionary_config_info_t config;
+
+	master_table_lookup_dictionary(tc, master_table, id, key_type, key_size, value_size, dictionary_size, dictionary_type, &config, boolean_true);
+}
+
+/**
+@brief	This function deletes a dictionary using the master table.
+*/
+void
+master_table_delete_dictionary(
+	planck_unit_test_t *tc,
+	MasterTable *master_table,
+	Dictionary<int, int>	*dictionary
+) {
+	ion_dictionary_id_t id	= dictionary->dict.instance->id;
+
+	ion_err_t err			= master_table->deleteDictionary(dictionary);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+
+	ion_dictionary_config_info_t config;
+
+	err = master_table->lookupMasterTable(id, &config);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_item_not_found, err);
 }
 
 /**
@@ -2646,7 +2680,7 @@ test_master_table_dictionary_create_delete(
 		dictionary implementations.
 */
 void
-test_master_table_dictionary_create_delete_all(
+test_master_table_dictionary_create_delete_all_1(
 	planck_unit_test_t *tc
 ) {
 	Dictionary<int, int> *dictionary;
@@ -2674,6 +2708,52 @@ test_master_table_dictionary_create_delete_all(
 	dictionary = new LinearHash<int, int>(1, key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
 	test_master_table_dictionary_create_delete(tc, dictionary, 7, dictionary_type_linear_hash_t);
+}
+
+/**
+@brief	This function tests creating and deleting a dictionary using the master table.
+*/
+void
+test_master_table_dictionary_create_delete(
+	planck_unit_test_t		*tc,
+	ion_dictionary_size_t	dictionary_size,
+	ion_dictionary_type_t	dictionary_type
+) {
+	MasterTable *master_table = new MasterTable();
+
+	master_table_setup(tc, master_table);
+	master_table_init(tc, master_table);
+
+	Dictionary<int, int> *dictionary;
+
+	int type = 0;
+
+	dictionary = master_table->initializeDictionary(key_type_numeric_signed, type, type, sizeof(int), sizeof(int), dictionary_size, dictionary_type);
+	master_table_create_dictionary(tc, master_table, dictionary, 1, key_type_numeric_signed, sizeof(int), sizeof(int), dictionary_size, dictionary_type);
+	master_table_delete_dictionary(tc, master_table, dictionary);
+
+	delete master_table;
+}
+
+/**
+@brief Tests creating and deleting a dictionary using the master table on all
+		dictionary implementations created using the master table.
+*/
+void
+test_master_table_dictionary_create_delete_all_2(
+	planck_unit_test_t *tc
+) {
+	test_master_table_dictionary_create_delete(tc, 0, dictionary_type_bpp_tree_t);
+
+	test_master_table_dictionary_create_delete(tc, 30, dictionary_type_flat_file_t);
+
+	test_master_table_dictionary_create_delete(tc, 50, dictionary_type_open_address_hash_t);
+
+	test_master_table_dictionary_create_delete(tc, 50, dictionary_type_open_address_file_hash_t);
+
+	test_master_table_dictionary_create_delete(tc, 7, dictionary_type_skip_list_t);
+
+	test_master_table_dictionary_create_delete(tc, 7, dictionary_type_linear_hash_t);
 }
 
 /**
@@ -2711,7 +2791,7 @@ test_master_table_dictionary_open_close(
 		dictionary implementations.
 */
 void
-test_master_table_dictionary_open_close_all(
+test_master_table_dictionary_open_close_all_1(
 	planck_unit_test_t *tc
 ) {
 	Dictionary<int, int> *dictionary;
@@ -2740,6 +2820,61 @@ test_master_table_dictionary_open_close_all(
 /*	dictionary = new LinearHash<int, int>(1, key_type_numeric_signed, sizeof(int), sizeof(int), 7); */
 /*	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status); */
 /*	test_master_table_dictionary_open_close(tc, dictionary, 7, dictionary_type_linear_hash_t); */
+}
+
+/**
+@brief	This function tests opening and closing a dictionary using the master table.
+*/
+void
+test_master_table_dictionary_open_close(
+	planck_unit_test_t		*tc,
+	ion_dictionary_size_t	dictionary_size,
+	ion_dictionary_type_t	dictionary_type
+) {
+	MasterTable *master_table = new MasterTable();
+
+	ion_dictionary_id_t id;
+
+	master_table_setup(tc, master_table);
+	master_table_init(tc, master_table);
+
+	Dictionary<int, int> *dictionary;
+
+	int type = 0;
+
+	dictionary	= master_table->initializeDictionary(key_type_numeric_signed, type, type, sizeof(int), sizeof(int), dictionary_size, dictionary_type);
+	master_table_create_dictionary(tc, master_table, dictionary, 1, key_type_numeric_signed, sizeof(int), sizeof(int), dictionary_size, dictionary_type);
+
+	id			= dictionary->dict.instance->id;
+
+	master_table_close_dictionary(tc, master_table, dictionary);
+	master_table_open_dictionary(tc, master_table, dictionary, id);
+
+	master_table_delete_dictionary(tc, master_table, dictionary);
+
+	delete master_table;
+}
+
+/**
+@brief Tests opening and closing a dictionary using the master table on all
+		dictionary implementations created using the master table.
+*/
+void
+test_master_table_dictionary_open_close_all_2(
+	planck_unit_test_t *tc
+) {
+	test_master_table_dictionary_open_close(tc, 0, dictionary_type_bpp_tree_t);
+
+	test_master_table_dictionary_open_close(tc, 30, dictionary_type_flat_file_t);
+
+	test_master_table_dictionary_open_close(tc, 50, dictionary_type_open_address_hash_t);
+
+	test_master_table_dictionary_open_close(tc, 50, dictionary_type_open_address_file_hash_t);
+
+	test_master_table_dictionary_open_close(tc, 7, dictionary_type_skip_list_t);
+
+	/* Uncomment when LinearHash dictionary open memory issue fixed. */
+/*	test_master_table_dictionary_open_close(tc, 7, dictionary_type_linear_hash_t); */
 }
 
 /**
@@ -2852,7 +2987,7 @@ test_master_table(
 @brief Tests all functionality of the master table on all dictionary implementations.
 */
 void
-test_master_table_all(
+test_master_table_all_1(
 	planck_unit_test_t *tc
 ) {
 	Dictionary<int, int>	*dictionary;
@@ -2905,6 +3040,141 @@ test_master_table_all(
 	test_master_table(tc, dictionary, dictionary2, dictionary_type_linear_hash_t);
 	delete dictionary;
 	delete dictionary2;
+}
+
+/**
+@brief Tests all functionality of the master table.
+*/
+void
+test_master_table(
+	planck_unit_test_t		*tc,
+	ion_dictionary_type_t	dictionary_type,
+	ion_dictionary_size_t	dictionary_size_1,
+	ion_dictionary_size_t	dictionary_size_2
+) {
+	MasterTable *master_table = new MasterTable();
+
+	/* Cleanup, just in case */
+	master_table_setup(tc, master_table);
+
+	/* Test init */
+	master_table_init(tc, master_table);
+
+	/*************/
+
+	/* Test create */
+	Dictionary<int, int> *dictionary;
+
+	int type = 0;
+
+	dictionary = master_table->initializeDictionary(key_type_numeric_signed, type, type, sizeof(int), 10, dictionary_size_1, dictionary_type);
+	master_table_create_dictionary(tc, master_table, dictionary, 1, key_type_numeric_signed, sizeof(int), 10, dictionary_size_1, dictionary_type);
+
+	ion_dictionary_id_t id = dictionary->dict.instance->id;
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, id);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, ion_master_table_next_id);
+
+	/* Close dictionary before closing master table  or ensure dictionary
+	   instance has been closed previously to initialize it. */
+	/* Remove if-statement when linear hash dictionary open memory issue fixed. */
+	if (dictionary_type_linear_hash_t != dictionary_type) {
+		master_table_close_dictionary(tc, master_table, dictionary);
+		master_table_open_dictionary(tc, master_table, dictionary, id);
+
+		/***************/
+
+		/* Test close */
+		master_table_close(tc, master_table);
+
+		/**************/
+
+		/* Test re-open master table */
+		master_table_init(tc, master_table);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, ion_master_table_next_id);
+
+		/****************/
+
+		/* Test re-open dictionary */
+		master_table_open_dictionary(tc, master_table, dictionary, 1);
+	}
+
+	/* Test lookup 1st dictionary */
+	ion_dictionary_config_info_t config;
+
+	master_table_lookup_dictionary(tc, master_table, id, key_type_numeric_signed, sizeof(int), 10, dictionary_size_1, dictionary_type, &config, boolean_true);
+
+	/******************************/
+
+	/* Test create 2nd dictionary */
+	Dictionary<int, int> *dictionary2;
+
+	dictionary2 = master_table->initializeDictionary(key_type_numeric_signed, type, type, sizeof(short), 7, dictionary_size_2, dictionary_type);
+	master_table_create_dictionary(tc, master_table, dictionary2, 2, key_type_numeric_signed, sizeof(short), 7, dictionary_size_2, dictionary_type);
+
+	ion_dictionary_id_t id2 = dictionary2->dict.instance->id;
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, id2);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, ion_master_table_next_id);
+	/******************************/
+
+	/* Test 2nd lookup */
+	master_table_lookup_dictionary(tc, master_table, id2, key_type_numeric_signed, sizeof(short), 7, dictionary_size_2, dictionary_type, &config, boolean_true);
+
+	/*******************/
+
+	/* Test delete */
+	master_table_delete_dictionary(tc, master_table, dictionary);
+
+	/***************/
+
+	/* Test lookup on non-existent row */
+	master_table_lookup_dictionary(tc, master_table, id, key_type_numeric_signed, sizeof(int), 10, dictionary_size_1, dictionary_type, &config, boolean_false);
+
+	/***********************************/
+
+	/* Remove if-statement when linear hash dictionary open memory issue fixed. */
+	if (dictionary_type_linear_hash_t != dictionary_type) {
+		/* Test close dictionary */
+
+		master_table_close_dictionary(tc, master_table, dictionary2);
+
+		/* Test open dictionary */
+
+		master_table_open_dictionary(tc, master_table, dictionary2, id2);
+	}
+
+	/* Test delete dictionary */
+
+	master_table_delete_dictionary(tc, master_table, dictionary2);
+
+	/* Test close master table */
+
+	master_table_close(tc, master_table);
+	/**************/
+
+	delete master_table;
+}
+
+/**
+@brief Tests all functionality of the master table on all dictionary implementations
+	   created using the master table.
+*/
+void
+test_master_table_all_2(
+	planck_unit_test_t *tc
+) {
+	test_master_table(tc, dictionary_type_bpp_tree_t, 0, 0);
+
+	test_master_table(tc, dictionary_type_flat_file_t, 20, 14);
+
+	test_master_table(tc, dictionary_type_open_address_hash_t, 20, 14);
+
+	test_master_table(tc, dictionary_type_open_address_file_hash_t, 20, 14);
+
+	test_master_table(tc, dictionary_type_skip_list_t, 20, 14);
+
+	test_master_table(tc, dictionary_type_linear_hash_t, 20, 14);
 }
 
 /**
@@ -2985,9 +3255,12 @@ cpp_wrapper_getsuite_3(
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_open_close);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_delete);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_create_delete_all);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_create_delete_all_1);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_create_delete_all_2);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all_1);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all_2);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_all_1);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_all_2);
 
 	return suite;
 }
