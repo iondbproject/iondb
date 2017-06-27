@@ -78,7 +78,7 @@ master_table_close(
 	planck_unit_test_t	*tc,
 	MasterTable			*master_table
 ) {
-	ion_err_t err = master_table->closeMasterTable();
+	ion_err_t err = master_table->closeAllMasterTable();
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == ion_master_table_file);

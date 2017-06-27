@@ -244,6 +244,21 @@ ion_err_t
 ion_close_master_table(
 	void
 ) {
+	if (NULL != ion_master_table_file) {
+		if (0 != fclose(ion_master_table_file)) {
+			return err_file_close_error;
+		}
+	}
+
+	ion_master_table_file = NULL;
+
+	return err_ok;
+}
+
+ion_err_t
+ion_close_all_master_table(
+	void
+) {
 	ion_err_t						err;
 	ion_dictionary_handler_t		handler;
 	ion_dictionary_t				dict;

@@ -56,6 +56,18 @@ closeMasterTable(
 }
 
 /**
+@brief		Closes the master table and all dictionary instances in it.
+@details	For this method to work properly, all dictionary instances must already
+			be closed or must have been closed previously and are now re-opened.
+@returns	An error code describing the result of the operation.
+*/
+ion_err_t
+closeAllMasterTable(
+) {
+	return ion_close_all_master_table();
+}
+
+/**
 @brief		Deletes the master table.
 @returns	An error code describing the result of the operation.
 */
@@ -106,54 +118,6 @@ ion_dictionary_id_t
 getNextID(
 ) {
 	return ion_master_table_next_id;
-}
-
-/**
-@brief		Creates a dictionary through use of the master table.
-@param		dictionary
-				A pointer to an allocated dictionary object, which will be
-				written into when opened.
-@param		key_type
-				The type of key to be used with this dictionary, which
-				determines the key comparison operator.
-@param		key_size
-				The size of the key type to be used with this dictionary.
-@param		value_size
-				The size of the value type to be used with this dictionary.
-@param		dictionary_size
-				The dictionary implementation specific dictionary size
-				parameter.
-@param		dictionary_type
-				The kind of dictionary instance to be created.
-@returns	An error code describing the result of the operation.
-*/
-template<typename K, typename V>
-ion_err_t
-createDictionary(
-	Dictionary<K, V>		 *dictionary,
-	ion_key_type_t key_type,
-	ion_key_size_t key_size,
-	ion_value_size_t value_size,
-	ion_dictionary_size_t dictionary_size,
-	ion_dictionary_type_t dictionary_type
-) {
-	ion_dictionary_id_t id;
-
-	ion_err_t err = ion_master_table_get_next_id(&id);
-
-	if (err_ok != err) {
-		return err;
-	}
-
-	err = initializeDictionary(dictionary, id, key_type, key_size, value_size, dictionary_size, dictionary_type);
-
-	if (err_ok != err) {
-		return err;
-	}
-
-	err = addToMasterTable(dictionary, dictionary_size);
-
-	return err;
 }
 
 /**
@@ -372,7 +336,11 @@ initializeDictionary(
 	}
 
 	if ((dictionary_type != dictionary_type_error_t) && (ion_dictionary_status_error != dictionary->dict.status)) {
-		addToMasterTable(dictionary, dictionary_size);
+		ion_err_t err = addToMasterTable(dictionary, dictionary_size);
+
+		if (err_ok != err) {
+			dictionary->dict.status = ion_dictionary_status_error;
+		}
 	}
 
 	return dictionary;
