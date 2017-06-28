@@ -980,9 +980,9 @@ test_cpp_wrapper_get_nonexist_single_all(
 	test_cpp_wrapper_get_nonexist_single(tc, dict);
 	delete dict;
 
-	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
-	test_cpp_wrapper_get_nonexist_single(tc, dict);
-	delete dict;
+//	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+//	test_cpp_wrapper_get_nonexist_single(tc, dict);
+//	delete dict;
 }
 
 /**
@@ -1028,9 +1028,9 @@ test_cpp_wrapper_get_nonexist_many_all(
 	test_cpp_wrapper_get_nonexist_many(tc, dict);
 	delete dict;
 
-	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
-	test_cpp_wrapper_get_nonexist_many(tc, dict);
-	delete dict;
+//	dict = new LinearHash<int, int>(0, key_type_numeric_signed, sizeof(int), sizeof(int), 50);
+//	test_cpp_wrapper_get_nonexist_many(tc, dict);
+//	delete dict;
 }
 
 /**
