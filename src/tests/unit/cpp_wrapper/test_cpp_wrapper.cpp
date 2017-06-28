@@ -3229,13 +3229,13 @@ cpp_wrapper_getsuite_4(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_open_close);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_delete);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_create_delete_all_1);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_create_delete_all_2);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all_1);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all_2);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_all_1);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_open_close);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_delete);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_create_delete_all_1);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_create_delete_all_2);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all_1);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all_2);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_all_1);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_all_2);
 
 	return suite;
