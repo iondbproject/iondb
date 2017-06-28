@@ -98,19 +98,6 @@ master_table_setup(
 }
 
 /**
-@brief	This function deletes the master table.
-*/
-void
-master_table_delete(
-	planck_unit_test_t	*tc,
-	MasterTable			*master_table
-) {
-	ion_err_t err = master_table->deleteMasterTable();
-
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
-}
-
-/**
 @brief	This function performs the dictionary initialization using the master table.
 */
 void
