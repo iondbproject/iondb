@@ -2897,7 +2897,6 @@ test_master_table(
 	/* Remove if-statement when linear hash dictionary open memory issue fixed. */
 	if (dictionary_type_linear_hash_t != dictionary_type) {
 		master_table_close_dictionary(tc, master_table, dictionary);
-		master_table_open_dictionary(tc, master_table, dictionary, id);
 
 		/***************/
 
@@ -2946,17 +2945,6 @@ test_master_table(
 	master_table_lookup_dictionary(tc, master_table, id, key_type_numeric_signed, sizeof(int), 10, 20, dictionary_type, &config, boolean_false);
 
 	/***********************************/
-
-	/* Remove if-statement when linear hash dictionary open memory issue fixed. */
-	if (dictionary_type_linear_hash_t != dictionary_type) {
-		/* Test close dictionary */
-
-		master_table_close_dictionary(tc, master_table, dictionary2);
-
-		/* Test open dictionary */
-
-		master_table_open_dictionary(tc, master_table, dictionary2, id2);
-	}
 
 	/* Test delete dictionary */
 
@@ -3119,17 +3107,6 @@ test_master_table(
 
 	/***********************************/
 
-	/* Remove if-statement when linear hash dictionary open memory issue fixed. */
-	if (dictionary_type_linear_hash_t != dictionary_type) {
-		/* Test close dictionary */
-
-		master_table_close_dictionary(tc, master_table, dictionary2);
-
-		/* Test open dictionary */
-
-		master_table_open_dictionary(tc, master_table, dictionary2, id2);
-	}
-
 	/* Test delete dictionary */
 
 	master_table_delete_dictionary(tc, master_table, dictionary2);
@@ -3272,20 +3249,20 @@ runalltests_cpp_wrapper(
 ) {
 	fdeleteall();
 
-	planck_unit_suite_t *suite1 = cpp_wrapper_getsuite_1();
-
-	planck_unit_run_suite(suite1);
-	planck_unit_destroy_suite(suite1);
-
-	planck_unit_suite_t *suite2 = cpp_wrapper_getsuite_2();
-
-	planck_unit_run_suite(suite2);
-	planck_unit_destroy_suite(suite2);
-
-	planck_unit_suite_t *suite3 = cpp_wrapper_getsuite_3();
-
-	planck_unit_run_suite(suite3);
-	planck_unit_destroy_suite(suite3);
+//	planck_unit_suite_t *suite1 = cpp_wrapper_getsuite_1();
+//
+//	planck_unit_run_suite(suite1);
+//	planck_unit_destroy_suite(suite1);
+//
+//	planck_unit_suite_t *suite2 = cpp_wrapper_getsuite_2();
+//
+//	planck_unit_run_suite(suite2);
+//	planck_unit_destroy_suite(suite2);
+//
+//	planck_unit_suite_t *suite3 = cpp_wrapper_getsuite_3();
+//
+//	planck_unit_run_suite(suite3);
+//	planck_unit_destroy_suite(suite3);
 
 	planck_unit_suite_t *suite4 = cpp_wrapper_getsuite_4();
 
