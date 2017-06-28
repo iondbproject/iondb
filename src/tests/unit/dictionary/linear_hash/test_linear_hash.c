@@ -50,7 +50,7 @@ test_linear_hash_create(
 	ion_value_size_t		value_size,
 	ion_dictionary_size_t	dictionary_size
 ) {
-	/* TODO create and desetroy a linear_hash in every file */
+	/* TODO create and destroy a linear_hash in every file */
 
 	int			initial_size		= 2;
 	int			split_threshold		= 85;
@@ -473,7 +473,7 @@ test_linear_hash_create_destroy(
 }
 
 planck_unit_suite_t *
-linear_hash_getsuite(
+linear_hash_getsuite_1(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
@@ -481,6 +481,14 @@ linear_hash_getsuite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_basic_operations);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_bucket_map_head_updates);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_increment_buckets);
+	return suite;
+}
+
+planck_unit_suite_t *
+linear_hash_getsuite_2(
+) {
+	planck_unit_suite_t *suite = planck_unit_new_suite();
+
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_correct_hash_function);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_correct_bucket_after_split);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_global_record_increments_decrements);
@@ -491,8 +499,13 @@ linear_hash_getsuite(
 void
 runalltests_linear_hash(
 ) {
-	planck_unit_suite_t *suite = linear_hash_getsuite();
+	planck_unit_suite_t *suite1 = linear_hash_getsuite_1();
 
-	planck_unit_run_suite(suite);
-	planck_unit_destroy_suite(suite);
+	planck_unit_run_suite(suite1);
+	planck_unit_destroy_suite(suite1);
+
+	planck_unit_suite_t *suite2 = linear_hash_getsuite_2();
+
+	planck_unit_run_suite(suite2);
+	planck_unit_destroy_suite(suite2);
 }
