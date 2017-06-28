@@ -248,13 +248,6 @@ closeDictionary(
 /**
 @brief		Creates a dictionary of a specified implementation.
 @details	This method is not currently used for creation of a C++ dictionary.
-			Modifications to be made in the future for full use.
-@param		dictionary
-				A pointer to an allocated dictionary object to be initialized.
-@param		id
-				A unique identifier important for use of the dictionary through
-				the master table. If the dictionary is being created without
-				the master table, this identifier can be 0.
 @param		key_type
 				The type of key to be used with this dictionary, which
 				determines the key comparison operator.
