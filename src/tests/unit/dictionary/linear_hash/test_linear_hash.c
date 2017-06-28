@@ -478,9 +478,9 @@ linear_hash_getsuite_1(
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_create_destroy);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_basic_operations);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_bucket_map_head_updates);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_increment_buckets);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_basic_operations);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_bucket_map_head_updates);
+//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_increment_buckets);
 	return suite;
 }
 
@@ -504,8 +504,8 @@ runalltests_linear_hash(
 	planck_unit_run_suite(suite1);
 	planck_unit_destroy_suite(suite1);
 
-	planck_unit_suite_t *suite2 = linear_hash_getsuite_2();
-
-	planck_unit_run_suite(suite2);
-	planck_unit_destroy_suite(suite2);
+//	planck_unit_suite_t *suite2 = linear_hash_getsuite_2();
+//
+//	planck_unit_run_suite(suite2);
+//	planck_unit_destroy_suite(suite2);
 }
