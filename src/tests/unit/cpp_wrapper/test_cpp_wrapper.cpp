@@ -2869,159 +2869,6 @@ test_master_table_dictionary_open_close_all_2(
 */
 void
 test_master_table(
-	planck_unit_test_t *tc,
-	Dictionary<int, int>	*dictionary,
-	Dictionary<int, int>	*dictionary2,
-	ion_dictionary_type_t dictionary_type
-) {
-	MasterTable *master_table = new MasterTable();
-
-	/* Cleanup, just in case */
-	master_table_setup(tc, master_table);
-
-	/* Test init */
-	master_table_init(tc, master_table);
-
-	/*************/
-
-	/* Test create */
-	master_table_dictionary_add(tc, master_table, dictionary, key_type_numeric_signed, sizeof(int), 10, 20, dictionary_type);
-
-	ion_dictionary_id_t id = dictionary->dict.instance->id;
-
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, id);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, ion_master_table_next_id);
-
-	/* Close dictionary before closing master table  or ensure dictionary
-	   instance has been closed previously to initialize it. */
-	/* Remove if-statement when linear hash dictionary open memory issue fixed. */
-	if (dictionary_type_linear_hash_t != dictionary_type) {
-		master_table_close_dictionary(tc, master_table, dictionary);
-
-		/***************/
-
-		/* Test close */
-		master_table_close(tc, master_table);
-
-		/**************/
-
-		/* Test re-open master table */
-		master_table_init(tc, master_table);
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, ion_master_table_next_id);
-
-		/****************/
-
-		/* Test re-open dictionary */
-		master_table_open_dictionary(tc, master_table, dictionary, 1);
-	}
-
-	/* Test lookup 1st dictionary */
-	ion_dictionary_config_info_t config;
-
-	master_table_lookup_dictionary(tc, master_table, id, key_type_numeric_signed, sizeof(int), 10, 20, dictionary_type, &config, boolean_true);
-
-	/******************************/
-
-	/* Test create 2nd dictionary */
-	master_table_dictionary_add(tc, master_table, dictionary2, key_type_numeric_signed, sizeof(short), 7, 14, dictionary_type);
-
-	ion_dictionary_id_t id2 = dictionary2->dict.instance->id;
-
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, id2);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, ion_master_table_next_id);
-	/******************************/
-
-	/* Test 2nd lookup */
-	master_table_lookup_dictionary(tc, master_table, id2, key_type_numeric_signed, sizeof(short), 7, 14, dictionary_type, &config, boolean_true);
-
-	/*******************/
-
-	/* Test delete */
-	master_table_delete_from_master_table(tc, master_table, id);
-
-	/***************/
-
-	/* Test lookup on non-existent row */
-	master_table_lookup_dictionary(tc, master_table, id, key_type_numeric_signed, sizeof(int), 10, 20, dictionary_type, &config, boolean_false);
-
-	/***********************************/
-
-	/* Test delete dictionary */
-
-	master_table_delete_from_master_table(tc, master_table, id2);
-
-	/* Test close master table */
-
-	master_table_close(tc, master_table);
-	/**************/
-
-	delete master_table;
-}
-
-/**
-@brief Tests all functionality of the master table on all dictionary implementations.
-*/
-void
-test_master_table_all_1(
-	planck_unit_test_t *tc
-) {
-	Dictionary<int, int>	*dictionary;
-	Dictionary<int, int>	*dictionary2;
-
-	dictionary	= new BppTree<int, int>(1, key_type_numeric_signed, sizeof(int), 10);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
-	dictionary2 = new BppTree<int, int>(2, key_type_numeric_signed, sizeof(short), 7);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
-	test_master_table(tc, dictionary, dictionary2, dictionary_type_bpp_tree_t);
-	delete dictionary;
-	delete dictionary2;
-
-	dictionary	= new FlatFile<int, int>(1, key_type_numeric_signed, sizeof(int), 10, 20);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
-	dictionary2 = new FlatFile<int, int>(2, key_type_numeric_signed, sizeof(short), 7, 14);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
-	test_master_table(tc, dictionary, dictionary2, dictionary_type_flat_file_t);
-	delete dictionary;
-	delete dictionary2;
-
-	dictionary	= new OpenAddressHash<int, int>(1, key_type_numeric_signed, sizeof(int), 10, 20);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
-	dictionary2 = new OpenAddressHash<int, int>(2, key_type_numeric_signed, sizeof(short), 7, 14);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
-	test_master_table(tc, dictionary, dictionary2, dictionary_type_open_address_hash_t);
-	delete dictionary;
-	delete dictionary2;
-
-	dictionary	= new OpenAddressFileHash<int, int>(1, key_type_numeric_signed, sizeof(int), 10, 20);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
-	dictionary2 = new OpenAddressFileHash<int, int>(2, key_type_numeric_signed, sizeof(short), 7, 14);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
-	test_master_table(tc, dictionary, dictionary2, dictionary_type_open_address_file_hash_t);
-	delete dictionary;
-	delete dictionary2;
-
-	dictionary	= new SkipList<int, int>(1, key_type_numeric_signed, sizeof(int), 10, 20);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
-	dictionary2 = new SkipList<int, int>(2, key_type_numeric_signed, sizeof(short), 7, 14);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
-	test_master_table(tc, dictionary, dictionary2, dictionary_type_skip_list_t);
-	delete dictionary;
-	delete dictionary2;
-
-	dictionary	= new LinearHash<int, int>(1, key_type_numeric_signed, sizeof(int), 10, 20);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
-	dictionary2 = new LinearHash<int, int>(2, key_type_numeric_signed, sizeof(short), 7, 14);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
-	test_master_table(tc, dictionary, dictionary2, dictionary_type_linear_hash_t);
-	delete dictionary;
-	delete dictionary2;
-}
-
-/**
-@brief Tests all functionality of the master table.
-*/
-void
-test_master_table(
 	planck_unit_test_t		*tc,
 	ion_dictionary_type_t	dictionary_type,
 	ion_dictionary_size_t	dictionary_size_1,
@@ -3124,7 +2971,7 @@ test_master_table(
 	   created using the master table.
 */
 void
-test_master_table_all_2(
+test_master_table_all(
 	planck_unit_test_t *tc
 ) {
 	test_master_table(tc, dictionary_type_bpp_tree_t, 0, 0);
@@ -3229,14 +3076,13 @@ cpp_wrapper_getsuite_4(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_open_close);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_delete);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_create_delete_all_1);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_create_delete_all_2);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all_1);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all_2);
-//	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_all_1);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_all_2);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_open_close);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_delete);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_create_delete_all_1);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_create_delete_all_2);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all_1);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all_2);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_all);
 
 	return suite;
 }
@@ -3249,20 +3095,20 @@ runalltests_cpp_wrapper(
 ) {
 	fdeleteall();
 
-//	planck_unit_suite_t *suite1 = cpp_wrapper_getsuite_1();
-//
-//	planck_unit_run_suite(suite1);
-//	planck_unit_destroy_suite(suite1);
-//
-//	planck_unit_suite_t *suite2 = cpp_wrapper_getsuite_2();
-//
-//	planck_unit_run_suite(suite2);
-//	planck_unit_destroy_suite(suite2);
-//
-//	planck_unit_suite_t *suite3 = cpp_wrapper_getsuite_3();
-//
-//	planck_unit_run_suite(suite3);
-//	planck_unit_destroy_suite(suite3);
+	planck_unit_suite_t *suite1 = cpp_wrapper_getsuite_1();
+
+	planck_unit_run_suite(suite1);
+	planck_unit_destroy_suite(suite1);
+
+	planck_unit_suite_t *suite2 = cpp_wrapper_getsuite_2();
+
+	planck_unit_run_suite(suite2);
+	planck_unit_destroy_suite(suite2);
+
+	planck_unit_suite_t *suite3 = cpp_wrapper_getsuite_3();
+
+	planck_unit_run_suite(suite3);
+	planck_unit_destroy_suite(suite3);
 
 	planck_unit_suite_t *suite4 = cpp_wrapper_getsuite_4();
 
