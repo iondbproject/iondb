@@ -3082,6 +3082,19 @@ cpp_wrapper_getsuite_4(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_create_delete_all_2);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all_1);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all_2);
+
+	return suite;
+}
+
+/**
+@brief		Creates the suite to test.
+@return		Pointer to a test suite.
+*/
+planck_unit_suite_t *
+cpp_wrapper_getsuite_5(
+) {
+	planck_unit_suite_t *suite = planck_unit_new_suite();
+
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_all);
 
 	return suite;
@@ -3114,4 +3127,11 @@ runalltests_cpp_wrapper(
 
 	planck_unit_run_suite(suite4);
 	planck_unit_destroy_suite(suite4);
+
+	fdeleteall();
+
+	planck_unit_suite_t *suite5 = cpp_wrapper_getsuite_5();
+
+	planck_unit_run_suite(suite5);
+	planck_unit_destroy_suite(suite5);
 }
