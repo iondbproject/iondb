@@ -2865,106 +2865,6 @@ test_master_table_dictionary_open_close_all_2(
 }
 
 /**
-@brief Tests all functionality of the master table.
-*/
-void
-test_master_table(
-	planck_unit_test_t		*tc,
-	ion_dictionary_type_t	dictionary_type,
-	ion_dictionary_size_t	dictionary_size_1,
-	ion_dictionary_size_t	dictionary_size_2
-) {
-	MasterTable *master_table = new MasterTable();
-
-	/* Cleanup, just in case */
-	master_table_setup(tc, master_table);
-
-	/* Test init */
-	master_table_init(tc, master_table);
-
-	/*************/
-
-	/* Test create */
-	Dictionary<int, int> *dictionary;
-
-	int type = 0;
-
-	dictionary = master_table->initializeDictionary(key_type_numeric_signed, type, type, sizeof(int), 10, dictionary_size_1, dictionary_type);
-	master_table_create_dictionary(tc, master_table, dictionary, 1, key_type_numeric_signed, sizeof(int), 10, dictionary_size_1, dictionary_type);
-
-	ion_dictionary_id_t id = dictionary->dict.instance->id;
-
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, id);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, ion_master_table_next_id);
-
-	/* Test lookup 1st dictionary */
-	ion_dictionary_config_info_t config;
-
-	master_table_lookup_dictionary(tc, master_table, id, key_type_numeric_signed, sizeof(int), 10, dictionary_size_1, dictionary_type, &config, boolean_true);
-
-	/******************************/
-
-	/* Test create 2nd dictionary */
-	Dictionary<int, int> *dictionary2;
-
-	dictionary2 = master_table->initializeDictionary(key_type_numeric_signed, type, type, sizeof(short), 7, dictionary_size_2, dictionary_type);
-	master_table_create_dictionary(tc, master_table, dictionary2, 2, key_type_numeric_signed, sizeof(short), 7, dictionary_size_2, dictionary_type);
-
-	ion_dictionary_id_t id2 = dictionary2->dict.instance->id;
-
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, id2);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, ion_master_table_next_id);
-	/******************************/
-
-	/* Test 2nd lookup */
-	master_table_lookup_dictionary(tc, master_table, id2, key_type_numeric_signed, sizeof(short), 7, dictionary_size_2, dictionary_type, &config, boolean_true);
-
-	/*******************/
-
-	/* Test delete */
-	master_table_delete_dictionary(tc, master_table, dictionary);
-
-	/***************/
-
-	/* Test lookup on non-existent row */
-	master_table_lookup_dictionary(tc, master_table, id, key_type_numeric_signed, sizeof(int), 10, dictionary_size_1, dictionary_type, &config, boolean_false);
-
-	/***********************************/
-
-	/* Test delete dictionary */
-
-	master_table_delete_dictionary(tc, master_table, dictionary2);
-
-	/* Test close master table */
-
-	master_table_close(tc, master_table);
-	/**************/
-
-	delete master_table;
-}
-
-/**
-@brief Tests all functionality of the master table on all dictionary implementations
-	   created using the master table.
-*/
-void
-test_master_table_all(
-	planck_unit_test_t *tc
-) {
-	test_master_table(tc, dictionary_type_bpp_tree_t, 0, 0);
-
-	test_master_table(tc, dictionary_type_flat_file_t, 20, 14);
-
-	test_master_table(tc, dictionary_type_open_address_hash_t, 20, 14);
-
-	test_master_table(tc, dictionary_type_open_address_file_hash_t, 20, 14);
-
-	test_master_table(tc, dictionary_type_skip_list_t, 20, 14);
-
-	test_master_table(tc, dictionary_type_linear_hash_t, 20, 14);
-}
-
-/**
 @brief		Creates the suite to test.
 @return		Pointer to a test suite.
 */
@@ -3064,20 +2964,6 @@ cpp_wrapper_getsuite_4(
 }
 
 /**
-@brief		Creates the suite to test.
-@return		Pointer to a test suite.
-*/
-planck_unit_suite_t *
-cpp_wrapper_getsuite_5(
-) {
-	planck_unit_suite_t *suite = planck_unit_new_suite();
-
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_all);
-
-	return suite;
-}
-
-/**
 @brief	  Runs all C++ Related related tests and outputs the result.
 */
 void
@@ -3104,11 +2990,4 @@ runalltests_cpp_wrapper(
 
 	planck_unit_run_suite(suite4);
 	planck_unit_destroy_suite(suite4);
-
-	fdeleteall();
-
-	planck_unit_suite_t *suite5 = cpp_wrapper_getsuite_5();
-
-	planck_unit_run_suite(suite5);
-	planck_unit_destroy_suite(suite5);
 }
