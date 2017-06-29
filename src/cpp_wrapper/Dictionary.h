@@ -297,4 +297,6 @@ allRecords(
 }
 };
 
+/* Comment to trigger commit and therefore pc-build */
+
 #endif /* PROJECT_CPP_DICTIONARY_H */
