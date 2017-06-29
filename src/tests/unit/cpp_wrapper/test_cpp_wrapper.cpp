@@ -2897,29 +2897,6 @@ test_master_table(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, id);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, ion_master_table_next_id);
 
-	/* Close dictionary before closing master table  or ensure dictionary
-	   instance has been closed previously to initialize it. */
-	/* Remove if-statement when linear hash dictionary open memory issue fixed. */
-	if (dictionary_type_linear_hash_t != dictionary_type) {
-		master_table_close_dictionary(tc, master_table, dictionary);
-
-		/***************/
-
-		/* Test close */
-		master_table_close(tc, master_table);
-
-		/**************/
-
-		/* Test re-open master table */
-		master_table_init(tc, master_table);
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, ion_master_table_next_id);
-
-		/****************/
-
-		/* Test re-open dictionary */
-		master_table_open_dictionary(tc, master_table, dictionary, 1);
-	}
-
 	/* Test lookup 1st dictionary */
 	ion_dictionary_config_info_t config;
 
