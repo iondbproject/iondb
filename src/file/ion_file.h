@@ -127,6 +127,13 @@ ion_fwrite_at(
 );
 
 ion_err_t
+ion_fappend(
+	ion_file_handle_t	file,
+	unsigned int		num_bytes,
+	ion_byte_t			*to_write
+);
+
+ion_err_t
 ion_fread(
 	ion_file_handle_t	file,
 	unsigned int		num_bytes,

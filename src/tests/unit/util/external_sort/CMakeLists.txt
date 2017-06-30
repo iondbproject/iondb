@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
-project(test_iinq)
+project(test_external_sort)
 
 set(SOURCE_FILES
-    test_iinq.h
-    test_iinq.c)
+        test_external_sort.h
+        test_external_sort.c)
 
 if(USE_ARDUINO)
     set(${PROJECT_NAME}_BOARD       ${BOARD})
@@ -12,15 +12,15 @@ if(USE_ARDUINO)
     set(${PROJECT_NAME}_PORT        ${PORT})
     set(${PROJECT_NAME}_SERIAL      ${SERIAL})
 
+    set(${PROJECT_NAME}_SKETCH      external_sort.ino)
     set(${PROJECT_NAME}_SRCS        ${SOURCE_FILES})
-    set(${PROJECT_NAME}_SKETCH      iinq.ino)
-    set(${PROJECT_NAME}_LIBS        planck_unit iinq external_sort)
+    set(${PROJECT_NAME}_LIBS        planck_unit external_sort)
 
     generate_arduino_firmware(${PROJECT_NAME})
 else()
-    add_executable(${PROJECT_NAME}          run_iinq.c ${SOURCE_FILES})
+    add_executable(${PROJECT_NAME}          ${SOURCE_FILES} run_external_sort.c)
 
-    target_link_libraries(${PROJECT_NAME}   planck_unit iinq flat_file external_sort)
+    target_link_libraries(${PROJECT_NAME}   planck_unit     external_sort)
 
     # Use cmake -DCOVERAGE_TESTING=ON to include coverage testing information.
     if (CMAKE_COMPILER_IS_GNUCC AND COVERAGE_TESTING)
