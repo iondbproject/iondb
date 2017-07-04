@@ -29,10 +29,11 @@ extern "C" {
 #endif
 
 #include "../../key_value/kv_system.h"
+#include "../../dictionary/dictionary_types.h"
 
 typedef void *ion_sort_comparator_context_t;
 
-typedef ion_comparison_e (*ion_sort_comparator_t)(
+typedef ion_comparison_t (*ion_sort_comparator_t)(
 	ion_sort_comparator_context_t	context,
 	void							*value_a,
 	void							*value_b

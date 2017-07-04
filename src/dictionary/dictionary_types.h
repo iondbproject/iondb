@@ -131,7 +131,7 @@ typedef enum ION_COMPARISON {
 	A_lt_B	= -1,	/**< The result for the comparison operation is A <= B. */
 	A_equ_B = 0,/**< The result for the comparison operation is A == B. */
 	A_gt_B	= 1		/**< The result for the comparison operation is A >= B. */
-} ion_comparsion_t;
+} ion_comparison_t;
 
 /**
 @brief		A status type describing the current state of an initialized cursor.

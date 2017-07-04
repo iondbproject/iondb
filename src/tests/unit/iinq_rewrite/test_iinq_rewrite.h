@@ -47,6 +47,15 @@ extern "C" {
 #include "../../planck-unit/src/planck_unit.h"
 #include "../../../iinq/iinq.h"
 
+#define DEFINE_SCHEMA(source_name, struct_def) \
+	struct iinq_ ## source_name ## _schema struct_def
+
+#define SCHEMA_SIZE(source_name) \
+	sizeof(struct iinq_ ## source_name ## _schema)
+
+#define DECLARE_SCHEMA_VAR(source_name, var_name) \
+	struct iinq_ ## source_name ## _schema var_name
+
 void
 run_all_tests_iinq_rewrite(
 );

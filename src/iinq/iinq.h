@@ -9,7 +9,11 @@ extern "C" {
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
+#include <malloc.h>
+#else /* Not windows, then use the proper header */
 #include <alloca.h>
+#endif
 #include "../dictionary/dictionary_types.h"
 #include "../dictionary/ion_master_table.h"
 #include "../key_value/kv_system.h"
@@ -385,7 +389,7 @@ iinq_drop(
 	char *schema_file_name
 );
 
-ion_comparison_e
+ion_comparison_t
 iinq_sort_compare(
 	void	*context,	/* TODO: Turn this into a ion_sort_comparator_context_t. */
 	void	*a,
