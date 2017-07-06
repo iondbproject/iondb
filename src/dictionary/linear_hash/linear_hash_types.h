@@ -1,8 +1,8 @@
 /******************************************************************************/
 /**
-@file		bpp_tree_handler.h
-@author		Graeme Douglas
-@brief		The handler for a disk-backed B+ Tree.
+@file		linear_hash_types.h
+@author		Spencer MacBeth
+@brief		Header for linear hash types.
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
@@ -34,48 +34,64 @@
 */
 /******************************************************************************/
 
-#if !defined(BPP_TREE_HANDLER_H_)
-#define BPP_TREE_HANDLER_H_
-
-#if defined(__cplusplus)
-extern "C" {
-#endif
-
-#include "../dictionary_types.h"
-#include "./../dictionary.h"
+#include <stdio.h>
 #include "../../key_value/kv_system.h"
-#include "../../file/linked_file_bag.h"
-#include "bpp_tree.h"
+#include "../dictionary.h"
+#include "../../file/sd_stdio_c_iface.h"
 
-typedef struct bplusplustree {
-	ion_dictionary_parent_t super;
-	ion_bpp_handle_t		tree;
-	ion_lfb_t				values;
-} ion_bpptree_t;
+typedef ion_byte_t *linear_hash_record_status_t;
 
+#define linear_hash_end_of_list			-1
+#define linear_hash_record_status_empty 0
+#define linear_hash_record_status_full	1
+
+/* SIMPLE ARRAY_LIST FOR BUCKET MAP */
 typedef struct {
-	ion_dict_cursor_t	super;		/**< Supertype of cursor		*/
-	ion_key_t			cur_key;/**< Current key we're visiting */
-	ion_file_offset_t	offset;		/**< offset in LFB; holds value */
-} ion_bpp_cursor_t;
+	int			current_size;
+	ion_fpos_t	*data;
+} array_list_t;
 
-/**
-@brief		Registers a specific handler for a  dictionary instance.
+/* definition of linear hash record, with a type and pointer instance declared for later use */
+typedef struct {
+	ion_key_t	key;
+	ion_value_t value;
+} linear_hash_record_t;
 
-@details	Registers functions for handlers.  This only needs to be called
-			once for each type of dictionary that is present.
+/* buckets */
+typedef struct {
+	int			idx;
+	int			record_count;
+	ion_fpos_t	overflow_location;
+} linear_hash_bucket_t;
 
-@param	  handler
-				The handler for the dictionary instance that is to be
-				initialized.
-*/
-void
-bpptree_init(
-	ion_dictionary_handler_t *handler
-);
+/* function pointer syntax: return_type (*function_name) (arg_type) */
+/* linear hash structure definition, with a type and pointer instance declared for later use */
+typedef struct {
+	/**> Parent structure that holds dictionary level information. */
+	ion_dictionary_parent_t super;
+	ion_dictionary_size_t	dictionary_size;
+	int						initial_size;
+	int						next_split;
+	int						split_threshold;
+	int						num_buckets;
+	int						num_records;
+	int						records_per_bucket;
+	ion_fpos_t				record_total_size;
+	FILE					*database;
+	FILE					*state;
 
-#if defined(__cplusplus)
-}
-#endif
+	/* maps the location of the head of the linked list of buckets corresponding to its index */
+	array_list_t			*bucket_map;
 
-#endif /* BPP_TREE_HANDLER_H_ */
+	/* generic cache */
+	ion_byte_t				*cache;
+	int						last_cache_idx;
+
+	/* pointer location of the next record to swap-on-delete*/
+	ion_fpos_t				swap_bucket_loc;
+} linear_hash_table_t;
+
+/* typedef struct { */
+/*	ion_fpos_t	next; */
+/*	ion_fpos_t	current_bucket_loc; */
+/* } linear_hash_record_iterator_t; */

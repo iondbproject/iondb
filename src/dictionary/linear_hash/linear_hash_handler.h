@@ -1,8 +1,8 @@
 /******************************************************************************/
 /**
-@file		skip_list_handler.h
-@author		Eric Huang
-@brief		Handler liaison between dictionary API and skiplist implementation
+@file		linear_hash_handler.h
+@author		Spencer MacBeth
+@brief		Header for handler for a linear hash .
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
@@ -33,21 +33,20 @@
 	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
-#if !defined(SKIP_LIST_HANDLER_H_)
-#define SKIP_LIST_HANDLER_H_
+#if !defined(LINEAR_HASH_HANDLER_H_)
+#define LINEAR_HASH_HANDLER_H_
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-#include "skip_list_types.h"
-#include "skip_list.h"
+#include "linear_hash.h"
 
 /**
-@brief	  Registers a skiplist handler to a dictionary instance.
+@brief	  Registers a linear hash handler to a dictionary instance.
 
-@details	Binds each unique skiplist function to the generic dictionary
-			interface. Only needs to be called once when the skiplist is
+@details	Binds each unique linear hash function to the generic dictionary
+			interface. Only needs to be called once when the linear hash is
 			initialized.
 
 @param	  handler
@@ -55,7 +54,7 @@ extern "C" {
 				It is assumed @p handler is initialized by the user.
 */
 void
-sldict_init(
+linear_hash_dict_init(
 	ion_dictionary_handler_t *handler
 );
 
@@ -71,7 +70,7 @@ sldict_init(
 @return	 Status of insertion.
 */
 ion_status_t
-sldict_insert(
+linear_hash_dict_insert(
 	ion_dictionary_t	*dictionary,
 	ion_key_t			key,
 	ion_value_t			value
@@ -81,10 +80,8 @@ sldict_insert(
 @brief	  Creates an instance of a dictionary.
 
 @details	Creates an instance of a dictionary given a @p key_size and
-			@p value_size, in bytes as well as the @p dictionary_size, which
-			is the maximum number of levels in the skiplist. By nature of the
-			structure, the maximum number of elements is bounded only by memory
-			use.
+			@p value_size, in bytes. Given an By nature of the
+			structure, the maximum number of elements is bounded only by memory.
 
 @param		id
 @param		key_type
@@ -104,7 +101,7 @@ sldict_insert(
 @return	 Status of creation.
 */
 ion_err_t
-sldict_create_dictionary(
+linear_hash_create_dictionary(
 	ion_dictionary_id_t			id,
 	ion_key_type_t				key_type,
 	ion_key_size_t				key_size,
@@ -113,6 +110,26 @@ sldict_create_dictionary(
 	ion_dictionary_compare_t	compare,
 	ion_dictionary_handler_t	*handler,
 	ion_dictionary_t			*dictionary
+);
+
+ion_err_t
+linear_hash_close_dictionary(
+	ion_dictionary_t *dictionary
+);
+
+ion_err_t
+linear_hash_open_dictionary(
+	ion_dictionary_handler_t		*handler,
+	ion_dictionary_t				*dictionary,
+	ion_dictionary_config_info_t	*config,
+	ion_dictionary_compare_t		compare
+);
+
+ion_status_t
+linear_hash_dict_get(
+	ion_dictionary_t	*dictionary,
+	ion_key_t			key,
+	ion_value_t			value
 );
 
 /**
@@ -126,7 +143,7 @@ sldict_create_dictionary(
 @return	 Status of deletion.
 */
 ion_status_t
-sldict_delete(
+linear_hash_dict_delete(
 	ion_dictionary_t	*dictionary,
 	ion_key_t			key
 );
@@ -139,18 +156,19 @@ sldict_delete(
 @return	 Status of dictionary deletion.
 */
 ion_err_t
-sldict_delete_dictionary(
+linear_hash_delete_dictionary(
 	ion_dictionary_t *dictionary
 );
 
 /**
-@brief	  Deletes an instance of a closed dictionary.
-@param	  id
-				The identifier identifying the dictionary to destroy.
-@return	 Status of dictionary deletion.
+@brief		Cleans up all files created by the dictionary, and frees any allocated memory,
+			for an already closed dictionary.
+@param		id
+				The identifier identifying the dictionary to delete.
+@return		The resulting status of the operation.
 */
 ion_err_t
-sldict_destroy_dictionary(
+linear_hash_destroy_dictionary(
 	ion_dictionary_id_t id
 );
 
@@ -169,7 +187,7 @@ sldict_destroy_dictionary(
 @return Status of update.
 */
 ion_status_t
-sldict_update(
+linear_hash_dict_update(
 	ion_dictionary_t	*dictionary,
 	ion_key_t			key,
 	ion_value_t			value
@@ -179,4 +197,9 @@ sldict_update(
 }
 #endif
 
-#endif /* SKIP_LIST_HANDLER_H_ */
+#endif /* LINEAR_HASH_HANDLER */
+
+ion_status_t
+linear_hash_dict_find(
+	ion_dictionary_t *dictionary
+);

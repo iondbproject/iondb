@@ -1,24 +1,37 @@
 /******************************************************************************/
 /**
-@file
-@author		Scott Fazackerley, Graeme Douglas
+@file		dictionary_types.h
+@author		Graeme Douglas, Scott Fazackerley
 @brief		Types used for dictionaries.
 @details	This file exists mostly to avoid circular dependencies.
-@copyright	Copyright 2016
-				The University of British Columbia,
-				IonDB Project Contributors (see AUTHORS.md)
-@par
-			Licensed under the Apache License, Version 2.0 (the "License");
-			you may not use this file except in compliance with the License.
-			You may obtain a copy of the License at
-					http://www.apache.org/licenses/LICENSE-2.0
-@par
-			Unless required by applicable law or agreed to in writing,
-			software distributed under the License is distributed on an
-			"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
-			either express or implied. See the License for the specific
-			language governing permissions and limitations under the
-			License.
+@copyright	Copyright 2017
+			The University of British Columbia,
+			IonDB Project Contributors (see AUTHORS.md)
+@par Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions are met:
+
+@par 1.Redistributions of source code must retain the above copyright notice,
+	this list of conditions and the following disclaimer.
+
+@par 2.Redistributions in binary form must reproduce the above copyright notice,
+	this list of conditions and the following disclaimer in the documentation
+	and/or other materials provided with the distribution.
+
+@par 3.Neither the name of the copyright holder nor the names of its contributors
+	may be used to endorse or promote products derived from this software without
+	specific prior written permission.
+
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
 
@@ -46,23 +59,9 @@ typedef unsigned int ion_dictionary_id_t;
 typedef ion_byte_t ion_dict_use_t;
 
 /**
-@brief		Struct containing details for opening a dictionary previously
-			created.
+@brief		The position in the hashmap.
 */
-typedef struct {
-	ion_dictionary_id_t		id;					/**< The identifier used to
-													 identify the dictionary. */
-	ion_dict_use_t			use_type;			/**< How the dictionary will be
-													 used. Ignore if N/A. */
-	ion_key_type_t			type;					/**< The type of key to store.
-													*/
-	ion_key_size_t			key_size;			/**< The size of the key. */
-	ion_value_size_t		value_size;			/**< The size of the value. */
-	ion_dictionary_size_t	dictionary_size;	/**< The dictionary size
-													 parameter. Dependent on
-													 the dictionary
-													 implementation used. */
-} ion_dictionary_config_info_t;
+typedef int ion_hash_t;
 
 /**
 @brief		A dictionary instance variable.
@@ -114,7 +113,7 @@ typedef struct dictionary_parent ion_dictionary_parent_t;
 /**
 @brief		A comparison result type that describes the result of a comparison.
 */
-typedef enum comparison {
+typedef enum ION_COMPARISON {
 	A_lt_B	= -1,	/**< The result for the comparison operation is A <= B. */
 	A_equ_B = 0,/**< The result for the comparison operation is A == B. */
 	A_gt_B	= 1		/**< The result for the comparison operation is A >= B. */
@@ -123,7 +122,7 @@ typedef enum comparison {
 /**
 @brief		A status type describing the current state of an initialized cursor.
 */
-enum cursor_status {
+enum ION_CURSOR_STATUS {
 	cs_invalid_index = -1,	/**< A cursor status stating that
 											 the cursor has an invalid index. */
 	cs_invalid_cursor,	/**< A cursor status stating that the
@@ -148,7 +147,6 @@ enum cursor_status {
 											 data in the underlying dictionary
 											 has been changed, making the cursor
 											 invalid. */
-	cs_valid_data	/**< The data in the cursor is valid. @todo we should delete this. */
 };
 
 /**
@@ -157,6 +155,49 @@ enum cursor_status {
 			rather than depending on the enum.
 */
 typedef char ion_cursor_status_t;
+
+/**
+@brief		The status codes describing various states a dictionary can be
+			in.
+*/
+enum ION_DICTIONARY_STATUS {
+	/**> A status describing the situation when a dictionary is ready to be used. */
+	ion_dictionary_status_ok,
+	/**> A status describing the situation when a dictionary has been closed. */
+	ion_dictionary_status_closed,
+	/**> A status describing the situation when a dictionary operation modifying
+		 the dictionary has failed. */
+	ion_dictionary_status_error,
+};
+
+/**
+@brief		A short status describing the current status of a
+			dictionary.
+*/
+typedef char ion_dictionary_status_t;
+
+/**
+@brief		Struct containing details for opening a dictionary previously
+			created.
+*/
+typedef struct {
+	ion_dictionary_id_t		id;					/**< The identifier used to
+													 identify the dictionary. */
+	ion_dict_use_t			use_type;			/**< How the dictionary will be
+													 used. Ignore if N/A. */
+	ion_key_type_t			type;					/**< The type of key to store.
+													*/
+	ion_key_size_t			key_size;			/**< The size of the key. */
+	ion_value_size_t		value_size;			/**< The size of the value. */
+	ion_dictionary_size_t	dictionary_size;	/**< The dictionary size
+													 parameter. Dependent on
+													 the dictionary
+													 implementation used. */
+	ion_dictionary_type_t	dictionary_type;	/**< The type of dictionary
+													 implementation used. */
+	ion_dictionary_status_t dictionary_status;	/**< The current status of the
+													dictionary, either closed or ok. */
+} ion_dictionary_config_info_t;
 
 /**
 @brief		A dictionary_handler is responsible for dealing with the specific
@@ -208,6 +249,10 @@ struct dictionary_handler {
 		ion_dictionary_t *
 	);
 	/**< A pointer to the dictionaries dictionary removal function. */
+	ion_err_t (*destroy_dictionary)(
+		ion_dictionary_id_t id
+	);
+	/**< A pointer to the dictionaries dictionary destroy function. */
 	ion_err_t (*open_dictionary)(
 		ion_dictionary_handler_t *,
 		ion_dictionary_t *,
@@ -220,26 +265,6 @@ struct dictionary_handler {
 	);
 	/**< A pointer to the dictionaries close function */
 };
-
-/**
-@brief		The status codes describing various states a dictionary can be
-			in.
-*/
-enum ion_dictionary_status {
-	/**> A status describing the situation when a dictionary is ready to be used. */
-	ion_dictionary_status_ok,
-	/**> A status describing the situation when a dictionary has been closed. */
-	ion_dictionary_status_closed,
-	/**> A status describing the situation when a dictionary operation modifying
-		 the dictionary has failed. */
-	ion_dictionary_status_error,
-};
-
-/**
-@brief		A short status describing the current status of a
-			dictionary.
-*/
-typedef char ion_dictionary_status_t;
 
 /**
 @brief		A dictionary contains information regarding an instance of the
@@ -263,6 +288,7 @@ struct dictionary_parent {
 	ion_dictionary_compare_t	compare;/**< Comparison function for
 											  instance of map. */
 	ion_dictionary_id_t			id;		/**< ID of dictionary instance. */
+	ion_dictionary_type_t		type;	/**< Type of dictionary implementation used. */
 };
 
 /**
@@ -275,7 +301,7 @@ typedef char ion_predicate_type_t;
 @details	These type flags tell internal code what type of predicate is
 			being described.
 */
-enum predicate_type {
+enum ION_PREDICATE_TYPE {
 	predicate_equality,	/**< Predicate type for equality cursors. */
 	predicate_range,/**< Predicate tyoe for range cursors. */
 	predicate_all_records,	/**< Predicate type for cursors over all records. */
@@ -397,7 +423,7 @@ struct dictionary_cursor {
 			values are inserted with the same key. Not all implementations are
 			required to support different write concern levels.
 */
-enum write_concern {
+enum ION_WRITE_CONCERN {
 	wc_update,	/**< Write concern which allows for values to be
 								 overwritten if their associated key
 								 already exists in the dictionary. */

@@ -1,23 +1,36 @@
 /******************************************************************************/
 /**
-@file
-@author		Kris Wallperington
+@file		flat_file.c
+@author		Eric Huang
 @brief		Implementation specific definitions for the flat file store.
-@copyright	Copyright 2016
-				The University of British Columbia,
-				IonDB Project Contributors (see AUTHORS.md)
-@par
-			Licensed under the Apache License, Version 2.0 (the "License");
-			you may not use this file except in compliance with the License.
-			You may obtain a copy of the License at
-					http://www.apache.org/licenses/LICENSE-2.0
-@par
-			Unless required by applicable law or agreed to in writing,
-			software distributed under the License is distributed on an
-			"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
-			either express or implied. See the License for the specific
-			language governing permissions and limitations under the
-			License.
+@copyright	Copyright 2017
+			The University of British Columbia,
+			IonDB Project Contributors (see AUTHORS.md)
+@par Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions are met:
+
+@par 1.Redistributions of source code must retain the above copyright notice,
+	this list of conditions and the following disclaimer.
+
+@par 2.Redistributions in binary form must reproduce the above copyright notice,
+	this list of conditions and the following disclaimer in the documentation
+	and/or other materials provided with the distribution.
+
+@par 3.Neither the name of the copyright holder nor the names of its contributors
+	may be used to endorse or promote products derived from this software without
+	specific prior written permission.
+
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
 
@@ -45,11 +58,11 @@ flat_file_initialize(
 	int		actual_filename_length = dictionary_get_filename(id, "ffs", filename);
 
 	if (actual_filename_length >= ION_MAX_FILENAME_LENGTH) {
-		return err_dictionary_initialization_failed;
+		return err_uninitialized;
 	}
 
 	flat_file->sorted_mode				= boolean_false;/* By default, we don't use sorted mode */
-	flat_file->num_buffered				= dictionary_size;	/* TODO: Sorted mode needs to be written out as a header? */
+	flat_file->num_buffered				= dictionary_size;
 	flat_file->current_loaded_region	= -1;	/* No loaded region yet */
 
 	flat_file->data_file				= fopen(filename, "r+b");
@@ -99,7 +112,7 @@ flat_file_initialize(
 	/* Now move the eof to the last non-empty row in the file */
 	ion_fpos_t			loc = -1;
 	ion_flat_file_row_t row;
-	ion_err_t			err = flat_file_scan(flat_file, -1, &loc, &row, FLAT_FILE_SCAN_BACKWARDS, flat_file_predicate_not_empty);
+	ion_err_t			err = flat_file_scan(flat_file, -1, &loc, &row, ION_FLAT_FILE_SCAN_BACKWARDS, flat_file_predicate_not_empty);
 
 	if ((err_ok != err) && (err_file_hit_eof != err)) {
 		fclose(flat_file->data_file);
@@ -151,10 +164,10 @@ flat_file_scan(
 	...
 ) {
 	ion_fpos_t	cur_offset	= flat_file->start_of_data + start_location * flat_file->row_size;
-	ion_fpos_t	end_offset	= FLAT_FILE_SCAN_FORWARDS == scan_direction ? flat_file->eof_position : flat_file->start_of_data;
+	ion_fpos_t	end_offset	= ION_FLAT_FILE_SCAN_FORWARDS == scan_direction ? flat_file->eof_position : flat_file->start_of_data;
 
 	if (-1 == start_location) {
-		if (FLAT_FILE_SCAN_FORWARDS == scan_direction) {
+		if (ION_FLAT_FILE_SCAN_FORWARDS == scan_direction) {
 			cur_offset = flat_file->start_of_data;
 		}
 		else {
@@ -164,7 +177,7 @@ flat_file_scan(
 
 	/* If we're scanning backwards, bump the cur_offset up one record so that we read the record we're sitting on. */
 	/* We don't do this if we're positioned at the EOF, since otherwise we would read garbage. */
-	if ((FLAT_FILE_SCAN_BACKWARDS == scan_direction) && (cur_offset != flat_file->eof_position)) {
+	if ((ION_FLAT_FILE_SCAN_BACKWARDS == scan_direction) && (cur_offset != flat_file->eof_position)) {
 		cur_offset += flat_file->row_size;
 	}
 
@@ -182,14 +195,14 @@ flat_file_scan(
 		ion_fpos_t	prev_offset				= cur_offset;
 		size_t		num_records_to_process	= flat_file->num_buffered;
 
-		if (FLAT_FILE_SCAN_FORWARDS == scan_direction) {
+		if (ION_FLAT_FILE_SCAN_FORWARDS == scan_direction) {
 			/* It's possible for this to do a partial read (if you're close to EOF), calculate how many we need to read */
 			size_t records_left = (end_offset - cur_offset) / flat_file->row_size;
 
-			num_records_to_process = records_left > (unsigned) /* TODO HACK: remove this */ flat_file->num_buffered ? (unsigned) flat_file->num_buffered : records_left;
+			num_records_to_process = records_left > (unsigned) flat_file->num_buffered ? (unsigned) flat_file->num_buffered : records_left;
 
 			if (num_records_to_process != fread(flat_file->buffer, flat_file->row_size, num_records_to_process, flat_file->data_file)) {
-				return err_file_incomplete_read;
+				return err_file_read_error;
 			}
 
 			if (-1 == (cur_offset = ftell(flat_file->data_file))) {
@@ -211,7 +224,7 @@ flat_file_scan(
 			}
 
 			if (num_records_to_process != fread(flat_file->buffer, flat_file->row_size, num_records_to_process, flat_file->data_file)) {
-				return err_file_incomplete_read;
+				return err_file_read_error;
 			}
 
 			/* In this case, the prev_offset is actually the cur_offset. */
@@ -223,7 +236,7 @@ flat_file_scan(
 
 		int32_t i;
 
-		for (i = FLAT_FILE_SCAN_FORWARDS == scan_direction ? 0 : num_records_to_process - 1; FLAT_FILE_SCAN_FORWARDS == scan_direction ? (size_t) i < num_records_to_process : i >= 0; FLAT_FILE_SCAN_FORWARDS == scan_direction ? i++ : i--) {
+		for (i = ION_FLAT_FILE_SCAN_FORWARDS == scan_direction ? 0 : num_records_to_process - 1; ION_FLAT_FILE_SCAN_FORWARDS == scan_direction ? (size_t) i < num_records_to_process : i >= 0; ION_FLAT_FILE_SCAN_FORWARDS == scan_direction ? i++ : i--) {
 			size_t cur_rec = i * flat_file->row_size;
 
 			/* This cast is done because in the future, the status could possibly be a non-byte type */
@@ -260,7 +273,7 @@ flat_file_predicate_not_empty(
 	UNUSED(flat_file);
 	UNUSED(args);
 
-	return FLAT_FILE_STATUS_OCCUPIED == row->row_status;
+	return ION_FLAT_FILE_STATUS_OCCUPIED == row->row_status;
 }
 
 ion_boolean_t
@@ -271,7 +284,7 @@ flat_file_predicate_key_match(
 ) {
 	ion_key_t target_key = va_arg(*args, ion_key_t);
 
-	return FLAT_FILE_STATUS_OCCUPIED == row->row_status && 0 == flat_file->super.compare(target_key, row->key, flat_file->super.record.key_size);
+	return ION_FLAT_FILE_STATUS_OCCUPIED == row->row_status && 0 == flat_file->super.compare(target_key, row->key, flat_file->super.record.key_size);
 }
 
 ion_boolean_t
@@ -283,7 +296,7 @@ flat_file_predicate_within_bounds(
 	ion_key_t	lower_bound = va_arg(*args, ion_key_t);
 	ion_key_t	upper_bound = va_arg(*args, ion_key_t);
 
-	return FLAT_FILE_STATUS_OCCUPIED == row->row_status && flat_file->super.compare(row->key, lower_bound, flat_file->super.record.key_size) >= 0 && flat_file->super.compare(row->key, upper_bound, flat_file->super.record.key_size) <= 0;
+	return ION_FLAT_FILE_STATUS_OCCUPIED == row->row_status && flat_file->super.compare(row->key, lower_bound, flat_file->super.record.key_size) >= 0 && flat_file->super.compare(row->key, upper_bound, flat_file->super.record.key_size) <= 0;
 }
 
 /**
@@ -319,15 +332,15 @@ flat_file_write_row(
 	}
 
 	if (1 != fwrite(&row->row_status, sizeof(row->row_status), 1, flat_file->data_file)) {
-		return err_file_incomplete_write;
+		return err_file_write_error;
 	}
 
 	if ((NULL != row->key) && (1 != fwrite(row->key, flat_file->super.record.key_size, 1, flat_file->data_file))) {
-		return err_file_incomplete_write;
+		return err_file_write_error;
 	}
 
 	if ((NULL != row->value) && (1 != fwrite(row->value, flat_file->super.record.value_size, 1, flat_file->data_file))) {
-		return err_file_incomplete_write;
+		return err_file_write_error;
 	}
 
 	return err_ok;
@@ -352,15 +365,15 @@ flat_file_read_row(
 		}
 
 		if (1 != fread(flat_file->buffer, sizeof(row->row_status), 1, flat_file->data_file)) {
-			return err_file_incomplete_write;
+			return err_file_write_error;
 		}
 
 		if (1 != fread(flat_file->buffer + sizeof(row->row_status), flat_file->super.record.key_size, 1, flat_file->data_file)) {
-			return err_file_incomplete_write;
+			return err_file_write_error;
 		}
 
 		if (1 != fread(flat_file->buffer + sizeof(row->row_status) + flat_file->super.record.key_size, flat_file->super.record.value_size, 1, flat_file->data_file)) {
-			return err_file_incomplete_write;
+			return err_file_write_error;
 		}
 	}
 
@@ -402,7 +415,7 @@ flat_file_insert(
 		}
 	}
 
-	err = flat_file_write_row(flat_file, insert_loc, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_OCCUPIED, key, value });
+	err = flat_file_write_row(flat_file, insert_loc, &(ion_flat_file_row_t) { ION_FLAT_FILE_STATUS_OCCUPIED, key, value });
 
 	if (err_ok != err) {
 		status.error = err;
@@ -434,7 +447,7 @@ flat_file_get(
 	ion_flat_file_row_t row;
 
 	if (!flat_file->sorted_mode) {
-		err = flat_file_scan(flat_file, -1, &found_loc, &row, FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, key);
+		err = flat_file_scan(flat_file, -1, &found_loc, &row, ION_FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, key);
 
 		if (err_ok != err) {
 			if (err_file_hit_eof == err) {
@@ -492,7 +505,7 @@ flat_file_delete(
 	ion_err_t			err;
 	ion_fpos_t			loc		= -1;
 
-	while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, key))) {
+	while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, ION_FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, key))) {
 		ion_fpos_t			last_record_offset	= flat_file->eof_position - flat_file->row_size;
 		ion_flat_file_row_t last_row;
 		ion_fpos_t			last_record_index	= (last_record_offset - flat_file->start_of_data) / flat_file->row_size;
@@ -516,7 +529,7 @@ flat_file_delete(
 		}
 
 		/* Set last row to be empty just for sanity reasons. */
-		row_err = flat_file_write_row(flat_file, last_record_index, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_EMPTY, NULL, NULL });
+		row_err = flat_file_write_row(flat_file, last_record_index, &(ion_flat_file_row_t) { ION_FLAT_FILE_STATUS_EMPTY, NULL, NULL });
 
 		if (err_ok != row_err) {
 			status.error = row_err;
@@ -581,8 +594,8 @@ flat_file_update(
 		}
 	}
 
-	while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, key))) {
-		ion_err_t row_err = flat_file_write_row(flat_file, loc, &(ion_flat_file_row_t) { FLAT_FILE_STATUS_OCCUPIED, key, value });
+	while (err_ok == (err = flat_file_scan(flat_file, loc, &loc, &row, ION_FLAT_FILE_SCAN_FORWARDS, flat_file_predicate_key_match, key))) {
+		ion_err_t row_err = flat_file_write_row(flat_file, loc, &(ion_flat_file_row_t) { ION_FLAT_FILE_STATUS_OCCUPIED, key, value });
 
 		if (err_ok != row_err) {
 			status.error = row_err;

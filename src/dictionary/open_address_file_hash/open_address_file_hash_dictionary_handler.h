@@ -1,8 +1,36 @@
 /******************************************************************************/
 /**
-@file
+@file		open_address_file_hash_dictionary_handler.h
 @author		Scott Ronald Fazackerley
 @brief		The handler for a hash table using linear probing.
+@copyright	Copyright 2017
+			The University of British Columbia,
+			IonDB Project Contributors (see AUTHORS.md)
+@par Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions are met:
+
+@par 1.Redistributions of source code must retain the above copyright notice,
+	this list of conditions and the following disclaimer.
+
+@par 2.Redistributions in binary form must reproduce the above copyright notice,
+	this list of conditions and the following disclaimer in the documentation
+	and/or other materials provided with the distribution.
+
+@par 3.Neither the name of the copyright holder nor the names of its contributors
+	may be used to endorse or promote products derived from this software without
+	specific prior written permission.
+
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
 
@@ -20,7 +48,7 @@ extern "C" {
 #include "open_address_file_hash_dictionary.h"
 
 /*edefines file operations for arduino */
-#include "./../../file/SD_stdio_c_iface.h"
+#include "../../file/sd_stdio_c_iface.h"
 
 /**
 @brief Struct used to for instance of a given dictionary.
@@ -34,13 +62,12 @@ typedef struct oaf_dictionary {
 
 /**
  @brief Cursor for dictionary specific implementations
- @todo What happens to the cursor if the dictionary instance is modified during traversal?
 */
 /*typedef struct oadict_cursor
 {
-	ion_hash_t				first;		*<First visited spot
-	ion_hash_t				current;	*<Currently visited spot
-	char				status;		*@todo what is this for again as there are two status
+	ion_hash_t						first;		*<First visited spot
+	ion_hash_t						current;	*<Currently visited spot
+	ion_cursor_status_t				status;		*<Status of last cursor call
 } ion_oadict_cursor_t;*/
 
 /*
@@ -100,37 +127,6 @@ oafdict_init(
 */
 ion_status_t
 oafdict_insert(
-	ion_dictionary_t	*dictionary,
-	ion_key_t			key,
-	ion_value_t			value
-);
-
-/**
-@brief	  Queries a dictionary instance for the given @p key and returns
-			the associated @p value.
-
-@details	Queries a dictionary instance for the given @p key and returns
-			the associated @p value.  If the @p write_concern is set to
-			wc_insert_unique then if the @p key exists already, an error will
-			be generated as duplicate keys are prevented.  If the
-			@p write_concern is set to wc_update, the updates are allowed.
-			In this case, if the @p key exists in the hashmap, the @p value
-			will be updated.  If the @p key does not exist, then a new item
-			will be inserted to hashmap.
-
-@param	  dictionary
-				The instance of the dictionary to query.
-@param	  key
-				The key to search for.
-@param	  value
-				A pointer that is used to return the value associated with
-				the provided key.  The function will malloc memory for the
-				value and it is up to the consumer the free the associated
-				memory.
-@return		The status of the query.
-*/
-ion_status_t
-oafdict_query(
 	ion_dictionary_t	*dictionary,
 	ion_key_t			key,
 	ion_value_t			value
@@ -201,6 +197,18 @@ oafdict_delete_dictionary(
 );
 
 /**
+@brief		Cleans up all files created by the dictionary, and frees any allocated memory,
+			for an already closed dictionary.
+@param		id
+				The identifier identifying the dictionary to delete.
+@return		The resulting status of the operation.
+*/
+ion_err_t
+oafdict_destroy_dictionary(
+	ion_dictionary_id_t id
+);
+
+/**
 @brief		Updates the value for a given key.
 
 @details	Updates the value for a given @p key.  If the key does not currently
@@ -222,30 +230,6 @@ oafdict_update(
 );
 
 /**
-@brief	  Finds multiple instances of a keys that satisfy the provided
-			 predicate in the dictionary.
-
-@details	Generates a cursor that allows the traversal of items where
-			the items key satisfies the @p predicate (if the underlying
-			implementation allows it).
-
-@param	  dictionary
-				The instance of the dictionary to search.
-@param	  predicate
-				The predicate to be used as the condition for matching.
-@param	  cursor
-				The pointer to a cursor which is caller declared but callee
-				is responsible for populating.
-@return		The status of the operation.
-*/
-ion_err_t
-oafdict_find(
-	ion_dictionary_t	*dictionary,
-	ion_predicate_t		*predicate,
-	ion_dict_cursor_t	**cursor
-);
-
-/**
 @brief		Compares two key and returns the difference
 
 @details	Compares two key and returns the difference depending on the type
@@ -256,13 +240,11 @@ oafdict_find(
 			@p second_key.  If the return value is 0 then @p first_key is
 			equal to @p second_key.
 
-			If the key type is @p key_type_char_array then
-			@todo fix this commemt!
-			The function memcmp compares the size bytes of memory beginning at
-			a1 against the size bytes of memory beginning at a2. The value
-			returned has the same sign as the difference between the first
-			differing pair of bytes (interpreted as unsigned char objects,
-			then promoted to int).
+			If the key type is key_type_char_array then the function memcmp
+			compares the size bytes of memory beginning at a1 against the size
+			bytes of memory beginning at a2. The value returned has the same sign
+			as the difference between the first differing pair of bytes (interpreted
+			as unsigned char objects, then promoted to int).
 
 @param	  first_key
 				The first key in the comparison.
@@ -291,41 +273,6 @@ oadict_next(
 );*/
 
 /**
-@brief		Next function to query and retrieve the next
-			<K,V> that stratifies the predicate of the cursor.
-
-@param	  cursor
-				The cursor to iterate over the results.
-@param		record
-@return		The status of the cursor.
-*/
-ion_cursor_status_t
-oafdict_next(
-	ion_dict_cursor_t	*cursor,
-	ion_record_t		*record
-);
-
-/**
-@brief		Compares two keys and determines if they are equal assuming
-			that they are equal is length (in size).
-
-@param	  dict
-					 The map the keys are associated with.
-@param	  key1
-					 The first key for comparison.
-@param	  key2
-					 The second key for comparison.
-@return		If the keys are equal.
-*/
-ion_boolean_t
-/*TODO Fix name of function */
-oafdict_is_equal(
-	ion_dictionary_t	*dict,
-	ion_key_t			key1,
-	ion_key_t			key2
-);
-
-/**
 @brief		Destroys the cursor.
 
 @details	Destroys the cursor when the user is finished with it.  The
@@ -340,75 +287,6 @@ oafdict_is_equal(
 void
 oafdict_destroy_cursor(
 	ion_dict_cursor_t **cursor
-);
-
-/**
-@brief		Tests the supplied @p key against the predicate registered in the
-			cursor.
-
-@param	  cursor
-				The cursor and predicate being used to test @p key against.
-@param	  key
-				The key to test.
-@return		The result is the key passes or fails the predicate test.
-*/
-ion_boolean_t
-oafdict_test_predicate(
-	ion_dict_cursor_t	*cursor,
-	ion_key_t			key
-);
-
-/**
-@brief			Starts scanning map looking for conditions that match
-				predicate and returns result.
-
-@details		Scans that map looking for the next value that satisfies the predicate.
-				The next valid index is returned through the cursor
-
-@param			cursor
-					A pointer to the cursor that is operating on the map.
-
-@return			The status of the scan.
-*/
-ion_err_t
-oafdict_scan(
-	ion_oafdict_cursor_t *cursor/* don't need to pass in the cursor */
-);
-
-/**
-@brief			Opens a specific open address file hash instance of a dictionary.
-
-@param			handler
-					A pointer to the handler for the specific dictionary being opened.
-@param			dictionary
-					The pointer declared by the caller that will reference
-					the instance of the dictionary opened.
-@param			config
-					The configuration info of the specific dictionary to be opened.
-@param			compare
-					Function pointer for the comparison function for the dictionary.
-
-@return			The status of opening the dictionary.
- */
-ion_err_t
-oafdict_open_dictionary(
-	ion_dictionary_handler_t		*handler,
-	ion_dictionary_t				*dictionary,
-	ion_dictionary_config_info_t	*config,
-	ion_dictionary_compare_t		compare
-);
-
-/**
-@brief			Closes an open address file hash instance of a dictionary.
-
-@param			dictionary
-					A pointer to the specific dictionary instance to be closed.
-
-@return			The status of closing the dictionary.
- */
-ion_err_t
-oafdict_close_dictionary(
-	ion_dictionary_t *dictionary
 );
 
 #if defined(__cplusplus)

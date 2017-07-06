@@ -1,15 +1,42 @@
 /******************************************************************************/
 /**
-@file
+@file		open_address_hash.c
 @author		Scott Ronald Fazackerley
 @brief		Open Address Hash Map
 @details	The open address hash map allows non-colliding entries into a hash table
-
 @todo   capture size of map
 @todo   prevent duplicate insertions
 @todo   When creating the hash-map, need to know something about what is going in it.
 		What we need to know if the the size of the key and the size of the data.
 		That is all.  Nothing else.
+@copyright	Copyright 2017
+			The University of British Columbia,
+			IonDB Project Contributors (see AUTHORS.md)
+@par Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions are met:
+
+@par 1.Redistributions of source code must retain the above copyright notice,
+	this list of conditions and the following disclaimer.
+
+@par 2.Redistributions in binary form must reproduce the above copyright notice,
+	this list of conditions and the following disclaimer in the documentation
+	and/or other materials provided with the distribution.
+
+@par 3.Neither the name of the copyright holder nor the names of its contributors
+	may be used to endorse or promote products derived from this software without
+	specific prior written permission.
+
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
 
@@ -43,13 +70,13 @@ oah_initialize(
 		return 1;
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	printf("Initializing hash table\n");
 #endif
 
 	/* Initialize hash table */
 	for (i = 0; i < size; i++) {
-		((ion_hash_bucket_t *) (hashmap->entry + ((hashmap->super.record.key_size + hashmap->super.record.value_size + SIZEOF(STATUS)) * i)))->status = EMPTY;
+		((ion_hash_bucket_t *) (hashmap->entry + ((hashmap->super.record.key_size + hashmap->super.record.value_size + SIZEOF(STATUS)) * i)))->status = ION_EMPTY;
 	}
 
 	return 0;
@@ -89,7 +116,6 @@ oah_update(
 	ion_key_t		key,
 	ion_value_t		value
 ) {
-	/* TODO: lock potentially required */
 	ion_write_concern_t current_write_concern = hash_map->write_concern;
 
 	hash_map->write_concern = wc_update;/* change write concern to allow update */
@@ -118,10 +144,10 @@ oah_insert(
 	while (count != hash_map->map_size) {
 		item = ((ion_hash_bucket_t *) ((hash_map->entry + (hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS)) * loc)));
 
-		if (item->status == IN_USE) {
+		if (item->status == ION_IN_USE) {
 			/* if a cell is in use, need to key to */
 
-			if (hash_map->super.compare(item->data, key, hash_map->super.record.key_size) == IS_EQUAL) {
+			if (hash_map->super.compare(item->data, key, hash_map->super.record.key_size) == ION_IS_EQUAL) {
 				if (hash_map->write_concern == wc_insert_unique) {
 					/* allow unique entries only */
 					return ION_STATUS_ERROR(err_duplicate_key);
@@ -132,13 +158,13 @@ oah_insert(
 					return ION_STATUS_OK(1);
 				}
 				else {
-					return ION_STATUS_ERROR(err_write_concern);	/* there is a configuration issue with write concern */
+					return ION_STATUS_ERROR(err_file_write_error);	/* there is a configuration issue with write concern */
 				}
 			}
 		}
-		else if ((item->status == EMPTY) || (item->status == DELETED)) {
+		else if ((item->status == ION_EMPTY) || (item->status == ION_DELETED)) {
 			/* problem is here with base types as it is just an array of data.  Need better way */
-			item->status = IN_USE;
+			item->status = ION_IN_USE;
 			memcpy(item->data, key, (hash_map->super.record.key_size));
 			memcpy(item->data + hash_map->super.record.key_size, value, (hash_map->super.record.value_size));
 			return ION_STATUS_OK(1);
@@ -151,13 +177,13 @@ oah_insert(
 			loc = 0;
 		}
 
-#if DEBUG
+#if ION_DEBUG
 		printf("checking location %i\n", loc);
 #endif
 		count++;
 	}
 
-#if DEBUG
+#if ION_DEBUG
 	printf("Hash table full.  Insert not done");
 #endif
 
@@ -183,20 +209,16 @@ oah_find_item_loc(
 		/* locate first item */
 		ion_hash_bucket_t *item = (((ion_hash_bucket_t *) ((hash_map->entry + (hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS)) * loc))));
 
-		if (item->status == EMPTY) {
+		if (item->status == ION_EMPTY) {
 			return err_item_not_found;	/* if you hit an empty cell, exit */
 		}
 		else {
 			/* calculate if there is a match */
 
-			if (item->status != DELETED) {
-				/*@todo correct compare to use proper returen type*/
-				/*@todo An error exisits with the comparitor from the dictionary and will need to be
-				 * revisitied onced fixed */
-
+			if (item->status != ION_DELETED) {
 				int key_is_equal = hash_map->super.compare(item->data, key, hash_map->super.record.key_size);
 
-				if (IS_EQUAL == key_is_equal) {
+				if (ION_IS_EQUAL == key_is_equal) {
 					(*location) = loc;
 					return err_ok;
 				}
@@ -223,7 +245,7 @@ oah_delete(
 	int loc = -1;
 
 	if (oah_find_item_loc(hash_map, key, &loc) == err_item_not_found) {
-#if DEBUG
+#if ION_DEBUG
 		printf("Item not found when trying to oah_delete.\n");
 #endif
 		return ION_STATUS_ERROR(err_item_not_found);
@@ -232,9 +254,9 @@ oah_delete(
 		/* locate item */
 		ion_hash_bucket_t *item = (((ion_hash_bucket_t *) ((hash_map->entry + (hash_map->super.record.key_size + hash_map->super.record.value_size + SIZEOF(STATUS)) * loc))));
 
-		item->status = DELETED;	/* delete item */
+		item->status = ION_DELETED;	/* delete item */
 
-#if DEBUG
+#if ION_DEBUG
 		printf("Item deleted at location %d\n", loc);
 #endif
 		return ION_STATUS_OK(1);
@@ -242,7 +264,7 @@ oah_delete(
 }
 
 ion_status_t
-oah_query(
+oah_get(
 	ion_hashmap_t	*hash_map,
 	ion_key_t		key,
 	ion_value_t		value
@@ -250,7 +272,7 @@ oah_query(
 	int loc;
 
 	if (oah_find_item_loc(hash_map, key, &loc) == err_ok) {
-#if DEBUG
+#if ION_DEBUG
 		printf("Item found at location %d\n", loc);
 #endif
 
@@ -262,13 +284,26 @@ oah_query(
 		return ION_STATUS_OK(1);
 	}
 	else {
-#if DEBUG
+#if ION_DEBUG
 		printf("Item not found in hash table.\n");
 #endif
 		return ION_STATUS_ERROR(err_item_not_found);
 	}
 }
 
+/**
+@brief		Helper function to print out map.
+
+@details	Helper function that displays the contents of the map including
+			both key and value.
+
+@param		hash_map
+				The map into which the data is going to be inserted.
+@param		size
+				The number of buckets available in the map.
+@param		record
+				The structure of the record being inserted.
+*/
 void
 oah_print(
 	ion_hashmap_t		*hash_map,
@@ -282,7 +317,7 @@ oah_print(
 	for (i = 0; i < size; i++) {
 		printf("%d -- %i ", i, ((ion_hash_bucket_t *) ((hash_map->entry + (record->key_size + record->value_size + SIZEOF(STATUS)) * i)))->status);
 		{
-			if (((ion_hash_bucket_t *) ((hash_map->entry + (record->key_size + record->value_size + SIZEOF(STATUS)) * i)))->status == (EMPTY | DELETED)) {
+			if (((ion_hash_bucket_t *) ((hash_map->entry + (record->key_size + record->value_size + SIZEOF(STATUS)) * i)))->status == (ION_EMPTY | ION_DELETED)) {
 				printf("(null)");
 			}
 			else {
@@ -306,8 +341,6 @@ oah_compute_simple_hash(
 ) {
 	UNUSED(size_of_key);
 
-	/* convert to a hashable value */
-	/*@todo int will cause an issues depending on sizeof int */
 	ion_hash_t hash = (ion_hash_t) (((*(int *) key) % hashmap->map_size) + hashmap->map_size) % hashmap->map_size;
 
 	return hash;
