@@ -401,10 +401,10 @@ function(GENERATE_ARDUINO_LIBRARY INPUT_NAME)
 
     get_arduino_flags(ARDUINO_COMPILE_FLAGS ARDUINO_LINK_FLAGS  ${INPUT_BOARD} ${INPUT_PROCESSOR} ${INPUT_MANUAL})
 
-    set(ARDUINO_LINK_FLAGS) #TODO: Is this necessary?
+    set(ARDUINO_LINK_FLAGS)
     set(LINK_FLAGS)
     set_target_properties(${INPUT_NAME} PROPERTIES
-                COMPILE_FLAGS "${ARDUINO_COMPILE_FLAGS} ${LIB_DEP_INCLUDES}" # TODO: ${COMPILE_FLAGS}
+                COMPILE_FLAGS "${ARDUINO_COMPILE_FLAGS} ${LIB_DEP_INCLUDES}"
                 LINK_FLAGS "${ARDUINO_LINK_FLAGS} ${LINK_FLAGS}")
 
     target_link_libraries(${INPUT_NAME} ${ALL_LIBS} "-lc -lm")
@@ -537,7 +537,6 @@ endfunction()
 # see documentation at top
 #=============================================================================#
 function(GENERATE_AVR_FIRMWARE INPUT_NAME)
-    # TODO: This is not optimal!!!!
     message(STATUS "Generating ${INPUT_NAME}")
     parse_generator_arguments(${INPUT_NAME} INPUT
                               "NO_AUTOLIBS;MANUAL;PROCESSOR"    # Options
@@ -940,8 +939,6 @@ function(find_arduino_libraries VAR_NAME SRCS ARDLIBS)
     foreach(SRC ${SRCS})
 
         # Skipping generated files. They are, probably, not exist yet.
-        # TODO: Maybe it's possible to skip only really nonexisting files,
-        # but then it will be less deterministic.
         get_source_file_property(_srcfile_generated ${SRC} GENERATED)
         # Workaround for sketches, which are marked as generated
         get_source_file_property(_sketch_generated ${SRC} GENERATED_SKETCH)
@@ -954,7 +951,7 @@ function(find_arduino_libraries VAR_NAME SRCS ARDLIBS)
             endif()
             file(STRINGS ${SRC} SRC_CONTENTS)
 
-            foreach(LIBNAME ${ARDLIBS}) # TODO: Duplicate ARDLIBS
+            foreach(LIBNAME ${ARDLIBS})
                 list(APPEND SRC_CONTENTS "#include <${LIBNAME}.h>")
             endforeach()
 
@@ -1427,7 +1424,6 @@ function(setup_arduino_programmer_args BOARD_ID PROCESSOR PROGRAMMER TARGET_NAME
 
     list(APPEND AVRDUDE_ARGS "-C${ARDUINO_AVRDUDE_CONFIG_PATH}")
 
-    #TODO: Check mandatory settings before continuing
     if(NOT ${PROGRAMMER}.protocol)
         message(FATAL_ERROR "Missing ${PROGRAMMER}.protocol, aborting!")
     endif()

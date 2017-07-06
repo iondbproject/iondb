@@ -1,8 +1,36 @@
 /******************************************************************************/
 /**
-@file
+@file		open_address_hash.h
 @author		Scott Ronald Fazackerley
 @brief		A hash table using linear probing. Designed for in memory use.
+@copyright	Copyright 2017
+			The University of British Columbia,
+			IonDB Project Contributors (see AUTHORS.md)
+@par Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions are met:
+
+@par 1.Redistributions of source code must retain the above copyright notice,
+	this list of conditions and the following disclaimer.
+
+@par 2.Redistributions in binary form must reproduce the above copyright notice,
+	this list of conditions and the following disclaimer in the documentation
+	and/or other materials provided with the distribution.
+
+@par 3.Neither the name of the copyright holder nor the names of its contributors
+	may be used to endorse or promote products derived from this software without
+	specific prior written permission.
+
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
 
@@ -26,9 +54,9 @@ extern "C" {
 
 #include "../../key_value/kv_system.h"
 
-#define EMPTY	-1
-#define DELETED -2
-#define IN_USE	-3
+#define ION_EMPTY	-1
+#define ION_DELETED -2
+#define ION_IN_USE	-3
 #define SIZEOF(STATUS) 1
 
 /**
@@ -216,30 +244,10 @@ oah_delete(
 				The value associated in the map.
 */
 ion_status_t
-oah_query(
+oah_get(
 	ion_hashmap_t	*hash_map,
 	ion_key_t		key,
 	ion_value_t		value
-);
-
-/**
-@brief		Helper function to print out map.
-
-@details	Helper function that displays the contents of the map including
-			both key and value.
-
-@param		hash_map
-				The map into which the data is going to be inserted.
-@param		size
-				The number of buckets available in the map.
-@param		record
-				The structure of the record being inserted.
-*/
-void
-oah_print(
-	ion_hashmap_t		*hash_map,
-	int					size,
-	ion_record_info_t	*record
 );
 
 /**

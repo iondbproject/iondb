@@ -3,7 +3,7 @@ project(test_flat_file)
 
 set(SOURCE_FILES
     test_flat_file.h
-    test_flat_file.c
+        test_flat_file.c
     test_flat_file_dictionary_handler.h
     test_flat_file_dictionary_handler.c)
 

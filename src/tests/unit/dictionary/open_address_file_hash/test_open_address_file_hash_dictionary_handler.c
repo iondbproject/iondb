@@ -1,8 +1,38 @@
+/******************************************************************************/
 /**
-@file
-
+@file		test_open_address_file_hash_dictionary_handler.c
 @author		Scott Ronald Fazackerley
+@brief		Tests base operations for hash dict
+@copyright	Copyright 2017
+			The University of British Columbia,
+			IonDB Project Contributors (see AUTHORS.md)
+@par Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions are met:
+
+@par 1.Redistributions of source code must retain the above copyright notice,
+	this list of conditions and the following disclaimer.
+
+@par 2.Redistributions in binary form must reproduce the above copyright notice,
+	this list of conditions and the following disclaimer in the documentation
+	and/or other materials provided with the distribution.
+
+@par 3.Neither the name of the copyright holder nor the names of its contributors
+	may be used to endorse or promote products derived from this software without
+	specific prior written permission.
+
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+	POSSIBILITY OF SUCH DAMAGE.
 */
+/******************************************************************************/
 
 #if defined(__cplusplus)
 extern "C" {
@@ -10,7 +40,7 @@ extern "C" {
 
 #include "test_open_address_file_hash_dictionary_handler.h"
 
-#define MAX_HASH_TEST 100
+#define ION_MAX_HASH_TEST 100
 
 /**
 @brief		A helper function to build a test dictionary instance
@@ -191,7 +221,7 @@ test_open_address_file_dictionary_handler_query_with_results(
 	str = malloc(record_info.value_size);
 	sprintf((char *) str, "value : %i", *(int *) predicate.statement.equality.equality_value);
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL == memcmp(record.value, str, record_info.value_size));
+	PLANCK_UNIT_ASSERT_TRUE(tc, ION_IS_EQUAL == memcmp(record.value, str, record_info.value_size));
 
 	free(str);
 
@@ -297,20 +327,20 @@ test_open_address_file_dictionary_predicate_equality(
 
 	/* printf("key %i\n",*(int *)key_under_test); */
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == oafdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test, &(int) { 2 }, sizeof(int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == oafdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test, &(int) { -1 }, sizeof(int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == oafdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == test_predicate(cursor, key_under_test));
 
 	free(key_under_test);
 	free(cursor);
 
-	/* destroy cursor for cleanup TODO TODO memory leak cannot free here!! */
+	/* destroy cursor for cleanup */
 	/* cursor->destroy(&cursor); */
 	/* and destroy the dictionary instance */
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -354,29 +384,29 @@ test_open_address_file_dictionary_predicate_range_signed(
 
 	/* DUMP(*(int *)key_under_test,"%i"); */
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == oafdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test, &(int) { -1 }, sizeof(int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == oafdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test, &(int) { 1 }, sizeof(int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == oafdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test, &(int) { 2 }, sizeof(int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == oafdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test, &(int) { -2 }, sizeof(int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == oafdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == test_predicate(cursor, key_under_test));
 
 	free(key_under_test);
 
 	free(cursor);
 
-	/* destroy cursor for cleanup TODO TODO memory leak CANNOT free here!! */
+	/* destroy cursor for cleanup */
 	/* cursor->destroy(&cursor); */
 	/* and destroy the dictionary instance */
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -420,29 +450,29 @@ test_open_address_file_dictionary_predicate_range_unsigned(
 
 	/* printf("key %i\n",*(unsigned int *)key_under_test); */
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == oafdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test, &(unsigned int) { 1 }, sizeof(unsigned int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == oafdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test, &(unsigned int) { 2 }, sizeof(unsigned int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == oafdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_true == test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test, &(unsigned int) { 3 }, sizeof(unsigned int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == oafdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == test_predicate(cursor, key_under_test));
 
 	memcpy(key_under_test, &(unsigned int) { 4 }, sizeof(unsigned int));
 
-	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == oafdict_test_predicate(cursor, key_under_test));
+	PLANCK_UNIT_ASSERT_TRUE(tc, boolean_false == test_predicate(cursor, key_under_test));
 
 	free(key_under_test);
 
 	free(cursor);
 
-	/* destroy cursor for cleanup TODO TODO Memory leak here CANNOT free!!! */
+	/* destroy cursor for cleanup */
 	/* cursor->destroy(&cursor); */
 	/* and destroy the dictionary instance */
 	test_dictionary.handler->delete_dictionary(&test_dictionary);
@@ -496,7 +526,7 @@ test_open_address_file_dictionary_cursor_range(
 		str = malloc(record_info.value_size);
 		sprintf((char *) str, "value : %i", (*(int *) predicate.statement.range.lower_bound) + result_count);
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, IS_EQUAL == memcmp(record.value, str, record_info.value_size));
+		PLANCK_UNIT_ASSERT_TRUE(tc, ION_IS_EQUAL == memcmp(record.value, str, record_info.value_size));
 		result_count++;
 		free(str);
 	}

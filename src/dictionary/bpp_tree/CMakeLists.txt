@@ -26,8 +26,8 @@ if(USE_ARDUINO)
         ../../serial/serial_c_iface.h
         ../../serial/serial_c_iface.cpp
         ../../file/kv_stdio_intercept.h
-        ../../file/SD_stdio_c_iface.h
-        ../../file/SD_stdio_c_iface.cpp)
+            ../../file/sd_stdio_c_iface.h
+            ../../file/sd_stdio_c_iface.cpp)
 
 ##    if(DEBUG)
 #        set(${PROJECT_NAME}_SRCS

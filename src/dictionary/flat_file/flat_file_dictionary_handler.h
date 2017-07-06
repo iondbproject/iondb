@@ -1,27 +1,40 @@
 /******************************************************************************/
 /**
-@file
-@author		Kris Wallperington
+@file		flat_file_dictionary_handler.h
+@author		Eric Huang
 @brief		Function declarations at the dictionary interface level for the
 			flat file store.
 @details	These functions are not intended to be used directly. The entry
 			point here is the initialization function, which is used to bind
 			these functions to a dictionary.
-@copyright	Copyright 2016
-				The University of British Columbia,
-				IonDB Project Contributors (see AUTHORS.md)
-@par
-			Licensed under the Apache License, Version 2.0 (the "License");
-			you may not use this file except in compliance with the License.
-			You may obtain a copy of the License at
-					http://www.apache.org/licenses/LICENSE-2.0
-@par
-			Unless required by applicable law or agreed to in writing,
-			software distributed under the License is distributed on an
-			"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
-			either express or implied. See the License for the specific
-			language governing permissions and limitations under the
-			License.
+@copyright	Copyright 2017
+			The University of British Columbia,
+			IonDB Project Contributors (see AUTHORS.md)
+@par Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions are met:
+
+@par 1.Redistributions of source code must retain the above copyright notice,
+	this list of conditions and the following disclaimer.
+
+@par 2.Redistributions in binary form must reproduce the above copyright notice,
+	this list of conditions and the following disclaimer in the documentation
+	and/or other materials provided with the distribution.
+
+@par 3.Neither the name of the copyright holder nor the names of its contributors
+	may be used to endorse or promote products derived from this software without
+	specific prior written permission.
+
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
 
@@ -92,7 +105,7 @@ ffdict_get(
 				The ID to assign to the dictionary. This is either user defined or is given
 				by the master table.
 @param[in]	key_type
-				The category of key used by the dictionary. See @ref key_type for more information.
+				The category of key used by the dictionary. See @ref ION_KEY_TYPE for more information.
 @param[in]	key_size
 				The size of the keys used for this dictionary, specified in bytes. It is strongly
 				recommended to use a @p sizeof() directive to specify this size to avoid painful problems.
@@ -148,6 +161,18 @@ ffdict_delete_dictionary(
 );
 
 /**
+@brief		Cleans up all files created by the dictionary, and frees any allocated memory,
+			for an already closed dictionary.
+@param[in]	id
+				The identifier identifying the dictionary to delete.
+@return		The resulting status of the operation.
+*/
+ion_err_t
+ffdict_destroy_dictionary(
+	ion_dictionary_id_t id
+);
+
+/**
 @brief		Updates all records stored at @p key to have value equal to @p value.
 @details	If no records are stored at @p key, then an "upsert" (insert instead of update)
 			is performed.
@@ -164,96 +189,6 @@ ffdict_update(
 	ion_dictionary_t	*dictionary,
 	ion_key_t			key,
 	ion_value_t			value
-);
-
-/**
-@brief			Initializes a cursor query and returns an allocated cursor object.
-@details		Given a @p predicate that was previously initialized by @ref dictionary_build_predicate,
-				Build a cursor object that acts as the iterator for the desired query through the dictionary.
-@param[in]		dictionary
-					Which dictionary to query on.
-@param[in]		predicate
-					An allocated, initialized predicate object that defines the parameters of the query.
-@param[out]		cursor
-					A cursor pointer should be initialized to @p NULL, and then given to this function.
-					This function shall allocate appropriate memory and redirect @p cursor to point to
-					the allocated memory. **NOTE:** Anything originally pointed to by this cursor will
-					effectively be lost, if there is no other reference to said thing.
-@return			The resulting status of the operation.
-*/
-ion_err_t
-ffdict_find(
-	ion_dictionary_t	*dictionary,
-	ion_predicate_t		*predicate,
-	ion_dict_cursor_t	**cursor
-);
-
-/**
-@brief			Fetches the next record to be returned from a cursor that has already been initialized.
-@details		The returned record is written back to @p record, and then the cursor is advanced to the next
-				record. The returned status code signifies whether or not there are more results to traverse.
-				This function should not be called directly, but instead will be bound to the cursor like a method.
-@param[in]		cursor
-					Which cursor to fetch results from.
-@param[out]		record
-					An initialized record struct with the @p key and @p value appropriately allocated to fit
-					the returned key and value. This function will write back data to the struct.
-@return			The resulting status of the operation.
-*/
-ion_cursor_status_t
-ffdict_next(
-	ion_dict_cursor_t	*cursor,
-	ion_record_t		*record
-);
-
-/**
-@brief		Destroys and frees the given cursor.
-@details	This function should not be called directly, but instead accessed through the interface
-			the cursor object.
-@param[in]	cursor
-				Which cursor to destroy.
-*/
-void
-ffdict_destroy_cursor(
-	ion_dict_cursor_t **cursor
-);
-
-/**
-@brief		Re-instances a previously created flat file store instance
-			and prepares it to be used again.
-@param[in]	handler
-				A handler that must be bound with the flat file's functions.
-@param[in]	dictionary
-				A dictionary that is allocated but not initialized. We will
-				store the details of the re-instanced flat file store in here.
-@param[in]	config
-				The configuration parameters previously used by the flat file store
-				we are opening. This must either be provided directly if dictionaries
-				are being managed manually, or will be provided by the dictionary manager
-				that is currently in use.
-@param[in]	compare
-				The comparison function that will be given by higher layers, based on the
-				destined key type.
-@return		The resulting status of the operation.
-*/
-ion_err_t
-ffdict_open_dictionary(
-	ion_dictionary_handler_t		*handler,
-	ion_dictionary_t				*dictionary,
-	ion_dictionary_config_info_t	*config,
-	ion_dictionary_compare_t		compare
-);
-
-/**
-@brief		Closes this flat file store and persists everything to disk
-			to be brought back later using @ref dictionary_open.
-@param[in]	dictionary
-				Which instance of a flat file store to close.
-@return		The resuling status of the operation.
-*/
-ion_err_t
-ffdict_close_dictionary(
-	ion_dictionary_t *dictionary
 );
 
 #if defined(__cplusplus)
