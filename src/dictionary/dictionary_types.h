@@ -7,30 +7,30 @@
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
-@par Redistribution and use in source and binary forms, with or without 
+@par Redistribution and use in source and binary forms, with or without
 	modification, are permitted provided that the following conditions are met:
-	
-@par 1.Redistributions of source code must retain the above copyright notice, 
+
+@par 1.Redistributions of source code must retain the above copyright notice,
 	this list of conditions and the following disclaimer.
-	
+
 @par 2.Redistributions in binary form must reproduce the above copyright notice,
-	this list of conditions and the following disclaimer in the documentation 
+	this list of conditions and the following disclaimer in the documentation
 	and/or other materials provided with the distribution.
-	
+
 @par 3.Neither the name of the copyright holder nor the names of its contributors
 	may be used to endorse or promote products derived from this software without
-	specific prior written permission. 
-	
-@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
-	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+	specific prior written permission.
+
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
@@ -59,23 +59,9 @@ typedef unsigned int ion_dictionary_id_t;
 typedef ion_byte_t ion_dict_use_t;
 
 /**
-@brief		Struct containing details for opening a dictionary previously
-			created.
+@brief		The position in the hashmap.
 */
-typedef struct {
-	ion_dictionary_id_t		id;					/**< The identifier used to
-													 identify the dictionary. */
-	ion_dict_use_t			use_type;			/**< How the dictionary will be
-													 used. Ignore if N/A. */
-	ion_key_type_t			type;					/**< The type of key to store.
-													*/
-	ion_key_size_t			key_size;			/**< The size of the key. */
-	ion_value_size_t		value_size;			/**< The size of the value. */
-	ion_dictionary_size_t	dictionary_size;	/**< The dictionary size
-													 parameter. Dependent on
-													 the dictionary
-													 implementation used. */
-} ion_dictionary_config_info_t;
+typedef int ion_hash_t;
 
 /**
 @brief		A dictionary instance variable.
@@ -171,6 +157,49 @@ enum ION_CURSOR_STATUS {
 typedef char ion_cursor_status_t;
 
 /**
+@brief		The status codes describing various states a dictionary can be
+			in.
+*/
+enum ION_DICTIONARY_STATUS {
+	/**> A status describing the situation when a dictionary is ready to be used. */
+	ion_dictionary_status_ok,
+	/**> A status describing the situation when a dictionary has been closed. */
+	ion_dictionary_status_closed,
+	/**> A status describing the situation when a dictionary operation modifying
+		 the dictionary has failed. */
+	ion_dictionary_status_error,
+};
+
+/**
+@brief		A short status describing the current status of a
+			dictionary.
+*/
+typedef char ion_dictionary_status_t;
+
+/**
+@brief		Struct containing details for opening a dictionary previously
+			created.
+*/
+typedef struct {
+	ion_dictionary_id_t		id;					/**< The identifier used to
+													 identify the dictionary. */
+	ion_dict_use_t			use_type;			/**< How the dictionary will be
+													 used. Ignore if N/A. */
+	ion_key_type_t			type;					/**< The type of key to store.
+													*/
+	ion_key_size_t			key_size;			/**< The size of the key. */
+	ion_value_size_t		value_size;			/**< The size of the value. */
+	ion_dictionary_size_t	dictionary_size;	/**< The dictionary size
+													 parameter. Dependent on
+													 the dictionary
+													 implementation used. */
+	ion_dictionary_type_t	dictionary_type;	/**< The type of dictionary
+													 implementation used. */
+	ion_dictionary_status_t dictionary_status;	/**< The current status of the
+													dictionary, either closed or ok. */
+} ion_dictionary_config_info_t;
+
+/**
 @brief		A dictionary_handler is responsible for dealing with the specific
 			interface for an underlying dictionary, but is decoupled from a
 			specific implementation.
@@ -220,6 +249,10 @@ struct dictionary_handler {
 		ion_dictionary_t *
 	);
 	/**< A pointer to the dictionaries dictionary removal function. */
+	ion_err_t (*destroy_dictionary)(
+		ion_dictionary_id_t id
+	);
+	/**< A pointer to the dictionaries dictionary destroy function. */
 	ion_err_t (*open_dictionary)(
 		ion_dictionary_handler_t *,
 		ion_dictionary_t *,
@@ -232,26 +265,6 @@ struct dictionary_handler {
 	);
 	/**< A pointer to the dictionaries close function */
 };
-
-/**
-@brief		The status codes describing various states a dictionary can be
-			in.
-*/
-enum ION_DICTIONARY_STATUS {
-	/**> A status describing the situation when a dictionary is ready to be used. */
-	ion_dictionary_status_ok,
-	/**> A status describing the situation when a dictionary has been closed. */
-	ion_dictionary_status_closed,
-	/**> A status describing the situation when a dictionary operation modifying
-		 the dictionary has failed. */
-	ion_dictionary_status_error,
-};
-
-/**
-@brief		A short status describing the current status of a
-			dictionary.
-*/
-typedef char ion_dictionary_status_t;
 
 /**
 @brief		A dictionary contains information regarding an instance of the
@@ -275,6 +288,7 @@ struct dictionary_parent {
 	ion_dictionary_compare_t	compare;/**< Comparison function for
 											  instance of map. */
 	ion_dictionary_id_t			id;		/**< ID of dictionary instance. */
+	ion_dictionary_type_t		type;	/**< Type of dictionary implementation used. */
 };
 
 /**

@@ -1,35 +1,35 @@
 /******************************************************************************/
 /**
 @file		iinq.h
-@author		Dana Klamut
+@author		IonDB Project
 @brief		This code contains definitions for iinq functions
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
-@par Redistribution and use in source and binary forms, with or without 
+@par Redistribution and use in source and binary forms, with or without
 	modification, are permitted provided that the following conditions are met:
-	
-@par 1.Redistributions of source code must retain the above copyright notice, 
+
+@par 1.Redistributions of source code must retain the above copyright notice,
 	this list of conditions and the following disclaimer.
-	
+
 @par 2.Redistributions in binary form must reproduce the above copyright notice,
-	this list of conditions and the following disclaimer in the documentation 
+	this list of conditions and the following disclaimer in the documentation
 	and/or other materials provided with the distribution.
-	
+
 @par 3.Neither the name of the copyright holder nor the names of its contributors
 	may be used to endorse or promote products derived from this software without
-	specific prior written permission. 
-	
-@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
-	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+	specific prior written permission.
+
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
@@ -50,7 +50,7 @@ typedef unsigned int ion_iinq_result_size_t;
 
 typedef struct {
 	ion_iinq_result_size_t	num_bytes;
-	unsigned char		*data;
+	unsigned char			*data;
 } ion_iinq_result_t;
 
 /**
@@ -72,10 +72,9 @@ typedef struct {
 typedef struct iinq_source ion_iinq_source_t;
 
 typedef struct iinq_cleanup {
-	ion_iinq_source_t		*reference;
+	ion_iinq_source_t	*reference;
 	struct iinq_cleanup *next;
 	struct iinq_cleanup *last;
-
 } ion_iinq_cleanup_t;
 
 struct iinq_source {
@@ -84,45 +83,45 @@ struct iinq_source {
 	ion_predicate_t				predicate;
 	ion_dict_cursor_t			*cursor;
 	ion_cursor_status_t			cursor_status;
-	ion_key_t				key;
-	ion_value_t				value;
-	ion_record_t			ion_record;
+	ion_key_t					key;
+	ion_value_t					value;
+	ion_record_t				ion_record;
 	ion_iinq_cleanup_t			cleanup;
 };
 
 ion_err_t
 iinq_create_source(
-		char					*schema_file_name,
-		ion_key_type_t				key_type,
-		ion_key_size_t			key_size,
-		ion_value_size_t		value_size
+	char				*schema_file_name,
+	ion_key_type_t		key_type,
+	ion_key_size_t		key_size,
+	ion_value_size_t	value_size
 );
 
 ion_err_t
 iinq_open_source(
-		char					*schema_file_name,
-		ion_dictionary_t			*dictionary,
-		ion_dictionary_handler_t	*handler
+	char						*schema_file_name,
+	ion_dictionary_t			*dictionary,
+	ion_dictionary_handler_t	*handler
 );
 
 ion_status_t
 iinq_insert(
-		char 		*schema_file_name,
-		ion_key_t	key,
-		ion_value_t value
+	char		*schema_file_name,
+	ion_key_t	key,
+	ion_value_t value
 );
 
 ion_status_t
 iinq_update(
-		char 		*schema_file_name,
-		ion_key_t	key,
-		ion_value_t value
+	char		*schema_file_name,
+	ion_key_t	key,
+	ion_value_t value
 );
 
 ion_status_t
 iinq_delete(
-		char 		*schema_file_name,
-		ion_key_t	key
+	char		*schema_file_name,
+	ion_key_t	key
 );
 
 ion_err_t

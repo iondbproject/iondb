@@ -1,8 +1,8 @@
 /******************************************************************************/
 /**
-@file		test_open_adress_hash_dictionary_handler.h
-@author		Scott Ronald Fazackerley
-@brief		Tests base operations for open address hash dict
+@file		LinearHash.h
+@author		Dana Klamut
+@brief		The C++ implementation of a linear hash dictionary.
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
@@ -34,27 +34,44 @@
 */
 /******************************************************************************/
 
-#ifndef TEST_OPEN_ADDRESS_HASH_HANDLER_H_
-#define TEST_OPEN_ADDRESS_HASH_HANDLER_H_
+#if !defined(PROJECT_LINEARHASH_H)
+#define PROJECT_LINEARHASH_H
 
-#include <stdio.h>
-#include <string.h>
-#include "../../../planck-unit/src/planck_unit.h"
-#include "../../../../dictionary/dictionary_types.h"
-#include "./../../../../dictionary/dictionary.h"
-#include "../../../../dictionary/open_address_hash/open_address_hash.h"
-#include "../../../../dictionary/open_address_hash/open_address_hash_dictionary_handler.h"
+#include "Dictionary.h"
+#include "../key_value/kv_system.h"
+#include "../dictionary/linear_hash/linear_hash_handler.h"
 
-#ifdef  __cplusplus
-extern "C" {
-#endif
+template<typename K, typename V>
+class LinearHash:public Dictionary<K, V> {
+public:
+/**
+@brief		Registers a specific linear hash dictionary instance.
 
-void
-runalltests_open_address_hash_handler(
-);
+@details	Registers functions for dictionary.
+@param		id
+				A unique identifier important for use of the dictionary through
+				the master table. If the dictionary is being created without
+				the master table, this identifier can be 0.
+@param		key_type
+				The type of keys to be stored in the dictionary.
+@param		key_size
+				The size of keys to be stored in the dictionary.
+@param	  value_size
+				The size of the values to be stored in the dictionary.
+@param	  dictionary_size
+				The size desired for the dictionary.
+*/
+LinearHash(
+	ion_dictionary_id_t		id,
+	ion_key_type_t			key_type,
+	ion_key_size_t			key_size,
+	ion_value_size_t		value_size,
+	ion_dictionary_size_t	dictionary_size
+) {
+	linear_hash_dict_init(&this->handler);
 
-#ifdef  __cplusplus
+	this->initializeDictionary(id, key_type, key_size, value_size, dictionary_size);
 }
-#endif
+};
 
-#endif
+#endif /* PROJECT_LINEARHASH_H */

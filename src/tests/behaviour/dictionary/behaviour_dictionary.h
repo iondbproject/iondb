@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		behaviour_dictionnary.h
+@file		behaviour_dictionary.h
 @author		Eric Huang
 @brief		Entry point for dictionary level behaviour tests.
 @details	Note that the tests assume a minimum capacity of 160 simultaneous
