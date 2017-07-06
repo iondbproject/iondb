@@ -31,6 +31,7 @@
 #include "cpp_wrapper/OpenAddressHash.h"
 #include "cpp_wrapper/BppTree.h"
 #include "cpp_wrapper/SkipList.h"
+#include "cpp_wrapper/MasterTable.h"
 
 #include "serial/serial_c_iface.h"
 
