@@ -1,23 +1,36 @@
 /******************************************************************************/
 /**
-@file
+@file		dictionary.c
 @author		Graeme Douglas, Scott Fazackerley
-@see		For more information, refer to @ref dictionary.h.
-@copyright	Copyright 2016
-				The University of British Columbia,
-				IonDB Project Contributors (see AUTHORS.md)
-@par
-			Licensed under the Apache License, Version 2.0 (the "License");
-			you may not use this file except in compliance with the License.
-			You may obtain a copy of the License at
-					http://www.apache.org/licenses/LICENSE-2.0
-@par
-			Unless required by applicable law or agreed to in writing,
-			software distributed under the License is distributed on an
-			"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
-			either express or implied. See the License for the specific
-			language governing permissions and limitations under the
-			License.
+@see		For more information, refer to dictionary.h.
+@copyright	Copyright 2017
+			The University of British Columbia,
+			IonDB Project Contributors (see AUTHORS.md)
+@par Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions are met:
+
+@par 1.Redistributions of source code must retain the above copyright notice,
+	this list of conditions and the following disclaimer.
+
+@par 2.Redistributions in binary form must reproduce the above copyright notice,
+	this list of conditions and the following disclaimer in the documentation
+	and/or other materials provided with the distribution.
+
+@par 3.Neither the name of the copyright holder nor the names of its contributors
+	may be used to endorse or promote products derived from this software without
+	specific prior written permission.
+
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
 
@@ -31,6 +44,45 @@ dictionary_get_filename(
 	char				*filename
 ) {
 	return snprintf(filename, ION_MAX_FILENAME_LENGTH, "%d.%s", id, ext);
+}
+
+/**
+@brief		Compare any two character (byte) arrays. These are not assumed
+			to be null-terminated.
+@param		first_key
+				The first (left) key being compared.
+@param		second_key
+				The second (right) key being compared.
+@param		key_size
+				The size of the keys being compared.
+@return		The resulting comparison value.
+*/
+char
+dictionary_compare_char_array(
+	ion_key_t		first_key,
+	ion_key_t		second_key,
+	ion_key_size_t	key_size
+) {
+	return strncmp((char *) first_key, (char *) second_key, key_size);
+}
+
+/**
+@brief		Compare any two null-terminated strings.
+@param		first_key
+				The first (left) key being compared.
+@param		second_key
+				The second (right) key being compared.
+@param		key_size
+				The (maximum) size of the keys being compared.
+@return		The resulting comparison value.
+*/
+char
+dictionary_compare_null_terminated_string(
+	ion_key_t		first_key,
+	ion_key_t		second_key,
+	ion_key_size_t	key_size
+) {
+	return strncmp((char *) first_key, (char *) second_key, key_size);
 }
 
 ion_dictionary_compare_t
@@ -129,6 +181,20 @@ dictionary_delete_dictionary(
 	return dictionary->handler->delete_dictionary(dictionary);
 }
 
+ion_err_t
+dictionary_destroy_dictionary(
+	ion_dictionary_handler_t	*handler,
+	ion_dictionary_id_t			id
+) {
+	ion_err_t error = handler->destroy_dictionary(id);
+
+	if (err_not_implemented == error) {
+		error = ffdict_destroy_dictionary(id);
+	}
+
+	return error;
+}
+
 ion_status_t
 dictionary_delete(
 	ion_dictionary_t	*dictionary,
@@ -144,7 +210,7 @@ dictionary_compare_unsigned_value(
 	ion_key_size_t	key_size
 ) {
 	int		idx;
-	char	return_value = 0x73;/* Magic default return value to be easy to spot */
+	char	return_value = ION_RETURN_VALUE;
 
 	/*
 	 * In this case, the endianness of the process does matter as the code does
@@ -155,14 +221,13 @@ dictionary_compare_unsigned_value(
 	for (idx = key_size - 1; idx >= 0; idx--) {
 #else
 
-	/*@todo This is a potential issue and needs to be tested on SAMD3 */
 	for (idx = 0; idx < key_size; idx++) {
 #endif
 
 		ion_byte_t	firstbyte	= *((ion_byte_t *) first_key + idx);
 		ion_byte_t	secondbyte	= *((ion_byte_t *) second_key + idx);
 
-		if ((return_value = (firstbyte > secondbyte) - (firstbyte < secondbyte)) != ZERO) {
+		if ((return_value = (firstbyte > secondbyte) - (firstbyte < secondbyte)) != ION_ZERO) {
 			return return_value;
 		}
 	}
@@ -177,7 +242,7 @@ dictionary_compare_signed_value(
 	ion_key_size_t	key_size
 ) {
 	int		idx;
-	char	return_value = 0x73;/* Magic default return value to be easy to spot TODO refactor out into macro */
+	char	return_value = ION_RETURN_VALUE;
 
 	/*
 	 * In this case, the endianness of the process does matter as the code does
@@ -195,7 +260,7 @@ dictionary_compare_signed_value(
 	ion_byte_t	secondbyte	= *((ion_byte_t *) second_key + idx);
 
 	/* Do bit comparison on the sign bit to do positive/negative comparison. Lets us exit early in many cases */
-	if ((return_value = (secondbyte >> 7) - (firstbyte >> 7)) != ZERO) {
+	if ((return_value = (secondbyte >> 7) - (firstbyte >> 7)) != ION_ZERO) {
 		return return_value;
 	}
 
@@ -205,36 +270,17 @@ dictionary_compare_signed_value(
 	for (; idx >= 0; idx--) {
 #else
 
-	/*@todo This is a potential issue and needs to be tested on SAMD3 */
 	for (; idx < key_size; idx++) {
 #endif
 		firstbyte	= *((ion_byte_t *) first_key + idx);
 		secondbyte	= *((ion_byte_t *) second_key + idx);
 
-		if ((return_value = (firstbyte > secondbyte) - (firstbyte < secondbyte)) != ZERO) {
+		if ((return_value = (firstbyte > secondbyte) - (firstbyte < secondbyte)) != ION_ZERO) {
 			return return_value;
 		}
 	}
 
 	return return_value;
-}
-
-char
-dictionary_compare_char_array(
-	ion_key_t		first_key,
-	ion_key_t		second_key,
-	ion_key_size_t	key_size
-) {
-	return strncmp((char *) first_key, (char *) second_key, key_size);
-}
-
-char
-dictionary_compare_null_terminated_string(
-	ion_key_t		first_key,
-	ion_key_t		second_key,
-	ion_key_size_t	key_size
-) {
-	return strncmp((char *) first_key, (char *) second_key, key_size);
 }
 
 ion_err_t
@@ -297,7 +343,7 @@ dictionary_open(
 		}
 
 		if (cursor_status != cs_end_of_results) {
-			return err_dictionary_initialization_failed;
+			return err_uninitialized;
 		}
 
 		cursor->destroy(&cursor);
@@ -375,8 +421,10 @@ dictionary_close(
 			}
 		}
 
-		if (cs_end_of_results != cursor_status) {
-			return err_dictionary_initialization_failed;
+		/* Cursor has either reached the end of the result set or there was no
+		   result set to traverse, and the cursor remains uninitialized. */
+		if ((cs_end_of_results != cursor_status) && (cs_cursor_uninitialized != cursor_status)) {
+			return err_uninitialized;
 		}
 
 		cursor->destroy(&cursor);
@@ -401,6 +449,63 @@ dictionary_close(
 	}
 
 	return error;
+}
+
+/**
+@brief		Destroys an equality predicate.
+@details	This function should not be called directly. Instead, it is set
+			while building the predicate.
+@param		predicate
+				A pointer to the pointer to the predicate object being
+				destroyed.
+*/
+void
+dictionary_destroy_predicate_equality(
+	ion_predicate_t **predicate
+) {
+	if (*predicate != NULL) {
+		free((*predicate)->statement.equality.equality_value);
+		free(*predicate);
+		*predicate = NULL;
+	}
+}
+
+/**
+@brief		Destroys a range predicate.
+@details	This function should not be called directly. Instead, it is set
+			while building the predicate.
+@param		predicate
+				A pointer to the pointer to the predicate object being
+				destroyed.
+*/
+void
+dictionary_destroy_predicate_range(
+	ion_predicate_t **predicate
+) {
+	if (*predicate != NULL) {
+		free((*predicate)->statement.range.upper_bound);
+		free((*predicate)->statement.range.lower_bound);
+		free(*predicate);
+		*predicate = NULL;
+	}
+}
+
+/**
+@brief		Destroys an all records predicate.
+@details	This function should not be called directly. Instead, it is set
+			while building the predicate.
+@param		predicate
+				A pointer to the pointer to the predicate object being
+				destroyed.
+*/
+void
+dictionary_destroy_predicate_all_records(
+	ion_predicate_t **predicate
+) {
+	if (*predicate != NULL) {
+		free(*predicate);
+		*predicate = NULL;
+	}
 }
 
 ion_err_t
@@ -440,7 +545,6 @@ dictionary_build_predicate(
 		}
 
 		case predicate_predicate: {
-			/* TODO not implemented */
 			return err_invalid_predicate;
 		}
 
@@ -454,39 +558,6 @@ dictionary_build_predicate(
 	return err_ok;
 }
 
-void
-dictionary_destroy_predicate_equality(
-	ion_predicate_t **predicate
-) {
-	if (*predicate != NULL) {
-		free((*predicate)->statement.equality.equality_value);
-		free(*predicate);
-		*predicate = NULL;
-	}
-}
-
-void
-dictionary_destroy_predicate_range(
-	ion_predicate_t **predicate
-) {
-	if (*predicate != NULL) {
-		free((*predicate)->statement.range.upper_bound);
-		free((*predicate)->statement.range.lower_bound);
-		free(*predicate);
-		*predicate = NULL;
-	}
-}
-
-void
-dictionary_destroy_predicate_all_records(
-	ion_predicate_t **predicate
-) {
-	if (*predicate != NULL) {
-		free(*predicate);
-		*predicate = NULL;
-	}
-}
-
 ion_err_t
 dictionary_find(
 	ion_dictionary_t	*dictionary,
@@ -494,4 +565,45 @@ dictionary_find(
 	ion_dict_cursor_t	**cursor
 ) {
 	return dictionary->handler->find(dictionary, predicate, cursor);
+}
+
+ion_boolean_t
+test_predicate(
+	ion_dict_cursor_t	*cursor,
+	ion_key_t			key
+) {
+	ion_dictionary_parent_t *parent		= cursor->dictionary->instance;
+	ion_key_size_t			key_size	= cursor->dictionary->instance->record.key_size;
+	ion_boolean_t			result		= boolean_false;
+
+	switch (cursor->predicate->type) {
+		case predicate_equality: {
+			if (parent->compare(key, cursor->predicate->statement.equality.equality_value, cursor->dictionary->instance->record.key_size) == 0) {
+				result = boolean_true;
+			}
+
+			break;
+		}
+
+		case predicate_range: {
+			ion_key_t	lower_b			= cursor->predicate->statement.range.lower_bound;
+			ion_key_t	upper_b			= cursor->predicate->statement.range.upper_bound;
+
+			/* Check if key >= lower bound */
+			ion_boolean_t comp_lower	= parent->compare(key, lower_b, key_size) >= 0;
+
+			/* Check if key <= upper bound */
+			ion_boolean_t comp_upper	= parent->compare(key, upper_b, key_size) <= 0;
+
+			result = comp_lower && comp_upper;
+			break;
+		}
+
+		case predicate_all_records: {
+			result = boolean_true;
+			break;
+		}
+	}
+
+	return result;
 }

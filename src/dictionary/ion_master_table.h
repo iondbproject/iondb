@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file
+@file		ion_master_table.h
 @author		Eric Huang, Graeme Douglas, Scott Fazackerley, Wade Penson
 @brief		Master table API.
 @details	At compile time, the master table is either used, OR it is not
@@ -13,21 +13,34 @@
 			If the master table is not used, the user must provide IDs directly
 			to dictionary creation and the onus is on the user to resolve
 			conflicts, if they occur.
-@copyright	Copyright 2016
-				The University of British Columbia,
-				IonDB Project Contributors (see AUTHORS.md)
-@par
-			Licensed under the Apache License, Version 2.0 (the "License");
-			you may not use this file except in compliance with the License.
-			You may obtain a copy of the License at
-					http://www.apache.org/licenses/LICENSE-2.0
-@par
-			Unless required by applicable law or agreed to in writing,
-			software distributed under the License is distributed on an
-			"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
-			either express or implied. See the License for the specific
-			language governing permissions and limitations under the
-			License.
+@copyright	Copyright 2017
+			The University of British Columbia,
+			IonDB Project Contributors (see AUTHORS.md)
+@par Redistribution and use in source and binary forms, with or without
+	modification, are permitted provided that the following conditions are met:
+
+@par 1.Redistributions of source code must retain the above copyright notice,
+	this list of conditions and the following disclaimer.
+
+@par 2.Redistributions in binary form must reproduce the above copyright notice,
+	this list of conditions and the following disclaimer in the documentation
+	and/or other materials provided with the distribution.
+
+@par 3.Neither the name of the copyright holder nor the names of its contributors
+	may be used to endorse or promote products derived from this software without
+	specific prior written permission.
+
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
 
@@ -39,8 +52,18 @@ extern "C" {
 #endif
 
 #include "dictionary.h"
-#include "../file/SD_stdio_c_iface.h"
+#include "../file/sd_stdio_c_iface.h"
 #include "../file/kv_stdio_intercept.h"
+#include "bpp_tree/bpp_tree_handler.h"
+#include "flat_file/flat_file_dictionary_handler.h"
+#include "open_address_file_hash/open_address_file_hash_dictionary_handler.h"
+#include "open_address_hash/open_address_hash_dictionary_handler.h"
+#include "skip_list/skip_list_handler.h"
+#include "linear_hash/linear_hash_handler.h"
+
+#define ION_MASTER_TABLE_CALCULATE_POS	-1
+#define ION_MASTER_TABLE_WRITE_FROM_END -2
+#define ION_MASTER_TABLE_RECORD_SIZE(cp) (sizeof((cp)->id) + sizeof((cp)->use_type) + sizeof((cp)->type) + sizeof((cp)->key_size) + sizeof((cp)->value_size) + sizeof((cp)->dictionary_size) + sizeof((cp)->dictionary_type) + sizeof((cp)->dictionary_status))
 
 #if ION_USING_MASTER_TABLE
 
@@ -78,6 +101,29 @@ extern ion_dictionary_id_t ion_master_table_next_id;
 extern FILE *ion_master_table_file;
 
 /**
+@brief		Write a record to the master table.
+@details	Automatically, this call will reposition the file position
+			back to where it was once the call is complete.
+@param[in]	config
+				A pointer to a previously allocated config object to write from.
+@param[in]	where
+				An integral value representing where to write to in the file.
+				This file offset is byte-aligned, not record aligned, in general.
+
+				Two special flags can be passed in here:
+					- @c ION_MASTER_TABLE_CALCULATE_POS
+						Calculate the position based on the passed-in config id.
+					- @c ION_MASTER_TABLE_WRITE_FROM_END
+						Write the record at the end of the file.
+@returns	An error code describing the result of the call.
+*/
+ion_err_t
+ion_master_table_write(
+	ion_dictionary_config_info_t	*config,
+	long							where
+);
+
+/**
 @brief	  Opens the master table.
 @details	Can be safely called multiple times without closing.
 */
@@ -91,6 +137,16 @@ ion_init_master_table(
 */
 ion_err_t
 ion_close_master_table(
+	void
+);
+
+/**
+@brief		Closes the master table and all dictionary instances within it.
+@details	For this method to work properly, all dictionary instances must already
+			be closed or must have been closed previously and are now re-opened.
+*/
+ion_err_t
+ion_close_all_master_table(
 	void
 );
 
@@ -134,22 +190,6 @@ ion_master_table_create_dictionary(
 );
 
 /**
-@brief		Adds the given dictionary to the master table.
-@param		dictionary
-				A pointer to the dictionary object to add to the master table.
-@param		dictionary_size
-				The implementation specific size parameter used when
-				creating the dictionary. This parameter must be passed
-				to this function by @ref ion_master_table_create_dictionary,
-				since not all implementations track the dictionary size.
-*/
-ion_err_t
-ion_add_to_master_table(
-	ion_dictionary_t		*dictionary,
-	ion_dictionary_size_t	dictionary_size
-);
-
-/**
 @brief		Looks up the config of the given id.
 @param		id
 				The identifier identifying the dictionary metadata in the
@@ -190,22 +230,20 @@ ion_find_by_use_master_table(
 
 /**
 @brief		Deletes a dictionary from the master table.
-@param		dictionary
-				A pointer to the dictionary object to delete (it contains its
-				own identifier info for the master table).
+@param		id
+				The identifier identifying the dictionary metadata in the
+				master table.
 @returns	An error code describing the result of the operation.
 */
 ion_err_t
 ion_delete_from_master_table(
-	ion_dictionary_t *dictionary
+	ion_dictionary_id_t id
 );
 
 /**
 @brief		Finds the target dictionary and opens it.
 @param		handler
-				A pointer to an initialized dictionary handler object
-				containing the implementation specific data and function
-				pointers for the dictionary to open.
+				A pointer to the handler object to be initialized.
 @param		dictionary
 				A pointer to the dictionary object to open.
 @param		id
@@ -228,6 +266,61 @@ ion_open_dictionary(
 ion_err_t
 ion_close_dictionary(
 	ion_dictionary_t *dictionary
+);
+
+/**
+@brief		Deletes a given dictionary instance and deletes it from the master
+			table.
+@param		dictionary
+				A pointer to the dictionary object to delete.
+@param		id
+				The identifier identifying the dictionary metadata in the
+				master table. Required to delete a closed dictionary without
+				reopening it.
+*/
+ion_err_t
+ion_delete_dictionary(
+	ion_dictionary_t	*dictionary,
+	ion_dictionary_id_t id
+);
+
+/**
+@brief		Retrieves the type of dictionary stored under a particular id in the
+			master table.
+@param		type
+				The type of dictionary instance to initialize the handler to.
+@param		handler
+				A pointer to the handler to be set.
+@returns	An error code describing the result of the operation.
+*/
+ion_err_t
+ion_switch_handler(
+	ion_dictionary_type_t		type,
+	ion_dictionary_handler_t	*handler
+);
+
+/**
+@brief		Returns the next dictionary ID, then increments.
+@param		id
+				An identifier pointer to be written into.
+@returns	An error code describing the result of the operation.
+*/
+ion_err_t
+ion_master_table_get_next_id(
+	ion_dictionary_id_t *id
+);
+
+/**
+@brief		Retrieves the type of dictionary stored under a particular id in the
+			master table.
+@param		id
+				The identifier identifying the dictionary metadata in the
+				master table.
+@returns	The type of dictionary implementation corresponding to the id.
+*/
+ion_dictionary_type_t
+ion_get_dictionary_type(
+	ion_dictionary_id_t id
 );
 
 #if defined(__cplusplus)

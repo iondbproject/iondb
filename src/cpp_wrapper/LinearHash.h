@@ -1,8 +1,8 @@
 /******************************************************************************/
 /**
-@file		bpp_tree_handler.h
-@author		Graeme Douglas
-@brief		The handler for a disk-backed B+ Tree.
+@file		LinearHash.h
+@author		Dana Klamut
+@brief		The C++ implementation of a linear hash dictionary.
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
@@ -34,48 +34,44 @@
 */
 /******************************************************************************/
 
-#if !defined(BPP_TREE_HANDLER_H_)
-#define BPP_TREE_HANDLER_H_
+#if !defined(PROJECT_LINEARHASH_H)
+#define PROJECT_LINEARHASH_H
 
-#if defined(__cplusplus)
-extern "C" {
-#endif
+#include "Dictionary.h"
+#include "../key_value/kv_system.h"
+#include "../dictionary/linear_hash/linear_hash_handler.h"
 
-#include "../dictionary_types.h"
-#include "./../dictionary.h"
-#include "../../key_value/kv_system.h"
-#include "../../file/linked_file_bag.h"
-#include "bpp_tree.h"
-
-typedef struct bplusplustree {
-	ion_dictionary_parent_t super;
-	ion_bpp_handle_t		tree;
-	ion_lfb_t				values;
-} ion_bpptree_t;
-
-typedef struct {
-	ion_dict_cursor_t	super;		/**< Supertype of cursor		*/
-	ion_key_t			cur_key;/**< Current key we're visiting */
-	ion_file_offset_t	offset;		/**< offset in LFB; holds value */
-} ion_bpp_cursor_t;
-
+template<typename K, typename V>
+class LinearHash:public Dictionary<K, V> {
+public:
 /**
-@brief		Registers a specific handler for a  dictionary instance.
+@brief		Registers a specific linear hash dictionary instance.
 
-@details	Registers functions for handlers.  This only needs to be called
-			once for each type of dictionary that is present.
-
-@param	  handler
-				The handler for the dictionary instance that is to be
-				initialized.
+@details	Registers functions for dictionary.
+@param		id
+				A unique identifier important for use of the dictionary through
+				the master table. If the dictionary is being created without
+				the master table, this identifier can be 0.
+@param		key_type
+				The type of keys to be stored in the dictionary.
+@param		key_size
+				The size of keys to be stored in the dictionary.
+@param	  value_size
+				The size of the values to be stored in the dictionary.
+@param	  dictionary_size
+				The size desired for the dictionary.
 */
-void
-bpptree_init(
-	ion_dictionary_handler_t *handler
-);
+LinearHash(
+	ion_dictionary_id_t		id,
+	ion_key_type_t			key_type,
+	ion_key_size_t			key_size,
+	ion_value_size_t		value_size,
+	ion_dictionary_size_t	dictionary_size
+) {
+	linear_hash_dict_init(&this->handler);
 
-#if defined(__cplusplus)
+	this->initializeDictionary(id, key_type, key_size, value_size, dictionary_size);
 }
-#endif
+};
 
-#endif /* BPP_TREE_HANDLER_H_ */
+#endif /* PROJECT_LINEARHASH_H */

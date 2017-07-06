@@ -33,7 +33,7 @@ For extensive information on IonDB, refer to our [documentation pages](http://io
 
 # License
 
-IonDB is licensed under the Apache License. For more information, please refer to [the license file](LICENSE.md).
+IonDB is licensed under the BSD-Clause 3 License. For more information, please refer to [the license file](LICENSE.md).
 
 # Collaboration
 
