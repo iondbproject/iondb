@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		iinq_user.h
+@file		iinq_query_iterator.c
 @author		Dana Klamut
 @brief		This code contains definitions for iinq user functions
 @copyright	Copyright 2017
@@ -34,63 +34,17 @@
 */
 /******************************************************************************/
 
-#if !defined(IINQ_USER_H_)
-#define IINQ_USER_H_
-
-#if defined(__cplusplus)
-extern "C" {
-#endif
-
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-#include "../../dictionary/dictionary_types.h"
 #include "iinq_query_iterator.h"
-#include "../../dictionary/dictionary.h"
 
-/**
-@brief		A supertype for query iterator objects.
-@details	This is a super type. The state information
-			must be stored within a subtype that makes
-			sense to the particular dictionary implementation.
+ion_dict_cursor_t
+query_init(
+	ion_predicate_t predicate
+) {
+/*	ion_record_t ion_record; */
+/*	ion_record.key		= malloc(key_size); */
+/*	ion_record.value	= malloc(value_size); */
 
-			There are different types of cursors for different types of
-			dictionary operations.
-*/
-struct query_iterator {
-	ion_cursor_status_t status;	/**< Status of last cursor call. */
-	ion_record_t		record;		/**< The current record returned by the
-												iterator. */
+	ion_dict_cursor_t cursor;
 
-	ion_record_t		(*next)(
-	);
-	/**< A pointer to the next function,
-		 which returns the next record). */
-	ion_dict_cursor_t (*init)(
-		ion_predicate_t predicate	/**< Initialized predicate of the query. */
-	);
-	/**< A pointer to the next function,
-		 which returns the next record). */
-	void (*destroy)(
-	);
-	/**< A pointer to the function used
-		 to destroy the cursor (frees
-		 internal memory). */
-};
-
-/**
-@brief		The iterator for a query.
-@see		query_iterator
-*/
-typedef struct query_iterator ion_query_iterator_t;
-
-ion_query_iterator_t
-SQL_query(
-	char *sql_string
-);
-
-#if defined(__cplusplus)
+	return cursor;
 }
-#endif
-
-#endif
