@@ -102,7 +102,7 @@ ion_flash_min_sort_init(
 				return err_file_read_error;
 			}
 
-			if (((0 == fms->cur_page_in_region) && (0 == fms->cur_byte_in_page)) || (less_than == es->compare_function(es->context, fms->temp_value, cursor->buffer + fms->cur_byte_in_buffer))) {
+			if (((0 == fms->cur_page_in_region) && (0 == fms->cur_byte_in_page)) || (A_lt_B == es->compare_function(es->context, fms->temp_value, cursor->buffer + fms->cur_byte_in_buffer))) {
 				memcpy(cursor->buffer + fms->cur_byte_in_buffer, fms->temp_value, es->value_size);
 			}
 		}
@@ -154,7 +154,7 @@ ion_flash_min_sort_next(
 			uint16_t	temp_byte_in_buffer = 0;
 
 			while (temp_region < fms->num_regions) {
-				if ((0 != ION_FMS_GET_FLAG(fms->min_index_bit_vector, temp_region)) && ((boolean_true == fms->is_cur_null) || (greater_than == es->compare_function(es->context, fms->cur_value, cursor->buffer + temp_byte_in_buffer)))) {
+				if ((0 != ION_FMS_GET_FLAG(fms->min_index_bit_vector, temp_region)) && ((boolean_true == fms->is_cur_null) || (A_gt_B == es->compare_function(es->context, fms->cur_value, cursor->buffer + temp_byte_in_buffer)))) {
 					fms->is_cur_null		= boolean_false;
 					memcpy(fms->cur_value, cursor->buffer + temp_byte_in_buffer, es->value_size);
 					fms->cur_region			= temp_region;
@@ -214,15 +214,15 @@ ion_flash_min_sort_next(
 
 					uint16_t mid_point = lower_bound + (upper_bound - lower_bound) / 2;
 
-					if (less_than == es->compare_function(es->context, fms->cache_pages + mid_point * es->value_size, fms->cur_value)) {
+					if (A_lt_B == es->compare_function(es->context, fms->cache_pages + mid_point * es->value_size, fms->cur_value)) {
 						lower_bound = mid_point + 1;
 					}
 
-					if (greater_than == es->compare_function(es->context, fms->cache_pages + mid_point * es->value_size, fms->cur_value)) {
+					if (A_gt_B == es->compare_function(es->context, fms->cache_pages + mid_point * es->value_size, fms->cur_value)) {
 						upper_bound = mid_point - 1;
 					}
 
-					if (equal == es->compare_function(es->context, fms->cache_pages + mid_point * es->value_size, fms->cur_value)) {
+					if (A_equ_B == es->compare_function(es->context, fms->cache_pages + mid_point * es->value_size, fms->cur_value)) {
 						fms->cur_byte_in_page = mid_point * es->value_size;
 						break;
 					}
@@ -232,7 +232,7 @@ ion_flash_min_sort_next(
 			while (fms->cur_byte_in_page < fms->num_bytes_in_page) {
 				fms->temp_value = fms->cache_pages + fms->cur_byte_in_page;
 
-				if (equal == es->compare_function(es->context, fms->temp_value, fms->cur_value)) {
+				if (A_equ_B == es->compare_function(es->context, fms->temp_value, fms->cur_value)) {
 					if (NULL != cursor->output_file) {
 						/* Dump values to file */
 						fms->page_statuses[1] += es->value_size;
@@ -256,7 +256,7 @@ ion_flash_min_sort_next(
 						return err_ok;
 					}
 				}
-				else if ((greater_than == es->compare_function(es->context, fms->temp_value, fms->cur_value)) && ((0 == ION_FMS_GET_FLAG(fms->min_index_bit_vector, fms->cur_region)) || (less_than == es->compare_function(es->context, fms->temp_value, cursor->buffer + fms->cur_byte_in_buffer)))) {
+				else if ((A_gt_B == es->compare_function(es->context, fms->temp_value, fms->cur_value)) && ((0 == ION_FMS_GET_FLAG(fms->min_index_bit_vector, fms->cur_region)) || (A_lt_B == es->compare_function(es->context, fms->temp_value, cursor->buffer + fms->cur_byte_in_buffer)))) {
 					memcpy(cursor->buffer + fms->cur_byte_in_buffer, fms->temp_value, es->value_size);
 					ION_FMS_SET_FLAG(fms->min_index_bit_vector, fms->cur_region);
 				}

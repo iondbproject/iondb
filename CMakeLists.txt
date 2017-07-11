@@ -57,8 +57,10 @@ add_subdirectory(src/tests)
 add_subdirectory(examples)
 
 add_subdirectory(src/util/lfsr)
+add_subdirectory(src/util/sort/external_sort)
 
 add_subdirectory(src/iinq)
+add_subdirectory(src/iinq_rewrite)
 add_subdirectory(src/dictionary/bpp_tree)
 add_subdirectory(src/dictionary/flat_file)
 add_subdirectory(src/dictionary/open_address_file_hash)

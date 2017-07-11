@@ -35,11 +35,12 @@
 /******************************************************************************/
 
 #include "test_iinq_rewrite.h"
+#include "../../../util/sort/external_sort/external_sort.h"
 #include "../../../util/sort/sort.h"
 #include "../../../iinq/iinq.h"
 
 #define IINQ_PAGE_SIZE    512
-#define TOLERANCE		  0.0001
+#define TOLERANCE          0.0001
 
 /* Declared globally for now
  * could be moved into each function individually */
@@ -148,7 +149,7 @@ void
 iinq_rewrite_test_insert_multiple_different_values_test1(
 		planck_unit_test_t *tc
 ) {
-	ion_key_t key = 1;
+	ion_key_t key = IONIZE(1, uint32_t);
 	DECLARE_SCHEMA_VAR(test1, test_val);
 
 	test_val.col1 = 2.5;
@@ -165,6 +166,30 @@ iinq_rewrite_test_insert_multiple_different_values_test1(
 	strcpy(test_val.col4, "Hello");
 
 	iinq_rewrite_insert_value_test1(tc, key, &test_val);
+	iinq_rewrite_insert_value_test1(tc, key, &test_val);
+}
+
+void
+iinq_rewrite_test_insert_multiple_values_test1_order_by_single(
+		planck_unit_test_t *tc
+) {
+	ion_key_t key = IONIZE(1, uint32_t);
+	DECLARE_SCHEMA_VAR(test1, test_val);
+
+	// This tuple should get filtered out
+	test_val.col3 = 26000;
+	iinq_rewrite_insert_value_test1(tc, key, &test_val);
+
+	test_val.col3 = 26001;
+	strcpy(test_val.col4, "Zimbabwe");
+	iinq_rewrite_insert_value_test1(tc, key, &test_val);
+
+	test_val.col3 = 26003;
+	strcpy(test_val.col4, "Canada");
+	iinq_rewrite_insert_value_test1(tc, key, &test_val);
+
+	test_val.col3 = 26002;
+	strcpy(test_val.col4, "USA");
 	iinq_rewrite_insert_value_test1(tc, key, &test_val);
 }
 
@@ -1672,7 +1697,7 @@ void
 iinq_rewrite_test_select_field_list_from_test1_where_filter_string(
 		ion_iinq_query_processor_t processor
 ) {
-	iinq_test_query_state_t* state = (iinq_test_query_state_t*)(processor.state);
+	iinq_test_query_state_t *state = (iinq_test_query_state_t *) (processor.state);
 
 	state->count = 0;
 	iinq_rewrite_test_select_field_list_from_test1_where_filter_gt_string(processor);
@@ -1806,8 +1831,9 @@ iinq_rewrite_test_select_field_list_from_test1_where_filter_gt_numeric(
 					ref_cursor->reference->cursor->destroy(&ref_cursor->reference->cursor);
 					dictionary_find(&ref_cursor->reference->dictionary, &ref_cursor->reference->predicate,
 									&ref_cursor->reference->cursor);
-					if ((cs_cursor_active != (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(
-							ref_cursor->reference->cursor, &ref_cursor->reference->ion_record)) &&
+					if ((cs_cursor_active !=
+						 (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(
+								 ref_cursor->reference->cursor, &ref_cursor->reference->ion_record)) &&
 						 cs_cursor_initialized != ref_cursor->reference->cursor_status)) { goto IINQ_QUERY_CLEANUP; }
 					ref_cursor = ref_cursor->last;
 				}
@@ -1818,7 +1844,7 @@ iinq_rewrite_test_select_field_list_from_test1_where_filter_gt_numeric(
 				}
 				/* end of _FROM_ADVANCE_CURSORS */
 				/* if (!conditions) { continue; } */
-				if (!((test1_tuple->col3 > 27300))){
+				if (!((test1_tuple->col3 > 27300))) {
 					continue;
 				}
 				result.processed = alloca(result.num_bytes);
@@ -1945,8 +1971,9 @@ iinq_rewrite_test_select_field_list_from_test1_where_filter_gt_eq_numeric(
 					ref_cursor->reference->cursor->destroy(&ref_cursor->reference->cursor);
 					dictionary_find(&ref_cursor->reference->dictionary, &ref_cursor->reference->predicate,
 									&ref_cursor->reference->cursor);
-					if ((cs_cursor_active != (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(
-							ref_cursor->reference->cursor, &ref_cursor->reference->ion_record)) &&
+					if ((cs_cursor_active !=
+						 (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(
+								 ref_cursor->reference->cursor, &ref_cursor->reference->ion_record)) &&
 						 cs_cursor_initialized != ref_cursor->reference->cursor_status)) { goto IINQ_QUERY_CLEANUP; }
 					ref_cursor = ref_cursor->last;
 				}
@@ -1957,7 +1984,7 @@ iinq_rewrite_test_select_field_list_from_test1_where_filter_gt_eq_numeric(
 				}
 				/* end of _FROM_ADVANCE_CURSORS */
 				/* if (!conditions) { continue; } */
-				if (!((test1_tuple->col3 >= 27300))){
+				if (!((test1_tuple->col3 >= 27300))) {
 					continue;
 				}
 				result.processed = alloca(result.num_bytes);
@@ -2084,8 +2111,9 @@ iinq_rewrite_test_select_field_list_from_test1_where_filter_lt_numeric(
 					ref_cursor->reference->cursor->destroy(&ref_cursor->reference->cursor);
 					dictionary_find(&ref_cursor->reference->dictionary, &ref_cursor->reference->predicate,
 									&ref_cursor->reference->cursor);
-					if ((cs_cursor_active != (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(
-							ref_cursor->reference->cursor, &ref_cursor->reference->ion_record)) &&
+					if ((cs_cursor_active !=
+						 (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(
+								 ref_cursor->reference->cursor, &ref_cursor->reference->ion_record)) &&
 						 cs_cursor_initialized != ref_cursor->reference->cursor_status)) { goto IINQ_QUERY_CLEANUP; }
 					ref_cursor = ref_cursor->last;
 				}
@@ -2096,7 +2124,7 @@ iinq_rewrite_test_select_field_list_from_test1_where_filter_lt_numeric(
 				}
 				/* end of _FROM_ADVANCE_CURSORS */
 				/* if (!conditions) { continue; } */
-				if (!((test1_tuple->col1 < 2.1))){
+				if (!((test1_tuple->col1 < 2.1))) {
 					continue;
 				}
 				result.processed = alloca(result.num_bytes);
@@ -2223,8 +2251,9 @@ iinq_rewrite_test_select_field_list_from_test1_where_filter_lt_eq_numeric(
 					ref_cursor->reference->cursor->destroy(&ref_cursor->reference->cursor);
 					dictionary_find(&ref_cursor->reference->dictionary, &ref_cursor->reference->predicate,
 									&ref_cursor->reference->cursor);
-					if ((cs_cursor_active != (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(
-							ref_cursor->reference->cursor, &ref_cursor->reference->ion_record)) &&
+					if ((cs_cursor_active !=
+						 (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(
+								 ref_cursor->reference->cursor, &ref_cursor->reference->ion_record)) &&
 						 cs_cursor_initialized != ref_cursor->reference->cursor_status)) { goto IINQ_QUERY_CLEANUP; }
 					ref_cursor = ref_cursor->last;
 				}
@@ -2235,7 +2264,7 @@ iinq_rewrite_test_select_field_list_from_test1_where_filter_lt_eq_numeric(
 				}
 				/* end of _FROM_ADVANCE_CURSORS */
 				/* if (!conditions) { continue; } */
-				if (!((test1_tuple->col1 <= 2.1))){
+				if (!((test1_tuple->col1 <= 2.1))) {
 					continue;
 				}
 				result.processed = alloca(result.num_bytes);
@@ -2362,8 +2391,9 @@ iinq_rewrite_test_select_field_list_from_test1_where_filter_lt_gt_numeric(
 					ref_cursor->reference->cursor->destroy(&ref_cursor->reference->cursor);
 					dictionary_find(&ref_cursor->reference->dictionary, &ref_cursor->reference->predicate,
 									&ref_cursor->reference->cursor);
-					if ((cs_cursor_active != (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(
-							ref_cursor->reference->cursor, &ref_cursor->reference->ion_record)) &&
+					if ((cs_cursor_active !=
+						 (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(
+								 ref_cursor->reference->cursor, &ref_cursor->reference->ion_record)) &&
 						 cs_cursor_initialized != ref_cursor->reference->cursor_status)) { goto IINQ_QUERY_CLEANUP; }
 					ref_cursor = ref_cursor->last;
 				}
@@ -2374,7 +2404,7 @@ iinq_rewrite_test_select_field_list_from_test1_where_filter_lt_gt_numeric(
 				}
 				/* end of _FROM_ADVANCE_CURSORS */
 				/* if (!conditions) { continue; } */
-				if (!((test1_tuple->col1 != 2.1))){
+				if (!((test1_tuple->col1 != 2.1))) {
 					continue;
 				}
 				result.processed = alloca(result.num_bytes);
@@ -2501,8 +2531,9 @@ iinq_rewrite_test_select_field_list_from_test1_where_filter_not_eq_numeric(
 					ref_cursor->reference->cursor->destroy(&ref_cursor->reference->cursor);
 					dictionary_find(&ref_cursor->reference->dictionary, &ref_cursor->reference->predicate,
 									&ref_cursor->reference->cursor);
-					if ((cs_cursor_active != (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(
-							ref_cursor->reference->cursor, &ref_cursor->reference->ion_record)) &&
+					if ((cs_cursor_active !=
+						 (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(
+								 ref_cursor->reference->cursor, &ref_cursor->reference->ion_record)) &&
 						 cs_cursor_initialized != ref_cursor->reference->cursor_status)) { goto IINQ_QUERY_CLEANUP; }
 					ref_cursor = ref_cursor->last;
 				}
@@ -2513,7 +2544,7 @@ iinq_rewrite_test_select_field_list_from_test1_where_filter_not_eq_numeric(
 				}
 				/* end of _FROM_ADVANCE_CURSORS */
 				/* if (!conditions) { continue; } */
-				if (!((test1_tuple->col1 != 2.1))){
+				if (!((test1_tuple->col1 != 2.1))) {
 					continue;
 				}
 				result.processed = alloca(result.num_bytes);
@@ -2537,7 +2568,7 @@ void
 iinq_rewrite_test_select_all_from_test1_where_filter_numeric(
 		ion_iinq_query_processor_t processor
 ) {
-	iinq_test_query_state_t* state = (iinq_test_query_state_t*)(processor.state);
+	iinq_test_query_state_t *state = (iinq_test_query_state_t *) (processor.state);
 
 	state->count = 0;
 	iinq_rewrite_test_select_field_list_from_test1_where_filter_gt_numeric(processor);
@@ -2682,7 +2713,7 @@ iinq_rewrite_test_select_field_list_from_test1_where_comparison(
 }
 
 void
-iinq_rewrite_test_select_field_list_from_test1_where_orderby_single_asc_check_results(
+iinq_rewrite_test_select_field_list_from_test1_where_orderby_single_check_results(
 		planck_unit_test_t *tc,
 		ion_iinq_result_t *result,
 		uint32_t count,
@@ -2693,62 +2724,598 @@ iinq_rewrite_test_select_field_list_from_test1_where_orderby_single_asc_check_re
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(double) + sizeof(char) * 50 + sizeof(int) + sizeof(uint32_t),
 									 result->num_bytes);
+
 	ion_key_t key = result->processed;
-	unsigned char *field = result->processed + sizeof(uint32_t);
+	unsigned char *field = key + sizeof(uint32_t) + sizeof(double) + sizeof(char) * 40;
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, NEUTRALIZE(key, uint32_t));
-	PLANCK_UNIT_ASSERT_TRUE(tc, *(double *) field == 2.5); // col1
-	field += sizeof(double);
-	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, "Hello", field); // col2
-	field += sizeof(char) * 40;
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, *(int *) field); // col3
-
-}
-
-void
-iinq_rewrite_test_select_field_list_from_test1_where_orderby_single_desc_check_results(
-		planck_unit_test_t *tc,
-		ion_iinq_result_t *result,
-		uint32_t count,
-		uint32_t total
-) {
-	UNUSED(count);
-	UNUSED(total);
-
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(double) + sizeof(char) * 50 + sizeof(int) + sizeof(uint32_t),
-									 result->num_bytes);
-	ion_key_t key = result->processed;
-	unsigned char *field = result->processed + sizeof(uint32_t);
-
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, NEUTRALIZE(key, uint32_t));
-	PLANCK_UNIT_ASSERT_TRUE(tc, *(double *) field == 2.5); // col1
-	field += sizeof(double);
-	PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, "Hello", field); // col2
-	field += sizeof(char) * 40;
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, *(int *) field); // col3
-
+	switch (count) {
+		case 0:
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 26001, *(int *) field); // col3
+			field += sizeof(int);
+			PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, "Zimbabwe", field); // col4
+			break;
+		case 1:
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 26002, *(int *) field); // col3
+			field += sizeof(int);
+			PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, "USA", field); // col4
+			break;
+		case 2:
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 26003, *(int *) field); // col3
+			field += sizeof(int);
+			PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, "Canada", field); // col4
+			break;
+		default:
+			PLANCK_UNIT_SET_FAIL(tc);
+			break;
+	}
 }
 
 void
 iinq_rewrite_test_select_field_list_from_test1_where_orderby_single_asc(
+		ion_iinq_query_processor_t processor
+) {
+	//SELECT col1, col2, col3, col4 FROM test1 WHERE col3 > 26000 ORDER BY col3 ASC;
+	do {
+		ion_err_t error;
+		ion_iinq_result_t result;
+		int jmp_r;
+		jmp_buf selectbuf;
+		result.raw_record_size = 0;
+		result.num_bytes = 0;
+		int read_page_remaining = IINQ_PAGE_SIZE;
+		int write_page_remaining = IINQ_PAGE_SIZE;
+		FILE *input_file;
+		FILE *output_file;
+		int agg_n = 0;
+		int i_agg = 0;
+		/* FROM(0, test1)
+		 * first argument is with_schemas but the query macro would check for with_schema
+		 * the IF_ELSE macro always substituted as (),
+		 * pretty sure there was a typo in the macro */
+		ion_iinq_cleanup_t *first;
+		ion_iinq_cleanup_t *last;
+		ion_iinq_cleanup_t *ref_cursor;
+		ion_iinq_cleanup_t *last_cursor;
+		first = NULL;
+		last = NULL;
+		ref_cursor = NULL;
+		last_cursor = NULL;
+		/* FROM_SOURCES(test1)
+		 * substituted with FROM_SOURCE_SINGLE(test1) */
+		ion_iinq_source_t test1;
+		test1.cleanup.next = NULL;
+		test1.cleanup.last = last;
+		test1.cleanup.reference = &test1;
+		if (NULL == first) { first = &test1.cleanup; }
+		if (NULL != last) { last->next = &test1.cleanup; }
+		last = &test1.cleanup;
+		test1.cleanup.next = NULL;
+		test1.dictionary.handler = &test1.handler;
+		error = iinq_open_source("test1" ".inq", &(test1.dictionary), &(test1.handler));
+		if (err_ok != error) { break; }
+		result.raw_record_size += test1.dictionary.instance->record.key_size;
+		result.raw_record_size += test1.dictionary.instance->record.value_size;
+		result.num_bytes += test1.dictionary.instance->record.key_size;
+		result.num_bytes += test1.dictionary.instance->record.value_size;
+		error = dictionary_build_predicate(&(test1.predicate), predicate_all_records);
+		if (err_ok != error) { break; }
+		dictionary_find(&test1.dictionary, &test1.predicate, &test1.cursor);
+		/* end of FROM_SOURCES(test1),
+		 * FROM(0, test1) continued */
+		result.data = alloca(result.raw_record_size);
+		result.processed = result.data;
+		/* _FROM_SETUP_POINTERS(test1),
+		 * substituted to _FROM_GET_OVERRIDE(test1)
+		 * substituted to _FROM_SETUP_POINTERS_SINGLE(test1) */
+		test1.key = result.processed;
+		result.processed += test1.dictionary.instance->record.key_size;
+		test1.value = result.processed;
+		result.processed += test1.dictionary.instance->record.value_size;
+		test1.ion_record.key = test1.key;
+		test1.ion_record.value = test1.value;
+		struct iinq_test1_schema *test1_tuple;
+		test1_tuple = test1.value;
+		ref_cursor = first;
+		while (ref_cursor != last) {
+			if (NULL == ref_cursor || (cs_cursor_active !=
+									   (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(
+											   ref_cursor->reference->cursor,
+											   &ref_cursor->reference->ion_record)) && cs_cursor_initialized !=
+																					   ref_cursor->reference->cursor_status)) { break; }
+			ref_cursor = ref_cursor->next;
+		}
+		ref_cursor = last;
+		int orderby_n = 0;
+		int i_orderby = 0;
+		int total_orderby_size = 0;
+		iinq_order_part_t *orderby_order_parts = NULL;
+		/* select_clause */
+		goto SKIP_COMPUTE_SELECT;
+		COMPUTE_SELECT:;
+		/* SELECT(...) */
+		do {
+			ion_iinq_result_size_t select_byte_index = 0;
+			memcpy(result.processed, test1.key, test1.dictionary.instance->record.key_size);
+			select_byte_index += test1.dictionary.instance->record.key_size;
+			memcpy(result.processed + select_byte_index, &(test1_tuple->col1), sizeof(test1_tuple->col1));
+			select_byte_index += sizeof(test1_tuple->col1);
+			memcpy(result.processed + select_byte_index, &(test1_tuple->col2), sizeof(test1_tuple->col2));
+			select_byte_index += sizeof(test1_tuple->col2);
+			memcpy(result.processed + select_byte_index, &(test1_tuple->col3), sizeof(test1_tuple->col3));
+			select_byte_index += sizeof(test1_tuple->col3);
+			memcpy(result.processed + select_byte_index, &(test1_tuple->col4), sizeof(test1_tuple->col4));
+			select_byte_index += sizeof(test1_tuple->col4);
+			result.num_bytes = select_byte_index;
+		} while (0);
+		goto DONE_COMPUTE_SELECT;
+		SKIP_COMPUTE_SELECT:;
+		/* end of select_clause */
+		orderby_n = 1;
+		total_orderby_size = 0;
+		orderby_order_parts = alloca(sizeof(iinq_order_part_t)*1);
+		orderby_order_parts[0].direction = 1;
+		orderby_order_parts[0].size = sizeof(test1_tuple->col3);
+		orderby_order_parts[0].type = IINQ_ORDERTYPE_INT;
+		total_orderby_size += orderby_order_parts[0].size;
+		goto IINQ_SKIP_COMPUTE_ORDERBY;
+		IINQ_COMPUTE_ORDERBY:;
+		orderby_order_parts[0].pointer = &(test1_tuple->col3);
+		goto IINQ_DONE_COMPUTE_ORDERBY;
+		IINQ_SKIP_COMPUTE_ORDERBY:;		do {
+			{
+				/* _OPEN_ORDERING_FILE_WRITE(orderby, 0, 1, 0, result, orderby) */
+				output_file = fopen("orderby", "wb");
+				if (NULL == output_file) {
+					error = err_file_open_error;
+					goto IINQ_QUERY_END;
+				}
+				write_page_remaining = IINQ_PAGE_SIZE;
+				if ((int) write_page_remaining < (int) (total_orderby_size + (result.raw_record_size))) {
+					error = err_record_size_too_large;
+					goto IINQ_QUERY_END;
+				}
+			}
+			while (1) {
+				/* _FROM_ADVANCE_CURSORS */
+				if (NULL == ref_cursor) { break; }
+				last_cursor = ref_cursor;
+				while (NULL != ref_cursor && (cs_cursor_active !=
+											  (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(
+													  ref_cursor->reference->cursor,
+													  &ref_cursor->reference->ion_record)) &&
+											  cs_cursor_initialized != ref_cursor->reference->cursor_status)) {
+					ref_cursor->reference->cursor->destroy(&ref_cursor->reference->cursor);
+					dictionary_find(&ref_cursor->reference->dictionary, &ref_cursor->reference->predicate,
+									&ref_cursor->reference->cursor);
+					if ((cs_cursor_active != (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(
+							ref_cursor->reference->cursor, &ref_cursor->reference->ion_record)) &&
+						 cs_cursor_initialized != ref_cursor->reference->cursor_status)) { goto IINQ_QUERY_CLEANUP; }
+					ref_cursor = ref_cursor->last;
+				}
+				if (NULL == ref_cursor) {
+					break;
+				} else if (last_cursor != ref_cursor) {
+					ref_cursor = last;
+				}
+				/* end of _FROM_ADVANCE_CURSORS */
+				/* if (!conditions) { continue; } */
+				if (!((test1_tuple->col3 > 26000))){
+					continue;
+				}
+				{
+					goto IINQ_COMPUTE_ORDERBY;
+					IINQ_DONE_COMPUTE_ORDERBY:;
+					jmp_r = 3;
+					goto COMPUTE_SELECT;
+					DONE_COMPUTE_SELECT_3:;
+					if ((int) write_page_remaining < (int) (total_orderby_size + (result.num_bytes) + (8 * agg_n))) {
+						int i = 0;
+						char x = 0;
+						for (; i < write_page_remaining; i++) { if (1 != fwrite(&x, 1, 1, output_file)) { break; }}
+						write_page_remaining = 512;
+					};
+					for (i_orderby = 0; i_orderby < orderby_n; i_orderby++) {
+						if (1 != fwrite(orderby_order_parts[i_orderby].pointer, orderby_order_parts[i_orderby].size, 1,
+										output_file)) { break; }
+						else { write_page_remaining -= orderby_order_parts[i_orderby].size; }
+					}
+					if (1 != fwrite(result.processed, result.num_bytes, 1, output_file)) { break; }
+					else { write_page_remaining -= result.num_bytes; }
+				}
+				if (orderby_n == 0) {
+					goto COMPUTE_SELECT;
+					DONE_COMPUTE_SELECT:;
+					if (3 == jmp_r) { goto DONE_COMPUTE_SELECT_3; }
+					(&processor)->execute(&result, (&processor)->state);
+				}
+			}		IINQ_QUERY_CLEANUP:
+			if (0 != fclose(output_file)) {
+				error = err_file_close_error;
+				goto IINQ_QUERY_END;
+			};
+			while (NULL != first) {
+				first->reference->cursor->destroy(&first->reference->cursor);
+				ion_close_dictionary(&first->reference->dictionary);
+				first = first->next;
+			}
+			if (err_ok != error) { goto IINQ_QUERY_END; }
+		} while (0);
+		{
+			/* _OPEN_ORDERING_FILE_READ(orderby, 1, 0, 1, result, orderby); */
+			input_file = fopen("orderby", "rb");
+			if (NULL == input_file) {
+				error = err_file_open_error;
+				goto IINQ_QUERY_END;
+			}
+			read_page_remaining = 512;
+			if ((int) read_page_remaining < (int) (total_orderby_size + (8 * agg_n) + result.num_bytes)) {
+				error = err_record_size_too_large;
+				goto IINQ_QUERY_END;
+			};
+		}
+		/* end of _OPEN_ORDERING_FILE_READ(orderby, 1, 0, 1, result, orderby); */
+		ion_external_sort_t es;
+		/* iinq_sort_context_t context = _IINQ_SORT_CONTEXT(orderby); */
+		iinq_sort_context_t context = ((iinq_sort_context_t) {orderby_order_parts, orderby_n});
+		/* if (err_ok != (error = ion_external_sort_init(&es, input_file, &context, iinq_sort_compare, _RESULT_ORDERBY_RECORD_SIZE, _RESULT_ORDERBY_RECORD_SIZE + total_orderby_size + (8 * agg_n), IINQ_PAGE_SIZE, boolean_false, ION_FILE_SORT_FLASH_MINSORT)))*/
+		if (err_ok != (error = ion_external_sort_init(&es, input_file, &context, iinq_sort_compare,
+													  result.num_bytes, result.num_bytes +
+																		total_orderby_size + (8 * agg_n), 512, boolean_false,
+													  ION_FILE_SORT_FLASH_MINSORT))) {
+			/* _CLOSE_ORDERING_FILE(input_file); */
+			if (0 != fclose(input_file)) {
+				error = err_file_close_error;
+				goto IINQ_QUERY_END;
+			};
+			/* end of _CLOSE_ORDERING_FILE(input_file); */
+			goto IINQ_QUERY_END;
+		}
+		uint16_t buffer_size = ion_external_sort_bytes_of_memory_required(&es, 0, boolean_false);
+		char *buffer = alloca(buffer_size);
+		char *record_buf = alloca((total_orderby_size + 8 * agg_n + result.num_bytes));
+		result.processed = (unsigned char *) (record_buf + total_orderby_size + (8 * agg_n));
+		ion_external_sort_cursor_t cursor;
+		if (err_ok != (error = ion_external_sort_init_cursor(&es, &cursor, buffer, buffer_size))) {
+			/* _CLOSE_ORDERING_FILE(input_file); */
+			if (0 != fclose(input_file)) {
+				error = err_file_close_error;
+				goto IINQ_QUERY_END;
+			};
+			/* end of _CLOSE_ORDERING_FILE(input_file); */
+			goto IINQ_QUERY_END;
+		}
+		if (err_ok != (error = cursor.next(&cursor, record_buf))) {
+			/* _CLOSE_ORDERING_FILE(input_file); */
+			if (0 != fclose(input_file)) {
+				error = err_file_close_error;
+				goto IINQ_QUERY_END;
+			};
+			/* end of _CLOSE_ORDERING_FILE(input_file); */
+			goto IINQ_QUERY_END;
+		}
+		while (cs_cursor_active == cursor.status) {
+			(&processor)->execute(&result, (&processor)->state);
+			if (err_ok != (error = cursor.next(&cursor, record_buf))) {
+				/* _CLOSE_ORDERING_FILE(input_file); */
+				if (0 != fclose(input_file)) {
+					error = err_file_close_error;
+					goto IINQ_QUERY_END;
+				};
+				goto IINQ_QUERY_END;
+			}
+		}
+		ion_external_sort_destroy_cursor(&cursor);
+		/* _CLOSE_ORDERING_FILE(input_file); */
+		if (0 != fclose(input_file)) {
+			error = err_file_close_error;
+			goto IINQ_QUERY_END;
+		};
+		/* end of _CLOSE_ORDERING_FILE(input_file); */
+		/* _REMOVE_ORDERING_FILE(orderby); */
+		if (0 != remove("orderby")) {
+			error = err_file_delete_error;
+			goto IINQ_QUERY_END;
+		};
+		/* end of _REMOVE_ORDERING_FILE(orderby); */
+		IINQ_QUERY_END:;
+	} while (0);
+
+
+}
+
+void
+iinq_rewrite_test_select_field_list_from_test1_where_orderby_single_desc(
+		ion_iinq_query_processor_t processor
+) {
+	do {
+		ion_err_t error;
+		ion_iinq_result_t result;
+		int jmp_r;
+		jmp_buf selectbuf;
+		result.raw_record_size = 0;
+		result.num_bytes = 0;
+		int read_page_remaining = IINQ_PAGE_SIZE;
+		int write_page_remaining = IINQ_PAGE_SIZE;
+		FILE *input_file;
+		FILE *output_file;
+		int agg_n = 0;
+		int i_agg = 0;
+		/* FROM(0, test1)
+		 * first argument is with_schemas but the query macro would check for with_schema
+		 * the IF_ELSE macro always substituted as (),
+		 * pretty sure there was a typo in the macro */
+		ion_iinq_cleanup_t *first;
+		ion_iinq_cleanup_t *last;
+		ion_iinq_cleanup_t *ref_cursor;
+		ion_iinq_cleanup_t *last_cursor;
+		first = NULL;
+		last = NULL;
+		ref_cursor = NULL;
+		last_cursor = NULL;
+		/* FROM_SOURCES(test1)
+		 * substituted with FROM_SOURCE_SINGLE(test1) */
+		ion_iinq_source_t test1;
+		test1.cleanup.next = NULL;
+		test1.cleanup.last = last;
+		test1.cleanup.reference = &test1;
+		if (NULL == first) { first = &test1.cleanup; }
+		if (NULL != last) { last->next = &test1.cleanup; }
+		last = &test1.cleanup;
+		test1.cleanup.next = NULL;
+		test1.dictionary.handler = &test1.handler;
+		error = iinq_open_source("test1" ".inq", &(test1.dictionary), &(test1.handler));
+		if (err_ok != error) { break; }
+		result.raw_record_size += test1.dictionary.instance->record.key_size;
+		result.raw_record_size += test1.dictionary.instance->record.value_size;
+		result.num_bytes += test1.dictionary.instance->record.key_size;
+		result.num_bytes += test1.dictionary.instance->record.value_size;
+		error = dictionary_build_predicate(&(test1.predicate), predicate_all_records);
+		if (err_ok != error) { break; }
+		dictionary_find(&test1.dictionary, &test1.predicate, &test1.cursor);
+		/* end of FROM_SOURCES(test1),
+		 * FROM(0, test1) continued */
+		result.data = alloca(result.raw_record_size);
+		result.processed = result.data;
+		/* _FROM_SETUP_POINTERS(test1),
+		 * substituted to _FROM_GET_OVERRIDE(test1)
+		 * substituted to _FROM_SETUP_POINTERS_SINGLE(test1) */
+		test1.key = result.processed;
+		result.processed += test1.dictionary.instance->record.key_size;
+		test1.value = result.processed;
+		result.processed += test1.dictionary.instance->record.value_size;
+		test1.ion_record.key = test1.key;
+		test1.ion_record.value = test1.value;
+		struct iinq_test1_schema *test1_tuple;
+		test1_tuple = test1.value;
+		ref_cursor = first;
+		while (ref_cursor != last) {
+			if (NULL == ref_cursor || (cs_cursor_active !=
+									   (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(
+											   ref_cursor->reference->cursor,
+											   &ref_cursor->reference->ion_record)) && cs_cursor_initialized !=
+																					   ref_cursor->reference->cursor_status)) { break; }
+			ref_cursor = ref_cursor->next;
+		}
+		ref_cursor = last;
+		int orderby_n = 0;
+		int i_orderby = 0;
+		int total_orderby_size = 0;
+		iinq_order_part_t *orderby_order_parts = NULL;
+		/* select_clause */
+		goto SKIP_COMPUTE_SELECT;
+		COMPUTE_SELECT:;
+		/* SELECT(...) */
+		do {
+			ion_iinq_result_size_t select_byte_index = 0;
+			memcpy(result.processed, test1.key, test1.dictionary.instance->record.key_size);
+			select_byte_index += test1.dictionary.instance->record.key_size;
+			memcpy(result.processed + select_byte_index, &(test1_tuple->col1), sizeof(test1_tuple->col1));
+			select_byte_index += sizeof(test1_tuple->col1);
+			memcpy(result.processed + select_byte_index, &(test1_tuple->col2), sizeof(test1_tuple->col2));
+			select_byte_index += sizeof(test1_tuple->col2);
+			memcpy(result.processed + select_byte_index, &(test1_tuple->col3), sizeof(test1_tuple->col3));
+			select_byte_index += sizeof(test1_tuple->col3);
+			memcpy(result.processed + select_byte_index, &(test1_tuple->col4), sizeof(test1_tuple->col4));
+			select_byte_index += sizeof(test1_tuple->col4);
+			result.num_bytes = select_byte_index;
+		} while (0);
+		goto DONE_COMPUTE_SELECT;
+		SKIP_COMPUTE_SELECT:;
+		/* end of select_clause */
+		orderby_n = 1;
+		total_orderby_size = 0;
+		orderby_order_parts = alloca(sizeof(iinq_order_part_t)*1);
+		orderby_order_parts[0].direction = -1;
+		orderby_order_parts[0].size = sizeof(test1_tuple->col4);
+		orderby_order_parts[0].type = IINQ_ORDERTYPE_OTHER;
+		total_orderby_size += orderby_order_parts[0].size;
+		goto IINQ_SKIP_COMPUTE_ORDERBY;
+		IINQ_COMPUTE_ORDERBY:;
+		orderby_order_parts[0].pointer = &(test1_tuple->col4);
+		goto IINQ_DONE_COMPUTE_ORDERBY;
+		IINQ_SKIP_COMPUTE_ORDERBY:;		do {
+			{
+				/* _OPEN_ORDERING_FILE_WRITE(orderby, 0, 1, 0, result, orderby) */
+				output_file = fopen("orderby", "wb");
+				if (NULL == output_file) {
+					error = err_file_open_error;
+					goto IINQ_QUERY_END;
+				}
+				write_page_remaining = IINQ_PAGE_SIZE;
+				if ((int) write_page_remaining < (int) (total_orderby_size + (result.raw_record_size))) {
+					error = err_record_size_too_large;
+					goto IINQ_QUERY_END;
+				}
+			}
+			while (1) {
+				/* _FROM_ADVANCE_CURSORS */
+				if (NULL == ref_cursor) { break; }
+				last_cursor = ref_cursor;
+				while (NULL != ref_cursor && (cs_cursor_active !=
+											  (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(
+													  ref_cursor->reference->cursor,
+													  &ref_cursor->reference->ion_record)) &&
+											  cs_cursor_initialized != ref_cursor->reference->cursor_status)) {
+					ref_cursor->reference->cursor->destroy(&ref_cursor->reference->cursor);
+					dictionary_find(&ref_cursor->reference->dictionary, &ref_cursor->reference->predicate,
+									&ref_cursor->reference->cursor);
+					if ((cs_cursor_active != (ref_cursor->reference->cursor_status = ref_cursor->reference->cursor->next(
+							ref_cursor->reference->cursor, &ref_cursor->reference->ion_record)) &&
+						 cs_cursor_initialized != ref_cursor->reference->cursor_status)) { goto IINQ_QUERY_CLEANUP; }
+					ref_cursor = ref_cursor->last;
+				}
+				if (NULL == ref_cursor) {
+					break;
+				} else if (last_cursor != ref_cursor) {
+					ref_cursor = last;
+				}
+				/* end of _FROM_ADVANCE_CURSORS */
+				/* if (!conditions) { continue; } */
+				if (!((test1_tuple->col3 > 26000))){
+					continue;
+				}
+				{
+					goto IINQ_COMPUTE_ORDERBY;
+					IINQ_DONE_COMPUTE_ORDERBY:;
+					jmp_r = 3;
+					goto COMPUTE_SELECT;
+					DONE_COMPUTE_SELECT_3:;
+					if ((int) write_page_remaining < (int) (total_orderby_size + (result.num_bytes) + (8 * agg_n))) {
+						int i = 0;
+						char x = 0;
+						for (; i < write_page_remaining; i++) { if (1 != fwrite(&x, 1, 1, output_file)) { break; }}
+						write_page_remaining = 512;
+					};
+					for (i_orderby = 0; i_orderby < orderby_n; i_orderby++) {
+						if (1 != fwrite(orderby_order_parts[i_orderby].pointer, orderby_order_parts[i_orderby].size, 1,
+										output_file)) { break; }
+						else { write_page_remaining -= orderby_order_parts[i_orderby].size; }
+					}
+					if (1 != fwrite(result.processed, result.num_bytes, 1, output_file)) { break; }
+					else { write_page_remaining -= result.num_bytes; }
+				}
+				if (orderby_n == 0) {
+					goto COMPUTE_SELECT;
+					DONE_COMPUTE_SELECT:;
+					if (3 == jmp_r) { goto DONE_COMPUTE_SELECT_3; }
+					(&processor)->execute(&result, (&processor)->state);
+				}
+			}		IINQ_QUERY_CLEANUP:
+			if (0 != fclose(output_file)) {
+				error = err_file_close_error;
+				goto IINQ_QUERY_END;
+			};
+			while (NULL != first) {
+				first->reference->cursor->destroy(&first->reference->cursor);
+				ion_close_dictionary(&first->reference->dictionary);
+				first = first->next;
+			}
+			if (err_ok != error) { goto IINQ_QUERY_END; }
+		} while (0);
+		{
+			/* _OPEN_ORDERING_FILE_READ(orderby, 1, 0, 1, result, orderby); */
+			input_file = fopen("orderby", "rb");
+			if (NULL == input_file) {
+				error = err_file_open_error;
+				goto IINQ_QUERY_END;
+			}
+			read_page_remaining = 512;
+			if ((int) read_page_remaining < (int) (total_orderby_size + (8 * agg_n) + result.num_bytes)) {
+				error = err_record_size_too_large;
+				goto IINQ_QUERY_END;
+			};
+		}
+		/* end of _OPEN_ORDERING_FILE_READ(orderby, 1, 0, 1, result, orderby); */
+		ion_external_sort_t es;
+		/* iinq_sort_context_t context = _IINQ_SORT_CONTEXT(orderby); */
+		iinq_sort_context_t context = ((iinq_sort_context_t) {orderby_order_parts, orderby_n});
+		/* if (err_ok != (error = ion_external_sort_init(&es, input_file, &context, iinq_sort_compare, _RESULT_ORDERBY_RECORD_SIZE, _RESULT_ORDERBY_RECORD_SIZE + total_orderby_size + (8 * agg_n), IINQ_PAGE_SIZE, boolean_false, ION_FILE_SORT_FLASH_MINSORT)))*/
+		if (err_ok != (error = ion_external_sort_init(&es, input_file, &context, iinq_sort_compare,
+													  result.num_bytes, result.num_bytes +
+																		total_orderby_size + (8 * agg_n), 512, boolean_false,
+													  ION_FILE_SORT_FLASH_MINSORT))) {
+			/* _CLOSE_ORDERING_FILE(input_file); */
+			if (0 != fclose(input_file)) {
+				error = err_file_close_error;
+				goto IINQ_QUERY_END;
+			};
+			/* end of _CLOSE_ORDERING_FILE(input_file); */
+			goto IINQ_QUERY_END;
+		}
+		uint16_t buffer_size = ion_external_sort_bytes_of_memory_required(&es, 0, boolean_false);
+		char *buffer = alloca(buffer_size);
+		char *record_buf = alloca((total_orderby_size + 8 * agg_n + result.num_bytes));
+		result.processed = (unsigned char *) (record_buf + total_orderby_size + (8 * agg_n));
+		ion_external_sort_cursor_t cursor;
+		if (err_ok != (error = ion_external_sort_init_cursor(&es, &cursor, buffer, buffer_size))) {
+			/* _CLOSE_ORDERING_FILE(input_file); */
+			if (0 != fclose(input_file)) {
+				error = err_file_close_error;
+				goto IINQ_QUERY_END;
+			};
+			/* end of _CLOSE_ORDERING_FILE(input_file); */
+			goto IINQ_QUERY_END;
+		}
+		if (err_ok != (error = cursor.next(&cursor, record_buf))) {
+			/* _CLOSE_ORDERING_FILE(input_file); */
+			if (0 != fclose(input_file)) {
+				error = err_file_close_error;
+				goto IINQ_QUERY_END;
+			};
+			/* end of _CLOSE_ORDERING_FILE(input_file); */
+			goto IINQ_QUERY_END;
+		}
+		while (cs_cursor_active == cursor.status) {
+			(&processor)->execute(&result, (&processor)->state);
+			if (err_ok != (error = cursor.next(&cursor, record_buf))) {
+				/* _CLOSE_ORDERING_FILE(input_file); */
+				if (0 != fclose(input_file)) {
+					error = err_file_close_error;
+					goto IINQ_QUERY_END;
+				};
+				goto IINQ_QUERY_END;
+			}
+		}
+		ion_external_sort_destroy_cursor(&cursor);
+		/* _CLOSE_ORDERING_FILE(input_file); */
+		if (0 != fclose(input_file)) {
+			error = err_file_close_error;
+			goto IINQ_QUERY_END;
+		};
+		/* end of _CLOSE_ORDERING_FILE(input_file); */
+		/* _REMOVE_ORDERING_FILE(orderby); */
+		if (0 != remove("orderby")) {
+			error = err_file_delete_error;
+			goto IINQ_QUERY_END;
+		};
+		/* end of _REMOVE_ORDERING_FILE(orderby); */
+		IINQ_QUERY_END:;
+	} while (0);
+
+}
+
+void
+iinq_rewrite_test_select_field_list_from_test1_where_orderby_single(
 		planck_unit_test_t *tc
 ) {
 	iinq_rewrite_create_test1(tc);
-
-	iinq_rewrite_test_insert_multiple_same_values_test1(tc);
+	iinq_rewrite_test_insert_multiple_values_test1_order_by_single(tc);
 
 	ion_iinq_query_processor_t processor;
 	iinq_test_query_state_t state;
 
-	state.func = iinq_rewrite_test_select_field_list_from_test1_where_orderby_check_results;
+	state.func = iinq_rewrite_test_select_field_list_from_test1_where_orderby_single_check_results;
 	state.tc = tc;
 	state.count = 0;
 
 	processor = IINQ_QUERY_PROCESSOR(check_results, &state);
 
+	iinq_rewrite_test_select_field_list_from_test1_where_orderby_single_asc(processor);
+
+	state.count = 0;
+	iinq_rewrite_test_select_field_list_from_test1_where_orderby_single_desc(processor);
 
 	DROP(test1);
-
 }
 
 planck_unit_suite_t *
@@ -2759,7 +3326,7 @@ iinq_rewrite_get_suite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_all_from_test1);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_field_list_from_test1_where_equality_filter);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_field_list_from_test1_where_comparison);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_field_list_from_test1_where_orderby);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_field_list_from_test1_where_orderby_single);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_field_list_from_test1);
 
 	return suite;

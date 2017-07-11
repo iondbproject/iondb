@@ -481,7 +481,7 @@ iinq_sort_compare(
 	iinq_delete( # schema_name ".inq", key)
 
 #define DROP(schema_name) \
-	iinq_drop( # schema_name ".inq")
+	;iinq_drop( # schema_name ".inq")
 
 /**
 @brief		This copies all tuple data created after a join (but before grouping/aggregation/sorting)
