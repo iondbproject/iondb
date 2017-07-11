@@ -41,12 +41,17 @@
 extern "C" {
 #endif
 
-#include "../../dictionary/dictionary_types.h"
+#include "iinq_user.h"
 #include "../../dictionary/dictionary.h"
 
 ion_dict_cursor_t
 query_init(
 	ion_predicate_t predicate
+);
+
+ion_record_t
+next(
+	ion_query_iterator_t *iterator
 );
 
 #if defined(__cplusplus)

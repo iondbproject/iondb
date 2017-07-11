@@ -45,8 +45,14 @@ extern "C" {
 #include <ctype.h>
 #include <string.h>
 #include "../../dictionary/dictionary_types.h"
-#include "iinq_query_iterator.h"
 #include "../../dictionary/dictionary.h"
+#include "../iinq.h"
+
+/**
+@brief		The iterator for a query.
+@see		query_iterator
+*/
+typedef struct query_iterator ion_query_iterator_t;
 
 /**
 @brief		A supertype for query iterator objects.
@@ -61,8 +67,11 @@ struct query_iterator {
 	ion_cursor_status_t status;	/**< Status of last cursor call. */
 	ion_record_t		record;		/**< The current record returned by the
 												iterator. */
+	ion_dict_cursor_t	*cursor;	/**< A pointer to the cursor of the given query. */
 
 	ion_record_t		(*next)(
+		ion_query_iterator_t	*iterator,
+		ion_record_t			record
 	);
 	/**< A pointer to the next function,
 		 which returns the next record). */
@@ -78,13 +87,19 @@ struct query_iterator {
 		 internal memory). */
 };
 
-/**
-@brief		The iterator for a query.
-@see		query_iterator
-*/
-typedef struct query_iterator ion_query_iterator_t;
+void
+uppercase(
+	char	*string,
+	char	uppercase[]
+);
 
-ion_query_iterator_t
+void
+lowercase(
+	char	*string,
+	char	lowercase[]
+);
+
+ion_query_iterator_t *
 SQL_query(
 	char *sql_string
 );

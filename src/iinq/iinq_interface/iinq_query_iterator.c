@@ -35,16 +35,3 @@
 /******************************************************************************/
 
 #include "iinq_query_iterator.h"
-
-ion_dict_cursor_t
-query_init(
-	ion_predicate_t predicate
-) {
-/*	ion_record_t ion_record; */
-/*	ion_record.key		= malloc(key_size); */
-/*	ion_record.value	= malloc(value_size); */
-
-	ion_dict_cursor_t cursor;
-
-	return cursor;
-}
