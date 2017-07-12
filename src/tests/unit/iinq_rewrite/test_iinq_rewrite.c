@@ -38,6 +38,7 @@
 #include "../../../util/sort/external_sort/external_sort.h"
 #include "../../../util/sort/sort.h"
 #include "../../../iinq/iinq.h"
+#include "../../../iinq_rewrite/iinq_rewrite.h"
 
 #define IINQ_PAGE_SIZE    512
 #define TOLERANCE          0.0001
@@ -193,6 +194,76 @@ iinq_rewrite_test_insert_multiple_values_test1_order_by_single(
 	iinq_rewrite_insert_value_test1(tc, key, &test_val);
 }
 
+void
+iinq_rewrite_test_select_all_from_test1_iterator(
+		planck_unit_test_t *tc
+) {
+	iinq_rewrite_create_test1(tc);
+	iinq_rewrite_test_insert_multiple_same_values_test1(tc);
+
+	ion_iinq_iterator_t iterator = init(boolean_false);
+	struct iinq_test1_schema *schema_tuple;
+
+	ion_iinq_tuple_t *tuple;
+	int count = 0;
+	while (it_status_ok == iterator->iterator_status) {
+		tuple = iterator->next(iterator);
+		if (it_status_ok != iterator->iterator_status)
+			break;
+		schema_tuple = (struct iinq_test1_schema*) tuple->fields;
+		PLANCK_UNIT_ASSERT_TRUE(tc, 2.5 == schema_tuple->col1);
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, "Hello", schema_tuple->col2);
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, schema_tuple->col3);
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, "Goodbye", schema_tuple->col4);
+		count++;
+		printf("%d\n", count);
+	}
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, count);
+	iterator->sources->cursor->destroy(&iterator->sources->cursor);
+	free(iterator->sources->record.value);
+	free(iterator->sources->record.key);
+	ion_close_dictionary(&iterator->sources->dictionary);
+
+	DROP(test1);
+}
+
+void
+iinq_rewrite_test_select_field_list_from_test1_iterator(
+		planck_unit_test_t *tc
+) {
+	iinq_rewrite_create_test1(tc);
+	iinq_rewrite_test_insert_multiple_same_values_test1(tc);
+
+	ion_iinq_iterator_t iterator = init(boolean_true);
+	struct iinq_test1_schema *schema_tuple;
+
+	ion_iinq_tuple_t *tuple;
+	int count = 0;
+	while (it_status_ok == iterator->iterator_status) {
+		tuple = iterator->next(iterator);
+		if (it_status_ok != iterator->iterator_status)
+			break;
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(double) + sizeof(char) * 40 + sizeof(int),
+										 tuple->size);
+
+		ion_iinq_tuple_data_t field = tuple->fields;
+
+		PLANCK_UNIT_ASSERT_TRUE(tc, abs(**(double **) field - 2.5) < TOLERANCE); // col1
+		field++;
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, "Hello", *field); // col2
+		field++;
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, **(int **) field); // col3
+		count++;
+	}
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, count);
+	iterator->sources->cursor->destroy(&iterator->sources->cursor);
+	free(iterator->sources->record.value);
+	free(iterator->sources->record.key);
+	free(&tuple->fields);
+	ion_close_dictionary(&iterator->sources->dictionary);
+
+	DROP(test1);
+}
 
 void
 iinq_rewrite_test_select_all_from_test1(
@@ -3328,6 +3399,9 @@ iinq_rewrite_get_suite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_field_list_from_test1_where_comparison);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_field_list_from_test1_where_orderby_single);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_field_list_from_test1);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_all_from_test1_iterator);
+	/* TODO: crashes in release but not debug */
+	//PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_field_list_from_test1_iterator);
 
 	return suite;
 }

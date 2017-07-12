@@ -46,6 +46,7 @@ extern "C" {
 #include <limits.h>
 #include "../../planck-unit/src/planck_unit.h"
 #include "../../../iinq/iinq.h"
+#include "../../../iinq_rewrite/iinq_rewrite.h"
 
 #define DEFINE_SCHEMA(source_name, struct_def) \
 	struct iinq_ ## source_name ## _schema struct_def
