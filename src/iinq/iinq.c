@@ -59,7 +59,7 @@ iinq_create_source(
 	}
 
 	/* Load the handler. */
-	bpptree_init(&handler);
+	ffdict_init(&handler);
 
 	/* If the file exists, fail. */
 	if (NULL != (schema_file = fopen(schema_file_name, "rb"))) {
@@ -119,7 +119,7 @@ iinq_open_source(
 	}
 
 	/* Load the handler. */
-	bpptree_init(handler);
+	ffdict_init(handler);
 
 	/* If the schema file already exists. */
 	if (NULL != (schema_file = fopen(schema_file_name, "rb"))) {

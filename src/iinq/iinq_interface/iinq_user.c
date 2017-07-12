@@ -154,6 +154,22 @@ get_field_list(
 	memcpy(field_list, &clause[(int) strlen(keyword) + 1], (int) strlen(clause));
 }
 
+void
+table_cleanup(
+	ion_query_iterator_t *iterator
+) {
+	ion_dictionary_id_t id = iterator->cursor->dictionary->instance->id;
+
+	/* Table clean-up */
+	char cleanup_name[20];
+
+	sprintf(cleanup_name, "%d.bpt", (int) id);
+	fremove(cleanup_name);
+	sprintf(cleanup_name, "%d.val", (int) id);
+	fremove(cleanup_name);
+	fremove(iterator->schema_file_name);
+}
+
 ion_record_t
 next(
 	ion_query_iterator_t	*iterator,
@@ -169,10 +185,22 @@ next(
 	record.key		= NULL;
 	record.value	= NULL;
 
+	table_cleanup(iterator);
+	iterator->destroy(iterator);
+
 	return record;
 }
 
-/* Need to be made generic - but key and value types need to be known */
+void
+destroy(
+	ion_query_iterator_t *iterator
+) {
+	iterator->cursor->destroy(&iterator->cursor);
+	free(iterator->record.key);
+	free(iterator->record.value);
+}
+
+/* Needs to be made generic - but key and value types need to be known */
 int
 get_key(
 	ion_query_iterator_t *iterator
@@ -188,119 +216,8 @@ get_value(
 	return NEUTRALIZE(iterator->record.value, int);
 }
 
-ion_query_iterator_t *
-SQL_query(
-	char *sql_string
-) {
-	char uppercase_sql[(int) strlen(sql_string)];
-
-	uppercase(sql_string, uppercase_sql);
-	printf("%s\n", uppercase_sql);
-
-	char		select_clause[50];
-	ion_err_t	err					= get_clause("SELECT", uppercase_sql, select_clause);
-	char		select_fields[40]	= "null";
-
-	if (err == err_ok) {
-		get_field_list("SELECT", select_clause, select_fields);
-	}
-
-	printf("%sdone\n", select_fields);
-
-	char from_clause[50];
-
-	err = get_clause("FROM", uppercase_sql, from_clause);
-	printf("%sdone\n", from_clause);
-
-	char from_fields[40] = "null";
-
-	if (err == err_ok) {
-		get_field_list("FROM", from_clause, from_fields);
-	}
-
-	printf("%sdone\n", from_fields);
-
-/*	char where_clause[50]; */
-/*  */
-/*	err = get_clause("WHERE", uppercase_sql, where_clause); */
-/*	printf("%sdone\n", where_clause); */
-/*  */
-/*	char		where_fields[40] = "null"; */
-/*  */
-/*	if (err == err_ok) { */
-/*		get_field_list("WHERE", where_clause, where_fields); */
-/*	} */
-/*  */
-/*	printf("%sdone\n", where_fields); */
-/*  */
-/*	char orderby_clause[50]; */
-/*  */
-/*	err = get_clause("ORDERBY", uppercase_sql, orderby_clause); */
-/*	printf("%sdone\n", orderby_clause); */
-/*  */
-/*	char		orderby_fields[40] = "null"; */
-/*  */
-/*	if (err == err_ok) { */
-/*		get_field_list("ORDERBY", orderby_clause, orderby_fields); */
-/*	} */
-/*  */
-/*	printf("%sdone\n", orderby_fields); */
-/*  */
-/*	char groupby_clause[50]; */
-/*  */
-/*	err = get_clause("GROUPBY", uppercase_sql, groupby_clause); */
-/*	printf("%sdone\n", groupby_clause); */
-/*  */
-/*	char		groupby_fields[40] = "null"; */
-/*  */
-/*	if (err == err_ok) { */
-/*		get_field_list("GROUPBY", groupby_clause, groupby_fields); */
-/*	} */
-/*  */
-/*	printf("%sdone\n", groupby_fields); */
-
-	/* Evaluate FROM here */
-	ion_dictionary_t			dictionary;
-	ion_dictionary_handler_t	handler;
-
-	/* currently only supports one table */
-	char *schema_file_name = from_fields;
-
-	printf("table name: %s\n", from_fields);
-
-	dictionary.handler = &handler;
-
-	ion_err_t error = iinq_open_source(schema_file_name, &dictionary, &handler);
-
-	if (err_ok != error) {
-		printf("Error7\n");
-	}
-
-	/* Evaluate SELECT here */
-	ion_predicate_t predicate;
-
-	if (0 == strncmp("*", select_fields, 1)) {
-		dictionary_build_predicate(&predicate, predicate_all_records);
-	}
-
-	ion_dict_cursor_t *cursor = NULL;
-
-	dictionary_find(&dictionary, &predicate, &cursor);
-
-	/* Initialize iterator */
-	ion_query_iterator_t *t = malloc(sizeof(ion_query_iterator_t));
-
-	t->record.key	= malloc((size_t) dictionary.instance->record.key_size);
-	t->record.value = malloc((size_t) dictionary.instance->record.value_size);
-	t->cursor		= cursor;
-	t->next			= next;
-
-	return t;
-}
-
-int
-main(
-	void
+void
+table_setup(
 ) {
 	/* Table set-up */
 	char				*schema_file_name;
@@ -316,7 +233,6 @@ main(
 	ion_err_t					error;
 	ion_dictionary_t			dictionary;
 	ion_dictionary_handler_t	handler;
-	ion_dictionary_id_t			id;
 
 	error = iinq_create_source(schema_file_name, key_type, key_size, value_size);
 
@@ -359,34 +275,144 @@ main(
 	}
 
 	/* Close table and clean-up files */
-	id		= dictionary.instance->id;
-	error	= ion_close_dictionary(&dictionary);
+	error = ion_close_dictionary(&dictionary);
 
 	if (err_ok != error) {
 		printf("Error6\n");
 	}
+}
+
+ion_err_t
+SQL_query(
+	ion_query_iterator_t	*iterator,
+	char					*sql_string
+) {
+	char uppercase_sql[(int) strlen(sql_string)];
+
+	uppercase(sql_string, uppercase_sql);
+	printf("%s\n", uppercase_sql);
+
+	char		select_clause[50];
+	ion_err_t	err					= get_clause("SELECT", uppercase_sql, select_clause);
+	char		select_fields[40]	= "null";
+
+	if (err == err_ok) {
+		get_field_list("SELECT", select_clause, select_fields);
+	}
+
+	printf("%sdone\n", select_fields);
+
+	char from_clause[50];
+
+	err = get_clause("FROM", uppercase_sql, from_clause);
+	printf("%sdone\n", from_clause);
+
+	char from_fields[40] = "null";
+
+	if (err == err_ok) {
+		get_field_list("FROM", from_clause, from_fields);
+	}
+
+	printf("%sdone\n", from_fields);
+
+	char where_clause[50];
+
+	err = get_clause("WHERE", uppercase_sql, where_clause);
+	printf("%sdone\n", where_clause);
+
+	char where_fields[40] = "null";
+
+	if (err == err_ok) {
+		get_field_list("WHERE", where_clause, where_fields);
+	}
+
+	printf("%sdone\n", where_fields);
+
+/*	char orderby_clause[50]; */
+/*  */
+/*	err = get_clause("ORDERBY", uppercase_sql, orderby_clause); */
+/*	printf("%sdone\n", orderby_clause); */
+/*  */
+/*	char		orderby_fields[40] = "null"; */
+/*  */
+/*	if (err == err_ok) { */
+/*		get_field_list("ORDERBY", orderby_clause, orderby_fields); */
+/*	} */
+/*  */
+/*	printf("%sdone\n", orderby_fields); */
+/*  */
+/*	char groupby_clause[50]; */
+/*  */
+/*	err = get_clause("GROUPBY", uppercase_sql, groupby_clause); */
+/*	printf("%sdone\n", groupby_clause); */
+/*  */
+/*	char		groupby_fields[40] = "null"; */
+/*  */
+/*	if (err == err_ok) { */
+/*		get_field_list("GROUPBY", groupby_clause, groupby_fields); */
+/*	} */
+/*  */
+/*	printf("%sdone\n", groupby_fields); */
+
+	/* Evaluate FROM here */
+	ion_dictionary_t			*dictionary = malloc(sizeof(ion_dictionary_t));
+	ion_dictionary_handler_t	handler;
+
+	/* currently only supports one table */
+	char *schema_file_name = from_fields;
+
+	printf("table name: %s\n", from_fields);
+
+	dictionary->handler = &handler;
+
+	ion_err_t error = iinq_open_source(schema_file_name, dictionary, &handler);
+
+	if (err_ok != error) {
+		printf("Error7\n");
+	}
+
+	/* Evaluate SELECT here */
+	ion_predicate_t predicate;
+
+	if (0 == strncmp("*", select_fields, 1)) {
+		dictionary_build_predicate(&predicate, predicate_all_records);
+	}
+
+	ion_dict_cursor_t *cursor = malloc(sizeof(ion_dict_cursor_t));
+
+	dictionary_find(dictionary, &predicate, &cursor);
+
+	/* Initialize iterator */
+	iterator->record.key	= malloc((size_t) dictionary->instance->record.key_size);
+	iterator->record.value	= malloc((size_t) dictionary->instance->record.value_size);
+	iterator->cursor		= cursor;
+	iterator->next			= next;
+	iterator->destroy		= destroy;
+
+	free(dictionary);
+
+	return err_ok;
+}
+
+int
+main(
+	void
+) {
+	table_setup();
 
 	/* Query */
-	ion_query_iterator_t *iterator = SQL_query("Select * FRoM test.inq");
+	ion_query_iterator_t iterator;
+
+	SQL_query(&iterator, "Select * FRoM test.inq wHere key = 3");
 
 	/* Iterate through results */
-	iterator->record = next(iterator, iterator->record);
-	printf("Key: %i, Value: %i\n", get_key(iterator), get_value(iterator));
+	iterator.record = next(&iterator, iterator.record);
 
-/*	while(iterator->record.key != NULL) { */
-/*		printf("Key: %i, Value: %i\n", get_key(iterator), get_value(iterator)); */
-/*  */
-/*		iterator->record = next(iterator, iterator->record); */
-/*	} */
+	while (iterator.record.key != NULL) {
+		printf("Key: %i, Value: %i\n", get_key(&iterator), get_value(&iterator));
 
-	/* Table clean-up */
-	char cleanup_name[20];
-
-	sprintf(cleanup_name, "%d.bpt", (int) id);
-	fremove(cleanup_name);
-	sprintf(cleanup_name, "%d.val", (int) id);
-	fremove(cleanup_name);
-	fremove(schema_file_name);
+		iterator.record = next(&iterator, iterator.record);
+	}
 
 	return 0;
 }

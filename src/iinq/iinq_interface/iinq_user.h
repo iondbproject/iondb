@@ -68,6 +68,8 @@ struct query_iterator {
 	ion_record_t		record;		/**< The current record returned by the
 												iterator. */
 	ion_dict_cursor_t	*cursor;	/**< A pointer to the cursor of the given query. */
+	char				*schema_file_name;	/**< A pointer to the name of the
+												schema file in use. */
 
 	ion_record_t		(*next)(
 		ion_query_iterator_t	*iterator,
@@ -81,6 +83,7 @@ struct query_iterator {
 	/**< A pointer to the next function,
 		 which returns the next record). */
 	void (*destroy)(
+		ion_query_iterator_t *iterator
 	);
 	/**< A pointer to the function used
 		 to destroy the cursor (frees
@@ -99,9 +102,15 @@ lowercase(
 	char	lowercase[]
 );
 
-ion_query_iterator_t *
+ion_err_t
 SQL_query(
-	char *sql_string
+	ion_query_iterator_t	*iterator,
+	char					*sql_string
+);
+
+void
+destroy(
+	ion_query_iterator_t *iterator
 );
 
 #if defined(__cplusplus)
