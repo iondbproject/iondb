@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		behaviour_dictionnary.c
+@file		behaviour_dictionary.c
 @author		Eric Huang
 @brief		Behaviour tests for all dictionary implementations.
 @details	The behaviour tests represent a "black box" approach to the
@@ -105,7 +105,7 @@ bhdct_delete_from_master_table(
 	planck_unit_test_t	*tc,
 	ion_dictionary_t	*dict
 ) {
-	ion_err_t err = ion_delete_from_master_table(dict);
+	ion_err_t err = ion_delete_from_master_table(dict->instance->id);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 }
@@ -118,7 +118,7 @@ bhdct_delete_dictionary(
 	planck_unit_test_t	*tc,
 	ion_dictionary_t	*dict
 ) {
-	ion_err_t err = dictionary_delete_dictionary(dict);
+	ion_err_t err = ion_delete_dictionary(dict, dict->instance->id);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
 	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == dict->instance);

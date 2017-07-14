@@ -6,30 +6,30 @@
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
-@par Redistribution and use in source and binary forms, with or without 
+@par Redistribution and use in source and binary forms, with or without
 	modification, are permitted provided that the following conditions are met:
-	
-@par 1.Redistributions of source code must retain the above copyright notice, 
+
+@par 1.Redistributions of source code must retain the above copyright notice,
 	this list of conditions and the following disclaimer.
-	
+
 @par 2.Redistributions in binary form must reproduce the above copyright notice,
-	this list of conditions and the following disclaimer in the documentation 
+	this list of conditions and the following disclaimer in the documentation
 	and/or other materials provided with the distribution.
-	
+
 @par 3.Neither the name of the copyright holder nor the names of its contributors
 	may be used to endorse or promote products derived from this software without
-	specific prior written permission. 
-	
-@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
-	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+	specific prior written permission.
+
+@par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
@@ -131,6 +131,7 @@ bpptree_create_dictionary(
 	dictionary->instance->key_type			= key_type;
 	dictionary->instance->record.key_size	= key_size;
 	dictionary->instance->record.value_size = value_size;
+	dictionary->instance->type				= dictionary_type_bpp_tree_t;
 	dictionary->handler						= handler;
 
 	return err_ok;
@@ -332,6 +333,33 @@ bpptree_delete_dictionary(
 
 	if (err_ok != error) {
 		return error;
+	}
+
+	ion_fremove(addr_filename);
+	ion_fremove(value_filename);
+
+	return err_ok;
+}
+
+/**
+@brief	  Deletes a closed instance of the dictionary and associated data.
+
+@param	  id
+				The identifier identifying the dictionary to delete.
+@return		The status of the dictionary deletion.
+*/
+ion_err_t
+bpptree_destroy_dictionary(
+	ion_dictionary_id_t id
+) {
+	char	addr_filename[ION_MAX_FILENAME_LENGTH];
+	char	value_filename[ION_MAX_FILENAME_LENGTH];
+
+	int actual_addr_filename_length		= dictionary_get_filename(id, "bpt", addr_filename);
+	int actual_value_filename_length	= dictionary_get_filename(id, "val", value_filename);
+
+	if ((actual_addr_filename_length >= ION_MAX_FILENAME_LENGTH) || (actual_value_filename_length >= ION_MAX_FILENAME_LENGTH)) {
+		return err_dictionary_destruction_error;
 	}
 
 	ion_fremove(addr_filename);
@@ -690,6 +718,7 @@ bpptree_init(
 	handler->find				= bpptree_find;
 	handler->remove				= bpptree_delete;
 	handler->delete_dictionary	= bpptree_delete_dictionary;
+	handler->destroy_dictionary = bpptree_destroy_dictionary;
 	handler->open_dictionary	= bpptree_open_dictionary;
 	handler->close_dictionary	= bpptree_close_dictionary;
 }

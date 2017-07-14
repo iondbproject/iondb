@@ -5,30 +5,30 @@
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
-@par Redistribution and use in source and binary forms, with or without 
+@par Redistribution and use in source and binary forms, with or without
 	modification, are permitted provided that the following conditions are met:
-	
-@par 1.Redistributions of source code must retain the above copyright notice, 
+
+@par 1.Redistributions of source code must retain the above copyright notice,
 	this list of conditions and the following disclaimer.
-	
+
 @par 2.Redistributions in binary form must reproduce the above copyright notice,
-	this list of conditions and the following disclaimer in the documentation 
+	this list of conditions and the following disclaimer in the documentation
 	and/or other materials provided with the distribution.
-	
+
 @par 3.Neither the name of the copyright holder nor the names of its contributors
 	may be used to endorse or promote products derived from this software without
-	specific prior written permission. 
+	specific prior written permission.
 @par
-	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE 
-	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+	ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+	LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+	CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+	SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+	CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
@@ -43,11 +43,11 @@ int
 main(
 	void
 ) {
-	int						key_size, value_size;
+	int							key_size, value_size;
 	ion_key_type_t				key_type;
 	ion_dictionary_handler_t	bpp_tree_handler;
 	ion_dictionary_t			dictionary;
-	ion_status_t			status;
+	ion_status_t				status;
 
 	/* These sizes are given in units of bytes. */
 	key_type	= key_type_numeric_signed;
@@ -204,7 +204,7 @@ main(
 	/* Clean-up the dictionary. Must be done through the master table to erase the table record we kept. */
 	printf("Deleting dictionary...\n");
 
-	if (ion_delete_from_master_table(&dictionary)) {
+	if (ion_delete_dictionary(&dictionary, dictionary.instance->id)) {
 		printf("Failed to delete the dictionary\n");
 		return 1;
 	}
