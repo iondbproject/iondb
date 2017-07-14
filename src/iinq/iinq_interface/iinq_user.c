@@ -328,6 +328,8 @@ SQL_query(
 
 	printf("%sdone\n", where_fields);
 
+	iterator->where_condition = where_fields;
+
 /*	char orderby_clause[50]; */
 /*  */
 /*	err = get_clause("ORDERBY", uppercase_sql, orderby_clause); */
@@ -370,6 +372,8 @@ SQL_query(
 	if (err_ok != error) {
 		printf("Error7\n");
 	}
+
+	iterator->schema_file_name = schema_file_name;
 
 	/* Evaluate SELECT here */
 	ion_predicate_t predicate;

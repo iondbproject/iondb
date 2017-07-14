@@ -65,20 +65,16 @@ typedef struct query_iterator ion_query_iterator_t;
 */
 struct query_iterator {
 	ion_cursor_status_t status;	/**< Status of last cursor call. */
-	ion_record_t		record;		/**< The current record returned by the
+	ion_record_t		record;				/**< The current record returned by the
 												iterator. */
-	ion_dict_cursor_t	*cursor;	/**< A pointer to the cursor of the given query. */
+	ion_dict_cursor_t	*cursor;			/**< A pointer to the cursor of the given query. */
 	char				*schema_file_name;	/**< A pointer to the name of the
 												schema file in use. */
+	char				*where_condition;	/**< A pointer to the where condition of the query. */
 
 	ion_record_t		(*next)(
 		ion_query_iterator_t	*iterator,
 		ion_record_t			record
-	);
-	/**< A pointer to the next function,
-		 which returns the next record). */
-	ion_dict_cursor_t (*init)(
-		ion_predicate_t predicate	/**< Initialized predicate of the query. */
 	);
 	/**< A pointer to the next function,
 		 which returns the next record). */
