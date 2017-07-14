@@ -68,9 +68,13 @@ struct query_iterator {
 	ion_record_t		record;				/**< The current record returned by the
 												iterator. */
 	ion_dict_cursor_t	*cursor;			/**< A pointer to the cursor of the given query. */
+	ion_dictionary_t	*dictionary;		/**< A pointer to a dictionary for ordering/grouping returned records. */
+	int 				num_records;		/**< Number of records left in sorting dictionary. */
 	char				*schema_file_name;	/**< A pointer to the name of the
 												schema file in use. */
-	char				*where_condition;	/**< A pointer to the where condition of the query. */
+	ion_boolean_t		where_condition;	/**< A boolean value whether a WHERE condition exists. */
+	ion_boolean_t		groupby_condition;	/**< A boolean value whether a GROUPBY condition exists. */
+	ion_boolean_t		orderby_condition;	/**< A boolean value whether an ORDERBY condition exists. */
 
 	ion_record_t		(*next)(
 		ion_query_iterator_t	*iterator,

@@ -51,21 +51,6 @@ uppercase(
 	uppercase[i] = '\0';
 }
 
-void
-lowercase(
-	char	*string,
-	char	lowercase[]
-) {
-	int i;
-	int len = (int) strlen(string);
-
-	for (i = 0; i < len; i++) {
-		lowercase[i] = (char) tolower(string[i]);
-	}
-
-	lowercase[i] = '\0';
-}
-
 char *
 next_keyword(
 	char *keyword
@@ -140,7 +125,6 @@ get_clause(
 	/* Get clause */
 	memcpy(clause, &sql[start_pos], end_pos - 1);
 	clause[(end_pos - start_pos) - 1] = '\0';
-	printf("%s/done\n", clause);
 
 	return err_ok;
 }
@@ -167,7 +151,67 @@ table_cleanup(
 	fremove(cleanup_name);
 	sprintf(cleanup_name, "%d.val", (int) id);
 	fremove(cleanup_name);
-	fremove(iterator->schema_file_name);
+	fremove("TEST.INQ");
+}
+
+int
+get_int(
+	void *value
+) {
+	return NEUTRALIZE(value, int);
+}
+
+ion_record_t
+get_largest(
+	ion_query_iterator_t *iterator,
+	ion_record_t max_record
+) {
+	ion_dictionary_t			*dictionary = malloc(sizeof(ion_dictionary_t));
+
+	dictionary = iterator->dictionary;
+
+	ion_predicate_t predicate;
+	int num_records = 0;
+
+	dictionary_build_predicate(&predicate, predicate_all_records);
+
+	ion_dict_cursor_t *cursor = malloc(sizeof(ion_dict_cursor_t));
+
+	dictionary_find(dictionary, &predicate, &cursor);
+
+	/* Initialize iterator */
+	ion_record_t curr_record;
+	curr_record.key = malloc((size_t) dictionary->instance->record.key_size);
+	curr_record.value = malloc((size_t) dictionary->instance->record.value_size);
+
+	ion_cursor_status_t cursor_status;
+
+	cursor_status = cursor->next(cursor, &curr_record);
+
+	if((cs_cursor_active != cursor_status) && (cs_cursor_initialized != cursor_status)) {
+		printf("Error!");
+	}
+
+	max_record = curr_record;
+
+	while ((cursor_status = cursor->next(cursor, &curr_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
+		if(get_int(curr_record.key) > get_int(max_record.key)) {
+			max_record = curr_record;
+		}
+
+		num_records++;
+	}
+
+	dictionary_delete(dictionary, max_record.key);
+
+	cursor->destroy(&cursor);
+	free(curr_record.key);
+	free(curr_record.value);
+	free(dictionary);
+
+	iterator->num_records = num_records;
+
+	return max_record;
 }
 
 ion_record_t
@@ -177,9 +221,36 @@ next(
 ) {
 	ion_cursor_status_t cursor_status;
 
-	if (((cursor_status = iterator->cursor->next(iterator->cursor, &record)) == cs_cursor_active) || (cursor_status == cs_cursor_initialized)) {
-		/* Return the retrieved record */
-		return record;
+	ion_record_t largest_record;
+	largest_record.key	= malloc((size_t) iterator->dictionary->instance->record.key_size);
+	largest_record.value	= malloc((size_t) iterator->dictionary->instance->record.value_size);
+
+	if((iterator->where_condition) && (iterator->orderby_condition)) {
+		largest_record = get_largest(iterator, largest_record);
+
+		if(0 < iterator->num_records) {
+			if (3 > get_int(largest_record.key)) {
+				return largest_record;
+			}
+		}
+	}
+
+	else {
+		while (((cursor_status = iterator->cursor->next(iterator->cursor, &record)) ==
+				cs_cursor_active) || (cursor_status == cs_cursor_initialized)) {
+			/* Evaluate WHERE condition */
+			if ((iterator->where_condition) && !(iterator->orderby_condition)) {
+				if (3 > get_int(record.key)) {
+					/* Return the retrieved record that meets WHERE condition */
+					return record;
+				}
+			}
+
+				/* No WHERE or ORDERBY or GROUPBY condition - return any retrieved record */
+			else {
+				return record;
+			}
+		}
 	}
 
 	record.key		= NULL;
@@ -198,22 +269,6 @@ destroy(
 	iterator->cursor->destroy(&iterator->cursor);
 	free(iterator->record.key);
 	free(iterator->record.value);
-}
-
-/* Needs to be made generic - but key and value types need to be known */
-int
-get_key(
-	ion_query_iterator_t *iterator
-) {
-	return NEUTRALIZE(iterator->record.key, int);
-}
-
-/* Need to be made generic - but key and value types need to be known */
-int
-get_value(
-	ion_query_iterator_t *iterator
-) {
-	return NEUTRALIZE(iterator->record.value, int);
 }
 
 void
@@ -296,16 +351,18 @@ SQL_query(
 	ion_err_t	err					= get_clause("SELECT", uppercase_sql, select_clause);
 	char		select_fields[40]	= "null";
 
+	iterator->where_condition = boolean_false;
+	iterator->orderby_condition = boolean_false;
+	iterator->groupby_condition = boolean_false;
+	ion_boolean_t dict_initialized = boolean_false;
+
 	if (err == err_ok) {
 		get_field_list("SELECT", select_clause, select_fields);
 	}
 
-	printf("%sdone\n", select_fields);
-
 	char from_clause[50];
 
 	err = get_clause("FROM", uppercase_sql, from_clause);
-	printf("%sdone\n", from_clause);
 
 	char from_fields[40] = "null";
 
@@ -313,48 +370,15 @@ SQL_query(
 		get_field_list("FROM", from_clause, from_fields);
 	}
 
-	printf("%sdone\n", from_fields);
-
 	char where_clause[50];
+	char where_fields[40] = "null";
 
 	err = get_clause("WHERE", uppercase_sql, where_clause);
-	printf("%sdone\n", where_clause);
-
-	char where_fields[40] = "null";
 
 	if (err == err_ok) {
 		get_field_list("WHERE", where_clause, where_fields);
+		iterator->where_condition = boolean_true;
 	}
-
-	printf("%sdone\n", where_fields);
-
-	iterator->where_condition = where_fields;
-
-/*	char orderby_clause[50]; */
-/*  */
-/*	err = get_clause("ORDERBY", uppercase_sql, orderby_clause); */
-/*	printf("%sdone\n", orderby_clause); */
-/*  */
-/*	char		orderby_fields[40] = "null"; */
-/*  */
-/*	if (err == err_ok) { */
-/*		get_field_list("ORDERBY", orderby_clause, orderby_fields); */
-/*	} */
-/*  */
-/*	printf("%sdone\n", orderby_fields); */
-/*  */
-/*	char groupby_clause[50]; */
-/*  */
-/*	err = get_clause("GROUPBY", uppercase_sql, groupby_clause); */
-/*	printf("%sdone\n", groupby_clause); */
-/*  */
-/*	char		groupby_fields[40] = "null"; */
-/*  */
-/*	if (err == err_ok) { */
-/*		get_field_list("GROUPBY", groupby_clause, groupby_fields); */
-/*	} */
-/*  */
-/*	printf("%sdone\n", groupby_fields); */
 
 	/* Evaluate FROM here */
 	ion_dictionary_t			*dictionary = malloc(sizeof(ion_dictionary_t));
@@ -362,8 +386,6 @@ SQL_query(
 
 	/* currently only supports one table */
 	char *schema_file_name = from_fields;
-
-	printf("table name: %s\n", from_fields);
 
 	dictionary->handler = &handler;
 
@@ -373,7 +395,60 @@ SQL_query(
 		printf("Error7\n");
 	}
 
-	iterator->schema_file_name = schema_file_name;
+	iterator->schema_file_name = from_fields;
+
+	/* Set-up ORDERBY clause if exists */
+	char orderby_clause[50];
+	char orderby_fields[40] = "null";
+	ion_dictionary_t            *orderby_dictionary = malloc(sizeof(ion_dictionary_t));
+	ion_dictionary_handler_t	*orderby_handler	= malloc(sizeof(ion_dictionary_handler_t));
+
+	err = get_clause("ORDERBY", uppercase_sql, orderby_clause);
+
+	if (err == err_ok) {
+		get_field_list("ORDERBY", orderby_clause, orderby_fields);
+		iterator->orderby_condition = boolean_true;
+
+//		sldict_init(&orderby_handler);
+//		dictionary_create(&orderby_handler,
+//						  orderby_dictionary,
+//						  -1,
+//						  dictionary->instance->key_type,
+//						  dictionary->instance->record.key_size,
+//						  dictionary->instance->record.value_size,
+//						  20);
+
+		orderby_dictionary = dictionary;
+		ffdict_init(orderby_handler);
+		orderby_dictionary->handler = orderby_handler;
+		dict_initialized = boolean_true;
+	}
+
+	/* Set-up GROUPBY clause if exists */
+	char groupby_clause[50];
+	char groupby_fields[40] = "null";
+
+	err = get_clause("GROUPBY", uppercase_sql, groupby_clause);
+
+	if (err == err_ok) {
+		get_field_list("GROUPBY", groupby_clause, groupby_fields);
+		iterator->groupby_condition = boolean_true;
+
+		/* If dictionary for grouping has not yet been initialized through ORDERBY,
+		   initialize it */
+		if(!dict_initialized) {
+//			sldict_init(&orderby_handler);
+//			dictionary_create(&orderby_handler,
+//							  orderby_dictionary,
+//							  -1,
+//							  dictionary->instance->key_type,
+//							  dictionary->instance->record.key_size,
+//							  dictionary->instance->record.value_size,
+//							  20);
+		}
+
+		orderby_dictionary = dictionary;
+	}
 
 	/* Evaluate SELECT here */
 	ion_predicate_t predicate;
@@ -390,6 +465,7 @@ SQL_query(
 	iterator->record.key	= malloc((size_t) dictionary->instance->record.key_size);
 	iterator->record.value	= malloc((size_t) dictionary->instance->record.value_size);
 	iterator->cursor		= cursor;
+	iterator->dictionary	= orderby_dictionary;
 	iterator->next			= next;
 	iterator->destroy		= destroy;
 
@@ -407,13 +483,13 @@ main(
 	/* Query */
 	ion_query_iterator_t iterator;
 
-	SQL_query(&iterator, "Select * FRoM test.inq wHere key = 3");
+	SQL_query(&iterator, "Select * FRoM test.inq where Key < 3 orDerby key DESC");
 
 	/* Iterate through results */
 	iterator.record = next(&iterator, iterator.record);
 
 	while (iterator.record.key != NULL) {
-		printf("Key: %i, Value: %i\n", get_key(&iterator), get_value(&iterator));
+		printf("Key: %i, Value: %i\n", get_int(iterator.record.key), get_int(iterator.record.value));
 
 		iterator.record = next(&iterator, iterator.record);
 	}
