@@ -161,17 +161,13 @@ get_int(
 	return NEUTRALIZE(value, int);
 }
 
-ion_record_t
-get_largest(
-	ion_query_iterator_t *iterator,
-	ion_record_t max_record
+void
+sort(
+	ion_dictionary_t	*dictionary,
+	ion_record_t		records[]
 ) {
-	ion_dictionary_t			*dictionary = malloc(sizeof(ion_dictionary_t));
-
-	dictionary = iterator->dictionary;
-
 	ion_predicate_t predicate;
-	int num_records = 0;
+	int				num_records = 0;
 
 	dictionary_build_predicate(&predicate, predicate_all_records);
 
@@ -181,37 +177,59 @@ get_largest(
 
 	/* Initialize iterator */
 	ion_record_t curr_record;
-	curr_record.key = malloc((size_t) dictionary->instance->record.key_size);
-	curr_record.value = malloc((size_t) dictionary->instance->record.value_size);
+
+	curr_record.key		= malloc((size_t) dictionary->instance->record.key_size);
+	curr_record.value	= malloc((size_t) dictionary->instance->record.value_size);
 
 	ion_cursor_status_t cursor_status;
 
-	cursor_status = cursor->next(cursor, &curr_record);
-
-	if((cs_cursor_active != cursor_status) && (cs_cursor_initialized != cursor_status)) {
-		printf("Error!");
-	}
-
-	max_record = curr_record;
+	ion_record_t max_key;
 
 	while ((cursor_status = cursor->next(cursor, &curr_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
-		if(get_int(curr_record.key) > get_int(max_record.key)) {
-			max_record = curr_record;
-		}
+		records[0] = curr_record;
 
+		printf("numrec: %i\n", num_records);
 		num_records++;
 	}
 
-	dictionary_delete(dictionary, max_record.key);
+	/* Modify for total number of records in table */
+	for (int i = 0; i < 3; ++i) {
+		for (int j = i + 1; j < 3; ++j) {
+			if (get_int(records[i].key) > get_int(records[j].key)) {
+				max_key		= records[i];
+				records[i]	= records[j];
+				records[j]	= max_key;
+			}
+		}
+	}
 
 	cursor->destroy(&cursor);
 	free(curr_record.key);
 	free(curr_record.value);
-	free(dictionary);
+}
 
-	iterator->num_records = num_records;
+ion_record_t
+next_sorted_record(
+	ion_record_t	sorted_records[],
+	ion_record_t	record
+) {
+	int pos = 0;
 
-	return max_record;
+	while (3 > pos) {
+		if (NULL != sorted_records[pos].key) {
+			record					= sorted_records[pos];
+
+			/* Set record to NULL as not to return it repeatedly */
+			sorted_records[pos].key = NULL;
+			return record;
+		}
+
+		pos++;
+	}
+
+	/* Array is empty - all records have been previously returned */
+	record.key = NULL;
+	return record;
 }
 
 ion_record_t
@@ -221,23 +239,21 @@ next(
 ) {
 	ion_cursor_status_t cursor_status;
 
-	ion_record_t largest_record;
-	largest_record.key	= malloc((size_t) iterator->dictionary->instance->record.key_size);
-	largest_record.value	= malloc((size_t) iterator->dictionary->instance->record.value_size);
-
-	if((iterator->where_condition) && (iterator->orderby_condition)) {
-		largest_record = get_largest(iterator, largest_record);
-
-		if(0 < iterator->num_records) {
-			if (3 > get_int(largest_record.key)) {
-				return largest_record;
+	/* Evaluate ORDERBY condition */
+	if (iterator->orderby_condition) {
+		while (((record = next_sorted_record(iterator->sorted_records, record)).key) != NULL) {
+			if (iterator->where_condition) {
+				if (3 > get_int(record.key)) {
+					return record;
+				}
+			}
+			else {
+				return record;
 			}
 		}
 	}
-
 	else {
-		while (((cursor_status = iterator->cursor->next(iterator->cursor, &record)) ==
-				cs_cursor_active) || (cursor_status == cs_cursor_initialized)) {
+		while (((cursor_status = iterator->cursor->next(iterator->cursor, &record)) == cs_cursor_active) || (cursor_status == cs_cursor_initialized)) {
 			/* Evaluate WHERE condition */
 			if ((iterator->where_condition) && !(iterator->orderby_condition)) {
 				if (3 > get_int(record.key)) {
@@ -245,8 +261,7 @@ next(
 					return record;
 				}
 			}
-
-				/* No WHERE or ORDERBY or GROUPBY condition - return any retrieved record */
+			/* No WHERE or ORDERBY or GROUPBY condition - return any retrieved record */
 			else {
 				return record;
 			}
@@ -304,12 +319,12 @@ table_setup(
 	}
 
 	/* Insert values into table */
-	ion_key_t	key1	= IONIZE(1, int);
-	ion_value_t value1	= IONIZE(100, int);
+	ion_key_t	key1	= IONIZE(3, int);
+	ion_value_t value1	= IONIZE(300, int);
 	ion_key_t	key2	= IONIZE(2, int);
 	ion_value_t value2	= IONIZE(200, int);
-	ion_key_t	key3	= IONIZE(3, int);
-	ion_value_t value3	= IONIZE(300, int);
+	ion_key_t	key3	= IONIZE(1, int);
+	ion_value_t value3	= IONIZE(100, int);
 
 	ion_status_t status = dictionary_insert(&dictionary, key1, value1);
 
@@ -351,10 +366,9 @@ SQL_query(
 	ion_err_t	err					= get_clause("SELECT", uppercase_sql, select_clause);
 	char		select_fields[40]	= "null";
 
-	iterator->where_condition = boolean_false;
+	iterator->where_condition	= boolean_false;
 	iterator->orderby_condition = boolean_false;
 	iterator->groupby_condition = boolean_false;
-	ion_boolean_t dict_initialized = boolean_false;
 
 	if (err == err_ok) {
 		get_field_list("SELECT", select_clause, select_fields);
@@ -370,8 +384,8 @@ SQL_query(
 		get_field_list("FROM", from_clause, from_fields);
 	}
 
-	char where_clause[50];
-	char where_fields[40] = "null";
+	char	where_clause[50];
+	char	where_fields[40] = "null";
 
 	err = get_clause("WHERE", uppercase_sql, where_clause);
 
@@ -398,10 +412,8 @@ SQL_query(
 	iterator->schema_file_name = from_fields;
 
 	/* Set-up ORDERBY clause if exists */
-	char orderby_clause[50];
-	char orderby_fields[40] = "null";
-	ion_dictionary_t            *orderby_dictionary = malloc(sizeof(ion_dictionary_t));
-	ion_dictionary_handler_t	*orderby_handler	= malloc(sizeof(ion_dictionary_handler_t));
+	char	orderby_clause[50];
+	char	orderby_fields[40] = "null";
 
 	err = get_clause("ORDERBY", uppercase_sql, orderby_clause);
 
@@ -409,45 +421,22 @@ SQL_query(
 		get_field_list("ORDERBY", orderby_clause, orderby_fields);
 		iterator->orderby_condition = boolean_true;
 
-//		sldict_init(&orderby_handler);
-//		dictionary_create(&orderby_handler,
-//						  orderby_dictionary,
-//						  -1,
-//						  dictionary->instance->key_type,
-//						  dictionary->instance->record.key_size,
-//						  dictionary->instance->record.value_size,
-//						  20);
+		ion_record_t sorted_records[3];
 
-		orderby_dictionary = dictionary;
-		ffdict_init(orderby_handler);
-		orderby_dictionary->handler = orderby_handler;
-		dict_initialized = boolean_true;
+		sort(dictionary, sorted_records);
+
+		iterator->sorted_records = sorted_records;
 	}
 
 	/* Set-up GROUPBY clause if exists */
-	char groupby_clause[50];
-	char groupby_fields[40] = "null";
+	char	groupby_clause[50];
+	char	groupby_fields[40] = "null";
 
 	err = get_clause("GROUPBY", uppercase_sql, groupby_clause);
 
 	if (err == err_ok) {
 		get_field_list("GROUPBY", groupby_clause, groupby_fields);
 		iterator->groupby_condition = boolean_true;
-
-		/* If dictionary for grouping has not yet been initialized through ORDERBY,
-		   initialize it */
-		if(!dict_initialized) {
-//			sldict_init(&orderby_handler);
-//			dictionary_create(&orderby_handler,
-//							  orderby_dictionary,
-//							  -1,
-//							  dictionary->instance->key_type,
-//							  dictionary->instance->record.key_size,
-//							  dictionary->instance->record.value_size,
-//							  20);
-		}
-
-		orderby_dictionary = dictionary;
 	}
 
 	/* Evaluate SELECT here */
@@ -465,7 +454,6 @@ SQL_query(
 	iterator->record.key	= malloc((size_t) dictionary->instance->record.key_size);
 	iterator->record.value	= malloc((size_t) dictionary->instance->record.value_size);
 	iterator->cursor		= cursor;
-	iterator->dictionary	= orderby_dictionary;
 	iterator->next			= next;
 	iterator->destroy		= destroy;
 
@@ -483,7 +471,7 @@ main(
 	/* Query */
 	ion_query_iterator_t iterator;
 
-	SQL_query(&iterator, "Select * FRoM test.inq where Key < 3 orDerby key DESC");
+	SQL_query(&iterator, "Select * FRoM test.inq where Key < 3 orDerby key ASC");
 
 	/* Iterate through results */
 	iterator.record = next(&iterator, iterator.record);
