@@ -164,7 +164,7 @@ get_int(
 void
 sort(
 	ion_dictionary_t	*dictionary,
-	ion_record_t		records[]
+	ion_record_t		records[3]
 ) {
 	ion_predicate_t predicate;
 	int				num_records = 0;
@@ -175,23 +175,25 @@ sort(
 
 	dictionary_find(dictionary, &predicate, &cursor);
 
-	/* Initialize iterator */
-	ion_record_t curr_record;
-
-	curr_record.key		= malloc((size_t) dictionary->instance->record.key_size);
-	curr_record.value	= malloc((size_t) dictionary->instance->record.value_size);
+	/* Initialize records */
+	records[0].key		= malloc((size_t) dictionary->instance->record.key_size);
+	records[0].value	= malloc((size_t) dictionary->instance->record.value_size);
+	records[1].key		= malloc((size_t) dictionary->instance->record.key_size);
+	records[1].value	= malloc((size_t) dictionary->instance->record.value_size);
+	records[2].key		= malloc((size_t) dictionary->instance->record.key_size);
+	records[2].value	= malloc((size_t) dictionary->instance->record.value_size);
 
 	ion_cursor_status_t cursor_status;
 
 	ion_record_t max_key;
 
-	while ((cursor_status = cursor->next(cursor, &curr_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
-		records[0] = curr_record;
-
-		printf("numrec: %i\n", num_records);
-		num_records++;
+	while (3 > num_records) {
+		while ((cursor_status = cursor->next(cursor, &records[num_records])) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
+			num_records++;
+		}
 	}
 
+	/* Sort records in array ASC */
 	/* Modify for total number of records in table */
 	for (int i = 0; i < 3; ++i) {
 		for (int j = i + 1; j < 3; ++j) {
@@ -204,8 +206,6 @@ sort(
 	}
 
 	cursor->destroy(&cursor);
-	free(curr_record.key);
-	free(curr_record.value);
 }
 
 ion_record_t
@@ -241,7 +241,10 @@ next(
 
 	/* Evaluate ORDERBY condition */
 	if (iterator->orderby_condition) {
-		while (((record = next_sorted_record(iterator->sorted_records, record)).key) != NULL) {
+		record = next_sorted_record(iterator->sorted_records, record);
+
+		while (NULL != (record.key)) {
+			/* If WHERE condition, evaluate */
 			if (iterator->where_condition) {
 				if (3 > get_int(record.key)) {
 					return record;
@@ -250,6 +253,8 @@ next(
 			else {
 				return record;
 			}
+
+			record = next_sorted_record(iterator->sorted_records, record);
 		}
 	}
 	else {
@@ -281,6 +286,15 @@ void
 destroy(
 	ion_query_iterator_t *iterator
 ) {
+/*	if(iterator->orderby_condition) { */
+/*		free(iterator->sorted_records[0].key); */
+/*		free(iterator->sorted_records[0].value); */
+/*		free(iterator->sorted_records[1].key); */
+/*		free(iterator->sorted_records[1].value); */
+/*		free(iterator->sorted_records[2].key); */
+/*		free(iterator->sorted_records[2].value); */
+/*	} */
+
 	iterator->cursor->destroy(&iterator->cursor);
 	free(iterator->record.key);
 	free(iterator->record.value);
@@ -425,7 +439,9 @@ SQL_query(
 
 		sort(dictionary, sorted_records);
 
-		iterator->sorted_records = sorted_records;
+		iterator->sorted_records[0] = sorted_records[0];
+		iterator->sorted_records[1] = sorted_records[1];
+		iterator->sorted_records[2] = sorted_records[2];
 	}
 
 	/* Set-up GROUPBY clause if exists */
@@ -477,7 +493,8 @@ main(
 	iterator.record = next(&iterator, iterator.record);
 
 	while (iterator.record.key != NULL) {
-		printf("Key: %i, Value: %i\n", get_int(iterator.record.key), get_int(iterator.record.value));
+		printf("Key: %i ", get_int(iterator.record.key));
+		printf("Value: %i\n", get_int(iterator.record.value));
 
 		iterator.record = next(&iterator, iterator.record);
 	}
