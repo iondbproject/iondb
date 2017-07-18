@@ -63,11 +63,8 @@ iinq_test_create_open_source(
 
 	char cleanup_name[20];
 
-	sprintf(cleanup_name, "%d.bpt", (int) id);
+	sprintf(cleanup_name, "%d.ffs", (int) id);
 	fremove(cleanup_name);
-	sprintf(cleanup_name, "%d.val", (int) id);
-	fremove(cleanup_name);
-	sprintf(cleanup_name, "%d.bpt", (int) id);
 	fremove(schema_file_name);
 }
 
@@ -103,6 +100,7 @@ iinq_test_create_insert_update_delete_drop_dictionary(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
 
 	error = DROP(test);
+	fremove("test.inq");
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
 }
 
@@ -208,6 +206,7 @@ iinq_test_create_query_select_all_from_where_single_dictionary(
 	QUERY(SELECT_ALL, FROM(test), WHERE(NEUTRALIZE(test.key, int) == 1), , , , , , &processor);
 
 	DROP(test);
+	fremove("test.inq");
 }
 
 void
@@ -261,7 +260,9 @@ iinq_test_create_query_select_all_from_where_two_dictionaries(
 	QUERY(SELECT_ALL, FROM(test1, test2), WHERE(NEUTRALIZE(test1.key, int) == 1), , , , , , &processor);
 
 	DROP(test1);
+	fremove("test1.inq");
 	DROP(test2);
+	fremove("test2.inq");
 }
 
 planck_unit_suite_t *
@@ -288,7 +289,7 @@ run_all_tests_iinq(
 	planck_unit_destroy_suite(suite);
 
 	fremove(ION_MASTER_TABLE_FILENAME);
-	fremove("1.bpt");
+	fremove("3.ffs");
 	fremove("1.val");
 	fremove("2.bpt");
 	fremove("2.val");
