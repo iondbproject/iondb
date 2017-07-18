@@ -35,6 +35,7 @@
 /******************************************************************************/
 
 #include "iinq_user.h"
+#include <string.h>
 
 void
 uppercase(
@@ -147,11 +148,11 @@ table_cleanup(
 	/* Table clean-up */
 	char cleanup_name[20];
 
-	sprintf(cleanup_name, "%d.bpt", (int) id);
+	sprintf(cleanup_name, "%d.ffs", (int) id);
 	fremove(cleanup_name);
-	sprintf(cleanup_name, "%d.val", (int) id);
-	fremove(cleanup_name);
-	fremove("TEST.INQ");
+	fremove("ion_mt.tbl");
+	fremove("TEST1.INQ");
+	fremove("TEST2.INQ");
 }
 
 int
@@ -239,6 +240,25 @@ next(
 ) {
 	ion_cursor_status_t cursor_status;
 
+	/* Set-up for SELECT fieldlist condition */
+	if ((iterator->select_fieldlist) && !(iterator->orderby_condition)) {
+		while (((cursor_status = iterator->cursor->next(iterator->cursor, &record)) == cs_cursor_active) || (cursor_status == cs_cursor_initialized)) {
+			/* Evaluate WHERE condition */
+			if ((iterator->where_condition) && !(iterator->orderby_condition)) {
+				if (3 > get_int(record.key)) {
+					/* Return the retrieved record that meets WHERE condition */
+					record.value = (char *) (record.value + 3);
+					return record;
+				}
+			}
+			/* No WHERE or ORDERBY or GROUPBY condition - return any retrieved record */
+			else {
+				record.value = (char *) (record.value + 3);
+				return record;
+			}
+		}
+	}
+
 	/* Evaluate ORDERBY condition */
 	if (iterator->orderby_condition) {
 		record = next_sorted_record(iterator->sorted_records, record);
@@ -247,10 +267,18 @@ next(
 			/* If WHERE condition, evaluate */
 			if (iterator->where_condition) {
 				if (3 > get_int(record.key)) {
+					if (iterator->select_fieldlist) {
+						record.value = (char *) (record.value + 3);
+					}
+
 					return record;
 				}
 			}
 			else {
+				if (iterator->select_fieldlist) {
+					record.value = (char *) (record.value + 3);
+				}
+
 				return record;
 			}
 
@@ -297,7 +325,7 @@ destroy(
 
 	iterator->cursor->destroy(&iterator->cursor);
 	free(iterator->record.key);
-	free(iterator->record.value);
+/*	free(iterator->record.value); */
 }
 
 void
@@ -309,7 +337,7 @@ table_setup(
 	ion_key_size_t		key_size;
 	ion_value_size_t	value_size;
 
-	schema_file_name	= "TEST.INQ";
+	schema_file_name	= "TEST1.INQ";
 	key_type			= key_type_numeric_signed;
 	key_size			= sizeof(int);
 	value_size			= sizeof(int);
@@ -366,6 +394,72 @@ table_setup(
 	}
 }
 
+void
+fieldlist_table_setup(
+) {
+	/* Table set-up */
+	char				*schema_file_name;
+	ion_key_type_t		key_type;
+	ion_key_size_t		key_size;
+	ion_value_size_t	value_size;
+
+	schema_file_name	= "TEST2.INQ";
+	key_type			= key_type_numeric_signed;
+	key_size			= sizeof(int);
+	value_size			= sizeof("one") + sizeof("two");
+
+	ion_err_t					error;
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
+
+	error = iinq_create_source(schema_file_name, key_type, key_size, value_size);
+
+	if (err_ok != error) {
+		printf("Error1\n");
+	}
+
+	dictionary.handler	= &handler;
+
+	error				= iinq_open_source(schema_file_name, &dictionary, &handler);
+
+	if (err_ok != error) {
+		printf("Error2\n");
+	}
+
+	/* Insert values into table */
+	ion_key_t	key1	= IONIZE(3, int);
+	ion_value_t value1	= "onetwo";
+	ion_key_t	key2	= IONIZE(2, int);
+	ion_value_t value2	= "thrfor";
+	ion_key_t	key3	= IONIZE(1, int);
+	ion_value_t value3	= "fivsix";
+
+	ion_status_t status = dictionary_insert(&dictionary, key1, value1);
+
+	if (err_ok != status.error) {
+		printf("Error3\n");
+	}
+
+	status = dictionary_insert(&dictionary, key2, value2);
+
+	if (err_ok != status.error) {
+		printf("Error4\n");
+	}
+
+	status = dictionary_insert(&dictionary, key3, value3);
+
+	if (err_ok != status.error) {
+		printf("Error5\n");
+	}
+
+	/* Close table and clean-up files */
+	error = ion_close_dictionary(&dictionary);
+
+	if (err_ok != error) {
+		printf("Error6\n");
+	}
+}
+
 ion_err_t
 SQL_query(
 	ion_query_iterator_t	*iterator,
@@ -383,6 +477,7 @@ SQL_query(
 	iterator->where_condition	= boolean_false;
 	iterator->orderby_condition = boolean_false;
 	iterator->groupby_condition = boolean_false;
+	iterator->select_fieldlist	= boolean_false;
 
 	if (err == err_ok) {
 		get_field_list("SELECT", select_clause, select_fields);
@@ -458,8 +553,11 @@ SQL_query(
 	/* Evaluate SELECT here */
 	ion_predicate_t predicate;
 
-	if (0 == strncmp("*", select_fields, 1)) {
-		dictionary_build_predicate(&predicate, predicate_all_records);
+	dictionary_build_predicate(&predicate, predicate_all_records);
+
+	if (0 != strncmp("*", select_fields, 1)) {
+		/* If query is not SELECT * then it is SELECT fieldlist */
+		iterator->select_fieldlist = boolean_true;
 	}
 
 	ion_dict_cursor_t *cursor = malloc(sizeof(ion_dict_cursor_t));
@@ -482,19 +580,37 @@ int
 main(
 	void
 ) {
+	/* For SELECT * queries */
 	table_setup();
+
+	/* For SELECT fieldlist queries */
+/*	fieldlist_table_setup(); */
 
 	/* Query */
 	ion_query_iterator_t iterator;
 
-	SQL_query(&iterator, "Select * FRoM test.inq where Key < 3 orDerby key ASC");
+/*	SQL_query(&iterator, "Select * FRoM test1.inq"); */
+/*	SQL_query(&iterator, "Select * FRoM test1.inq where Key < 3"); */
+/*	SQL_query(&iterator, "Select * FRoM test1.inq where Key < 3 orDerby key ASC"); */
+	SQL_query(&iterator, "Select * FROM test1.inq orderby key ASC");
+
+/*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq"); */
+/*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq where Key < 3"); */
+/*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq where Key < 3 orderby key ASC"); */
+/*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq orderby key ASC"); */
 
 	/* Iterate through results */
 	iterator.record = next(&iterator, iterator.record);
 
 	while (iterator.record.key != NULL) {
 		printf("Key: %i ", get_int(iterator.record.key));
-		printf("Value: %i\n", get_int(iterator.record.value));
+
+		if (iterator.select_fieldlist) {
+			printf("Value: %s\n", (char *) (iterator.record.value));
+		}
+		else {
+			printf("Value: %i\n", get_int(iterator.record.value));
+		}
 
 		iterator.record = next(&iterator, iterator.record);
 	}

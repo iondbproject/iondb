@@ -74,6 +74,7 @@ struct query_iterator {
 	ion_boolean_t		where_condition;	/**< A boolean value whether a WHERE condition exists. */
 	ion_boolean_t		groupby_condition;	/**< A boolean value whether a GROUPBY condition exists. */
 	ion_boolean_t		orderby_condition;	/**< A boolean value whether an ORDERBY condition exists. */
+	ion_boolean_t		select_fieldlist;	/**< A boolean value whether a SELECT fieldlist condition exists. */
 
 	ion_record_t		(*next)(
 		ion_query_iterator_t	*iterator,
