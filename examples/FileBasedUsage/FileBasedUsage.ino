@@ -1,12 +1,14 @@
+#include <SD.h>
 #include <IonDB.h>
 
 void
 setup(
 ) {
+	SD.begin(13);
 	Serial.begin(9600);
 
 	/* Instantiate your dictionary */
-	Dictionary < int, int > *dict = new SkipList < int, int > (-1, key_type_numeric_signed, sizeof(int), sizeof(int), 7);
+	Dictionary < int, int > *dict = new FlatFile < int, int > (-1, key_type_numeric_signed, sizeof(int), sizeof(int), 7);
 
 	/* Insert a record with key 3 and value 10 */
 	dict->insert(3, 10);
