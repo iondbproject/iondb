@@ -68,12 +68,14 @@ struct query_iterator {
 	ion_record_t		record;				/**< The current record returned by the
 												iterator. */
 	ion_dict_cursor_t	*cursor;			/**< A pointer to the cursor of the given query. */
-	ion_record_t		sorted_records[3];	/**< An array of sorted records for orderby queries. */
+	ion_record_t		sorted_records[3];	/**< An array of sorted records for ORDERBY queries. */
+	ion_record_t		grouped_records[3];	/**< An array of grouped records for GROUPBY. */
 	char				*schema_file_name;	/**< A pointer to the name of the
 												schema file in use. */
 	ion_boolean_t		where_condition;	/**< A boolean value whether a WHERE condition exists. */
 	ion_boolean_t		groupby_condition;	/**< A boolean value whether a GROUPBY condition exists. */
 	ion_boolean_t		orderby_condition;	/**< A boolean value whether an ORDERBY condition exists. */
+	ion_boolean_t		orderby_asc;		/**< A boolean value whether the ORDERBY condition is of type ASC. */
 	ion_boolean_t		select_fieldlist;	/**< A boolean value whether a SELECT fieldlist condition exists. */
 
 	ion_record_t		(*next)(

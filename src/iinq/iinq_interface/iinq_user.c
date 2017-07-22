@@ -36,6 +36,7 @@
 
 #include "iinq_user.h"
 #include <string.h>
+#include <unistd.h>
 
 void
 uppercase(
@@ -150,9 +151,11 @@ table_cleanup(
 
 	sprintf(cleanup_name, "%d.ffs", (int) id);
 	fremove(cleanup_name);
+	fremove("1.ffs");
 	fremove("ion_mt.tbl");
 	fremove("TEST1.INQ");
 	fremove("TEST2.INQ");
+	fremove("TEST3.INQ");
 }
 
 int
@@ -163,7 +166,7 @@ get_int(
 }
 
 void
-sort(
+group(
 	ion_dictionary_t	*dictionary,
 	ion_record_t		records[3]
 ) {
@@ -186,22 +189,34 @@ sort(
 
 	ion_cursor_status_t cursor_status;
 
-	ion_record_t max_key;
-
 	while (3 > num_records) {
 		while ((cursor_status = cursor->next(cursor, &records[num_records])) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
 			num_records++;
 		}
 	}
 
+	int		col_val;
+	char	num[4];
+	char	*result;
+
 	/* Sort records in array ASC */
 	/* Modify for total number of records in table */
 	for (int i = 0; i < 3; ++i) {
 		for (int j = i + 1; j < 3; ++j) {
-			if (get_int(records[i].key) > get_int(records[j].key)) {
-				max_key		= records[i];
-				records[i]	= records[j];
-				records[j]	= max_key;
+			/* If col2 has same same value -> group */
+			if ((NULL != records[i].key) && (NULL != records[j].key) && (0 == strncmp((char *) (records[i].value), (char *) (records[j].value), 3))) {
+				result	= malloc(strlen(records[i].value) + 1);
+				col_val = (atoi(records[i].value + 3)) + (atoi(records[j].value + 3));
+
+				sprintf(num, "%i", col_val);
+				num[3]	= '\0';
+
+				memcpy(result, records[i].value, 3);
+				memcpy(result + 3, num, 4);
+
+				records[i].value	= result;
+				records[j].key		= NULL;
+				records[j].value	= NULL;
 			}
 		}
 	}
@@ -209,8 +224,74 @@ sort(
 	cursor->destroy(&cursor);
 }
 
+void
+sort(
+	ion_dictionary_t	*dictionary,
+	ion_record_t		records[3],
+	ion_boolean_t		ASC,
+	ion_boolean_t		grouped
+) {
+	ion_predicate_t predicate;
+	int				num_records = 0;
+
+	if (!grouped) {
+		dictionary_build_predicate(&predicate, predicate_all_records);
+
+		ion_dict_cursor_t *cursor = malloc(sizeof(ion_dict_cursor_t));
+
+		dictionary_find(dictionary, &predicate, &cursor);
+
+		/* Initialize records */
+		records[0].key		= malloc((size_t) dictionary->instance->record.key_size);
+		records[0].value	= malloc((size_t) dictionary->instance->record.value_size);
+		records[1].key		= malloc((size_t) dictionary->instance->record.key_size);
+		records[1].value	= malloc((size_t) dictionary->instance->record.value_size);
+		records[2].key		= malloc((size_t) dictionary->instance->record.key_size);
+		records[2].value	= malloc((size_t) dictionary->instance->record.value_size);
+
+		ion_cursor_status_t cursor_status;
+
+		while (3 > num_records) {
+			while ((cursor_status = cursor->next(cursor, &records[num_records])) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
+				num_records++;
+			}
+		}
+
+		cursor->destroy(&cursor);
+	}
+
+	ion_record_t max_key;
+
+	/* Sort records in array ASC */
+	/* Modify for total number of records in table */
+	if (ASC) {
+		for (int i = 0; i < 3; ++i) {
+			for (int j = i + 1; j < 3; ++j) {
+				if ((get_int(records[i].key) > get_int(records[j].key)) && (NULL != records[i].key) && (NULL != records[j].key)) {
+					max_key		= records[i];
+					records[i]	= records[j];
+					records[j]	= max_key;
+				}
+			}
+		}
+	}
+	/* Sort records in array DESC */
+	/* Modify for total number of records in table */
+	else {
+		for (int i = 0; i < 3; ++i) {
+			for (int j = i + 1; j < 3; ++j) {
+				if (get_int(records[i].key) < get_int(records[j].key)) {
+					max_key		= records[i];
+					records[i]	= records[j];
+					records[j]	= max_key;
+				}
+			}
+		}
+	}
+}
+
 ion_record_t
-next_sorted_record(
+next_record(
 	ion_record_t	sorted_records[],
 	ion_record_t	record
 ) {
@@ -241,7 +322,7 @@ next(
 	ion_cursor_status_t cursor_status;
 
 	/* Set-up for SELECT fieldlist condition */
-	if ((iterator->select_fieldlist) && !(iterator->orderby_condition)) {
+	if ((iterator->select_fieldlist) && !(iterator->orderby_condition) && !(iterator->groupby_condition)) {
 		while (((cursor_status = iterator->cursor->next(iterator->cursor, &record)) == cs_cursor_active) || (cursor_status == cs_cursor_initialized)) {
 			/* Evaluate WHERE condition */
 			if ((iterator->where_condition) && !(iterator->orderby_condition)) {
@@ -261,7 +342,7 @@ next(
 
 	/* Evaluate ORDERBY condition */
 	if (iterator->orderby_condition) {
-		record = next_sorted_record(iterator->sorted_records, record);
+		record = next_record(iterator->sorted_records, record);
 
 		while (NULL != (record.key)) {
 			/* If WHERE condition, evaluate */
@@ -282,7 +363,7 @@ next(
 				return record;
 			}
 
-			record = next_sorted_record(iterator->sorted_records, record);
+			record = next_record(iterator->sorted_records, record);
 		}
 	}
 	else {
@@ -294,9 +375,22 @@ next(
 					return record;
 				}
 			}
-			/* No WHERE or ORDERBY or GROUPBY condition - return any retrieved record */
 			else {
-				return record;
+				/* Evaluate GROUPBY condition */
+				if (iterator->groupby_condition) {
+					record = next_record(iterator->grouped_records, record);
+
+					if (NULL != record.key) {
+						return record;
+					}
+
+					break;
+				}
+
+				/* No WHERE or ORDERBY or GROUPBY condition - return any retrieved record */
+				if (NULL != record.key) {
+					return record;
+				}
 			}
 		}
 	}
@@ -361,12 +455,12 @@ table_setup(
 	}
 
 	/* Insert values into table */
-	ion_key_t	key1	= IONIZE(3, int);
-	ion_value_t value1	= IONIZE(300, int);
-	ion_key_t	key2	= IONIZE(2, int);
-	ion_value_t value2	= IONIZE(200, int);
-	ion_key_t	key3	= IONIZE(1, int);
-	ion_value_t value3	= IONIZE(100, int);
+	ion_key_t	key1	= IONIZE(1, int);
+	ion_value_t value1	= IONIZE(100, int);
+	ion_key_t	key2	= IONIZE(3, int);
+	ion_value_t value2	= IONIZE(300, int);
+	ion_key_t	key3	= IONIZE(2, int);
+	ion_value_t value3	= IONIZE(200, int);
 
 	ion_status_t status = dictionary_insert(&dictionary, key1, value1);
 
@@ -427,12 +521,78 @@ fieldlist_table_setup(
 	}
 
 	/* Insert values into table */
-	ion_key_t	key1	= IONIZE(3, int);
+	ion_key_t	key1	= IONIZE(1, int);
 	ion_value_t value1	= "onetwo";
-	ion_key_t	key2	= IONIZE(2, int);
+	ion_key_t	key2	= IONIZE(3, int);
 	ion_value_t value2	= "thrfor";
-	ion_key_t	key3	= IONIZE(1, int);
+	ion_key_t	key3	= IONIZE(2, int);
 	ion_value_t value3	= "fivsix";
+
+	ion_status_t status = dictionary_insert(&dictionary, key1, value1);
+
+	if (err_ok != status.error) {
+		printf("Error3\n");
+	}
+
+	status = dictionary_insert(&dictionary, key2, value2);
+
+	if (err_ok != status.error) {
+		printf("Error4\n");
+	}
+
+	status = dictionary_insert(&dictionary, key3, value3);
+
+	if (err_ok != status.error) {
+		printf("Error5\n");
+	}
+
+	/* Close table and clean-up files */
+	error = ion_close_dictionary(&dictionary);
+
+	if (err_ok != error) {
+		printf("Error6\n");
+	}
+}
+
+void
+groupby_table_setup(
+) {
+	/* Table set-up */
+	char				*schema_file_name;
+	ion_key_type_t		key_type;
+	ion_key_size_t		key_size;
+	ion_value_size_t	value_size;
+
+	schema_file_name	= "TEST3.INQ";
+	key_type			= key_type_numeric_signed;
+	key_size			= sizeof(int);
+	value_size			= sizeof("100") + sizeof("200");
+
+	ion_err_t					error;
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
+
+	error = iinq_create_source(schema_file_name, key_type, key_size, value_size);
+
+	if (err_ok != error) {
+		printf("Error1\n");
+	}
+
+	dictionary.handler	= &handler;
+
+	error				= iinq_open_source(schema_file_name, &dictionary, &handler);
+
+	if (err_ok != error) {
+		printf("Error2\n");
+	}
+
+	/* Insert values into table */
+	ion_key_t	key1	= IONIZE(1, int);
+	ion_value_t value1	= "100200";
+	ion_key_t	key2	= IONIZE(3, int);
+	ion_value_t value2	= "111150";
+	ion_key_t	key3	= IONIZE(2, int);
+	ion_value_t value3	= "100250";
 
 	ion_status_t status = dictionary_insert(&dictionary, key1, value1);
 
@@ -478,6 +638,7 @@ SQL_query(
 	iterator->orderby_condition = boolean_false;
 	iterator->groupby_condition = boolean_false;
 	iterator->select_fieldlist	= boolean_false;
+	iterator->orderby_asc		= boolean_false;
 
 	if (err == err_ok) {
 		get_field_list("SELECT", select_clause, select_fields);
@@ -520,6 +681,25 @@ SQL_query(
 
 	iterator->schema_file_name = from_fields;
 
+	/* Set-up GROUPBY clause if exists */
+	char	groupby_clause[50];
+	char	groupby_fields[40] = "null";
+
+	err = get_clause("GROUPBY", uppercase_sql, groupby_clause);
+
+	if (err == err_ok) {
+		get_field_list("GROUPBY", groupby_clause, groupby_fields);
+		iterator->groupby_condition = boolean_true;
+
+		ion_record_t grouped_records[3];
+
+		group(dictionary, grouped_records);
+
+		iterator->grouped_records[0]	= grouped_records[0];
+		iterator->grouped_records[1]	= grouped_records[1];
+		iterator->grouped_records[2]	= grouped_records[2];
+	}
+
 	/* Set-up ORDERBY clause if exists */
 	char	orderby_clause[50];
 	char	orderby_fields[40] = "null";
@@ -530,24 +710,19 @@ SQL_query(
 		get_field_list("ORDERBY", orderby_clause, orderby_fields);
 		iterator->orderby_condition = boolean_true;
 
+		char *sort_pointer = strstr(orderby_fields, "ASC");
+
+		if (NULL != sort_pointer) {
+			iterator->orderby_asc = boolean_true;
+		}
+
 		ion_record_t sorted_records[3];
 
-		sort(dictionary, sorted_records);
+		sort(dictionary, iterator->grouped_records, iterator->orderby_asc, iterator->groupby_condition);
 
 		iterator->sorted_records[0] = sorted_records[0];
 		iterator->sorted_records[1] = sorted_records[1];
 		iterator->sorted_records[2] = sorted_records[2];
-	}
-
-	/* Set-up GROUPBY clause if exists */
-	char	groupby_clause[50];
-	char	groupby_fields[40] = "null";
-
-	err = get_clause("GROUPBY", uppercase_sql, groupby_clause);
-
-	if (err == err_ok) {
-		get_field_list("GROUPBY", groupby_clause, groupby_fields);
-		iterator->groupby_condition = boolean_true;
 	}
 
 	/* Evaluate SELECT here */
@@ -581,10 +756,13 @@ main(
 	void
 ) {
 	/* For SELECT * queries */
-	table_setup();
+/*	table_setup(); */
 
 	/* For SELECT fieldlist queries */
 /*	fieldlist_table_setup(); */
+
+	/* For ORDERBY fieldlist and GROUPBY queries */
+	groupby_table_setup();
 
 	/* Query */
 	ion_query_iterator_t iterator;
@@ -592,12 +770,18 @@ main(
 /*	SQL_query(&iterator, "Select * FRoM test1.inq"); */
 /*	SQL_query(&iterator, "Select * FRoM test1.inq where Key < 3"); */
 /*	SQL_query(&iterator, "Select * FRoM test1.inq where Key < 3 orDerby key ASC"); */
-	SQL_query(&iterator, "Select * FROM test1.inq orderby key ASC");
+/*	SQL_query(&iterator, "Select * FRoM test1.inq where Key < 3 orDerby key DESC"); */
+/*	SQL_query(&iterator, "Select * FROM test1.inq orderby key ASC"); */
+/*	SQL_query(&iterator, "Select * FROM test1.inq orderby key DESC"); */
 
 /*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq"); */
 /*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq where Key < 3"); */
 /*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq where Key < 3 orderby key ASC"); */
+/*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq where Key < 3 orderby key DESC"); */
 /*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq orderby key ASC"); */
+/*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq orderby key DESC"); */
+
+	SQL_query(&iterator, "Select key, col1, col2, FRoM test3.inq groupby col1");
 
 	/* Iterate through results */
 	iterator.record = next(&iterator, iterator.record);
@@ -605,7 +789,11 @@ main(
 	while (iterator.record.key != NULL) {
 		printf("Key: %i ", get_int(iterator.record.key));
 
-		if (iterator.select_fieldlist) {
+		if (iterator.groupby_condition) {
+			printf("col1: %.*s ", 3, (char *) (iterator.record.value));
+			printf("col2: %s\n", (char *) (iterator.record.value + 3));
+		}
+		else if (iterator.select_fieldlist) {
 			printf("Value: %s\n", (char *) (iterator.record.value));
 		}
 		else {

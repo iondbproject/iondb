@@ -4,8 +4,6 @@ project(test_iinq_user)
 set(SOURCE_FILES
         iinq_user.c
         iinq_user.h
-        iinq_query_iterator.c
-        iinq_query_iterator.h
         ../../dictionary/dictionary_types.h
         ../../dictionary/dictionary.c
         ../../dictionary/dictionary.h
