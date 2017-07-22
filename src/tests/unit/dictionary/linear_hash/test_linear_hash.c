@@ -50,8 +50,6 @@ test_linear_hash_create(
 	ion_value_size_t		value_size,
 	ion_dictionary_size_t	dictionary_size
 ) {
-	/* TODO create and destroy a linear_hash in every file */
-
 	int			initial_size		= 2;
 	int			split_threshold		= 85;
 	int			records_per_bucket	= 4;

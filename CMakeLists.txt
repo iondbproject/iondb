@@ -67,6 +67,7 @@ add_subdirectory(src/dictionary/open_address_file_hash)
 add_subdirectory(src/dictionary/open_address_hash)
 add_subdirectory(src/dictionary/skip_list)
 add_subdirectory(src/dictionary/linear_hash)
+add_subdirectory(src/benchmark/linear_hash_benchmarks)
 
 add_subdirectory(src/tests/unit/iinq)
 add_subdirectory(src/tests/unit/dictionary/bpp_tree)
