@@ -61,7 +61,7 @@ benchmark_insert(
 		printf("%ld,%d\n", ion_time() - start, linear_hash->num_records);
 	}
 
-	time_t elapsed = ion_time() - start;
+	time_t elapsed = ion_time() - total_start;
 
 	printf("\nTook %ld to insert all %d records \n", elapsed, record_count);
 	linear_hash_destroy(linear_hash);
