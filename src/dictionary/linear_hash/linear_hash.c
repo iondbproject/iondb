@@ -103,9 +103,9 @@ linear_hash_init(
 	}
 
 	linear_hash->bucket_map = bucket_map;
-	linear_hash->database	= fopen(data_filename, "r+b");
+	/* linear_hash->database	= fopen(data_filename, "r+b"); */
 
-	if (NULL == linear_hash->database) {
+	if ((NULL == linear_hash->database) || 1) {
 		linear_hash->database = fopen(data_filename, "w+b");
 
 		if (NULL == linear_hash->database) {
@@ -124,9 +124,9 @@ linear_hash_init(
 		}
 	}
 
-	linear_hash->state = fopen(state_filename, "r+b");
+	/* linear_hash->state = fopen(state_filename, "r+b"); */
 
-	if (NULL == linear_hash->state) {
+	if ((NULL == linear_hash->state) || 1) {
 		linear_hash->state = fopen(state_filename, "w+b");
 
 		if (NULL == linear_hash->state) {
