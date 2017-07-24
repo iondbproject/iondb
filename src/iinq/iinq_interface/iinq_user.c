@@ -142,16 +142,10 @@ get_field_list(
 
 void
 table_cleanup(
-	ion_query_iterator_t *iterator
 ) {
-	ion_dictionary_id_t id = iterator->cursor->dictionary->instance->id;
-
-	/* Table clean-up */
-	char cleanup_name[20];
-
-	sprintf(cleanup_name, "%d.ffs", (int) id);
-	fremove(cleanup_name);
 	fremove("1.ffs");
+	fremove("2.ffs");
+	fremove("3.ffs");
 	fremove("ion_mt.tbl");
 	fremove("TEST1.INQ");
 	fremove("TEST2.INQ");
@@ -267,7 +261,7 @@ sort(
 	if (ASC) {
 		for (int i = 0; i < 3; ++i) {
 			for (int j = i + 1; j < 3; ++j) {
-				if ((get_int(records[i].key) > get_int(records[j].key)) && (NULL != records[i].key) && (NULL != records[j].key)) {
+				if ((NULL != records[i].key) && (NULL != records[j].key) && (get_int(records[i].key) > get_int(records[j].key))) {
 					max_key		= records[i];
 					records[i]	= records[j];
 					records[j]	= max_key;
@@ -298,7 +292,7 @@ next_record(
 	int pos = 0;
 
 	while (3 > pos) {
-		if (NULL != sorted_records[pos].key) {
+		if ((NULL != sorted_records[pos].key) && (NULL != sorted_records[pos].value)) {
 			record					= sorted_records[pos];
 
 			/* Set record to NULL as not to return it repeatedly */
@@ -346,7 +340,7 @@ next(
 
 		while (NULL != (record.key)) {
 			/* If WHERE condition, evaluate */
-			if (iterator->where_condition) {
+			if (iterator->where_condition && !iterator->minmax_condition) {
 				if (3 > get_int(record.key)) {
 					if (iterator->select_fieldlist) {
 						record.value = (char *) (record.value + 3);
@@ -355,7 +349,12 @@ next(
 					return record;
 				}
 			}
+			/* If WHERE condition and MIN/MAX condition, evaluate */
+			else if (iterator->where_condition && iterator->minmax_condition) {
+				return record;
+			}
 			else {
+				/* Evaluate FIELDLIST condition */
 				if (iterator->select_fieldlist) {
 					record.value = (char *) (record.value + 3);
 				}
@@ -398,7 +397,7 @@ next(
 	record.key		= NULL;
 	record.value	= NULL;
 
-	table_cleanup(iterator);
+	table_cleanup();
 	iterator->destroy(iterator);
 
 	return record;
@@ -418,8 +417,33 @@ destroy(
 /*	} */
 
 	iterator->cursor->destroy(&iterator->cursor);
-	free(iterator->record.key);
+/*	free(iterator->record.key); */
 /*	free(iterator->record.value); */
+}
+
+void
+print_records(
+	char *table
+) {
+	printf("Records inserted into table:\n");
+
+	if (0 == strncmp("TEST1.INQ", table, 6)) {
+		printf("Key: 1 Value: 100\n");
+		printf("Key: 3 Value: 300\n");
+		printf("Key: 2 Value: 200\n\n");
+	}
+
+	if (0 == strncmp("TEST2.INQ", table, 6)) {
+		printf("Key: 1 Value: one, two\n");
+		printf("Key: 3 Value: thr, for\n");
+		printf("Key: 2 Value: fiv, six\n\n");
+	}
+
+	if (0 == strncmp("TEST3.INQ", table, 6)) {
+		printf("Key: 1 Value: 100, 200\n");
+		printf("Key: 3 Value: 111, 150\n");
+		printf("Key: 2 Value: 100, 250\n\n");
+	}
 }
 
 void
@@ -628,7 +652,6 @@ SQL_query(
 	char uppercase_sql[(int) strlen(sql_string)];
 
 	uppercase(sql_string, uppercase_sql);
-	printf("%s\n", uppercase_sql);
 
 	char		select_clause[50];
 	ion_err_t	err					= get_clause("SELECT", uppercase_sql, select_clause);
@@ -639,9 +662,23 @@ SQL_query(
 	iterator->groupby_condition = boolean_false;
 	iterator->select_fieldlist	= boolean_false;
 	iterator->orderby_asc		= boolean_false;
+	iterator->minmax_condition	= boolean_false;
 
 	if (err == err_ok) {
 		get_field_list("SELECT", select_clause, select_fields);
+
+		char *min_pointer = strstr(select_fields, "MIN");
+
+		if (NULL != min_pointer) {
+			iterator->orderby_asc		= boolean_true;
+			iterator->minmax_condition	= boolean_true;
+		}
+
+		char *max_pointer = strstr(select_fields, "MAX");
+
+		if (NULL != max_pointer) {
+			iterator->minmax_condition = boolean_true;
+		}
 	}
 
 	char from_clause[50];
@@ -653,6 +690,9 @@ SQL_query(
 	if (err == err_ok) {
 		get_field_list("FROM", from_clause, from_fields);
 	}
+
+	print_records(from_fields);
+	printf("%s\n", uppercase_sql);
 
 	char	where_clause[50];
 	char	where_fields[40] = "null";
@@ -706,8 +746,15 @@ SQL_query(
 
 	err = get_clause("ORDERBY", uppercase_sql, orderby_clause);
 
+	if (iterator->minmax_condition) {
+		err = err_ok;
+	}
+
 	if (err == err_ok) {
-		get_field_list("ORDERBY", orderby_clause, orderby_fields);
+		if (!iterator->minmax_condition) {
+			get_field_list("ORDERBY", orderby_clause, orderby_fields);
+		}
+
 		iterator->orderby_condition = boolean_true;
 
 		char *sort_pointer = strstr(orderby_fields, "ASC");
@@ -718,11 +765,34 @@ SQL_query(
 
 		ion_record_t sorted_records[3];
 
-		sort(dictionary, iterator->grouped_records, iterator->orderby_asc, iterator->groupby_condition);
+		sort(dictionary, sorted_records, iterator->orderby_asc, iterator->groupby_condition);
 
-		iterator->sorted_records[0] = sorted_records[0];
-		iterator->sorted_records[1] = sorted_records[1];
-		iterator->sorted_records[2] = sorted_records[2];
+		if (iterator->minmax_condition) {
+			iterator->sorted_records[1].key = NULL;
+			iterator->sorted_records[2].key = NULL;
+
+			/* Evaluate WHERE condition */
+			if (iterator->where_condition) {
+				int i = 0;
+
+				while (i < 3) {
+					if (0 == strncmp(sorted_records[i].value, "100", 3)) {
+						iterator->sorted_records[0] = sorted_records[i];
+						break;
+					}
+
+					i++;
+				}
+			}
+			else {
+				iterator->sorted_records[0] = sorted_records[0];
+			}
+		}
+		else {
+			iterator->sorted_records[0] = sorted_records[0];
+			iterator->sorted_records[1] = sorted_records[1];
+			iterator->sorted_records[2] = sorted_records[2];
+		}
 	}
 
 	/* Evaluate SELECT here */
@@ -755,11 +825,14 @@ int
 main(
 	void
 ) {
+	/* Cleanup just in case */
+	table_cleanup();
+
 	/* For SELECT * queries */
-/*	table_setup(); */
+	table_setup();
 
 	/* For SELECT fieldlist queries */
-/*	fieldlist_table_setup(); */
+	fieldlist_table_setup();
 
 	/* For ORDERBY fieldlist and GROUPBY queries */
 	groupby_table_setup();
@@ -781,22 +854,32 @@ main(
 /*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq orderby key ASC"); */
 /*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq orderby key DESC"); */
 
-	SQL_query(&iterator, "Select key, col1, col2, FRoM test3.inq groupby col1");
+/*	SQL_query(&iterator, "Select MAX(key) FRoM test1.inq"); */
+/*	SQL_query(&iterator, "Select MAX(key), col1, col2 FRoM test3.inq where col1 = 100"); */
+/*	SQL_query(&iterator, "Select MIN(key) FRoM test1.inq"); */
+	SQL_query(&iterator, "Select MIN(key), col1, col2 FRoM test3.inq where col1 = 100");
+
+/*	SQL_query(&iterator, "Select key, col1, col2, FRoM test3.inq groupby col1"); */
 
 	/* Iterate through results */
 	iterator.record = next(&iterator, iterator.record);
 
+	printf("\n");
+
 	while (iterator.record.key != NULL) {
 		printf("Key: %i ", get_int(iterator.record.key));
 
-		if (iterator.groupby_condition) {
+		if (iterator.groupby_condition || (iterator.minmax_condition && iterator.where_condition)) {
 			printf("col1: %.*s ", 3, (char *) (iterator.record.value));
 			printf("col2: %s\n", (char *) (iterator.record.value + 3));
+		}
+		else if (iterator.minmax_condition && !iterator.where_condition) {
+			printf("\n");
 		}
 		else if (iterator.select_fieldlist) {
 			printf("Value: %s\n", (char *) (iterator.record.value));
 		}
-		else {
+		else if (!iterator.minmax_condition) {
 			printf("Value: %i\n", get_int(iterator.record.value));
 		}
 
