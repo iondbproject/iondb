@@ -315,8 +315,12 @@ next(
 ) {
 	ion_cursor_status_t cursor_status;
 
+	int sum			= 0;
+	int count		= 1;
+	int avg_count	= 0;
+
 	/* Set-up for SELECT fieldlist condition */
-	if ((iterator->select_fieldlist) && !(iterator->orderby_condition) && !(iterator->groupby_condition)) {
+	if ((iterator->select_fieldlist) && !(iterator->orderby_condition) && !(iterator->groupby_condition) && !(iterator->sum_condition) && !(iterator->avg_condition)) {
 		while (((cursor_status = iterator->cursor->next(iterator->cursor, &record)) == cs_cursor_active) || (cursor_status == cs_cursor_initialized)) {
 			/* Evaluate WHERE condition */
 			if ((iterator->where_condition) && !(iterator->orderby_condition)) {
@@ -368,9 +372,54 @@ next(
 	else {
 		while (((cursor_status = iterator->cursor->next(iterator->cursor, &record)) == cs_cursor_active) || (cursor_status == cs_cursor_initialized)) {
 			/* Evaluate WHERE condition */
-			if ((iterator->where_condition) && !(iterator->orderby_condition)) {
+			if ((iterator->where_condition) && !(iterator->orderby_condition) && !(iterator->sum_condition) && !(iterator->avg_condition)) {
 				if (3 > get_int(record.key)) {
 					/* Return the retrieved record that meets WHERE condition */
+					return record;
+				}
+			}
+			/* Evaluate SUM or AVG aggregate */
+			else if ((iterator->sum_condition) || (iterator->avg_condition)) {
+				char	num[4];
+				char	*result;
+
+				if ((NULL != record.key) &&
+					/* Evaluate WHERE condition if it exists */
+					((!iterator->where_condition) || (0 == strncmp((char *) record.value, "100", 3)))) {
+					result	= malloc(strlen(record.value) + 1);
+					sum		+= (atoi(record.value + 3));
+
+					sprintf(num, "%i", sum);
+					num[3]	= '\0';
+
+					memcpy(result, record.value, 3);
+					memcpy(result + 3, num, 4);
+
+					record.value = result;
+					avg_count++;
+				}
+
+				count++;
+
+				if (4 == count) {
+					/* Evaluate AVG aggregate */
+					if (iterator->avg_condition) {
+						int avg = 0;
+
+						result	= malloc(strlen(record.value) + 1);
+						avg		= (atoi(record.value + 3)) / avg_count;
+
+						sprintf(num, "%i", avg);
+						num[3]	= '\0';
+
+						memcpy(result, record.value, 3);
+						memcpy(result + 3, num, 4);
+
+						record.value = result;
+						return record;
+					}
+
+					/* Return SUM record as aggregate has been evaluated */
 					return record;
 				}
 			}
@@ -663,6 +712,8 @@ SQL_query(
 	iterator->select_fieldlist	= boolean_false;
 	iterator->orderby_asc		= boolean_false;
 	iterator->minmax_condition	= boolean_false;
+	iterator->sum_condition		= boolean_false;
+	iterator->avg_condition		= boolean_false;
 
 	if (err == err_ok) {
 		get_field_list("SELECT", select_clause, select_fields);
@@ -678,6 +729,18 @@ SQL_query(
 
 		if (NULL != max_pointer) {
 			iterator->minmax_condition = boolean_true;
+		}
+
+		char *sum_pointer = strstr(select_fields, "SUM");
+
+		if (NULL != sum_pointer) {
+			iterator->sum_condition = boolean_true;
+		}
+
+		char *avg_pointer = strstr(uppercase_sql, "AVG");
+
+		if (NULL != avg_pointer) {
+			iterator->avg_condition = boolean_true;
 		}
 	}
 
@@ -857,7 +920,11 @@ main(
 /*	SQL_query(&iterator, "Select MAX(key) FRoM test1.inq"); */
 /*	SQL_query(&iterator, "Select MAX(key), col1, col2 FRoM test3.inq where col1 = 100"); */
 /*	SQL_query(&iterator, "Select MIN(key) FRoM test1.inq"); */
-	SQL_query(&iterator, "Select MIN(key), col1, col2 FRoM test3.inq where col1 = 100");
+/*	SQL_query(&iterator, "Select MIN(key), col1, col2 FRoM test3.inq where col1 = 100"); */
+/*	SQL_query(&iterator, "Select SUM(col2) FRoM test3.inq"); */
+/*	SQL_query(&iterator, "Select SUM(col2) FRoM test3.inq where col1 = 100"); */
+/*	SQL_query(&iterator, "Select AVG(col2) FRoM test3.inq"); */
+	SQL_query(&iterator, "Select AVG(col2) FRoM test3.inq where col1 = 100");
 
 /*	SQL_query(&iterator, "Select key, col1, col2, FRoM test3.inq groupby col1"); */
 
@@ -867,10 +934,15 @@ main(
 	printf("\n");
 
 	while (iterator.record.key != NULL) {
-		printf("Key: %i ", get_int(iterator.record.key));
+		if (!(iterator.sum_condition) && !(iterator.avg_condition)) {
+			printf("Key: %i ", get_int(iterator.record.key));
+		}
 
 		if (iterator.groupby_condition || (iterator.minmax_condition && iterator.where_condition)) {
 			printf("col1: %.*s ", 3, (char *) (iterator.record.value));
+			printf("col2: %s\n", (char *) (iterator.record.value + 3));
+		}
+		else if (iterator.sum_condition || iterator.avg_condition) {
 			printf("col2: %s\n", (char *) (iterator.record.value + 3));
 		}
 		else if (iterator.minmax_condition && !iterator.where_condition) {
