@@ -74,12 +74,14 @@ struct query_iterator {
 												schema file in use. */
 	ion_boolean_t		where_condition;	/**< A boolean value whether a WHERE condition exists. */
 	ion_boolean_t		groupby_condition;	/**< A boolean value whether a GROUPBY condition exists. */
-	ion_boolean_t		orderby_condition;	/**< A boolean value whether an ORDERBY condition exists. */
+	ion_boolean_t		orderby1_condition;	/**< A boolean value whether an ORDERBY condition exists. */
+	ion_boolean_t		orderby2_condition;	/**< A boolean value whether a second ORDERBY condition exists. */
 	ion_boolean_t		minmax_condition;	/**< A boolean value whether a MAX/MIN aggregate condition exists. */
 	ion_boolean_t		sum_condition;	/**< A boolean value whether a SUM aggregate condition exists. */
 	ion_boolean_t		avg_condition;	/**< A boolean value whether a AVG aggregate condition exists. */
 	ion_boolean_t		count_condition;/**< A boolean value whether a COUNT aggregate condition exists. */
-	ion_boolean_t		orderby_asc;		/**< A boolean value whether the ORDERBY condition is of type ASC. */
+	ion_boolean_t		orderby1_asc;		/**< A boolean value whether the ORDERBY condition is of type ASC. */
+	ion_boolean_t		orderby2_asc;		/**< A boolean value whether the second ORDERBY condition is of type ASC. */
 	ion_boolean_t		select_fieldlist;	/**< A boolean value whether a SELECT fieldlist condition exists. */
 
 	ion_record_t		(*next)(

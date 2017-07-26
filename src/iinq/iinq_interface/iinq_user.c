@@ -216,15 +216,14 @@ group(
 
 void
 sort(
-	ion_dictionary_t	*dictionary,
-	ion_record_t		records[3],
-	ion_boolean_t		ASC,
-	ion_boolean_t		grouped
+	ion_query_iterator_t	*iterator,
+	ion_dictionary_t		*dictionary,
+	ion_record_t			records[3]
 ) {
 	ion_predicate_t predicate;
 	int				num_records = 0;
 
-	if (!grouped) {
+	if (!iterator->groupby_condition) {
 		dictionary_build_predicate(&predicate, predicate_all_records);
 
 		ion_dict_cursor_t *cursor = malloc(sizeof(ion_dict_cursor_t));
@@ -253,13 +252,31 @@ sort(
 
 		/* Sort records in array by key ASC */
 		/* Modify for total number of records in table */
-		if (ASC) {
+		if (iterator->orderby1_asc) {
 			for (int i = 0; i < 3; ++i) {
 				for (int j = i + 1; j < 3; ++j) {
+					/* Evaluate first sort */
 					if ((NULL != records[i].key) && (NULL != records[j].key) && (get_int(records[i].key) > get_int(records[j].key))) {
 						max_key		= records[i];
 						records[i]	= records[j];
 						records[j]	= max_key;
+					}
+					/* Evaluate second sort if keys are equal */
+					else if ((NULL != records[i].key) && (NULL != records[j].key) && (get_int(records[i].key) == get_int(records[j].key))) {
+						if (iterator->orderby2_condition && iterator->orderby2_asc) {
+							if ((0 < strncmp((records[i].value + 3), (records[j].value + 3), 3))) {
+								max_key		= records[i];
+								records[i]	= records[j];
+								records[j]	= max_key;
+							}
+						}
+						else if (iterator->orderby2_condition && !(iterator->orderby2_asc)) {
+							if ((0 > strncmp((records[i].value + 3), (records[j].value + 3), 3))) {
+								max_key		= records[i];
+								records[i]	= records[j];
+								records[j]	= max_key;
+							}
+						}
 					}
 				}
 			}
@@ -269,10 +286,28 @@ sort(
 		else {
 			for (int i = 0; i < 3; ++i) {
 				for (int j = i + 1; j < 3; ++j) {
-					if (get_int(records[i].key) < get_int(records[j].key)) {
+					/* Evaluate first sort */
+					if ((NULL != records[i].key) && (NULL != records[j].key) && (get_int(records[i].key) < get_int(records[j].key))) {
 						max_key		= records[i];
 						records[i]	= records[j];
 						records[j]	= max_key;
+					}
+					/* Evaluate second sort if keys are equal */
+					else if ((NULL != records[i].key) && (NULL != records[j].key) && (get_int(records[i].key) == get_int(records[j].key))) {
+						if (iterator->orderby2_condition && iterator->orderby2_asc) {
+							if ((0 < strncmp((records[i].value + 3), (records[j].value + 3), 3))) {
+								max_key		= records[i];
+								records[i]	= records[j];
+								records[j]	= max_key;
+							}
+						}
+						else if (iterator->orderby2_condition && !(iterator->orderby2_asc)) {
+							if ((0 > strncmp((records[i].value + 3), (records[j].value + 3), 3))) {
+								max_key		= records[i];
+								records[i]	= records[j];
+								records[j]	= max_key;
+							}
+						}
 					}
 				}
 			}
@@ -283,7 +318,7 @@ sort(
 
 		/* Sort records in array by key ASC */
 		/* Modify for total number of records in table */
-		if (ASC) {
+		if (iterator->orderby1_asc) {
 			for (int i = 0; i < 3; ++i) {
 				for (int j = i + 1; j < 3; ++j) {
 					if ((NULL != records[i].key) && (NULL != records[j].key) && (0 < strncmp((records[i].value + 3), (records[j].value + 3), 3))) {
@@ -346,10 +381,10 @@ next(
 	int avg_count	= 0;
 
 	/* Set-up for SELECT fieldlist condition */
-	if ((iterator->select_fieldlist) && !(iterator->orderby_condition) && !(iterator->groupby_condition) && !(iterator->sum_condition) && !(iterator->avg_condition) && !(iterator->count_condition)) {
+	if ((iterator->select_fieldlist) && !(iterator->orderby1_condition) && !(iterator->groupby_condition) && !(iterator->sum_condition) && !(iterator->avg_condition) && !(iterator->count_condition)) {
 		while (((cursor_status = iterator->cursor->next(iterator->cursor, &record)) == cs_cursor_active) || (cursor_status == cs_cursor_initialized)) {
 			/* Evaluate WHERE condition */
-			if ((iterator->where_condition) && !(iterator->orderby_condition)) {
+			if ((iterator->where_condition) && !(iterator->orderby1_condition)) {
 				if (3 > get_int(record.key)) {
 					/* Return the retrieved record that meets WHERE condition */
 					record.value = (char *) (record.value + 3);
@@ -365,7 +400,7 @@ next(
 	}
 
 	/* Evaluate ORDERBY condition */
-	if (iterator->orderby_condition && !(iterator->groupby_condition)) {
+	if (iterator->orderby1_condition && !(iterator->groupby_condition)) {
 		record = next_record(iterator->sorted_records, record);
 
 		while (NULL != (record.key)) {
@@ -398,7 +433,7 @@ next(
 	else {
 		while (((cursor_status = iterator->cursor->next(iterator->cursor, &record)) == cs_cursor_active) || (cursor_status == cs_cursor_initialized)) {
 			/* Evaluate WHERE condition */
-			if ((iterator->where_condition) && !(iterator->orderby_condition) && !(iterator->sum_condition) && !(iterator->avg_condition) && !(iterator->count_condition) && !(iterator->groupby_condition)) {
+			if ((iterator->where_condition) && !(iterator->orderby1_condition) && !(iterator->sum_condition) && !(iterator->avg_condition) && !(iterator->count_condition) && !(iterator->groupby_condition)) {
 				if (3 > get_int(record.key)) {
 					/* Return the retrieved record that meets WHERE condition */
 					return record;
@@ -772,7 +807,7 @@ table4_setup(
 	/* Insert values into table */
 	ion_key_t	key1	= IONIZE(1, int);
 	ion_value_t value1	= "100200";
-	ion_key_t	key2	= IONIZE(3, int);
+	ion_key_t	key2	= IONIZE(1, int);
 	ion_value_t value2	= "100250";
 	ion_key_t	key3	= IONIZE(2, int);
 	ion_value_t value3	= "100250";
@@ -854,21 +889,21 @@ SQL_query(
 	char		select_clause[50];
 	ion_err_t	err = get_clause("SELECT", uppercase_sql, select_clause);
 
-	iterator->where_condition	= boolean_false;
-	iterator->orderby_condition = boolean_false;
-	iterator->groupby_condition = boolean_false;
-	iterator->select_fieldlist	= boolean_false;
-	iterator->orderby_asc		= boolean_false;
-	iterator->minmax_condition	= boolean_false;
-	iterator->sum_condition		= boolean_false;
-	iterator->avg_condition		= boolean_false;
-	iterator->count_condition	= boolean_false;
+	iterator->where_condition		= boolean_false;
+	iterator->orderby1_condition	= boolean_false;
+	iterator->groupby_condition		= boolean_false;
+	iterator->select_fieldlist		= boolean_false;
+	iterator->orderby1_asc			= boolean_false;
+	iterator->minmax_condition		= boolean_false;
+	iterator->sum_condition			= boolean_false;
+	iterator->avg_condition			= boolean_false;
+	iterator->count_condition		= boolean_false;
 
 	if (err == err_ok) {
 		char *min_pointer = strstr(select_clause, "MIN");
 
 		if (NULL != min_pointer) {
-			iterator->orderby_asc		= boolean_true;
+			iterator->orderby1_asc		= boolean_true;
 			iterator->minmax_condition	= boolean_true;
 		}
 
@@ -955,56 +990,82 @@ SQL_query(
 	}
 
 	if (err == err_ok) {
-		iterator->orderby_condition = boolean_true;
+		iterator->orderby1_condition = boolean_true;
 
-		char *sort_pointer = strstr(orderby_clause, "ASC");
+		char	*asc1_pointer	= strstr(orderby_clause, "ASC");
+		char	*desc1_pointer	= strstr(orderby_clause, "DESC");
 
-		if (NULL != sort_pointer) {
-			iterator->orderby_asc = boolean_true;
-		}
+		if (NULL != asc1_pointer) {
+			char *asc2_pointer = strstr(asc1_pointer + 3, "ASC");
 
-		ion_record_t sorted_records[3];
-
-		/* Sort already GROUPED records */
-		if (iterator->groupby_condition) {
-			sort(dictionary, iterator->grouped_records, iterator->orderby_asc, iterator->groupby_condition);
-		}
-		else {
-			sort(dictionary, sorted_records, iterator->orderby_asc, iterator->groupby_condition);
-		}
-
-		if (iterator->minmax_condition) {
-			iterator->sorted_records[1].key = NULL;
-			iterator->sorted_records[2].key = NULL;
-
-			/* Evaluate WHERE condition */
-			if (iterator->where_condition) {
-				int i = 0;
-
-				while (i < 3) {
-					if (0 == strncmp(sorted_records[i].value, "100", 3)) {
-						iterator->sorted_records[0] = sorted_records[i];
-						break;
+			if (asc1_pointer != asc2_pointer) {
+				iterator->orderby1_asc			= boolean_true;
+				iterator->orderby2_condition	= boolean_true;
+				iterator->orderby2_asc			= boolean_true;
+			}
+			else {
+				if (NULL != desc1_pointer) {
+					if (asc1_pointer > desc1_pointer) {
+						iterator->orderby2_condition	= boolean_true;
+						iterator->orderby2_asc			= boolean_true;
 					}
-
-					i++;
+					else {
+						iterator->orderby1_asc			= boolean_true;
+						iterator->orderby2_condition	= boolean_true;
+					}
 				}
 			}
-			else {
-				iterator->sorted_records[0] = sorted_records[0];
+		}
+		else if (NULL != desc1_pointer) {
+			char *desc2_pointer = strstr(desc1_pointer + 4, "DESC");
+
+			if (NULL != desc2_pointer) {
+				iterator->orderby2_condition = boolean_true;
+			}
+		}
+	}
+
+	ion_record_t sorted_records[3];
+
+	/* Sort already GROUPED records */
+	if (iterator->groupby_condition) {
+		sort(iterator, dictionary, iterator->grouped_records);
+	}
+	else {
+		sort(iterator, dictionary, sorted_records);
+	}
+
+	if (iterator->minmax_condition) {
+		iterator->sorted_records[1].key = NULL;
+		iterator->sorted_records[2].key = NULL;
+
+		/* Evaluate WHERE condition */
+		if (iterator->where_condition) {
+			int i = 0;
+
+			while (i < 3) {
+				if (0 == strncmp(sorted_records[i].value, "100", 3)) {
+					iterator->sorted_records[0] = sorted_records[i];
+					break;
+				}
+
+				i++;
 			}
 		}
 		else {
-			if (iterator->groupby_condition) {
-				iterator->sorted_records[0] = iterator->grouped_records[0];
-				iterator->sorted_records[1] = iterator->grouped_records[1];
-				iterator->sorted_records[2] = iterator->grouped_records[2];
-			}
-			else {
-				iterator->sorted_records[0] = sorted_records[0];
-				iterator->sorted_records[1] = sorted_records[1];
-				iterator->sorted_records[2] = sorted_records[2];
-			}
+			iterator->sorted_records[0] = sorted_records[0];
+		}
+	}
+	else {
+		if (iterator->groupby_condition) {
+			iterator->sorted_records[0] = iterator->grouped_records[0];
+			iterator->sorted_records[1] = iterator->grouped_records[1];
+			iterator->sorted_records[2] = iterator->grouped_records[2];
+		}
+		else {
+			iterator->sorted_records[0] = sorted_records[0];
+			iterator->sorted_records[1] = sorted_records[1];
+			iterator->sorted_records[2] = sorted_records[2];
 		}
 	}
 
@@ -1068,6 +1129,12 @@ main(
 /*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq orderby key ASC"); */
 /*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq orderby key DESC"); */
 
+	/* Set of tests for ORDERBY multiple fields */
+/*	SQL_query(&iterator, "Select key, col2 FRoM test4.inq orderby key DESC, col2 ASC"); */
+/*	SQL_query(&iterator, "Select key, col2 FRoM test4.inq orderby key ASC, col2 DESC"); */
+/*	SQL_query(&iterator, "Select key, col2 FRoM test4.inq orderby key ASC, col2 ASC"); */
+	SQL_query(&iterator, "Select key, col2 FRoM test4.inq orderby key DESC, col2 DESC");
+
 	/* Set of AGGREGATE operations */
 /*	SQL_query(&iterator, "Select MAX(key) FRoM test1.inq"); */
 /*	SQL_query(&iterator, "Select MAX(key), col1, col2 FRoM test3.inq where col1 = 100"); */
@@ -1084,7 +1151,7 @@ main(
 /*	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test3.inq groupby col1"); */
 /*	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test4.inq where col2 = 250 groupby col1"); */
 /*	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test3.inq orderby col2 ASC groupby col1"); */
-	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test3.inq orderby col2 DESC groupby col1");
+/*	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test3.inq orderby col2 DESC groupby col1"); */
 	/* Tables are not currently constructed with enough records to verify results of this query */
 /*	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test4.inq where col2 = 250 orderby col2 ASC groupby col1"); */
 
