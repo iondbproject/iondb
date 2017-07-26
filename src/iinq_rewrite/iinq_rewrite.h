@@ -1,8 +1,8 @@
 /******************************************************************************/
 /**
-@file		test_iinq_rewrite.h
+@file		iinq_rewrite.h
 @author		Kai Neubauer
-@brief		Entry point for iinq tests.
+@brief		Function declarations and type definitions for the new version of iinq.
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
@@ -44,13 +44,35 @@
 extern "C" {
 #endif
 
-#define FLOAT_TOLERANCE                0.00001
-#define get_int(iterator, field_num)	(NEUTRALIZE((iterator).query->tuple.fields[(field_num)], int))
-#define get_double(iterator, field_num)	(NEUTRALIZE((iterator).query->tuple.fields[(field_num)], double))
-#define get_string(iterator, field_num)	((char*)((iterator).query->tuple.fields[(field_num)]))
+/* Macro to improve readability of query in init function. */
+#define IINQ_QUERY(select_clause, from_clause, where_clause, having_clause, order_by_clause, group_by_clause) select_clause, from_clause, where_clause, having_clause, order_by_clause, group_by_clause
+/* Empty clause to be used in the case of missing clauses (e.g. ORDER BY was not given). */
+#define IINQ_EMPTY_CLAUSE NULL
 
-#define IINQ_ORDER_BY_ASC		1
-#define IINQ_ORDER_BY_DESC		-1
+#define IINQ_SELECT(type, ...)            IF_ELSE(type)(IINQ_FIELD_LIST(__VA_ARGS__))(NULL)
+#define IINQ_SELECT_ALL 0
+#define IINQ_SELECT_FIELD_LIST 1
+
+#define IINQ_WHERE_CLAUSE(...) (iinq_where_filter_t[]) {__VA_ARGS__}
+#define IINQ_WHERE_FILTER(source_num, field_num, operator, comp_value)    { source_num, field_num, operator, comp_value }
+
+#define FLOAT_TOLERANCE                0.00001
+#define get_int(iterator, field_num)    (NEUTRALIZE((iterator).query->tuple.fields[(field_num)], int))
+#define get_double(iterator, field_num)    (NEUTRALIZE((iterator).query->tuple.fields[(field_num)], double))
+#define get_string(iterator, field_num)    ((char*)((iterator).query->tuple.fields[(field_num)]))
+
+#define IINQ_ORDER_BY_ASC        1
+#define IINQ_ORDER_BY_DESC        -1
+
+#define FREE_AND_NULL(pointer) free(pointer); pointer = NULL
+
+#define IINQ_FIELD_LIST(...)        (iinq_field_list_t[]) {__VA_ARGS__}
+
+typedef enum IINQ_RETRIEVAL_LOCATION {
+	IINQ_FROM_TABLE,
+	IINQ_FROM_GROUP_BY,
+	IINQ_FROM_ORDER_BY
+} iinq_retrieval_location_t;
 
 /**
 @brief		Comparison operators available for a filter in the WHERE clause.
@@ -65,19 +87,36 @@ enum IINQ_COMPARISON_OPERATOR {
 };
 
 /**
-@brief		A type for the comparison operator used in a filter.
-@see		enum IINQ_COMPARISON_OPERATOR
-*/
+-@brief		A type for the comparison operator used in a filter.
+-@see		enum IINQ_COMPARISON_OPERATOR
+-*/
 typedef uint8_t iinq_comparison_operator_t;
 
+typedef union {
+	int *int_val;
+	unsigned int *uint_val;
+	double *double_val;
+	char *string_val;
+} iinq_comparison_pointer_t;
+
+typedef struct {
+	char *cur_key; /**< Memory allocated for the group by fields. */
+	char *old_key; /**< Memory allocated for the group by fields. */
+	char *record_buf; /**< Memory allocated for the record. */
+	FILE *input_file; /**< Pointer to the file containing the grouped records */
+	iinq_size_t group_by_size; /**< Size of the group by fields. */
+	iinq_size_t record_size; /**< Size of the record stored in the group by file */
+} iinq_group_by_t;
 
 /**
 @brief		A type containing information about a filter in the WHERE clause.
 */
 typedef struct {
-	int field_num; /**< The field number that will be compared. */
+
+	int source_num; /**< The index of the source used in the comparion. */
+	int field_num; /**< The field number within the source that will be compared. */
 	iinq_comparison_operator_t operator; /**< The operator that will be used for the comparison. */
-	void *comp_value; /**< Generic pointer to the value that will be compared. */
+	iinq_comparison_pointer_t comp_value; /**< Generic pointer to the value that will be compared. */
 } iinq_where_filter_t;
 
 /**
@@ -107,26 +146,26 @@ typedef struct {
 /**
 @brief		Data types for fields available in iinq.
 */
-enum IINQ_FIELD_TYPE {
+typedef enum IINQ_FIELD_TYPE {
 	IINQ_INT, /**< Integer data type. */
 	IINQ_UINT, /**< Unsigned integer data type. */
 	IINQ_DOUBLE, /**< Double data type. */
 	IINQ_STRING /**< String data type. */
-};
+} iinq_field_type_t;
 
 /**
 @brief		Data type for a field in iinq.
 @see		enum IINQ_FIELD_TYPE
 */
-typedef uint8_t iinq_field_type_t;
+typedef uint8_t;
 
 /**
 @brief		Select types for queries in iinq.
-*/
+*//*
 enum IINQ_SELECT_TYPE {
-	IINQ_SELECT_ALL, /**< SELECT * */
-	IINQ_SELECT_FIELD_LIST /**< SELECT <field_list> */
-};
+	IINQ_SELECT_ALL, *//**< SELECT * *//*
+	IINQ_SELECT_FIELD_LIST *//**< SELECT <field_list> *//*
+};*/
 
 /**
 @brief		Type for a SELECT clause in iinq.
@@ -246,6 +285,7 @@ typedef struct {
 typedef struct {
 	iinq_table_t *tables; /**< Pointer to the table tables for the queries. */
 	int num_tables; /**< Number of tables for the query. */
+	iinq_group_by_t *group_by; /**< Pointer to members used in the GROUP BY clause */
 	iinq_sort_t *sort; /**< Pointer to the sort used for the ORDER BY clause. */
 	iinq_where_filter_t *filter; /**< Pointer to the filters used for the WHERE clause. */
 	int num_filters; /**< Number of filters used for the query. */
@@ -323,6 +363,7 @@ init(
 		iinq_iterator_t *it,
 		iinq_select_type_t select_type,
 		iinq_order_by_type_t order_by_type,
+		ion_boolean_t has_group_by,
 		int num_tables,
 		int num_filters,
 		...

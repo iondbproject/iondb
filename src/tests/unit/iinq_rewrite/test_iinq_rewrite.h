@@ -48,6 +48,9 @@ extern "C" {
 #include "../../../iinq/iinq.h"
 #include "../../../iinq_rewrite/iinq_rewrite.h"
 
+#define STRINGIZE_(x) #x
+#define STRINGIZE(x) STRINGIZE_(x)
+
 #define DEFINE_SCHEMA(source_name, struct_def) \
 	struct iinq_ ## source_name ## _schema struct_def
 
