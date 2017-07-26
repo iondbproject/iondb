@@ -998,7 +998,7 @@ SQL_query(
 		if (NULL != asc1_pointer) {
 			char *asc2_pointer = strstr(asc1_pointer + 3, "ASC");
 
-			if (asc1_pointer != asc2_pointer) {
+			if ((asc1_pointer != asc2_pointer) && (NULL != asc2_pointer)) {
 				iterator->orderby1_asc			= boolean_true;
 				iterator->orderby2_condition	= boolean_true;
 				iterator->orderby2_asc			= boolean_true;
@@ -1013,6 +1013,10 @@ SQL_query(
 						iterator->orderby1_asc			= boolean_true;
 						iterator->orderby2_condition	= boolean_true;
 					}
+				}
+
+				else {
+					iterator->orderby1_asc = boolean_true;
 				}
 			}
 		}
@@ -1114,46 +1118,46 @@ main(
 	ion_query_iterator_t iterator;
 
 	/* Set of basic operations for SELECT * */
-/*	SQL_query(&iterator, "Select * FRoM test1.inq"); */
-/*	SQL_query(&iterator, "Select * FRoM test1.inq where Key < 3"); */
-/*	SQL_query(&iterator, "Select * FRoM test1.inq where Key < 3 orDerby key ASC"); */
-/*	SQL_query(&iterator, "Select * FRoM test1.inq where Key < 3 orDerby key DESC"); */
-/*	SQL_query(&iterator, "Select * FROM test1.inq orderby key ASC"); */
-/*	SQL_query(&iterator, "Select * FROM test1.inq orderby key DESC"); */
+//	SQL_query(&iterator, "Select * FRoM test1.inq");
+//	SQL_query(&iterator, "Select * FRoM test1.inq where Key < 3");
+//	SQL_query(&iterator, "Select * FRoM test1.inq where Key < 3 orDerby key ASC");
+//	SQL_query(&iterator, "Select * FRoM test1.inq where Key < 3 orDerby key DESC");
+//	SQL_query(&iterator, "Select * FROM test1.inq orderby key ASC");
+//	SQL_query(&iterator, "Select * FROM test1.inq orderby key DESC");
 
 	/* Set of basic operations for SELECT FIELDLIST */
-/*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq"); */
-/*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq where Key < 3"); */
-/*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq where Key < 3 orderby key ASC"); */
-/*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq where Key < 3 orderby key DESC"); */
-/*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq orderby key ASC"); */
-/*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq orderby key DESC"); */
+//	SQL_query(&iterator, "Select key, col2 FRoM test2.inq");
+//	SQL_query(&iterator, "Select key, col2 FRoM test2.inq where Key < 3");
+//	SQL_query(&iterator, "Select key, col2 FRoM test2.inq where Key < 3 orderby key ASC");
+//	SQL_query(&iterator, "Select key, col2 FRoM test2.inq where Key < 3 orderby key DESC");
+//	SQL_query(&iterator, "Select key, col2 FRoM test2.inq orderby key ASC");
+//	SQL_query(&iterator, "Select key, col2 FRoM test2.inq orderby key DESC");
 
 	/* Set of tests for ORDERBY multiple fields */
-/*	SQL_query(&iterator, "Select key, col2 FRoM test4.inq orderby key DESC, col2 ASC"); */
-/*	SQL_query(&iterator, "Select key, col2 FRoM test4.inq orderby key ASC, col2 DESC"); */
-/*	SQL_query(&iterator, "Select key, col2 FRoM test4.inq orderby key ASC, col2 ASC"); */
-	SQL_query(&iterator, "Select key, col2 FRoM test4.inq orderby key DESC, col2 DESC");
+//	SQL_query(&iterator, "Select key, col2 FRoM test4.inq orderby key DESC, col2 ASC");
+//	SQL_query(&iterator, "Select key, col2 FRoM test4.inq orderby key ASC, col2 DESC");
+//	SQL_query(&iterator, "Select key, col2 FRoM test4.inq orderby key ASC, col2 ASC");
+//	SQL_query(&iterator, "Select key, col2 FRoM test4.inq orderby key DESC, col2 DESC");
 
 	/* Set of AGGREGATE operations */
-/*	SQL_query(&iterator, "Select MAX(key) FRoM test1.inq"); */
-/*	SQL_query(&iterator, "Select MAX(key), col1, col2 FRoM test3.inq where col1 = 100"); */
-/*	SQL_query(&iterator, "Select MIN(key) FRoM test1.inq"); */
-/*	SQL_query(&iterator, "Select MIN(key), col1, col2 FRoM test3.inq where col1 = 100"); */
-/*	SQL_query(&iterator, "Select SUM(col2) FRoM test3.inq"); */
-/*	SQL_query(&iterator, "Select SUM(col2) FRoM test3.inq where col1 = 100"); */
-/*	SQL_query(&iterator, "Select AVG(col2) FRoM test3.inq"); */
-/*	SQL_query(&iterator, "Select AVG(col2) FRoM test3.inq where col1 = 100"); */
-/*	SQL_query(&iterator, "Select COUNT(*) FRoM test3.inq"); */
-/*	SQL_query(&iterator, "Select COUNT(*) FRoM test3.inq where col1 = 100"); */
+//	SQL_query(&iterator, "Select MAX(key) FRoM test1.inq");
+//	SQL_query(&iterator, "Select MAX(key), col1, col2 FRoM test3.inq where col1 = 100");
+//	SQL_query(&iterator, "Select MIN(key) FRoM test1.inq");
+//	SQL_query(&iterator, "Select MIN(key), col1, col2 FRoM test3.inq where col1 = 100");
+//	SQL_query(&iterator, "Select SUM(col2) FRoM test3.inq");
+//	SQL_query(&iterator, "Select SUM(col2) FRoM test3.inq where col1 = 100");
+//	SQL_query(&iterator, "Select AVG(col2) FRoM test3.inq");
+//	SQL_query(&iterator, "Select AVG(col2) FRoM test3.inq where col1 = 100");
+//	SQL_query(&iterator, "Select COUNT(*) FRoM test3.inq");
+//	SQL_query(&iterator, "Select COUNT(*) FRoM test3.inq where col1 = 100");
 
 	/* Set of GROUPBY operations */
-/*	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test3.inq groupby col1"); */
-/*	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test4.inq where col2 = 250 groupby col1"); */
-/*	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test3.inq orderby col2 ASC groupby col1"); */
-/*	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test3.inq orderby col2 DESC groupby col1"); */
+//	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test3.inq groupby col1");
+	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test4.inq where col2 = 250 groupby col1");
+//	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test3.inq orderby col2 ASC groupby col1");
+//	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test3.inq orderby col2 DESC groupby col1");
 	/* Tables are not currently constructed with enough records to verify results of this query */
-/*	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test4.inq where col2 = 250 orderby col2 ASC groupby col1"); */
+//	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test4.inq where col2 = 250 orderby col2 ASC groupby col1");
 
 	/* Iterate through results */
 	iterator.record = next(&iterator, iterator.record);
