@@ -4,7 +4,7 @@
 void
 setup(
 ) {
-	SD.begin(13);
+	SD.begin(4);
 	Serial.begin(9600);
 
 	/* Instantiate your dictionary */

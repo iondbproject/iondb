@@ -39,7 +39,8 @@ setup(
     /* Cast the returned value to type String using Arduino String constructor */
     String new_string = String((char *) new_value);
 
-    printf("3 -> %d\n", new_string);
+    printf("3 -> ");
+    Serial.println(new_string);
 
 	/* Always clean up your dictionaries when you're done with them! */
 	delete dict;
