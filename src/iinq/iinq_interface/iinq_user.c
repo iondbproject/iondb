@@ -35,8 +35,6 @@
 /******************************************************************************/
 
 #include "iinq_user.h"
-#include <string.h>
-#include <unistd.h>
 
 void
 uppercase(
@@ -132,24 +130,17 @@ get_clause(
 }
 
 void
-get_field_list(
-	char	*keyword,
-	char	clause[],
-	char	field_list[]
-) {
-	memcpy(field_list, &clause[(int) strlen(keyword) + 1], (int) strlen(clause));
-}
-
-void
 table_cleanup(
 ) {
 	fremove("1.ffs");
 	fremove("2.ffs");
 	fremove("3.ffs");
+	fremove("4.ffs");
 	fremove("ion_mt.tbl");
 	fremove("TEST1.INQ");
 	fremove("TEST2.INQ");
 	fremove("TEST3.INQ");
+	fremove("TEST4.INQ");
 }
 
 int
@@ -161,8 +152,9 @@ get_int(
 
 void
 group(
-	ion_dictionary_t	*dictionary,
-	ion_record_t		records[3]
+	ion_query_iterator_t	*iterator,
+	ion_dictionary_t		*dictionary,
+	ion_record_t			records[3]
 ) {
 	ion_predicate_t predicate;
 	int				num_records = 0;
@@ -198,7 +190,7 @@ group(
 	for (int i = 0; i < 3; ++i) {
 		for (int j = i + 1; j < 3; ++j) {
 			/* If col2 has same same value -> group */
-			if ((NULL != records[i].key) && (NULL != records[j].key) && (0 == strncmp((char *) (records[i].value), (char *) (records[j].value), 3))) {
+			if ((NULL != records[i].key) && (NULL != records[j].key) && (0 == strncmp((char *) (records[i].value), (char *) (records[j].value), 3)) && (!(iterator->where_condition) || (0 == strncmp((char *) (records[i].value + 3), "250", 3)))) {
 				result	= malloc(strlen(records[i].value) + 1);
 				col_val = (atoi(records[i].value + 3)) + (atoi(records[j].value + 3));
 
@@ -211,6 +203,10 @@ group(
 				records[i].value	= result;
 				records[j].key		= NULL;
 				records[j].value	= NULL;
+			}
+			else if (iterator->where_condition) {
+				records[i].key		= NULL;
+				records[i].value	= NULL;
 			}
 		}
 	}
@@ -252,32 +248,62 @@ sort(
 		}
 
 		cursor->destroy(&cursor);
-	}
 
-	ion_record_t max_key;
+		ion_record_t max_key;
 
-	/* Sort records in array ASC */
-	/* Modify for total number of records in table */
-	if (ASC) {
-		for (int i = 0; i < 3; ++i) {
-			for (int j = i + 1; j < 3; ++j) {
-				if ((NULL != records[i].key) && (NULL != records[j].key) && (get_int(records[i].key) > get_int(records[j].key))) {
-					max_key		= records[i];
-					records[i]	= records[j];
-					records[j]	= max_key;
+		/* Sort records in array by key ASC */
+		/* Modify for total number of records in table */
+		if (ASC) {
+			for (int i = 0; i < 3; ++i) {
+				for (int j = i + 1; j < 3; ++j) {
+					if ((NULL != records[i].key) && (NULL != records[j].key) && (get_int(records[i].key) > get_int(records[j].key))) {
+						max_key		= records[i];
+						records[i]	= records[j];
+						records[j]	= max_key;
+					}
+				}
+			}
+		}
+		/* Sort records in array by key DESC */
+		/* Modify for total number of records in table */
+		else {
+			for (int i = 0; i < 3; ++i) {
+				for (int j = i + 1; j < 3; ++j) {
+					if (get_int(records[i].key) < get_int(records[j].key)) {
+						max_key		= records[i];
+						records[i]	= records[j];
+						records[j]	= max_key;
+					}
 				}
 			}
 		}
 	}
-	/* Sort records in array DESC */
-	/* Modify for total number of records in table */
 	else {
-		for (int i = 0; i < 3; ++i) {
-			for (int j = i + 1; j < 3; ++j) {
-				if (get_int(records[i].key) < get_int(records[j].key)) {
-					max_key		= records[i];
-					records[i]	= records[j];
-					records[j]	= max_key;
+		ion_record_t max_key;
+
+		/* Sort records in array by key ASC */
+		/* Modify for total number of records in table */
+		if (ASC) {
+			for (int i = 0; i < 3; ++i) {
+				for (int j = i + 1; j < 3; ++j) {
+					if ((NULL != records[i].key) && (NULL != records[j].key) && (0 < strncmp((records[i].value + 3), (records[j].value + 3), 3))) {
+						max_key		= records[i];
+						records[i]	= records[j];
+						records[j]	= max_key;
+					}
+				}
+			}
+		}
+		/* Sort records in array by key DESC */
+		/* Modify for total number of records in table */
+		else {
+			for (int i = 0; i < 3; ++i) {
+				for (int j = i + 1; j < 3; ++j) {
+					if ((NULL != records[i].key) && (NULL != records[j].key) && (0 > strncmp((records[i].value + 3), (records[j].value + 3), 3))) {
+						max_key		= records[i];
+						records[i]	= records[j];
+						records[j]	= max_key;
+					}
 				}
 			}
 		}
@@ -339,7 +365,7 @@ next(
 	}
 
 	/* Evaluate ORDERBY condition */
-	if (iterator->orderby_condition) {
+	if (iterator->orderby_condition && !(iterator->groupby_condition)) {
 		record = next_record(iterator->sorted_records, record);
 
 		while (NULL != (record.key)) {
@@ -372,7 +398,7 @@ next(
 	else {
 		while (((cursor_status = iterator->cursor->next(iterator->cursor, &record)) == cs_cursor_active) || (cursor_status == cs_cursor_initialized)) {
 			/* Evaluate WHERE condition */
-			if ((iterator->where_condition) && !(iterator->orderby_condition) && !(iterator->sum_condition) && !(iterator->avg_condition) && !(iterator->count_condition)) {
+			if ((iterator->where_condition) && !(iterator->orderby_condition) && !(iterator->sum_condition) && !(iterator->avg_condition) && !(iterator->count_condition) && !(iterator->groupby_condition)) {
 				if (3 > get_int(record.key)) {
 					/* Return the retrieved record that meets WHERE condition */
 					return record;
@@ -505,10 +531,16 @@ print_records(
 		printf("Key: 3 Value: 111, 150\n");
 		printf("Key: 2 Value: 100, 250\n\n");
 	}
+
+	if (0 == strncmp("TEST4.INQ", table, 6)) {
+		printf("Key: 1 Value: 100, 200\n");
+		printf("Key: 3 Value: 100, 250\n");
+		printf("Key: 2 Value: 100, 250\n\n");
+	}
 }
 
 void
-table_setup(
+table1_setup(
 ) {
 	/* Table set-up */
 	char				*schema_file_name;
@@ -574,7 +606,7 @@ table_setup(
 }
 
 void
-fieldlist_table_setup(
+table2_setup(
 ) {
 	/* Table set-up */
 	char				*schema_file_name;
@@ -640,7 +672,7 @@ fieldlist_table_setup(
 }
 
 void
-groupby_table_setup(
+table3_setup(
 ) {
 	/* Table set-up */
 	char				*schema_file_name;
@@ -705,6 +737,111 @@ groupby_table_setup(
 	}
 }
 
+void
+table4_setup(
+) {
+	/* Table set-up */
+	char				*schema_file_name;
+	ion_key_type_t		key_type;
+	ion_key_size_t		key_size;
+	ion_value_size_t	value_size;
+
+	schema_file_name	= "TEST4.INQ";
+	key_type			= key_type_numeric_signed;
+	key_size			= sizeof(int);
+	value_size			= sizeof("100") + sizeof("200");
+
+	ion_err_t					error;
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
+
+	error = iinq_create_source(schema_file_name, key_type, key_size, value_size);
+
+	if (err_ok != error) {
+		printf("Error1\n");
+	}
+
+	dictionary.handler	= &handler;
+
+	error				= iinq_open_source(schema_file_name, &dictionary, &handler);
+
+	if (err_ok != error) {
+		printf("Error2\n");
+	}
+
+	/* Insert values into table */
+	ion_key_t	key1	= IONIZE(1, int);
+	ion_value_t value1	= "100200";
+	ion_key_t	key2	= IONIZE(3, int);
+	ion_value_t value2	= "100250";
+	ion_key_t	key3	= IONIZE(2, int);
+	ion_value_t value3	= "100250";
+
+	ion_status_t status = dictionary_insert(&dictionary, key1, value1);
+
+	if (err_ok != status.error) {
+		printf("Error3\n");
+	}
+
+	status = dictionary_insert(&dictionary, key2, value2);
+
+	if (err_ok != status.error) {
+		printf("Error4\n");
+	}
+
+	status = dictionary_insert(&dictionary, key3, value3);
+
+	if (err_ok != status.error) {
+		printf("Error5\n");
+	}
+
+	/* Close table and clean-up files */
+	error = ion_close_dictionary(&dictionary);
+
+	if (err_ok != error) {
+		printf("Error6\n");
+	}
+}
+
+void
+ion_switch_table(
+	char	filename[10],
+	char	*sql
+) {
+	char *table_pointer = strstr(sql, "TEST1.INQ");
+
+	if (NULL != table_pointer) {
+		memcpy(filename, "TEST1.INQ", sizeof("TEST1.INQ"));
+		filename[9] = '\0';
+		return;
+	}
+
+	table_pointer = strstr(sql, "TEST2.INQ");
+
+	if (NULL != table_pointer) {
+		memcpy(filename, "TEST2.INQ", sizeof("TEST2.INQ"));
+		filename[9] = '\0';
+		return;
+	}
+
+	table_pointer = strstr(sql, "TEST3.INQ");
+
+	if (NULL != table_pointer) {
+		memcpy(filename, "TEST3.INQ", sizeof("TEST3.INQ"));
+		filename[9] = '\0';
+		return;
+	}
+
+	table_pointer = strstr(sql, "TEST4.INQ");
+
+	if (NULL != table_pointer) {
+		memcpy(filename, "TEST4.INQ", sizeof("TEST4.INQ"));
+		filename[9] = '\0';
+		return;
+		;
+	}
+}
+
 ion_err_t
 SQL_query(
 	ion_query_iterator_t	*iterator,
@@ -715,8 +852,7 @@ SQL_query(
 	uppercase(sql_string, uppercase_sql);
 
 	char		select_clause[50];
-	ion_err_t	err					= get_clause("SELECT", uppercase_sql, select_clause);
-	char		select_fields[40]	= "null";
+	ion_err_t	err = get_clause("SELECT", uppercase_sql, select_clause);
 
 	iterator->where_condition	= boolean_false;
 	iterator->orderby_condition = boolean_false;
@@ -729,60 +865,43 @@ SQL_query(
 	iterator->count_condition	= boolean_false;
 
 	if (err == err_ok) {
-		get_field_list("SELECT", select_clause, select_fields);
-
-		char *min_pointer = strstr(select_fields, "MIN");
+		char *min_pointer = strstr(select_clause, "MIN");
 
 		if (NULL != min_pointer) {
 			iterator->orderby_asc		= boolean_true;
 			iterator->minmax_condition	= boolean_true;
 		}
 
-		char *max_pointer = strstr(select_fields, "MAX");
+		char *max_pointer = strstr(select_clause, "MAX");
 
 		if (NULL != max_pointer) {
 			iterator->minmax_condition = boolean_true;
 		}
 
-		char *sum_pointer = strstr(select_fields, "SUM");
+		char *sum_pointer = strstr(select_clause, "SUM");
 
 		if (NULL != sum_pointer) {
 			iterator->sum_condition = boolean_true;
 		}
 
-		char *avg_pointer = strstr(select_fields, "AVG");
+		char *avg_pointer = strstr(select_clause, "AVG");
 
 		if (NULL != avg_pointer) {
 			iterator->avg_condition = boolean_true;
 		}
 
-		char *count_pointer = strstr(select_fields, "COUNT");
+		char *count_pointer = strstr(select_clause, "COUNT");
 
 		if (NULL != count_pointer) {
 			iterator->count_condition = boolean_true;
 		}
 	}
 
-	char from_clause[50];
-
-	err = get_clause("FROM", uppercase_sql, from_clause);
-
-	char from_fields[40] = "null";
-
-	if (err == err_ok) {
-		get_field_list("FROM", from_clause, from_fields);
-	}
-
-	print_records(from_fields);
-	printf("%s\n", uppercase_sql);
-
-	char	where_clause[50];
-	char	where_fields[40] = "null";
+	char where_clause[50];
 
 	err = get_clause("WHERE", uppercase_sql, where_clause);
 
 	if (err == err_ok) {
-		get_field_list("WHERE", where_clause, where_fields);
 		iterator->where_condition = boolean_true;
 	}
 
@@ -791,7 +910,12 @@ SQL_query(
 	ion_dictionary_handler_t	handler;
 
 	/* currently only supports one table */
-	char *schema_file_name = from_fields;
+	char schema_file_name[9];
+
+	ion_switch_table(schema_file_name, uppercase_sql);
+
+	print_records(schema_file_name);
+	printf("%s\n", uppercase_sql);
 
 	dictionary->handler = &handler;
 
@@ -801,21 +925,20 @@ SQL_query(
 		printf("Error7\n");
 	}
 
-	iterator->schema_file_name = from_fields;
+	iterator->schema_file_name = schema_file_name;
 
 	/* Set-up GROUPBY clause if exists */
-	char	groupby_clause[50];
-	char	groupby_fields[40] = "null";
+	char groupby_clause[50];
 
 	err = get_clause("GROUPBY", uppercase_sql, groupby_clause);
 
 	if (err == err_ok) {
-		get_field_list("GROUPBY", groupby_clause, groupby_fields);
 		iterator->groupby_condition = boolean_true;
+		iterator->sum_condition		= boolean_false;
 
 		ion_record_t grouped_records[3];
 
-		group(dictionary, grouped_records);
+		group(iterator, dictionary, grouped_records);
 
 		iterator->grouped_records[0]	= grouped_records[0];
 		iterator->grouped_records[1]	= grouped_records[1];
@@ -823,8 +946,7 @@ SQL_query(
 	}
 
 	/* Set-up ORDERBY clause if exists */
-	char	orderby_clause[50];
-	char	orderby_fields[40] = "null";
+	char orderby_clause[50];
 
 	err = get_clause("ORDERBY", uppercase_sql, orderby_clause);
 
@@ -833,13 +955,9 @@ SQL_query(
 	}
 
 	if (err == err_ok) {
-		if (!iterator->minmax_condition) {
-			get_field_list("ORDERBY", orderby_clause, orderby_fields);
-		}
-
 		iterator->orderby_condition = boolean_true;
 
-		char *sort_pointer = strstr(orderby_fields, "ASC");
+		char *sort_pointer = strstr(orderby_clause, "ASC");
 
 		if (NULL != sort_pointer) {
 			iterator->orderby_asc = boolean_true;
@@ -847,7 +965,13 @@ SQL_query(
 
 		ion_record_t sorted_records[3];
 
-		sort(dictionary, sorted_records, iterator->orderby_asc, iterator->groupby_condition);
+		/* Sort already GROUPED records */
+		if (iterator->groupby_condition) {
+			sort(dictionary, iterator->grouped_records, iterator->orderby_asc, iterator->groupby_condition);
+		}
+		else {
+			sort(dictionary, sorted_records, iterator->orderby_asc, iterator->groupby_condition);
+		}
 
 		if (iterator->minmax_condition) {
 			iterator->sorted_records[1].key = NULL;
@@ -871,9 +995,16 @@ SQL_query(
 			}
 		}
 		else {
-			iterator->sorted_records[0] = sorted_records[0];
-			iterator->sorted_records[1] = sorted_records[1];
-			iterator->sorted_records[2] = sorted_records[2];
+			if (iterator->groupby_condition) {
+				iterator->sorted_records[0] = iterator->grouped_records[0];
+				iterator->sorted_records[1] = iterator->grouped_records[1];
+				iterator->sorted_records[2] = iterator->grouped_records[2];
+			}
+			else {
+				iterator->sorted_records[0] = sorted_records[0];
+				iterator->sorted_records[1] = sorted_records[1];
+				iterator->sorted_records[2] = sorted_records[2];
+			}
 		}
 	}
 
@@ -882,7 +1013,9 @@ SQL_query(
 
 	dictionary_build_predicate(&predicate, predicate_all_records);
 
-	if (0 != strncmp("*", select_fields, 1)) {
+	char *select_all_pointer = strstr(select_clause, "*");
+
+	if (NULL == select_all_pointer) {
 		/* If query is not SELECT * then it is SELECT fieldlist */
 		iterator->select_fieldlist = boolean_true;
 	}
@@ -910,14 +1043,11 @@ main(
 	/* Cleanup just in case */
 	table_cleanup();
 
-	/* For SELECT * queries */
-	table_setup();
-
-	/* For SELECT fieldlist queries */
-	fieldlist_table_setup();
-
-	/* For ORDERBY fieldlist and GROUPBY queries */
-	groupby_table_setup();
+	/* Setup variations of tables for queries */
+	table1_setup();
+	table2_setup();
+	table3_setup();
+	table4_setup();
 
 	/* Query */
 	ion_query_iterator_t iterator;
@@ -947,11 +1077,16 @@ main(
 /*	SQL_query(&iterator, "Select SUM(col2) FRoM test3.inq where col1 = 100"); */
 /*	SQL_query(&iterator, "Select AVG(col2) FRoM test3.inq"); */
 /*	SQL_query(&iterator, "Select AVG(col2) FRoM test3.inq where col1 = 100"); */
-	SQL_query(&iterator, "Select COUNT(*) FRoM test3.inq");
+/*	SQL_query(&iterator, "Select COUNT(*) FRoM test3.inq"); */
 /*	SQL_query(&iterator, "Select COUNT(*) FRoM test3.inq where col1 = 100"); */
 
 	/* Set of GROUPBY operations */
-/*	SQL_query(&iterator, "Select key, col1, col2, FRoM test3.inq groupby col1"); */
+/*	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test3.inq groupby col1"); */
+/*	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test4.inq where col2 = 250 groupby col1"); */
+/*	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test3.inq orderby col2 ASC groupby col1"); */
+	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test3.inq orderby col2 DESC groupby col1");
+	/* Tables are not currently constructed with enough records to verify results of this query */
+/*	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test4.inq where col2 = 250 orderby col2 ASC groupby col1"); */
 
 	/* Iterate through results */
 	iterator.record = next(&iterator, iterator.record);
@@ -959,7 +1094,7 @@ main(
 	printf("\n");
 
 	while (iterator.record.key != NULL) {
-		if (!(iterator.sum_condition) && !(iterator.avg_condition) && !(iterator.count_condition)) {
+		if (!(iterator.sum_condition) && !(iterator.avg_condition) && !(iterator.count_condition) && !(iterator.groupby_condition)) {
 			printf("Key: %i ", get_int(iterator.record.key));
 		}
 
