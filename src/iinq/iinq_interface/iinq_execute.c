@@ -83,8 +83,6 @@ SQL_create(
 	ion_table_t *table,
 	char		*sql
 ) {
-	table = malloc(sizeof(ion_table_t));
-
 	char *substring = sql + 13;
 
 	printf("%s\n", substring);
@@ -94,17 +92,15 @@ SQL_create(
 
 	pos = (int) (pointer - substring);
 
-	char table_name[20];
+	char table_name[ION_MAX_FILENAME_LENGTH];
 
 	memcpy(table_name, substring, pos);
-	strncat(table_name, ".inq", 4);
-	table_name[strlen(table_name)]	= '\0';
 
-	table->table_name				= table_name;
+	snprintf(table->table_name, ION_MAX_FILENAME_LENGTH, "%s.%s", table_name, "inq");
+
 	printf("table: %s\n", table->table_name);
 
-	substring						= pointer + 2;
-	printf("%s\n", table_name);
+	substring = pointer + 2;
 
 	/* Calculate number of fields in table */
 	int i, count;
@@ -113,18 +109,17 @@ SQL_create(
 		count += (substring[i] == ',');
 	}
 
-	printf("%i\n", count);
-	printf("%s\n", substring);
-
 	ion_attribute_t table_fields[count];
 	ion_key_type_t	key_type;
 
 	/* Set up attribute names and types */
 	for (int j = 0; j < count; j++) {
-		printf("%s\n", substring);
-		pointer = strstr(substring, ",");
+		/* Initialize attribute struct */
+		table_fields[j].field_name	= malloc(sizeof("ABRACADABRA"));
 
-		pos		= (int) (pointer - substring);
+		pointer						= strstr(substring, ",");
+
+		pos							= (int) (pointer - substring);
 
 		char field[pos + 1];
 
@@ -140,9 +135,9 @@ SQL_create(
 		char field_name[pos + 1];
 
 		memcpy(field_name, field, pos);
-		field_name[pos]				= '\0';
+		field_name[pos] = '\0';
 
-		table_fields[j].field_name	= field_name;
+		strcpy(table_fields[j].field_name, field_name);
 
 		char field_type[strlen(field) - strlen(field_name) + 1];
 
@@ -152,11 +147,11 @@ SQL_create(
 		key_type										= ion_switch_key_type(field_type);
 		table_fields[j].field_type						= key_type;
 
-		printf("%s.\n", table_fields[j].field_name);
-		printf("%s.\n", field_type);
-	}
+		table->table_fields[j]							= table_fields[j];
 
-	printf("%s\n", substring);
+		printf("att name: %s\n", table_fields[j].field_name);
+		printf("att type: %i\n", table_fields[j].field_type);
+	}
 
 	/* Table set-up */
 
@@ -169,7 +164,7 @@ SQL_create(
 	memcpy(primary_key, pointer + 1, strlen(pointer) - 3);
 	primary_key[strlen(pointer) - 3] = '\0';
 
-	printf("%s.\n", primary_key);
+	printf("Primary key: %s\n", primary_key);
 
 	/* Set up table for primary key */
 
@@ -178,12 +173,13 @@ SQL_create(
 
 	for (int j = 0; j < count; j++) {
 		/* Primary key attribute information found */
-		if (0 == strncmp(primary_key, table_fields[j].field_name, strlen(primary_key))) {
+		if ((0 == strncmp(primary_key, table_fields[j].field_name, strlen(primary_key))) && (strlen(primary_key) == strlen(table_fields[j].field_name))) {
 			primary_key_type = table_fields[j].field_type;
 		}
 	}
 
 	primary_key_size = ion_switch_key_size(primary_key_type);
+	printf("pkt %i\n", primary_key_type);
 
 	ion_value_size_t value_size = 0;
 
@@ -192,14 +188,17 @@ SQL_create(
 	}
 
 	table->key_type		= primary_key_type;
+	printf("kt %i\n", primary_key_type);
 	table->key_size		= primary_key_size;
+	printf("ks %i\n", primary_key_size);
 	table->value_size	= value_size;
+	printf("vs %i\n", value_size);
 
 	ion_err_t					error;
 	ion_dictionary_t			dictionary;
 	ion_dictionary_handler_t	handler;
 
-	error = iinq_create_source(table_name, primary_key_type, primary_key_size, value_size);
+	error = iinq_create_source(table->table_name, primary_key_type, primary_key_size, value_size);
 
 	if (err_ok != error) {
 		printf("Error occurred creating table. Error code: %i\n", error);
@@ -207,7 +206,7 @@ SQL_create(
 
 	dictionary.handler	= &handler;
 
-	error				= iinq_open_source(table_name, &dictionary, &handler);
+	error				= iinq_open_source(table->table_name, &dictionary, &handler);
 
 	if (err_ok != error) {
 		printf("Error occurred opening table. Error code: %i\n", error);

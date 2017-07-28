@@ -46,22 +46,6 @@ extern "C" {
 #include "../iinq.h"
 
 /**
-@brief		The table created through a CREATE TABLE statement.
-@see		iinq_table
-*/
-typedef struct iinq_table ion_table_t;
-
-/**
-@brief		A supertype for the table created through a CREATE TABLE statement.
-*/
-struct iinq_table {
-	char				*table_name;/**> Name of database table. */
-	ion_key_type_t		key_type;	/**> Key type of specified primary key. */
-	ion_key_size_t		key_size;	/**> Key size of specified primary key. */
-	ion_value_size_t	value_size;	/**> Size of all attributes in table. */
-};
-
-/**
 @brief		An attribute to be stored in an ion_table_t.
 @see		iinq_attribute
 */
@@ -73,6 +57,24 @@ typedef struct iinq_attribute ion_attribute_t;
 struct iinq_attribute {
 	char			*field_name;/**> Name of field. */
 	ion_key_type_t	field_type;	/**> Data type of field. */
+};
+
+/**
+@brief		The table created through a CREATE TABLE statement.
+@see		iinq_table
+*/
+typedef struct iinq_table ion_table_t;
+
+/**
+@brief		A supertype for the table created through a CREATE TABLE statement.
+*/
+struct iinq_table {
+	char				table_name[ION_MAX_FILENAME_LENGTH];/**> Name of database table. */
+	ion_key_type_t		key_type;	/**> Key type of specified primary key. */
+	ion_key_size_t		key_size;	/**> Key size of specified primary key. */
+	ion_value_size_t	value_size;	/**> Size of all attributes in table. */
+
+	ion_attribute_t		*table_fields;	/**> Pointer to all attributes of table. */
 };
 
 void

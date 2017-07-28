@@ -35,6 +35,7 @@
 /******************************************************************************/
 
 #include "iinq_user.h"
+#include "errno.h"
 
 void
 uppercase(
@@ -1194,14 +1195,11 @@ main(
 
 	ion_table_t table;
 
-	SQL_execute(&table, "CREATE TABLE CUSTOMER (id INT, name CHAR[20], age INT, primary key(id))");
+/*	SQL_execute(&table, "CREATE TABLE Cust (id INT, name CHAR[20], age INT, primary key(id))"); */
+	SQL_execute(&table, "CREATE TABLE Dogs (id INT, type CHAR[20], name VARCHAR, age INT, city VARCHAR, primary key(id))");
 
 	/* Clean-up */
-	printf(".%s.\n", table.table_name);
-
-	ion_err_t err = ion_fremove(table.table_name);
-
-	printf("err: %i\n", err);
+	fremove(table.table_name);
 	cleanup();
 
 	return 0;
