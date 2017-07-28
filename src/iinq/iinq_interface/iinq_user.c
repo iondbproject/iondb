@@ -130,13 +130,14 @@ get_clause(
 }
 
 void
-table_cleanup(
+cleanup(
 ) {
 	fremove("1.ffs");
 	fremove("2.ffs");
 	fremove("3.ffs");
 	fremove("4.ffs");
 	fremove("ion_mt.tbl");
+
 	fremove("TEST1.INQ");
 	fremove("TEST2.INQ");
 	fremove("TEST3.INQ");
@@ -519,7 +520,7 @@ next(
 	record.key		= NULL;
 	record.value	= NULL;
 
-	table_cleanup();
+	cleanup();
 	iterator->destroy(iterator);
 
 	return record;
@@ -1105,7 +1106,7 @@ main(
 	void
 ) {
 	/* Cleanup just in case */
-	table_cleanup();
+	cleanup();
 
 	/* Setup variations of tables for queries */
 	table1_setup();
@@ -1188,6 +1189,20 @@ main(
 
 		iterator.record = next(&iterator, iterator.record);
 	}
+
+	printf("\n");
+
+	ion_table_t table;
+
+	SQL_execute(&table, "CREATE TABLE CUSTOMER (id INT, name CHAR[20], age INT, primary key(id))");
+
+	/* Clean-up */
+	printf(".%s.\n", table.table_name);
+
+	ion_err_t err = ion_fremove(table.table_name);
+
+	printf("err: %i\n", err);
+	cleanup();
 
 	return 0;
 }

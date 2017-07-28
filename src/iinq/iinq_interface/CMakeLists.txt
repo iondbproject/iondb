@@ -4,6 +4,8 @@ project(test_iinq_user)
 set(SOURCE_FILES
         iinq_user.c
         iinq_user.h
+        iinq_execute.c
+        iinq_execute.h
         ../../dictionary/dictionary_types.h
         ../../dictionary/dictionary.c
         ../../dictionary/dictionary.h
@@ -12,4 +14,3 @@ set(SOURCE_FILES
 add_executable(test_iinq_user         ${SOURCE_FILES})
 
 target_link_libraries(${PROJECT_NAME} bpp_tree flat_file iinq linear_hash open_address_hash open_address_file_hash skip_list)
-#target_link_libraries(test_iinq_user bpp_tree flat_file skip_list open_address_file_hash open_address_hash linear_hash)

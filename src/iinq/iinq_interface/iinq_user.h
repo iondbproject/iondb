@@ -44,6 +44,7 @@ extern "C" {
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#include "iinq_execute.h"
 #include "../../dictionary/dictionary_types.h"
 #include "../../dictionary/dictionary.h"
 #include "../iinq.h"
@@ -56,12 +57,6 @@ typedef struct query_iterator ion_query_iterator_t;
 
 /**
 @brief		A supertype for query iterator objects.
-@details	This is a super type. The state information
-			must be stored within a subtype that makes
-			sense to the particular dictionary implementation.
-
-			There are different types of cursors for different types of
-			dictionary operations.
 */
 struct query_iterator {
 	ion_cursor_status_t status;	/**< Status of last cursor call. */
