@@ -46,6 +46,7 @@ extern "C" {
 #include "../../dictionary/dictionary_types.h"
 #include "../../dictionary/dictionary.h"
 #include "../iinq.h"
+#include "iinq_user.h"
 
 /**
 @brief		An attribute to be stored in an ion_table_t.
@@ -79,6 +80,27 @@ struct iinq_table {
 	int					primary_key_field;	/**> Identifies which table field is the primary key. */
 	ion_attribute_t		*table_fields;	/**> Pointer to all attributes of table. */
 };
+
+/**
+@brief		This is the available dictionary types for ION_DB.  All types will be
+			based on system defines.
+*/
+typedef enum ION_COMPARE_TYPE {
+	/**> Clause comparison is of type equal "=". */
+	ion_equal,
+	/**> Clause comparison is of type not equal "!=". */
+	ion_not_equal,
+	/**> Clause comparison is of type greater than ">". */
+	ion_greater_than,
+	/**> Clause comparison is of type greater than or equal to ">=". */
+	ion_greater_than_equal,
+	/**> Clause comparison is of type less than "<". */
+	ion_less_than,
+	/**> Clause comparison is of type less than or equal to "<=". */
+	ion_less_than_equal,
+	/**> Clause comparison is not of valid type. */
+	ion_invalid_comparison,
+} ion_compare_type_t;
 
 void
 SQL_execute(

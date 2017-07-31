@@ -1201,17 +1201,21 @@ main(
 /*	SQL_execute(&table, "INSERT INTO Cust VALUES (3, 'Annie', 76)"); */
 /*	SQL_execute(&table, "INSERT INTO Cust VALUES (4, 'Julianne', 34)"); */
 
-/*	SQL_execute(&table, "CREATE TABLE Dogs (id INT, type CHAR[20], name VARCHAR, age INT, city VARCHAR, primary key(id))"); */
-/*	SQL_execute(&table, "INSERT INTO Dogs VALUES (1, 'Poodle', 'BooBoo', 5, 'Rio')"); */
-/*	SQL_execute(&table, "INSERT INTO Dogs VALUES (2, 'Frenchie', 'Minnie', 1, 'Penticton')"); */
-/*	SQL_execute(&table, "INSERT INTO Dogs VALUES (3, 'Shihtzu', 'Sadie', 13, 'Utah')"); */
-/*	SQL_execute(&table, "INSERT INTO Dogs VALUES (4, 'Chihuahua', 'Barky', 7, 'Van')"); */
+	SQL_execute(&table, "CREATE TABLE Dogs (id INT, type CHAR[20], name VARCHAR, age INT, city VARCHAR, primary key(id))");
+	SQL_execute(&table, "INSERT INTO Dogs VALUES (1, 'Poodle', 'BooBoo', 5, 'Rio')");
+	SQL_execute(&table, "INSERT INTO Dogs VALUES (2, 'Frenchie', 'Minnie', 1, 'Penticton')");
+	SQL_execute(&table, "INSERT INTO Dogs VALUES (3, 'Shihtzu', 'Sadie', 13, 'Utah')");
+	SQL_execute(&table, "INSERT INTO Dogs VALUES (4, 'Chihuahua', 'Barky', 7, 'Van')");
+	SQL_execute(&table, "UPDATE Dogs SET age=4 WHERE age!=13;");
+	SQL_execute(&table, "UPDATE Dogs SET city='Vancouver' WHERE city='Van';");
 
-	SQL_execute(&table, "CREATE TABLE Family (name VARCHAR, age INT, job CHAR[30], relation VARCHAR, primary key(name))");
-	SQL_execute(&table, "INSERT INTO Family VALUES ('Deb', 59, 'Mom', 'Mom')");
-	SQL_execute(&table, "INSERT INTO Family VALUES ('Kerry', 59, 'Investments', 'Dad')");
-	SQL_execute(&table, "INSERT INTO Family VALUES ('Toni', 26, 'Manager', 'Sister')");
-	SQL_execute(&table, "INSERT INTO Family VALUES ('Minnie', 1, 'Puppy', 'Dog')");
+/*	SQL_execute(&table, "CREATE TABLE Family (name VARCHAR, age INT, job CHAR[30], relation VARCHAR, primary key(name))"); */
+/*	SQL_execute(&table, "INSERT INTO Family VALUES ('Deb', 59, 'Mom', 'Mom')"); */
+/*	SQL_execute(&table, "INSERT INTO Family VALUES ('Kerry', 59, 'Investments', 'Dad')"); */
+/*	SQL_execute(&table, "INSERT INTO Family VALUES ('Toni', 26, 'Manager', 'Sister')"); */
+/*	SQL_execute(&table, "INSERT INTO Family VALUES ('Minnie', 1, 'Puppy', 'Dog')"); */
+/*	SQL_execute(&table, "UPDATE Family SET job='Painter' WHERE name='Toni';"); */
+/*	SQL_execute(&table, "UPDATE Family SET name='Sadie' WHERE name='Minnie';"); */
 
 	/* Clean-up */
 	fremove(table.table_name);

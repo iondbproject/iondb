@@ -116,6 +116,11 @@ destroy(
 	ion_query_iterator_t *iterator
 );
 
+int
+get_int(
+	void *value
+);
+
 #if defined(__cplusplus)
 }
 #endif

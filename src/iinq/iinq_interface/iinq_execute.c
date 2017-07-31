@@ -83,12 +83,12 @@ SQL_create(
 	ion_table_t *table,
 	char		*sql
 ) {
-	char *substring = sql + 13;
+	printf("\n%s\n", sql);
 
-	printf("%s\n", substring);
+	char *substring		= sql + 13;
 
 	int		pos;
-	char	*pointer = strstr(substring, " ");
+	char	*pointer	= strstr(substring, " ");
 
 	pos = (int) (pointer - substring);
 
@@ -97,8 +97,6 @@ SQL_create(
 	memcpy(table_name, substring, pos);
 
 	snprintf(table->table_name, ION_MAX_FILENAME_LENGTH, "%s.%s", table_name, "inq");
-
-	printf("table: %s\n", table->table_name);
 
 	substring = pointer + 2;
 
@@ -148,9 +146,6 @@ SQL_create(
 		table_fields[j].field_type						= key_type;
 
 		table->table_fields[j]							= table_fields[j];
-
-		printf("att name: %s\n", table_fields[j].field_name);
-		printf("att type: %i\n", table_fields[j].field_type);
 	}
 
 	/* Table set-up */
@@ -163,8 +158,6 @@ SQL_create(
 
 	memcpy(primary_key, pointer + 1, strlen(pointer) - 3);
 	primary_key[strlen(pointer) - 3] = '\0';
-
-	printf("Primary key: %s\n", primary_key);
 
 	/* Set up table for primary key */
 
@@ -180,7 +173,6 @@ SQL_create(
 	}
 
 	primary_key_size = ion_switch_key_size(primary_key_type);
-	printf("pkt %i\n", primary_key_type);
 
 	ion_value_size_t value_size = 0;
 
@@ -189,14 +181,9 @@ SQL_create(
 	}
 
 	table->key_type		= primary_key_type;
-	printf("kt %i\n", primary_key_type);
 	table->key_size		= primary_key_size;
-	printf("ks %i\n", primary_key_size);
 	table->value_size	= value_size;
-	printf("vs %i\n", value_size);
 	table->num_fields	= count;
-	printf("nf %i\n", table->num_fields);
-	printf("pk: %i\n", table->primary_key_field);
 
 	ion_err_t					error;
 	ion_dictionary_t			dictionary;
@@ -222,9 +209,9 @@ SQL_insert(
 	ion_table_t *table,
 	char		*sql
 ) {
-	char *substring = sql + 12 + (strlen(table->table_name) - 3);
+	printf("\n%s\n", sql);
 
-	printf("%s\n", substring);
+	char *substring = sql + 12 + (strlen(table->table_name) - 3);
 
 	ion_err_t					error;
 	ion_dictionary_t			dictionary;
@@ -272,8 +259,6 @@ SQL_insert(
 
 			substring	= pointer + 2;
 
-			printf("%s\n", field);
-
 			/* If column value is an INT, ionize it to be added to the table */
 			if (0 == table->table_fields[j].field_type) {
 				int num = atoi(field);
@@ -281,14 +266,15 @@ SQL_insert(
 				key = IONIZE(num, int);
 			}
 			else {
-				key = field;
+				key = malloc(strlen(field));
+				strcpy(key, field);
 			}
 
 			break;
 		}
 	}
 
-	printf("%s\n", value);
+	printf("Record inserted: %s\n", value);
 
 	ion_status_t status = dictionary_insert(&dictionary, key, value);
 
@@ -304,11 +290,356 @@ SQL_insert(
 	}
 }
 
+ion_compare_type_t
+compare_type(
+	char	*sql,
+	char	*ret_pointer
+) {
+	char *pointer;
+
+	pointer = strstr(sql, "!=");
+
+	if (NULL != pointer) {
+		strcpy(ret_pointer, pointer);
+		return ion_not_equal;
+	}
+
+	pointer = strstr(sql, "=");
+
+	if (NULL != pointer) {
+		strcpy(ret_pointer, pointer);
+		return ion_equal;
+	}
+
+	pointer = strstr(sql, "<=");
+
+	if (NULL != pointer) {
+		strcpy(ret_pointer, pointer);
+		return ion_less_than_equal;
+	}
+
+	pointer = strstr(sql, "<");
+
+	if (NULL != pointer) {
+		strcpy(ret_pointer, pointer);
+		return ion_less_than;
+	}
+
+	pointer = strstr(sql, ">=");
+
+	if (NULL != pointer) {
+		strcpy(ret_pointer, pointer);
+		return ion_greater_than_equal;
+	}
+
+	pointer = strstr(sql, ">");
+
+	if (NULL != pointer) {
+		strcpy(ret_pointer, pointer);
+		return ion_greater_than;
+	}
+	else {
+		return ion_invalid_comparison;
+	}
+}
+
+ion_boolean_t
+condition_satified(
+	ion_table_t		*table,
+	char			*sql,
+	ion_record_t	*record
+) {
+	int pos;
+
+	char				*pointer	= malloc(sizeof(sql));
+	ion_compare_type_t	compare		= compare_type(sql, pointer);
+
+	if (ion_invalid_comparison == compare) {
+		printf("Error occurred! Please check that you have entered a valid WHERE condition.\n");
+		return boolean_false;
+	}
+
+	if (NULL != pointer) {
+		pos = (int) (strlen(sql) - strlen(pointer));
+
+		char	field[pos];
+		char	*substring;
+		char	*value;
+
+		memcpy(field, sql, pos);
+		field[pos] = '\0';
+
+		for (int j = 0; j < table->num_fields; j++) {
+			/* Column to evaluate WHERE condition found */
+			if ((0 == strncmp(field, table->table_fields[j].field_name, strlen(field))) && (strlen(field) == strlen(table->table_fields[j].field_name))) {
+				if ((compare == ion_not_equal) || (compare == ion_less_than_equal) || (compare == ion_greater_than_equal)) {
+					sql = sql + strlen(field) + 2;
+				}
+				else {
+					sql = sql + strlen(field) + 1;
+				}
+
+				int		num;
+				char	val[strlen(sql)];
+
+				memcpy(val, sql, strlen(sql) - 2);
+				val[strlen(sql) - 2] = '\0';
+
+				/* Column to be evaluated is the primary key */
+				if (j == table->primary_key_field) {
+					num		= get_int(record->key);
+
+					value	= malloc(strlen(record->key));
+					strcpy(value, record->key);
+				}
+				/* Separate record into column to be evaluated */
+				else {
+					substring = malloc(strlen(record->value));
+					strcpy(substring, record->value);
+
+					/* Get field value for column j as it is the column to be evaluated */
+					for (int i = 0; i <= j; i++) {
+						pointer = strstr(substring, ",");
+
+						if (NULL == pointer) {
+							char col_val[strlen(substring)];
+
+							memcpy(col_val, substring, strlen(substring) + 1);
+							col_val[strlen(substring)]	= '\0';
+
+							value						= malloc(strlen(col_val));
+							strcpy(value, col_val);
+						}
+						else {
+							pos = (int) (pointer - substring);
+
+							char col_val[pos + 1];
+
+							memcpy(col_val, substring, pos);
+							col_val[pos]	= '\0';
+
+							substring		= pointer + 2;
+
+							value			= malloc(strlen(col_val));
+							strcpy(value, col_val);
+						}
+					}
+				}
+
+				/* If field type to be evaluated is INT */
+				if (0 == table->table_fields[j].field_type) {
+					num = atoi(value);
+
+					if (((ion_not_equal == compare) && (num != atoi(val))) || ((ion_equal == compare) && (num == atoi(val))) || ((ion_less_than == compare) && (num < atoi(val))) || ((ion_less_than_equal == compare) && (num <= atoi(val))) || ((ion_greater_than == compare) && (num > atoi(val))) || ((ion_greater_than_equal == compare) && (num >= atoi(val)))) {
+						return boolean_true;
+					}
+					else {
+						return boolean_false;
+					}
+				}
+				/* Else it is of type CHAR[] or VARCHAR */
+				else if (((ion_not_equal == compare) && (0 != strncmp(val, value, strlen(val)))) || ((ion_equal == compare) && (0 == strncmp(val, value, strlen(val)))) || ((ion_less_than == compare) && (0 > strncmp(val, value, strlen(val)))) || ((ion_less_than_equal == compare) && (0 >= strncmp(val, value, strlen(val)))) || ((ion_greater_than == compare) && (0 < strncmp(val, value, strlen(val)))) || ((ion_greater_than_equal == compare) && (0 <= strncmp(val, value, strlen(val))))) {
+					return boolean_true;
+				}
+				else {
+					return boolean_false;
+				}
+			}
+		}
+	}
+
+	printf("Error occurred! Please check that you have entered a valid WHERE condition.\n");
+	return boolean_false;
+}
+
 void
 SQL_update(
 	ion_table_t *table,
 	char		*sql
-) {}
+) {
+	printf("\n%s\n", sql);
+
+	char *substring = sql + 11 + (strlen(table->table_name) - 3);
+
+	ion_err_t					error;
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
+
+	dictionary.handler	= &handler;
+
+	error				= iinq_open_source(table->table_name, &dictionary, &handler);
+
+	if (err_ok != error) {
+		printf("Error occurred opening table. Error code: %i\n", error);
+	}
+
+	ion_boolean_t	where_condition = boolean_false;
+	char			*pointer		= strstr(substring, "WHERE");
+	char			*where;
+
+	char update_fields[strlen(substring) - strlen(pointer)];
+
+	if (NULL != pointer) {
+		where_condition = boolean_true;
+
+		memcpy(substring, substring, 4);
+
+		char field[strlen(pointer) - 6];
+
+		memcpy(field, pointer + 6, strlen(pointer) - 6);
+		field[strlen(pointer) - 5]	= '\0';
+
+		where						= malloc(strlen(substring) - strlen(pointer));
+		strcpy(where, field);
+
+		strncpy(update_fields, substring, strlen(substring) - strlen(pointer));
+		update_fields[strlen(substring) - strlen(pointer) - 1] = '\0';
+	}
+
+	ion_predicate_t predicate;
+
+	dictionary_build_predicate(&predicate, predicate_all_records);
+
+	ion_dict_cursor_t *cursor = NULL;
+
+	dictionary_find(&dictionary, &predicate, &cursor);
+
+	ion_record_t ion_record;
+
+	ion_record.key		= malloc(table->key_size);
+	ion_record.value	= malloc(table->value_size);
+
+	ion_boolean_t where_satisfied = boolean_false;
+
+	pointer = strstr(update_fields, "=");
+
+	char update_field[strlen(update_fields) - strlen(pointer)];
+
+	strncpy(update_field, update_fields, strlen(update_fields) - strlen(pointer));
+	update_field[strlen(update_fields) - strlen(pointer)] = '\0';
+
+	char *update_value = update_fields + strlen(update_field) + 1;
+
+	int				pos;
+	char			*old_record, *record;
+	ion_key_t		key;
+	ion_boolean_t	update_key = boolean_false;
+	ion_status_t	status;
+
+	ion_cursor_status_t cursor_status;
+
+	while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
+		if (where_condition) {
+			where_satisfied = condition_satified(table, where, &ion_record);
+		}
+
+		if (!where_condition || (boolean_true == where_satisfied)) {
+			/* Initialize old record value */
+			char	value[strlen(ion_record.value) + 1];
+			char	*field_value;
+
+			memcpy(value, ion_record.value, strlen(ion_record.value));
+			value[strlen(ion_record.value)] = '\0';
+
+			record							= malloc(strlen(value));
+			strcpy(record, value);
+
+			old_record						= malloc(strlen(record));
+			strcpy(old_record, record);
+
+			/* Parse record to find fields to update */
+			for (int j = 0; j < table->num_fields; j++) {
+				/* Column to UPDATE found */
+				if ((0 == strncmp(update_field, table->table_fields[j].field_name, strlen(update_field))) && (strlen(update_field) == strlen(table->table_fields[j].field_name))) {
+					/* Get old column value to remove */
+					/* Get field value for column j as it is the column to be evaluated */
+					for (int i = 0; i <= j; i++) {
+						pointer = strstr(record, ",");
+
+						if (NULL == pointer) {
+							char col_val[strlen(record)];
+
+							memcpy(col_val, record, strlen(record) + 1);
+							col_val[strlen(record)] = '\0';
+
+							field_value				= malloc(strlen(col_val));
+							strcpy(field_value, col_val);
+						}
+						else {
+							pos = (int) (pointer - record);
+
+							char col_val[pos + 1];
+
+							memcpy(col_val, record, pos);
+							col_val[pos]	= '\0';
+
+							record			= pointer + 2;
+
+							field_value		= malloc(strlen(col_val));
+							strcpy(field_value, col_val);
+						}
+					}
+
+					/* If value being updated is the primary key, update it as well */
+					if (j == table->primary_key_field) {
+						/* If column value is an INT, ionize it to be added to the table */
+						if (0 == table->table_fields[j].field_type) {
+							status = dictionary_delete(&dictionary, IONIZE(atoi(field_value), int));
+
+							if (err_ok != status.error) {
+								printf("Error occurred updating record in table.\n");
+							}
+
+							update_key = boolean_true;
+
+							int num = atoi(update_value);
+
+							key = IONIZE(num, int);
+						}
+						else {
+							key = malloc(strlen(update_value));
+							strcpy(key, update_value);
+						}
+					}
+					/* Else key remains unchanged */
+					else {
+						key = ion_record.key;
+					}
+
+					pointer = strstr(old_record, field_value);
+
+					char new_record[table->value_size];
+
+					pos = (int) (pointer - old_record);
+
+					memcpy(new_record, old_record, pos);
+
+					int len = (int) strlen(new_record);
+
+					strcat(new_record, update_value);
+					strcat(new_record, old_record + len + strlen(field_value));
+
+					printf("New record: %s\n", new_record);
+
+					if (update_key) {
+						status = dictionary_insert(&dictionary, key, new_record);
+					}
+					else {
+						status = dictionary_update(&dictionary, key, new_record);
+					}
+
+					if (err_ok != status.error) {
+						printf("Error occurred updating record in table.\n");
+					}
+				}
+			}
+		}
+	}
+
+	cursor->destroy(&cursor);
+	free(ion_record.key);
+	free(ion_record.value);
+}
 
 void
 SQL_delete(
