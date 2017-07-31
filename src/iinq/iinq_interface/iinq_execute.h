@@ -41,6 +41,8 @@
 extern "C" {
 #endif
 
+#include <stdio.h>
+#include <ctype.h>
 #include "../../dictionary/dictionary_types.h"
 #include "../../dictionary/dictionary.h"
 #include "../iinq.h"
@@ -73,7 +75,8 @@ struct iinq_table {
 	ion_key_type_t		key_type;	/**> Key type of specified primary key. */
 	ion_key_size_t		key_size;	/**> Key size of specified primary key. */
 	ion_value_size_t	value_size;	/**> Size of all attributes in table. */
-
+	int					num_fields;	/**> Number of fields in the table. */
+	int					primary_key_field;	/**> Identifies which table field is the primary key. */
 	ion_attribute_t		*table_fields;	/**> Pointer to all attributes of table. */
 };
 

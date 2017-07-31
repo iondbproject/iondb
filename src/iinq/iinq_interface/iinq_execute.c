@@ -174,7 +174,8 @@ SQL_create(
 	for (int j = 0; j < count; j++) {
 		/* Primary key attribute information found */
 		if ((0 == strncmp(primary_key, table_fields[j].field_name, strlen(primary_key))) && (strlen(primary_key) == strlen(table_fields[j].field_name))) {
-			primary_key_type = table_fields[j].field_type;
+			primary_key_type			= table_fields[j].field_type;
+			table->primary_key_field	= j;
 		}
 	}
 
@@ -193,6 +194,9 @@ SQL_create(
 	printf("ks %i\n", primary_key_size);
 	table->value_size	= value_size;
 	printf("vs %i\n", value_size);
+	table->num_fields	= count;
+	printf("nf %i\n", table->num_fields);
+	printf("pk: %i\n", table->primary_key_field);
 
 	ion_err_t					error;
 	ion_dictionary_t			dictionary;
@@ -217,7 +221,88 @@ void
 SQL_insert(
 	ion_table_t *table,
 	char		*sql
-) {}
+) {
+	char *substring = sql + 12 + (strlen(table->table_name) - 3);
+
+	printf("%s\n", substring);
+
+	ion_err_t					error;
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
+
+	dictionary.handler	= &handler;
+
+	error				= iinq_open_source(table->table_name, &dictionary, &handler);
+
+	if (err_ok != error) {
+		printf("Error occurred opening table. Error code: %i\n", error);
+	}
+
+	char *pointer = strstr(substring, "(");
+
+	substring = pointer + 1;
+
+	char value[strlen(substring) - 2];
+
+	memcpy(value, substring, strlen(substring) - 1);
+	value[strlen(substring) - 1] = '\0';
+
+	ion_key_t	key;
+	int			pos;
+
+	/* Get key value from record to be inserted */
+	for (int j = 0; j < table->num_fields; j++) {
+		if (j == table->primary_key_field) {
+			pointer = strstr(substring, ",");
+
+			if (NULL == pointer) {
+				pointer = strstr(substring, ")");
+			}
+
+			if (NULL == pointer) {
+				printf("Error occurred inserting values, please check that a value has been listed for each column in table.\n");
+			}
+
+			pos = (int) (pointer - substring);
+
+			char field[pos + 1];
+
+			memcpy(field, substring, pos);
+			field[pos]	= '\0';
+
+			substring	= pointer + 2;
+
+			printf("%s\n", field);
+
+			/* If column value is an INT, ionize it to be added to the table */
+			if (0 == table->table_fields[j].field_type) {
+				int num = atoi(field);
+
+				key = IONIZE(num, int);
+			}
+			else {
+				key = field;
+			}
+
+			break;
+		}
+	}
+
+	printf("%s\n", value);
+
+	ion_status_t status = dictionary_insert(&dictionary, key, value);
+
+	if (err_ok != status.error) {
+		printf("Error occurred inserting record into table.\n");
+	}
+
+	/* Close table */
+	error = ion_close_dictionary(&dictionary);
+
+	if (err_ok != error) {
+		printf("Error occurred closing table.\n");
+	}
+}
 
 void
 SQL_update(
