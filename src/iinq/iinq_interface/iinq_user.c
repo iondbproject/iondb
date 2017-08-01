@@ -1122,6 +1122,7 @@ main(
 	SQL_execute(&table, "UPDATE Dogs SET age=4 WHERE age<13;");
 	SQL_execute(&table, "UPDATE Dogs SET city='Vancouver' WHERE city='Van';");
 	SQL_execute(&table, "DELETE FROM Dogs WHERE age<10;");
+	SQL_execute(&table, "DROP TABLE Dogs;");
 
 /*	SQL_execute(&table, "CREATE TABLE Family (name VARCHAR, age INT, job CHAR[30], relation VARCHAR, primary key(name))"); */
 /*	SQL_execute(&table, "INSERT INTO Family VALUES ('Deb', 59, 'Mom', 'Mom')"); */

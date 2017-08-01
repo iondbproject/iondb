@@ -193,6 +193,9 @@ SQL_create(
 		key_type										= ion_switch_key_type(field_type);
 		table_fields[j].field_type						= key_type;
 
+		table->table_fields[j].field_name				= malloc(sizeof(table_fields[j].field_name));
+/*		table->table_fields[j].field_type = malloc(sizeof(table_fields[j].field_type)); */
+
 		table->table_fields[j]							= table_fields[j];
 	}
 
@@ -291,7 +294,7 @@ SQL_insert(
 	memcpy(value, substring, strlen(substring) - 1);
 	value[strlen(substring) - 1] = '\0';
 
-	ion_key_t	key;
+	ion_key_t	key = NULL;
 	int			pos;
 
 	/* Get key value from record to be inserted */
@@ -783,11 +786,6 @@ SQL_delete(
 
 	dictionary_find(&dictionary, &predicate, &cursor);
 
-	ion_record_t ion_record;
-
-	ion_record.key		= malloc(table->key_size);
-	ion_record.value	= malloc(table->value_size);
-
 	ion_boolean_t where_satisfied = boolean_false;
 
 	ion_status_t status;
@@ -841,9 +839,37 @@ SQL_delete(
 
 void
 SQL_drop(
-	ion_table_t *table,
-	char		*sql
-) {}
+	ion_table_t *table
+) {
+	ion_err_t					error;
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
+
+	dictionary.handler	= &handler;
+
+	error				= iinq_open_source(table->table_name, &dictionary, &handler);
+
+	if (err_ok != error) {
+		printf("Error occurred opening table. Error code: %i\n", error);
+		return;
+	}
+
+	error = dictionary_delete_dictionary(&dictionary);
+
+	if (err_ok != error) {
+		printf("Error deleting table. Error code: %i\n", error);
+		return;
+	}
+
+	char table_name[strlen(table->table_name) - 3];
+
+	memcpy(table_name, table->table_name, strlen(table->table_name) - 3);
+	table_name[strlen(table->table_name) - 4] = '\0';
+
+	if (0 == fremove(table->table_name)) {
+		printf("\nTable %s was successfully deleted.\n", table_name);
+	}
+}
 
 void
 SQL_execute(
@@ -881,7 +907,7 @@ SQL_execute(
 	command = strstr(sql, "DROP TABLE");
 
 	if (NULL != command) {
-		SQL_drop(table, sql);
+		SQL_drop(table);
 		return;
 	}
 
