@@ -79,6 +79,52 @@ ion_switch_key_size(
 }
 
 void
+print_table(
+	ion_table_t			*table,
+	ion_dictionary_t	*dictionary
+) {
+	ion_predicate_t predicate;
+
+	dictionary_build_predicate(&predicate, predicate_all_records);
+
+	ion_dict_cursor_t *cursor = NULL;
+
+	dictionary_find(dictionary, &predicate, &cursor);
+
+	ion_record_t ion_record;
+
+	ion_record.key		= malloc(table->key_size);
+	ion_record.value	= malloc(table->value_size);
+
+	char table_name[strlen(table->table_name) - 3];
+
+	memcpy(table_name, table->table_name, strlen(table->table_name) - 3);
+	table_name[strlen(table->table_name) - 4] = '\0';
+
+	printf("\nTable: %s\n", table_name);
+
+	for (int i = 0; i < table->num_fields; i++) {
+		printf("%s\t", table->table_fields[i].field_name);
+
+		if (0 == strncmp("age", table->table_fields[i].field_name, 3)) {
+			printf("\t");
+		}
+	}
+
+	printf("\n***************************************\n");
+
+	ion_cursor_status_t cursor_status;
+
+	while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
+		printf("%s\n", (char *) ion_record.value);
+	}
+
+	cursor->destroy(&cursor);
+	free(ion_record.key);
+	free(ion_record.value);
+}
+
+void
 SQL_create(
 	ion_table_t *table,
 	char		*sql
@@ -98,7 +144,9 @@ SQL_create(
 
 	snprintf(table->table_name, ION_MAX_FILENAME_LENGTH, "%s.%s", table_name, "inq");
 
-	substring = pointer + 2;
+	substring			= pointer + 2;
+
+	table->num_records	= 0;
 
 	/* Calculate number of fields in table */
 	int i, count;
@@ -202,6 +250,15 @@ SQL_create(
 	if (err_ok != error) {
 		printf("Error occurred opening table. Error code: %i\n", error);
 	}
+
+	print_table(table, &dictionary);
+
+	/* Close table */
+	error = ion_close_dictionary(&dictionary);
+
+	if (err_ok != error) {
+		printf("Error occurred closing table.\n");
+	}
 }
 
 void
@@ -282,6 +339,10 @@ SQL_insert(
 		printf("Error occurred inserting record into table.\n");
 	}
 
+	table->num_records++;
+
+	print_table(table, &dictionary);
+
 	/* Close table */
 	error = ion_close_dictionary(&dictionary);
 
@@ -349,8 +410,7 @@ condition_satified(
 	char			*sql,
 	ion_record_t	*record
 ) {
-	int pos;
-
+	int					pos;
 	char				*pointer	= malloc(sizeof(sql));
 	ion_compare_type_t	compare		= compare_type(sql, pointer);
 
@@ -369,21 +429,25 @@ condition_satified(
 		memcpy(field, sql, pos);
 		field[pos] = '\0';
 
+		int len;
+
 		for (int j = 0; j < table->num_fields; j++) {
 			/* Column to evaluate WHERE condition found */
 			if ((0 == strncmp(field, table->table_fields[j].field_name, strlen(field))) && (strlen(field) == strlen(table->table_fields[j].field_name))) {
 				if ((compare == ion_not_equal) || (compare == ion_less_than_equal) || (compare == ion_greater_than_equal)) {
-					sql = sql + strlen(field) + 2;
+					sql = sql + (strlen(field) + 2);
+					len = (int) (strlen(sql));
 				}
 				else {
 					sql = sql + strlen(field) + 1;
+					len = (int) strlen(sql);
 				}
 
 				int		num;
-				char	val[strlen(sql)];
+				char	val[len];
 
-				memcpy(val, sql, strlen(sql) - 2);
-				val[strlen(sql) - 2] = '\0';
+				memcpy(val, sql, len);
+				val[len - 1] = '\0';
 
 				/* Column to be evaluated is the primary key */
 				if (j == table->primary_key_field) {
@@ -477,17 +541,24 @@ SQL_update(
 	char			*pointer		= strstr(substring, "WHERE");
 	char			*where;
 
-	char update_fields[strlen(substring) - strlen(pointer)];
+	int len;
+
+	if (NULL != pointer) {
+		len = (int) (strlen(substring) - strlen(pointer));
+	}
+	else {
+		len = (int) strlen(substring);
+	}
+
+	char update_fields[len];
 
 	if (NULL != pointer) {
 		where_condition = boolean_true;
 
-		memcpy(substring, substring, 4);
-
 		char field[strlen(pointer) - 6];
 
 		memcpy(field, pointer + 6, strlen(pointer) - 6);
-		field[strlen(pointer) - 5]	= '\0';
+		field[strlen(pointer) - 6]	= '\0';
 
 		where						= malloc(strlen(substring) - strlen(pointer));
 		strcpy(where, field);
@@ -614,12 +685,12 @@ SQL_update(
 
 					memcpy(new_record, old_record, pos);
 
-					int len = (int) strlen(new_record);
+					len = (int) strlen(new_record);
 
 					strcat(new_record, update_value);
 					strcat(new_record, old_record + len + strlen(field_value));
 
-					printf("New record: %s\n", new_record);
+					printf("Updated record: %s\n", new_record);
 
 					if (update_key) {
 						status = dictionary_insert(&dictionary, key, new_record);
@@ -639,13 +710,134 @@ SQL_update(
 	cursor->destroy(&cursor);
 	free(ion_record.key);
 	free(ion_record.value);
+
+	print_table(table, &dictionary);
+
+	/* Close table */
+	error = ion_close_dictionary(&dictionary);
+
+	if (err_ok != error) {
+		printf("Error occurred closing table.\n");
+	}
 }
 
 void
 SQL_delete(
 	ion_table_t *table,
 	char		*sql
-) {}
+) {
+	printf("\n%s\n", sql);
+
+	char *substring = sql + 12 + (strlen(table->table_name) - 3);
+
+	ion_err_t					error;
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
+
+	dictionary.handler	= &handler;
+
+	error				= iinq_open_source(table->table_name, &dictionary, &handler);
+
+	if (err_ok != error) {
+		printf("Error occurred opening table. Error code: %i\n", error);
+	}
+
+	ion_boolean_t	where_condition = boolean_false;
+	char			*pointer		= strstr(substring, "WHERE");
+	char			*where;
+
+	int len;
+
+	if (NULL != pointer) {
+		len = (int) (strlen(substring) - strlen(pointer));
+	}
+	else {
+		len = (int) strlen(substring);
+	}
+
+	char update_fields[len];
+
+	if (NULL != pointer) {
+		where_condition = boolean_true;
+
+		memcpy(substring, substring, 4);
+
+		char field[strlen(pointer) - 6];
+
+		memcpy(field, pointer + 6, strlen(pointer) - 6);
+		field[strlen(pointer) - 5]	= '\0';
+
+		len							= (int) (strlen(substring) - strlen(pointer));
+		where						= malloc((size_t) len);
+		strcpy(where, field);
+
+		strncpy(update_fields, substring, len);
+		update_fields[len - 1] = '\0';
+	}
+
+	ion_predicate_t predicate;
+
+	dictionary_build_predicate(&predicate, predicate_all_records);
+
+	ion_dict_cursor_t *cursor = NULL;
+
+	dictionary_find(&dictionary, &predicate, &cursor);
+
+	ion_record_t ion_record;
+
+	ion_record.key		= malloc(table->key_size);
+	ion_record.value	= malloc(table->value_size);
+
+	ion_boolean_t where_satisfied = boolean_false;
+
+	ion_status_t status;
+
+	ion_cursor_status_t cursor_status;
+	int					count = 0;
+
+	ion_record_t deleted_records[table->num_records];
+
+	for (int i = 0; i < table->num_records; i++) {
+		deleted_records[i].key		= malloc(table->key_size);
+		deleted_records[i].value	= malloc(table->value_size);
+	}
+
+	while ((cursor_status = cursor->next(cursor, &deleted_records[count])) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
+		if (where_condition) {
+			where_satisfied = condition_satified(table, where, &deleted_records[count]);
+		}
+
+		if (where_condition && (boolean_false == where_satisfied)) {
+			deleted_records[count].key		= NULL;
+			deleted_records[count].value	= NULL;
+		}
+
+		count++;
+	}
+
+	for (int i = 0; i < count; i++) {
+		if (NULL != deleted_records[i].key) {
+			status = dictionary_delete(&dictionary, deleted_records[i].key);
+
+			if (err_ok != status.error) {
+				printf("Error occurred deleting record from table.\n");
+				break;
+			}
+
+			printf("Record deleted: %s\n", (char *) deleted_records[i].value);
+			table->num_records--;
+		}
+	}
+
+	print_table(table, &dictionary);
+
+	/* Close table */
+	error = ion_close_dictionary(&dictionary);
+
+	if (err_ok != error) {
+		printf("Error occurred closing table.\n");
+	}
+}
 
 void
 SQL_drop(

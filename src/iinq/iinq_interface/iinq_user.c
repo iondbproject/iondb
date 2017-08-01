@@ -1106,93 +1106,6 @@ int
 main(
 	void
 ) {
-	/* Cleanup just in case */
-	cleanup();
-
-	/* Setup variations of tables for queries */
-	table1_setup();
-	table2_setup();
-	table3_setup();
-	table4_setup();
-
-	/* Query */
-	ion_query_iterator_t iterator;
-
-	/* Set of basic operations for SELECT * */
-/*	SQL_query(&iterator, "Select * FRoM test1.inq"); */
-/*	SQL_query(&iterator, "Select * FRoM test1.inq where Key < 3"); */
-/*	SQL_query(&iterator, "Select * FRoM test1.inq where Key < 3 orDerby key ASC"); */
-/*	SQL_query(&iterator, "Select * FRoM test1.inq where Key < 3 orDerby key DESC"); */
-/*	SQL_query(&iterator, "Select * FROM test1.inq orderby key ASC"); */
-/*	SQL_query(&iterator, "Select * FROM test1.inq orderby key DESC"); */
-
-	/* Set of basic operations for SELECT FIELDLIST */
-/*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq"); */
-/*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq where Key < 3"); */
-/*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq where Key < 3 orderby key ASC"); */
-/*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq where Key < 3 orderby key DESC"); */
-/*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq orderby key ASC"); */
-/*	SQL_query(&iterator, "Select key, col2 FRoM test2.inq orderby key DESC"); */
-
-	/* Set of tests for ORDERBY multiple fields */
-	SQL_query(&iterator, "Select key, col2 FRoM test4.inq orderby key DESC, col2 ASC");
-/*	SQL_query(&iterator, "Select key, col2 FRoM test4.inq orderby key ASC, col2 DESC"); */
-/*	SQL_query(&iterator, "Select key, col2 FRoM test4.inq orderby key ASC, col2 ASC"); */
-/*	SQL_query(&iterator, "Select key, col2 FRoM test4.inq orderby key DESC, col2 DESC"); */
-
-	/* Set of AGGREGATE operations */
-/*	SQL_query(&iterator, "Select MAX(key) FRoM test1.inq"); */
-/*	SQL_query(&iterator, "Select MAX(key), col1, col2 FRoM test3.inq where col1 = 100"); */
-/*	SQL_query(&iterator, "Select MIN(key) FRoM test1.inq"); */
-/*	SQL_query(&iterator, "Select MIN(key), col1, col2 FRoM test3.inq where col1 = 100"); */
-/*	SQL_query(&iterator, "Select SUM(col2) FRoM test3.inq"); */
-/*	SQL_query(&iterator, "Select SUM(col2) FRoM test3.inq where col1 = 100"); */
-/*	SQL_query(&iterator, "Select AVG(col2) FRoM test3.inq"); */
-/*	SQL_query(&iterator, "Select AVG(col2) FRoM test3.inq where col1 = 100"); */
-/*	SQL_query(&iterator, "Select COUNT(*) FRoM test3.inq"); */
-/*	SQL_query(&iterator, "Select COUNT(*) FRoM test3.inq where col1 = 100"); */
-
-	/* Set of GROUPBY operations */
-/*	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test3.inq groupby col1"); */
-/*	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test4.inq where col2 = 250 groupby col1"); */
-/*	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test3.inq orderby col2 ASC groupby col1"); */
-/*	SQL_query(&iterator, "Select col1, SUM(col2) FRoM test3.inq orderby col2 DESC groupby col1"); */
-
-	/* Iterate through results */
-	iterator.record = next(&iterator, iterator.record);
-
-	printf("\n");
-
-	while (iterator.record.key != NULL) {
-		if (!(iterator.sum_condition) && !(iterator.avg_condition) && !(iterator.count_condition) && !(iterator.groupby_condition)) {
-			printf("Key: %i ", get_int(iterator.record.key));
-		}
-
-		if (iterator.groupby_condition || (iterator.minmax_condition && iterator.where_condition)) {
-			printf("col1: %.*s ", 3, (char *) (iterator.record.value));
-			printf("col2: %s\n", (char *) (iterator.record.value + 3));
-		}
-		else if (iterator.sum_condition || iterator.avg_condition) {
-			printf("col2: %s\n", (char *) (iterator.record.value + 3));
-		}
-		else if (iterator.count_condition) {
-			printf("COUNT: %s\n", (char *) iterator.record.value);
-		}
-		else if (iterator.minmax_condition && !iterator.where_condition) {
-			printf("\n");
-		}
-		else if (iterator.select_fieldlist) {
-			printf("Value: %s\n", (char *) (iterator.record.value));
-		}
-		else if (!iterator.minmax_condition) {
-			printf("Value: %i\n", get_int(iterator.record.value));
-		}
-
-		iterator.record = next(&iterator, iterator.record);
-	}
-
-	printf("\n");
-
 	ion_table_t table;
 
 /*	SQL_execute(&table, "CREATE TABLE Cust (id INT, name CHAR[20], age INT, primary key(id))"); */
@@ -1206,8 +1119,9 @@ main(
 	SQL_execute(&table, "INSERT INTO Dogs VALUES (2, 'Frenchie', 'Minnie', 1, 'Penticton')");
 	SQL_execute(&table, "INSERT INTO Dogs VALUES (3, 'Shihtzu', 'Sadie', 13, 'Utah')");
 	SQL_execute(&table, "INSERT INTO Dogs VALUES (4, 'Chihuahua', 'Barky', 7, 'Van')");
-	SQL_execute(&table, "UPDATE Dogs SET age=4 WHERE age!=13;");
+	SQL_execute(&table, "UPDATE Dogs SET age=4 WHERE age<13;");
 	SQL_execute(&table, "UPDATE Dogs SET city='Vancouver' WHERE city='Van';");
+	SQL_execute(&table, "DELETE FROM Dogs WHERE age<10;");
 
 /*	SQL_execute(&table, "CREATE TABLE Family (name VARCHAR, age INT, job CHAR[30], relation VARCHAR, primary key(name))"); */
 /*	SQL_execute(&table, "INSERT INTO Family VALUES ('Deb', 59, 'Mom', 'Mom')"); */
