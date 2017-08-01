@@ -4,6 +4,8 @@ project(benchmark_linear_hash)
 set(SOURCE_FILES
         linear_hash_benchmarks.h
         linear_hash_benchmarks.c
+        ../../tests/planck-unit/src/ion_time/ion_time.h
+        ../../tests/planck-unit/src/ion_time/ion_time.c
         )
 
 if(USE_ARDUINO)
@@ -13,8 +15,8 @@ if(USE_ARDUINO)
     set(${PROJECT_NAME}_PORT        ${PORT})
     set(${PROJECT_NAME}_SERIAL      ${SERIAL})
 
-    set(${PROJECT_NAME}_SKETCH linear_hash.ino)
-    set(${PROJECT_NAME}_SRCS        ${SOURCE_FILES})
+    set(${PROJECT_NAME}_SKETCH linear_hash_benchmarks.ino)
+    set(${PROJECT_NAME}_SRCS        ${SOURCE_FILES} run_linear_hash_benchmarks.c ../../tests/planck-unit/src/ion_time/ion_time.c)
     set(${PROJECT_NAME}_LIBS        linear_hash flat_file)
 
     generate_arduino_firmware(${PROJECT_NAME})
