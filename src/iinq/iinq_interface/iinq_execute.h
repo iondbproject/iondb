@@ -60,7 +60,7 @@ typedef struct iinq_attribute ion_attribute_t;
 @brief		A supertype for iinq attributes.
 */
 struct iinq_attribute {
-	char			field_name[ION_IINQ_VARIABLE_NAME_LENGTH];	/**> Name of field. */
+	char			*field_name;	/**> Name of field. */
 	ion_key_type_t	field_type;	/**> Data type of field. */
 };
 
@@ -74,7 +74,7 @@ typedef struct iinq_table ion_table_t;
 @brief		A supertype for the table created through a CREATE TABLE statement.
 */
 struct iinq_table {
-	char				table_name[ION_MAX_FILENAME_LENGTH];/**> Name of database table. */
+	char				*table_name;/**> Name of database table. */
 	ion_key_type_t		key_type;	/**> Key type of specified primary key. */
 	ion_key_size_t		key_size;	/**> Key size of specified primary key. */
 	ion_value_size_t	value_size;	/**> Size of all attributes in table. */

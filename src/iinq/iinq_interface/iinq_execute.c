@@ -144,6 +144,7 @@ SQL_create(
 
 	memcpy(table_name, substring, pos);
 
+	table->table_name	= malloc(ION_MAX_FILENAME_LENGTH);
 	snprintf(table->table_name, ION_MAX_FILENAME_LENGTH, "%s.%s", table_name, "inq");
 
 	substring			= pointer + 2;
@@ -188,9 +189,10 @@ SQL_create(
 
 		key_type										= ion_switch_key_type(field_type);
 
+		table->table_fields[j].field_name				= malloc(ION_IINQ_VARIABLE_NAME_LENGTH);
 		strcpy(table->table_fields[j].field_name, field_name);
 
-		table->table_fields[j].field_type = key_type;
+		table->table_fields[j].field_type				= key_type;
 	}
 
 	/* Table set-up */
@@ -873,9 +875,15 @@ SQL_drop(
 	memcpy(table_name, table->table_name, strlen(table->table_name) - 3);
 	table_name[strlen(table->table_name) - 4] = '\0';
 
+	for (int i = 0; i < (table->num_fields); i++) {
+		free(table->table_fields[i].field_name);
+	}
+
 	if (0 == fremove(table->table_name)) {
 		printf("\nTable %s was successfully deleted.\n", table_name);
 	}
+
+	free(table->table_name);
 }
 
 void

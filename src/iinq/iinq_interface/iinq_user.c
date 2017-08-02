@@ -1124,16 +1124,7 @@ main(
 	SQL_execute(&table, "DELETE FROM Dogs WHERE age<10;");
 	SQL_execute(&table, "DROP TABLE Dogs;");
 
-/*	SQL_execute(&table, "CREATE TABLE Family (name VARCHAR, age INT, job CHAR[30], relation VARCHAR, primary key(name))"); */
-/*	SQL_execute(&table, "INSERT INTO Family VALUES ('Deb', 59, 'Mom', 'Mom')"); */
-/*	SQL_execute(&table, "INSERT INTO Family VALUES ('Kerry', 59, 'Investments', 'Dad')"); */
-/*	SQL_execute(&table, "INSERT INTO Family VALUES ('Toni', 26, 'Manager', 'Sister')"); */
-/*	SQL_execute(&table, "INSERT INTO Family VALUES ('Minnie', 1, 'Puppy', 'Dog')"); */
-/*	SQL_execute(&table, "UPDATE Family SET job='Painter' WHERE name='Toni';"); */
-/*	SQL_execute(&table, "UPDATE Family SET name='Sadie' WHERE name='Minnie';"); */
-
 	/* Clean-up */
-	fremove(table.table_name);
 	cleanup();
 
 	return 0;
