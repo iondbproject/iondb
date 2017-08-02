@@ -176,7 +176,7 @@ SQL_create(
 
 		pos			= (int) (pointer - field);
 
-		char field_name[strlen("ABRACADABRA")];
+		char field_name[ION_IINQ_VARIABLE_NAME_LENGTH];
 
 		memcpy(field_name, field, pos);
 		field_name[pos] = '\0';
@@ -188,7 +188,7 @@ SQL_create(
 
 		key_type										= ion_switch_key_type(field_type);
 
-		strcpy(table->table_fields[j].field_name, field_name);
+		snprintf(table->table_fields[j].field_name, ION_IINQ_VARIABLE_NAME_LENGTH, "%s", field_name);
 
 		table->table_fields[j].field_type = key_type;
 	}

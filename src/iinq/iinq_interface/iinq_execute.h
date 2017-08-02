@@ -58,7 +58,7 @@ typedef struct iinq_attribute ion_attribute_t;
 @brief		A supertype for iinq attributes.
 */
 struct iinq_attribute {
-	char			field_name[strlen("ABRACADABRA")];	/**> Name of field. */
+	char			field_name[ION_IINQ_VARIABLE_NAME_LENGTH];	/**> Name of field. */
 	ion_key_type_t	field_type;	/**> Data type of field. */
 };
 
