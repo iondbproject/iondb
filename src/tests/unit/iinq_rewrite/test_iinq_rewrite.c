@@ -73,29 +73,236 @@ IINQ_NEW_PROCESSOR_FUNC(check_results) {
 }
 
 void
-iinq_rewrite_create_test1_with_iterator(
+iinq_rewrite_create_int_table_with_iterator(
+		planck_unit_test_t *tc
+) {
+	ion_err_t error;
+	ion_key_type_t key_type;
+	ion_key_size_t  key_size;
+	ion_value_size_t value_size;
 
+	key_type = key_type_numeric_signed;
+	key_size = sizeof(int);
+	value_size = sizeof(int)*3;
+
+	iinq_schema_t schema = (iinq_schema_t) {
+			4, (iinq_field_type_t[]) {
+					IINQ_INT,
+					IINQ_INT,
+					IINQ_INT,
+					IINQ_INT
+			}, (iinq_field_size_t[]) {
+					sizeof(int), sizeof(int), sizeof(int), sizeof(int)
+			}
+	};
+
+	error = iinq_create_table("int_table.inq", key_type, key_size, value_size, &schema);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
+}
+
+void
+iinq_rewrite_insert_value_int_table(
+		planck_unit_test_t *tc,
+		ion_key_t key,
+		ion_value_t value
+) {
+	ion_status_t status;
+
+	status = INSERT(int_table, key, value);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+}
+
+void
+iinq_rewrite_insert_values_into_int_table_for_select_all_and_select_field_list(
+		planck_unit_test_t *tc
+) {
+	int i;
+	ion_value_t value = malloc(sizeof(int)*3);
+
+	// First attribute is the key
+	int attr0;
+
+	// Remaining attributes are in the value
+	int *attr1 = value;
+	int *attr2 = attr1 + 1;
+	int *attr3 = attr2 + 1;
+
+	attr0 = 1;
+	*attr1 = 2;
+	*attr2 = 3;
+	*attr3 = 4;
+
+	for (i = 0; i < 50; i++)
+		iinq_rewrite_insert_value_int_table(tc, IONIZE(attr0, int), value);
+
+	attr0 = -1;
+
+	for (i = 0; i < 50; i++)
+		iinq_rewrite_insert_value_int_table(tc, IONIZE(attr0, int), value);
+
+	free(value);
+}
+
+void
+iinq_rewrite_test_select_all_from_int_table_iterator(
+		planck_unit_test_t *tc
+) {
+	iinq_rewrite_create_int_table_with_iterator(tc);
+
+	iinq_rewrite_insert_values_into_int_table_for_select_all_and_select_field_list(tc);
+
+	iinq_iterator_t iterator;
+
+	/* SELECT * FROM int_table; */
+	iinq_query_init_select_all_from_table(&iterator, "int_table", iinq_next_from_table_no_predicate, NULL);
+
+	int count = 0;
+
+	while (it_status_ok == iterator.next(&iterator)) {
+		if (count < 50) {
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, get_int(iterator, 0));    /* attr0 */
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, get_int(iterator, 1));    /* attr1 */
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, get_int(iterator, 2));    /* attr2 */
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 4, get_int(iterator, 3));    /* attr3 */
+		} else {
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, -1, get_int(iterator, 0));    /* attr0 */
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, get_int(iterator, 1));    /* attr1 */
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, get_int(iterator, 2));    /* attr2 */
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 4, get_int(iterator, 3));    /* attr3 */
+		}
+		count++;
+	}
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 100, count);
+
+	iinq_destroy_iterator(&iterator);
+
+	DROP(int_table);
+}
+
+void
+iinq_rewrite_test_select_attr0_from_int_table_iterator(
 		planck_unit_test_t *tc
 ) {
 
+	iinq_rewrite_create_int_table_with_iterator(tc);
+
+	iinq_rewrite_insert_values_into_int_table_for_select_all_and_select_field_list(tc);
+
+	iinq_iterator_t iterator;
+
+	/* SELECT attr0 FROM int_table; */
+	iinq_query_init_select_field_list_from_table(&iterator, "int_table", iinq_next_from_table_no_predicate, NULL, 1, IINQ_FIELD_LIST({0, 0}));
+
+	int count = 0;
+
+	while (it_status_ok == iterator.next(&iterator)) {
+
+		if (count < 50) {
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, get_int(iterator, 0));    /* attr0 */
+		} else {
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, -1, get_int(iterator, 0));    /* attr0 */
+		}
+		count++;
+	}
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 100, count);
+
+	iinq_destroy_iterator(&iterator);
+
+	DROP(int_table);
+}
+
+void
+iinq_rewrite_test_select_attr0_attr1_from_int_table_iterator(
+		planck_unit_test_t *tc
+) {
+	iinq_rewrite_create_int_table_with_iterator(tc);
+
+	iinq_rewrite_insert_values_into_int_table_for_select_all_and_select_field_list(tc);
+
+	iinq_iterator_t iterator;
+
+	/* SELECT attr0, attr1 FROM int_table; */
+	iinq_query_init_select_field_list_from_table(&iterator, "int_table", iinq_next_from_table_no_predicate, NULL, 2, IINQ_FIELD_LIST({0, 0}, {0, 1}));
+
+	int count = 0;
+
+	while (it_status_ok == iterator.next(&iterator)) {
+
+		if (count < 50) {
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, get_int(iterator, 0));    /* attr0 */
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, get_int(iterator, 1));    /* attr1 */
+		} else {
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, -1, get_int(iterator, 0));    /* attr0 */
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, get_int(iterator, 1));    /* attr1 */
+		}
+		count++;
+	}
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 100, count);
+
+	iinq_destroy_iterator(&iterator);
+
+	DROP(int_table);
+}
+
+void
+iinq_rewrite_test_select_attr0_attr1_attr2_attr3_from_int_table_iterator(
+		planck_unit_test_t *tc
+) {
+	iinq_rewrite_create_int_table_with_iterator(tc);
+
+	iinq_rewrite_insert_values_into_int_table_for_select_all_and_select_field_list(tc);
+
+	iinq_iterator_t iterator;
+
+	/* SELECT attr0, attr1, attr2, attr3 FROM int_table; */
+	iinq_query_init_select_field_list_from_table(&iterator, "int_table", iinq_next_from_table_no_predicate, NULL, 4, IINQ_FIELD_LIST({0, 0}, {0, 1}, {0, 2}, {0, 3}));
+
+	int count = 0;
+
+	while (it_status_ok == iterator.next(&iterator)) {
+
+		if (count < 50) {
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, get_int(iterator, 0));    /* attr0 */
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, get_int(iterator, 1));    /* attr1 */
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, get_int(iterator, 2));    /* attr2 */
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 4, get_int(iterator, 3));    /* attr3 */
+		} else {
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, -1, get_int(iterator, 0));    /* attr0 */
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, get_int(iterator, 1));    /* attr1 */
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, get_int(iterator, 2));    /* attr2 */
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 4, get_int(iterator, 3));    /* attr3 */
+		}
+		count++;
+	}
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 100, count);
+
+	iinq_destroy_iterator(&iterator);
+
+	DROP(int_table);
+}
+
+void
+iinq_rewrite_create_test1_with_iterator(
+		planck_unit_test_t *tc
+) {
 	ion_err_t error;
-
-
 	ion_key_type_t key_type;
-
 	ion_key_size_t key_size;
-
 	ion_value_size_t value_size;
 
-
 	key_type = key_type_numeric_signed;
-
 	key_size = sizeof(int);
-
 	value_size = sizeof(double) + sizeof(char) * 40 + sizeof(int) + sizeof(char) * 10;
 
-/* TODO: factor out into macro if possible (e.g. schema = SCHEMA(5, {IINQ_INT, IINQ_STRING[10]))*/
-
+/* TODO: factor out into macro if possible (e.g. schema = SCHEMA(5, {IINQ_INT, IINQ_STRING[10]}))*/
 	iinq_schema_t schema = (iinq_schema_t) {
 			5, (iinq_field_type_t[]) {
 					IINQ_INT,    /* key */
@@ -108,12 +315,9 @@ iinq_rewrite_create_test1_with_iterator(
 			}
 	};
 
-
 	error = iinq_create_table("test1.inq", key_type, key_size, value_size, &schema);
 
-
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error
-	);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
 }
 
 void
@@ -189,25 +393,17 @@ iinq_rewrite_test_select_all_from_check_results(
 
 void
 iinq_rewrite_insert_value_test1(
-
 		planck_unit_test_t *tc,
-
 		ion_key_t key,
-
 		ion_value_t value
 ) {
-
 	ion_status_t status;
-
 
 	status = INSERT(test1, key, value);
 
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status
-			.error);
-
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc,
-									 1, status.count);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
 }
 
 void
@@ -245,65 +441,45 @@ iinq_rewrite_test_insert_multiple_same_values_test1(
 
 void
 iinq_rewrite_test_insert_multiple_same_values_test1_with_iterator(
-
 		planck_unit_test_t *tc
 ) {
-
 	ion_key_t key = IONIZE(1, int);
-
 
 	unsigned char *value = malloc(sizeof(double) + sizeof(char) * 40 + sizeof(int) + sizeof(char) * 10);
 
 	unsigned char *data = value;
 
-	*(double *)
-			data = 2.5;
+	*(double *)data = 2.5;
 	data += sizeof(double);
-	/* strings give issues for some reason
-	 * TODO: fix this (reading other values written after string gives incorrect value) */
 
-	strcpy(data,
-		   "Hello");
+	strcpy(data, "Hello");
 	data += sizeof(char) * 40;
-	*(int *)
-			data = 1;
+
+	*(int *)data = 1;
 	data += sizeof(int);
 
-	strcpy(data,
-		   "Goodbye");
+	strcpy(data,"Goodbye");
 
-
-	iinq_rewrite_insert_value_test1(tc, key, value
-	);
-
-	iinq_rewrite_insert_value_test1(tc, key, value
-	);
-
-	iinq_rewrite_insert_value_test1(tc, key, value
-	);
-
+	iinq_rewrite_insert_value_test1(tc, key, value);
+	iinq_rewrite_insert_value_test1(tc, key, value);
+	iinq_rewrite_insert_value_test1(tc, key, value);
 
 	free(value);
 }
 
 void
 iinq_rewrite_test_insert_multiple_different_values_test1(
-
 		planck_unit_test_t *tc
 ) {
 
 	DECLARE_SCHEMA_VAR(test1, test_val);
 
-	test_val.
-			col1 = 2.5;
+	test_val.col1 = 2.5;
 
-	strcpy(test_val
-				   .col2, "Hello");
-	test_val.
-			col3 = 1;
+	strcpy(test_val.col2, "Hello");
+	test_val.col3 = 1;
 
-	strcpy(test_val
-				   .col4, "Goodbye");
+	strcpy(test_val.col4, "Goodbye");
 
 
 	iinq_rewrite_insert_value_test1(tc, IONIZE(1, uint32_t), &test_val);
@@ -463,86 +639,49 @@ iinq_rewrite_test_insert_multiple_values_test1_order_by_single_with_iterator(
 
 void
 iinq_rewrite_test_select_all_from_test1_iterator(
-
 		planck_unit_test_t *tc
 ) {
-
 	iinq_rewrite_create_test1_with_iterator(tc);
-
 	iinq_rewrite_test_insert_multiple_same_values_test1_with_iterator(tc);
-
-
 	iinq_iterator_t iterator;
 
 	/* SELECT * FROM test1; */
 	init(&iterator, IINQ_SELECT_ALL, IINQ_ORDER_BY_NONE, boolean_false, 1, 0, "test1");
 
-
 	int count = 0;
 
 	while (it_status_ok == iterator.next(&iterator)) {
-
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc,
-										 1, get_int(iterator, 0));    /* key */
-
-		PLANCK_UNIT_ASSERT_TRUE(tc,
-								2.5 == get_double(iterator, 1));/* col1 */
-
-		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc,
-										 "Hello", get_string(iterator, 2));    /* col2 */
-
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc,
-										 1, get_int(iterator, 3));    /* col3 */
-
-		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc,
-										 "Goodbye", get_string(iterator, 4));    /* col4 */
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, get_int(iterator, 0));    /* key */
+		PLANCK_UNIT_ASSERT_TRUE(tc, 2.5 == get_double(iterator, 1));/* col1 */
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, "Hello", get_string(iterator, 2));    /* col2 */
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, get_int(iterator, 3));    /* col3 */
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, "Goodbye", get_string(iterator, 4));    /* col4 */
 		count++;
 	}
-
-
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc,
-									 3, count);
-
-	free(iterator
-				 .query->tables->record.value);
-
-	free(iterator
-				 .query->tables->record.key);
-
-	ion_close_dictionary(iterator
-								 .query->tables->dictionary);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, count);
+	iinq_destroy_iterator(&iterator);
 
 	DROP(test1);
 }
 
 void
 iinq_rewrite_test_select_all_from_test1_where_iterator(
-
 		planck_unit_test_t *tc
 ) {
-
 	iinq_rewrite_create_test1_with_iterator(tc);
 
 	iinq_rewrite_test_insert_different_values_test1_with_iterator(tc);
 
-
 	iinq_comparison_pointer_t comp_value1;
-	comp_value1.
-			int_val = malloc(sizeof(int));
+	comp_value1.int_val = malloc(sizeof(int));
 
-	*comp_value1.
-			int_val = 1;
+	*comp_value1.int_val = 1;
 
 
 	iinq_comparison_pointer_t comp_value2;
-	comp_value2.
-			string_val = malloc(sizeof(char) * 10);
+	comp_value2.string_val = malloc(sizeof(char) * 10);
 
-
-	strcpy(comp_value2
-				   .string_val, "Hello");
-	/*comp_value2.string_val = "Hello";*/
-
+	strcpy(comp_value2.string_val, "Hello");
 
 	iinq_iterator_t iterator;
 
@@ -551,167 +690,93 @@ iinq_rewrite_test_select_all_from_test1_where_iterator(
 			IINQ_WHERE_FILTER(0, 0, IINQ_EQUAL_TO, comp_value1),
 			IINQ_WHERE_FILTER(0, 4, IINQ_NOT_EQUAL_TO, comp_value2))
 	);
-	/*free(comp_value1);
-	free(comp_value2);*/
-
 
 	int count = 0;
 
 	while (it_status_ok == iterator.next(&iterator)) {
-
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc,
-										 1, get_int(iterator, 0));    /* key */
-
-		PLANCK_UNIT_ASSERT_TRUE(tc,
-								2.5 == get_double(iterator, 1));/* col1 */
-
-		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc,
-										 "Hello", get_string(iterator, 2));    /* col2 */
-
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc,
-										 1, get_int(iterator, 3));    /* col3 */
-
-		PLANCK_UNIT_ASSERT_STR_ARE_NOT_EQUAL(tc,
-											 "Hello", get_string(iterator, 4));    /* col4 */
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, get_int(iterator, 0));    /* key */
+		PLANCK_UNIT_ASSERT_TRUE(tc, 2.5 == get_double(iterator, 1));/* col1 */
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, "Hello", get_string(iterator, 2));    /* col2 */
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, get_int(iterator, 3));    /* col3 */
+		PLANCK_UNIT_ASSERT_STR_ARE_NOT_EQUAL(tc, "Hello", get_string(iterator, 4));    /* col4 */
 		count++;
 	}
 
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, count);
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc,
-									 1, count);
-
-	free(iterator
-				 .query->tables->record.value);
-
-	free(iterator
-				 .query->tables->record.key);
-
-	ion_close_dictionary(iterator
-								 .query->tables->dictionary);
+	iinq_destroy_iterator(&iterator);
 
 	DROP(test1);
 }
 
 void
 iinq_rewrite_test_select_field_list_from_test1_iterator(
-
 		planck_unit_test_t *tc
 ) {
-
 	iinq_rewrite_create_test1_with_iterator(tc);
-
 	iinq_rewrite_test_insert_multiple_same_values_test1_with_iterator(tc);
-
-
 	iinq_iterator_t iterator;
 
 	/* SELECT col1, col2, col3, FROM test1; */
 	init(&iterator, IINQ_SELECT_FIELD_LIST, IINQ_ORDER_BY_NONE, boolean_false, 1, 0, "test1", 3, IINQ_FIELD_LIST(
 			{ 0, 1 }, { 0, 2 }, { 0, 3 }));
 
-
 	int count = 0;
 
 	while (it_status_ok == iterator.next(&iterator)) {
-
-		PLANCK_UNIT_ASSERT_TRUE(tc, abs(get_double(iterator, 0) - 2.5)
-									< FLOAT_TOLERANCE);    /* col1 */
-
-		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc,
-										 "Hello", get_string(iterator, 1));    /* col2 */
-
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc,
-										 1, get_int(iterator, 2));    /* col3 */
+		PLANCK_UNIT_ASSERT_TRUE(tc, abs(get_double(iterator, 0) - 2.5) < FLOAT_TOLERANCE);    /* col1 */
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, "Hello", get_string(iterator, 1));    /* col2 */
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, get_int(iterator, 2));    /* col3 */
 		count++;
 	}
 
-
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc,
-									 3, count);
-	iterator.query->tables->cursor->destroy(&iterator.query->tables->cursor);
-
-	free(iterator
-				 .query->tables->record.value);
-
-	free(iterator
-				 .query->tables->record.key);
-
-	free(iterator
-				 .query->tuple.fields);
-
-	ion_close_dictionary(iterator
-								 .query->tables->dictionary);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, count);
+	iinq_destroy_iterator(&iterator);
 
 	DROP(test1);
 }
 
 void
 iinq_rewrite_test_select_field_list_from_test1_where_iterator(
-
 		planck_unit_test_t *tc
 ) {
-
 	iinq_rewrite_create_test1_with_iterator(tc);
 
 	iinq_rewrite_test_insert_multiple_different_values_test1(tc);
 
-
 	iinq_iterator_t iterator;
 
 	iinq_comparison_pointer_t comp_value;
-	comp_value.
-			int_val = malloc(sizeof(int));
+	comp_value.int_val = malloc(sizeof(int));
 
-	*comp_value.
-			int_val = 1;
+	*comp_value.int_val = 1;
 	/* SELECT key, col1, col2 FROM test1 WHERE key = 0; */
 	init(&iterator, IINQ_SELECT_FIELD_LIST, IINQ_ORDER_BY_NONE, boolean_false, 1, 1, "test1", IINQ_WHERE_CLAUSE(
 			IINQ_WHERE_FILTER(0, 0, IINQ_EQUAL_TO, comp_value)), 3, IINQ_FIELD_LIST({ 0, 0 }, { 0, 1 }, { 0, 2 }));
 
-	free(comp_value
-				 .int_val);
-
+	free(comp_value.int_val);
 
 	int count = 0;
 
 	while (it_status_ok == iterator.next(&iterator)) {
 
-		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc,
-										 1, get_int(iterator, 0));    /* key */
+		PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, get_int(iterator, 0));    /* key */
 
-		PLANCK_UNIT_ASSERT_TRUE(tc, abs(get_double(iterator, 1) - 2.5)
-									< FLOAT_TOLERANCE);    /* col1 */
+		PLANCK_UNIT_ASSERT_TRUE(tc, abs(get_double(iterator, 1) - 2.5) < FLOAT_TOLERANCE);    /* col1 */
 
-		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc,
-										 "Hello", get_string(iterator, 2));    /* col2 */
+		PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, "Hello", get_string(iterator, 2));    /* col2 */
 		count++;
 	}
 
-
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc,
-									 2, count);
-	iterator.query->tables->cursor->destroy(&iterator.query->tables->cursor);
-
-	free(iterator
-				 .query->tables->record.value);
-
-	free(iterator
-				 .query->tables->record.key);
-
-	free(iterator
-				 .query->tuple.fields);
-
-	ion_close_dictionary(iterator
-								 .query->tables->dictionary);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, count);
+	iinq_destroy_iterator(&iterator);
 
 	DROP(test1);
 }
 
 void
 iinq_rewrite_test_select_field_list_from_test1_where_order_by_single_iterator_check_results(
-
 		planck_unit_test_t *tc,
-
 		iinq_iterator_t *iterator
 ) {
 
@@ -788,13 +853,7 @@ iinq_rewrite_test_select_field_list_from_test1_where_order_by_single_string_desc
 
 
 	iinq_rewrite_test_select_field_list_from_test1_where_order_by_single_iterator_check_results(tc,&iterator);
-	iterator.query->tables->cursor->destroy(&iterator.query->tables->cursor);
-	fclose(iterator.query->sort->cursor->es->input_file);
-	ion_external_sort_destroy_cursor(iterator.query->sort->cursor);
-	free(iterator.query->tables->record.value);
-	free(iterator.query->tables->record.key);
-	free(iterator.query->tuple.fields);
-	ion_close_dictionary(iterator.query->tables->dictionary);
+	iinq_destroy_iterator(&iterator);
 }
 
 void
@@ -827,19 +886,7 @@ iinq_rewrite_test_select_field_list_from_test1_where_order_by_single_int_asc_ite
 
 	iinq_rewrite_test_select_field_list_from_test1_where_order_by_single_iterator_check_results(tc, &iterator);
 
-	iterator.query->tables->cursor->destroy(&iterator.query->tables->cursor);
-
-	fclose(iterator.query->sort->cursor->es->input_file);
-
-	ion_external_sort_destroy_cursor(iterator.query->sort->cursor);
-
-	free(iterator.query->tables->record.value);
-
-	free(iterator.query->tables->record.key);
-
-	free(iterator.query->tuple.fields);
-
-	ion_close_dictionary(iterator.query->tables->dictionary);
+	iinq_destroy_iterator(&iterator);
 }
 
 void
@@ -847,7 +894,6 @@ iinq_rewrite_test_select_field_list_from_test1_where_order_by_single_iterator(
 
 		planck_unit_test_t *tc
 ) {
-
 	iinq_rewrite_create_test1_with_iterator(tc);
 	iinq_rewrite_test_insert_multiple_values_test1_order_by_single_with_iterator(tc);
 
@@ -6660,6 +6706,10 @@ iinq_rewrite_get_suite(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_all_from_test1_where_iterator);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_field_list_from_test1_where_iterator);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_field_list_from_test1_where_order_by_single_iterator);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_all_from_int_table_iterator);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_attr0_from_int_table_iterator);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_attr0_attr1_from_int_table_iterator);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_attr0_attr1_attr2_attr3_from_int_table_iterator);
 
 	return suite;
 }

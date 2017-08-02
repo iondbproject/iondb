@@ -261,7 +261,8 @@ enum IINQ_ITERATOR_STATUS {
 	it_status_ok,  /**< Iterator is valid. */
 	it_status_sort_error, /**< Iterator encountered a sorting error. */
 	it_status_end_of_results, /**< Iterator reached the end of the query. */
-	it_status_invalid /**< Iterator is invalid. */
+	it_status_memory_error, /**< Iterator failed to allocate enough memory to continue. */
+	it_status_invalid /**< General case when iterator is invalid. */
 };
 
 /**
@@ -279,6 +280,8 @@ typedef struct {
 	iinq_size_t size; /**< Size of the sort fields. */
 } iinq_sort_t;
 
+typedef ion_boolean_t (*iinq_predicate_t)(struct iterator *);
+
 /**
 @brief		Type for the sort portion of a query in iinq.
 */
@@ -291,6 +294,7 @@ typedef struct {
 	int num_filters; /**< Number of filters used for the query. */
 	iinq_select_type_t select_type; /**< Type of SELECT clause. */
 	iinq_tuple_t tuple; /**< Tuple that contains a record from the query. */
+	iinq_predicate_t predicate;
 } iinq_query_t;
 
 /**
@@ -368,6 +372,26 @@ init(
 		int num_filters,
 		...
 );
+
+void
+iinq_destroy_iterator(
+		iinq_iterator_t *it
+);
+
+iinq_iterator_status_t
+iinq_query_init_select_all_from_table(iinq_iterator_t *it, char *table_name, iinq_iterator_next_t next,
+									  iinq_predicate_t predicate);
+
+iinq_iterator_status_t
+iinq_query_init_select_field_list_from_table(iinq_iterator_t *it, char *table_name, iinq_iterator_next_t next,
+											 iinq_predicate_t predicate, int num_fields,
+											 iinq_field_list_t *field_list);
+
+iinq_iterator_status_t
+iinq_next_from_table_no_predicate(iinq_iterator_t *it);
+
+iinq_iterator_status_t
+iinq_next_from_table_with_predicate(iinq_iterator_t *it);
 
 #if defined(__cplusplus)
 }
