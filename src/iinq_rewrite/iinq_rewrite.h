@@ -87,9 +87,9 @@ enum IINQ_COMPARISON_OPERATOR {
 };
 
 /**
--@brief		A type for the comparison operator used in a filter.
--@see		enum IINQ_COMPARISON_OPERATOR
--*/
+@brief		A type for the comparison operator used in a filter.
+@see		enum IINQ_COMPARISON_OPERATOR
+*/
 typedef uint8_t iinq_comparison_operator_t;
 
 typedef union {
@@ -112,10 +112,9 @@ typedef struct {
 @brief		A type containing information about a filter in the WHERE clause.
 */
 typedef struct {
-
 	int source_num; /**< The index of the source used in the comparion. */
 	int field_num; /**< The field number within the source that will be compared. */
-	iinq_comparison_operator_t operator; /**< The operator that will be used for the comparison. */
+	iinq_comparison_operator_t comparison_operator; /**< The operator that will be used for the comparison. */
 	iinq_comparison_pointer_t comp_value; /**< Generic pointer to the value that will be compared. */
 } iinq_where_filter_t;
 
@@ -156,8 +155,8 @@ typedef enum IINQ_FIELD_TYPE {
 /**
 @brief		Data type for a field in iinq.
 @see		enum IINQ_FIELD_TYPE
-*/
-typedef uint8_t;
+*//*
+typedef uint8_t;*/
 
 /**
 @brief		Select types for queries in iinq.
@@ -363,7 +362,7 @@ typedef struct {
  The status of the created iterator.
 */
 iinq_iterator_status_t
-init(
+query_init(
 		iinq_iterator_t *it,
 		iinq_select_type_t select_type,
 		iinq_order_by_type_t order_by_type,
@@ -392,6 +391,18 @@ iinq_next_from_table_no_predicate(iinq_iterator_t *it);
 
 iinq_iterator_status_t
 iinq_next_from_table_with_predicate(iinq_iterator_t *it);
+
+ion_err_t
+drop_table(char *schema_file_name);
+
+ion_status_t
+iinq_insert_into(
+		char *schema_file_name,
+		ion_key_t key,
+		ion_value_t value);
+
+#define DROP_TABLE(table_name) drop_table(# table_name ".inq")
+#define INSERT_INTO(schema_name, key, value) iinq_insert_into(# schema_name ".inq", key, value)
 
 #if defined(__cplusplus)
 }

@@ -2,6 +2,55 @@
 #include "../iinq/iinq.h"
 #include "../util/sort/external_sort/external_sort_types.h"
 
+ion_status_t
+iinq_insert_into(
+		char		*schema_file_name,
+		ion_key_t	key,
+		ion_value_t value
+) {
+	ion_err_t					error;
+	ion_status_t				status = ION_STATUS_INITIALIZE;
+	iinq_table_t table;
+
+
+	error				= iinq_open_table(schema_file_name, &table);
+
+	if (err_ok != error) {
+		status = ION_STATUS_ERROR(error);
+		goto RETURN;
+	}
+
+	status	= dictionary_insert(&table.dictionary, key, value);
+	error	= ion_close_dictionary(&table.dictionary);
+
+	if ((err_ok == status.error) && (err_ok != error)) {
+		status.error = error;
+	}
+
+	RETURN: return status;
+}
+
+ion_err_t
+drop_table(char *schema_file_name) {
+
+		ion_err_t					error;
+		iinq_table_t table;
+
+
+		error				= iinq_open_table(schema_file_name, &table);
+
+		if (err_ok != error) {
+			return error;
+		}
+
+		error = dictionary_delete_dictionary(table.dictionary);
+
+		fremove(schema_file_name);
+
+		return error;
+
+}
+
 void
 iinq_destroy_tuple(iinq_tuple_t *tuple) {
 	if (NULL != tuple->fields)
@@ -20,7 +69,8 @@ iinq_destroy_tuple(iinq_tuple_t *tuple) {
 void
 iinq_destroy_query_tables(iinq_table_t **tables, int num_tables) {
 
-	for (int i = 0; i < num_tables; i++) {
+	int i;
+	for (i = 0; i < num_tables; i++) {
 		(*tables)[i].cursor->destroy(&(*tables)[i].cursor);
 		ion_err_t error = ion_close_dictionary((*tables)[i].dictionary);
 
@@ -42,7 +92,8 @@ iinq_destroy_iterator(
 	if (NULL != it->query) {
 		iinq_destroy_tuple(&it->query->tuple);
 		if (NULL != it->query->filter) {
-			for (int i = 0; i < it->query->num_filters; i++) {
+            int i;
+			for (i = 0; i < it->query->num_filters; i++) {
 				switch (it->query->tables[it->query->filter[i].source_num].schema->field_type[it->query->filter->field_num]) {
 					case IINQ_INT:
 						if (NULL != it->query->filter[i].comp_value.int_val)
@@ -373,6 +424,7 @@ iinq_open_table(
 		}
 
 		if (0 != fclose(schema_file)) {
+
 			return err_file_close_error;
 		}
 
@@ -422,8 +474,9 @@ iinq_init_where(
 
 	filter = va_arg(*filters, iinq_where_filter_t *);
 
-	for (int i = 0; i < num_filters; i++) {
-		it->query->filter[i].operator = filter->operator;
+    int i;
+	for (i = 0; i < num_filters; i++) {
+		it->query->filter[i].comparison_operator = filter->comparison_operator;
 		it->query->filter[i].source_num = filter->source_num;
 		it->query->filter[i].field_num = filter->field_num;
 		void *comp_value = malloc(it->query->tables[0].schema->field_size[filter->field_num]);
@@ -466,7 +519,8 @@ iinq_get_field_from_table(
 		field = it->query->tables[table_num].record.value;
 
 		/* loop to the point in the byte array that has the location of the field */
-		for (int i = 1; i < field_num; i++) {
+        int i;
+		for (i = 1; i < field_num; i++) {
 			field += it->query->tables->schema->field_size[i];
 		}
 	}
@@ -486,7 +540,8 @@ iinq_get_field_from_sort(
 	field = it->query->sort->record_buf + it->query->sort->size;
 
 	/* loop to the point in the byte array that has the location of the field */
-	for (int i = 0; i < field_num; i++) {
+    int i;
+	for (i = 0; i < field_num; i++) {
 		field += it->query->tables->schema->field_size[i];
 	}
 
@@ -498,7 +553,8 @@ iinq_get_field_from_group_by(iinq_iterator_t *it, int table_num, int field_num) 
 
 	iinq_field_t field = it->query->group_by->record_buf;
 
-	for (int i = 0; i < field_num; i++) {
+    int i;
+	for (i = 0; i < field_num; i++) {
 		field += it->query->tables->schema->field_size[i];
 	}
 
@@ -515,7 +571,8 @@ iinq_where_from_group_by(
 
 	iinq_where_filter_t *filter;
 
-	for (int i = 0; i < it->query->num_filters; i++) {
+    int i;
+	for (i = 0; i < it->query->num_filters; i++) {
 		filter = &it->query->filter[i];
 
 		int field_num = filter->field_num;
@@ -524,7 +581,7 @@ iinq_where_from_group_by(
 			case IINQ_STRING: {
 				char *value = (char *) iinq_get_field_from_group_by(it, 0, filter->field_num);
 
-				if (!iinq_string_comparison(value, filter->operator, filter->comp_value.string_val)) {
+				if (!iinq_string_comparison(value, filter->comparison_operator, filter->comp_value.string_val)) {
 					return boolean_false;
 				}
 
@@ -535,7 +592,7 @@ iinq_where_from_group_by(
 				int value = NEUTRALIZE(iinq_get_field_from_group_by(it, 0, filter->field_num),
 									   int);
 
-				if (!iinq_int_comparison(value, filter->operator, *filter->comp_value.int_val)) {
+				if (!iinq_int_comparison(value, filter->comparison_operator, *filter->comp_value.int_val)) {
 					return boolean_false;
 				}
 
@@ -545,7 +602,7 @@ iinq_where_from_group_by(
 				int value = NEUTRALIZE(iinq_get_field_from_group_by(it, 0, filter->field_num),
 									   unsigned int);
 
-				if (!iinq_int_comparison(value, filter->operator, *filter->comp_value.int_val)) {
+				if (!iinq_int_comparison(value, filter->comparison_operator, *filter->comp_value.int_val)) {
 					return boolean_false;
 				}
 
@@ -556,7 +613,7 @@ iinq_where_from_group_by(
 				double value = NEUTRALIZE(iinq_get_field_from_group_by(it, 0, filter->field_num),
 										  double);
 
-				if (iinq_double_comparison(value, filter->operator, *filter->comp_value.double_val)) {
+				if (iinq_double_comparison(value, filter->comparison_operator, *filter->comp_value.double_val)) {
 					return boolean_false;
 				}
 
@@ -577,7 +634,8 @@ iinq_where_from_table(
 
 	iinq_where_filter_t *filter;
 
-	for (int i = 0; i < it->query->num_filters; i++) {
+    int i;
+	for (i = 0; i < it->query->num_filters; i++) {
 		filter = &it->query->filter[i];
 
 		int field_num = filter->field_num;
@@ -586,7 +644,7 @@ iinq_where_from_table(
 			case IINQ_STRING: {
 				char *value = (char *) iinq_get_field_from_table(it, 0, filter->field_num);
 
-				if (!iinq_string_comparison(value, filter->operator, filter->comp_value.string_val)) {
+				if (!iinq_string_comparison(value, filter->comparison_operator, filter->comp_value.string_val)) {
 					return boolean_false;
 				}
 
@@ -597,7 +655,7 @@ iinq_where_from_table(
 				int value = NEUTRALIZE(iinq_get_field_from_table(it, 0, filter->field_num),
 									   int);
 
-				if (!iinq_int_comparison(value, filter->operator, *filter->comp_value.int_val)) {
+				if (!iinq_int_comparison(value, filter->comparison_operator, *filter->comp_value.int_val)) {
 					return boolean_false;
 				}
 
@@ -608,7 +666,7 @@ iinq_where_from_table(
 				int value = NEUTRALIZE(iinq_get_field_from_table(it, 0, filter->field_num),
 									   unsigned int);
 
-				if (!iinq_int_comparison(value, filter->operator, *filter->comp_value.int_val)) {
+				if (!iinq_int_comparison(value, filter->comparison_operator, *filter->comp_value.int_val)) {
 					return boolean_false;
 				}
 
@@ -619,7 +677,7 @@ iinq_where_from_table(
 				double value = NEUTRALIZE(iinq_get_field_from_table(it, 0, filter->field_num),
 										  double);
 
-				if (iinq_double_comparison(value, filter->operator, *filter->comp_value.double_val)) {
+				if (iinq_double_comparison(value, filter->comparison_operator, *filter->comp_value.double_val)) {
 					return boolean_false;
 				}
 
@@ -646,7 +704,8 @@ select_all_next(
 		}
 	}
 
-	for (int i = 0; i < it->query->tables[0].schema->num_fields; i++) {
+    int i;
+	for (i = 0; i < it->query->tables[0].schema->num_fields; i++) {
 		it->query->tuple.fields[i] = iinq_get_field_from_table(it, 0, i);
 	}
 
@@ -675,7 +734,8 @@ select_field_list_group_by_next(
 
 	iinq_field_list_t *field_list = it->query->tuple.field_list;
 
-	for (int i = 0; i < it->query->tuple.schema->num_fields; i++) {
+    int i;
+	for (i = 0; i < it->query->tuple.schema->num_fields; i++) {
 		int table_num = field_list[i].table_num;
 		int field_num = field_list[i].field_num;
 
@@ -705,7 +765,8 @@ select_all_group_by_next(
 
 	char *sort_data = it->query->group_by->record_buf;
 
-	for (int i = 0; i < it->query->tuple.schema->num_fields; i++) {
+    int i;
+	for (i = 0; i < it->query->tuple.schema->num_fields; i++) {
 		it->query->tuple.fields[i] = sort_data;
 		sort_data += it->query->tuple.schema->field_size[i];
 	}
@@ -734,7 +795,8 @@ select_field_list_next(
 
 	iinq_field_list_t *field_list = it->query->tuple.field_list;
 
-	for (int i = 0; i < it->query->tuple.schema->num_fields; i++) {
+    int i;
+	for (i = 0; i < it->query->tuple.schema->num_fields; i++) {
 		int table_num = field_list[i].table_num;
 		int field_num = field_list[i].field_num;
 
@@ -756,7 +818,8 @@ select_all_order_by_next(
 
 	char *sort_data = it->query->sort->record_buf;
 
-	for (int i = 0; i < it->query->tuple.schema->num_fields; i++) {
+    int i;
+	for (i = 0; i < it->query->tuple.schema->num_fields; i++) {
 		it->query->tuple.fields[i] = sort_data;
 		sort_data += it->query->tuple.schema->field_size[i];
 	}
@@ -780,7 +843,8 @@ select_field_list_order_by_next(
 
 	iinq_field_list_t *field_list = it->query->tuple.field_list;
 
-	for (int i = 0; i < it->query->tuple.schema->num_fields; i++) {
+    int i;
+	for (i = 0; i < it->query->tuple.schema->num_fields; i++) {
 		int table_num = field_list[i].table_num;
 		int field_num = field_list[i].field_num;
 
@@ -975,6 +1039,7 @@ iinq_init_tuple_from_table_full_schema(iinq_iterator_t *it) {
 	}
 
 	// first field is the key
+	it->query->tuple.field_list = NULL;
 	it->query->tuple.fields[0] = it->query->tables[0].record.key;
 
 	// rest of the fields are in the value of the record
@@ -1015,12 +1080,14 @@ iinq_query_init_select_field_list_from_table(iinq_iterator_t *it, char *table_na
 	it->next = next;
 
 	it->query->tuple.size = 0;
+	it->query->tuple.field_list = NULL;
 	it->query->tuple.schema = malloc(sizeof(iinq_schema_t));
 	it->query->tuple.schema->field_type = malloc(sizeof(iinq_field_type_t)*num_fields);
 	it->query->tuple.schema->field_size = malloc(sizeof(iinq_field_size_t)*num_fields);
 	it->query->tuple.fields = malloc(sizeof(iinq_field_t)*num_fields);
 	it->query->tuple.schema->num_fields = num_fields;
-	for (int i = 0; i < num_fields; i++) {
+    int i;
+	for (i = 0; i < num_fields; i++) {
 		it->query->tuple.size += it->query->tables[field_list[i].table_num].schema->field_size[field_list[i].field_num];
 		it->query->tuple.schema->field_type[i] = it->query->tables[field_list[i].table_num].schema->field_type[field_list[i].field_num];
 		it->query->tuple.fields[i] = iinq_get_field_from_table(it, field_list[i].table_num, field_list[i].field_num);
@@ -1121,14 +1188,14 @@ iinq_init_order_by(iinq_iterator_t *it, int orderby_n, iinq_order_by_field_t *or
 }
 
 iinq_iterator_status_t
-init(
-		iinq_iterator_t *it,
-		iinq_select_type_t select_type,
-		iinq_order_by_type_t order_by_type,
-		ion_boolean_t has_group_by,
-		int num_tables,
-		int num_filters,
-		...
+query_init(
+        iinq_iterator_t *it,
+        iinq_select_type_t select_type,
+        iinq_order_by_type_t order_by_type,
+        ion_boolean_t has_group_by,
+        int num_tables,
+        int num_filters,
+        ...
 ) {
 	int i;
 	va_list list;
