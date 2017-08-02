@@ -76,6 +76,8 @@ ion_switch_key_size(
 			return sizeof("ABRACADABRA");
 		}
 	}
+
+	return sizeof("ABRACADABRA");
 }
 
 void
@@ -193,10 +195,10 @@ SQL_create(
 		key_type										= ion_switch_key_type(field_type);
 		table_fields[j].field_type						= key_type;
 
-		table->table_fields[j].field_name				= malloc(sizeof(table_fields[j].field_name));
+/*		table->table_fields[j].field_name				= malloc(sizeof(table_fields[j].field_name)); */
 /*		table->table_fields[j].field_type = malloc(sizeof(table_fields[j].field_type)); */
 
-		table->table_fields[j]							= table_fields[j];
+		table->table_fields[j] = table_fields[j];
 	}
 
 	/* Table set-up */
@@ -207,7 +209,7 @@ SQL_create(
 
 	char primary_key[pos];
 
-	memcpy(primary_key, pointer + 1, strlen(pointer) - 3);
+	memcpy(primary_key, ((char *) pointer) + 1, strlen(pointer) - 3);
 	primary_key[strlen(pointer) - 3] = '\0';
 
 	/* Set up table for primary key */
