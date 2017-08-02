@@ -157,8 +157,7 @@ SQL_create(
 		count += (substring[i] == ',');
 	}
 
-	ion_key_type_t	key_type;
-	size_t			len;
+	ion_key_type_t key_type;
 
 	/* Set up attribute names and types */
 	for (int j = 0; j < count; j++) {
@@ -177,12 +176,10 @@ SQL_create(
 
 		pos			= (int) (pointer - field);
 
-		char field_name[pos + 1];
+		char field_name[strlen("ABRACADABRA")];
 
 		memcpy(field_name, field, pos);
 		field_name[pos] = '\0';
-
-		len				= strlen(field_name);
 
 		char field_type[strlen(field) - strlen(field_name) + 1];
 
