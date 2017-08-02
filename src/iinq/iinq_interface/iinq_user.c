@@ -192,9 +192,9 @@ group(
 	for (int i = 0; i < 3; ++i) {
 		for (int j = i + 1; j < 3; ++j) {
 			/* If col2 has same same value -> group */
-			if ((NULL != records[i].key) && (NULL != records[j].key) && (0 == strncmp((char *) (records[i].value), (char *) (records[j].value), 3)) && (!(iterator->where_condition) || (0 == strncmp((char *) (records[i].value + 3), "250", 3)))) {
+			if ((NULL != records[i].key) && (NULL != records[j].key) && (0 == strncmp((char *) (records[i].value), (char *) (records[j].value), 3)) && (!(iterator->where_condition) || (0 == strncmp((((char *) records[i].value) + 3), "250", 3)))) {
 				result	= malloc(strlen(records[i].value) + 1);
-				col_val = (atoi(records[i].value + 3)) + (atoi(records[j].value + 3));
+				col_val = (atoi(((char *) records[i].value) + 3)) + (atoi(((char *) records[j].value) + 3));
 
 				sprintf(num, "%i", col_val);
 				num[3]	= '\0';
@@ -266,14 +266,14 @@ sort(
 					/* Evaluate second sort if keys are equal */
 					else if ((NULL != records[i].key) && (NULL != records[j].key) && (get_int(records[i].key) == get_int(records[j].key))) {
 						if (iterator->orderby2_condition && iterator->orderby2_asc) {
-							if ((0 < strncmp((records[i].value + 3), (records[j].value + 3), 3))) {
+							if ((0 < strncmp((((char *) records[i].value) + 3), (((char *) records[j].value) + 3), 3))) {
 								max_key		= records[i];
 								records[i]	= records[j];
 								records[j]	= max_key;
 							}
 						}
 						else if (iterator->orderby2_condition && !(iterator->orderby2_asc)) {
-							if ((0 > strncmp((records[i].value + 3), (records[j].value + 3), 3))) {
+							if ((0 > strncmp((((char *) records[i].value + 3)), (((char *) records[j].value + 3)), 3))) {
 								max_key		= records[i];
 								records[i]	= records[j];
 								records[j]	= max_key;
@@ -297,14 +297,14 @@ sort(
 					/* Evaluate second sort if keys are equal */
 					else if ((NULL != records[i].key) && (NULL != records[j].key) && (get_int(records[i].key) == get_int(records[j].key))) {
 						if (iterator->orderby2_condition && iterator->orderby2_asc) {
-							if ((0 < strncmp((records[i].value + 3), (records[j].value + 3), 3))) {
+							if ((0 < strncmp((((char *) records[i].value) + 3), (((char *) records[j].value + 3)), 3))) {
 								max_key		= records[i];
 								records[i]	= records[j];
 								records[j]	= max_key;
 							}
 						}
 						else if (iterator->orderby2_condition && !(iterator->orderby2_asc)) {
-							if ((0 > strncmp((records[i].value + 3), (records[j].value + 3), 3))) {
+							if ((0 > strncmp((((char *) records[i].value) + 3), (((char *) records[j].value) + 3), 3))) {
 								max_key		= records[i];
 								records[i]	= records[j];
 								records[j]	= max_key;
@@ -323,7 +323,7 @@ sort(
 		if (iterator->orderby1_asc) {
 			for (int i = 0; i < 3; ++i) {
 				for (int j = i + 1; j < 3; ++j) {
-					if ((NULL != records[i].key) && (NULL != records[j].key) && (0 < strncmp((records[i].value + 3), (records[j].value + 3), 3))) {
+					if ((NULL != records[i].key) && (NULL != records[j].key) && (0 < strncmp((((char *) records[i].value) + 3), (((char *) records[j].value) + 3), 3))) {
 						max_key		= records[i];
 						records[i]	= records[j];
 						records[j]	= max_key;
@@ -336,7 +336,7 @@ sort(
 		else {
 			for (int i = 0; i < 3; ++i) {
 				for (int j = i + 1; j < 3; ++j) {
-					if ((NULL != records[i].key) && (NULL != records[j].key) && (0 > strncmp((records[i].value + 3), (records[j].value + 3), 3))) {
+					if ((NULL != records[i].key) && (NULL != records[j].key) && (0 > strncmp((((char *) records[i].value) + 3), (((char *) records[j].value) + 3), 3))) {
 						max_key		= records[i];
 						records[i]	= records[j];
 						records[j]	= max_key;
@@ -389,13 +389,13 @@ next(
 			if ((iterator->where_condition) && !(iterator->orderby1_condition)) {
 				if (3 > get_int(record.key)) {
 					/* Return the retrieved record that meets WHERE condition */
-					record.value = (char *) (record.value + 3);
+					record.value = (((char *) record.value) + 3);
 					return record;
 				}
 			}
 			/* No WHERE or ORDERBY or GROUPBY condition - return any retrieved record */
 			else {
-				record.value = (char *) (record.value + 3);
+				record.value = (((char *) record.value) + 3);
 				return record;
 			}
 		}
@@ -410,7 +410,7 @@ next(
 			if (iterator->where_condition && !iterator->minmax_condition) {
 				if (3 > get_int(record.key)) {
 					if (iterator->select_fieldlist) {
-						record.value = (char *) (record.value + 3);
+						record.value = (((char *) record.value) + 3);
 					}
 
 					return record;
@@ -423,7 +423,7 @@ next(
 			else {
 				/* Evaluate FIELDLIST condition */
 				if (iterator->select_fieldlist) {
-					record.value = (char *) (record.value + 3);
+					record.value = (((char *) record.value) + 3);
 				}
 
 				return record;
@@ -450,7 +450,7 @@ next(
 					/* Evaluate WHERE condition if it exists */
 					((!iterator->where_condition) || (0 == strncmp((char *) record.value, "100", 3)))) {
 					result	= malloc(strlen(record.value) + 1);
-					sum		+= (atoi(record.value + 3));
+					sum		+= (atoi(((char *) record.value) + 3));
 
 					sprintf(num, "%i", sum);
 					num[3]	= '\0';
@@ -470,7 +470,7 @@ next(
 						int avg = 0;
 
 						result	= malloc(strlen(record.value) + 1);
-						avg		= (atoi(record.value + 3)) / avg_count;
+						avg		= (atoi(((char *) record.value) + 3)) / avg_count;
 
 						sprintf(num, "%i", avg);
 						num[3]	= '\0';
