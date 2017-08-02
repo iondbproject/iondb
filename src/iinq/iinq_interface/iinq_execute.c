@@ -191,10 +191,10 @@ SQL_create(
 
 		key_type										= ion_switch_key_type(field_type);
 
-		table->table_fields[j].field_name				= malloc(len);
+		table->table_fields[j].field_name				= (char *) malloc(len);
 //		snprintf(table->table_fields[j].field_name, pos + 1, "%s", field_name);
-		memcpy(table->table_fields[j].field_name, field_name, len);
-//		strcpy(table->table_fields[j].field_name, field_name);
+//		memcpy(table->table_fields[j].field_name, field_name, len);
+		strcpy(table->table_fields[j].field_name, field_name);
 
 //		table->table_fields[j].field_name = field_name;
 		table->table_fields[j].field_type = key_type;
