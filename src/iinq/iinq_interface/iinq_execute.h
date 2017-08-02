@@ -48,6 +48,8 @@ extern "C" {
 #include "../iinq.h"
 #include "iinq_user.h"
 
+#define ION_IINQ_VARIABLE_NAME_LENGTH 20
+
 /**
 @brief		An attribute to be stored in an ion_table_t.
 @see		iinq_attribute

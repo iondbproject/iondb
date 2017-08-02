@@ -69,15 +69,15 @@ ion_switch_key_size(
 		}
 
 		case key_type_char_array: {
-			return sizeof("ABRACADABRA");
+			return ION_IINQ_VARIABLE_NAME_LENGTH;
 		}
 
 		case key_type_null_terminated_string: {
-			return sizeof("ABRACADABRA");
+			return ION_IINQ_VARIABLE_NAME_LENGTH;
 		}
 	}
 
-	return sizeof("ABRACADABRA");
+	return ION_IINQ_VARIABLE_NAME_LENGTH;
 }
 
 void
@@ -238,6 +238,7 @@ SQL_create(
 
 	if (err_ok != error) {
 		printf("Error occurred creating table. Error code: %i\n", error);
+		return;
 	}
 
 	dictionary.handler	= &handler;
@@ -246,6 +247,7 @@ SQL_create(
 
 	if (err_ok != error) {
 		printf("Error occurred opening table. Error code: %i\n", error);
+		return;
 	}
 
 	print_table(table, &dictionary);
@@ -254,7 +256,8 @@ SQL_create(
 	error = ion_close_dictionary(&dictionary);
 
 	if (err_ok != error) {
-		printf("Error occurred closing table.\n");
+		printf("Error occurred closing table. Error code: %i\n", error);
+		return;
 	}
 }
 
@@ -277,6 +280,7 @@ SQL_insert(
 
 	if (err_ok != error) {
 		printf("Error occurred opening table. Error code: %i\n", error);
+		return;
 	}
 
 	char *pointer = strstr(substring, "(");
@@ -302,6 +306,7 @@ SQL_insert(
 
 			if (NULL == pointer) {
 				printf("Error occurred inserting values, please check that a value has been listed for each column in table.\n");
+				return;
 			}
 
 			pos = (int) (pointer - substring);
@@ -333,7 +338,8 @@ SQL_insert(
 	ion_status_t status = dictionary_insert(&dictionary, key, value);
 
 	if (err_ok != status.error) {
-		printf("Error occurred inserting record into table.\n");
+		printf("Error occurred inserting record into table. Error code: %i\n", status.error);
+		return;
 	}
 
 	table->num_records++;
@@ -344,7 +350,8 @@ SQL_insert(
 	error = ion_close_dictionary(&dictionary);
 
 	if (err_ok != error) {
-		printf("Error occurred closing table.\n");
+		printf("Error occurred closing table. Error code: %i\n", error);
+		return;
 	}
 }
 
@@ -532,6 +539,7 @@ SQL_update(
 
 	if (err_ok != error) {
 		printf("Error occurred opening table. Error code: %i\n", error);
+		return;
 	}
 
 	ion_boolean_t	where_condition = boolean_false;
@@ -655,7 +663,8 @@ SQL_update(
 							status = dictionary_delete(&dictionary, IONIZE(atoi(field_value), int));
 
 							if (err_ok != status.error) {
-								printf("Error occurred updating record in table.\n");
+								printf("Error occurred updating record in table. Error code: %i\n", status.error);
+								return;
 							}
 
 							update_key = boolean_true;
@@ -697,7 +706,8 @@ SQL_update(
 					}
 
 					if (err_ok != status.error) {
-						printf("Error occurred updating record in table.\n");
+						printf("Error occurred updating record in table. Error code: %i\n", status.error);
+						return;
 					}
 				}
 			}
@@ -714,7 +724,8 @@ SQL_update(
 	error = ion_close_dictionary(&dictionary);
 
 	if (err_ok != error) {
-		printf("Error occurred closing table.\n");
+		printf("Error occurred closing table. Error code: %i\n", error);
+		return;
 	}
 }
 
@@ -737,6 +748,7 @@ SQL_delete(
 
 	if (err_ok != error) {
 		printf("Error occurred opening table. Error code: %i\n", error);
+		return;
 	}
 
 	ion_boolean_t	where_condition = boolean_false;
@@ -812,8 +824,8 @@ SQL_delete(
 			status = dictionary_delete(&dictionary, deleted_records[i].key);
 
 			if (err_ok != status.error) {
-				printf("Error occurred deleting record from table.\n");
-				break;
+				printf("Error occurred deleting record from table. Error code: %i\n", status.error);
+				return;
 			}
 
 			printf("Record deleted: %s\n", (char *) deleted_records[i].value);
@@ -827,7 +839,8 @@ SQL_delete(
 	error = ion_close_dictionary(&dictionary);
 
 	if (err_ok != error) {
-		printf("Error occurred closing table.\n");
+		printf("Error occurred closing table. Error code: %i\n", error);
+		return;
 	}
 }
 
