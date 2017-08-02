@@ -195,10 +195,8 @@ SQL_create(
 		key_type										= ion_switch_key_type(field_type);
 		table_fields[j].field_type						= key_type;
 
-/*		table->table_fields[j].field_name				= malloc(sizeof(table_fields[j].field_name)); */
-/*		table->table_fields[j].field_type = malloc(sizeof(table_fields[j].field_type)); */
-
-		table->table_fields[j] = table_fields[j];
+		table->table_fields[j].field_name				= table_fields[j].field_name;
+		table->table_fields[j].field_type				= table_fields[j].field_type;
 	}
 
 	/* Table set-up */
