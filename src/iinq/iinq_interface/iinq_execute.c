@@ -188,7 +188,7 @@ SQL_create(
 
 		key_type										= ion_switch_key_type(field_type);
 
-		snprintf(table->table_fields[j].field_name, ION_IINQ_VARIABLE_NAME_LENGTH, "%s", field_name);
+		strcpy(table->table_fields[j].field_name, field_name);
 
 		table->table_fields[j].field_type = key_type;
 	}
