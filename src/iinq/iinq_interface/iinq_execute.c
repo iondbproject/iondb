@@ -188,9 +188,11 @@ SQL_create(
 
 		key_type										= ion_switch_key_type(field_type);
 
-		table->table_fields[j].field_name				= malloc(sizeof(field_name));
-		memcpy(table->table_fields[j].field_name, field_name, strlen(field_name));
-		table->table_fields[j].field_type				= key_type;
+		table->table_fields[j].field_name				= malloc(strlen(field_name));
+		snprintf(table->table_fields[j].field_name, pos + 1, "%s", field_name);
+
+/*		memcpy(table->table_fields[j].field_name, field_name, strlen(field_name)); */
+		table->table_fields[j].field_type = key_type;
 	}
 
 	/* Table set-up */
@@ -853,6 +855,10 @@ SQL_drop(
 	if (err_ok != error) {
 		printf("Error deleting table. Error code: %i\n", error);
 		return;
+	}
+
+	for (int i = 0; i < table->num_records; i++) {
+		free(table->table_fields[i].field_name);
 	}
 
 	char table_name[strlen(table->table_name) - 3];
