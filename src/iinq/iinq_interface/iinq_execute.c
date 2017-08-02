@@ -157,8 +157,8 @@ SQL_create(
 		count += (substring[i] == ',');
 	}
 
-	ion_key_type_t key_type;
-	size_t len;
+	ion_key_type_t	key_type;
+	size_t			len;
 
 	/* Set up attribute names and types */
 	for (int j = 0; j < count; j++) {
@@ -182,7 +182,7 @@ SQL_create(
 		memcpy(field_name, field, pos);
 		field_name[pos] = '\0';
 
-		len = strlen(field_name);
+		len				= strlen(field_name);
 
 		char field_type[strlen(field) - strlen(field_name) + 1];
 
@@ -191,12 +191,8 @@ SQL_create(
 
 		key_type										= ion_switch_key_type(field_type);
 
-		table->table_fields[j].field_name				= (char *) malloc(len);
-//		snprintf(table->table_fields[j].field_name, pos + 1, "%s", field_name);
-//		memcpy(table->table_fields[j].field_name, field_name, len);
 		strcpy(table->table_fields[j].field_name, field_name);
 
-//		table->table_fields[j].field_name = field_name;
 		table->table_fields[j].field_type = key_type;
 	}
 
@@ -860,10 +856,6 @@ SQL_drop(
 	if (err_ok != error) {
 		printf("Error deleting table. Error code: %i\n", error);
 		return;
-	}
-
-	for (int i = 0; i < table->num_records; i++) {
-		free(table->table_fields[i].field_name);
 	}
 
 	char table_name[strlen(table->table_name) - 3];
