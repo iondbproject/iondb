@@ -920,14 +920,6 @@ iinq_next_from_table_with_predicate(iinq_iterator_t *it) {
 	}
 }
 
-ion_boolean_t
-my_predicate1(iinq_iterator_t *it) {
-	if (!(get_int(*it, 0) >= 0 && 2 * get_int(*it, 1) != 1))
-		return boolean_false;
-	else
-		return boolean_true;
-}
-
 iinq_iterator_status_t
 iinq_init_table(iinq_iterator_t *it, char *table_name) {
 	ion_err_t error;
