@@ -157,17 +157,13 @@ SQL_create(
 		count += (substring[i] == ',');
 	}
 
-	ion_attribute_t table_fields[count];
-	ion_key_type_t	key_type;
+	ion_key_type_t key_type;
 
 	/* Set up attribute names and types */
 	for (int j = 0; j < count; j++) {
-		/* Initialize attribute struct */
-		table_fields[j].field_name	= malloc(sizeof("ABRACADABRA"));
+		pointer = strstr(substring, ",");
 
-		pointer						= strstr(substring, ",");
-
-		pos							= (int) (pointer - substring);
+		pos		= (int) (pointer - substring);
 
 		char field[pos + 1];
 
@@ -185,18 +181,16 @@ SQL_create(
 		memcpy(field_name, field, pos);
 		field_name[pos] = '\0';
 
-		strcpy(table_fields[j].field_name, field_name);
-
 		char field_type[strlen(field) - strlen(field_name) + 1];
 
 		memcpy(field_type, &field[pos + 1], strlen(field) + 1);
 		field_type[strlen(field) - strlen(field_name)]	= '\0';
 
 		key_type										= ion_switch_key_type(field_type);
-		table_fields[j].field_type						= key_type;
 
-		table->table_fields[j].field_name				= table_fields[j].field_name;
-		table->table_fields[j].field_type				= table_fields[j].field_type;
+		table->table_fields[j].field_name				= malloc(sizeof(field_name));
+		memcpy(table->table_fields[j].field_name, field_name, strlen(field_name));
+		table->table_fields[j].field_type				= key_type;
 	}
 
 	/* Table set-up */
@@ -217,8 +211,8 @@ SQL_create(
 
 	for (int j = 0; j < count; j++) {
 		/* Primary key attribute information found */
-		if ((0 == strncmp(primary_key, table_fields[j].field_name, strlen(primary_key))) && (strlen(primary_key) == strlen(table_fields[j].field_name))) {
-			primary_key_type			= table_fields[j].field_type;
+		if ((0 == strncmp(primary_key, table->table_fields[j].field_name, strlen(primary_key))) && (strlen(primary_key) == strlen(table->table_fields[j].field_name))) {
+			primary_key_type			= table->table_fields[j].field_type;
 			table->primary_key_field	= j;
 		}
 	}
@@ -228,7 +222,7 @@ SQL_create(
 	ion_value_size_t value_size = 0;
 
 	for (int j = 0; j < count; j++) {
-		value_size += ion_switch_key_size(table_fields[j].field_type);
+		value_size += ion_switch_key_size(table->table_fields[j].field_type);
 	}
 
 	table->key_type		= primary_key_type;
