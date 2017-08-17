@@ -22,7 +22,7 @@ extern "C" {
 
 #if defined(ARDUINO)
 #include "../file/kv_stdio_intercept.h"
-#include "../file/SD_stdio_c_iface.h"
+#include "../file/sd_stdio_c_iface.h"
 #endif
 
 /**

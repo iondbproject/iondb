@@ -41,7 +41,7 @@ extern "C" {
 #include "../../../serial/printf_redirect.h"
 #include "../../../serial/serial_c_iface.h"
 #include "../../../file/kv_stdio_intercept.h"
-#include "../../../file/SD_stdio_c_iface.h"
+#include "../../../file/sd_stdio_c_iface.h"
 #endif
 
 ion_err_t

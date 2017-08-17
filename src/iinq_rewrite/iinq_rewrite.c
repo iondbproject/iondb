@@ -20,8 +20,8 @@ iinq_insert_into(
 		goto RETURN;
 	}
 
-	status	= dictionary_insert(&table.dictionary, key, value);
-	error	= ion_close_dictionary(&table.dictionary);
+	status	= dictionary_insert(table.dictionary, key, value);
+	error	= ion_close_dictionary(table.dictionary);
 
 	if ((err_ok == status.error) && (err_ok != error)) {
 		status.error = error;
@@ -192,15 +192,20 @@ iinq_create_table(
 		}
 
 		/* write field types in table */
-		if (schema->num_fields !=
-			fwrite(schema->field_type, sizeof(iinq_field_type_t), schema->num_fields, schema_file)) {
-			return err_file_incomplete_write;
+		int i;
+		for (i = 0; i < schema->num_fields; i++) {
+			if (1 !=
+				fwrite(&schema->field_type[i], sizeof(iinq_field_type_t), 1, schema_file)) {
+				return err_file_incomplete_write;
+			}
 		}
 
 		/* write field sizes in table */
-		if (schema->num_fields !=
-			fwrite(schema->field_size, sizeof(iinq_field_size_t), schema->num_fields, schema_file)) {
-			return err_file_incomplete_write;
+		for (i = 0; i < schema->num_fields; i++) {
+			if (1 !=
+				fwrite(&schema->field_size[i], sizeof(iinq_field_size_t), 1, schema_file)) {
+				return err_file_incomplete_write;
+			}
 		}
 
 		if (0 != fclose(schema_file)) {
@@ -403,28 +408,35 @@ iinq_open_table(
 			return err_out_of_memory;
 		}
 
-		if (table->schema->num_fields !=
-			fread(table->schema->field_type, sizeof(iinq_field_type_t), table->schema->num_fields, schema_file)) {
-			free(table->schema->num_fields);
-			free(table->schema);
-			free(table->dictionary->handler);
-			free(table->dictionary);
-			return err_file_incomplete_read;
+		int i;
+
+		for (i = 0; i < table->schema->num_fields; i ++) {
+			if (1 !=
+				fread(&table->schema->field_type[i], sizeof(iinq_field_type_t), 1, schema_file)) {
+				free(table->schema->num_fields);
+				free(table->schema);
+				free(table->dictionary->handler);
+				free(table->dictionary);
+				return err_file_incomplete_read;
+			}
 		}
+
 
 		table->schema->field_size = malloc(sizeof(iinq_field_size_t) * table->schema->num_fields);
 
-		if (table->schema->num_fields !=
-			fread(table->schema->field_size, sizeof(iinq_field_size_t), table->schema->num_fields, schema_file)) {
-			free(table->schema->num_fields);
-			free(table->schema);
-			free(table->dictionary->handler);
-			free(table->dictionary);
-			return err_file_incomplete_read;
+		for (i = 0; i < table->schema->num_fields; i++) {
+			if (1 !=
+				fread(&table->schema->field_size[i], sizeof(iinq_field_size_t), 1,
+					  schema_file)) {
+				free(table->schema->num_fields);
+				free(table->schema);
+				free(table->dictionary->handler);
+				free(table->dictionary);
+				return err_file_incomplete_read;
+			}
 		}
 
 		if (0 != fclose(schema_file)) {
-
 			return err_file_close_error;
 		}
 
@@ -522,6 +534,7 @@ iinq_get_field_from_table(
         int i;
 		for (i = 1; i < field_num; i++) {
 			field += it->query->tables->schema->field_size[i];
+
 		}
 	}
 
@@ -822,6 +835,14 @@ select_all_order_by_next(
 	for (i = 0; i < it->query->tuple.schema->num_fields; i++) {
 		it->query->tuple.fields[i] = sort_data;
 		sort_data += it->query->tuple.schema->field_size[i];
+	}
+
+	if (cs_cursor_active != it->query->sort->cursor->status) {
+		if (cs_end_of_results == it->query->sort->cursor->status) {
+			it->status = it_status_end_of_results;
+		} else {
+			it->status = it_status_invalid;
+		}
 	}
 
 	return it->status;
