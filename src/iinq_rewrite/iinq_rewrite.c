@@ -2,6 +2,35 @@
 #include "../iinq/iinq.h"
 #include "../util/sort/external_sort/external_sort_types.h"
 
+void
+iinq_print_tuple(
+		iinq_iterator_t *it
+) {
+	if (it_status_ok != it->status) {
+		printf("No record found.\n");
+	} else {
+		int i;
+		char tuple_as_string[it->query->tuple.size+(it->query->tuple.schema->num_fields*2)];
+		char *index = tuple_as_string;
+		for (i = 0; i < it->query->tuple.schema->num_fields; i++) {
+			switch (it->query->tuple.schema->field_type[i]) {
+				case IINQ_STRING:
+					index += sprintf(index, "%s, ", get_string(*it, i));
+					break;
+				case IINQ_INT:
+					index += sprintf(index, "%d, ", get_int(*it, i));
+					break;
+				case IINQ_DOUBLE:
+					index += sprintf(index, "%f, ", get_double(*it, i));
+					break;
+			}
+			//index += it->query->tuple.schema->field_size[i]+2;
+		}
+		*(index-2) = '\0';
+		printf("%s\n", tuple_as_string);
+	}
+}
+
 ion_status_t
 iinq_insert_into(
 		char *schema_file_name,
@@ -1478,8 +1507,15 @@ query_init(
 		/* Destroy the cursor for the table and close the table (we access records through other files now). */
 		it->query->tables[0].cursor->destroy(it->query->tables[0].cursor);
 		ion_close_dictionary(it->query->tables[0].dictionary);
-		FREE_AND_NULL(it->query->tables->record.key);
-		FREE_AND_NULL(it->query->tables->record.value);
+		if (NULL != it->query->tables[0].record.key) {
+			free(it->query->tables[0].record.key);
+			it->query->tables[0].record.key = NULL;
+		}
+
+		if (NULL != it->query->tables[0].record.value) {
+			free(it->query->tables[0].record.value);
+			it->query->tables[0].record.value = NULL;
+		}
 
 		/* Open the group by file for read. */
 		input_file = fopen("groupby", "rb");

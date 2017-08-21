@@ -394,6 +394,11 @@ iinq_insert_into(
 #define DROP_TABLE(table_name) drop_table(# table_name ".inq")
 #define INSERT_INTO(schema_name, key, value) iinq_insert_into(# schema_name ".inq", key, value)
 
+void
+iinq_print_tuple(
+		iinq_iterator_t *it
+);
+
 #if defined(__cplusplus)
 }
 #endif
