@@ -59,9 +59,14 @@ add_subdirectory(src/tests/unit/dictionary)
 #add_subdirectory(examples/CppWrapper)
 
 add_subdirectory(src/util/lfsr)
+add_subdirectory(src/util/sort/external_sort)
 
 add_subdirectory(src/iinq)
+<<<<<<< HEAD
 add_subdirectory(src/iinq/iinq_interface)
+=======
+add_subdirectory(src/iinq_rewrite)
+>>>>>>> origin/iinq-rewrite
 add_subdirectory(src/dictionary/bpp_tree)
 add_subdirectory(src/dictionary/flat_file)
 add_subdirectory(src/dictionary/open_address_file_hash)
@@ -69,7 +74,12 @@ add_subdirectory(src/dictionary/open_address_hash)
 add_subdirectory(src/dictionary/skip_list)
 add_subdirectory(src/dictionary/linear_hash)
 
+<<<<<<< HEAD
 #add_subdirectory(src/tests/unit/iinq)
+=======
+add_subdirectory(src/tests/unit/iinq)
+add_subdirectory(src/tests/unit/iinq_rewrite)
+>>>>>>> origin/iinq-rewrite
 add_subdirectory(src/tests/unit/dictionary/bpp_tree)
 add_subdirectory(src/tests/unit/dictionary/flat_file)
 add_subdirectory(src/tests/unit/dictionary/open_address_file_hash)
