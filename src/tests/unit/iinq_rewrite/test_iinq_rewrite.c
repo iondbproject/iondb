@@ -835,9 +835,6 @@ iinq_rewrite_test_select_field_list_from_test1_where_order_by_single_iterator_ch
 ) {
 	int count = 0;
 	while (it_status_ok == iterator->next(iterator)) {
-		printf("Count: %d\n"
-					   "\tKey: %d\n"
-					   "\tcol2: %s\n", count, get_int(*iterator, 0), get_string(*iterator, 1));
 		switch (count) {
 			case 0:
 				PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, get_int(*iterator, 0));    /* key */
@@ -855,7 +852,6 @@ iinq_rewrite_test_select_field_list_from_test1_where_order_by_single_iterator_ch
 				PLANCK_UNIT_SET_FAIL(tc);
 				break;
 		}
-		printf("END\n");
 		count++;
 	}
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, count);
@@ -921,7 +917,6 @@ iinq_rewrite_test_select_field_list_from_test1_where_order_by_single_int_asc_ite
 
 void
 iinq_rewrite_test_select_field_list_from_test1_where_order_by_single_iterator(
-
 		planck_unit_test_t *tc
 ) {
 	iinq_rewrite_create_test1_with_iterator(tc);
@@ -6725,21 +6720,21 @@ iinq_rewrite_get_suite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	/* Original IINQ */
+	/* Original IINQ, no longer works due to new schema format, need to use original IINQ create table and insert functions for these to work */
 	/*PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_all_from_test1);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_field_list_from_test1_where_equality_filter);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_field_list_from_test1_where_comparison);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_field_list_from_test1_where_orderby_single);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_field_list_from_test1);*/
 
-	/* IINQ rewrite */
+	/* IINQ rewrite, uses long init function, hard to maintain */
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_all_from_test1_iterator);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_field_list_from_test1_iterator);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_all_from_test1_where_iterator);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_field_list_from_test1_where_iterator);
 	//PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_field_list_from_test1_where_order_by_single_iterator); // fails on device, not sure why
 
-	/* Queries from paper */
+	/* Simple queries, uses smaller init functions with Java generated functions */
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_all_from_int_table_iterator);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_attr0_from_int_table_iterator);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_attr0_attr1_from_int_table_iterator);

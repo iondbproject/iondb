@@ -4,50 +4,51 @@
 
 ion_status_t
 iinq_insert_into(
-		char		*schema_file_name,
-		ion_key_t	key,
+		char *schema_file_name,
+		ion_key_t key,
 		ion_value_t value
 ) {
-	ion_err_t					error;
-	ion_status_t				status = ION_STATUS_INITIALIZE;
+	ion_err_t error;
+	ion_status_t status = ION_STATUS_INITIALIZE;
 	iinq_table_t table;
 
 
-	error				= iinq_open_table(schema_file_name, &table);
+	error = iinq_open_table(schema_file_name, &table);
 
 	if (err_ok != error) {
 		status = ION_STATUS_ERROR(error);
 		goto RETURN;
 	}
 
-	status	= dictionary_insert(table.dictionary, key, value);
-	error	= ion_close_dictionary(table.dictionary);
+	status = dictionary_insert(table.dictionary, key, value);
+	error = ion_close_dictionary(table.dictionary);
 
 	if ((err_ok == status.error) && (err_ok != error)) {
 		status.error = error;
 	}
 
-	RETURN: return status;
+	RETURN:
+	return status;
 }
 
 ion_err_t
 drop_table(char *schema_file_name) {
 
-		ion_err_t					error;
-		iinq_table_t table;
+	ion_err_t error;
+	iinq_table_t table;
 
 
-		error				= iinq_open_table(schema_file_name, &table);
+	error = iinq_open_table(schema_file_name, &table);
 
-		if (err_ok != error) {
-			return error;
-		}
-
-		error = dictionary_delete_dictionary(table.dictionary);
-
-		fremove(schema_file_name);
-
+	if (err_ok != error) {
 		return error;
+	}
+
+	error = dictionary_delete_dictionary(table.dictionary);
+
+	fremove(schema_file_name);
+
+	return error;
 
 }
 
@@ -62,8 +63,6 @@ iinq_destroy_tuple(iinq_tuple_t *tuple) {
 			free(tuple->schema->field_size);
 		free(tuple->schema);
 	}
-	if (NULL != tuple->field_list)
-		free(tuple->field_list);
 }
 
 void
@@ -86,13 +85,68 @@ iinq_destroy_query_tables(iinq_table_t **tables, int num_tables) {
 };
 
 void
+iinq_destroy_group_by(
+		iinq_group_by_t **group_by
+) {
+	if (NULL != (*group_by)->record_buf)
+		free((*group_by)->record_buf);
+
+	if (NULL != (*group_by)->cur_key)
+		free((*group_by)->cur_key);
+
+	if (NULL != (*group_by)->input_file) {
+		fclose((*group_by)->input_file);
+		fremove("groupby");
+	}
+
+	if (NULL != (*group_by)->old_key)
+		free((*group_by)->old_key);
+
+	*group_by = NULL;
+}
+
+void
+iinq_destroy_sort(
+		iinq_sort_t **sort
+) {
+	if (NULL != (*sort)->cursor) {
+		ion_external_sort_destroy_cursor((*sort)->cursor);
+
+		if (NULL != (*sort)->cursor->buffer) {
+			free((*sort)->cursor->buffer);
+		}
+
+		if (NULL != (*sort)->cursor->es) {
+			if (NULL != (*sort)->cursor->es->context) {
+				free((*sort)->cursor->es->context);
+			}
+
+			if (NULL != (*sort)->cursor->es->input_file) {
+				fclose((*sort)->cursor->es->input_file);
+			}
+			free((*sort)->cursor->es);
+		}
+
+		free((*sort)->cursor);
+	}
+
+	if (NULL != (*sort)->record_buf)
+		(*sort)->record_buf;
+
+	free(*sort);
+	fremove("orderby");
+	*sort = NULL;
+}
+
+void
 iinq_destroy_iterator(
 		iinq_iterator_t *it
 ) {
 	if (NULL != it->query) {
 		iinq_destroy_tuple(&it->query->tuple);
 		if (NULL != it->query->filter) {
-            int i;
+			int i;
+			// Used for old version of the iterator (without hard coded predicate)
 			for (i = 0; i < it->query->num_filters; i++) {
 				switch (it->query->tables[it->query->filter[i].source_num].schema->field_type[it->query->filter->field_num]) {
 					case IINQ_INT:
@@ -113,25 +167,15 @@ iinq_destroy_iterator(
 			}
 			free(it->query->filter);
 		}
+
 		if (NULL != it->query->sort) {
-			ion_external_sort_destroy_cursor(it->query->sort->cursor);
-			if (NULL != it->query->sort->record_buf)
-				it->query->sort->record_buf;
-			free(it->query->sort);
-			fremove("orderby");
+			iinq_destroy_sort(&it->query->sort);
 		}
+
 		if (NULL != it->query->group_by) {
-			if (NULL != it->query->group_by->record_buf)
-				free(it->query->group_by->record_buf);
-			if (NULL != it->query->group_by->cur_key)
-				free(it->query->group_by->cur_key);
-			if (NULL != it->query->group_by->input_file) {
-				fclose(it->query->group_by->input_file);
-				fremove("groupby");
-			}
-			if (NULL != it->query->group_by->old_key)
-				free(it->query->group_by->old_key);
+			iinq_destroy_group_by(&it->query->group_by);
 		}
+
 		if (NULL != it->query->tables) {
 			iinq_destroy_query_tables(&it->query->tables, it->query->num_tables);
 		}
@@ -410,7 +454,7 @@ iinq_open_table(
 
 		int i;
 
-		for (i = 0; i < table->schema->num_fields; i ++) {
+		for (i = 0; i < table->schema->num_fields; i++) {
 			if (1 !=
 				fread(&table->schema->field_type[i], sizeof(iinq_field_type_t), 1, schema_file)) {
 				free(table->schema->num_fields);
@@ -486,7 +530,7 @@ iinq_init_where(
 
 	filter = va_arg(*filters, iinq_where_filter_t *);
 
-    int i;
+	int i;
 	for (i = 0; i < num_filters; i++) {
 		it->query->filter[i].comparison_operator = filter->comparison_operator;
 		it->query->filter[i].source_num = filter->source_num;
@@ -531,7 +575,7 @@ iinq_get_field_from_table(
 		field = it->query->tables[table_num].record.value;
 
 		/* loop to the point in the byte array that has the location of the field */
-        int i;
+		int i;
 		for (i = 1; i < field_num; i++) {
 			field += it->query->tables->schema->field_size[i];
 
@@ -553,7 +597,7 @@ iinq_get_field_from_sort(
 	field = it->query->sort->record_buf + it->query->sort->size;
 
 	/* loop to the point in the byte array that has the location of the field */
-    int i;
+	int i;
 	for (i = 0; i < field_num; i++) {
 		field += it->query->tables->schema->field_size[i];
 	}
@@ -566,7 +610,7 @@ iinq_get_field_from_group_by(iinq_iterator_t *it, int table_num, int field_num) 
 
 	iinq_field_t field = it->query->group_by->record_buf;
 
-    int i;
+	int i;
 	for (i = 0; i < field_num; i++) {
 		field += it->query->tables->schema->field_size[i];
 	}
@@ -584,7 +628,7 @@ iinq_where_from_group_by(
 
 	iinq_where_filter_t *filter;
 
-    int i;
+	int i;
 	for (i = 0; i < it->query->num_filters; i++) {
 		filter = &it->query->filter[i];
 
@@ -647,7 +691,7 @@ iinq_where_from_table(
 
 	iinq_where_filter_t *filter;
 
-    int i;
+	int i;
 	for (i = 0; i < it->query->num_filters; i++) {
 		filter = &it->query->filter[i];
 
@@ -717,10 +761,10 @@ select_all_next(
 		}
 	}
 
-    int i;
+/*	int i;
 	for (i = 0; i < it->query->tables[0].schema->num_fields; i++) {
 		it->query->tuple.fields[i] = iinq_get_field_from_table(it, 0, i);
-	}
+	}*/
 
 	return it->status;
 }
@@ -745,15 +789,6 @@ select_field_list_group_by_next(
 		return (it->status = it_status_end_of_results);
 	}
 
-	iinq_field_list_t *field_list = it->query->tuple.field_list;
-
-    int i;
-	for (i = 0; i < it->query->tuple.schema->num_fields; i++) {
-		int table_num = field_list[i].table_num;
-		int field_num = field_list[i].field_num;
-
-		it->query->tuple.fields[i] = iinq_get_field_from_group_by(it, table_num, field_num);
-	}
 
 	return it->status;
 }
@@ -778,7 +813,7 @@ select_all_group_by_next(
 
 	char *sort_data = it->query->group_by->record_buf;
 
-    int i;
+	int i;
 	for (i = 0; i < it->query->tuple.schema->num_fields; i++) {
 		it->query->tuple.fields[i] = sort_data;
 		sort_data += it->query->tuple.schema->field_size[i];
@@ -806,16 +841,6 @@ select_field_list_next(
 		}
 	}
 
-	iinq_field_list_t *field_list = it->query->tuple.field_list;
-
-    int i;
-	for (i = 0; i < it->query->tuple.schema->num_fields; i++) {
-		int table_num = field_list[i].table_num;
-		int field_num = field_list[i].field_num;
-
-		it->query->tuple.fields[i] = iinq_get_field_from_table(it, table_num, field_num);
-	}
-
 	return it->status;
 }
 
@@ -831,7 +856,7 @@ select_all_order_by_next(
 
 	char *sort_data = it->query->sort->record_buf;
 
-    int i;
+	int i;
 	for (i = 0; i < it->query->tuple.schema->num_fields; i++) {
 		it->query->tuple.fields[i] = sort_data;
 		sort_data += it->query->tuple.schema->field_size[i];
@@ -862,15 +887,14 @@ select_field_list_order_by_next(
 		return it->status = it_status_end_of_results;
 	}
 
-	iinq_field_list_t *field_list = it->query->tuple.field_list;
 
-    int i;
+/*	int i;
 	for (i = 0; i < it->query->tuple.schema->num_fields; i++) {
 		int table_num = field_list[i].table_num;
 		int field_num = field_list[i].field_num;
 
 		it->query->tuple.fields[i] = iinq_get_field_from_sort(it, table_num, field_num);
-	}
+	}*/
 
 	return it->status;
 }
@@ -920,7 +944,7 @@ iinq_order_by_write_to_file(iinq_iterator_t *it, int orderby_n, iinq_order_part_
 
 	/* Filter before sorting.
 	 * if we are reading from a table, while condition is tied to the cursor
-	 * TODO: create a cursor for reading the group by file
+	 * TODO: create a cursor for reading the group by file rather than doing the fread
 	 * if we are reading from a group by file, while condition is tied to the successful read of the next record in the file*/
 	while ((location == IINQ_FROM_TABLE) ? (cs_cursor_active ==
 											it->query->tables->cursor->next(it->query->tables->cursor,
@@ -934,8 +958,11 @@ iinq_order_by_write_to_file(iinq_iterator_t *it, int orderby_n, iinq_order_part_
 																												  it->query->group_by->record_size,
 																												  1,
 																												  it->query->group_by->input_file))) {
-		if (!((location == IINQ_FROM_TABLE) ? iinq_where_from_table(it) : iinq_where_from_group_by(it))) {
-			continue;
+		/* Evaluate the predicate before sorting */
+		if (NULL != it->query->predicate) {
+			if (!it->query->predicate(it)) {
+				continue;
+			}
 		}
 
 		if (write_page_remaining < (total_orderby_size + key_size + value_size)) {
@@ -958,20 +985,29 @@ iinq_order_by_write_to_file(iinq_iterator_t *it, int orderby_n, iinq_order_part_
 			}
 		}
 
-		if (1 !=
-			fwrite((IINQ_FROM_TABLE == location) ? (it->query->tables->record.key) : (it->query->group_by->record_buf),
-				   key_size, 1, file)) {
+		/* If the sort is on a table, write the key from the record into the file.
+		 * If the sort is on a GROUP BY, write the key from the buffer. */
+		if (1 != fwrite((IINQ_FROM_TABLE == location) ? (it->query->tables[0].record.key)
+													  : (it->query->group_by->record_buf),
+						key_size, 1, file)) {
 			break;
 		} else {
 			write_page_remaining -= key_size;
 		}
 
+		/* If the sort is on a table, write the value from the record into the file.
+		 * If the sort is on a GROUP BY, write the value from the buffer. */
 		if (1 != fwrite((IINQ_FROM_TABLE == location) ? (it->query->tables->record.value) : (
 				it->query->group_by->record_buf + key_size), value_size, 1, file)) {
 			break;
 		} else {
 			write_page_remaining -= value_size;
 		}
+	}
+
+	/* We won't need the group by after the order by is done */
+	if (NULL != it->query->group_by) {
+		iinq_destroy_group_by(&it->query->group_by);
 	}
 
 	/* All records have been written, so close file */
@@ -1006,38 +1042,44 @@ iinq_next_from_table_with_predicate(iinq_iterator_t *it) {
 }
 
 iinq_iterator_status_t
-iinq_init_table(iinq_iterator_t *it, char *table_name) {
+iinq_init_tables(iinq_iterator_t *it, int num_tables, char **table_names) {
 	ion_err_t error;
-	// allocate memory for query
-	it->query = malloc(sizeof(iinq_query_t));
+
 	if (NULL == it->query) {
 		return it->status = it_status_memory_error;
 	}
 	// allocate memory for table
 	it->query->num_tables = 1;
-	it->query->tables = malloc(sizeof(iinq_table_t));
+	it->query->tables = malloc(sizeof(iinq_table_t) * num_tables);
 	if (NULL == it->query->tables) {
 		free(it->query);
 		return it->status = it_status_memory_error;
 	}
-	// allocate memory for table schema
-	it->query->tables[0].schema = malloc(sizeof(iinq_schema_t));
-	if (NULL == it->query->tables) {
-		free(it->query);
-		return it->status = it_status_memory_error;
+
+	// Open each table in the query
+	int i;
+	for (i = 0; i < num_tables; i++) {
+		// allocate memory for table schema
+		it->query->tables[i].schema = malloc(sizeof(iinq_schema_t));
+		if (NULL == it->query->tables) {
+			free(it->query);
+			return it->status = it_status_memory_error;
+		}
+		// open the table for reading
+		char file_name[ION_MAX_FILENAME_LENGTH];
+		strcpy(file_name, table_names[i]);
+		error = iinq_open_table(strcat(file_name, ".inq"), &it->query->tables[i]);
+		// allocate memory to hold a key from the table
+		it->query->tables->record.key = malloc(it->query->tables[i].dictionary->instance->record.key_size);
+		// allocate memory to hold a value from the table
+		it->query->tables->record.value = malloc(it->query->tables[i].dictionary->instance->record.value_size);
 	}
-	// open the table for reading
-	char file_name[ION_MAX_FILENAME_LENGTH];
-	strcpy(file_name, table_name);
-	error = iinq_open_table(strcat(file_name, ".inq"), &it->query->tables[0]);
-	// allocate memory to hold a key from the table
-	it->query->tables->record.key = malloc(it->query->tables->dictionary->instance->record.key_size);
-	// allocate memory to hold a value from the table
-	it->query->tables->record.value = malloc(it->query->tables->dictionary->instance->record.value_size);
+
 }
 
 iinq_iterator_status_t
 iinq_init_tuple_from_table_full_schema(iinq_iterator_t *it) {
+
 	/* Allocate the memory needed for the full schema */
 	it->query->tuple.size = 0;
 	it->query->tuple.schema = malloc(sizeof(iinq_schema_t));
@@ -1060,7 +1102,6 @@ iinq_init_tuple_from_table_full_schema(iinq_iterator_t *it) {
 	}
 
 	// first field is the key
-	it->query->tuple.field_list = NULL;
 	it->query->tuple.fields[0] = it->query->tables[0].record.key;
 
 	// rest of the fields are in the value of the record
@@ -1074,8 +1115,11 @@ iinq_init_tuple_from_table_full_schema(iinq_iterator_t *it) {
 iinq_iterator_status_t
 iinq_query_init_select_all_from_table(iinq_iterator_t *it, char *table_name, iinq_iterator_next_t next,
 									  iinq_predicate_t predicate) {
+	/* Allocate the memory for the query */
+	it->query = malloc(sizeof(iinq_query_t));
+
 	// initialize the table for the query
-	iinq_init_table(it, table_name);
+	iinq_init_tables(it, 1, &table_name);
 
 	// set next method and predicate
 	it->query->predicate = predicate;
@@ -1093,30 +1137,36 @@ iinq_iterator_status_t
 iinq_query_init_select_field_list_from_table(iinq_iterator_t *it, char *table_name, iinq_iterator_next_t next,
 											 iinq_predicate_t predicate, int num_fields,
 											 iinq_field_list_t *field_list) {
+	it->query = malloc(sizeof(iinq_query_t));
+
 	// initialize the table for the query
-	iinq_init_table(it, table_name);
+	iinq_init_tables(it, 1, &table_name);
 
 	// set next method and predicate
 	it->query->predicate = predicate;
 	it->next = next;
 
+	// initialize the tuple using the field list
+	iinq_init_tuple_from_table_field_list(it, num_fields, field_list);
+
+	it->query->sort = NULL;
+	it->query->group_by = NULL;
+	it->query->filter = NULL;
+}
+
+void iinq_init_tuple_from_table_field_list(iinq_iterator_t *it, int num_fields, iinq_field_list_t *field_list) {
 	it->query->tuple.size = 0;
-	it->query->tuple.field_list = NULL;
 	it->query->tuple.schema = malloc(sizeof(iinq_schema_t));
-	it->query->tuple.schema->field_type = malloc(sizeof(iinq_field_type_t)*num_fields);
-	it->query->tuple.schema->field_size = malloc(sizeof(iinq_field_size_t)*num_fields);
-	it->query->tuple.fields = malloc(sizeof(iinq_field_t)*num_fields);
+	it->query->tuple.schema->field_type = malloc(sizeof(iinq_field_type_t) * num_fields);
+	it->query->tuple.schema->field_size = malloc(sizeof(iinq_field_size_t) * num_fields);
+	it->query->tuple.fields = malloc(sizeof(iinq_field_t) * num_fields);
 	it->query->tuple.schema->num_fields = num_fields;
-    int i;
+	int i;
 	for (i = 0; i < num_fields; i++) {
 		it->query->tuple.size += it->query->tables[field_list[i].table_num].schema->field_size[field_list[i].field_num];
 		it->query->tuple.schema->field_type[i] = it->query->tables[field_list[i].table_num].schema->field_type[field_list[i].field_num];
 		it->query->tuple.fields[i] = iinq_get_field_from_table(it, field_list[i].table_num, field_list[i].field_num);
 	}
-
-	it->query->sort = NULL;
-	it->query->group_by = NULL;
-	it->query->filter = NULL;
 }
 
 iinq_iterator_status_t
@@ -1135,6 +1185,7 @@ iinq_init_order_by(iinq_iterator_t *it, int orderby_n, iinq_order_by_field_t *or
 		orderby_order_parts[i].direction = order_by_field[i].direction;
 		orderby_order_parts[i].size = it->query->tables[order_by_field[i].field_info.table_num].schema->field_size[order_by_field[i].field_info.field_num];
 
+		/* TODO: Order by type could be hard coded to increase performance */
 		switch (it->query->tables[order_by_field[i].field_info.table_num].schema->field_type[order_by_field[i].field_info.field_num]) {
 			case IINQ_INT:
 				orderby_order_parts[i].type = IINQ_ORDERTYPE_INT;
@@ -1208,15 +1259,33 @@ iinq_init_order_by(iinq_iterator_t *it, int orderby_n, iinq_order_by_field_t *or
 	}
 }
 
+void
+init_tuple_from_order_by_field_list(iinq_iterator_t *it, int num_fields, iinq_field_list_t *field_list) {
+	it->query->tuple.size = 0;
+	it->query->tuple.schema = malloc(sizeof(iinq_schema_t));
+	it->query->tuple.schema->field_type = malloc(sizeof(iinq_field_type_t) * num_fields);
+	it->query->tuple.schema->field_size = malloc(sizeof(iinq_field_size_t) * num_fields);
+	it->query->tuple.schema->num_fields = num_fields;
+	it->query->tuple.fields = malloc(sizeof(iinq_field_t) * num_fields);
+
+	int i;
+	for (i = 0; i < num_fields; i++) {
+		int table_num = field_list[i].table_num;
+		int field_num = field_list[i].field_num;
+
+		it->query->tuple.fields[i] = iinq_get_field_from_sort(it, table_num, field_num);
+	}
+}
+
 iinq_iterator_status_t
 query_init(
-        iinq_iterator_t *it,
-        iinq_select_type_t select_type,
-        iinq_order_by_type_t order_by_type,
-        ion_boolean_t has_group_by,
-        int num_tables,
-        int num_filters,
-        ...
+		iinq_iterator_t *it,
+		iinq_select_type_t select_type,
+		iinq_order_by_type_t order_by_type,
+		ion_boolean_t has_group_by,
+		int num_tables,
+		int num_filters,
+		...
 ) {
 	int i;
 	va_list list;
@@ -1224,6 +1293,7 @@ query_init(
 	va_start(list, num_filters);
 
 	it->query = malloc(sizeof(iinq_query_t));
+
 	/* multiply sizeof(ion_iinq_table_t) by number of dictionaries used in query */
 	it->query->tables = malloc(sizeof(iinq_table_t) * num_tables);
 	it->query->num_tables = num_tables;
@@ -1234,44 +1304,26 @@ query_init(
 
 	ion_err_t error;
 
+	// Store table names in array
+	char **table_names = malloc(sizeof(char *) * num_tables);
 	for (i = 0; i < num_tables; i++) {
-		char name[ION_MAX_FILENAME_LENGTH];
-
-		strcpy(name, va_arg(list, char *));
-		it->query->tables[i].schema = malloc(sizeof(iinq_schema_t));
-		error = iinq_open_table(strcat(name, ".inq"), &it->query->tables[i]);
-
-		/* predicate used to look through table,
-		 * for each table with multiple tables */
-		if (err_ok != error) {
-			return it->status = it_status_invalid;
-		}
-
-		it->query->tables->record.key = malloc(it->query->tables->dictionary->instance->record.key_size);
-
-		if (NULL == it->query->tables->record.key) {
-			ion_close_dictionary(it->query->tables);
-			free(it->query->tables);
-			it->status = it_status_invalid;
-			return it;
-		}
-
-		it->query->tables->record.value = malloc(it->query->tables->dictionary->instance->record.value_size);
-
-		if (NULL == it->query->tables->record.value) {
-			free(it->query->tables->record.key);
-			ion_close_dictionary(it->query->tables);
-			free(it->query->tables);
-			it->status = it_status_invalid;
-			return it;
-		}
+		table_names[i] = va_arg(list, char*);
 	}
 
-	it->query->num_filters = num_filters;
+	// Open the tables for the query
+	iinq_init_tables(it, num_tables, table_names);
 
+	// This is the old way to use predicates, new way is to generate a hardcoded function using the IINQ Java code
+	it->query->num_filters = num_filters;
 	if (0 != num_filters) {
 		/* initialize the WHERE based on the filters passed */
 		iinq_init_where(it, num_filters, &list);
+		/* If there isn't a group by clause, the tuple will be split into a key and value, order by clause */
+		if (has_group_by) {
+			it->query->predicate = iinq_where_from_group_by;
+		} else {
+			it->query->predicate = iinq_where_from_table;
+		}
 	} else {
 		it->query->filter = NULL;
 	}
@@ -1282,65 +1334,39 @@ query_init(
 	/* if SELECT field_list */
 	if (IINQ_SELECT_FIELD_LIST == select_type) {
 		/* get the number of fields to be selected */
-		it->query->tuple.schema->num_fields = va_arg(list, int);
-		/* allocate the appropriate number of pointers for the data */
-		it->query->tuple.fields = malloc(sizeof(iinq_field_t) * it->query->tuple.schema->num_fields);
-		it->query->tuple.schema->field_type = malloc(sizeof(iinq_field_type_t)*it->query->tuple.schema->num_fields);
-		it->query->tuple.schema->field_size = malloc(sizeof(iinq_field_size_t)*it->query->tuple.schema->num_fields);
-
-		if (has_group_by && IINQ_ORDER_BY_NONE == order_by_type) {
-			it->next = select_field_list_group_by_next;
-		} else if (IINQ_ORDER_BY_NONE == order_by_type) {
-			it->next = select_field_list_next;
-		} else if (IINQ_ORDER_BY_FIELD == order_by_type) {
-			it->next = select_field_list_order_by_next;
-		}
-
-		if (NULL == it->query->tuple.fields) {
-			ion_close_dictionary(it->query->tables);
-			free(it->query->tables);
-			free(it->query->tables->record.key);
-			free(it->query->tables->record.value);
-			it->status = it_status_invalid;
-			return it;
-		}
-
-		iinq_field_list_t *field_list;
-
-		it->query->tuple.field_list = malloc(sizeof(iinq_field_list_t) * it->query->tuple.schema->num_fields);
-		it->query->tuple.size = 0;
-		field_list = va_arg(list, iinq_field_list_t *);
-
-		for (i = 0; i < it->query->tuple.schema->num_fields; i++) {
-			it->query->tuple.field_list[i].table_num = field_list->table_num;
-			it->query->tuple.field_list[i].field_num = field_list->field_num;
-			it->query->tuple.size += it->query->tables[field_list->table_num].schema->field_size[field_list->field_num];
-			field_list++;
-		}
-	} else {
-		/* else SELECT * */
-		it->query->tuple.is_select_all = boolean_true;
-		it->query->tuple.field_list = NULL;
-		it->query->tuple.size = 0;
-		it->query->tuple.schema->num_fields = 0;
-		it->query->tuple.size += it->query->tables[0].dictionary->instance->record.key_size;
-		it->query->tuple.size += it->query->tables[0].dictionary->instance->record.value_size;
-		it->query->tuple.schema->num_fields += it->query->tables[0].schema->num_fields;
-		it->query->tuple.schema->field_type = malloc(
-				sizeof(iinq_field_type_t) * it->query->tables[0].schema->num_fields);
-		it->query->tuple.schema->field_size = malloc(
-				sizeof(iinq_field_size_t) * it->query->tables[0].schema->num_fields);
-
-		/* SELECT * has pointers to every field in the table */
-		for (i = 0; i < it->query->tables[0].schema->num_fields; i++) {
-			it->query->tuple.schema->field_type[i] = it->query->tables[0].schema->field_type[i];
-			it->query->tuple.schema->field_size[i] = it->query->tables[0].schema->field_size[i];
-		}
-
-		it->query->tuple.fields = malloc(sizeof(iinq_field_t) * it->query->tuple.schema->num_fields);
+		int num_fields = va_arg(list, int);
+		iinq_field_list_t *field_list = va_arg(list, iinq_field_list_t*);
 
 		if (IINQ_ORDER_BY_NONE == order_by_type) {
-			it->next = select_all_next;
+			if (has_group_by) {
+				it->next = select_field_list_group_by_next;
+			} else {
+				iinq_init_tuple_from_table_field_list(it, num_fields, field_list);
+				it->next = select_field_list_next;
+			}
+		} else if (IINQ_ORDER_BY_FIELD == order_by_type) {
+			if (has_group_by) {
+			} else {
+				it->query->group_by = NULL;
+				int orderby_n = va_arg(list, int);
+				iinq_order_by_field_t *order_by_field = va_arg(list, iinq_order_by_field_t *);
+				/* No GROUP BY so we are sorting directly from the table */
+				iinq_init_order_by(it, orderby_n, order_by_field, IINQ_FROM_TABLE);
+				init_tuple_from_order_by_field_list(it, num_fields, field_list);
+				it->next = select_field_list_order_by_next;
+			}
+		}
+
+	} else {
+		/* else SELECT * */
+		iinq_init_tuple_from_table_full_schema(it);
+
+		if (IINQ_ORDER_BY_NONE == order_by_type) {
+			if (has_group_by) {
+				it->next = select_all_group_by_next;
+			} else {
+				it->next = select_all_next;
+			}
 		} else if (IINQ_ORDER_BY_FIELD == order_by_type) {
 			it->next = select_all_order_by_next;
 		}
@@ -1542,7 +1568,6 @@ query_init(
 				}
 
 				/* Aggregates would be initialized here in the macro */
-
 				if (!is_first) {
 					if (A_equ_B != iinq_sort_compare(context, cur_key, old_key)) {
 						/* Copy order by fields into order by pointers */
@@ -1570,18 +1595,15 @@ query_init(
 			/* If at least one record was read */
 			if (!is_first) {
 				/* copy into order by pointers */
-				/* Should be done already when iinq_order_by_init is called */
+				/* Should be done when iinq_order_by_init is called */
 
 				/* if (!HAVING) clean up aggregates */
 
 				/* Write order by to file */
-
+				iinq_init_order_by(it, orderby_n, order_by_field, IINQ_FROM_GROUP_BY);
 				/* Write aggregates to file */
-
 				/* Write record to file */
-
 				/* Close input file (sortedgb) */
-
 				/* Close output file (orderby) */
 
 				/* Open orderby for read (input file) */
@@ -1593,19 +1615,11 @@ query_init(
 		}
 		/* else group by is used in next method */
 
-	}
-		/* if ORDER BY attribute without GROUP BY */
-	else if (IINQ_ORDER_BY_NONE != order_by_type) {
-		if (IINQ_ORDER_BY_FIELD == order_by_type) {
-			int orderby_n = va_arg(list, int);
-			iinq_order_by_field_t *order_by_field = va_arg(list, iinq_order_by_field_t *);
-			/* No GROUP BY so we are sorting directly from the table */
-			iinq_init_order_by(it, orderby_n, order_by_field, IINQ_FROM_TABLE);
-			it->query->group_by = NULL;
-		}
 	} else {
-		it->query->sort = NULL;
 		it->query->group_by = NULL;
+		if (IINQ_ORDER_BY_NONE == order_by_type) {
+			it->query->sort = NULL;
+		}
 	}
 
 	it->status = it_status_ok;

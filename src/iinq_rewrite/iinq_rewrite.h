@@ -44,27 +44,29 @@
 extern "C" {
 #endif
 
-/* Macro to improve readability of query in init function. */
+/* Macro to improve readability of query in init function. Not currently implemented */
 #define IINQ_QUERY(select_clause, from_clause, where_clause, having_clause, order_by_clause, group_by_clause) select_clause, from_clause, where_clause, having_clause, order_by_clause, group_by_clause
 /* Empty clause to be used in the case of missing clauses (e.g. ORDER BY was not given). */
 #define IINQ_EMPTY_CLAUSE NULL
 
+/* Makes the select part of the clause easier to read */
 #define IINQ_SELECT(type, ...)            IF_ELSE(type)(IINQ_FIELD_LIST(__VA_ARGS__))(NULL)
 #define IINQ_SELECT_ALL 0
 #define IINQ_SELECT_FIELD_LIST 1
 
+/* Makes the where clause easier to read */
 #define IINQ_WHERE_CLAUSE(...) (iinq_where_filter_t[]) {__VA_ARGS__}
 #define IINQ_WHERE_FILTER(source_num, field_num, operator, comp_value)    { source_num, field_num, operator, comp_value }
 
 #define FLOAT_TOLERANCE                0.00001
+
+/* Methods to get column values from a tuple */
 #define get_int(iterator, field_num)    (NEUTRALIZE((iterator).query->tuple.fields[(field_num)], int))
 #define get_double(iterator, field_num)    (NEUTRALIZE((iterator).query->tuple.fields[(field_num)], double))
 #define get_string(iterator, field_num)    ((char*)((iterator).query->tuple.fields[(field_num)]))
 
 #define IINQ_ORDER_BY_ASC        1
 #define IINQ_ORDER_BY_DESC        -1
-
-#define FREE_AND_NULL(pointer) free(pointer); pointer = NULL
 
 #define IINQ_FIELD_LIST(...)        (iinq_field_list_t[]) {__VA_ARGS__}
 
@@ -153,22 +155,7 @@ typedef enum IINQ_FIELD_TYPE {
 } iinq_field_type_t;
 
 /**
-@brief		Data type for a field in iinq.
-@see		enum IINQ_FIELD_TYPE
-*//*
-typedef uint8_t;*/
-
-/**
-@brief		Select types for queries in iinq.
-*//*
-enum IINQ_SELECT_TYPE {
-	IINQ_SELECT_ALL, *//**< SELECT * *//*
-	IINQ_SELECT_FIELD_LIST *//**< SELECT <field_list> *//*
-};*/
-
-/**
 @brief		Type for a SELECT clause in iinq.
-@see		enum IINQ_SELECT_TYPE
 */
 typedef uint8_t iinq_select_type_t;
 
@@ -223,7 +210,6 @@ typedef struct {
 	iinq_tuple_data_t fields; /**< Field data that is contained in the tuple. */
 	iinq_schema_t *schema; /**< The schema that the tuple follows. */
 	iinq_tuple_size_t size; /**< The total size of the fields in the tuple. */
-	iinq_field_list_t *field_list; /**< Array of fields that were used for this tuple. */
 	ion_boolean_t is_select_all; /**< Incicates whether the tuple was the result of a SELECT * query */
 } iinq_tuple_t;
 
@@ -289,11 +275,12 @@ typedef struct {
 	int num_tables; /**< Number of tables for the query. */
 	iinq_group_by_t *group_by; /**< Pointer to members used in the GROUP BY clause */
 	iinq_sort_t *sort; /**< Pointer to the sort used for the ORDER BY clause. */
+	/* TODO: remove the filter (softcoded) member and use predicate (hardcoded) instead */
 	iinq_where_filter_t *filter; /**< Pointer to the filters used for the WHERE clause. */
 	int num_filters; /**< Number of filters used for the query. */
 	iinq_select_type_t select_type; /**< Type of SELECT clause. */
 	iinq_tuple_t tuple; /**< Tuple that contains a record from the query. */
-	iinq_predicate_t predicate;
+	iinq_predicate_t predicate; /**< Predicate function for the query. */
 } iinq_query_t;
 
 /**
@@ -333,7 +320,7 @@ typedef struct {
 } iinq_order_by_field_t;
 
 /**
-@brief		Initializer function for an iterator.
+@brief		Initializer function for an iterator. Only used for testing, smaller init functions should be used for actual queries.
 @param[out]	it
  Initialized iterator is assigned to this pointer.
 @param[in] select_type
@@ -376,6 +363,9 @@ void
 iinq_destroy_iterator(
 		iinq_iterator_t *it
 );
+
+void
+iinq_init_tuple_from_table_field_list(iinq_iterator_t *it, int num_fields, iinq_field_list_t *field_list);
 
 iinq_iterator_status_t
 iinq_query_init_select_all_from_table(iinq_iterator_t *it, char *table_name, iinq_iterator_next_t next,
