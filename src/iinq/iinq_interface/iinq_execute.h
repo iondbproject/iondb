@@ -8,18 +8,14 @@
 			IonDB Project Contributors (see AUTHORS.md)
 @par Redistribution and use in source and binary forms, with or without
 	modification, are permitted provided that the following conditions are met:
-
 @par 1.Redistributions of source code must retain the above copyright notice,
 	this list of conditions and the following disclaimer.
-
 @par 2.Redistributions in binary form must reproduce the above copyright notice,
 	this list of conditions and the following disclaimer in the documentation
 	and/or other materials provided with the distribution.
-
 @par 3.Neither the name of the copyright holder nor the names of its contributors
 	may be used to endorse or promote products derived from this software without
 	specific prior written permission.
-
 @par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -47,6 +43,7 @@ extern "C" {
 #include "../../dictionary/dictionary.h"
 #include "../iinq.h"
 #include "iinq_user.h"
+#include "../../key_value/kv_system.h"
 
 #define ION_IINQ_VARIABLE_NAME_LENGTH 20
 
@@ -90,25 +87,24 @@ struct iinq_table {
 */
 typedef enum ION_COMPARE_TYPE {
 	/**> Clause comparison is of type equal "=". */
-	ion_equal,
+			ion_equal,
 	/**> Clause comparison is of type not equal "!=". */
-	ion_not_equal,
+			ion_not_equal,
 	/**> Clause comparison is of type greater than ">". */
-	ion_greater_than,
+			ion_greater_than,
 	/**> Clause comparison is of type greater than or equal to ">=". */
-	ion_greater_than_equal,
+			ion_greater_than_equal,
 	/**> Clause comparison is of type less than "<". */
-	ion_less_than,
+			ion_less_than,
 	/**> Clause comparison is of type less than or equal to "<=". */
-	ion_less_than_equal,
+			ion_less_than_equal,
 	/**> Clause comparison is not of valid type. */
-	ion_invalid_comparison,
+			ion_invalid_comparison,
 } ion_compare_type_t;
 
 void
 SQL_execute(
-	ion_table_t *table,
-	char		*sql
+		char		*sql
 );
 
 #if defined(__cplusplus)

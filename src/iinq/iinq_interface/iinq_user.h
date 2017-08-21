@@ -41,85 +41,9 @@
 extern "C" {
 #endif
 
-#include <stdio.h>
-#include <ctype.h>
-#include <string.h>
+#include "../../key_value/kv_system.h"
+#include "iinq_user_functions.h"
 #include "iinq_execute.h"
-#include "../../dictionary/dictionary_types.h"
-#include "../../dictionary/dictionary.h"
-#include "../iinq.h"
-
-/**
-@brief		The iterator for a query.
-@see		query_iterator
-*/
-typedef struct query_iterator ion_query_iterator_t;
-
-/**
-@brief		A supertype for query iterator objects.
-*/
-struct query_iterator {
-	ion_cursor_status_t status;	/**< Status of last cursor call. */
-	ion_record_t		record;				/**< The current record returned by the
-												iterator. */
-	ion_dict_cursor_t	*cursor;			/**< A pointer to the cursor of the given query. */
-	ion_record_t		sorted_records[3];	/**< An array of sorted records for ORDERBY queries. */
-	ion_record_t		grouped_records[3];	/**< An array of grouped records for GROUPBY. */
-	char				*schema_file_name;	/**< A pointer to the name of the
-												schema file in use. */
-	ion_boolean_t		where_condition;	/**< A boolean value whether a WHERE condition exists. */
-	ion_boolean_t		groupby_condition;	/**< A boolean value whether a GROUPBY condition exists. */
-	ion_boolean_t		orderby1_condition;	/**< A boolean value whether an ORDERBY condition exists. */
-	ion_boolean_t		orderby2_condition;	/**< A boolean value whether a second ORDERBY condition exists. */
-	ion_boolean_t		minmax_condition;	/**< A boolean value whether a MAX/MIN aggregate condition exists. */
-	ion_boolean_t		sum_condition;	/**< A boolean value whether a SUM aggregate condition exists. */
-	ion_boolean_t		avg_condition;	/**< A boolean value whether a AVG aggregate condition exists. */
-	ion_boolean_t		count_condition;/**< A boolean value whether a COUNT aggregate condition exists. */
-	ion_boolean_t		orderby1_asc;		/**< A boolean value whether the ORDERBY condition is of type ASC. */
-	ion_boolean_t		orderby2_asc;		/**< A boolean value whether the second ORDERBY condition is of type ASC. */
-	ion_boolean_t		select_fieldlist;	/**< A boolean value whether a SELECT fieldlist condition exists. */
-
-	ion_record_t		(*next)(
-		ion_query_iterator_t	*iterator,
-		ion_record_t			record
-	);
-	/**< A pointer to the next function,
-		 which returns the next record). */
-	void (*destroy)(
-		ion_query_iterator_t *iterator
-	);
-	/**< A pointer to the function used
-		 to destroy the cursor (frees
-		 internal memory). */
-};
-
-void
-uppercase(
-	char	*string,
-	char	uppercase[]
-);
-
-void
-lowercase(
-	char	*string,
-	char	lowercase[]
-);
-
-ion_err_t
-SQL_query(
-	ion_query_iterator_t	*iterator,
-	char					*sql_string
-);
-
-void
-destroy(
-	ion_query_iterator_t *iterator
-);
-
-int
-get_int(
-	void *value
-);
 
 #if defined(__cplusplus)
 }
