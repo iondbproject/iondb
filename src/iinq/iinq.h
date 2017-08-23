@@ -92,7 +92,10 @@ extern "C" {
 
 #define IINQ_FIELD_LIST(...)        (iinq_field_list_t[]) {__VA_ARGS__}
 
-
+#define TABLE_FIELD_NAMES(...)		(iinq_field_name_t[]) {__VA_ARGS__}
+#define TABLE_FIELD_SIZES(...)		(iinq_field_size_t[]) {__VA_ARGS__}
+#define TABLE_FIELD_TYPES(...)		(iinq_field_type_t[]) {__VA_ARGS__}
+#define TABLE_SCHEMA(num_fields, field_types, field_sizes, field_names)			(iinq_schema_t) {num_fields, field_types, field_sizes, field_names}
 /**
 @brief		Types used by the comparator.
 */
@@ -250,6 +253,8 @@ typedef unsigned int iinq_field_size_t;
 */
 typedef unsigned int iinq_num_fields_t;
 
+typedef char iinq_field_name_t[10];
+
 /**
 @brief		Type for schema information of a table used in iinq.
 */
@@ -257,6 +262,7 @@ typedef struct {
 	iinq_num_fields_t num_fields; /**< The number of fields in the schema */
 	iinq_field_type_t *field_type; /**< An array of the data types in the schema.*/
 	iinq_field_size_t *field_size; /**< An array of the field sizes in the schema.*/
+	iinq_field_name_t *field_name; /**< An array of the field names in the schema. */
 } iinq_schema_t;
 
 /**
@@ -445,7 +451,7 @@ iinq_destroy_iterator(
 		iinq_iterator_t *it
 );
 
-void
+ion_err_t
 iinq_close_table(iinq_table_t *table);
 
 void
@@ -479,6 +485,14 @@ void
 iinq_print_tuple(
 		iinq_iterator_t *it
 );
+
+void
+iinq_print_field_names(
+		iinq_table_t *table
+);
+
+void
+iinq_print_table(char *table_name);
 
 #if defined(__cplusplus)
 }

@@ -2,6 +2,20 @@
 #include "../util/sort/external_sort/external_sort_types.h"
 
 void
+iinq_print_field_names(
+		iinq_table_t *table
+) {
+	int i;
+	for (i = 0; i < table->schema->num_fields; i++) {
+		if (i > 0) {
+			printf(", ");
+		}
+		printf("%s", table->schema->field_name[i]);
+	}
+	printf("\n");
+}
+
+void
 iinq_print_tuple(
 		iinq_iterator_t *it
 ) {
@@ -9,7 +23,7 @@ iinq_print_tuple(
 		printf("No record found.\n");
 	} else {
 		int i;
-		char tuple_as_string[it->query->tuple.size+(it->query->tuple.schema->num_fields*2)];
+		char tuple_as_string[it->query->tuple.size + (it->query->tuple.schema->num_fields * 2)];
 		char *index = tuple_as_string;
 		for (i = 0; i < it->query->tuple.schema->num_fields; i++) {
 			switch (it->query->tuple.schema->field_type[i]) {
@@ -25,7 +39,7 @@ iinq_print_tuple(
 			}
 			//index += it->query->tuple.schema->field_size[i]+2;
 		}
-		*(index-2) = '\0';
+		*(index - 2) = '\0';
 		printf("%s\n", tuple_as_string);
 	}
 }
@@ -93,10 +107,15 @@ iinq_destroy_tuple(iinq_tuple_t *tuple) {
 	}
 }
 
-void
+ion_err_t
 iinq_close_table(iinq_table_t *table) {
-	ion_close_dictionary(table->dictionary);
+	ion_err_t error;
+	error = ion_close_dictionary(table->dictionary);
+	if (err_ok != error) {
+		return error;
+	}
 	table->cursor->destroy(&table->cursor);
+	return err_ok;
 }
 
 void
@@ -250,7 +269,7 @@ iinq_create_table(
 		return err_duplicate_dictionary_error;
 	}
 		/* Otherwise, we are creating the dictionary for the first time. */
-	else if (NULL != (schema_file = fopen(table_name, "w+b"))) {
+	else if (NULL != (schema_file = fopen(schema_file_name, "w+b"))) {
 		if (0 != fseek(schema_file, 0, SEEK_SET)) {
 			return err_file_bad_seek;
 		}
@@ -283,6 +302,14 @@ iinq_create_table(
 		for (i = 0; i < schema->num_fields; i++) {
 			if (1 !=
 				fwrite(&schema->field_size[i], sizeof(iinq_field_size_t), 1, schema_file)) {
+				return err_file_incomplete_write;
+			}
+		}
+
+		/* write field names in table */
+		for (i = 0; i < schema->num_fields; i++) {
+			if (1 !=
+				fwrite(&schema->field_name[i], sizeof(iinq_field_name_t), 1, schema_file)) {
 				return err_file_incomplete_write;
 			}
 		}
@@ -444,7 +471,9 @@ iinq_open_table(
 	ffdict_init(table->dictionary->handler);
 
 	/* If the schema file already exists. */
-	if (NULL != (schema_file = fopen(name, "rb"))) {
+	char schema_file_name[ION_MAX_FILENAME_LENGTH];
+	strcpy(schema_file_name, name);
+	if (NULL != (schema_file = fopen(strcat(schema_file_name, ".inq"), "rb"))) {
 		if (0 != fseek(schema_file, 0, SEEK_SET)) {
 			free(table->dictionary->handler);
 			free(table->dictionary);
@@ -507,6 +536,30 @@ iinq_open_table(
 			if (1 !=
 				fread(&table->schema->field_size[i], sizeof(iinq_field_size_t), 1,
 					  schema_file)) {
+				free(table->schema->num_fields);
+				free(table->schema);
+				free(table->dictionary->handler);
+				free(table->dictionary);
+				return err_file_incomplete_read;
+			}
+		}
+
+		table->schema->field_name = malloc(sizeof(iinq_field_name_t) * table->schema->num_fields);
+
+		if (NULL == table->schema->field_name) {
+			free(table->schema->field_size);
+			free(table->schema->num_fields);
+			free(table->schema);
+			free(table->dictionary->handler);
+			free(table->dictionary);
+			return err_out_of_memory;
+		}
+
+		for (i = 0; i < table->schema->num_fields; i++) {
+			if (1 !=
+				fread(&table->schema->field_name[i], sizeof(iinq_field_name_t), 1,
+				schema_file)) {
+				free(table->schema->field_size);
 				free(table->schema->num_fields);
 				free(table->schema);
 				free(table->dictionary->handler);
@@ -1092,9 +1145,7 @@ iinq_init_tables(iinq_iterator_t *it, int num_tables, char **table_names) {
 			return it->status = it_status_memory_error;
 		}
 		// open the table for reading
-		char file_name[ION_MAX_FILENAME_LENGTH];
-		strcpy(file_name, table_names[i]);
-		error = iinq_open_table(strcat(file_name, ".inq"), &it->query->tables[i]);
+		error = iinq_open_table(table_names[i], &it->query->tables[i]);
 		// allocate memory to hold a key from the table
 		it->query->tables->record.key = malloc(it->query->tables[i].dictionary->instance->record.key_size);
 		// allocate memory to hold a value from the table
@@ -1403,7 +1454,7 @@ query_init(
 		FILE *output_file;
 		FILE *input_file;
 		int groupby_n = va_arg(list,
-		int);
+							   int);
 		iinq_field_list_t *group_by_info = va_arg(list, iinq_field_list_t *);
 		int total_groupby_size = 0;
 		iinq_order_part_t *groupby_order_parts = malloc(sizeof(iinq_order_part_t) * groupby_n);
@@ -1664,22 +1715,22 @@ query_init(
 
 ion_comparison_t
 iinq_sort_compare(
-		void	*context,	/* TODO: Turn this into a ion_sort_comparator_context_t. */
-		void	*a,
-		void	*b
+		void *context,    /* TODO: Turn this into a ion_sort_comparator_context_t. */
+		void *a,
+		void *b
 ) {
 #define TO_COMPARISON_RESULT(r) ((r) > 0 ? A_gt_B : ((r) < 0 ? A_lt_B : A_equ_B))
 
 	int i;
 	iinq_sort_context_t *c;
-	int					result;
-	void				*cur_a;
-	void				*cur_b;
+	int result;
+	void *cur_a;
+	void *cur_b;
 
-	result	= 0;
-	c		= (iinq_sort_context_t *) context;
-	cur_a	= a;
-	cur_b	= b;
+	result = 0;
+	c = (iinq_sort_context_t *) context;
+	cur_a = a;
+	cur_b = b;
 
 	if (NULL == c->parts) {
 		return A_equ_B;
@@ -1691,74 +1742,57 @@ iinq_sort_compare(
 			if (1 == c->parts[i].size) {
 				if (*((uint8_t *) cur_a) > *((uint8_t *) cur_b)) {
 					result = 1;
-				}
-				else if (*((uint8_t *) cur_a) < *((uint8_t *) cur_b)) {
+				} else if (*((uint8_t *) cur_a) < *((uint8_t *) cur_b)) {
 					result = -1;
 				}
-			}
-			else if (2 == c->parts[i].size) {
+			} else if (2 == c->parts[i].size) {
 				if (*((uint16_t *) cur_a) > *((uint16_t *) cur_b)) {
 					result = 1;
-				}
-				else if (*((uint16_t *) cur_a) < *((uint16_t *) cur_b)) {
+				} else if (*((uint16_t *) cur_a) < *((uint16_t *) cur_b)) {
 					result = -1;
 				}
-			}
-			else if (4 == c->parts[i].size) {
+			} else if (4 == c->parts[i].size) {
 				if (*((uint32_t *) cur_a) > *((uint32_t *) cur_b)) {
 					result = 1;
-				}
-				else if (*((uint32_t *) cur_a) < *((uint32_t *) cur_b)) {
+				} else if (*((uint32_t *) cur_a) < *((uint32_t *) cur_b)) {
 					result = -1;
 				}
-			}
-			else if (8 == c->parts[i].size) {
+			} else if (8 == c->parts[i].size) {
 				if (*((uint64_t *) cur_a) > *((uint64_t *) cur_b)) {
 					result = 1;
-				}
-				else if (*((uint64_t *) cur_a) < *((uint64_t *) cur_b)) {
+				} else if (*((uint64_t *) cur_a) < *((uint64_t *) cur_b)) {
 					result = -1;
 				}
 			}
-		}
-		else if (IINQ_ORDERTYPE_UINT == c->parts->type) {
+		} else if (IINQ_ORDERTYPE_UINT == c->parts->type) {
 			if (1 == c->parts[i].size) {
 				if (*((int8_t *) cur_a) > *((int8_t *) cur_b)) {
 					result = 1;
-				}
-				else if (*((int8_t *) cur_a) < *((int8_t *) cur_b)) {
+				} else if (*((int8_t *) cur_a) < *((int8_t *) cur_b)) {
 					result = -1;
 				}
-			}
-			else if (2 == c->parts[i].size) {
+			} else if (2 == c->parts[i].size) {
 				if (*((int16_t *) cur_a) > *((int16_t *) cur_b)) {
 					result = 1;
-				}
-				else if (*((int16_t *) cur_a) < *((int16_t *) cur_b)) {
+				} else if (*((int16_t *) cur_a) < *((int16_t *) cur_b)) {
 					result = -1;
 				}
-			}
-			else if (4 == c->parts[i].size) {
+			} else if (4 == c->parts[i].size) {
 				if (*((int32_t *) cur_a) > *((int32_t *) cur_b)) {
 					result = 1;
-				}
-				else if (*((int32_t *) cur_a) < *((int32_t *) cur_b)) {
+				} else if (*((int32_t *) cur_a) < *((int32_t *) cur_b)) {
 					result = -1;
 				}
-			}
-			else if (8 == c->parts[i].size) {
+			} else if (8 == c->parts[i].size) {
 				if (*((int64_t *) cur_a) > *((int64_t *) cur_b)) {
 					result = 1;
-				}
-				else if (*((int64_t *) cur_a) < *((int64_t *) cur_b)) {
+				} else if (*((int64_t *) cur_a) < *((int64_t *) cur_b)) {
 					result = -1;
 				}
 			}
-		}
-		else if (IINQ_ORDERTYPE_FLOAT == c->parts->type) {
+		} else if (IINQ_ORDERTYPE_FLOAT == c->parts->type) {
 			/* TODO: Write a comparator for floats */
-		}
-		else if (IINQ_ORDERTYPE_OTHER == c->parts->type) {
+		} else if (IINQ_ORDERTYPE_OTHER == c->parts->type) {
 			result = strncmp(cur_a, cur_b, c->parts[i].size);
 		}
 
@@ -1767,11 +1801,25 @@ iinq_sort_compare(
 			return TO_COMPARISON_RESULT(result);
 		}
 
-		cur_a	= ((uint8_t *) cur_a) + c->parts[i].size;
-		cur_b	= ((uint8_t *) cur_b) + c->parts[i].size;
+		cur_a = ((uint8_t *) cur_a) + c->parts[i].size;
+		cur_b = ((uint8_t *) cur_b) + c->parts[i].size;
 	}
 
 	return A_equ_B;
 
 #undef TO_COMPARISON_RESULT
+}
+
+void
+iinq_print_table(char *table_name) {
+	iinq_iterator_t it;
+
+	printf("Printing %s Table:\n\n", table_name);
+	iinq_query_init_select_all_from_table(&it, table_name, select_all_next, NULL);
+	iinq_print_field_names(&it.query->tables[0]);
+	printf("**********************************************************************\n");
+	while (it_status_ok == it.next(&it))
+		iinq_print_tuple(&it);
+	printf("End of results.");
+	iinq_destroy_iterator(&it);
 }
