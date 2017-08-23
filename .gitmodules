@@ -6,3 +6,7 @@
 	path = dotfiles
 	url = https://github.com/iondbproject/utility-scripts
 	branch = iondb-sub
+[submodule "src/iinq/iinq_java"]
+	path = src/iinq/iinq_java
+	url = https://github.com/iondbproject/iinq.git
+	branch = iinq-iondb-submodule
