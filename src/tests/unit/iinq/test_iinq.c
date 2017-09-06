@@ -52,16 +52,9 @@ iinq_rewrite_create_int_table_with_iterator(
 	key_size = sizeof(int);
 	value_size = sizeof(int) * 3;
 
-	iinq_schema_t schema = (iinq_schema_t) {
-			4, (iinq_field_type_t[]) {
-					IINQ_INT,
-					IINQ_INT,
-					IINQ_INT,
-					IINQ_INT
-			}, (iinq_field_size_t[]) {
-					sizeof(int), sizeof(int), sizeof(int), sizeof(int)
-			}
-	};
+	iinq_schema_t schema = TABLE_SCHEMA(4, TABLE_FIELD_TYPES(IINQ_INT, IINQ_INT, IINQ_INT, IINQ_INT),
+										TABLE_FIELD_SIZES(sizeof(int), sizeof(int), sizeof(int), sizeof(int)),
+										TABLE_FIELD_NAMES("attr0", "attr1", "attr2", "att3"));
 
 	FILE *test = fopen("table.inq", "r");
 	if (NULL != test) {
@@ -69,7 +62,7 @@ iinq_rewrite_create_int_table_with_iterator(
 		fremove("table.inq");
 	}
 
-	error = iinq_create_table("table.inq", key_type, key_size, value_size, &schema);
+	error = iinq_create_table("table", key_type, key_size, value_size, &schema);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
 }
@@ -90,11 +83,42 @@ iinq_rewrite_insert_value_int_table(
 }
 
 void
+iinq_rewrite_insert_values_into_int_table_for_group_by(
+		planck_unit_test_t *tc
+) {
+	int i;
+	unsigned char * value = malloc(sizeof(int) * 3);
+
+	// First attribute is the key
+	int attr0;
+
+	// Remaining attributes are in the value
+	int *attr1 = value;
+	int *attr2 = attr1 + 1;
+	int *attr3 = attr2 + 1;
+
+	*attr1 = 2;
+	*attr2 = 3;
+	*attr3 = 4;
+
+	for (i = 0; i < 50; i++) {
+		attr0 = 1;
+		iinq_rewrite_insert_value_int_table(tc, IONIZE(attr0, int), value);
+
+		attr0 = -1;
+		iinq_rewrite_insert_value_int_table(tc, IONIZE(attr0, int), value);
+	}
+
+	free(value);
+}
+
+
+void
 iinq_rewrite_insert_values_into_int_table_for_select_all_and_select_field_list(
 		planck_unit_test_t *tc
 ) {
 	int i;
-	ion_value_t value = malloc(sizeof(int) * 3);
+	unsigned char *value = malloc(sizeof(int) * 3);
 
 	// First attribute is the key
 	int attr0;
@@ -131,7 +155,7 @@ iinq_rewrite_test_select_all_from_int_table_iterator(
 	iinq_iterator_t iterator;
 
 	/* SELECT * FROM int_table; */
-	iinq_query_init_select_all_from_table(&iterator, "table", iinq_next_from_table_no_predicate, NULL);
+	iinq_query_init_select_all_from_table(&iterator, "table", NULL);
 
 	int count = 0;
 
@@ -169,7 +193,7 @@ iinq_rewrite_test_select_attr0_from_int_table_iterator(
 	iinq_iterator_t iterator;
 
 	/* SELECT attr0 FROM int_table; */
-	iinq_query_init_select_field_list_from_table(&iterator, "table", iinq_next_from_table_no_predicate, NULL, 1,
+	iinq_query_init_select_field_list_from_table(&iterator, "table", NULL, 1,
 												 IINQ_FIELD_LIST({ 0, 0 }));
 
 	int count = 0;
@@ -202,7 +226,7 @@ iinq_rewrite_test_select_attr0_attr1_from_int_table_iterator(
 	iinq_iterator_t iterator;
 
 	/* SELECT attr0, attr1 FROM int_table; */
-	iinq_query_init_select_field_list_from_table(&iterator, "table", iinq_next_from_table_no_predicate, NULL, 2,
+	iinq_query_init_select_field_list_from_table(&iterator, "table", NULL, 2,
 												 IINQ_FIELD_LIST({ 0, 0 }, { 0, 1 }));
 
 	int count = 0;
@@ -237,7 +261,7 @@ iinq_rewrite_test_select_attr0_attr1_attr2_attr3_from_int_table_iterator(
 	iinq_iterator_t iterator;
 
 	/* SELECT attr0, attr1, attr2, attr3 FROM int_table; */
-	iinq_query_init_select_field_list_from_table(&iterator, "table", iinq_next_from_table_no_predicate, NULL, 4,
+	iinq_query_init_select_field_list_from_table(&iterator, "table", NULL, 4,
 												 IINQ_FIELD_LIST({ 0, 0 }, { 0, 1 }, { 0, 2 }, { 0, 3 }));
 
 	int count = 0;
@@ -284,7 +308,7 @@ iinq_rewrite_test_select_attr0_attr1_attr2_attr3_from_int_table_where_iterator(
 	iinq_iterator_t iterator;
 
 	/* SELECT attr0, attr1, attr2, attr3 FROM int_table WHERE attr0 >= 0 AND attr1 != -1; */
-	iinq_query_init_select_field_list_from_table(&iterator, "table", iinq_next_from_table_with_predicate,
+	iinq_query_init_select_field_list_from_table(&iterator, "table",
 												 generatedPredicate0, 4,
 												 IINQ_FIELD_LIST({ 0, 0 }, { 0, 1 }, { 0, 2 }, { 0, 3 }));
 
@@ -319,24 +343,18 @@ iinq_rewrite_create_test1_with_iterator(
 	value_size = sizeof(double) + sizeof(char) * 40 + sizeof(int) + sizeof(char) * 10;
 
 /* TODO: factor out into macro if possible (e.g. schema = SCHEMA(5, {IINQ_INT, IINQ_STRING[10]}))*/
-	iinq_schema_t schema = (iinq_schema_t) {
-			5, (iinq_field_type_t[]) {
-					IINQ_INT,    /* key */
-					IINQ_DOUBLE,/* col1 */
-					IINQ_STRING,/* col2 */
-					IINQ_INT,    /* col3 */
-					IINQ_STRING    /* col4 */
-			}, (iinq_field_size_t[]) {
-					sizeof(int), sizeof(double), sizeof(char) * 40, sizeof(int), sizeof(char) * 10
-			}
-	};
+	iinq_schema_t schema = TABLE_SCHEMA(5, TABLE_FIELD_TYPES(IINQ_INT, IINQ_DOUBLE, IINQ_STRING, IINQ_INT, IINQ_STRING),
+										TABLE_FIELD_SIZES(sizeof(int), sizeof(double), sizeof(char) * 40, sizeof(int),
+														  sizeof(char) * 10),
+										TABLE_FIELD_NAMES("key", "col1", "col2", "col3", "col4"));
+
 	FILE *file = fopen("test1.inq", "r");
 	if (NULL != file) {
 		fclose(file);
 		fremove("test1.inq");
 	}
 
-	error = iinq_create_table("test1.inq", key_type, key_size, value_size, &schema);
+	error = iinq_create_table("test1", key_type, key_size, value_size, &schema);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
 }
@@ -394,8 +412,8 @@ iinq_rewrite_test_insert_multiple_different_values_test1_with_iterator(
 
 	double *col1 = value;
 	char *col2 = value + sizeof(double);
-	int *col3 = value + sizeof(double) + sizeof(char)*40;
-	char *col4 = value + sizeof(double) + sizeof(char)*40 + sizeof(int);
+	int *col3 = value + sizeof(double) + sizeof(char) * 40;
+	char *col4 = value + sizeof(double) + sizeof(char) * 40 + sizeof(int);
 
 	*col1 = 2.5;
 
@@ -682,6 +700,29 @@ iinq_rewrite_test_select_field_list_from_test1_where_order_by_single_string_desc
 }
 
 void
+iinq_rewrite_test_select_all_from_int_table_group_by_single_int_iterator(
+		planck_unit_test_t *tc
+) {
+	iinq_iterator_t iterator;
+
+	iinq_rewrite_create_int_table_with_iterator(tc);
+	iinq_rewrite_insert_values_into_int_table_for_group_by(tc);
+
+	query_init(&iterator, IINQ_SELECT_ALL, IINQ_ORDER_BY_NONE, boolean_true, 1, 0, "table", 1, IINQ_FIELD_LIST({0, 0}));
+
+	int count = 0;
+	while (it_status_ok == iterator.next(&iterator)) {
+		if (count < 50) {
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, -1, get_int(iterator, 0));
+		} else {
+			PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, get_int(iterator, 0));
+		}
+	}
+
+	DROP_TABLE(table);
+}
+
+void
 iinq_rewrite_test_select_field_list_from_test1_where_order_by_single_int_asc_iterator(
 		planck_unit_test_t *tc
 ) {
@@ -727,12 +768,13 @@ iinq_rewrite_get_suite(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	/* IINQ rewrite, uses long init function, hard to maintain */
+	/* IINQ rewrite, uses long init function, hard to maintain, all of these should be converted to the smaller init functions. The larger init function is only used to bring over code from the previous version of iinq. */
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_all_from_test1_iterator);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_field_list_from_test1_iterator);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_all_from_test1_where_iterator);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_field_list_from_test1_where_iterator);
-	//PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_field_list_from_test1_where_order_by_single_iterator); // fails on device, not sure why
+	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_field_list_from_test1_where_order_by_single_iterator); // Not yet tested on device
+	//PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_all_from_int_table_group_by_single_int_iterator); Not sure why this does not work
 
 	/* Simple queries, uses smaller init functions with Java generated functions */
 	PLANCK_UNIT_ADD_TO_SUITE(suite, iinq_rewrite_test_select_all_from_int_table_iterator);

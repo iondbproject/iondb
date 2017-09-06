@@ -63,8 +63,8 @@ extern "C" {
 	((iinq_sort_context_t) { name ## _order_parts, name ## _n } \
 	)
 
-#define DROP_TABLE(table_name) drop_table(# table_name ".inq")
-#define INSERT_INTO(schema_name, key, value) iinq_insert_into(# schema_name ".inq", key, value)
+#define DROP_TABLE(table_name) drop_table(# table_name)
+#define INSERT_INTO(schema_name, key, value) iinq_insert_into(# schema_name, key, value)
 
 /* Macro to improve readability of query in init function. Not currently implemented */
 #define IINQ_QUERY(select_clause, from_clause, where_clause, having_clause, order_by_clause, group_by_clause) select_clause, from_clause, where_clause, having_clause, order_by_clause, group_by_clause
@@ -192,6 +192,8 @@ typedef struct {
 	FILE *input_file; /**< Pointer to the file containing the grouped records */
 	iinq_size_t group_by_size; /**< Size of the group by fields. */
 	iinq_size_t record_size; /**< Size of the record stored in the group by file */
+	ion_boolean_t is_first; /**< Indicates whether the first record has been read */
+	iinq_sort_context_t *context; /**< Context used to compare keys */
 } iinq_group_by_t;
 
 /**
@@ -446,51 +448,162 @@ query_init(
 		...
 );
 
+/**
+ * @brief Function to deallocate memory used for an iterator.
+ *
+ * @param it
+ * 		Pointer to the iterator to destroy.
+ */
 void
 iinq_destroy_iterator(
 		iinq_iterator_t *it
 );
 
+/**
+ * @brief Function to close a table used in a query
+ *
+ * @param table
+ * 		Pointer to the table to close
+ *
+ * @return
+ * 		Result of closing the table
+ */
 ion_err_t
 iinq_close_table(iinq_table_t *table);
 
+/**
+ * @brief Function to initialize the tuple of a SELECT field_list query.
+ *
+ * @param it
+ * 		Pointer to the iterator that will point to the tuple.
+ *
+ * @param num_fields
+ * 		Number of fields in the tuple.
+ *
+ * @param field_list
+ * 		Array of field information for the tuple.
+ */
 void
 iinq_init_tuple_from_table_field_list(iinq_iterator_t *it, int num_fields, iinq_field_list_t *field_list);
 
+/**
+ * @brief Initializes an iterator to select all fields from a table.
+ *
+ * @param it
+ * 		Pointer to the iterator to initialize.
+ *
+ * @param table_name
+ * 		Name of table used in the query.
+ *
+ * @param predicate
+ * 		Pointer to the predicate function used for the query (WHERE clause).
+
+ * @return
+ * 		The status of the iterator.
+ */
 iinq_iterator_status_t
-iinq_query_init_select_all_from_table(iinq_iterator_t *it, char *table_name, iinq_iterator_next_t next,
+iinq_query_init_select_all_from_table(iinq_iterator_t *it, char *table_name,
 									  iinq_predicate_t predicate);
 
+/**
+ * @brief Initializes an iterator to select a field list from a table.
+ *
+ * @param it
+ * 		Pointer to the iterator to initialize.
+ *
+ * @param table_name
+ * 		Name of table used in the query.
+ *
+ * @param predicate
+ * 		Pointer to the predicate function used for the query (WHERE clause).
+ *
+ * @param num_fields
+ * 		Number of fields in the field list.
+ *
+ * @param field_list
+ * 		Array of field information for for the SELECT clause.
+ *
+ * @return
+ * 		The status of the iterator.
+ */
 iinq_iterator_status_t
-iinq_query_init_select_field_list_from_table(iinq_iterator_t *it, char *table_name, iinq_iterator_next_t next,
+iinq_query_init_select_field_list_from_table(iinq_iterator_t *it, char *table_name,
 											 iinq_predicate_t predicate, int num_fields,
 											 iinq_field_list_t *field_list);
-
+/**
+ * @brief Moves an iterator forward by one when the data is stored in a table (No group by/order by).
+ *
+ * @param it
+ * 		The iterator to move forward.
+ *
+ * @return
+ * 		The status of the iterator after moving.
+ */
 iinq_iterator_status_t
-iinq_next_from_table_no_predicate(iinq_iterator_t *it);
+iinq_next_from_table(iinq_iterator_t *it);
 
-iinq_iterator_status_t
-iinq_next_from_table_with_predicate(iinq_iterator_t *it);
-
+/**
+ * @brief Function to drop a table from the database.
+ *
+ * @param table_name
+ * 		Name of the table to drop.
+ *
+ * @return
+ * 		Result of dropping the table.
+ */
 ion_err_t
-drop_table(char *schema_file_name);
+drop_table(char *table_name);
 
+/**
+ * @brief Funtion to insert a key-value pair (tuple) into a table.
+ *
+ * @param table_name
+ * 		Name of table to add the tuple to.
+ *
+ * @param key
+ * 		Key to be added (first column).
+ *
+ * @param value
+ * 		Value to be added (all columns after the first).
+ *
+ * @return
+ * 		Status of the insert.
+ */
 ion_status_t
 iinq_insert_into(
-		char *schema_file_name,
+		char *table_name,
 		ion_key_t key,
 		ion_value_t value);
 
+/**
+ * @brief Generic function to print out the values of a tuple pointed to by an iterator.
+ *
+ * @param it
+ * 		Iterator pointed at the tuple to print.
+ */
 void
 iinq_print_tuple(
 		iinq_iterator_t *it
 );
 
+
+/**
+ * @brief Generic function to print the field names for a given table.
+ *
+ * @param table
+ * 		The table to print the field names for.
+ */
 void
 iinq_print_field_names(
 		iinq_table_t *table
 );
 
+/**
+ * @brief Generic function to print out a table.
+ *
+ * @param table
+ * 		The table to print.
+ */
 void
 iinq_print_table(char *table_name);
 
