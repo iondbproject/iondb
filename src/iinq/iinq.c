@@ -97,6 +97,12 @@ drop_table(char *table_name) {
 
 }
 
+/**
+ * @brief Frees up the memory allocated for a tuple
+ *
+ * @param tuple
+ * 		Pointer to the tuple to be freed
+ */
 void
 iinq_destroy_tuple(iinq_tuple_t *tuple) {
 	if (NULL != tuple->fields)
@@ -121,6 +127,15 @@ iinq_close_table(iinq_table_t *table) {
 	return err_ok;
 }
 
+/**
+ * @brief Frees the memory allocated to an array of tables
+ *
+ * @param tables
+ * 		Array of pointers to the tables to be freed.
+ *
+ * @param num_tables
+ * 		Number of tables in the array
+ */
 void
 iinq_destroy_query_tables(iinq_table_t **tables, int num_tables) {
 
@@ -139,6 +154,12 @@ iinq_destroy_query_tables(iinq_table_t **tables, int num_tables) {
 	*tables = NULL;
 };
 
+/**
+ * @brief Frees the memory allocated for a group by clause.
+ *
+ * @param group_by
+ * 		Pointer to the pointer of the group by to free.
+ */
 void
 iinq_destroy_group_by(
 		iinq_group_by_t **group_by
@@ -160,6 +181,12 @@ iinq_destroy_group_by(
 	*group_by = NULL;
 }
 
+/**
+ * @brief Frees the memory used for the sort in an order by clause
+ *
+ * @param sort
+ * 		Pointer to the pointer of the sort to be freed *
+ */
 void
 iinq_destroy_sort(
 		iinq_sort_t **sort
@@ -333,6 +360,18 @@ iinq_create_table(
 	return error;
 }
 
+/**
+ * @brief Compares two strings using a given operator. Used for generic predicate functions.
+ *
+ * @param value
+ * 		First string to be compared.
+ * @param operator
+ * 		The operator to be used @see iinq_comparison_operator_t
+ * @param comp_value
+ * 		Second string to be compared.
+ * @return
+ * 		boolean_true if the comparison is true, otherwise boolean_false
+ */
 ion_boolean_t
 iinq_string_comparison(
 		const char *value,
@@ -369,6 +408,18 @@ iinq_string_comparison(
 	}
 }
 
+/**
+ * @brief Compares two ints using a given operator. Used for generic predicate functions.
+ *
+ * @param value
+ * 		First int to be compared.
+ * @param operator
+ * 		The operator to be used @see iinq_comparison_operator_t
+ * @param comp_value
+ * 		Second int to be compared.
+ * @return
+ * 		boolean_true if the comparison is true, otherwise boolean_false
+ */
 ion_boolean_t
 iinq_int_comparison(
 		int value,
@@ -404,7 +455,18 @@ iinq_int_comparison(
 			return boolean_false;
 	}
 }
-
+/**
+ * @brief Compares two doubles using a given operator. Used for generic predicate functions.
+ *
+ * @param value
+ * 		First double to be compared.
+ * @param operator
+ * 		The operator to be used @see iinq_comparison_operator_t
+ * @param comp_value
+ * 		Second double to be compared.
+ * @return
+ * 		boolean_true if the comparison is true, otherwise boolean_false
+ */
 ion_boolean_t
 iinq_double_comparison(
 		double value,
@@ -448,6 +510,10 @@ iinq_open_table(
 		iinq_table_t *table
 ) {
 	table->dictionary = malloc(sizeof(ion_dictionary_t));
+
+	if (NULL == table->dictionary) {
+		return err_out_of_memory;
+	}
 
 	table->dictionary->handler = malloc(sizeof(ion_dictionary_handler_t));
 
@@ -609,6 +675,18 @@ iinq_open_table(
 	return error;
 }
 
+/**
+ * @brief Initializes a list of filters for a query. Used for generic predicate functions.
+ *
+ * @param it
+ * 		Pointer to the iterator to add the filters to.
+ *
+ * @param num_filters
+ * 		Number of filters in the list
+ *
+ * @param filters
+ * 		List of the filters
+ */
 void
 iinq_init_where(
 		iinq_iterator_t *it,
@@ -650,6 +728,18 @@ iinq_init_where(
 	}
 }
 
+/**
+ * @brief Returns the field at a given index from a given table
+ *
+ * @param it
+ * 		Pointer to the iterator containing the table
+ * @param table_num
+ * 		Index of the table containing the field to return.
+ * @param field_num
+ * 		Index of the field to return.
+ * @return
+ * 		The field located at the given index.
+ */
 iinq_field_t
 iinq_get_field_from_table(
 		iinq_iterator_t *it,
@@ -676,6 +766,18 @@ iinq_get_field_from_table(
 	return field;
 }
 
+/**
+ * @brief Returns the field at a given index from a given sort.
+ *
+ * @param it
+ * 		Pointer to the iterator containing the sort
+ * @param sort_num
+ * 		Index of the sort containing the field to return. Not currently used.
+ * @param field_num
+ * 		Index of the field to return.
+ * @return
+ * 		The field located at the given index.
+ */
 iinq_field_t
 iinq_get_field_from_sort(
 		iinq_iterator_t *it,
@@ -696,6 +798,19 @@ iinq_get_field_from_sort(
 	return field;
 }
 
+
+/**
+ * @brief Returns the field at a given index from a group by.
+ *
+ * @param it
+ * 		Pointer to the iterator containing the group by.
+ * @param table_num
+ * 		Index of the table containing the field to return. Not currently used.
+ * @param field_num
+ * 		Index of the field to return.
+ * @return
+ * 		The field located at the given index.
+ */
 iinq_field_t
 iinq_get_field_from_group_by(iinq_iterator_t *it, int table_num, int field_num) {
 
@@ -709,6 +824,14 @@ iinq_get_field_from_group_by(iinq_iterator_t *it, int table_num, int field_num) 
 	return field;
 }
 
+/**
+ * @brief Generic predicate function for a query with a group by clause.
+ *
+ * @param it
+ * 		Pointer to the iterator with the predicate.
+ * @return
+ * 		boolean_true if the predicate is satisfied, otherwise boolean_false
+ */
 ion_boolean_t
 iinq_where_from_group_by(
 		iinq_iterator_t *it
@@ -772,6 +895,14 @@ iinq_where_from_group_by(
 
 }
 
+/**
+ * @brief Generic predicate function for a simple query (no group by/order by).
+ *
+ * @param it
+ * 		Pointer to the iterator with the predicate.
+ * @return
+ * 		boolean_true if the predicate is satisfied, otherwise boolean_false
+ */
 ion_boolean_t
 iinq_where_from_table(
 		iinq_iterator_t *it
@@ -958,6 +1089,18 @@ select_field_list_order_by_next(
 	return it->status;
 }
 
+/**
+ * @brief Initializes the pointers for an order by to a given location (i.e. group by or table).
+ *
+ * @param it
+ * 		Pointer to the iterator with the fields needed for the order by.
+ * @param order_by_field
+ * 		Field information for the order by field.
+ * @param orderby_order_parts
+ * 		Contains the pointers to be initialized for the order by.
+ * @param location
+ * 		Indicates where the field is located.
+ */
 void
 iinq_init_order_by_pointers(iinq_iterator_t *it, iinq_order_by_field_t *order_by_field,
 							iinq_order_part_t *orderby_order_parts, iinq_retrieval_location_t location) {
@@ -980,6 +1123,20 @@ iinq_init_order_by_pointers(iinq_iterator_t *it, iinq_order_by_field_t *order_by
 	}
 }
 
+/**
+ * @brief Writes the records for an order by clause to file.
+ *
+ * @param it
+ * 		Pointer to the iterator for accessing the records.
+ * @param orderby_n
+ * 		Number of order by fields.
+ * @param orderby_order_parts
+ * 		Array of information for the order by fields.
+ * @param location
+ * 		Indicator for where the records are located.
+ * @return
+ * 		The reult of writing the records to the file.
+ */
 ion_err_t
 iinq_order_by_write_to_file(iinq_iterator_t *it, int orderby_n, iinq_order_part_t *orderby_order_parts,
 							iinq_retrieval_location_t location) {
@@ -1075,6 +1232,18 @@ iinq_order_by_write_to_file(iinq_iterator_t *it, int orderby_n, iinq_order_part_
 	}
 }
 
+/**
+ * @brief Initializes the tables used for a query.
+ *
+ * @param it
+ * 		Pointer to the iterator for the query.
+ * @param num_tables
+ * 		Number of tables in the query.
+ * @param table_names
+ * 		Array of table names used in the query.
+ * @return
+ * 		The status of the iterator after initializing the tables.
+ */
 iinq_iterator_status_t
 iinq_init_tables(iinq_iterator_t *it, int num_tables, char **table_names) {
 	ion_err_t error;
@@ -1085,6 +1254,7 @@ iinq_init_tables(iinq_iterator_t *it, int num_tables, char **table_names) {
 	// allocate memory for table
 	it->query->num_tables = 1;
 	it->query->tables = malloc(sizeof(iinq_table_t) * num_tables);
+
 	if (NULL == it->query->tables) {
 		free(it->query);
 		return it->status = it_status_memory_error;
@@ -1095,36 +1265,92 @@ iinq_init_tables(iinq_iterator_t *it, int num_tables, char **table_names) {
 	for (i = 0; i < num_tables; i++) {
 		// allocate memory for table schema
 		it->query->tables[i].schema = malloc(sizeof(iinq_schema_t));
+
 		if (NULL == it->query->tables) {
 			free(it->query);
 			return it->status = it_status_memory_error;
 		}
 		// open the table for reading
 		error = iinq_open_table(table_names[i], &it->query->tables[i]);
+
+		if (err_ok != error) {
+			free(it->query->tables);
+			free(it->query);
+			return it->status = it_status_invalid;
+		}
+
 		// allocate memory to hold a key from the table
 		it->query->tables->record.key = malloc(it->query->tables[i].dictionary->instance->record.key_size);
+
+		if (NULL == it->query->tables->record.key) {
+			free(it->query->tables);
+			free(it->query);
+			return it->status = it_status_memory_error;
+		}
+
 		// allocate memory to hold a value from the table
 		it->query->tables->record.value = malloc(it->query->tables[i].dictionary->instance->record.value_size);
-	}
 
+		if (NULL == it->query->tables->record.value) {
+			free(it->query->tables->record.key);
+			free(it->query->tables);
+			free(it->query);
+			return it->status = it_status_memory_error;
+		}
+	}
+	return it->status = it_status_ok;
 }
 
+/**
+ * @brief Initializes a tuple in an iterator to use the full schema of the table.
+ *
+ * @param it
+ * 		Pointer to the iterator containing the tuple to initialize.
+ * @return
+ * 		The status of the iterator after initializing the tuple.
+ */
 iinq_iterator_status_t
 iinq_init_tuple_from_table_full_schema(iinq_iterator_t *it) {
 
 	/* Allocate the memory needed for the full schema */
 	it->query->tuple.size = 0;
+
 	it->query->tuple.schema = malloc(sizeof(iinq_schema_t));
+
+	if (NULL == it->query->tuple.schema) {
+		return it->status = it_status_memory_error;
+	}
+
 	it->query->tuple.schema->num_fields = 0;
 	it->query->tuple.size += it->query->tables[0].dictionary->instance->record.key_size;
 	it->query->tuple.size += it->query->tables[0].dictionary->instance->record.value_size;
 	it->query->tuple.schema->num_fields += it->query->tables[0].schema->num_fields;
+
 	it->query->tuple.schema->field_type = malloc(
 			sizeof(iinq_field_type_t) * it->query->tables[0].schema->num_fields);
+
+	if (NULL == it->query->tuple.schema->field_type) {
+		free(it->query->tuple.schema);
+		return it->status = it_status_memory_error;
+	}
+
 	it->query->tuple.schema->field_size = malloc(
 			sizeof(iinq_field_size_t) * it->query->tables[0].schema->num_fields);
 
+	if (NULL == it->query->tuple.schema->field_type) {
+		free(it->query->tuple.schema->field_size);
+		free(it->query->tuple.schema);
+		return it->status = it_status_memory_error;
+	}
+
 	it->query->tuple.fields = malloc(sizeof(iinq_field_t) * it->query->tuple.schema->num_fields);
+
+	if (NULL == it->query->tuple.fields) {
+		free(it->query->tuple.schema->field_type);
+		free(it->query->tuple.schema->field_size);
+		free(it->query->tuple.schema);
+		return it->status = it_status_memory_error;
+	}
 
 	/* SELECT * has pointers to every field in the table */
 	int i;
@@ -1142,6 +1368,8 @@ iinq_init_tuple_from_table_full_schema(iinq_iterator_t *it) {
 		it->query->tuple.fields[i] = it->query->tables[0].record.value + byte_index;
 		byte_index += it->query->tuple.schema->field_size[i];
 	}
+
+	return it->status = it_status_ok;
 }
 
 iinq_iterator_status_t
@@ -1205,6 +1433,20 @@ void iinq_init_tuple_from_table_field_list(iinq_iterator_t *it, int num_fields, 
 	}
 }
 
+/**
+ * @brief Initializes an order by clause for a query in an iterator.
+ *
+ * @param it
+ * 		Pointer to the iterator used for the query.
+ * @param orderby_n
+ * 		Number of order by fields in the query.
+ * @param order_by_field
+ * 		Array of field information for the order by fields.
+ * @param location
+ * 		Indicator of where the fields are located.
+ * @return
+ * 		The status of the iterator after initializing the order by.
+ */
 iinq_iterator_status_t
 iinq_init_order_by(iinq_iterator_t *it, int orderby_n, iinq_order_by_field_t *order_by_field,
 				   iinq_retrieval_location_t location) {
@@ -1214,6 +1456,10 @@ iinq_init_order_by(iinq_iterator_t *it, int orderby_n, iinq_order_by_field_t *or
 
 	int total_orderby_size = 0;
 	iinq_order_part_t *orderby_order_parts = malloc(sizeof(iinq_order_part_t) * orderby_n);
+
+	if (NULL == orderby_order_parts) {
+		return it->status = it_status_memory_error;
+	}
 
 	for (i = 0; i < orderby_n; i++) {
 		iinq_init_order_by_pointers(it, &order_by_field[i], orderby_order_parts, location);
@@ -1244,6 +1490,12 @@ iinq_init_order_by(iinq_iterator_t *it, int orderby_n, iinq_order_by_field_t *or
 	}
 
 	it->query->sort = malloc(sizeof(iinq_sort_t));
+
+	if (NULL == it->query->sort) {
+		free(orderby_order_parts);
+		return it->status = it_status_memory_error;
+	}
+
 	it->query->sort->size = total_orderby_size;
 	int write_page_remaining = IINQ_PAGE_SIZE;
 	ion_key_size_t key_size = it->query->tables[0].dictionary->instance->record.key_size;
@@ -1256,54 +1508,133 @@ iinq_init_order_by(iinq_iterator_t *it, int orderby_n, iinq_order_by_field_t *or
 
 	iinq_sort_context_t *context = malloc(sizeof(iinq_sort_context_t));
 
+	if (NULL == context) {
+		free(it->query->sort);
+		free(orderby_order_parts);
+		return it->status = it_status_memory_error;
+	}
+
 	*context = _IINQ_SORT_CONTEXT(orderby);
 
 	ion_external_sort_t *es = malloc(sizeof(ion_external_sort_t));
+
+	if (NULL == es) {
+		free(context);
+		free(it->query->sort);
+		free(orderby_order_parts);
+		return it->status = it_status_memory_error;
+	}
 
 	error = ion_external_sort_init(es, file, context, iinq_sort_compare, key_size + value_size,
 								   key_size + value_size + total_orderby_size, IINQ_PAGE_SIZE, boolean_false,
 								   ION_FILE_SORT_FLASH_MINSORT);
 
+	if (err_ok != error) {
+		free(es);
+		free(context);
+		free(it->query->sort);
+		free(orderby_order_parts);
+		return it->status = it_status_invalid;
+	}
+
 	uint16_t buffer_size = ion_external_sort_bytes_of_memory_required(es, 0, boolean_false);
 
 	char *buffer = malloc(buffer_size);
+
+	if (NULL == buffer) {
+		fclose(file);
+		free(es);
+		free(context);
+		free(it->query->sort);
+		free(orderby_order_parts);
+		return it->status = it_status_memory_error;
+	}
 
 	/* recordbuf needs enough room for the sort field and the table tuple (sort field is stored twice)
 	 * projection is done afterward */
 	it->query->sort->record_buf = malloc((total_orderby_size + key_size + value_size));
 
-	it->query->sort->cursor = malloc(sizeof(ion_external_sort_cursor_t));
-
-	if (err_ok != (error = ion_external_sort_init_cursor(es, it->query->sort->cursor, buffer, buffer_size))) {
-		free(it->query->tables);
-		free(it->query->tables->record.key);
-		free(it->query->tables->record.value);
-		free(it->query->tuple.fields);
-		;
+	if (NULL == it->query->sort->record_buf) {
+		free(buffer);
 		fclose(file);
-		return it->status = it_status_invalid;
+		free(es);
+		free(context);
+		free(it->query->sort);
+		free(orderby_order_parts);
+		return it->status = it_status_memory_error;
 	}
 
-	if (NULL == file) {
-		ion_close_dictionary(it->query->tables);
-		free(it->query->tables);
-		free(it->query->tables->record.key);
-		free(it->query->tables->record.value);
-		free(it->query->tuple.fields);
+	it->query->sort->cursor = malloc(sizeof(ion_external_sort_cursor_t));
+
+	if (NULL == it->query->sort->cursor) {
+		free(it->query->sort->record_buf);
+		fclose(file);
+		free(buffer);
+		free(es);
+		free(context);
+		free(it->query->sort);
+		free(orderby_order_parts);
+		return it->status = it_status_memory_error;
+	}
+
+	if (err_ok != (error = ion_external_sort_init_cursor(es, it->query->sort->cursor, buffer, buffer_size))) {
+		free(it->query->sort->record_buf);
+		fclose(file);
+		free(buffer);
+		free(es);
+		free(context);
+		free(it->query->sort);
+		free(orderby_order_parts);
+		fclose(file);
 		return it->status = it_status_invalid;
 	}
 
 	it->status = it_status_ok;
 }
 
-void
+/**
+ * @brief Initializes a tuple for a SELECT field_list FROM table ORDER BY query
+ *
+ * @param it
+ * 		Pointer to the iterator with the tuple to initialize.
+ * @param num_fields
+ * 		Number of fields in the field list.
+ * @param field_list
+ * 		Array of field information for the SELECT.
+ */
+iinq_iterator_status_t
 init_tuple_from_order_by_field_list(iinq_iterator_t *it, int num_fields, iinq_field_list_t *field_list) {
 	it->query->tuple.size = 0;
 	it->query->tuple.schema = malloc(sizeof(iinq_schema_t));
+
+	if (NULL == it->query->tuple.schema) {
+		return it->status = it_status_memory_error;
+	}
+
 	it->query->tuple.schema->field_type = malloc(sizeof(iinq_field_type_t) * num_fields);
+
+	if (NULL == it->query->tuple.schema->field_type) {
+		free(it->query->tuple.schema);
+		return it->status = it_status_memory_error;
+	}
+
 	it->query->tuple.schema->field_size = malloc(sizeof(iinq_field_size_t) * num_fields);
+
+	if (NULL == it->query->tuple.schema->field_size) {
+		free(it->query->tuple.schema->field_type);
+		free(it->query->tuple.schema);
+		return it->status = it_status_memory_error;
+	}
+
 	it->query->tuple.schema->num_fields = num_fields;
 	it->query->tuple.fields = malloc(sizeof(iinq_field_t) * num_fields);
+
+	if (NULL == it->query->tuple.fields) {
+		free(it->query->tuple.schema->field_size);
+		free(it->query->tuple.schema->field_type);
+		free(it->query->tuple.schema);
+		return it->status = it_status_memory_error;
+	}
 
 	int i;
 	for (i = 0; i < num_fields; i++) {

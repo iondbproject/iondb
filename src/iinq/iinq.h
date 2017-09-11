@@ -299,7 +299,6 @@ typedef struct {
 	iinq_tuple_data_t fields; /**< Field data that is contained in the tuple. */
 	iinq_schema_t *schema; /**< The schema that the tuple follows. */
 	iinq_tuple_size_t size; /**< The total size of the fields in the tuple. */
-	ion_boolean_t is_select_all; /**< Incicates whether the tuple was the result of a SELECT * query */
 } iinq_tuple_t;
 
 /**
