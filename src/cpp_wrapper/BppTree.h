@@ -69,6 +69,26 @@ BppTree(
 
 	this->initializeDictionary(id, key_type, key_size, value_size, 0);
 }
+
+BppTree(
+	ion_dictionary_config_info_t config
+) {
+	bpptree_init(&this->handler);
+
+	this->open(config);
+}
+
+static BppTree<K, V> *
+openDictionary(
+	ion_dictionary_config_info_t	config_info,
+	K								key_type,
+	V								value_type
+) {
+	UNUSED(key_type);
+	UNUSED(value_type);
+
+	return new BppTree<K, V>(config_info);
+}
 };
 
 #endif /* PROJECT_BPPTREE_H */

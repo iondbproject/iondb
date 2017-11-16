@@ -41,6 +41,7 @@
 #include "../dictionary/dictionary.h"
 #include "../dictionary/dictionary_types.h"
 #include "../key_value/kv_system.h"
+#include "../dictionary/ion_master_table.h"
 
 #include "Cursor.h"
 
@@ -48,7 +49,6 @@ template<typename K, typename V>
 class Dictionary {
 public:
 
-<<<<<<< HEAD
 ion_dictionary_handler_t	handler;
 ion_dictionary_t			dict;
 ion_key_type_t				key_type;
@@ -56,14 +56,6 @@ ion_key_size_t				key_size;
 ion_value_size_t			value_size;
 ion_dictionary_size_t		dict_size;
 ion_status_t				last_status;
-=======
-ion_dictionary_handler_t handler;
-ion_dictionary_t dict;
-ion_key_size_t size_k;
-ion_value_size_t size_v;
-ion_dictionary_size_t dict_size;
-ion_status_t last_status;
->>>>>>> origin/iinq-rewrite
 
 ~Dictionary(
 ) {
@@ -103,6 +95,8 @@ initializeDictionary(
 	dict_size	= dictionary_size;
 
 	ion_err_t err = dictionary_create(&handler, &dict, dict_id, k_type, k_size, v_size, dictionary_size);
+
+	last_status.error = err;
 
 	return err;
 }
@@ -203,6 +197,8 @@ deleteDictionary(
 ) {
 	ion_err_t err = dictionary_delete_dictionary(&dict);
 
+	last_status.error = err;
+
 	return err;
 }
 
@@ -217,6 +213,8 @@ destroyDictionary(
 	ion_dictionary_id_t id
 ) {
 	ion_err_t error = dictionary_destroy_dictionary(&handler, id);
+
+	last_status.error = error;
 
 	return error;
 }
@@ -234,6 +232,12 @@ open(
 ) {
 	ion_err_t err = dictionary_open(&handler, &dict, &config_info);
 
+	key_type			= config_info.type;
+	key_size			= config_info.key_size;
+	value_size			= config_info.value_size;
+	dict_size			= config_info.dictionary_size;
+	last_status.error	= err;
+
 	return err;
 }
 
@@ -244,6 +248,8 @@ ion_err_t
 close(
 ) {
 	ion_err_t err = dictionary_close(&dict);
+
+	last_status.error = err;
 
 	return err;
 }
