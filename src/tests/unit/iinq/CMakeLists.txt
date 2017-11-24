@@ -12,9 +12,9 @@ if(USE_ARDUINO)
     set(${PROJECT_NAME}_PORT        ${PORT})
     set(${PROJECT_NAME}_SERIAL      ${SERIAL})
 
-    set(${PROJECT_NAME}_SRCS        ${SOURCE_FILES})
     set(${PROJECT_NAME}_SKETCH      iinq.ino)
-    set(${PROJECT_NAME}_LIBS        planck_unit iinq external_sort)
+    set(${PROJECT_NAME}_SRCS        ${SOURCE_FILES})
+    set(${PROJECT_NAME}_LIBS        planck_unit iinq)
 
     generate_arduino_firmware(${PROJECT_NAME})
 else()

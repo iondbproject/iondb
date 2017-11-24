@@ -324,6 +324,16 @@ ion_delete_master_table(
 	return err_ok;
 }
 
+/**
+@brief		Adds the given dictionary to the master table.
+@param		dictionary
+				A pointer to the dictionary object to add to the master table.
+@param		dictionary_size
+				The implementation specific size parameter used when
+				creating the dictionary. This parameter must be passed
+				to this function by @ref ion_master_table_create_dictionary,
+				since not all implementations track the dictionary size.
+*/
 ion_err_t
 ion_add_to_master_table(
 	ion_dictionary_t		*dictionary,

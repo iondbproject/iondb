@@ -39,7 +39,6 @@
 #include "../../../cpp_wrapper/Dictionary.h"
 #include "../../../cpp_wrapper/MasterTable.h"
 #include "test_cpp_wrapper.h"
-#include "../../../util/sort/sort.h"
 
 /* This is used to define how complicated to pre-fill a dictionary for testing. */
 typedef enum ION_BEHAVIOUR_FILL_LEVEL {
@@ -494,7 +493,7 @@ cpp_wrapper_static_open_close(
 
 		case dictionary_type_error_t: {
 			dict					= SkipList<int, int>::openDictionary(config, type, type);
-			dict->last_status.error = err_dictionary_initialization_failed;
+			dict->last_status.error = err_uninitialized;
 			break;
 		}
 	}
@@ -580,7 +579,7 @@ cpp_wrapper_static_open_close_complex(
 
 		case dictionary_type_error_t: {
 			dict					= SkipList<int, int>::openDictionary(config, type, type);
-			dict->last_status.error = err_dictionary_initialization_failed;
+			dict->last_status.error = err_uninitialized;
 			break;
 		}
 	}
@@ -637,7 +636,7 @@ cpp_wrapper_static_open_close_complex(
 
 		case dictionary_type_error_t: {
 			dict					= SkipList<int, int>::openDictionary(config, type, type);
-			dict->last_status.error = err_dictionary_initialization_failed;
+			dict->last_status.error = err_uninitialized;
 			break;
 		}
 	}

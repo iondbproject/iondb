@@ -193,13 +193,13 @@ linear_hash_dict_update(
 	ion_value_t			value
 );
 
+ion_status_t
+linear_hash_dict_find(
+	ion_dictionary_t *dictionary
+);
+
 #if defined(__cplusplus)
 }
 #endif
 
 #endif /* LINEAR_HASH_HANDLER */
-
-ion_status_t
-linear_hash_dict_find(
-	ion_dictionary_t *dictionary
-);
