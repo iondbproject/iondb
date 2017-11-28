@@ -39,6 +39,7 @@
 #include "../../../cpp_wrapper/Dictionary.h"
 #include "../../../cpp_wrapper/MasterTable.h"
 #include "test_cpp_wrapper.h"
+#include "../../../dictionary/dictionary_types.h"
 
 /* This is used to define how complicated to pre-fill a dictionary for testing. */
 typedef enum ION_BEHAVIOUR_FILL_LEVEL {
@@ -2233,35 +2234,27 @@ test_static_equality(
 	test_cpp_wrapper_equality_duplicates(tc, dict, key);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 20, .dictionary_type = dictionary_type_skip_list_t
-	};
+	config.dictionary_type	= dictionary_type_skip_list_t;
 
-	dict = SkipList<int, int>::openDictionary(config, type, type);
+	dict					= SkipList<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_equality_duplicates(tc, dict, key);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 20, .dictionary_type = dictionary_type_flat_file_t
-	};
+	config.dictionary_type	= dictionary_type_flat_file_t;
 
-	dict = FlatFile<int, int>::openDictionary(config, type, type);
+	dict					= FlatFile<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_equality_no_duplicates(tc, dict, key);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 20, .dictionary_type = dictionary_type_open_address_hash_t
-	};
+	config.dictionary_type	= dictionary_type_open_address_hash_t;
 
-	dict = OpenAddressHash<int, int>::openDictionary(config, type, type);
+	dict					= OpenAddressHash<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_equality_no_duplicates(tc, dict, key);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 20, .dictionary_type = dictionary_type_open_address_file_hash_t
-	};
+	config.dictionary_type	= dictionary_type_open_address_file_hash_t;
 
-	dict = OpenAddressFileHash<int, int>::openDictionary(config, type, type);
+	dict					= OpenAddressFileHash<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_equality_no_duplicates(tc, dict, key);
 	delete dict;
 }
@@ -3178,43 +3171,33 @@ test_static_setup_all(
 	test_cpp_wrapper_setup(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 20, .dictionary_type = dictionary_type_skip_list_t
-	};
+	config.dictionary_type	= dictionary_type_skip_list_t;
 
-	dict = SkipList<int, int>::openDictionary(config, type, type);
+	dict					= SkipList<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_setup(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 20, .dictionary_type = dictionary_type_flat_file_t
-	};
+	config.dictionary_type	= dictionary_type_flat_file_t;
 
-	dict = FlatFile<int, int>::openDictionary(config, type, type);
+	dict					= FlatFile<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_setup(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 20, .dictionary_type = dictionary_type_open_address_hash_t
-	};
+	config.dictionary_type	= dictionary_type_open_address_hash_t;
 
-	dict = OpenAddressHash<int, int>::openDictionary(config, type, type);
+	dict					= OpenAddressHash<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_setup(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 20, .dictionary_type = dictionary_type_open_address_file_hash_t
-	};
+	config.dictionary_type	= dictionary_type_open_address_file_hash_t;
 
-	dict = OpenAddressFileHash<int, int>::openDictionary(config, type, type);
+	dict					= OpenAddressFileHash<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_setup(tc, dict);
 	delete dict;
 
 	/* Uncomment when LinearHash dictionary open memory issue fixed. */
-/*	config = {.id = 1, .type = key_type_numeric_signed, */
-/*			.key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 20, */
-/*			.dictionary_type = dictionary_type_linear_hash_t}; */
-/*  */
+/*	config.dictionary_type = dictionary_type_linear_hash_t; */
+/* */
 /*	dict = LinearHash<int, int>::openDictionary(config, type, type); */
 /*	test_cpp_wrapper_setup(tc, dict); */
 /*	delete dict; */
@@ -3240,42 +3223,37 @@ test_static_insert_multiple_all(
 	test_cpp_wrapper_insert_multiple(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 7, .dictionary_type = dictionary_type_skip_list_t
-	};
+	config.dictionary_size	= 7;
+	config.dictionary_type	= dictionary_type_skip_list_t;
 
-	dict = SkipList<int, int>::openDictionary(config, type, type);
+	dict					= SkipList<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_insert_multiple(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 30, .dictionary_type = dictionary_type_flat_file_t
-	};
+	config.dictionary_size	= 30;
+	config.dictionary_type	= dictionary_type_flat_file_t;
 
-	dict = FlatFile<int, int>::openDictionary(config, type, type);
+	dict					= FlatFile<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_insert_multiple(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 50, .dictionary_type = dictionary_type_open_address_hash_t
-	};
+	config.dictionary_size	= 50;
+	config.dictionary_type	= dictionary_type_open_address_hash_t;
 
-	dict = OpenAddressHash<int, int>::openDictionary(config, type, type);
+	dict					= OpenAddressHash<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_insert_multiple(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 50, .dictionary_type = dictionary_type_open_address_file_hash_t
-	};
+	config.dictionary_size	= 50;
+	config.dictionary_type	= dictionary_type_open_address_file_hash_t;
 
-	dict = OpenAddressFileHash<int, int>::openDictionary(config, type, type);
+	dict					= OpenAddressFileHash<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_insert_multiple(tc, dict);
 	delete dict;
 
 	/* Uncomment when LinearHash dictionary open memory issue fixed. */
-/*	config = {.id = 1, .type = key_type_numeric_signed, */
-/*			.key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 50, */
-/*			.dictionary_type = dictionary_type_linear_hash_t}; */
+/*	config.dictionary_size = 50, */
+/*	config.dictionary_type = dictionary_type_linear_hash_t; */
 /*  */
 /*	dict = LinearHash<int, int>::openDictionary(config, type, type); */
 /*	test_cpp_wrapper_insert_multiple(tc, dict); */
@@ -3302,42 +3280,37 @@ test_static_get_lots_all(
 	test_cpp_wrapper_get_lots(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 7, .dictionary_type = dictionary_type_skip_list_t
-	};
+	config.dictionary_size	= 7;
+	config.dictionary_type	= dictionary_type_skip_list_t;
 
-	dict = SkipList<int, int>::openDictionary(config, type, type);
+	dict					= SkipList<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_get_lots(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 30, .dictionary_type = dictionary_type_flat_file_t
-	};
+	config.dictionary_size	= 30;
+	config.dictionary_type	= dictionary_type_flat_file_t;
 
-	dict = FlatFile<int, int>::openDictionary(config, type, type);
+	dict					= FlatFile<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_get_lots(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 50, .dictionary_type = dictionary_type_open_address_hash_t
-	};
+	config.dictionary_size	= 50;
+	config.dictionary_type	= dictionary_type_open_address_hash_t;
 
-	dict = OpenAddressHash<int, int>::openDictionary(config, type, type);
+	dict					= OpenAddressHash<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_get_lots(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 50, .dictionary_type = dictionary_type_open_address_file_hash_t
-	};
+	config.dictionary_size	= 50;
+	config.dictionary_type	= dictionary_type_open_address_file_hash_t;
 
-	dict = OpenAddressFileHash<int, int>::openDictionary(config, type, type);
+	dict					= OpenAddressFileHash<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_get_lots(tc, dict);
 	delete dict;
 
 	/* Uncomment when LinearHash dictionary open memory issue fixed. */
-/*	config = {.id = 1, .type = key_type_numeric_signed, */
-/*			.key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 50, */
-/*			.dictionary_type = dictionary_type_linear_hash_t}; */
+/*	config.dictionary_size = 50, */
+/*	config.dictionary_type = dictionary_type_linear_hash_t; */
 /*  */
 /*	dict = LinearHash<int, int>::openDictionary(config, type, type); */
 /*	test_cpp_wrapper_get_lots(tc, dict); */
@@ -3364,42 +3337,37 @@ test_static_get_nonexist_many_all(
 	test_cpp_wrapper_get_nonexist_many(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_skip_list_t
-	};
+	config.dictionary_size	= 100;
+	config.dictionary_type	= dictionary_type_skip_list_t;
 
-	dict = SkipList<int, int>::openDictionary(config, type, type);
+	dict					= SkipList<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_get_nonexist_many(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_flat_file_t
-	};
+	config.dictionary_size	= 100;
+	config.dictionary_type	= dictionary_type_flat_file_t;
 
-	dict = FlatFile<int, int>::openDictionary(config, type, type);
+	dict					= FlatFile<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_get_nonexist_many(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 160, .dictionary_type = dictionary_type_open_address_hash_t
-	};
+	config.dictionary_size	= 160;
+	config.dictionary_type	= dictionary_type_open_address_hash_t;
 
-	dict = OpenAddressHash<int, int>::openDictionary(config, type, type);
+	dict					= OpenAddressHash<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_get_nonexist_many(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 160, .dictionary_type = dictionary_type_open_address_file_hash_t
-	};
+	config.dictionary_size	= 160;
+	config.dictionary_type	= dictionary_type_open_address_file_hash_t;
 
-	dict = OpenAddressFileHash<int, int>::openDictionary(config, type, type);
+	dict					= OpenAddressFileHash<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_get_nonexist_many(tc, dict);
 	delete dict;
 
 	/* Uncomment when LinearHash dictionary open memory issue fixed. */
-/*	config = {.id = 1, .type = key_type_numeric_signed, */
-/*			.key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, */
-/*			.dictionary_type = dictionary_type_linear_hash_t}; */
+/*	config.dictionary_size = 100; */
+/*	config.dictionary_type = dictionary_type_linear_hash_t; */
 /*  */
 /*	dict = LinearHash<int, int>::openDictionary(config, type, type); */
 /*	test_cpp_wrapper_get_nonexist_many(tc, dict); */
@@ -3426,42 +3394,37 @@ test_static_delete_all_all(
 	test_cpp_wrapper_delete_all(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_skip_list_t
-	};
+	config.dictionary_size	= 100;
+	config.dictionary_type	= dictionary_type_skip_list_t;
 
-	dict = SkipList<int, int>::openDictionary(config, type, type);
+	dict					= SkipList<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_delete_all(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_flat_file_t
-	};
+	config.dictionary_size	= 100;
+	config.dictionary_type	= dictionary_type_flat_file_t;
 
-	dict = FlatFile<int, int>::openDictionary(config, type, type);
+	dict					= FlatFile<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_delete_all(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 160, .dictionary_type = dictionary_type_open_address_hash_t
-	};
+	config.dictionary_size	= 160;
+	config.dictionary_type	= dictionary_type_open_address_hash_t;
 
-	dict = OpenAddressHash<int, int>::openDictionary(config, type, type);
+	dict					= OpenAddressHash<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_delete_all(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 160, .dictionary_type = dictionary_type_open_address_file_hash_t
-	};
+	config.dictionary_size	= 160;
+	config.dictionary_type	= dictionary_type_open_address_file_hash_t;
 
-	dict = OpenAddressFileHash<int, int>::openDictionary(config, type, type);
+	dict					= OpenAddressFileHash<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_delete_all(tc, dict);
 	delete dict;
 
 	/* Uncomment when LinearHash dictionary open memory issue fixed. */
-/*	config = {.id = 1, .type = key_type_numeric_signed, */
-/*			.key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, */
-/*			.dictionary_type = dictionary_type_linear_hash_t}; */
+/*	config.dictionary_size = 100; */
+/*	config.dictionary_type = dictionary_type_linear_hash_t}; */
 /*  */
 /*	dict = LinearHash<int, int>::openDictionary(config, type, type); */
 /*	test_cpp_wrapper_delete_all(tc, dict); */
@@ -3488,42 +3451,37 @@ test_static_update_exist_in_many_all(
 	test_cpp_wrapper_update_exist_in_many(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_skip_list_t
-	};
+	config.dictionary_size	= 100;
+	config.dictionary_type	= dictionary_type_skip_list_t;
 
-	dict = SkipList<int, int>::openDictionary(config, type, type);
+	dict					= SkipList<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_update_exist_in_many(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_flat_file_t
-	};
+	config.dictionary_size	= 100;
+	config.dictionary_type	= dictionary_type_flat_file_t;
 
-	dict = FlatFile<int, int>::openDictionary(config, type, type);
+	dict					= FlatFile<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_update_exist_in_many(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 160, .dictionary_type = dictionary_type_open_address_hash_t
-	};
+	config.dictionary_size	= 160;
+	config.dictionary_type	= dictionary_type_open_address_hash_t;
 
-	dict = OpenAddressHash<int, int>::openDictionary(config, type, type);
+	dict					= OpenAddressHash<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_update_exist_in_many(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 160, .dictionary_type = dictionary_type_open_address_file_hash_t
-	};
+	config.dictionary_size	= 160;
+	config.dictionary_type	= dictionary_type_open_address_file_hash_t;
 
-	dict = OpenAddressFileHash<int, int>::openDictionary(config, type, type);
+	dict					= OpenAddressFileHash<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_update_exist_in_many(tc, dict);
 	delete dict;
 
 	/* Uncomment when LinearHash dictionary open memory issue fixed. */
-/*	config = {.id = 1, .type = key_type_numeric_signed, */
-/*			.key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, */
-/*			.dictionary_type = dictionary_type_linear_hash_t}; */
+/*	config.dictionary_size = 100; */
+/*	config.dictionary_type = dictionary_type_linear_hash_t; */
 /*  */
 /*	dict = LinearHash<int, int>::openDictionary(config, type, type); */
 /*	test_cpp_wrapper_update_exist_in_many(tc, dict); */
@@ -3550,42 +3508,34 @@ test_static_range_all_all(
 	test_cpp_wrapper_range_all(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_skip_list_t
-	};
+	config.dictionary_type	= dictionary_type_skip_list_t;
 
-	dict = SkipList<int, int>::openDictionary(config, type, type);
+	dict					= SkipList<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_range_all(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_flat_file_t
-	};
+	config.dictionary_type	= dictionary_type_flat_file_t;
 
-	dict = FlatFile<int, int>::openDictionary(config, type, type);
+	dict					= FlatFile<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_range_all(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 160, .dictionary_type = dictionary_type_open_address_hash_t
-	};
+	config.dictionary_size	= 160;
+	config.dictionary_type	= dictionary_type_open_address_hash_t;
 
-	dict = OpenAddressHash<int, int>::openDictionary(config, type, type);
+	dict					= OpenAddressHash<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_range_all(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 160, .dictionary_type = dictionary_type_open_address_file_hash_t
-	};
+	config.dictionary_type	= dictionary_type_open_address_file_hash_t;
 
-	dict = OpenAddressFileHash<int, int>::openDictionary(config, type, type);
+	dict					= OpenAddressFileHash<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_range_all(tc, dict);
 	delete dict;
 
 	/* Uncomment when LinearHash dictionary open memory issue fixed. */
-/*	config = {.id = 1, .type = key_type_numeric_signed, */
-/*			.key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, */
-/*			.dictionary_type = dictionary_type_linear_hash_t}; */
+/*	config.dictionary_size = 100; */
+/*	config.dictionary_type = dictionary_type_linear_hash_t; */
 /*  */
 /*	dict = LinearHash<int, int>::openDictionary(config, type, type); */
 /*	test_cpp_wrapper_range_all(tc, dict); */
@@ -3612,42 +3562,34 @@ test_static_all_records_random_all(
 	test_cpp_wrapper_all_records_random(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_skip_list_t
-	};
+	config.dictionary_type	= dictionary_type_skip_list_t;
 
-	dict = SkipList<int, int>::openDictionary(config, type, type);
+	dict					= SkipList<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_all_records_random(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_flat_file_t
-	};
+	config.dictionary_type	= dictionary_type_flat_file_t;
 
-	dict = FlatFile<int, int>::openDictionary(config, type, type);
+	dict					= FlatFile<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_all_records_random(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 160, .dictionary_type = dictionary_type_open_address_hash_t
-	};
+	config.dictionary_size	= 160;
+	config.dictionary_type	= dictionary_type_open_address_hash_t;
 
-	dict = OpenAddressHash<int, int>::openDictionary(config, type, type);
+	dict					= OpenAddressHash<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_all_records_random(tc, dict);
 	delete dict;
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 160, .dictionary_type = dictionary_type_open_address_file_hash_t
-	};
+	config.dictionary_type	= dictionary_type_open_address_file_hash_t;
 
-	dict = OpenAddressFileHash<int, int>::openDictionary(config, type, type);
+	dict					= OpenAddressFileHash<int, int>::openDictionary(config, type, type);
 	test_cpp_wrapper_all_records_random(tc, dict);
 	delete dict;
 
 	/* Uncomment when LinearHash dictionary open memory issue fixed. */
-/*	config = {.id = 1, .type = key_type_numeric_signed, */
-/*			.key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, */
-/*			.dictionary_type = dictionary_type_linear_hash_t}; */
+/*	config.dictionary_size = 100; */
+/*	config.dictionary_type = dictionary_type_linear_hash_t; */
 /*  */
 /*	dict = LinearHash<int, int>::openDictionary(config, type, type); */
 /*	test_cpp_wrapper_all_records_random(tc, dict); */
@@ -3710,42 +3652,34 @@ test_static_create_open_close_all(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
 	cpp_wrapper_static_open_close(tc, dictionary, 66, 12);
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_flat_file_t
-	};
+	config.dictionary_type	= dictionary_type_flat_file_t;
 
-	dictionary = FlatFile<int, int>::openDictionary(config, type, type);
+	dictionary				= FlatFile<int, int>::openDictionary(config, type, type);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
 	cpp_wrapper_static_open_close(tc, dictionary, 45, 14);
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 160, .dictionary_type = dictionary_type_open_address_hash_t
-	};
+	config.dictionary_size	= 160;
+	config.dictionary_type	= dictionary_type_open_address_hash_t;
 
-	dictionary = OpenAddressHash<int, int>::openDictionary(config, type, type);
+	dictionary				= OpenAddressHash<int, int>::openDictionary(config, type, type);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
 	cpp_wrapper_static_open_close(tc, dictionary, 3, 15);
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 160, .dictionary_type = dictionary_type_open_address_file_hash_t
-	};
+	config.dictionary_type	= dictionary_type_open_address_file_hash_t;
 
-	dictionary = OpenAddressFileHash<int, int>::openDictionary(config, type, type);
+	dictionary				= OpenAddressFileHash<int, int>::openDictionary(config, type, type);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
 	cpp_wrapper_static_open_close(tc, dictionary, 5, 12);
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_skip_list_t
-	};
+	config.dictionary_size	= 100;
+	config.dictionary_type	= dictionary_type_skip_list_t;
 
-	dictionary = SkipList<int, int>::openDictionary(config, type, type);
+	dictionary				= SkipList<int, int>::openDictionary(config, type, type);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
 	cpp_wrapper_static_open_close(tc, dictionary, 1, 13);
 
 	/* Uncomment when LinearHash dictionary open memory issue fixed. */
-/*	config = {.id = 1, .type = key_type_numeric_signed, */
-/*			.key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, */
-/*			.dictionary_type = dictionary_type_linear_hash_t}; */
+/*	config.dictionary_type = dictionary_type_linear_hash_t; */
 /*  */
 /*	dictionary = LinearHash<int, int>::openDictionary(config, type, type); */
 /*	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status); */
@@ -3808,42 +3742,34 @@ test_static_create_open_close_complex_all(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
 	cpp_wrapper_static_open_close_complex(tc, dictionary, 66, 12);
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_flat_file_t
-	};
+	config.dictionary_type	= dictionary_type_flat_file_t;
 
-	dictionary = FlatFile<int, int>::openDictionary(config, type, type);
+	dictionary				= FlatFile<int, int>::openDictionary(config, type, type);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
 	cpp_wrapper_static_open_close_complex(tc, dictionary, 45, 14);
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 160, .dictionary_type = dictionary_type_open_address_hash_t
-	};
+	config.dictionary_size	= 160;
+	config.dictionary_type	= dictionary_type_open_address_hash_t;
 
-	dictionary = OpenAddressHash<int, int>::openDictionary(config, type, type);
+	dictionary				= OpenAddressHash<int, int>::openDictionary(config, type, type);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
 	cpp_wrapper_static_open_close_complex(tc, dictionary, 3, 15);
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 160, .dictionary_type = dictionary_type_open_address_file_hash_t
-	};
+	config.dictionary_type	= dictionary_type_open_address_file_hash_t;
 
-	dictionary = OpenAddressFileHash<int, int>::openDictionary(config, type, type);
+	dictionary				= OpenAddressFileHash<int, int>::openDictionary(config, type, type);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
 	cpp_wrapper_static_open_close_complex(tc, dictionary, 5, 12);
 
-	config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_skip_list_t
-	};
+	config.dictionary_size	= 100;
+	config.dictionary_type	= dictionary_type_skip_list_t;
 
-	dictionary = SkipList<int, int>::openDictionary(config, type, type);
+	dictionary				= SkipList<int, int>::openDictionary(config, type, type);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
 	cpp_wrapper_static_open_close_complex(tc, dictionary, 1, 13);
 
 	/* Uncomment when LinearHash dictionary open memory issue fixed. */
-/*	config = {.id = 1, .type = key_type_numeric_signed, */
-/*			.key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, */
-/*			.dictionary_type = dictionary_type_linear_hash_t}; */
+/*	config.dictionary_type = dictionary_type_linear_hash_t; */
 /*  */
 /*	dictionary = LinearHash<int, int>::openDictionary(config, type, type); */
 /*	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status); */
