@@ -55,8 +55,8 @@ endif()
 add_subdirectory(src/tests)
 add_subdirectory(src/tests/unit/dictionary)
 
-add_subdirectory(examples)
-add_subdirectory(examples/CppWrapper)
+#add_subdirectory(examples)
+#add_subdirectory(examples/CppWrapper)
 
 add_subdirectory(src/util/lfsr)
 

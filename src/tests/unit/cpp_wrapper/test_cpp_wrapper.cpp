@@ -39,7 +39,6 @@
 #include "../../../cpp_wrapper/Dictionary.h"
 #include "../../../cpp_wrapper/MasterTable.h"
 #include "test_cpp_wrapper.h"
-#include "../../../dictionary/dictionary_types.h"
 
 /* This is used to define how complicated to pre-fill a dictionary for testing. */
 typedef enum ION_BEHAVIOUR_FILL_LEVEL {
