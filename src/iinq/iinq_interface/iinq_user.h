@@ -44,6 +44,7 @@ extern "C" {
 #include "../../key_value/kv_system.h"
 #include "iinq_user_functions.h"
 #include "iinq_execute.h"
+#include "../iinq.h"
 
 #if defined(__cplusplus)
 }

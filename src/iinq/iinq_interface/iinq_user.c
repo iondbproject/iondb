@@ -40,38 +40,34 @@ void
 cleanup(
 ) {
 	fremove("1.ffs");
-	fremove("2.ffs");
-	fremove("3.ffs");
-	fremove("4.ffs");
+/*	fremove("2.ffs"); */
+/*	fremove("3.ffs"); */
+/*	fremove("4.ffs"); */
 	fremove("Dogs.inq");
-	fremove("Dogs.sch");
-	fremove("Cust.inq");
-	fremove("Cust.sch");
-	fremove("ion_mt.tbl");
+/*	fremove("Dogs.sch"); */
+/*	fremove("Cust.inq"); */
+/*	fremove("Cust.sch"); */
+/*	fremove("ion_mt.tbl"); */
 }
 
 int
 main(
 	void
 ) {
-/*     	SQL_execute("CREATE TABLE Dogs (id INT, type CHAR[20], name VARCHAR[30], age INT, city VARCHAR[30], primary key(id));"); */
+/*		  SQL_execute("CREATE TABLE Dogs (id INT, type CHAR[20], name VARCHAR[30], age INT, city VARCHAR[30], primary key(id));"); */
 	create_table1();
-/*     	SQL_execute("INSERT INTO Dogs VALUES (10, 'Frenchie', 'Minnie', 1, 'Penticton');"); */
-	insert1();
-/*          	SQL_execute("INSERT INTO Dogs VALUES (40, 'Chihuahua', 'Barky', 7, 'Van');"); */
-/* 	insert2(); */
-/*             	SQL_execute("INSERT INTO Dogs VALUES (30, 'Black Lab', 'Thunder', 5, 'Penticton');"); */
-/* 	insert3(); */
-/*     	SQL_execute("INSERT INTO Dogs VALUES (50, 'Cockapoo', 'Corky', 2, 'West Bench');"); */
-/* 	insert4(); */
-/*      	SQL_execute("UPDATE Dogs SET id = id-1, age = age * 10 WHERE name = 'Barky';"); */
-/*    	SQL_execute("DELETE FROM Dogs WHERE age < 5;"); */
-/* 	delete1(); */
-/*     SQL_execute("DROP TABLE Dogs;"); */
-/* 	drop_table1(); */
+/*			  SQL_execute("INSERT INTO Dogs VALUES (10, 'Frenchie', 'Minnie', 1, 'Penticton');"); */
+	insertFields();
+/*	  SQL_execute("INSERT INTO Dogs VALUES (40, 'Chihuahua', 'Barky', 7, 'Van');"); */
+/*	  SQL_execute("INSERT INTO Dogs VALUES (30, 'Black Lab', 'Thunder', 5, 'Penticton');"); */
+/*	  SQL_execute("INSERT INTO Dogs VALUES (50, 'Cockapoo', 'Corky', 2, 'West Bench');"); */
+/*	  SQL_execute("UPDATE Dogs SET id = id-1, age = age * 10 WHERE name = 'Barky';"); */
+	update1();
+/*	  SQL_execute("DELETE FROM Dogs WHERE age < 5;"); */
+/*	  SQL_execute("DROP TABLE Dogs;"); */
 
 	/* Clean-up */
-//	cleanup();
+	cleanup();
 
 	return 0;
 }
