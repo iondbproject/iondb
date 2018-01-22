@@ -6,6 +6,8 @@ set(SOURCE_FILES
         iinq_user.h
         iinq_execute.c
         iinq_execute.h
+        iinq_functions.c
+        iinq_functions.h
         iinq_user_functions.c
         iinq_user_functions.h
         ../../dictionary/dictionary_types.h

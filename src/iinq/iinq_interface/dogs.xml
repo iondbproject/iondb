@@ -1,0 +1,66 @@
+<?xml version="1.0" ?>
+<schema>
+	<table_name>
+		TABLE NAME: Dogs.inq
+	</table_name>
+	<primary_key_type>
+		PRIMARY KEY TYPE: 0
+	</primary_key_type>
+	<primary_key_size>
+		PRIMARY KEY SIZE: sizeof(int)
+	</primary_key_size>
+	<value_size>
+		VALUE SIZE: sizeof(int)+sizeof(char) * 20+sizeof(char) * 30+sizeof(int)+sizeof(char) * 30
+	</value_size>
+	<num_fields>
+		NUMBER OF FIELDS: 5
+	</num_fields>
+	<num_records>
+				NUMBER OF RECORDS: 0
+	</num_records>
+	<primary_key_field>
+		PRIMARY KEY FIELD: 0
+	</primary_key_field>
+	<fields>
+		<field>
+			<field_name>
+				FIELD0 NAME: id
+			</field_name>
+			<field_type>
+				FIELD0 TYPE: INT
+			</field_type>
+		</field>
+		<field>
+			<field_name>
+				FIELD1 NAME: type
+			</field_name>
+			<field_type>
+				FIELD1 TYPE: CHAR[20]
+			</field_type>
+		</field>
+		<field>
+			<field_name>
+				FIELD2 NAME: name
+			</field_name>
+			<field_type>
+				FIELD2 TYPE: VARCHAR[30]
+			</field_type>
+		</field>
+		<field>
+			<field_name>
+				FIELD3 NAME: age
+			</field_name>
+			<field_type>
+				FIELD3 TYPE: INT
+			</field_type>
+		</field>
+		<field>
+			<field_name>
+				FIELD4 NAME: city
+			</field_name>
+			<field_type>
+				FIELD4 TYPE: VARCHAR[30]
+			</field_type>
+		</field>
+	</fields>
+</schema>

@@ -1,26 +1,21 @@
 /******************************************************************************/
 /**
-		@file		iinq_user.c
-		@author		Dana Klamut
-
-@brief		This code contains definitions for iinq user functions
+@file		iinq_functions.h
+@author		Dana Klamut
+@brief		This code contains definitions for iinq pre-defined functions
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
 @par Redistribution and use in source and binary forms, with or without
 	modification, are permitted provided that the following conditions are met:
-
 @par 1.Redistributions of source code must retain the above copyright notice,
 	this list of conditions and the following disclaimer.
-
 @par 2.Redistributions in binary form must reproduce the above copyright notice,
 	this list of conditions and the following disclaimer in the documentation
 	and/or other materials provided with the distribution.
-
 @par 3.Neither the name of the copyright holder nor the names of its contributors
 	may be used to endorse or promote products derived from this software without
 	specific prior written permission.
-
 @par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -35,44 +30,63 @@
 */
 /******************************************************************************/
 
-#include "iinq_user.h"
+#include "../../key_value/kv_system.h"
+#include "../../util/sort/sort.h"
+#include "../iinq.h"
+#include "iinq_user_functions.h"
+
+#if !defined(IINQ_FUNCTIONS_H_)
+#define IINQ_FUNCTIONS_H_
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+/**
+@brief		Struct defining all IINQ SQL statement methods.
+@see		prepared_iinq
+*/
+typedef struct prepared_iinq iinq_prepared_sql;
+
+/**
+@brief		A dictionary_handler is responsible for dealing with the specific
+			interface for an underlying dictionary, but is decoupled from a
+			specific implementation.
+*/
+struct prepared_iinq {
+	void (*execute)(
+		iinq_prepared_sql	/* Prepared SQL statement object */
+	);
+	/**< A pointer to the prepared statement's execute function. */
+	void (*setInt)(
+		iinq_prepared_sql,	/* Prepared SQL statement object */
+		int,/* Position of variable to be set in prepared statement */
+		int	/* Value to set variable to */
+	);
+	/**< A pointer to the prepared statement's setInt function. */
+	void (*setFloat)(
+		int,/* Position of variable to be set in prepared statement */
+		float	/* Value to set variable to */
+	);
+	/**< A pointer to the prepared statement's setFloat function. */
+	void (*setString)(
+		int,/* Position of variable to be set in prepared statement */
+		char *	/* Value to set variable to */
+	);
+
+	/**< A pointer to the prepared statement's setString function. */
+	unsigned char *value;	/* Value parsed from the prepared statement */
+};
 
 void
-cleanup(
-) {
-	fremove("1.ffs");
-/*	fremove("2.ffs"); */
-/*	fremove("3.ffs"); */
-/*	fremove("4.ffs"); */
-	fremove("Dogs.inq");
-/*	fremove("Dogs.sch"); */
-/*	fremove("Cust.inq"); */
-/*	fremove("Cust.sch"); */
-/*	fremove("ion_mt.tbl"); */
+insert(
+	char			*table_name,
+	void			*key,
+	unsigned char	*value
+);
+
+#if defined(__cplusplus)
 }
+#endif
 
-int
-main(
-	void
-) {
-/*			SQL_execute("CREATE TABLE Dogs (id INT, type CHAR[20], name VARCHAR[30], age INT, city VARCHAR[30], primary key(id));"); */
-	create_table1();
-
-/*			SQL_execute("INSERT INTO Dogs VALUES (10, 'Frenchie', 'Minnie', 1, 'Penticton');");  */
-/*	  SQL_execute("INSERT INTO Dogs VALUES (40, 'Chihuahua', 'Barky', 7, 'Van');"); */
-/*	  SQL_execute("INSERT INTO Dogs VALUES (30, 'Black Lab', 'Thunder', 5, 'Penticton');"); */
-/*	  SQL_execute("INSERT INTO Dogs VALUES (50, 'Cockapoo', 'Corky', 2, 'West Bench');"); */
-/*	  SQL_execute("UPDATE Dogs SET id = id-1, age = age * 10 WHERE name = 'Barky';"); */
-/*	  SQL_execute("DELETE FROM Dogs WHERE age < 5;"); */
-/*	  SQL_execute("DROP TABLE Dogs;"); */
-
-	iinq_prepared_sql p = SQL_prepare("INSERT INTO Dogs VALUES (10, 'Frenchie', 'Minnie', (?), 'Penticton');");
-
-	p.setInt(p, 1, 20);
-	p.execute(p);
-
-	/* Clean-up */
-	cleanup();
-
-	return 0;
-}
+#endif /* IINQ_FUNCTIONS_H */

@@ -44,6 +44,7 @@ extern "C" {
 #include "../iinq.h"
 #include "iinq_user.h"
 #include "../../key_value/kv_system.h"
+#include "iinq_functions.h"
 
 #define ION_IINQ_VARIABLE_NAME_LENGTH 20
 
@@ -87,24 +88,24 @@ struct iinq_table {
 */
 typedef enum ION_COMPARE_TYPE {
 	/**> Clause comparison is of type equal "=". */
-			ion_equal,
+	ion_equal,
 	/**> Clause comparison is of type not equal "!=". */
-			ion_not_equal,
+	ion_not_equal,
 	/**> Clause comparison is of type greater than ">". */
-			ion_greater_than,
+	ion_greater_than,
 	/**> Clause comparison is of type greater than or equal to ">=". */
-			ion_greater_than_equal,
+	ion_greater_than_equal,
 	/**> Clause comparison is of type less than "<". */
-			ion_less_than,
+	ion_less_than,
 	/**> Clause comparison is of type less than or equal to "<=". */
-			ion_less_than_equal,
+	ion_less_than_equal,
 	/**> Clause comparison is not of valid type. */
-			ion_invalid_comparison,
+	ion_invalid_comparison,
 } ion_compare_type_t;
 
 void
 SQL_execute(
-		char		*sql
+	char *sql
 );
 
 #if defined(__cplusplus)

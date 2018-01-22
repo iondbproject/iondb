@@ -48,7 +48,6 @@ template<typename K, typename V>
 class Dictionary {
 public:
 
-<<<<<<< HEAD
 ion_dictionary_handler_t	handler;
 ion_dictionary_t			dict;
 ion_key_type_t				key_type;
@@ -56,14 +55,6 @@ ion_key_size_t				key_size;
 ion_value_size_t			value_size;
 ion_dictionary_size_t		dict_size;
 ion_status_t				last_status;
-=======
-ion_dictionary_handler_t handler;
-ion_dictionary_t dict;
-ion_key_size_t size_k;
-ion_value_size_t size_v;
-ion_dictionary_size_t dict_size;
-ion_status_t last_status;
->>>>>>> origin/iinq-rewrite
 
 ~Dictionary(
 ) {

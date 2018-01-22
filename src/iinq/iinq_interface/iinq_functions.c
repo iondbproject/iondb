@@ -1,26 +1,21 @@
 /******************************************************************************/
 /**
-		@file		iinq_user.c
-		@author		Dana Klamut
-
-@brief		This code contains definitions for iinq user functions
+@file		iinq_functions.c
+@author		Dana Klamut
+@brief		This code contains definitions for iinq pre-defined functions
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
 @par Redistribution and use in source and binary forms, with or without
 	modification, are permitted provided that the following conditions are met:
-
 @par 1.Redistributions of source code must retain the above copyright notice,
 	this list of conditions and the following disclaimer.
-
 @par 2.Redistributions in binary form must reproduce the above copyright notice,
 	this list of conditions and the following disclaimer in the documentation
 	and/or other materials provided with the distribution.
-
 @par 3.Neither the name of the copyright holder nor the names of its contributors
 	may be used to endorse or promote products derived from this software without
 	specific prior written permission.
-
 @par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -35,44 +30,42 @@
 */
 /******************************************************************************/
 
-#include "iinq_user.h"
+#include "iinq_functions.h"
 
 void
-cleanup(
+insert(
+	char			*table_name,
+	void			*key,
+	unsigned char	*value
 ) {
-	fremove("1.ffs");
-/*	fremove("2.ffs"); */
-/*	fremove("3.ffs"); */
-/*	fremove("4.ffs"); */
-	fremove("Dogs.inq");
-/*	fremove("Dogs.sch"); */
-/*	fremove("Cust.inq"); */
-/*	fremove("Cust.sch"); */
-/*	fremove("ion_mt.tbl"); */
-}
+	ion_err_t					error;
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
 
-int
-main(
-	void
-) {
-/*			SQL_execute("CREATE TABLE Dogs (id INT, type CHAR[20], name VARCHAR[30], age INT, city VARCHAR[30], primary key(id));"); */
-	create_table1();
+	dictionary.handler	= &handler;
 
-/*			SQL_execute("INSERT INTO Dogs VALUES (10, 'Frenchie', 'Minnie', 1, 'Penticton');");  */
-/*	  SQL_execute("INSERT INTO Dogs VALUES (40, 'Chihuahua', 'Barky', 7, 'Van');"); */
-/*	  SQL_execute("INSERT INTO Dogs VALUES (30, 'Black Lab', 'Thunder', 5, 'Penticton');"); */
-/*	  SQL_execute("INSERT INTO Dogs VALUES (50, 'Cockapoo', 'Corky', 2, 'West Bench');"); */
-/*	  SQL_execute("UPDATE Dogs SET id = id-1, age = age * 10 WHERE name = 'Barky';"); */
-/*	  SQL_execute("DELETE FROM Dogs WHERE age < 5;"); */
-/*	  SQL_execute("DROP TABLE Dogs;"); */
+	error				= iinq_open_source(table_name, &dictionary, &handler);
 
-	iinq_prepared_sql p = SQL_prepare("INSERT INTO Dogs VALUES (10, 'Frenchie', 'Minnie', (?), 'Penticton');");
+	if (err_ok != error) {
+		printf("Error occurred. Error code: %i\n", error);
+		return;
+	}
 
-	p.setInt(p, 1, 20);
-	p.execute(p);
+	ion_status_t status;
 
-	/* Clean-up */
-	cleanup();
+	status = dictionary_insert(&dictionary, key, value);
 
-	return 0;
+	if (err_ok != status.error) {
+		printf("Error occurred. Error code: %i\n", error);
+		return;
+	}
+
+	print_table_dogs(&dictionary);
+
+	error = ion_close_dictionary(&dictionary);
+
+	if (err_ok != error) {
+		printf("Error occurred. Error code: %i\n", error);
+		return;
+	}
 }
