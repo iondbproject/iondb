@@ -1569,7 +1569,7 @@ test_static_equality(
 	Dictionary<int, int> *dict;
 
 	ion_dictionary_config_info_t config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 20, .dictionary_type = dictionary_type_bpp_tree_t
+		.id = 1, .use_type = 0, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 20, .dictionary_type = dictionary_type_bpp_tree_t, .dictionary_status = err_ok
 	};
 
 	int type = 0;
@@ -2386,7 +2386,7 @@ test_static_setup_all(
 	Dictionary<int, int> *dict;
 
 	ion_dictionary_config_info_t config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 20, .dictionary_type = dictionary_type_bpp_tree_t
+		.id = 1, .use_type = 0, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 20, .dictionary_type = dictionary_type_bpp_tree_t, .dictionary_status = err_ok
 	};
 
 	int type = 0;
@@ -2438,7 +2438,7 @@ test_static_insert_multiple_all(
 	Dictionary<int, int> *dict;
 
 	ion_dictionary_config_info_t config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 20, .dictionary_type = dictionary_type_bpp_tree_t
+		.id = 1, .use_type = 0, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 20, .dictionary_type = dictionary_type_bpp_tree_t, .dictionary_status = err_ok
 	};
 
 	int type = 0;
@@ -2495,7 +2495,7 @@ test_static_get_lots_all(
 	Dictionary<int, int> *dict;
 
 	ion_dictionary_config_info_t config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 20, .dictionary_type = dictionary_type_bpp_tree_t
+		.id = 1, .use_type = 0, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 20, .dictionary_type = dictionary_type_bpp_tree_t, .dictionary_status = err_ok
 	};
 
 	int type = 0;
@@ -2552,7 +2552,7 @@ test_static_get_nonexist_many_all(
 	Dictionary<int, int> *dict;
 
 	ion_dictionary_config_info_t config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_bpp_tree_t
+		.id = 1, .use_type = 0, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_bpp_tree_t, .dictionary_status = err_ok
 	};
 
 	int type = 0;
@@ -2609,7 +2609,7 @@ test_static_update_exist_in_many_all(
 	Dictionary<int, int> *dict;
 
 	ion_dictionary_config_info_t config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_bpp_tree_t
+		.id = 1, .use_type = 0, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_bpp_tree_t, .dictionary_status = err_ok
 	};
 
 	int type = 0;
@@ -2666,7 +2666,7 @@ test_static_range_all_all(
 	Dictionary<int, int> *dict;
 
 	ion_dictionary_config_info_t config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_bpp_tree_t
+		.id = 1, .use_type = 0, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_bpp_tree_t, .dictionary_status = err_ok
 	};
 
 	int type = 0;
@@ -2720,7 +2720,7 @@ test_static_all_records_random_all(
 	Dictionary<int, int> *dict;
 
 	ion_dictionary_config_info_t config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_bpp_tree_t
+		.id = 1, .use_type = 0, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_bpp_tree_t, .dictionary_status = err_ok
 	};
 
 	int type = 0;
@@ -2810,7 +2810,7 @@ test_static_create_open_close_all(
 	Dictionary<int, int> *dictionary;
 
 	ion_dictionary_config_info_t config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_bpp_tree_t
+		.id = 1, .use_type = 0, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_bpp_tree_t, .dictionary_status = err_ok
 	};
 
 	int type = 0;
@@ -2900,7 +2900,7 @@ test_static_create_open_close_complex_all(
 	Dictionary<int, int> *dictionary;
 
 	ion_dictionary_config_info_t config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_bpp_tree_t
+		.id = 1, .use_type = 0, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_bpp_tree_t, .dictionary_status = err_ok
 	};
 
 	int type = 0;

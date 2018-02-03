@@ -810,7 +810,7 @@ test_static_delete_all_all(
 	Dictionary<int, int> *dict;
 
 	ion_dictionary_config_info_t config = {
-		.id = 1, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_bpp_tree_t
+		.id = 1, .use_type = 0, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_bpp_tree_t, .dictionary_status = err_ok
 	};
 
 	int type = 0;
