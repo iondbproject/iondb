@@ -1,9 +1,8 @@
 /******************************************************************************/
 /**
-@file		test_cpp_wrapper.h
-@author		Eric Huang, Dana Klamut
-@brief		Unit test for the C++ Wrapper
-@todo		These tests need to be fully fleshed out.
+@file		run_cpp_wrapper1.cpp
+@author		Eric Huang
+@brief		Entry point for C++ Wrapper unit tests
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
@@ -35,11 +34,11 @@
 */
 /******************************************************************************/
 
-#ifndef TEST_CPP_WRAPPER_H_
-#define TEST_CPP_WRAPPER_H_
+#include "test_cpp_wrapper1.h"
 
-void
-runalltests_cpp_wrapper(
-);
-
-#endif
+int
+main(
+) {
+	runalltests_cpp_wrapper1();
+	return 0;
+}
