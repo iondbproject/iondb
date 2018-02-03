@@ -2996,11 +2996,6 @@ cpp_wrapper2_getsuite_3(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_update_nonexist_in_many_all);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_update_exist_single_all);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_update_exist_in_many_all);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_update_all_all);
-
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_open_close);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all_1);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all_2);
 
 	return suite;
 }
@@ -3014,21 +3009,15 @@ cpp_wrapper2_getsuite_4(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_update_all_all);
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_open_close);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all_1);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all_2);
+
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_equality_all);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_equality_nonexist_empty_all);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_equality_nonexist_all);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_range_single_all);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_range_multiple_all);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_range_nonexist_empty_all);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_range_nonexist_all);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_range_exist_single_all);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_range_all_all);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_all_records_all);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_all_records_nonexist_empty_all);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_all_records_populated_all);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_all_records_random_all);
-
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_open_close_all);
 
 	return suite;
 }
@@ -3042,7 +3031,46 @@ cpp_wrapper2_getsuite_5(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_range_single_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_range_multiple_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_range_nonexist_empty_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_range_nonexist_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_range_exist_single_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_range_all_all);
+
+	return suite;
+}
+
+/**
+@brief		Creates the suite to test.
+@return		Pointer to a test suite.
+*/
+planck_unit_suite_t *
+cpp_wrapper2_getsuite_6(
+) {
+	planck_unit_suite_t *suite = planck_unit_new_suite();
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_all_records_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_all_records_nonexist_empty_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_all_records_populated_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_all_records_random_all);
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_open_close_all);
+
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_static_setup_all);
+
+	return suite;
+}
+
+/**
+@brief		Creates the suite to test.
+@return		Pointer to a test suite.
+*/
+planck_unit_suite_t *
+cpp_wrapper2_getsuite_7(
+) {
+	planck_unit_suite_t *suite = planck_unit_new_suite();
+
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_static_insert_multiple_all);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_static_get_lots_all);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_static_get_nonexist_many_all);
@@ -3092,4 +3120,14 @@ runalltests_cpp_wrapper2(
 
 	planck_unit_run_suite(suite5);
 	planck_unit_destroy_suite(suite5);
+
+	planck_unit_suite_t *suite6 = cpp_wrapper2_getsuite_6();
+
+	planck_unit_run_suite(suite6);
+	planck_unit_destroy_suite(suite6);
+
+	planck_unit_suite_t *suite7 = cpp_wrapper2_getsuite_7();
+
+	planck_unit_run_suite(suite7);
+	planck_unit_destroy_suite(suite7);
 }
