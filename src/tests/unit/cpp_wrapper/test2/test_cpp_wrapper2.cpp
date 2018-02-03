@@ -2321,61 +2321,6 @@ test_master_table_dictionary_open_close_all_1(
 }
 
 /**
-@brief	This function tests opening and closing a dictionary using the master table.
-*/
-void
-test_master_table_dictionary_open_close(
-	planck_unit_test_t		*tc,
-	ion_dictionary_size_t	dictionary_size,
-	ion_dictionary_type_t	dictionary_type
-) {
-	MasterTable *master_table = new MasterTable();
-
-	ion_dictionary_id_t id;
-
-	master_table_setup(tc, master_table);
-	master_table_init(tc, master_table);
-
-	Dictionary<int, int> *dictionary;
-
-	int type = 0;
-
-	dictionary	= master_table->initializeDictionary(key_type_numeric_signed, type, type, sizeof(int), sizeof(int), dictionary_size, dictionary_type);
-	master_table_create_dictionary(tc, master_table, dictionary, 1, key_type_numeric_signed, sizeof(int), sizeof(int), dictionary_size, dictionary_type);
-
-	id			= dictionary->dict.instance->id;
-
-	master_table_close_dictionary(tc, master_table, dictionary);
-	master_table_open_dictionary(tc, master_table, dictionary, id);
-
-	master_table_delete_dictionary(tc, master_table, dictionary);
-
-	delete master_table;
-}
-
-/**
-@brief Tests opening and closing a dictionary using the master table on all
-		dictionary implementations created using the master table.
-*/
-void
-test_master_table_dictionary_open_close_all_2(
-	planck_unit_test_t *tc
-) {
-	test_master_table_dictionary_open_close(tc, 0, dictionary_type_bpp_tree_t);
-
-	test_master_table_dictionary_open_close(tc, 30, dictionary_type_flat_file_t);
-
-	test_master_table_dictionary_open_close(tc, 50, dictionary_type_open_address_hash_t);
-
-	test_master_table_dictionary_open_close(tc, 50, dictionary_type_open_address_file_hash_t);
-
-	test_master_table_dictionary_open_close(tc, 7, dictionary_type_skip_list_t);
-
-	/* Uncomment when LinearHash dictionary open memory issue fixed. */
-/*	test_master_table_dictionary_open_close(tc, 7, dictionary_type_linear_hash_t); */
-}
-
-/**
 @brief	This function tests whether or not we can build and a dictionary
 		on all dictionary implementations.
 */
@@ -3013,7 +2958,10 @@ cpp_wrapper2_getsuite_4(
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_open_close);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all_1);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_master_table_dictionary_open_close_all_2);
+
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_equality_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_equality_nonexist_empty_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_equality_nonexist_all);
 
 	return suite;
 }
@@ -3026,10 +2974,6 @@ planck_unit_suite_t *
 cpp_wrapper2_getsuite_5(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
-
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_equality_all);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_equality_nonexist_empty_all);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_equality_nonexist_all);
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_range_single_all);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_range_multiple_all);
