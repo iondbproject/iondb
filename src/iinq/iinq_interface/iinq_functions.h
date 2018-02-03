@@ -58,24 +58,15 @@ struct prepared_iinq {
 		iinq_prepared_sql	/* Prepared SQL statement object */
 	);
 	/**< A pointer to the prepared statement's execute function. */
-	void (*setInt)(
+	void (*setParam)(
 		iinq_prepared_sql,	/* Prepared SQL statement object */
 		int,/* Position of variable to be set in prepared statement */
-		int	/* Value to set variable to */
-	);
-	/**< A pointer to the prepared statement's setInt function. */
-	void (*setFloat)(
-		int,/* Position of variable to be set in prepared statement */
-		float	/* Value to set variable to */
-	);
-	/**< A pointer to the prepared statement's setFloat function. */
-	void (*setString)(
-		int,/* Position of variable to be set in prepared statement */
-		char *	/* Value to set variable to */
+		void *	/* Value to set variable to */
 	);
 
 	/**< A pointer to the prepared statement's setString function. */
-	unsigned char *value;	/* Value parsed from the prepared statement */
+	unsigned char	*value;	/* Value parsed from the prepared statement */
+	char			*table;	/* The table name */
 };
 
 void

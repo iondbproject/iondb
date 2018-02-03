@@ -55,7 +55,7 @@ int
 main(
 	void
 ) {
-/*			SQL_execute("CREATE TABLE Dogs (id INT, type CHAR[20], name VARCHAR[30], age INT, city VARCHAR[30], primary key(id));"); */
+/*	  SQL_execute("CREATE TABLE Dogs (id INT, type CHAR[20], name VARCHAR[30], age INT, city VARCHAR[30], primary key(id));"); */
 	create_table1();
 
 /*			SQL_execute("INSERT INTO Dogs VALUES (10, 'Frenchie', 'Minnie', 1, 'Penticton');");  */
@@ -66,10 +66,19 @@ main(
 /*	  SQL_execute("DELETE FROM Dogs WHERE age < 5;"); */
 /*	  SQL_execute("DROP TABLE Dogs;"); */
 
-	iinq_prepared_sql p = SQL_prepare("INSERT INTO Dogs VALUES (10, 'Frenchie', 'Minnie', (?), 'Penticton');");
+	iinq_prepared_sql p1 = SQL_Dogs("INSERT INTO Dogs VALUES (10, (?), 'Minnie', (?), 'Penticton');");
 
-	p.setInt(p, 1, 20);
-	p.execute(p);
+	p1.setParam(p1, 1, (int *) 20);
+	p1.setParam(p1, 2, (int *) 10);
+	p1.execute(p1);
+
+/*	  SQL_execute("CREATE TABLE Cats (id INT, name VARCHAR[30], age INT, primary key(id));"); */
+	create_table2();
+
+	iinq_prepared_sql p2 = SQL_Cats("INSERT INTO Cats VALUES (1, 'Chester', (?));");
+
+	p2.setParam(p2, 1, (int *) 5);
+	p2.execute(p2);
 
 	/* Clean-up */
 	cleanup();
