@@ -46,7 +46,7 @@ $(BUILD_DIR)/Makefile: init_dirs
 
 .PHONY: all
 all: init_dirs $(BUILD_DIR)/Makefile
-	make clean ; cd $(BUILD_DIR) ; cmake .. ; make all
+	cd $(BUILD_DIR) ; make all
 
 .PHONY: test
 test: init_dirs $(SCRIPTS_DIR)/runalltests.py
@@ -69,8 +69,4 @@ format: $(SCRIPTS_DIR)/format.py
 .PHONY: checktest
 checktest: $(SCRIPTS_DIR)/checktest.py
 	$(PY) $(SCRIPTS_DIR)/checktest.py
-
-.PHONY: precompile
-precompile: init_dirs $(BUILD_DIR)/Makefile
-	make clean ; cd $(BUILD_DIR) ; cmake -DCMAKE_BUILD_TYPE=precompile .. ; make all
 ################################################################################
