@@ -2971,9 +2971,9 @@ cpp_wrapper2_getsuite_5(
 ) {
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_equality_all);
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_equality_nonexist_empty_all); */
-/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_equality_nonexist_all); */
+/*	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_equality_all); */
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_equality_nonexist_empty_all);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_cpp_wrapper_equality_nonexist_all);
 
 	return suite;
 }
