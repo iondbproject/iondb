@@ -36,125 +36,13 @@
 /******************************************************************************/
 
 #include "../test1/test_cpp_wrapper1.h"
+#include "../test2/test_cpp_wrapper2.h"
 
-#ifndef TEST_CPP_WRAPPER2_H_
-#define TEST_CPP_WRAPPER2_H_
-
-void
-runalltests_cpp_wrapper2(
-);
+#ifndef TEST_CPP_WRAPPER3_H_
+#define TEST_CPP_WRAPPER3_H_
 
 void
-test_cpp_wrapper_equality_duplicates(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict,
-	int key
-);
-
-void
-test_cpp_wrapper_equality_duplicates(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict,
-	int key
-);
-
-void
-test_cpp_wrapper_range(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict,
-	int min_key,
-	int max_key
-);
-
-void
-test_cpp_wrapper_equality_no_duplicates(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict,
-	int key
-);
-
-void
-test_cpp_wrapper_all_records(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict,
-	int random_positive_num
-);
-
-void
-cpp_wrapper_range(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict,
-	int min_key,
-	int max_key,
-	int expected_records[],
-	int expected_num_records,
-	ion_boolean_t records_exist
-);
-
-void
-cpp_wrapper_equality(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict,
-	int key,
-	int expected_values[],
-	int expected_num_records,
-	ion_boolean_t key_exists
-);
-
-void
-test_cpp_wrapper_equality(
-	planck_unit_test_t	*tc,
-	int					key
-);
-
-void
-cpp_wrapper_all_records(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict,
-	int expected_records[],
-	int expected_num_records,
-	ion_boolean_t records_exist
-);
-
-void
-cpp_wrapper_update(
-	planck_unit_test_t *tc,
-	Dictionary<int, int>	*dict,
-	int key,
-	int value,
-	ion_err_t expected_status,
-	ion_result_count_t expected_count,
-	ion_boolean_t check_result
-);
-
-void
-test_cpp_wrapper_get_nonexist_many(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict
-);
-
-void
-test_cpp_wrapper_update_exist_in_many(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict
-);
-
-void
-test_cpp_wrapper_get_lots(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict
-);
-
-void
-test_cpp_wrapper_setup(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict
-);
-
-void
-test_cpp_wrapper_insert_multiple(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict
+runalltests_cpp_wrapper3(
 );
 
 #endif
