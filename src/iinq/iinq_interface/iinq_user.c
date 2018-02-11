@@ -55,8 +55,7 @@ int
 main(
 	void
 ) {
-/*	  SQL_execute("CREATE TABLE Dogs (id INT, type CHAR[20], name VARCHAR[30], age INT, city VARCHAR[30], primary key(id));"); */
-	create_table1();
+/*	SQL_execute("CREATE TABLE Dogs (id INT, type CHAR[20], name VARCHAR[30], age INT, city VARCHAR[30], primary key(id));"); */
 
 /*			SQL_execute("INSERT INTO Dogs VALUES (10, 'Frenchie', 'Minnie', 1, 'Penticton');");  */
 /*	  SQL_execute("INSERT INTO Dogs VALUES (40, 'Chihuahua', 'Barky', 7, 'Van');"); */
@@ -72,10 +71,11 @@ main(
 	p1.setParam(p1, 2, (int *) 10);
 	p1.execute(p1);
 
-/*	  SQL_execute("CREATE TABLE Cats (id INT, name VARCHAR[30], age INT, primary key(id));"); */
-	create_table2();
+/*  SQL_execute("CREATE TABLE Cats (id INT, name VARCHAR[30], age INT, primary key(id));"); */
+/*  create_table1(); */
 
-	iinq_prepared_sql p2 = SQL_Cats("INSERT INTO Cats VALUES (1, 'Chester', (?));");
+	iinq_prepared_sql	p2	= SQL_Cats("INSERT INTO Cats VALUES (1, 'Chester', (?));");
+	iinq_prepared_sql	p3	= SQL_Cats("INSERT INTO Cats VALUES (1, (?), 88);");
 
 	p2.setParam(p2, 1, (int *) 5);
 	p2.execute(p2);

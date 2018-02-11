@@ -19,43 +19,6 @@ void
 create_table1(
 );
 
-void
-create_table2(
-);
-
-void
-print_table_dogs(
-	ion_dictionary_t *dictionary
-);
-
-iinq_prepared_sql
-SQL_Dogs(
-	char *sql
-);
-
-size_t
-calculateOffset(
-	char	*table,
-	int		field_num
-);
-
-void
-setParam(
-	iinq_prepared_sql	p,
-	int					field_num,
-	void				*val
-);
-
-void
-execute(
-	iinq_prepared_sql p
-);
-
-iinq_prepared_sql
-SQL_Cats(
-	char *sql
-);
-
 #if defined(__cplusplus)
 }
 #endif
