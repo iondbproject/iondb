@@ -22,7 +22,7 @@ if(USE_ARDUINO)
     set(${PROJECT_NAME}_PORT        ${PORT})
     set(${PROJECT_NAME}_SERIAL      ${SERIAL})
 
-    set(${PROJECT_NAME}_SKETCH      cpp_wrapper3.ino)
+    set(${PROJECT_NAME}_SKETCH      cpp_wrapper4.ino)
     set(${PROJECT_NAME}_SRCS        ${SOURCE_FILES})
     set(${PROJECT_NAME}_LIBS        planck_unit cpp_wrapper)
 
