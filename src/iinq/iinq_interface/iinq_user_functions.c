@@ -88,6 +88,8 @@ calculateOffset(
 	const unsigned char *table,
 	int					field_num
 ) {
+	size_t offset = 0;
+
 	switch (*(int *) table) {
 		case 0: {
 			switch (field_num) {
@@ -111,6 +113,22 @@ calculateOffset(
 			}
 		}
 
+		case 1: {
+			switch (field_num) {
+				case 1:
+					return sizeof(int);
+
+				case 2:
+					return sizeof(int) + sizeof(char) * 30;
+
+				case 3:
+					return sizeof(int) + sizeof(char) * 30 + sizeof(int);
+
+				default:
+					return 0;
+			}
+		}
+
 		default:
 			return 0;
 	}
@@ -124,19 +142,28 @@ setParam(
 ) {
 	unsigned char *data = p.value;
 
-	if ((field_num == 2) && (*(int *) p.table == 0)) {
-		data += calculateOffset(p.table, field_num);
-		memcpy(data, "val", sizeof(val));
+	if (*(int *) p.table == 0) {
+		if ((field_num == 1) || (field_num == 4)) {
+			data			+= calculateOffset(p.table, field_num);
+			*(int *) data	= (int) val;
+		}
+
+		if ((field_num == 2) || (field_num == 3) || (field_num == 5)) {
+			data += calculateOffset(p.table, field_num);
+			memcpy(data, val, sizeof(val));
+		}
 	}
 
-	if ((field_num == 4) && (*(int *) p.table == 0)) {
-		data			+= calculateOffset(p.table, field_num);
-		*(int *) data	= (int) val;
-	}
+	if (*(int *) p.table == 1) {
+		if ((field_num == 1) || (field_num == 3)) {
+			data			+= calculateOffset(p.table, field_num);
+			*(int *) data	= (int) val;
+		}
 
-	if ((field_num == 2) && (*(int *) p.table == 1)) {
-		data += calculateOffset(p.table, field_num);
-		memcpy(data, "val", sizeof(val));
+		if (field_num == 2) {
+			data += calculateOffset(p.table, field_num);
+			memcpy(data, val, sizeof(val));
+		}
 	}
 }
 
@@ -149,7 +176,7 @@ execute(
 	}
 
 	if (*(int *) p.table == 1) {
-		insert("Cats", IONIZE(1, int), p.value);
+		insert("null", IONIZE(1, int), p.value);
 	}
 
 	free(p.value);

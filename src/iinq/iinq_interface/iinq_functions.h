@@ -76,6 +76,20 @@ insert(
 	unsigned char	*value
 );
 
+/**
+@brief		This is the available value types for IINQ.
+*/
+typedef enum IINQ_VALUE_TYPE {
+	/**> Field value is an int value. */
+	value_type_int,
+	/**> Field value is a char array value. */
+	value_type_char,
+	/**> Field value is a varchar value. */
+	value_type_varchar,
+	/**> Field value is a float value. */
+	value_type_float
+} iinq_value_type_t;
+
 #if defined(__cplusplus)
 }
 #endif
