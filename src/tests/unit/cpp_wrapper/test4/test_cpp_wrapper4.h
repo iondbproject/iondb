@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		test_cpp_wrapper3.h
+@file		test_cpp_wrapper4.h
 @author		Eric Huang, Dana Klamut
 @brief		Unit test for the C++ Wrapper
 @todo		These tests need to be fully fleshed out.
@@ -37,24 +37,13 @@
 
 #include "../test1/test_cpp_wrapper1.h"
 #include "../test2/test_cpp_wrapper2.h"
+#include "../test3/test_cpp_wrapper3.h"
 
-#ifndef TEST_CPP_WRAPPER3_H_
-#define TEST_CPP_WRAPPER3_H_
-
-void
-runalltests_cpp_wrapper3(
-);
+#ifndef TEST_CPP_WRAPPER4_H_
+#define TEST_CPP_WRAPPER4_H_
 
 void
-test_cpp_wrapper_range_all(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict
-);
-
-void
-test_cpp_wrapper_all_records_random(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict
+runalltests_cpp_wrapper4(
 );
 
 #endif

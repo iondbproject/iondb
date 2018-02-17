@@ -1,9 +1,8 @@
 /******************************************************************************/
 /**
-@file		test_cpp_wrapper3.h
-@author		Eric Huang, Dana Klamut
-@brief		Unit test for the C++ Wrapper
-@todo		These tests need to be fully fleshed out.
+@file		run_cpp_wrapper4.cpp
+@author		Eric Huang
+@brief		Entry point for C++ Wrapper unit tests
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
@@ -35,26 +34,11 @@
 */
 /******************************************************************************/
 
-#include "../test1/test_cpp_wrapper1.h"
-#include "../test2/test_cpp_wrapper2.h"
+#include "test_cpp_wrapper4.h"
 
-#ifndef TEST_CPP_WRAPPER3_H_
-#define TEST_CPP_WRAPPER3_H_
-
-void
-runalltests_cpp_wrapper3(
-);
-
-void
-test_cpp_wrapper_range_all(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict
-);
-
-void
-test_cpp_wrapper_all_records_random(
-	planck_unit_test_t *tc,
-	Dictionary<int, int> *dict
-);
-
-#endif
+int
+main(
+) {
+	runalltests_cpp_wrapper4();
+	return 0;
+}
