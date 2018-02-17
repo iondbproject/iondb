@@ -1579,6 +1579,19 @@ cpp_wrapper3_getsuite_4(
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_static_insert_multiple_all);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_static_get_lots_all);
+
+	return suite;
+}
+
+/**
+@brief		Creates the suite to test.
+@return		Pointer to a test suite.
+*/
+planck_unit_suite_t *
+cpp_wrapper3_getsuite_5(
+) {
+	planck_unit_suite_t *suite = planck_unit_new_suite();
+
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_static_get_nonexist_many_all);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_static_update_exist_in_many_all);
 
@@ -1621,4 +1634,9 @@ runalltests_cpp_wrapper3(
 
 	planck_unit_run_suite(suite4);
 	planck_unit_destroy_suite(suite4);
+
+	planck_unit_suite_t *suite5 = cpp_wrapper3_getsuite_5();
+
+	planck_unit_run_suite(suite5);
+	planck_unit_destroy_suite(suite5);
 }
