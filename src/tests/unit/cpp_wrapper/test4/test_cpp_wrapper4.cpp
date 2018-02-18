@@ -842,60 +842,6 @@ test_static_open_close_complex_all(
 }
 
 /**
-@brief Tests opening a dictionary using the static open method on all dictionary
-		implementations.
-*/
-void
-test_static_create_open_close_complex_all(
-	planck_unit_test_t *tc
-) {
-	Dictionary<int, int> *dictionary;
-
-	ion_dictionary_config_info_t config = {
-		.id = 1, .use_type = 0, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = sizeof(int), .dictionary_size = 100, .dictionary_type = dictionary_type_bpp_tree_t, .dictionary_status = err_ok
-	};
-
-	int type = 0;
-
-	dictionary = BppTree<int, int>::openDictionary(config, type, type);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
-	cpp_wrapper_static_open_close_complex(tc, dictionary, 66, 12);
-
-	config.dictionary_type	= dictionary_type_flat_file_t;
-
-	dictionary				= FlatFile<int, int>::openDictionary(config, type, type);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
-	cpp_wrapper_static_open_close_complex(tc, dictionary, 45, 14);
-
-	config.dictionary_size	= 160;
-	config.dictionary_type	= dictionary_type_open_address_hash_t;
-
-	dictionary				= OpenAddressHash<int, int>::openDictionary(config, type, type);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
-	cpp_wrapper_static_open_close_complex(tc, dictionary, 3, 15);
-
-	config.dictionary_type	= dictionary_type_open_address_file_hash_t;
-
-	dictionary				= OpenAddressFileHash<int, int>::openDictionary(config, type, type);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
-	cpp_wrapper_static_open_close_complex(tc, dictionary, 5, 12);
-
-	config.dictionary_size	= 100;
-	config.dictionary_type	= dictionary_type_skip_list_t;
-
-	dictionary				= SkipList<int, int>::openDictionary(config, type, type);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
-	cpp_wrapper_static_open_close_complex(tc, dictionary, 1, 13);
-
-	/* Uncomment when LinearHash dictionary open memory issue fixed. */
-/*	config.dictionary_type = dictionary_type_linear_hash_t; */
-/*  */
-/*	dictionary = LinearHash<int, int>::openDictionary(config, type, type); */
-/*	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status); */
-/*	cpp_wrapper_static_open_close_complex(tc, dictionary, 2, 22); */
-}
-
-/**
 @brief		Creates the suite to test.
 @return		Pointer to a test suite.
 */
@@ -931,7 +877,6 @@ cpp_wrapper4_getsuite_2(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_static_open_close_all);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_static_create_open_close_all);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_static_open_close_complex_all);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, test_static_create_open_close_complex_all);
 
 	return suite;
 }
