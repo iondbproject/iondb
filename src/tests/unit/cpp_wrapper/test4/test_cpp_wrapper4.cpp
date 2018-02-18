@@ -857,9 +857,9 @@ test_static_create_open_close_complex_all(
 
 	int type = 0;
 
-/*	dictionary = BppTree<int, int>::openDictionary(config, type, type); */
-/*	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status); */
-/*	cpp_wrapper_static_open_close_complex(tc, dictionary, 66, 12); */
+	dictionary = BppTree<int, int>::openDictionary(config, type, type);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, ion_dictionary_status_ok, dictionary->dict.status);
+	cpp_wrapper_static_open_close_complex(tc, dictionary, 66, 12);
 
 	config.dictionary_type	= dictionary_type_flat_file_t;
 
