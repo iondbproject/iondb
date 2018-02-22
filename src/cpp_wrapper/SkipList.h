@@ -73,6 +73,26 @@ SkipList(
 
 	this->initializeDictionary(id, key_type, key_size, value_size, dictionary_size);
 }
+
+SkipList(
+	ion_dictionary_config_info_t config
+) {
+	sldict_init(&this->handler);
+
+	this->open(config);
+}
+
+static SkipList<K, V> *
+openDictionary(
+	ion_dictionary_config_info_t	config_info,
+	K								key_type,
+	V								value_type
+) {
+	UNUSED(key_type);
+	UNUSED(value_type);
+
+	return new SkipList<K, V>(config_info);
+}
 };
 
 #endif /* PROJECT_SKIPLIST_H */

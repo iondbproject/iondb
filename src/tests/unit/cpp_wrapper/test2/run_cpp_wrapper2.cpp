@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		run_cpp_wrapper.cpp
+@file		run_cpp_wrapper2.cpp
 @author		Eric Huang
 @brief		Entry point for C++ Wrapper unit tests
 @copyright	Copyright 2017
@@ -34,11 +34,11 @@
 */
 /******************************************************************************/
 
-#include "test_cpp_wrapper.h"
+#include "test_cpp_wrapper2.h"
 
 int
 main(
 ) {
-	runalltests_cpp_wrapper();
+	runalltests_cpp_wrapper2();
 	return 0;
 }
