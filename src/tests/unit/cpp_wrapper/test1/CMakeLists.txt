@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.5)
-project(test_cpp_wrapper)
+project(test_cpp_wrapper1)
 
 set(SOURCE_FILES
-	test_cpp_wrapper.cpp
-	test_cpp_wrapper.h
-    ../../../cpp_wrapper/MasterTable.h
-    ../../../dictionary/ion_master_table.h
-    ../../../dictionary/ion_master_table.c)
+        test_cpp_wrapper1.cpp
+        test_cpp_wrapper1.h
+        ../../../../cpp_wrapper/MasterTable.h
+        ../../../../dictionary/ion_master_table.h
+        ../../../../dictionary/ion_master_table.c)
 
 
 if(USE_ARDUINO)
@@ -16,13 +16,13 @@ if(USE_ARDUINO)
     set(${PROJECT_NAME}_PORT        ${PORT})
     set(${PROJECT_NAME}_SERIAL      ${SERIAL})
 
-    set(${PROJECT_NAME}_SKETCH      cpp_wrapper.ino)
+    set(${PROJECT_NAME}_SKETCH cpp_wrapper1.ino)
     set(${PROJECT_NAME}_SRCS        ${SOURCE_FILES})
     set(${PROJECT_NAME}_LIBS        planck_unit cpp_wrapper)
 
     generate_arduino_firmware(${PROJECT_NAME})
 else()
-    add_executable(${PROJECT_NAME}          ${SOURCE_FILES} run_cpp_wrapper.cpp)
+    add_executable(${PROJECT_NAME}          ${SOURCE_FILES} run_cpp_wrapper1.cpp)
 
     target_link_libraries(${PROJECT_NAME}   planck_unit cpp_wrapper)
 

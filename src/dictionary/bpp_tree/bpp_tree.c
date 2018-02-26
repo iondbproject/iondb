@@ -88,6 +88,18 @@
 /* shortcuts */
 #define ks(ct)		((ct) * h->ks)
 
+/* statistics */
+int maxHeight;	/* maximum height attained */
+int nNodesIns;	/* number of nodes inserted */
+int nNodesDel;	/* number of nodes deleted */
+int nKeysIns;	/* number of keys inserted */
+int nKeysDel;	/* number of keys deleted */
+int nDiskReads;	/* number of disk reads */
+int nDiskWrites;/* number of disk writes */
+
+/* line number for last IO or memory error */
+int bErrLineNo;
+
 typedef char ion_bpp_key_t;	/* keys entries are treated as char arrays */
 
 typedef struct {

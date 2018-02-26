@@ -86,5 +86,8 @@ add_subdirectory(src/tests/behaviour/dictionary/linear_hash)
 
 
 add_subdirectory(src/cpp_wrapper)
-add_subdirectory(src/tests/unit/cpp_wrapper)
+add_subdirectory(src/tests/unit/cpp_wrapper/test1)
+add_subdirectory(src/tests/unit/cpp_wrapper/test2)
+add_subdirectory(src/tests/unit/cpp_wrapper/test3)
+add_subdirectory(src/tests/unit/cpp_wrapper/test4)
 add_subdirectory(src/tests/integration/cpp_wrapper)

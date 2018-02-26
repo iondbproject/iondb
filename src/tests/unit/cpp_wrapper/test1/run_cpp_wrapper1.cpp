@@ -1,8 +1,8 @@
 /******************************************************************************/
 /**
-@file		LinearHash.h
-@author		Dana Klamut
-@brief		The C++ implementation of a linear hash dictionary.
+@file		run_cpp_wrapper1.cpp
+@author		Eric Huang
+@brief		Entry point for C++ Wrapper unit tests
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
@@ -34,64 +34,11 @@
 */
 /******************************************************************************/
 
-#if !defined(PROJECT_LINEARHASH_H)
-#define PROJECT_LINEARHASH_H
+#include "test_cpp_wrapper1.h"
 
-#include "Dictionary.h"
-#include "../key_value/kv_system.h"
-#include "../dictionary/linear_hash/linear_hash_handler.h"
-
-template<typename K, typename V>
-class LinearHash:public Dictionary<K, V> {
-public:
-/**
-@brief		Registers a specific linear hash dictionary instance.
-
-@details	Registers functions for dictionary.
-@param		id
-				A unique identifier important for use of the dictionary through
-				the master table. If the dictionary is being created without
-				the master table, this identifier can be 0.
-@param		key_type
-				The type of keys to be stored in the dictionary.
-@param		key_size
-				The size of keys to be stored in the dictionary.
-@param	  value_size
-				The size of the values to be stored in the dictionary.
-@param	  dictionary_size
-				The size desired for the dictionary.
-*/
-LinearHash(
-	ion_dictionary_id_t		id,
-	ion_key_type_t			key_type,
-	ion_key_size_t			key_size,
-	ion_value_size_t		value_size,
-	ion_dictionary_size_t	dictionary_size
+int
+main(
 ) {
-	linear_hash_dict_init(&this->handler);
-
-	this->initializeDictionary(id, key_type, key_size, value_size, dictionary_size);
+	runalltests_cpp_wrapper1();
+	return 0;
 }
-
-LinearHash(
-	ion_dictionary_config_info_t config
-) {
-	linear_hash_dict_init(&this->handler);
-
-	this->open(config);
-}
-
-static LinearHash<K, V> *
-openDictionary(
-	ion_dictionary_config_info_t	config_info,
-	K								key_type,
-	V								value_type
-) {
-	UNUSED(key_type);
-	UNUSED(value_type);
-
-	return new LinearHash<K, V>(config_info);
-}
-};
-
-#endif /* PROJECT_LINEARHASH_H */
