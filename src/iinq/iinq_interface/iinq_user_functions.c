@@ -55,9 +55,46 @@ print_table_dogs(
 	free(ion_record.value);
 }
 
+void
+create_table1(
+) {
+	printf("%s\n\n", "CREATE TABLE Dogs (id INT, type CHAR[20], name VARCHAR[30], age INT, city VARCHAR[30], primary key(id))");
+
+	ion_err_t					error;
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
+
+	error = iinq_create_source("Dogs.inq", 0, sizeof(int), sizeof(int) + sizeof(char) * 20 + sizeof(char) * 30 + sizeof(int) + sizeof(char) * 30);
+
+	if (err_ok != error) {
+		printf("Error occurred. Error code: %i\n", error);
+		return;
+	}
+
+	dictionary.handler	= &handler;
+	error				= iinq_open_source("Dogs.inq", &dictionary, &handler);
+
+	if (err_ok != error) {
+		printf("Error occurred. Error code: %i\n", error);
+		return;
+	}
+
+	print_table_dogs(&dictionary);
+	error = ion_close_dictionary(&dictionary);
+
+	if (err_ok != error) {
+		printf("Error occurred. Error code: %i\n", error);
+		return;
+	}
+}
+
 iinq_prepared_sql
-SQL_Dogs1(
-	char *sql
+SQL_Dogs(
+	int		value_1,
+	char	*value_2,
+	char	*value_3,
+	int		value_4,
+	char	*value_5
 ) {
 	iinq_prepared_sql p = { 0 };
 
@@ -69,17 +106,23 @@ SQL_Dogs1(
 
 	unsigned char *data = p.value;
 
-	*(int *) data	= 10;
-	data			+= sizeof(int);
+	p.key			= malloc(sizeof(int));
+	*(int *) p.key	= value_1;
 
-	data			+= sizeof(char) * 20;
+	*(int *) data	= value_1;
+	data			+= calculateOffset(p.table, 1);
 
-	memcpy(data, "'Minnie'", sizeof("'Minnie'"));
-	data			+= sizeof(char) * 30;
+	memcpy(data, value_2, sizeof(char) * 20);
+	data			+= calculateOffset(p.table, 2);
 
-	data			+= sizeof(int);
+	memcpy(data, value_3, sizeof(char) * 30);
+	data			+= calculateOffset(p.table, 3);
 
-	memcpy(data, "'Penticton'", sizeof("'Penticton'"));
+	*(int *) data	= value_4;
+	data			+= calculateOffset(p.table, 4);
+
+	memcpy(data, value_5, sizeof(char) * 30);
+
 	return p;
 }
 
@@ -88,8 +131,6 @@ calculateOffset(
 	const unsigned char *table,
 	int					field_num
 ) {
-	size_t offset = 0;
-
 	switch (*(int *) table) {
 		case 0: {
 			switch (field_num) {
@@ -97,16 +138,16 @@ calculateOffset(
 					return sizeof(int);
 
 				case 2:
-					return sizeof(int) + sizeof(char) * 20;
+					return sizeof(int) + (sizeof(char) * 20);
 
 				case 3:
-					return sizeof(int) + sizeof(char) * 20 + sizeof(char) * 30;
+					return sizeof(int) + (sizeof(char) * 50);
 
 				case 4:
-					return sizeof(int) + sizeof(char) * 20 + sizeof(char) * 30 + sizeof(int);
+					return (sizeof(int) * 2) + (sizeof(char) * 50);
 
 				case 5:
-					return sizeof(int) + sizeof(char) * 20 + sizeof(char) * 30 + sizeof(int) + sizeof(char) * 30;
+					return (sizeof(int) * 2) + (sizeof(char) * 80);
 
 				default:
 					return 0;
@@ -119,10 +160,10 @@ calculateOffset(
 					return sizeof(int);
 
 				case 2:
-					return sizeof(int) + sizeof(char) * 30;
+					return sizeof(int) + (sizeof(char) * 30);
 
 				case 3:
-					return sizeof(int) + sizeof(char) * 30 + sizeof(int);
+					return (sizeof(int) * 2) + (sizeof(char) * 30);
 
 				default:
 					return 0;
@@ -144,24 +185,24 @@ setParam(
 
 	if (*(int *) p.table == 0) {
 		if ((field_num == 1) || (field_num == 4)) {
-			data			+= calculateOffset(p.table, field_num);
+			data			+= calculateOffset(p.table, (field_num - 1));
 			*(int *) data	= (int) val;
 		}
 
 		if ((field_num == 2) || (field_num == 3) || (field_num == 5)) {
-			data += calculateOffset(p.table, field_num);
+			data += calculateOffset(p.table, (field_num - 1));
 			memcpy(data, val, sizeof(val));
 		}
 	}
 
 	if (*(int *) p.table == 1) {
 		if ((field_num == 1) || (field_num == 3)) {
-			data			+= calculateOffset(p.table, field_num);
+			data			+= calculateOffset(p.table, (field_num - 1));
 			*(int *) data	= (int) val;
 		}
 
 		if (field_num == 2) {
-			data += calculateOffset(p.table, field_num);
+			data += calculateOffset(p.table, (field_num - 1));
 			memcpy(data, val, sizeof(val));
 		}
 	}
@@ -172,42 +213,53 @@ execute(
 	iinq_prepared_sql p
 ) {
 	if (*(int *) p.table == 0) {
-		insert("Dogs.inq", IONIZE(10, int), p.value);
+		insert("Dogs.inq", IONIZE(*(int *) p.key, int), p.value);
 	}
 
 	if (*(int *) p.table == 1) {
-		insert("null", IONIZE(1, int), p.value);
+		insert("Cats.inq", IONIZE(*(int *) p.key, int), p.value);
 	}
 
 	free(p.value);
 }
 
-iinq_prepared_sql
-SQL_Cats2(
-	char *sql
+void
+create_table2(
 ) {
-	iinq_prepared_sql p = { 0 };
+	printf("%s\n\n", "CREATE TABLE Cats (id INT, name VARCHAR[30], age INT, primary key(id))");
 
-	p.setParam			= setParam;
-	p.execute			= execute;
-	p.table				= malloc(sizeof(int));
-	*(int *) p.table	= 1;
-	p.value				= malloc(sizeof(int) + sizeof(char) * 30 + sizeof(int));
+	ion_err_t					error;
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
 
-	unsigned char *data = p.value;
+	error = iinq_create_source("Cats.inq", 0, sizeof(int), sizeof(int) + sizeof(char) * 30 + sizeof(int));
 
-	*(int *) data	= 1;
-	data			+= sizeof(int);
+	if (err_ok != error) {
+		printf("Error occurred. Error code: %i\n", error);
+		return;
+	}
 
-	memcpy(data, "'Chester'", sizeof("'Chester'"));
-	data			+= sizeof(char) * 30;
+	dictionary.handler	= &handler;
+	error				= iinq_open_source("Cats.inq", &dictionary, &handler);
 
-	return p;
+	if (err_ok != error) {
+		printf("Error occurred. Error code: %i\n", error);
+		return;
+	}
+
+	error = ion_close_dictionary(&dictionary);
+
+	if (err_ok != error) {
+		printf("Error occurred. Error code: %i\n", error);
+		return;
+	}
 }
 
 iinq_prepared_sql
-SQL_Cats3(
-	char *sql
+SQL_Cats(
+	int		value_1,
+	char	*value_2,
+	int		value_3
 ) {
 	iinq_prepared_sql p = { 0 };
 
@@ -219,11 +271,16 @@ SQL_Cats3(
 
 	unsigned char *data = p.value;
 
-	*(int *) data	= 1;
-	data			+= sizeof(int);
+	p.key			= malloc(sizeof(int));
+	*(int *) p.key	= value_1;
 
-	data			+= sizeof(char) * 30;
+	*(int *) data	= value_1;
+	data			+= calculateOffset(p.table, 1);
 
-	*(int *) data	= 88;
+	memcpy(data, value_2, sizeof(char) * 30);
+	data			+= calculateOffset(p.table, 2);
+
+	*(int *) data	= value_3;
+
 	return p;
 }

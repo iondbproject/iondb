@@ -60,7 +60,10 @@ insert(
 		return;
 	}
 
-	print_table_dogs(&dictionary);
+	/* Make more generic */
+	if (memcmp(table_name, "Dogs.inq", sizeof("Dogs.inq")) == 0) {
+		print_table_dogs(&dictionary);
+	}
 
 	error = ion_close_dictionary(&dictionary);
 

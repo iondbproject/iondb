@@ -19,6 +19,49 @@ void
 create_table1(
 );
 
+void
+execute(
+	iinq_prepared_sql p
+);
+
+iinq_prepared_sql
+SQL_Dogs(
+	int		value_1,
+	char	*value_2,
+	char	*value_3,
+	int		value_4,
+	char	*value_5
+);
+
+size_t
+calculateOffset(
+	const unsigned char *table,
+	int					field_num
+);
+
+void
+setParam(
+	iinq_prepared_sql	p,
+	int					field_num,
+	void				*val
+);
+
+void
+create_table2(
+);
+
+iinq_prepared_sql
+SQL_Cats(
+	int		value_1,
+	char	*value_2,
+	int		value_3
+);
+
+void
+print_table_dogs(
+	ion_dictionary_t *dictionary
+);
+
 #if defined(__cplusplus)
 }
 #endif

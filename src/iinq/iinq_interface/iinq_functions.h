@@ -66,6 +66,7 @@ struct prepared_iinq {
 
 	/**< A pointer to the prepared statement's setString function. */
 	unsigned char	*value;	/* Value parsed from the prepared statement */
+	unsigned char	*key;	/* Key to be inserted */
 	unsigned char	*table;	/* The table name, stored as a unique identifier */
 };
 

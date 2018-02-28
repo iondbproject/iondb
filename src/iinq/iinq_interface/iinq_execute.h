@@ -1,6 +1,6 @@
 /******************************************************************************/
 /**
-@file		iinq_user.h
+@file		iinq_execute.h
 @author		Dana Klamut
 @brief		This code contains definitions for iinq user functions
 @copyright	Copyright 2017
@@ -105,6 +105,11 @@ typedef enum ION_COMPARE_TYPE {
 
 void
 SQL_execute(
+	char *sql
+);
+
+iinq_prepared_sql
+SQL_prepare(
 	char *sql
 );
 

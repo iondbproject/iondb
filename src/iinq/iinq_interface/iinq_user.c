@@ -55,9 +55,7 @@ int
 main(
 	void
 ) {
-/*	SQL_execute("CREATE TABLE Dogs (id INT, type CHAR[20], name VARCHAR[30], age INT, city VARCHAR[30], primary key(id));"); */
-
-/*			SQL_execute("INSERT INTO Dogs VALUES (10, 'Frenchie', 'Minnie', 1, 'Penticton');");  */
+/*	  SQL_execute("INSERT INTO Dogs VALUES (10, 'Frenchie', 'Minnie', 1, 'Penticton');");  */
 /*	  SQL_execute("INSERT INTO Dogs VALUES (40, 'Chihuahua', 'Barky', 7, 'Van');"); */
 /*	  SQL_execute("INSERT INTO Dogs VALUES (30, 'Black Lab', 'Thunder', 5, 'Penticton');"); */
 /*	  SQL_execute("INSERT INTO Dogs VALUES (50, 'Cockapoo', 'Corky', 2, 'West Bench');"); */
@@ -65,20 +63,29 @@ main(
 /*	  SQL_execute("DELETE FROM Dogs WHERE age < 5;"); */
 /*	  SQL_execute("DROP TABLE Dogs;"); */
 
-	iinq_prepared_sql p1 = SQL_Dogs("INSERT INTO Dogs VALUES (10, (?), 'Minnie', (?), 'Penticton');");
+/*  SQL_execute("CREATE TABLE Dogs (id INT, type CHAR[20], name VARCHAR[30], age INT, city VARCHAR[30], primary key(id));"); */
+	create_table1();
 
-	p1.setParam(p1, 1, (int *) 20);
-	p1.setParam(p1, 2, (int *) 10);
+/*  iinq_prepared_sql p1 = SQL_prepare("INSERT INTO Dogs VALUES (10, (?), 'Minnie', (?), 'Penticton');"); */
+	iinq_prepared_sql p1 = SQL_Dogs(10, "(?)", "'Minnie'", NULL, "'Penticton'");
+
+	p1.setParam(p1, 2, "Bulldog");
+	p1.setParam(p1, 4, (int *) 5);
 	p1.execute(p1);
 
-/*  SQL_execute("CREATE TABLE Cats (id INT, name VARCHAR[30], age INT, primary key(id));"); */
-/*  create_table1(); */
+/*	  SQL_execute("CREATE TABLE Cats (id INT, name VARCHAR[30], age INT, primary key(id));"); */
+	create_table2();
 
-	iinq_prepared_sql	p2	= SQL_Cats("INSERT INTO Cats VALUES (1, 'Chester', (?));");
-	iinq_prepared_sql	p3	= SQL_Cats("INSERT INTO Cats VALUES (1, (?), 88);");
+/*	  iinq_prepared_sql	p2	= SQL_prepare("INSERT INTO Cats VALUES (1, 'Chester', (?));"); */
+	iinq_prepared_sql p2	= SQL_Cats(1, "'Chester'", NULL);
+/*	  iinq_prepared_sql	p3	= SQL_prepare("INSERT INTO Cats VALUES (1, (?), 88);"); */
+	iinq_prepared_sql p3	= SQL_Cats(1, "(?)", 88);
 
 	p2.setParam(p2, 1, (int *) 5);
 	p2.execute(p2);
+
+	p3.setParam(p3, 2, "Beau");
+	p3.execute(p3);
 
 	/* Clean-up */
 	cleanup();
