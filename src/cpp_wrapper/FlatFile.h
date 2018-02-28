@@ -72,6 +72,26 @@ FlatFile(
 
 	this->initializeDictionary(id, key_type, key_size, value_size, dictionary_size);
 }
+
+FlatFile(
+	ion_dictionary_config_info_t config
+) {
+	ffdict_init(&this->handler);
+
+	this->open(config);
+}
+
+static FlatFile<K, V> *
+openDictionary(
+	ion_dictionary_config_info_t	config_info,
+	K								key_type,
+	V								value_type
+) {
+	UNUSED(key_type);
+	UNUSED(value_type);
+
+	return new FlatFile<K, V>(config_info);
+}
 };
 
 #endif /* PROJECT_FLATFILE_H */

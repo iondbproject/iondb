@@ -34,6 +34,8 @@
 */
 /******************************************************************************/
 
+#include <iostream>
+using namespace std;
 #include "../../src/cpp_wrapper/Dictionary.h"
 #include "../../src/cpp_wrapper/MasterTable.h"
 
@@ -41,67 +43,61 @@ int
 main(
 	void
 ) {
-	/* Create master table instance */
-	MasterTable *master_table = new MasterTable();
+	int key									= 0;
+	int count								= 0;
 
-	/* Perform master table initialization */
-	master_table->initializeMasterTable();
+	/* Create dictionary */
+	ion_dictionary_id_t				id		= 1;
+	ion_dictionary_config_info_t	config	= {
+		.id = id, .type = key_type_numeric_signed, .key_size = sizeof(int), .value_size = 40, .dictionary_size = 20, .dictionary_type = dictionary_type_skip_list_t
+	};
+	int								type	= 0;
+	string							val		= "";
 
-	/**************************************************************************/
+	/* Traditional method of creating a dictionary */
+/*	Dictionary<int, string> *dictionary = new SkipList<int, string>(id, key_type_numeric_signed, sizeof(int), sizeof("abracadabra"), 7); */
 
-	/* Create Skip List dictionary using master table */
+/*	Dictionary<int, string> *dictionary = SkipList<int, string>::open(config, type, val); */
+	SkipList<int, string> *dictionary = SkipList<int, string>::openDictionary(config, type, val);
 
-	/* Data type to initialize Key and Value type of dictionary being created */
-	int type							= 0;
+	if (err_ok != dictionary->last_status.error) {
+		printf("Oh no! Something went wrong opening my dictionary\n");
+	}
 
-	Dictionary<int, int> *dictionary	= master_table->initializeDictionary(key_type_numeric_signed, type, type, sizeof(int), 10, 14, dictionary_type_skip_list_t);
+	string input;
 
-	ion_dictionary_id_t dictionary_id	= dictionary->dict.instance->id;
+	while (7 > count) {
+		printf("READY FOR INPUT\n");
+		getline(cin, input);
 
-	/**************************************************************************/
+		printf("key: %i\n", key);
+		cout << input << "\n";
+		dictionary->insert(key, input);
 
-	/* Close dictionary before closing master table  or ensure dictionary
-	instance has been closed previously to initialize it. */
+		if (key > 0) {
+			printf("last key: %i", key - 1);
+			cout << "value: " << dictionary->get(key - 1) << "\n";
+		}
 
-	master_table->closeDictionary(dictionary);
+		if (err_ok != dictionary->last_status.error) {
+			printf("Oh no! Something went wrong opening my dictionary\n");
+		}
 
-	master_table->openDictionary(dictionary, dictionary_id);
+		key = key + 1;
 
-	/**************************************************************************/
+		Cursor<int, string> *cur = dictionary->allRecords();
+		printf("\n<CURRENT DICTIONARY VALUES>\n");
 
-	/* Close master table - which will concurrently close dictionary */
+		while (cur->next()) {
+			printf("%i ", cur->getKey());
+			cout << cur->getValue() << "\n";
+		}
 
-	master_table->closeAllMasterTable();
+		printf("</CURRENT DICTIONARY VALUES>\n\n");
+		delete cur;
 
-	/**************************************************************************/
-
-	/* Re-open master table */
-
-	master_table->initializeMasterTable();
-
-	/**************************************************************************/
-
-	/* Re-open dictionary */
-
-	master_table->openDictionary(dictionary, dictionary_id);
-
-	/**************************************************************************/
-
-	/* Delete dictionary */
-
-	master_table->deleteDictionary(dictionary);
-
-	/**************************************************************************/
-
-	/* Test close master table - dictionary has been deleted so no need to close all */
-
-	master_table->closeMasterTable();
-
-	/**************************************************************************/
-
-	/* Master table must be deleted using destructor */
-
-	delete master_table;
+		count++;
+	}
 
 	return 0;
 }
