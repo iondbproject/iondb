@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.5)
-project(test_cpp_wrapper)
+project(test_iinq_device)
 
 set(SOURCE_FILES
-        iinq_test.cpp
-	test_cpp_wrapper.h
-    ../../../cpp_wrapper/MasterTable.h
-    ../../../dictionary/ion_master_table.h
-    ../../../dictionary/ion_master_table.c)
-
+    test_iinq_device.h
+    test_iinq_device.c
+    ../iinq_interface/iinq_functions.h
+    ../iinq_interface/iinq_functions.c
+    ../iinq_interface/iinq_user_functions.h
+    ../iinq_interface/iinq_user_functions.c)
 
 if(USE_ARDUINO)
     set(${PROJECT_NAME}_BOARD       ${BOARD})
@@ -16,15 +16,15 @@ if(USE_ARDUINO)
     set(${PROJECT_NAME}_PORT        ${PORT})
     set(${PROJECT_NAME}_SERIAL      ${SERIAL})
 
-    set(${PROJECT_NAME}_SKETCH      cpp_wrapper.ino)
     set(${PROJECT_NAME}_SRCS        ${SOURCE_FILES})
-    set(${PROJECT_NAME}_LIBS        planck_unit cpp_wrapper)
+    set(${PROJECT_NAME}_SKETCH      test_iinq.ino)
+    set(${PROJECT_NAME}_LIBS        planck_unit iinq flat_file skip_list open_address_file_hash open_address_hash linear_hash)
 
     generate_arduino_firmware(${PROJECT_NAME})
 else()
-    add_executable(${PROJECT_NAME}          ${SOURCE_FILES} run_cpp_wrapper.cpp)
+    add_executable(${PROJECT_NAME}          run_iinq_device.c ${SOURCE_FILES})
 
-    target_link_libraries(${PROJECT_NAME}   planck_unit cpp_wrapper)
+    target_link_libraries(${PROJECT_NAME}   planck_unit iinq flat_file skip_list open_address_file_hash open_address_hash linear_hash)
 
     # Use cmake -DCOVERAGE_TESTING=ON to include coverage testing information.
     if (CMAKE_COMPILER_IS_GNUCC AND COVERAGE_TESTING)
@@ -33,4 +33,3 @@ else()
         set(CMAKE_C_OUTPUT_EXTENSION_REPLACE 1)
     endif()
 endif()
-

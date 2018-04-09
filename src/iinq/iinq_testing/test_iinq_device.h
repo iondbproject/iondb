@@ -1,21 +1,25 @@
 /******************************************************************************/
 /**
-@file		iinq_user.c
+@file		test_iinq_device.h
 @author		Dana Klamut
-@brief		This code contains definitions for iinq user functions
+@brief		Entry point for iinq tests.
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
 @par Redistribution and use in source and binary forms, with or without
 	modification, are permitted provided that the following conditions are met:
+
 @par 1.Redistributions of source code must retain the above copyright notice,
 	this list of conditions and the following disclaimer.
+
 @par 2.Redistributions in binary form must reproduce the above copyright notice,
 	this list of conditions and the following disclaimer in the documentation
 	and/or other materials provided with the distribution.
+
 @par 3.Neither the name of the copyright holder nor the names of its contributors
 	may be used to endorse or promote products derived from this software without
 	specific prior written permission.
+
 @par THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -30,11 +34,27 @@
 */
 /******************************************************************************/
 
-#include "iinq_execute.h"
+#ifndef PLANCK_UNIT_TEST_IINQ_H
+#define PLANCK_UNIT_TEST_IINQ_H
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+#include <stdio.h>
+#include <string.h>
+#include <limits.h>
+#include "../iinq.h"
+#include "../iinq_interface/iinq_user_functions.h"
+#include "../../tests/planck-unit/src/planck_unit.h"
 
 void
-SQL_execute(
-	char *sql
-) {
-	printf("\n%s\n", sql);
+run_all_tests_iinq_device(
+	int num_records
+);
+
+#if defined(__cplusplus)
 }
+#endif
+
+#endif /* PLANCK_UNIT_TEST_IINQ_H */

@@ -43,53 +43,121 @@ extern "C" {
 #endif
 
 /**
-@brief		Struct defining all IINQ SQL statement methods.
+@brief		This is the available operation types for IINQ.
+*/
+typedef enum IINQ_OPERATION_TYPE {
+	/**> Operation to be performed is an INSERT. */
+	iinq_insert_t,
+	/**> Operation to be performed is a DELETE. */
+	iinq_delete_t,
+	/**> Operation to be performed is an UPDATE. */
+	iinq_update_t
+} iinq_operation_type_t;
+
+/**
+@brief		Struct defining IINQ INSERT components.
 @see		prepared_iinq
 */
 typedef struct prepared_iinq iinq_prepared_sql;
 
-/**
-@brief		A dictionary_handler is responsible for dealing with the specific
-			interface for an underlying dictionary, but is decoupled from a
-			specific implementation.
-*/
 struct prepared_iinq {
-	void (*execute)(
-		iinq_prepared_sql	/* Prepared SQL statement object */
-	);
-	/**< A pointer to the prepared statement's execute function. */
-	void (*setParam)(
-		iinq_prepared_sql,	/* Prepared SQL statement object */
-		int,/* Position of variable to be set in prepared statement */
-		void *	/* Value to set variable to */
-	);
-
-	/**< A pointer to the prepared statement's setString function. */
 	unsigned char	*value;	/* Value parsed from the prepared statement */
 	unsigned char	*key;	/* Key to be inserted */
 	unsigned char	*table;	/* The table name, stored as a unique identifier */
 };
 
+/**
+@brief		Struct defining IINQ SELECT iterator.
+@see		select_iinq
+*/
+typedef struct select_iinq iinq_result_set;
+
+struct select_iinq {
+	ion_record_t		record;
+	ion_dict_cursor_t	*cursor;
+	unsigned char		*table_id;
+	unsigned char		*fields;
+	unsigned char		*num_fields;
+};
+
 void
-insert(
-	char			*table_name,
-	void			*key,
-	unsigned char	*value
+iinq_execute(
+	char					*table_name,
+	void					*key,
+	unsigned char			*value,
+	iinq_operation_type_t	type
 );
 
 /**
-@brief		This is the available value types for IINQ.
+@brief		This is the available boolean operator types for IINQ.
 */
-typedef enum IINQ_VALUE_TYPE {
-	/**> Field value is an int value. */
-	value_type_int,
-	/**> Field value is a char array value. */
-	value_type_char,
-	/**> Field value is a varchar value. */
-	value_type_varchar,
-	/**> Field value is a float value. */
-	value_type_float
-} iinq_value_type_t;
+typedef enum IINQ_BOOL_OPERATOR_TYPE {
+	/**> Operator corresponding to "=". */
+	iinq_equal,
+	/**> Operator corresponding to "!=". */
+	iinq_not_equal,
+	/**> Operator corresponding to "<". */
+	iinq_less_than,
+	/**> Operator corresponding to "<=". */
+	iinq_less_than_equal_to,
+	/**> Operator corresponding to ">". */
+	iinq_greater_than,
+	/**> Operator corresponding to ">=". */
+	iinq_greater_than_equal_to
+} iinq_bool_operator_t;
+
+/**
+@brief		This is the available math operator types for IINQ.
+*/
+typedef enum IINQ_MATH_OPERATOR_TYPE {
+	/**> Operator corresponding to "-". */
+	iinq_subtract,
+	/**> Operator corresponding to "+". */
+	iinq_add,
+	/**> Operator corresponding to "*". */
+	iinq_multiply,
+	/**> Operator corresponding to "/". */
+	iinq_divide
+} iinq_math_operator_t;
+
+/**
+@brief		This is the available operator types for IINQ.
+*/
+typedef enum IINQ_FIELD_TYPE {
+	/**> Operator corresponding to "=". */
+	iinq_int,
+	/**> Operator corresponding to "!=". */
+	iinq_char
+} iinq_field_t;
+
+void
+SQL_execute(
+	char *sql
+);
+
+iinq_prepared_sql
+SQL_prepare(
+	char *sql
+);
+
+iinq_result_set
+SQL_select(
+	char *sql
+);
+
+ion_cursor_status_t
+iinq_next_record(
+	ion_dict_cursor_t	*cursor,
+	ion_record_t		*record
+);
+
+ion_boolean_t
+where(
+	unsigned char	*id,
+	ion_record_t	*record,
+	int				num_fields,
+	va_list			*where
+);
 
 #if defined(__cplusplus)
 }

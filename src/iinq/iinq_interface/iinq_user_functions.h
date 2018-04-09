@@ -13,10 +13,13 @@ extern "C" {
 #include "../../dictionary/dictionary.h"
 #include "../iinq.h"
 #include "iinq_functions.h"
-#include "iinq_execute.h"
 
 void
-create_table1(
+create_table(
+	char				*table_name,
+	ion_key_type_t		key_type,
+	ion_key_size_t		key_size,
+	ion_value_size_t	value_size
 );
 
 void
@@ -25,18 +28,10 @@ execute(
 );
 
 iinq_prepared_sql
-SQL_Dogs(
+insert_Cats(
 	int		value_1,
 	char	*value_2,
-	char	*value_3,
-	int		value_4,
-	char	*value_5
-);
-
-size_t
-calculateOffset(
-	const unsigned char *table,
-	int					field_num
+	int		value_3
 );
 
 void
@@ -47,18 +42,78 @@ setParam(
 );
 
 void
-create_table2(
-);
-
-iinq_prepared_sql
-SQL_Cats(
-	int		value_1,
-	char	*value_2,
-	int		value_3
+delete_record(
+	int				id,
+	char			*name,
+	ion_key_type_t	key_type,
+	size_t			key_size,
+	size_t			value_size,
+	int				fields,
+	...
 );
 
 void
-print_table_dogs(
+update(
+	int				id,
+	char			*name,
+	ion_key_type_t	key_type,
+	size_t			key_size,
+	size_t			value_size,
+	int				num_wheres,
+	int				num_update,
+	int				num,
+	...
+);
+
+iinq_result_set
+iinq_select(
+	int				id,
+	char			*name,
+	ion_key_type_t	key_type,
+	size_t			key_size,
+	size_t			value_size,
+	int				num_wheres,
+	int				num_fields,
+	int				num,
+	...
+);
+
+ion_boolean_t
+next(
+	iinq_result_set *select
+);
+
+char *
+getString(
+	iinq_result_set *select,
+	int				field_num
+);
+
+int
+getInt(
+	iinq_result_set *select,
+	int				field_num
+);
+
+void
+drop_table(
+	char *table_name
+);
+
+size_t
+calculateOffset(
+	const unsigned char *table,
+	int					field_num
+);
+
+iinq_field_t
+getFieldType(
+	const unsigned char *table,
+	int					field_num
+);
+
+void
+print_table_cats(
 	ion_dictionary_t *dictionary
 );
 

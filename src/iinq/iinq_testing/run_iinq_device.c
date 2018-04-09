@@ -1,8 +1,8 @@
 /******************************************************************************/
 /**
-@file		iinq_user.h
+@file		run_iinq_device.c
 @author		Dana Klamut
-@brief		This code contains definitions for iinq user functions
+@brief		Entry point for iinq tests.
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
@@ -34,20 +34,13 @@
 */
 /******************************************************************************/
 
-#if !defined(IINQ_USER_H_)
-#define IINQ_USER_H_
+#include "test_iinq_device.h"
 
-#if defined(__cplusplus)
-extern "C" {
-#endif
-
-#include "../../key_value/kv_system.h"
-#include "iinq_user_functions.h"
-#include "../iinq.h"
-#include "iinq_functions.h"
-
-#if defined(__cplusplus)
+int
+main(
+	void
+) {
+	fdeleteall();
+	run_all_tests_iinq_device(30);
+	return 0;
 }
-#endif
-
-#endif
