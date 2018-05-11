@@ -75,6 +75,9 @@ typedef struct select_iinq iinq_result_set;
 struct select_iinq {
 	ion_record_t		record;
 	ion_dict_cursor_t	*cursor;
+	int					*count;
+	int					*num_recs;
+	unsigned char		*value;
 	unsigned char		*table_id;
 	unsigned char		*fields;
 	unsigned char		*num_fields;
