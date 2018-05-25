@@ -39,7 +39,7 @@
 
 ion_err_t
 iinq_create_source(
-	char				*schema_file_name,
+	char				*table_name,
 	ion_key_type_t		key_type,
 	ion_key_size_t		key_size,
 	ion_value_size_t	value_size
@@ -49,9 +49,14 @@ iinq_create_source(
 	ion_dictionary_t			dictionary;
 	ion_dictionary_handler_t	handler;
 
-	dictionary.handler	= &handler;
+	dictionary.handler = &handler;
 
-	error				= ion_init_master_table();
+	char schema_file_name[ION_MAX_FILENAME_LENGTH];
+
+	snprintf(schema_file_name, ION_MAX_FILENAME_LENGTH, "%s.%s", table_name, "inq");
+	;
+
+	error = ion_init_master_table();
 
 	if (err_ok != error) {
 		return error;
@@ -103,7 +108,7 @@ iinq_create_source(
 
 ion_err_t
 iinq_open_source(
-	char						*schema_file_name,
+	char						*table_name,
 	ion_dictionary_t			*dictionary,
 	ion_dictionary_handler_t	*handler
 ) {
@@ -116,6 +121,10 @@ iinq_open_source(
 	if (err_ok != error) {
 		return error;
 	}
+
+	char schema_file_name[ION_MAX_FILENAME_LENGTH];
+
+	snprintf(schema_file_name, ION_MAX_FILENAME_LENGTH, "%s.%s", table_name, "inq");
 
 	/* Load the handler. */
 	ffdict_init(handler);
@@ -153,7 +162,7 @@ iinq_open_source(
 
 ion_status_t
 iinq_insert(
-	char		*schema_file_name,
+	char		*table_name,
 	ion_key_t	key,
 	ion_value_t value
 ) {
@@ -164,7 +173,7 @@ iinq_insert(
 
 	dictionary.handler	= &handler;
 
-	error				= iinq_open_source(schema_file_name, &dictionary, &handler);
+	error				= iinq_open_source(table_name, &dictionary, &handler);
 
 	if (err_ok != error) {
 		status = ION_STATUS_ERROR(error);
@@ -183,7 +192,7 @@ RETURN: return status;
 
 ion_status_t
 iinq_update(
-	char		*schema_file_name,
+	char		*table_name,
 	ion_key_t	key,
 	ion_value_t value
 ) {
@@ -194,7 +203,7 @@ iinq_update(
 
 	dictionary.handler	= &handler;
 
-	error				= iinq_open_source(schema_file_name, &dictionary, &handler);
+	error				= iinq_open_source(table_name, &dictionary, &handler);
 
 	if (err_ok != error) {
 		status = ION_STATUS_ERROR(error);
@@ -213,7 +222,7 @@ RETURN: return status;
 
 ion_status_t
 iinq_delete(
-	char		*schema_file_name,
+	char		*table_name,
 	ion_key_t	key
 ) {
 	ion_err_t					error;
@@ -223,7 +232,7 @@ iinq_delete(
 
 	dictionary.handler	= &handler;
 
-	error				= iinq_open_source(schema_file_name, &dictionary, &handler);
+	error				= iinq_open_source(table_name, &dictionary, &handler);
 
 	if (err_ok != error) {
 		status = ION_STATUS_ERROR(error);
@@ -242,7 +251,7 @@ RETURN: return status;
 
 ion_err_t
 iinq_drop(
-	char *schema_file_name
+	char *table_name
 ) {
 	ion_err_t					error;
 	ion_dictionary_t			dictionary;
@@ -250,13 +259,17 @@ iinq_drop(
 
 	dictionary.handler	= &handler;
 
-	error				= iinq_open_source(schema_file_name, &dictionary, &handler);
+	error				= iinq_open_source(table_name, &dictionary, &handler);
 
 	if (err_ok != error) {
 		return error;
 	}
 
 	error = dictionary_delete_dictionary(&dictionary);
+
+	char schema_file_name[ION_MAX_FILENAME_LENGTH];
+
+	snprintf(schema_file_name, ION_MAX_FILENAME_LENGTH, "%s.%s", table_name, "inq");
 
 	fremove(schema_file_name);
 
