@@ -110,35 +110,38 @@ where(
 
 	va_copy(where_list, *where);
 
-	int						fields[num_fields / 3];
-	iinq_bool_operator_t	operators[num_fields / 3];
-	void					*field_values[num_fields / 3];
+	int						fields[num_fields];
+	iinq_bool_operator_t	operators[num_fields];
+	void					*field_values[num_fields];
 
-	for (i = 0; i < num_fields / 3; i++) {
-		fields[i]		= va_arg(where_list, int);
-		operators[i]	= va_arg(where_list, iinq_bool_operator_t);
-		field_values[i] = va_arg(where_list, void *);
-	}
+	iinq_where_params_t iinq_where;
 
 	ion_boolean_t condition_failed = boolean_false;
 
-	for (i = 0; i < num_fields / 3; i++) {
+	for (i = 0; i < num_fields; i++) {
+		iinq_where = va_arg(where_list, iinq_where_params_t);
+
 		unsigned char *curr			= record->value;
 
-		iinq_field_t	field_type	= getFieldType(id, fields[i]);
+		iinq_field_t	field_type	= getFieldType(id, iinq_where.where_field);
 		int				int_value	= 0;
-		char			char_value[100];
+		char			*char_value = NULL;
 
 		if (field_type == iinq_int) {
-			int_value = (int) field_values[i];
+			int_value = (int) iinq_where.field_value;
 		}
-		else {
-			memcpy(char_value, (char *) field_values[i], sizeof(field_values[i]));
+		else if (field_type == iinq_null_terminated_string){
+			char_value = malloc(calculateOffset(id, (iinq_where.where_field))-calculateOffset(id,(iinq_where.where_field - 1)));
+			strncpy(char_value, (char *) iinq_where.field_value, sizeof(iinq_where.field_value));
+		} else {
+			size_t size = calculateOffset(id,(iinq_where.where_field))-calculateOffset(id,(iinq_where.where_field-1));
+			char_value = malloc(size);
+			memcpy(char_value, (char *) iinq_where.field_value, sizeof(iinq_where.field_value));
 		}
 
-		curr = curr + calculateOffset(id, (fields[i] - 1));
+		curr = curr + calculateOffset(id, (iinq_where.where_field - 1));
 
-		switch (operators[i]) {
+		switch (iinq_where.operator) {
 			case iinq_equal:
 
 				if (field_type == iinq_int) {
@@ -146,12 +149,17 @@ where(
 						condition_failed = boolean_true;
 					}
 				}
-				else {
-					if (memcmp(char_value, curr, calculateOffset(id, fields[i] - 1) - calculateOffset(id, fields[i] - 2)) != 0) {
+				else if (field_type == iinq_null_terminated_string) {
+					if (strncmp(char_value, curr, calculateOffset(id, iinq_where.where_field - 1) - calculateOffset(id, iinq_where.where_field - 2)) != 0) {
 						condition_failed = boolean_true;
 					}
 				}
-
+				else if (field_type == iinq_char_array) {
+					if (memcmp(char_value, curr,
+							   calculateOffset(id, iinq_where.where_field - 1) - calculateOffset(id, iinq_where.where_field - 2)) != 0) {
+						condition_failed = boolean_true;
+					}
+				}
 				break;
 
 			case iinq_not_equal:
@@ -161,8 +169,14 @@ where(
 						condition_failed = boolean_true;
 					}
 				}
-				else {
-					if (memcmp(char_value, curr, calculateOffset(id, fields[i] - 1) - calculateOffset(id, fields[i] - 2)) == 0) {
+				else if (field_type == iinq_null_terminated_string){
+					if (strncmp(char_value, curr, calculateOffset(id, iinq_where.where_field - 1) - calculateOffset(id, iinq_where.where_field - 2)) == 0) {
+						condition_failed = boolean_true;
+					}
+				}
+				else if (field_type == iinq_char_array) {
+					if (memcmp(char_value, curr,
+							   calculateOffset(id, iinq_where.where_field - 1) - calculateOffset(id, iinq_where.where_field - 2)) != 0) {
 						condition_failed = boolean_true;
 					}
 				}
@@ -176,8 +190,14 @@ where(
 						condition_failed = boolean_true;
 					}
 				}
-				else {
-					if (memcmp(char_value, curr, calculateOffset(id, fields[i] - 1) - calculateOffset(id, fields[i] - 2)) >= 0) {
+				else if (field_type == iinq_null_terminated_string) {
+					if (strncmp(char_value, curr, calculateOffset(id, iinq_where.where_field - 1) - calculateOffset(id, iinq_where.where_field - 2)) >= 0) {
+						condition_failed = boolean_true;
+					}
+				}
+				else if (field_type == iinq_char_array) {
+					if (memcmp(char_value, curr,
+							   calculateOffset(id, iinq_where.where_field - 1) - calculateOffset(id, iinq_where.where_field - 2)) != 0) {
 						condition_failed = boolean_true;
 					}
 				}
@@ -191,10 +211,16 @@ where(
 						condition_failed = boolean_true;
 					}
 				}
-				else {
-					char *value = (char *) field_values[i];
+				else if (field_type == iinq_null_terminated_string) {
+					char *value = (char *) iinq_where.field_value;
 
-					if (memcmp(value, curr, calculateOffset(id, fields[i] - 1) - calculateOffset(id, fields[i] - 2)) > 0) {
+					if (strncmp(value, curr, calculateOffset(id, iinq_where.where_field - 1) - calculateOffset(id, iinq_where.where_field - 2)) > 0) {
+						condition_failed = boolean_true;
+					}
+				}
+				else if (field_type == iinq_char_array) {
+					if (memcmp(char_value, curr,
+							   calculateOffset(id, iinq_where.where_field - 1) - calculateOffset(id, iinq_where.where_field - 2)) != 0) {
 						condition_failed = boolean_true;
 					}
 				}
@@ -208,8 +234,14 @@ where(
 						condition_failed = boolean_true;
 					}
 				}
-				else {
-					if (memcmp(char_value, curr, calculateOffset(id, fields[i] - 1) - calculateOffset(id, fields[i] - 2)) <= 0) {
+				else if (field_type == iinq_null_terminated_string){
+					if (strncmp(char_value, curr, calculateOffset(id, iinq_where.where_field - 1) - calculateOffset(id, iinq_where.where_field - 2)) <= 0) {
+						condition_failed = boolean_true;
+					}
+				}
+				else if (field_type == iinq_char_array) {
+					if (memcmp(char_value, curr,
+							   calculateOffset(id, iinq_where.where_field - 1) - calculateOffset(id, iinq_where.where_field - 2)) != 0) {
 						condition_failed = boolean_true;
 					}
 				}
@@ -223,13 +255,22 @@ where(
 						condition_failed = boolean_true;
 					}
 				}
-				else {
-					if (memcmp(char_value, curr, calculateOffset(id, fields[i] - 1) - calculateOffset(id, fields[i] - 2)) < 0) {
+				else if (field_type == iinq_null_terminated_string) {
+					if (strncmp(char_value, curr, calculateOffset(id, iinq_where.where_field - 1) - calculateOffset(id, iinq_where.where_field - 2)) < 0) {
+						condition_failed = boolean_true;
+					}
+				}
+				else if (field_type == iinq_char_array) {
+					if (memcmp(char_value, curr,
+							   calculateOffset(id, iinq_where.where_field - 1) - calculateOffset(id, iinq_where.where_field - 2)) != 0) {
 						condition_failed = boolean_true;
 					}
 				}
 
 				break;
+		}
+		if (char_value != NULL) {
+			free(char_value);
 		}
 	}
 

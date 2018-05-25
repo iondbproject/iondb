@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		iinq_functions.h
-@author		Dana Klamut
+@author		Dana Klamut, Kai Neubauer
 @brief		This code contains definitions for iinq pre-defined functions
 @copyright	Copyright 2017
 			The University of British Columbia,
@@ -37,6 +37,14 @@
 
 #if !defined(IINQ_FUNCTIONS_H_)
 #define IINQ_FUNCTIONS_H_
+
+#define IINQ_CONDITION(left, op, right) (iinq_where_params_t) {(left), (op), (right)}
+#define IINQ_CONDITION_LIST(...) __VA_ARGS__
+#define IINQ_UPDATE_LIST(...) __VA_ARGS__
+#define IINQ_UPDATE(update_field, implicit_field, operator, field_value) (iinq_update_params_t) {(update_field), (implicit_field), (operator), (field_value)}
+
+#define NULL_FIELD NULL
+#define PREPARED_FIELD NULL
 
 #if defined(__cplusplus)
 extern "C" {
@@ -124,13 +132,15 @@ typedef enum IINQ_MATH_OPERATOR_TYPE {
 } iinq_math_operator_t;
 
 /**
-@brief		This is the available operator types for IINQ.
+@brief		This is the available data types for IINQ.
 */
 typedef enum IINQ_FIELD_TYPE {
-	/**> Operator corresponding to "=". */
+	/**> Field is a signed integer type. */
 	iinq_int,
-	/**> Operator corresponding to "!=". */
-	iinq_char
+	/**> Field is a null-terminated string type. */
+	iinq_null_terminated_string,
+	/**> Field is a char array type. This requires padding to prevent reading memory that is not owned by the value. */
+	iinq_char_array
 } iinq_field_t;
 
 void
@@ -161,6 +171,27 @@ where(
 	int				num_fields,
 	va_list			*where
 );
+
+typedef void (*iinq_print_table_t)(ion_dictionary_t*);
+
+typedef void* iinq_field_value_t;
+
+struct IINQ_WHERE_PARAMS {
+	int where_field;
+	iinq_bool_operator_t operator;
+	iinq_field_value_t field_value;
+};
+
+typedef struct IINQ_WHERE_PARAMS iinq_where_params_t;
+
+struct IINQ_UPDATE_PARAMS {
+	int update_field;
+	int implicit_field;
+	iinq_math_operator_t operator;
+	iinq_field_value_t field_value;
+};
+
+typedef struct IINQ_UPDATE_PARAMS iinq_update_params_t;
 
 #if defined(__cplusplus)
 }
