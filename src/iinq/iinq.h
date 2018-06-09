@@ -46,6 +46,11 @@ extern "C" {
 typedef unsigned int ion_iinq_result_size_t;
 
 /**
+@brief		A unique identifier used for an IINQ table
+*/
+typedef unsigned char iinq_table_id;
+
+/**
 @brief		IINQ result type.
 @details	At present, this does not contain any schema information.
 */
@@ -285,9 +290,8 @@ typedef enum {
 } iinq_order_type_e;
 
 /**
-@param		schema_file_name
-				A pointer to a character array describing the name of the schema
-				file to open.
+@param		table_id
+				A pointer to a unique identifier for a table.
 @param		key_type
 				The type of key to store in this source and it's dictionary.
 @param		key_size
@@ -299,16 +303,15 @@ typedef enum {
 */
 ion_err_t
 iinq_create_source(
-	char				*schema_file_name,
+	iinq_table_id		*table_id,
 	ion_key_type_t		key_type,
 	ion_key_size_t		key_size,
 	ion_value_size_t	value_size
 );
 
 /**
-@param		schema_file_name
-				A pointer to a character array describing the name of the schema
-				file to open.
+@param		table_id
+				A pointer to a unique identifier for a table.
 @param		dictionary
 				A pointer to a dictionary object to open, initialize, and
 				manipulate.
@@ -319,16 +322,15 @@ iinq_create_source(
 */
 ion_err_t
 iinq_open_source(
-	char						*schema_file_name,
+	iinq_table_id				*table_id,
 	ion_dictionary_t			*dictionary,
 	ion_dictionary_handler_t	*handler
 );
 
 /**
 @brief		Insert a key/value into a source (and it's underlying dictionary).
-@param		schema_file_name
-				A pointer to a character array describing the name of the schema
-				file to open.
+@param		table_id
+				A pointer to a unique identifier for a table.
 @param		key
 				The key to insert.
 @param		value
@@ -337,17 +339,16 @@ iinq_open_source(
 */
 ion_status_t
 iinq_insert(
-	char		*schema_file_name,
-	ion_key_t	key,
-	ion_value_t value
+	iinq_table_id	*table_id,
+	ion_key_t		key,
+	ion_value_t		value
 );
 
 /**
 @brief		Update all values associated with a key in a given source
 			(and it's underlying dictionary).
-@param		schema_file_name
-				A pointer to a character array describing the name of the schema
-				file to open.
+@param		table_id
+				A pointer to a unique identifier for a table.
 @param		key
 				The key to update.
 @param		value
@@ -356,37 +357,35 @@ iinq_insert(
 */
 ion_status_t
 iinq_update(
-	char		*schema_file_name,
-	ion_key_t	key,
-	ion_value_t value
+	iinq_table_id	*table_id,
+	ion_key_t		key,
+	ion_value_t		value
 );
 
 /**
 @brief		Delete all records associated with a key in a source (and it's
 			associated dictionary).
-@param		schema_file_name
-				A pointer to a character array describing the name of the schema
-				file to open.
+@param		table_id
+				A pointer to a unique identifier for a table.
 @param		key
 				The key for which we wish to delete all records associated.
 @return		A status describing the result of the call.
 */
 ion_status_t
 iinq_delete(
-	char		*schema_file_name,
+	table_id	*table_id,
 	ion_key_t	key
 );
 
 /**
 @brief		Drop a source.
-@param		schema_file_name
-				A pointer to a character array describing the name of the schema
-				file to open.
+@param		table_id
+				A pointer to a unique identifier for a table.
 @return		An error describing the result of the call.
 */
 ion_err_t
 iinq_drop(
-	char *schema_file_name
+	table_id *table_id
 );
 
 ion_comparison_t
@@ -418,7 +417,7 @@ iinq_sort_compare(
 @details	Example:
 				IF_ELSE(SOME_MACRO_EQUAL_TO_ONE)(we_execute_this())(we_dont_execute_this());
 */
-#define IF_ELSE(condition)	_IF_ELSE(BOOL(condition))
+#define IF_ELSE(condition)	_IF_ELSE(BOOL (condition))
 #define _IF_ELSE(condition) CAT(_IF_, condition)
 
 #define _IF_1(...)			__VA_ARGS__ _IF_1_ELSE
@@ -638,7 +637,7 @@ iinq_sort_compare(
 	_FROM_CHECK_CURSOR_SINGLE(sources)
 
 #define FROM(with_schemas, ...) \
-	ion_iinq_cleanup_t * first; \
+	ion_iinq_cleanup_t *first; \
 	ion_iinq_cleanup_t	*last; \
 	ion_iinq_cleanup_t	*ref_cursor; \
 	ion_iinq_cleanup_t	*last_cursor; \
