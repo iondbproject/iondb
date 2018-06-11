@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 		@file		iinq_user.c
-		@author		Dana Klamut
+		@author		Dana Klamut, Kai Neubauer
 
 @brief		This code contains definitions for iinq user functions
 @copyright	Copyright 2017
@@ -40,22 +40,18 @@
 void
 cleanup(
 ) {
+	fdeleteall();
 	fremove("1.ffs");
 	fremove("2.ffs");
 	fremove("3.ffs");
-	fremove("6.ffs");
-/*	fremove("3.ffs"); */
-/*	fremove("4.ffs"); */
-	fremove("Cats.inq");
-	fremove("SEL.inq");
-	fremove("DEL.inq");
-	fremove("UPD.inq");
-/*	fremove("Dogs.sch"); */
-/*	fremove("Cust.inq"); */
-/*	fremove("Cust.sch"); */
+	fremove("0.inq");
+	fremove("1.inq");
+	fremove("2.inq");
+	fremove("255.inq");
 	fremove("ion_mt.tbl");
 }
 
+/* TODO: test OR and XOR once implemented */
 int
 main(
 	void
@@ -63,120 +59,92 @@ main(
 	/* Clean-up */
 	cleanup();
 
-/*	  SQL_execute("INSERT INTO Dogs VALUES (10, 'Frenchie', 'Minnie', 1, 'Penticton');");  */
-/*	  SQL_execute("INSERT INTO Dogs VALUES (40, 'Chihuahua', 'Barky', 7, 'Van');"); */
-/*	  SQL_execute("INSERT INTO Dogs VALUES (30, 'Black Lab', 'Thunder', 5, 'Penticton');"); */
-/*	  SQL_execute("INSERT INTO Dogs VALUES (50, 'Cockapoo', 'Corky', 2, 'West Bench');"); */
-/*	  SQL_execute("UPDATE Dogs SET id = id-1, age = age * 10 WHERE name = 'Barky';"); */
-/*	  SQL_execute("DELETE FROM Dogs WHERE age < 5;"); */
-/*	  SQL_execute("DROP TABLE Dogs;"); */
+	/* Test CREATE TABLE statement */
+/*  SQL_execute("CREATE TABLE Dogs (id INT, type CHAR(20), name VARCHAR(30), age INT, city VARCHAR(30), primary key(id));"); */
+	create_table(0, key_type_numeric_unsigned, sizeof(int), (sizeof(int) * 2) + (sizeof(char) * 80));
 
-/* / *	SQL_execute("CREATE TABLE Dogs (id INT, type CHAR[20], name VARCHAR[30], age INT, city VARCHAR[30], primary key(id));"); * / */
-/*  */
-/* / *   iinq_prepared_sql p1 = SQL_prepare("INSERT INTO Dogs VALUES (10, (?), 'Minnie', (?), 'Penticton');");  * / */
-/*  */
-/*	p1.setParam(p1, 2, "Bulldog"); */
-/*	p1.setParam(p1, 4, (int *) 5); */
-/*	p1.execute(p1); */
+	/* Test INSERT statements */
+/*  SQL_execute("INSERT INTO Dogs VALUES (10, 'Frenchie', 'Minnie', 1, 'Penticton');"); */
+	execute(insert_0(10, "Frenchie", "Minnie", 1, "Penticton"));
+/*  SQL_execute("INSERT INTO Dogs VALUES (40, 'Chihuahua', 'Barky', 7, 'Van');"); */
+	execute(insert_0(40, "Chihuahua", "Barky", 7, "Van"));
 
-/*		  SQL_execute("CREATE TABLE Cats (id INT, name VARCHAR[30], age INT, primary key(id));"); */
-	create_table("Cats.inq", key_type_numeric_unsigned, sizeof(int), (sizeof(int) * 2) + (sizeof(char) * 30));
+/*  SQL_execute("INSERT INTO Dogs COLUMNS (id, type, age) VALUES (30, 'Black Lab', 5);"); */
+	execute(insert_0(30, "Black Lab", NULL_FIELD, 5, NULL_FIELD));
+/*  SQL_execute("INSERT INTO Dogs COLUMNS (id, type) VALUES (20, 'Black Lab');"); */
+	execute(insert_0(20, "Black Lab", NULL_FIELD, NULL_FIELD, NULL_FIELD));
+/*  SQL_execute("INSERT INTO Dogs COLUMNS (city, name, id) VALUES ('West Bench', 'Corky', 50);"); */
+	execute(insert_0(50, NULL_FIELD, "Corky", NULL_FIELD, "West Bench"));
 
-/*		  iinq_prepared_sql	p2	= SQL_prepare("INSERT INTO Cats VALUES (1, 'Chester', (?));"); */
-/*			iinq_prepared_sql	p2	= insert_Cats(1, "'Chester'", NULL); */
-/*	setParam(p2, 3, (int *) 4); */
-/*	execute(p2); */
+	/* Test UPDATE statement */
+/*  SQL_execute("UPDATE Dogs SET id = id-1, age = age * 10 WHERE name = 'Barky';"); */
+	update(0, print_table_0, key_type_numeric_unsigned, sizeof(int), (sizeof(int) * 2) + (sizeof(char) * 80), 1, 2, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_equal, "Barky")), IINQ_UPDATE_LIST(IINQ_UPDATE(1, 1, iinq_subtract, 1), IINQ_UPDATE(4, 4, iinq_multiply, 10)));
 
-	iinq_prepared_sql p2 = insert_Cats(0, "'Beau'", 1);
+	/* Test DELETE statement */
+/*  SQL_execute("DELETE FROM Dogs WHERE id < 50 AND age >= 5;"); */
+	delete_record(0, print_table_0, key_type_numeric_unsigned, sizeof(int), (sizeof(int) * 2) + (sizeof(char) * 80), 2, IINQ_CONDITION_LIST(IINQ_CONDITION(4, iinq_greater_than_equal_to, 5), IINQ_CONDITION(1, iinq_less_than, 50)));
 
+	/* Test DROP TABLE statement */
+/*  SQL_execute("DROP TABLE Dogs;"); */
+	drop_table(0);
+
+	/* Create Dogs table for further testing */
+/*  SQL_execute("CREATE TABLE Dogs (id INT, type CHAR(20), name VARCHAR(30), age INT, city VARCHAR(30), primary key(id));"); */
+	create_table(1, key_type_numeric_unsigned, sizeof(int), (sizeof(int) * 2) + (sizeof(char) * 80));
+
+	/* Test prepared statements */
+/*  iinq_prepared_sql p1 = SQL_prepare("INSERT INTO Dogs VALUES (10, (?), 'Minnie', (?), 'Penticton');"); */
+	iinq_prepared_sql p1 = insert_1(10, PREPARED_FIELD, "Minnie", PREPARED_FIELD, "Penticton");
+
+	setParam(p1, 2, "Black Lab");
+	setParam(p1, 4, "5");
+	execute(p1);
+
+	/* Test that multiple tables simultaneously will not break functionality */
+/*  SQL_execute("CREATE TABLE Cats (id VARCHAR(2), name VARCHAR(30), age INT, primary key(id));"); */
+	create_table(2, key_type_char_array, (sizeof(char) * 2), (sizeof(int) * 1) + (sizeof(char) * 32));
+
+/*  SQL_execute("INSERT INTO Cats VALUES ('6', 'Buttons', 2);"); */
+	execute(insert_2("6", "Buttons", 2));
+/*  SQL_execute("INSERT INTO Cats VALUES ('4', 'Mr. Whiskers', 4);"); */
+	execute(insert_2("4", "Mr. Whiskers", 4));
+
+/*  iinq_prepared_sql p2 = SQL_prepare("INSERT INTO Cats VALUES ('5', ?, (?));"); */
+	iinq_prepared_sql p2 = insert_2("5", PREPARED_FIELD, PREPARED_FIELD);
+
+	setParam(p2, 2, "Minnie");
+	setParam(p2, 3, 6);
 	execute(p2);
 
-	iinq_prepared_sql p3 = insert_Cats(1, "'Beau'", 2);
+	/* Test DELETE with multiple conditions */
+/*  SQL_execute("DELETE FROM Cats WHERE id >= 5 AND id < 10 AND name != 'Minnie';"); */
+	delete_record(2, print_table_2, key_type_char_array, (sizeof(char) * 2), (sizeof(int) * 1) + (sizeof(char) * 32), 3, IINQ_CONDITION_LIST(IINQ_CONDITION(2, iinq_not_equal, "Minnie"), IINQ_CONDITION(1, iinq_less_than, 10), IINQ_CONDITION(1, iinq_greater_than_equal_to, 5)));
 
-	execute(p3);
-
-	iinq_prepared_sql p4 = insert_Cats(2, "'Beau'", 3);
-
-	execute(p4);
-
-	iinq_prepared_sql p5 = insert_Cats(3, "'Beau'", 4);
-
-	execute(p5);
-
-	iinq_prepared_sql p6 = insert_Cats(4, "'Beau'", 5);
-
-	execute(p6);
-
-	iinq_prepared_sql p7 = insert_Cats(5, "'Beau'", 6);
-
-	execute(p7);
-
-	iinq_prepared_sql p8 = insert_Cats(6, "'Beau'", 7);
-
-	execute(p8);
-
-	iinq_prepared_sql p0 = insert_Cats(7, "'Beau'", 8);
-
-	execute(p0);
-
-	iinq_prepared_sql p9 = insert_Cats(8, "'Beau'", 9);
-
-	execute(p9);
-
-	iinq_prepared_sql p11 = insert_Cats(9, "'Beau'", 10);
-
-	execute(p11);
-
-	iinq_prepared_sql p12 = insert_Cats(10, "'Beau'", 1);
-
-	execute(p12);
-
-/*	  iinq_prepared_sql	p3	= SQL_prepare("INSERT INTO Cats VALUES (2, (?), 88);"); */
-/*	  iinq_prepared_sql	p3	= insert_Cats(2, "(?)", 88); */
-/*	setParam(p3, 2, "'Beau'"); */
-/*	execute(p3); */
-
-/*		  SQL_execute("DELETE FROM Cats WHERE id >= 5, id < 10, name != 'Minnie';"); */
-/*	delete_record(0, "Cats.inq", key_type_numeric_unsigned, sizeof(int), (sizeof(int) * 2)+(sizeof(char) * 30), 9, 1, iinq_greater_than_equal_to, 5, 1, iinq_less_than, 10, 2, iinq_not_equal, "'Minnie'"); */
-
+	/* Test UPDATE with multiple conditions */
+/*  SQL_execute("UPDATE Cats SET age = age + 90 WHERE id >= 5 AND id < 10 AND name != 'Minnie';"); */
+	update(0, print_table_0, key_type_char_array, (sizeof(char) * 2), (sizeof(int) * 1) + (sizeof(char) * 32), 3, 1, IINQ_CONDITION_LIST(IINQ_CONDITION(2, iinq_not_equal, "Minnie"), IINQ_CONDITION(1, iinq_less_than, 10), IINQ_CONDITION(1, iinq_greater_than_equal_to, 5)), IINQ_UPDATE_LIST(IINQ_UPDATE(3, 3, iinq_add, 90)));
 /*  SQL_execute("UPDATE Cats SET age = 90 WHERE age < 5;"); */
-/*	update(0, "Cats.inq", key_type_numeric_unsigned, sizeof(int), (sizeof(int) * 2)+(sizeof(char) * 30), 3, 4, 7, 3, iinq_less_than, 5, 3, 0, 0, 90); */
+	update(0, print_table_0, key_type_char_array, (sizeof(char) * 2), (sizeof(int) * 1) + (sizeof(char) * 32), 1, 1, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_less_than, 5)), IINQ_UPDATE_LIST(IINQ_UPDATE(3, 0, 0, 90)));
 
-/*  SQL_execute("UPDATE Cats SET age = 90 WHERE id >= 5, id < 10, name != 'Minnie';"); */
-/*	update(0, "Cats.inq", key_type_numeric_unsigned, sizeof(int), (sizeof(int) * 2)+(sizeof(char) * 30), 9, 4, 13, 1, iinq_greater_than_equal_to, 5, 1, iinq_less_than, 10, 2, iinq_not_equal, "'Minnie'", 3, 0, 0, 90); */
-
+	/* Test update with implicit fields */
 /*  SQL_execute("UPDATE Cats SET age = 90, id = id+1, name = 'Chichi' WHERE age < 5;"); */
-/*	update(0, "Cats.inq", key_type_numeric_unsigned, sizeof(int), (sizeof(int) * 2)+(sizeof(char) * 30), 3, 12, 15, 3, iinq_less_than, 5, 3, 0, 0, 90, 1, 1, iinq_add, 1, 2, 0, 0, "'Chichi'"); */
+	update(0, print_table_0, key_type_char_array, (sizeof(char) * 2), (sizeof(int) * 1) + (sizeof(char) * 32), 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_less_than, 5)), IINQ_UPDATE_LIST(IINQ_UPDATE(3, 0, 0, 90), IINQ_UPDATE(1, 1, iinq_add, "1"), IINQ_UPDATE(2, 0, 0, "'Chichi'")));
+/*  SQL_execute("UPDATE Cats SET age = 90, id = id+1, name = 'Chichi' WHERE id >= 5 AND id < 10 AND name != 'Minnie';"); */
+	update(0, print_table_0, key_type_char_array, (sizeof(char) * 2), (sizeof(int) * 1) + (sizeof(char) * 32), 3, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(2, iinq_not_equal, "Minnie"), IINQ_CONDITION(1, iinq_less_than, 10), IINQ_CONDITION(1, iinq_greater_than_equal_to, 5)), IINQ_UPDATE_LIST(IINQ_UPDATE(3, 0, 0, 90), IINQ_UPDATE(1, 1, iinq_add, "1"), IINQ_UPDATE(2, 0, 0, "'Chichi'")));
 
-/*  SQL_execute("UPDATE Cats SET age = 90, id = id+1, name = 'Chichi' WHERE id >= 5, id < 10, name != 'Minnie';"); */
-/*	update(0, "Cats.inq", key_type_numeric_unsigned, sizeof(int), (sizeof(int) * 2)+(sizeof(char) * 30), 9, 12, 21, 1, iinq_greater_than_equal_to, 5, 1, iinq_less_than, 10, 2, iinq_not_equal, "'Minnie'", 3, 0, 0, 90, 1, 1, iinq_add, 1, 2, 0, 0, "'Chichi'"); */
+/*  SQL_execute("UPDATE Cats SET age = age + 5 WHERE age > 2;"); */
+	update(0, print_table_0, key_type_char_array, (sizeof(char) * 2), (sizeof(int) * 1) + (sizeof(char) * 32), 1, 1, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_greater_than, 2)), IINQ_UPDATE_LIST(IINQ_UPDATE(3, 3, iinq_add, 5)));
 
-/*		  iinq_prepared_sql	p4	= SQL_prepare("INSERT INTO Cats VALUES (3, 'Buttons', 2);"); */
-/*		  iinq_prepared_sql	p4	= insert_Cats(3, "'Buttons'", 2); */
-/*	execute(p4); */
+/*  SQL_execute("DELETE FROM Cats WHERE age >= 10;"); */
+	delete_record(2, print_table_2, key_type_char_array, (sizeof(char) * 2), (sizeof(int) * 1) + (sizeof(char) * 32), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_greater_than_equal_to, 10)));
 
-/*		  iinq_prepared_sql	p5	= SQL_prepare("INSERT INTO Cats VALUES (4, 'Mr. Whiskers', 4);"); */
-/*		  iinq_prepared_sql	p5	= insert_Cats(4, "'Mr. Whiskers'", 4); */
-/*	execute(p5); */
-
-/*		  SQL_execute("UPDATE Cats SET age = age + 5 WHERE age > 2;"); */
-/*  update(0, "Cats.inq", key_type_numeric_unsigned, sizeof(int), (sizeof(int) * 2)+(sizeof(char) * 30), 3, 4, 7, 3, iinq_greater_than, 2, 3, 3, iinq_add, 5); */
-
-/*		  SQL_execute("DELETE FROM Cats WHERE age >= 10;"); */
-/*  delete_record(0, "Cats.inq", key_type_numeric_unsigned, sizeof(int), (sizeof(int) * 2)+(sizeof(char) * 30), 3, 3, iinq_greater_than_equal_to, 10); */
-
-/*	  iinq_result_set rs1 = SQL_select("SELECT id, name FROM Cats WHERE age < 10;"); */
-	iinq_result_set rs1 = iinq_select(0, "Cats.inq", key_type_numeric_unsigned, sizeof(int), (sizeof(int) * 2) + (sizeof(char) * 30), 3, 2, 5, 3, iinq_less_than, 10, 1, 2);
+	/* Test query */
+	/*iinq_result_set rs1 = SQL_select("SELECT id, name FROM Cats WHERE age < 10;");*/
 
 	printf("sizeof value: %zu\n", (sizeof(int) * 2) + (sizeof(char) * 30));
 
-	while (next(&rs1)) {
-		printf("ID: %i,", getInt(&rs1, 1));
-		printf(" name: %s\n", getString(&rs1, 1));
-	}
-
 /*  SQL_execute("DROP TABLE Cats;"); */
-	drop_table("Cats.inq");
+	drop_table(2);
 
 	/* Clean-up */
 	cleanup();

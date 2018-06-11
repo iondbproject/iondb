@@ -14,22 +14,42 @@ extern "C" {
 #include "../iinq.h"
 #include "iinq_functions.h"
 
-void
-create_table(
-	char				*table_name,
-	ion_key_type_t		key_type,
-	ion_key_size_t		key_size,
-	ion_value_size_t	value_size
+iinq_prepared_sql
+insert_1(
+	int		value_1,
+	char	*value_2,
+	char	*value_3,
+	int		value_4,
+	char	*value_5
 );
 
 void
-execute(
-	iinq_prepared_sql p
+print_table_0(
+	ion_dictionary_t *dictionary
 );
 
 iinq_prepared_sql
-insert_Cats(
+insert_0(
 	int		value_1,
+	char	*value_2,
+	char	*value_3,
+	int		value_4,
+	char	*value_5
+);
+
+void
+print_table_1(
+	ion_dictionary_t *dictionary
+);
+
+void
+print_table_2(
+	ion_dictionary_t *dictionary
+);
+
+iinq_prepared_sql
+insert_2(
+	char	*value_1,
 	char	*value_2,
 	int		value_3
 );
@@ -41,80 +61,57 @@ setParam(
 	void				*val
 );
 
-void
-delete_record(
-	int				id,
-	char			*name,
-	ion_key_type_t	key_type,
-	size_t			key_size,
-	size_t			value_size,
-	int				fields,
-	...
+iinq_field_t
+getFieldType(
+	iinq_table_id	table_id,
+	int				field_num
 );
 
 void
 update(
-	int				id,
-	char			*name,
-	ion_key_type_t	key_type,
-	size_t			key_size,
-	size_t			value_size,
-	int				num_wheres,
-	int				num_update,
-	int				num,
+	iinq_table_id		table_id,
+	iinq_print_table_t	print_function,
+	ion_key_type_t		key_type,
+	size_t				key_size,
+	size_t				value_size,
+	int					num_wheres,
+	int					num_update,
 	...
-);
-
-iinq_result_set
-iinq_select(
-	int				id,
-	char			*name,
-	ion_key_type_t	key_type,
-	size_t			key_size,
-	size_t			value_size,
-	int				num_wheres,
-	int				num_fields,
-	int				num,
-	...
-);
-
-ion_boolean_t
-next(
-	iinq_result_set *select
-);
-
-char *
-getString(
-	iinq_result_set *select,
-	int				field_num
-);
-
-int
-getInt(
-	iinq_result_set *select,
-	int				field_num
 );
 
 void
 drop_table(
-	char *table_name
+	iinq_table_id *table_id
+);
+
+void
+execute(
+	iinq_prepared_sql p
+);
+
+void
+delete_record(
+	iinq_table_id		table_id,
+	iinq_print_table_t	print_function,
+	ion_key_type_t		key_type,
+	size_t				key_size,
+	size_t				value_size,
+	int					num_fields,
+	...
+);
+
+void
+create_table(
+	iinq_table_id		table_id,
+	ion_key_type_t		key_type,
+	ion_key_size_t		key_size,
+	ion_value_size_t	value_size
 );
 
 size_t
 calculateOffset(
-	const unsigned char *table,
-	int					field_num
-);
-
-iinq_field_t
-getFieldType(
-	const unsigned char *table,
-	int					field_num
-);
-
-void
-print_table_cats(
-	ion_dictionary_t *dictionary
+	iinq_table_id	table_id,
+	int				field_num
 );
 
 #if defined(__cplusplus)

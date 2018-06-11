@@ -38,13 +38,13 @@
 #if !defined(IINQ_FUNCTIONS_H_)
 #define IINQ_FUNCTIONS_H_
 
-#define IINQ_CONDITION(left, op, right) (iinq_where_params_t) {(left), (op), (right)}
-#define IINQ_CONDITION_LIST(...) __VA_ARGS__
-#define IINQ_UPDATE_LIST(...) __VA_ARGS__
-#define IINQ_UPDATE(update_field, implicit_field, operator, field_value) (iinq_update_params_t) {(update_field), (implicit_field), (operator), (field_value)}
+#define IINQ_CONDITION(left, op, right)										(iinq_where_params_t) { (left), (op), (right) }
+#define IINQ_CONDITION_LIST(...)											__VA_ARGS__
+#define IINQ_UPDATE_LIST(...)												__VA_ARGS__
+#define IINQ_UPDATE(update_field, implicit_field, operator, field_value)	(iinq_update_params_t) { (update_field), (implicit_field), (operator), (field_value) }
 
-#define NULL_FIELD NULL
-#define PREPARED_FIELD NULL
+#define NULL_FIELD		NULL
+#define PREPARED_FIELD	NULL
 
 #if defined(__cplusplus)
 extern "C" {
@@ -93,7 +93,7 @@ struct select_iinq {
 
 void
 iinq_execute(
-	char					*table_name,
+	iinq_table_id			table_id,
 	void					*key,
 	unsigned char			*value,
 	iinq_operation_type_t	type
@@ -166,20 +166,22 @@ iinq_next_record(
 
 ion_boolean_t
 where(
-	unsigned char	*id,
+	iinq_table_id	id,
 	ion_record_t	*record,
 	int				num_fields,
 	va_list			*where
 );
 
-typedef void (*iinq_print_table_t)(ion_dictionary_t*);
+typedef void (*iinq_print_table_t)(
+	ion_dictionary_t *
+);
 
-typedef void* iinq_field_value_t;
+typedef void *iinq_field_value_t;
 
 struct IINQ_WHERE_PARAMS {
 	int where_field;
-	iinq_bool_operator_t operator;
-	iinq_field_value_t field_value;
+
+	iinq_bool_operator_t operator; iinq_field_value_t field_value;
 };
 
 typedef struct IINQ_WHERE_PARAMS iinq_where_params_t;
@@ -187,8 +189,8 @@ typedef struct IINQ_WHERE_PARAMS iinq_where_params_t;
 struct IINQ_UPDATE_PARAMS {
 	int update_field;
 	int implicit_field;
-	iinq_math_operator_t operator;
-	iinq_field_value_t field_value;
+
+	iinq_math_operator_t operator; iinq_field_value_t field_value;
 };
 
 typedef struct IINQ_UPDATE_PARAMS iinq_update_params_t;

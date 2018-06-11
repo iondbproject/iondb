@@ -291,7 +291,7 @@ typedef enum {
 
 /**
 @param		table_id
-				A pointer to a unique identifier for a table.
+				A unique identifier for a table.
 @param		key_type
 				The type of key to store in this source and it's dictionary.
 @param		key_size
@@ -303,7 +303,7 @@ typedef enum {
 */
 ion_err_t
 iinq_create_source(
-	iinq_table_id		*table_id,
+	iinq_table_id		table_id,
 	ion_key_type_t		key_type,
 	ion_key_size_t		key_size,
 	ion_value_size_t	value_size
@@ -311,7 +311,7 @@ iinq_create_source(
 
 /**
 @param		table_id
-				A pointer to a unique identifier for a table.
+				A unique identifier for a table.
 @param		dictionary
 				A pointer to a dictionary object to open, initialize, and
 				manipulate.
@@ -322,7 +322,7 @@ iinq_create_source(
 */
 ion_err_t
 iinq_open_source(
-	iinq_table_id				*table_id,
+	iinq_table_id				table_id,
 	ion_dictionary_t			*dictionary,
 	ion_dictionary_handler_t	*handler
 );
@@ -330,7 +330,7 @@ iinq_open_source(
 /**
 @brief		Insert a key/value into a source (and it's underlying dictionary).
 @param		table_id
-				A pointer to a unique identifier for a table.
+				A unique identifier for a table.
 @param		key
 				The key to insert.
 @param		value
@@ -339,7 +339,7 @@ iinq_open_source(
 */
 ion_status_t
 iinq_insert(
-	iinq_table_id	*table_id,
+	iinq_table_id	table_id,
 	ion_key_t		key,
 	ion_value_t		value
 );
@@ -357,7 +357,7 @@ iinq_insert(
 */
 ion_status_t
 iinq_update(
-	iinq_table_id	*table_id,
+	iinq_table_id	table_id,
 	ion_key_t		key,
 	ion_value_t		value
 );
@@ -373,19 +373,19 @@ iinq_update(
 */
 ion_status_t
 iinq_delete(
-	table_id	*table_id,
-	ion_key_t	key
+	iinq_table_id	table_id,
+	ion_key_t		key
 );
 
 /**
 @brief		Drop a source.
 @param		table_id
-				A pointer to a unique identifier for a table.
+				A unique identifier for a table.
 @return		An error describing the result of the call.
 */
 ion_err_t
 iinq_drop(
-	table_id *table_id
+	iinq_table_id table_id
 );
 
 ion_comparison_t
