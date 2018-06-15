@@ -62,7 +62,7 @@ typedef enum IINQ_OPERATION_TYPE {
 	iinq_update_t
 } iinq_operation_type_t;
 
-/**
+/**git
 @brief		Struct defining IINQ INSERT components.
 @see		prepared_iinq
 */
@@ -89,6 +89,7 @@ struct select_iinq {
 	unsigned char		*table_id;
 	unsigned char		*fields;
 	unsigned char		*num_fields;
+	ion_status_t		status;
 };
 
 void

@@ -16,16 +16,16 @@ extern "C" {
 
 iinq_prepared_sql
 insert_1(
-	int		value_1,
+	char	*value_1,
 	char	*value_2,
 	char	*value_3,
 	int		value_4,
 	char	*value_5
 );
 
-void
-print_table_0(
-	ion_dictionary_t *dictionary
+ion_boolean_t
+next(
+	iinq_result_set *select
 );
 
 iinq_prepared_sql
@@ -37,21 +37,16 @@ insert_0(
 	char	*value_5
 );
 
-void
-print_table_1(
-	ion_dictionary_t *dictionary
-);
-
-void
-print_table_2(
-	ion_dictionary_t *dictionary
-);
-
 iinq_prepared_sql
 insert_2(
-	char	*value_1,
+	int		value_1,
 	char	*value_2,
 	int		value_3
+);
+
+void
+print_table(
+	iinq_table_id table_id
 );
 
 void
@@ -69,14 +64,19 @@ getFieldType(
 
 void
 update(
-	iinq_table_id		table_id,
-	iinq_print_table_t	print_function,
-	ion_key_type_t		key_type,
-	size_t				key_size,
-	size_t				value_size,
-	int					num_wheres,
-	int					num_update,
+	iinq_table_id	table_id,
+	ion_key_type_t	key_type,
+	size_t			key_size,
+	size_t			value_size,
+	int				num_wheres,
+	int				num_update,
 	...
+);
+
+char *
+getString(
+	iinq_result_set *select,
+	int				field_num
 );
 
 void
@@ -91,13 +91,29 @@ execute(
 
 void
 delete_record(
-	iinq_table_id		table_id,
-	iinq_print_table_t	print_function,
-	ion_key_type_t		key_type,
-	size_t				key_size,
-	size_t				value_size,
-	int					num_fields,
+	iinq_table_id	table_id,
+	ion_key_type_t	key_type,
+	size_t			key_size,
+	size_t			value_size,
+	int				num_fields,
 	...
+);
+
+iinq_result_set
+iinq_select(
+	iinq_table_id	table_id,
+	ion_key_type_t	key_type,
+	size_t			key_size,
+	size_t			value_size,
+	int				num_wheres,
+	int				num_fields,
+	...
+);
+
+int
+getInt(
+	iinq_result_set *select,
+	int				field_num
 );
 
 void
