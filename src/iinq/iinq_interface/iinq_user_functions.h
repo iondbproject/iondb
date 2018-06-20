@@ -14,34 +14,38 @@ extern "C" {
 #include "../iinq.h"
 #include "iinq_functions.h"
 
-iinq_prepared_sql
-insert_1(
-	char	*value_1,
-	char	*value_2,
-	char	*value_3,
-	int		value_4,
-	char	*value_5
-);
-
 ion_boolean_t
 next(
 	iinq_result_set *select
 );
 
-iinq_prepared_sql
-insert_0(
-	int		value_1,
-	char	*value_2,
-	char	*value_3,
-	int		value_4,
-	char	*value_5
+iinq_result_set *
+iinq_select(
+	iinq_table_id		table_id,
+	size_t				project_size,
+	int					num_wheres,
+	iinq_field_num_t	num_fields,
+	...
 );
 
 iinq_prepared_sql
-insert_2(
-	int		value_1,
-	char	*value_2,
-	int		value_3
+insert_0(
+	int value_1,
+	int value_2
+);
+
+int
+getInt(
+	iinq_result_set *select,
+	int				field_num
+);
+
+void
+create_table(
+	iinq_table_id		table_id,
+	ion_key_type_t		key_type,
+	ion_key_size_t		key_size,
+	ion_value_size_t	project_size
 );
 
 void
@@ -53,24 +57,13 @@ void
 setParam(
 	iinq_prepared_sql	p,
 	int					field_num,
-	void				*val
+	ion_value_t			val
 );
 
 iinq_field_t
 getFieldType(
-	iinq_table_id	table_id,
-	int				field_num
-);
-
-void
-update(
-	iinq_table_id	table_id,
-	ion_key_type_t	key_type,
-	size_t			key_size,
-	size_t			value_size,
-	int				num_wheres,
-	int				num_update,
-	...
+	iinq_table_id		table_id,
+	iinq_field_num_t	field_num
 );
 
 char *
@@ -89,45 +82,10 @@ execute(
 	iinq_prepared_sql p
 );
 
-void
-delete_record(
-	iinq_table_id	table_id,
-	ion_key_type_t	key_type,
-	size_t			key_size,
-	size_t			value_size,
-	int				num_fields,
-	...
-);
-
-iinq_result_set
-iinq_select(
-	iinq_table_id	table_id,
-	ion_key_type_t	key_type,
-	size_t			key_size,
-	size_t			value_size,
-	int				num_wheres,
-	int				num_fields,
-	...
-);
-
-int
-getInt(
-	iinq_result_set *select,
-	int				field_num
-);
-
-void
-create_table(
-	iinq_table_id		table_id,
-	ion_key_type_t		key_type,
-	ion_key_size_t		key_size,
-	ion_value_size_t	value_size
-);
-
 size_t
 calculateOffset(
-	iinq_table_id	table_id,
-	int				field_num
+	iinq_table_id		table_id,
+	iinq_field_num_t	field_num
 );
 
 #if defined(__cplusplus)

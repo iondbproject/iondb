@@ -38,8 +38,9 @@
 #if !defined(IINQ_FUNCTIONS_H_)
 #define IINQ_FUNCTIONS_H_
 
+#define IINQ_SELECT_LIST(...)												(iinq_field_num_t[]) { __VA_ARGS__ }
 #define IINQ_CONDITION(left, op, right)										(iinq_where_params_t) { (left), (op), (right) }
-#define IINQ_CONDITION_LIST(...)											__VA_ARGS__
+#define IINQ_CONDITION_LIST(...)											(iinq_where_params_t[]) { __VA_ARGS__ }
 #define IINQ_UPDATE_LIST(...)												__VA_ARGS__
 #define IINQ_UPDATE(update_field, implicit_field, operator, field_value)	(iinq_update_params_t) { (update_field), (implicit_field), (operator), (field_value) }
 
@@ -49,6 +50,8 @@
 #if defined(__cplusplus)
 extern "C" {
 #endif
+
+typedef unsigned char iinq_field_num_t;
 
 /**
 @brief		This is the available operation types for IINQ.
@@ -69,9 +72,9 @@ typedef enum IINQ_OPERATION_TYPE {
 typedef struct prepared_iinq iinq_prepared_sql;
 
 struct prepared_iinq {
-	unsigned char	*value;	/* Value parsed from the prepared statement */
-	unsigned char	*key;	/* Key to be inserted */
-	unsigned char	*table;	/* The table name, stored as a unique identifier */
+	ion_value_t		value;	/* Value parsed from the prepared statement */
+	ion_key_t		key;	/* Key to be inserted */
+	iinq_table_id	table;	/* The table name, stored as a unique identifier */
 };
 
 /**
@@ -82,21 +85,22 @@ typedef struct select_iinq iinq_result_set;
 
 struct select_iinq {
 	ion_record_t		record;
+	ion_dictionary_id_t id;
 	ion_dict_cursor_t	*cursor;
-	int					*count;
-	int					*num_recs;
-	unsigned char		*value;
-	unsigned char		*table_id;
-	unsigned char		*fields;
-	unsigned char		*num_fields;
+	int					num_recs;
+	ion_value_t			value;
+	iinq_table_id		table_id;
+	iinq_field_num_t	*fields;
+	iinq_field_num_t	num_fields;
 	ion_status_t		status;
+	unsigned int		*offset;
 };
 
 void
 iinq_execute(
 	iinq_table_id			table_id,
-	void					*key,
-	unsigned char			*value,
+	ion_key_t				key,
+	ion_value_t				value,
 	iinq_operation_type_t	type
 );
 
@@ -165,18 +169,6 @@ iinq_next_record(
 	ion_record_t		*record
 );
 
-ion_boolean_t
-where(
-	iinq_table_id	id,
-	ion_record_t	*record,
-	int				num_fields,
-	va_list			*where
-);
-
-typedef void (*iinq_print_table_t)(
-	ion_dictionary_t *
-);
-
 typedef void *iinq_field_value_t;
 
 struct IINQ_WHERE_PARAMS {
@@ -186,6 +178,18 @@ struct IINQ_WHERE_PARAMS {
 };
 
 typedef struct IINQ_WHERE_PARAMS iinq_where_params_t;
+
+ion_boolean_t
+where(
+	iinq_table_id		id,
+	ion_record_t		*record,
+	int					num_wheres,
+	iinq_where_params_t *where
+);
+
+typedef void (*iinq_print_table_t)(
+	ion_dictionary_t *
+);
 
 struct IINQ_UPDATE_PARAMS {
 	int update_field;

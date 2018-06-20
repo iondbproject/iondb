@@ -1,78 +1,191 @@
 #include "iinq_user_functions.h"
 
-iinq_prepared_sql
-insert_1(
-	char	*value_1,
-	char	*value_2,
-	char	*value_3,
-	int		value_4,
-	char	*value_5
-) {
-	iinq_prepared_sql p = { 0 };
-
-	p.table				= malloc(sizeof(int));
-	*(int *) p.table	= 1;
-	p.value				= malloc((sizeof(int) * 1) + (sizeof(char) * 82));
-
-	unsigned char *data = p.value;
-
-	p.key = malloc((sizeof(char) * 2));
-	memcpy(p.key, value_1, 12);
-
-	strcpy(data, value_1);
-	data			+= (sizeof(char) * 2);
-
-	strcpy(data, value_2);
-	data			+= (sizeof(char) * 20);
-
-	strcpy(data, value_3);
-	data			+= (sizeof(char) * 30);
-
-	*(int *) data	= value_4;
-	data			+= sizeof(int);
-
-	strcpy(data, value_5);
-
-	return p;
-}
-
 ion_boolean_t
 next(
 	iinq_result_set *select
 ) {
-	if (*(int *) select->count < (*(int *) select->num_recs) - 1) {
-		*(int *) select->count = (*(int *) select->count) + 1;
+	if (select->status.count < select->num_recs - 1) {
+		select->status.count++;
 		return boolean_true;
 	}
 
-	ion_err_t error = iinq_drop(255);
+	select->status.error = ion_init_master_table();
 
-	if (err_ok != error) {
-		printf("Error occurred. Error code: %i\n", error);
+	if (err_ok != select->status.error) {
+		return boolean_false;
+	}
+
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
+
+	dictionary.handler		= &handler;
+	select->status.error	= ion_open_dictionary(&handler, &dictionary, select->id);
+
+	if (err_ok != select->status.error) {
+		return boolean_false;
+	}
+
+	select->status.error = ion_delete_dictionary(&dictionary, select->id);
+
+	if (err_ok != select->status.error) {
+		return boolean_false;
+	}
+
+	select->status.error = ion_close_master_table();
+
+	if (err_ok != select->status.error) {
+		return boolean_false;
 	}
 
 	free(select->value);
 	free(select->fields);
-	free(select->count);
-	free(select->table_id);
-	free(select->num_recs);
-	free(select->num_fields);
 	return boolean_false;
+}
+
+iinq_result_set *
+iinq_select(
+	iinq_table_id		table_id,
+	size_t				project_size,
+	int					num_wheres,
+	iinq_field_num_t	num_fields,
+	...
+) {
+	int					i;
+	va_list				valist;
+	iinq_where_params_t *where_list = NULL;
+
+	va_start(valist, num_fields);
+
+	ion_err_t					error;
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
+
+	dictionary.handler = &handler;
+
+	iinq_result_set *select = malloc(sizeof(iinq_result_set));
+
+	select->status.error = iinq_open_source(table_id, &dictionary, &handler);
+
+	if (err_ok != select->status.error) {
+		return select;
+	}
+
+	ion_predicate_t predicate;
+
+	dictionary_build_predicate(&predicate, predicate_all_records);
+
+	ion_dict_cursor_t *cursor = NULL;
+
+	dictionary_find(&dictionary, &predicate, &cursor);
+
+	ion_record_t ion_record;
+
+	ion_record.key		= malloc(dictionary.instance->record.key_size);
+	ion_record.value	= malloc(dictionary.instance->record.value_size);
+
+	ion_cursor_status_t status;
+
+	int				count = 0;
+	ion_boolean_t	condition_satisfied;
+
+	if (num_wheres > 0) {
+		where_list = va_arg(valist, iinq_where_params_t *);
+	}
+
+	iinq_field_num_t *fields = va_arg(valist, iinq_field_num_t *);
+
+	select->num_fields	= num_fields;
+	select->fields		= malloc(sizeof(iinq_field_num_t) * num_fields);
+	select->offset		= malloc(sizeof(unsigned int) * num_fields);
+	memcpy(select->fields, fields, sizeof(iinq_field_num_t) * num_fields);
+
+	unsigned int offset = 0;
+
+	for (int i = 0; i < num_fields; i++) {
+		select->offset[i]	= offset;
+		offset				+= calculateOffset(table_id, fields[i] + 1) - calculateOffset(table_id, fields[i]);
+	}
+
+	va_end(valist);
+
+	ion_dictionary_handler_t	handler_temp;
+	ion_dictionary_t			dictionary_temp;
+
+	select->status.error	= ion_init_master_table();
+	ffdict_init(&handler_temp);
+	dictionary_temp.handler = &handler_temp;
+
+	select->status.error	= ion_master_table_create_dictionary(&handler_temp, &dictionary_temp, key_type_numeric_unsigned, sizeof(unsigned int), project_size, 10);
+
+	if (err_ok != select->status.error) {
+		return select;
+	}
+
+	ion_close_master_table();
+	select->id = dictionary_temp.instance->id;
+
+	while ((status = iinq_next_record(cursor, &ion_record)) == cs_cursor_initialized || status == cs_cursor_active) {
+		condition_satisfied = where(table_id, &ion_record, num_wheres, where_list);
+
+		if (condition_satisfied) {
+			ion_value_t fieldlist	= malloc(project_size);
+			ion_value_t data		= fieldlist;
+
+			for (i = 0; i < num_fields; i++) {
+				if (getFieldType(table_id, fields[i]) == iinq_int) {
+					*(int *) data	= NEUTRALIZE(ion_record.value + calculateOffset(table_id, fields[i]), int);
+					data			+= sizeof(int);
+				}
+				else {
+					strncpy(data, ion_record.value + calculateOffset(table_id, fields[i]), calculateOffset(table_id, fields[i] + 1) - calculateOffset(table_id, fields[i]));
+					data += calculateOffset(table_id, fields[i] + 1) - calculateOffset(table_id, fields[i]);
+				}
+			}
+
+			select->status.error = dictionary_insert(&dictionary_temp, IONIZE(count, unsigned int), fieldlist).error;
+
+			if (err_ok != select->status.error) {
+				return select;
+			}
+
+			count++;
+			free(fieldlist);
+		}
+	}
+
+	cursor->destroy(&cursor);
+
+	select->status.error = ion_close_dictionary(&dictionary);
+
+	if (err_ok != select->status.error) {
+		return select;
+	}
+
+	select->status.error = ion_close_dictionary(&dictionary_temp);
+
+	if (err_ok != select->status.error) {
+		return select;
+	}
+
+	select->num_recs		= count;
+	select->status.count	= -1;
+	select->table_id		= table_id;
+	select->value			= malloc(project_size);
+	free(ion_record.key);
+	free(ion_record.value);
+
+	return select;
 }
 
 iinq_prepared_sql
 insert_0(
-	int		value_1,
-	char	*value_2,
-	char	*value_3,
-	int		value_4,
-	char	*value_5
+	int value_1,
+	int value_2
 ) {
 	iinq_prepared_sql p = { 0 };
 
-	p.table				= malloc(sizeof(int));
-	*(int *) p.table	= 0;
-	p.value				= malloc((sizeof(int) * 2) + (sizeof(char) * 80));
+	p.table = 0;
+	p.value = malloc((sizeof(int) * 2));
 
 	unsigned char *data = p.value;
 
@@ -82,46 +195,61 @@ insert_0(
 	*(int *) data	= value_1;
 	data			+= sizeof(int);
 
-	strcpy(data, value_2);
-	data			+= (sizeof(char) * 20);
-
-	strcpy(data, value_3);
-	data			+= (sizeof(char) * 30);
-
-	*(int *) data	= value_4;
-	data			+= sizeof(int);
-
-	strcpy(data, value_5);
+	*(int *) data	= value_2;
 
 	return p;
 }
 
-iinq_prepared_sql
-insert_2(
-	int		value_1,
-	char	*value_2,
-	int		value_3
+int
+getInt(
+	iinq_result_set *select,
+	int				field_num
 ) {
-	iinq_prepared_sql p = { 0 };
+	iinq_field_num_t i;
 
-	p.table				= malloc(sizeof(int));
-	*(int *) p.table	= 2;
-	p.value				= malloc((sizeof(int) * 2) + (sizeof(char) * 30));
+	ion_err_t					error;
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
 
-	unsigned char *data = p.value;
+	dictionary.handler		= &handler;
 
-	p.key			= malloc(sizeof(int));
-	*(int *) p.key	= value_1;
+	select->status.error	= ion_init_master_table();
 
-	*(int *) data	= value_1;
-	data			+= sizeof(int);
+	if (err_ok != select->status.error) {
+		return -1;
+	}
 
-	strcpy(data, value_2);
-	data			+= (sizeof(char) * 30);
+	select->status.error = ion_open_dictionary(&handler, &dictionary, select->id);
 
-	*(int *) data	= value_3;
+	if (err_ok != select->status.error) {
+		return -1;
+	}
 
-	return p;
+	select->status.error	= ion_close_master_table();
+	dictionary_get(&dictionary, IONIZE(select->status.count, int), select->value);
+
+	select->status.error	= ion_close_dictionary(&dictionary);
+
+	if (err_ok != select->status.error) {
+		return -1;
+	}
+
+	return NEUTRALIZE(select->value + select->offset[field_num - 1], int);
+}
+
+void
+create_table(
+	iinq_table_id		table_id,
+	ion_key_type_t		key_type,
+	ion_key_size_t		key_size,
+	ion_value_size_t	project_size
+) {
+	ion_err_t error = iinq_create_source(table_id, key_type, key_size, project_size);
+
+	if (err_ok != error) {
+		printf("Error occurred. Error code: %i\n", error);
+		return;
+	}
 }
 
 void
@@ -154,17 +282,7 @@ print_table(
 	switch (table_id) {
 		case 0:
 			ion_record.key		= malloc(sizeof(int));
-			ion_record.value	= malloc((sizeof(int) * 2) + (sizeof(char) * 80));
-			break;
-
-		case 1:
-			ion_record.key		= malloc((sizeof(char) * 2));
-			ion_record.value	= malloc((sizeof(int) * 1) + (sizeof(char) * 82));
-			break;
-
-		case 2:
-			ion_record.key		= malloc(sizeof(int));
-			ion_record.value	= malloc((sizeof(int) * 2) + (sizeof(char) * 30));
+			ion_record.value	= malloc((sizeof(int) * 2));
 			break;
 	}
 
@@ -179,55 +297,6 @@ print_table(
 				printf("%10d, ", NEUTRALIZE(value, int));
 				value	+= sizeof(int);
 
-				printf("%20s, ", (char *) value);
-				value	+= (sizeof(char) * 20);
-
-				printf("%30s, ", (char *) value);
-				value	+= (sizeof(char) * 30);
-
-				printf("%10d, ", NEUTRALIZE(value, int));
-				value	+= sizeof(int);
-
-				printf("%30s\n", (char *) value);
-			}
-
-			printf("\n");
-			break;
-
-		case 1:
-
-			while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
-				value	= ion_record.value;
-
-				printf("%2s, ", (char *) value);
-				value	+= (sizeof(char) * 2);
-
-				printf("%20s, ", (char *) value);
-				value	+= (sizeof(char) * 20);
-
-				printf("%30s, ", (char *) value);
-				value	+= (sizeof(char) * 30);
-
-				printf("%10d, ", NEUTRALIZE(value, int));
-				value	+= sizeof(int);
-
-				printf("%30s\n", (char *) value);
-			}
-
-			printf("\n");
-			break;
-
-		case 2:
-
-			while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
-				value	= ion_record.value;
-
-				printf("%10d, ", NEUTRALIZE(value, int));
-				value	+= sizeof(int);
-
-				printf("%30s, ", (char *) value);
-				value	+= (sizeof(char) * 30);
-
 				printf("%10d\n", NEUTRALIZE(value, int));
 			}
 
@@ -240,26 +309,26 @@ void
 setParam(
 	iinq_prepared_sql	p,
 	int					field_num,
-	void				*val
+	ion_value_t			val
 ) {
 	unsigned char *data = p.value;
 
-	iinq_field_t type	= getFieldType(*p.table, field_num);
+	iinq_field_t type	= getFieldType(p.table, field_num);
 
-	data += calculateOffset(*p.table, field_num);
+	data += calculateOffset(p.table, field_num);
 
 	if (type == iinq_int) {
-		*(int *) data = (int) val;
+		*(int *) data = NEUTRALIZE(val, int);
 	}
 	else {
-		strncpy(data, val, (calculateOffset(*p.table, field_num + 1) - calculateOffset(*p.table, field_num)));
+		strncpy(data, val, (calculateOffset(p.table, field_num + 1) - calculateOffset(p.table, field_num)));
 	}
 }
 
 iinq_field_t
 getFieldType(
-	iinq_table_id	table,
-	int				field_num
+	iinq_table_id		table,
+	iinq_field_num_t	field_num
 ) {
 	switch (table) {
 		case 0: {
@@ -268,53 +337,6 @@ getFieldType(
 					return iinq_int;
 
 				case 2:
-					return iinq_null_terminated_string;
-
-				case 3:
-					return iinq_null_terminated_string;
-
-				case 4:
-					return iinq_int;
-
-				case 5:
-					return iinq_null_terminated_string;
-
-				default:
-					return 0;
-			}
-		}
-
-		case 1: {
-			switch (field_num) {
-				case 1:
-					return iinq_null_terminated_string;
-
-				case 2:
-					return iinq_null_terminated_string;
-
-				case 3:
-					return iinq_null_terminated_string;
-
-				case 4:
-					return iinq_int;
-
-				case 5:
-					return iinq_null_terminated_string;
-
-				default:
-					return 0;
-			}
-		}
-
-		case 2: {
-			switch (field_num) {
-				case 1:
-					return iinq_int;
-
-				case 2:
-					return iinq_null_terminated_string;
-
-				case 3:
 					return iinq_int;
 
 				default:
@@ -327,163 +349,12 @@ getFieldType(
 	}
 }
 
-void
-update(
-	iinq_table_id	table_id,
-	ion_key_type_t	key_type,
-	size_t			key_size,
-	size_t			value_size,
-	int				num_wheres,
-	int				num_update,
-	...
-) {
-	va_list valist;
-
-	va_start(valist, num_update);
-
-	ion_err_t					error;
-	ion_dictionary_t			dictionary;
-	ion_dictionary_handler_t	handler;
-
-	dictionary.handler	= &handler;
-
-	error				= iinq_open_source(table_id, &dictionary, &handler);
-
-	if (err_ok != error) {
-		printf("Error occurred. Error code: %i\n", error);
-	}
-
-	ion_predicate_t predicate;
-
-	dictionary_build_predicate(&predicate, predicate_all_records);
-
-	ion_dict_cursor_t *cursor = NULL;
-
-	dictionary_find(&dictionary, &predicate, &cursor);
-
-	ion_record_t ion_record;
-
-	ion_record.key		= malloc(key_size);
-	ion_record.value	= malloc(value_size);
-
-	ion_cursor_status_t status;
-
-	error = iinq_create_source(255, key_type, (ion_key_size_t) key_size, (ion_value_size_t) value_size);
-
-	if (err_ok != error) {
-		printf("Error occurred. Error code: %i\n", error);
-	}
-
-	ion_dictionary_t			dictionary_temp;
-	ion_dictionary_handler_t	handler_temp;
-
-	dictionary_temp.handler = &handler_temp;
-
-	error					= iinq_open_source(255, &dictionary_temp, &handler_temp);
-
-	if (err_ok != error) {
-		printf("Error occurred. Error code: %i\n", error);
-	}
-
-	ion_boolean_t condition_satisfied;
-
-	while ((status = iinq_next_record(cursor, &ion_record)) == cs_cursor_initialized || status == cs_cursor_active) {
-		condition_satisfied = where(table_id, &ion_record, num_wheres, &valist);
-
-		if (condition_satisfied) {
-			error = dictionary_insert(&dictionary_temp, ion_record.key, ion_record.value).error;
-
-			if (err_ok != error) {
-				printf("Error occurred. Error code: %i\n", error);
-			}
-		}
-	}
-
-	cursor->destroy(&cursor);
-
-	int i;
-
-	iinq_update_params_t updates[num_update];
-
-	for (i = 0; i < num_wheres; i++) {
-		va_arg(valist, void *);
-	}
-
-	for (i = 0; i < num_update; i++) {
-		updates[i] = va_arg(valist, iinq_update_params_t);
-	}
-
-	va_end(valist);
-
-	ion_predicate_t predicate_temp;
-
-	dictionary_build_predicate(&predicate_temp, predicate_all_records);
-
-	ion_dict_cursor_t *cursor_temp = NULL;
-
-	dictionary_find(&dictionary_temp, &predicate_temp, &cursor_temp);
-
-	while ((status = iinq_next_record(cursor_temp, &ion_record)) == cs_cursor_initialized || status == cs_cursor_active) {
-		for (i = 0; i < num_update; i++) {
-			unsigned char *value;
-
-			if (updates[i].implicit_field != 0) {
-				int new_value;
-
-				value = ion_record.value + calculateOffset(table_id, updates[i].implicit_field);
-
-				switch (updates[i].operator) {
-					case iinq_add:
-						new_value = (NEUTRALIZE(value, int) + (int) updates[i].field_value);
-						break;
-
-					case iinq_subtract:
-						new_value = (NEUTRALIZE(value, int) - (int) updates[i].field_value);
-						break;
-
-					case iinq_multiply:
-						new_value = (NEUTRALIZE(value, int) * (int) updates[i].field_value);
-						break;
-
-					case iinq_divide:
-						new_value = (NEUTRALIZE(value, int) / (int) updates[i].field_value);
-						break;
-				}
-
-				value			= ion_record.value + calculateOffset(table_id, updates[i].update_field);
-				*(int *) value	= new_value;
-			}
-			else {
-				value = ion_record.value + calculateOffset(table_id, updates[i].update_field);
-
-				if (getFieldType(table_id, updates[i].update_field) == iinq_int) {
-					*(int *) value = (int) updates[i].field_value;
-				}
-				else {
-					memcpy(value, updates[i].field_value, calculateOffset(table_id, updates[i].update_field) - calculateOffset(table_id, updates[i].update_field - 1));
-				}
-			}
-		}
-
-		error = dictionary_update(&dictionary, ion_record.key, ion_record.value).error;
-
-		if (err_ok != error) {
-			printf("Error occurred. Error code: %i\n", error);
-		}
-	}
-
-	cursor_temp->destroy(&cursor_temp);
-	iinq_drop(255);
-	free(ion_record.key);
-	free(ion_record.value);
-}
-
 char *
 getString(
 	iinq_result_set *select,
 	int				field_num
 ) {
-	int i, count = 0;
+	iinq_field_num_t i, count = 0;
 
 	ion_err_t					error;
 	ion_dictionary_t			dictionary;
@@ -491,13 +362,25 @@ getString(
 
 	dictionary.handler		= &handler;
 
-	select->status.error	= iinq_open_source(255, &dictionary, &handler);
+	select->status.error	= ion_init_master_table();
 
 	if (err_ok != select->status.error) {
 		return "";
 	}
 
-	dictionary_get(&dictionary, select->count, select->value);
+	select->status.error = ion_open_dictionary(&handler, &dictionary, select->id);
+
+	if (err_ok != select->status.error) {
+		return "";
+	}
+
+	select->status.error = ion_close_master_table();
+
+	if (err_ok != select->status.error) {
+		return "";
+	}
+
+	dictionary_get(&dictionary, select->status.count, select->value);
 
 	error = ion_close_dictionary(&dictionary);
 
@@ -505,7 +388,7 @@ getString(
 		return "";
 	}
 
-	for (i = 0; i < *(int *) select->num_fields; i++) {
+	for (i = 0; i < select->num_fields; i++) {
 		int field = *(int *) (select->fields + sizeof(int) * i);
 
 		if (getFieldType(select->table_id, field) == iinq_null_terminated_string) {
@@ -540,344 +423,21 @@ void
 execute(
 	iinq_prepared_sql p
 ) {
-	switch (*(int *) p.table) {
+	switch (p.table) {
 		case 0: {
-			iinq_execute(0, IONIZE(*(int *) p.key, int), p.value, iinq_insert_t);
-			break;
-		}
-
-		case 1: {
-			iinq_execute(1, p.key, p.value, iinq_insert_t);
-			break;
-		}
-
-		case 2: {
-			iinq_execute(2, IONIZE(*(int *) p.key, int), p.value, iinq_insert_t);
+			iinq_execute(0, p.key, p.value, iinq_insert_t);
 			break;
 		}
 	}
 
 	free(p.value);
-	free(p.table);
 	free(p.key);
-}
-
-void
-delete_record(
-	iinq_table_id	table_id,
-	ion_key_type_t	key_type,
-	size_t			key_size,
-	size_t			value_size,
-	int				num_fields,
-	...
-) {
-	va_list valist;
-
-	va_start(valist, num_fields);
-
-	ion_err_t					error;
-	ion_dictionary_t			dictionary;
-	ion_dictionary_handler_t	handler;
-
-	dictionary.handler	= &handler;
-
-	error				= iinq_open_source(table_id, &dictionary, &handler);
-
-	if (err_ok != error) {
-		printf("Error occurred. Error code: %i\n", error);
-		return;
-	}
-
-	ion_predicate_t predicate;
-
-	dictionary_build_predicate(&predicate, predicate_all_records);
-
-	ion_dict_cursor_t *cursor = NULL;
-
-	dictionary_find(&dictionary, &predicate, &cursor);
-
-	ion_record_t ion_record;
-
-	ion_record.key		= malloc(key_size);
-	ion_record.value	= malloc(value_size);
-
-	ion_cursor_status_t status;
-
-	error = iinq_create_source(255, key_type, (ion_key_size_t) key_size, (ion_value_size_t) sizeof(int));
-
-	if (err_ok != error) {
-		printf("Error occurred. Error code: %i\n", error);
-		return;
-	}
-
-	ion_dictionary_t			dictionary_temp;
-	ion_dictionary_handler_t	handler_temp;
-
-	dictionary_temp.handler = &handler_temp;
-
-	error					= iinq_open_source(255, &dictionary_temp, &handler_temp);
-
-	if (err_ok != error) {
-		printf("Error occurred. Error code: %i\n", error);
-		return;
-	}
-
-	ion_boolean_t condition_satisfied;
-
-	while ((status = iinq_next_record(cursor, &ion_record)) == cs_cursor_initialized || status == cs_cursor_active) {
-		condition_satisfied = where(table_id, &ion_record, num_fields, &valist);
-
-		if (condition_satisfied) {
-			error = dictionary_insert(&dictionary_temp, ion_record.key, IONIZE(0, int)).error;
-
-			if (err_ok != error) {
-				printf("Error occurred. Error code: %i\n", error);
-				return;
-			}
-		}
-	}
-
-	va_end(valist);
-	cursor->destroy(&cursor);
-
-	ion_predicate_t predicate_temp;
-
-	dictionary_build_predicate(&predicate_temp, predicate_all_records);
-
-	ion_dict_cursor_t *cursor_temp = NULL;
-
-	dictionary_find(&dictionary_temp, &predicate_temp, &cursor_temp);
-
-	while ((status = iinq_next_record(cursor_temp, &ion_record)) == cs_cursor_initialized || status == cs_cursor_active) {
-		error = dictionary_delete(&dictionary, ion_record.key).error;
-
-		if (err_ok != error) {
-			printf("Error occurred. Error code: %i\n", error);
-			return;
-		}
-	}
-
-	cursor_temp->destroy(&cursor_temp);
-	error = ion_close_dictionary(&dictionary);
-
-	if (err_ok != error) {
-		printf("Error occurred. Error code: %i\n", error);
-		return;
-	}
-
-	iinq_drop(255);
-	free(ion_record.key);
-	free(ion_record.value);
-}
-
-iinq_result_set
-iinq_select(
-	iinq_table_id	table_id,
-	ion_key_type_t	key_type,
-	size_t			key_size,
-	size_t			value_size,
-	int				num_wheres,
-	int				num_fields,
-	...
-) {
-	int		i;
-	va_list valist, where_list;
-
-	va_start(valist, num_fields);
-	va_copy(where_list, valist);
-
-	ion_err_t					error;
-	ion_dictionary_t			dictionary;
-	ion_dictionary_handler_t	handler;
-
-	dictionary.handler = &handler;
-
-	iinq_result_set select = { 0 };
-
-	select.status.error = iinq_open_source(table_id, &dictionary, &handler);
-
-	if (err_ok != select.status.error) {
-		return select;
-	}
-
-	ion_predicate_t predicate;
-
-	dictionary_build_predicate(&predicate, predicate_all_records);
-
-	ion_dict_cursor_t *cursor = NULL;
-
-	dictionary_find(&dictionary, &predicate, &cursor);
-
-	ion_record_t ion_record;
-
-	ion_record.key		= malloc(key_size);
-	ion_record.value	= malloc(value_size);
-
-	ion_cursor_status_t status;
-
-	int				count = 0;
-	ion_boolean_t	condition_satisfied;
-
-	int fields[num_fields];
-
-	for (i = 0; i < num_wheres; i++) {
-		va_arg(valist, void *);
-	}
-
-	select.num_fields			= malloc(sizeof(int));
-	*(int *) select.num_fields	= num_fields;
-	select.fields				= malloc(sizeof(int) * num_fields);
-
-	unsigned char *field_list = select.fields;
-
-	select.num_recs = malloc(sizeof(int));
-
-	for (i = 0; i < num_fields; i++) {
-		fields[i]			= va_arg(valist, int);
-
-		*(int *) field_list = fields[i];
-
-		if (i < num_fields - 1) {
-			field_list += sizeof(int);
-		}
-	}
-
-	va_end(valist);
-
-	ion_dictionary_handler_t	handler_temp;
-	ion_dictionary_t			dictionary_temp;
-
-	select.status.error = iinq_create_source(255, key_type, (ion_key_size_t) key_size, (ion_value_size_t) value_size);
-
-	if (err_ok != select.status.error) {
-		return select;
-	}
-
-	dictionary_temp.handler = &handler_temp;
-
-	select.status.error		= iinq_open_source(255, &dictionary_temp, &handler_temp);
-
-	if (err_ok != select.status.error) {
-		return select;
-	}
-
-	while ((status = iinq_next_record(cursor, &ion_record)) == cs_cursor_initialized || status == cs_cursor_active) {
-		condition_satisfied = where(table_id, &ion_record, num_wheres, &where_list);
-
-		if (!condition_satisfied || (num_wheres == 0)) {
-			unsigned char	*fieldlist	= malloc(value_size);
-			unsigned char	*data		= fieldlist;
-
-			for (i = 0; i < num_fields; i++) {
-				if (getFieldType(table_id, fields[i]) == iinq_int) {
-					*(int *) data	= NEUTRALIZE(ion_record.value + calculateOffset(table_id, fields[i] - 1), int);
-					data			+= sizeof(int);
-				}
-				else {
-					memcpy(data, ion_record.value + calculateOffset(table_id, fields[i] - 1), calculateOffset(table_id, fields[i]) - calculateOffset(table_id, fields[i] - 1));
-					data += calculateOffset(table_id, fields[i]) - calculateOffset(table_id, fields[i] - 1);
-				}
-			}
-
-			select.status.error = dictionary_insert(&dictionary_temp, IONIZE(count, int), fieldlist).error;
-
-			if (err_ok != select.status.error) {
-				return select;
-			}
-
-			count++;
-			free(fieldlist);
-		}
-	}
-
-	cursor->destroy(&cursor);
-
-	select.status.error = ion_close_dictionary(&dictionary);
-
-	if (err_ok != select.status.error) {
-		return select;
-	}
-
-	select.status.error = ion_close_dictionary(&dictionary_temp);
-
-	if (err_ok != select.status.error) {
-		return select;
-	}
-
-	*(int *) select.num_recs			= count;
-	select.table_id						= malloc(sizeof(int));
-	*(iinq_table_id *) select.table_id	= table_id;
-	select.value						= malloc(value_size);
-	select.count						= malloc(sizeof(int));
-	*(int *) select.count				= -1;
-
-	free(ion_record.key);
-	free(ion_record.value);
-
-	return select;
-}
-
-int
-getInt(
-	iinq_result_set *select,
-	int				field_num
-) {
-	int i, count = 0;
-
-	ion_err_t					error;
-	ion_dictionary_t			dictionary;
-	ion_dictionary_handler_t	handler;
-
-	dictionary.handler		= &handler;
-
-	select->status.error	= iinq_open_source(255, &dictionary, &handler);
-
-	if (err_ok != select->status.error) {
-		return -1;
-	}
-
-	dictionary_get(&dictionary, select->count, select->value);
-
-	select->status.error = ion_close_dictionary(&dictionary);
-
-	if (err_ok != select->status.error) {
-		return -1;
-	}
-
-	for (i = 0; i < *(int *) select->num_fields; i++) {
-		int field = *(int *) (select->fields + sizeof(int) * i);
-
-		if (getFieldType(select->table_id, field) == iinq_int) {
-			count++;
-		}
-
-		if (count == field_num) {
-			return NEUTRALIZE(select->value + calculateOffset(select->table_id, field - 1), int);
-		}
-	}
-
-	return 0;
-}
-
-void
-create_table(
-	iinq_table_id		table_id,
-	ion_key_type_t		key_type,
-	ion_key_size_t		key_size,
-	ion_value_size_t	value_size
-) {
-	ion_err_t error = iinq_create_source(table_id, key_type, key_size, value_size);
-
-	if (err_ok != error) {
-		printf("Error occurred. Error code: %i\n", error);
-		return;
-	}
 }
 
 size_t
 calculateOffset(
-	iinq_table_id	table_id,
-	int				field_num
+	iinq_table_id		table_id,
+	iinq_field_num_t	field_num
 ) {
 	switch (table_id) {
 		case 0: {
@@ -889,51 +449,7 @@ calculateOffset(
 					return sizeof(int);
 
 				case 3:
-					return sizeof(int) + (sizeof(char) * 20);
-
-				case 4:
-					return sizeof(int) + (sizeof(char) * 20) + (sizeof(char) * 30);
-
-				case 5:
-					return sizeof(int) + (sizeof(char) * 20) + (sizeof(char) * 30) + sizeof(int);
-
-				default:
-					return 0;
-			}
-		}
-
-		case 1: {
-			switch (field_num) {
-				case 1:
-					return 0;
-
-				case 2:
-					return sizeof(char) * 2;
-
-				case 3:
-					return (sizeof(char) * 2) + (sizeof(char) * 20);
-
-				case 4:
-					return (sizeof(char) * 2) + (sizeof(char) * 20) + (sizeof(char) * 30);
-
-				case 5:
-					return (sizeof(char) * 2) + (sizeof(char) * 20) + (sizeof(char) * 30) + sizeof(int);
-
-				default:
-					return 0;
-			}
-		}
-
-		case 2: {
-			switch (field_num) {
-				case 1:
-					return 0;
-
-				case 2:
-					return sizeof(int);
-
-				case 3:
-					return sizeof(int) + (sizeof(char) * 30);
+					return sizeof(int) + sizeof(int);
 
 				default:
 					return 0;
