@@ -41,7 +41,7 @@
 #define IINQ_SELECT_LIST(...)												(iinq_field_num_t[]) { __VA_ARGS__ }
 #define IINQ_CONDITION(left, op, right)										(iinq_where_params_t) { (left), (op), (right) }
 #define IINQ_CONDITION_LIST(...)											(iinq_where_params_t[]) { __VA_ARGS__ }
-#define IINQ_UPDATE_LIST(...)												__VA_ARGS__
+#define IINQ_UPDATE_LIST(...)												(iinq_update_params_t[]) { __VA_ARGS__ }
 #define IINQ_UPDATE(update_field, implicit_field, operator, field_value)	(iinq_update_params_t) { (update_field), (implicit_field), (operator), (field_value) }
 
 #define NULL_FIELD		NULL

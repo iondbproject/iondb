@@ -62,7 +62,7 @@ iinq_create_source(
 	}
 
 	/* Load the handler. */
-	ffdict_init(&handler);
+	iinq_table_handler_init(&handler);
 
 	/* If the file exists, fail. */
 	if (NULL != (schema_file = fopen(schema_file_name, "rb"))) {
@@ -126,7 +126,7 @@ iinq_open_source(
 	dictionary_get_filename(table_id, "inq", schema_file_name);
 
 	/* Load the handler. */
-	ffdict_init(handler);
+	iinq_table_handler_init(handler);
 
 	/* If the schema file already exists. */
 	if (NULL != (schema_file = fopen(schema_file_name, "rb"))) {

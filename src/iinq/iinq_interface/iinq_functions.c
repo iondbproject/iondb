@@ -115,7 +115,7 @@ where(
 		char			*char_value = NULL;
 
 		if (field_type == iinq_int) {
-			int_value = (int) iinq_where.field_value;
+			int_value = NEUTRALIZE(iinq_where.field_value, int);
 		}
 		else if (field_type == iinq_null_terminated_string) {
 			char_value = malloc(calculateOffset(table_id, (iinq_where.where_field + 1)) - calculateOffset(table_id, (iinq_where.where_field)));
@@ -134,7 +134,7 @@ where(
 			case iinq_equal:
 
 				if (field_type == iinq_int) {
-					if (*(int *) curr != int_value) {
+					if (NEUTRALIZE(curr, int) != int_value) {
 						return boolean_false;
 					}
 				}
@@ -154,7 +154,7 @@ where(
 			case iinq_not_equal:
 
 				if (field_type == iinq_int) {
-					if (*(int *) curr == int_value) {
+					if (NEUTRALIZE(curr, int) == int_value) {
 						return boolean_false;
 					}
 				}
@@ -174,7 +174,7 @@ where(
 			case iinq_less_than:
 
 				if (field_type == iinq_int) {
-					if (*(int *) curr >= int_value) {
+					if (NEUTRALIZE(curr, int) >= int_value) {
 						return boolean_false;
 					}
 				}
@@ -194,7 +194,7 @@ where(
 			case iinq_less_than_equal_to:
 
 				if (field_type == iinq_int) {
-					if (*(int *) curr > int_value) {
+					if (NEUTRALIZE(curr, int) > int_value) {
 						return boolean_false;
 					}
 				}
@@ -216,7 +216,7 @@ where(
 			case iinq_greater_than:
 
 				if (field_type == iinq_int) {
-					if (*(int *) curr <= int_value) {
+					if (NEUTRALIZE(curr, int) <= int_value) {
 						return boolean_false;
 					}
 				}
@@ -236,7 +236,7 @@ where(
 			case iinq_greater_than_equal_to:
 
 				if (field_type == iinq_int) {
-					if (*(int *) curr < int_value) {
+					if (NEUTRALIZE(curr, int) < int_value) {
 						return boolean_false;
 					}
 				}

@@ -25,20 +25,26 @@ extern "C" {
 #include "../file/sd_stdio_c_iface.h"
 #endif
 
+#define iinq_handler_init			ffdict_init
+#define iinq_table_handler_init		iinq_handler_init
+#define iinq_select_handler_init	iinq_handler_init
+#define iinq_update_handler_init	iinq_handler_init
+#define iinq_delete_handler_init	iinq_handler_init
+
 /**
 @brief		Page size in bytes.
 */
-#define IINQ_PAGE_SIZE	512
+#define IINQ_PAGE_SIZE				512
 
 /**
 @brief		Error code for using long jumps.
 */
-#define IINQ_JMP_ERROR	1
+#define IINQ_JMP_ERROR				1
 
 /**
 @brief		"Everything is good" code when using long jumps.
 */
-#define IINQ_JMP_OK		2
+#define IINQ_JMP_OK					2
 
 /**
 @brief		A size type for IINQ results (row data from an IINQ query).
