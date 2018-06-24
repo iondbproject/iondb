@@ -43,12 +43,26 @@ iinq_execute(
 	ion_err_t					error;
 	ion_dictionary_t			dictionary;
 	ion_dictionary_handler_t	handler;
+	ion_dict_cursor_t			*cursor = NULL;
+	ion_predicate_t				predicate;
 
 	dictionary.handler	= &handler;
 
 	error				= iinq_open_source(table_id, &dictionary, &handler);
 
 	if (err_ok != error) {
+		goto ERROR;
+	}
+
+	dictionary_build_predicate(&predicate, predicate_equality, key);
+	error = dictionary_find(&dictionary, &predicate, &cursor);
+
+	if (err_ok != error) {
+		goto ERROR;
+	}
+
+	if (cs_end_of_results != cursor->status) {
+		error = err_duplicate_key;
 		goto ERROR;
 	}
 
@@ -83,7 +97,13 @@ iinq_execute(
 
 	return;
 
-ERROR: printf("Execution error: %i\n", error);
+ERROR:
+
+	if (NULL != cursor) {
+		cursor->destroy(&cursor);
+	}
+
+	printf("Execution error: %i\n", error);
 }
 
 ion_cursor_status_t
