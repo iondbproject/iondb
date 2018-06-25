@@ -19,50 +19,27 @@ next(
 	iinq_result_set *select
 );
 
-iinq_result_set *
-iinq_select(
+unsigned int
+iinq_calculate_key_offset(
 	iinq_table_id		table_id,
-	size_t				project_size,
-	int					num_wheres,
-	iinq_field_num_t	num_fields,
-	...
-);
-
-iinq_prepared_sql
-insert_0(
-	int value_1,
-	int value_2
-);
-
-int
-getInt(
-	iinq_result_set *select,
-	int				field_num
-);
-
-void
-create_table(
-	iinq_table_id		table_id,
-	ion_key_type_t		key_type,
-	ion_key_size_t		key_size,
-	ion_value_size_t	project_size
+	iinq_field_num_t	field_num
 );
 
 void
 print_table(
-	iinq_table_id table_id
+	iinq_table_id tableId
 );
 
 void
 setParam(
 	iinq_prepared_sql	p,
-	int					field_num,
+	iinq_field_num_t	field_num,
 	ion_value_t			val
 );
 
 iinq_field_t
 getFieldType(
-	iinq_table_id		table_id,
+	iinq_table_id		tableId,
 	iinq_field_num_t	field_num
 );
 
@@ -74,7 +51,7 @@ getString(
 
 void
 drop_table(
-	iinq_table_id *table_id
+	iinq_table_id *tableId
 );
 
 void
@@ -82,9 +59,45 @@ execute(
 	iinq_prepared_sql p
 );
 
+iinq_result_set *
+iinq_select(
+	iinq_table_id		table_id,
+	size_t				project_size,
+	int					numWheres,
+	iinq_field_num_t	num_fields,
+	...
+);
+
+int
+getInt(
+	iinq_result_set *select,
+	int				field_num
+);
+
+ion_boolean_t
+iinq_is_key_field(
+	iinq_table_id		table_id,
+	iinq_field_num_t	field_num
+);
+
+void
+create_table(
+	iinq_table_id		tableId,
+	ion_key_type_t		keyType,
+	ion_key_size_t		keySize,
+	ion_value_size_t	project_size
+);
+
+iinq_prepared_sql
+iinq_insert_0(
+	int		value_1,
+	char	*value_2,
+	int		value_3
+);
+
 size_t
 calculateOffset(
-	iinq_table_id		table_id,
+	iinq_table_id		tableId,
 	iinq_field_num_t	field_num
 );
 

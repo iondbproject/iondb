@@ -41,6 +41,6 @@ main(
 	void
 ) {
 	fdeleteall();
-	run_all_tests_iinq_device(30);
+	run_all_tests_iinq_device(100);
 	return 0;
 }

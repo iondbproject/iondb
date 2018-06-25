@@ -1,9 +1,8 @@
 /******************************************************************************/
 /**
-		@file		iinq_user.c
-		@author		Dana Klamut, Kai Neubauer
-
-@brief		This code contains definitions for iinq user functions
+@file		test_iinq.c
+@author		IonDB Project
+@brief		iinq tests.
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
@@ -35,89 +34,306 @@
 */
 /******************************************************************************/
 
-#include "iinq_user.h"
+#include "test_iinq_device.h"
+
+int num_records = 100;
 
 void
-cleanup(
+/* create_table1( */
 ) {
-	fdeleteall();
-	fremove("1.ffs");
-	fremove("2.ffs");
-	fremove("3.ffs");
-	fremove("4.ffs");
-	fremove("5.ffs");
-	fremove("6.ffs");
-	fremove("0.inq");
-	fremove("1.inq");
-	fremove("2.inq");
-	fremove("255.inq");
-	fremove("ion_mt.tbl");
+/*  SQL_execute("CREATE TABLE Table1 (ID INT, CharValue VARCHAR(30), IntValue INT, primary key(ID));"); */
+	create_table(0, key_type_numeric_unsigned, sizeof(int), (sizeof(int) * 2) + (sizeof(char) * 31));
+	printf("Table created.\n");
 }
 
-/* TODO: test OR and XOR once implemented */
-int
-main(
-	void
+void
+/* insert_prepared_record( */
+int id, char	*char_value, int int_value) {
+/*  iinq_prepared_sql p2 = SQL_prepare("INSERT INTO Table1 VALUES (?, ?, ?);"); */
+	iinq_prepared_sql p2 = iinq_insert_0(NULL, "", NULL);
+	setParam(1, IONIZE(num, int));
+	setParam(2, char_value);
+	setParam(3, IONIZE(int_value, int));
+
+	execute(p2);
+}
+
+void
+/* insert_record( */
+int num, char   *name, int age) {
+/*  execute(insert_0(num, name, age)); */
+}
+
+void
+/* insert_records( */
 ) {
-	/* Clean-up */
-	cleanup();
+	int						i;
+	volatile unsigned long	start_time, end_time;
 
-	/* CREATE TABLE statement (table_id = 0)*/
-/*  SQL_execute("CREATE TABLE Table1 (id INT, value INT, primary key(id));"); */
-	create_table(0, key_type_numeric_unsigned, sizeof(int), (sizeof(int) * 2));
+	printf("Inserting records.\n");
+	start_time = ion_time();
 
-	/* Insert rows */
-	for (int i = 0; i < 100; i++) {
-/*		 iinq_prepared_sql p1 = SQL_prepare("INSERT INTO Table1 VALUES (?, ?);"); */
-		iinq_prepared_sql p1 = insert_0(NULL, NULL);
-
-		setParam(p1, 1, IONIZE(i, int));
-		setParam(p1, 2, IONIZE(100 - i, int));
-		execute(p1);
+	for (i = 0; i < num_records; i++) {
+/*	  insert_record(i + 1, "regInsert", i + 5); */
 	}
 
-	/* Test query */
+	end_time = ion_time();
+
+	printf("%d records inserted.Time taken: %lu\n", num_records, end_time - start_time);
+}
+
+void
+/* insert_records_prep( */
+) {
+	int						i;
+	volatile unsigned long	start_time, end_time;
+
+	printf("Inserting prep records.\n");
+	start_time = ion_time();
+
+	for (i = 0; i < num_records; i++) {
+/*	  insert_prepared(-i, "prepInsert", -i + 5); */
+	}
+
+	end_time = ion_time();
+
+	printf("%d records inserted. Time taken: %lu\n", num_records, end_time - start_time);
+}
+
+void
+select_all_records(
+) {
+	volatile unsigned long start_time, end_time;
+
 	printf("SELECT * FROM Table1\n");
 
-/*  iinq_result_set *rs1 = SQL_select("SELECT * FROM Table1;\n"); */
-	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + sizeof(int), 0, 2, IINQ_SELECT_LIST(1, 2));
+	start_time = ion_time();
+
+/*  iinq_result_set *rs1 = SQL_select("SELECT * FROM Table1;"); */
+	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + (sizeof(char) * 31) + sizeof(int), 0, 3, IINQ_SELECT_LIST(1, 2, 3));
+
+	end_time = ion_time();
+	printf("Time taken: %lu\n\n", end_time - start_time);
 
 	while (next(rs1)) {
-		printf("ID: %d,", getInt(rs1, 1));
-		printf(" VALUE: %d\n", getInt(rs1, 2));
+		printf("ID: %i, ", getInt(rs1, 1));
+		printf("CharValue: %s, ", getString(rs1, 2));
+		printf("IntValue: %d\n", getInt(rs1, 3));
 	}
 
-	printf("SELECT * FROM Table1 WHERE id > 50 AND id < 70;\n");
-/*	 rs1 = SQL_select("SELECT * FROM Table1 WHERE id > 50 AND id < 70;\n"); */
-	rs1 = iinq_select(0, sizeof(int) + sizeof(int), 2, 2, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_less_than, 70), IINQ_CONDITION(1, iinq_greater_than, 50)), IINQ_SELECT_LIST(1, 2));
+	printf("\n");
+}
+
+void
+select_field_list(
+) {
+	volatile unsigned long start_time, end_time;
+
+	printf("SELECT IntValue, ID FROM Table1\n");
+
+	start_time = ion_time();
+
+/*	 iinq_result_set *rs1 = SQL_select("SELECT IntValue, ID FROM Table1;"); */
+	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + sizeof(int), 0, 2, IINQ_SELECT_LIST(3, 1));
+
+	end_time = ion_time();
+	printf("Done select\n");
+	printf("Time taken: %lu\n\n", end_time - start_time);
 
 	while (next(rs1)) {
-		printf("ID: %d,", getInt(rs1, 1));
-		printf(" VALUE: %d\n", getInt(rs1, 2));
+		printf("IntValue: %d\n", getInt(rs1, 1));
+		printf("ID: %i, ", getInt(rs1, 2));
 	}
 
-	printf("SELECT value, id FROM Table1 WHERE id > 50 AND id < 70;\n");
-/*	 rs1 = SQL_select("SELECT value, id FROM Table1 WHERE id > 50 AND id < 70;\n"); */
-	rs1 = iinq_select(0, sizeof(int) + sizeof(int), 2, 2, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_less_than, 70), IINQ_CONDITION(1, iinq_greater_than, 50)), IINQ_SELECT_LIST(2, 1));
+	printf("\n");
+}
+
+void
+select_all_where_greater_than(
+) {
+	volatile unsigned long start_time, end_time;
+
+	printf("SELECT * FROM Table1 WHERE ID > 50;\n");
+
+	start_time = ion_time();
+
+/*	 iinq_result_set *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID > 50;"); */
+	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + (sizeof(char) * 31) + sizeof(int), 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_greater_than, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
+
+	end_time = ion_time();
+	printf("Time taken: %lu\n\n", end_time - start_time);
 
 	while (next(rs1)) {
-		printf("VALUE: %d, ", getInt(rs1, 1));
-		printf("ID: %d\n", getInt(rs1, 2));
+		printf("ID: %i, ", getInt(rs1, 1));
+		printf("CharValue: %s, ", getString(rs1, 2));
+		printf("IntValue: %d\n", getInt(rs1, 3));
 	}
 
-	printf("SELECT value FROM Table1 WHERE id > 50 AND id < 70;\n");
-/*	 rs1 = SQL_select("SELECT value FROM Table1 WHERE id > 50 AND id < 70;\n"); */
-	rs1 = iinq_select(0, sizeof(int), 2, 1, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_less_than, 70), IINQ_CONDITION(1, iinq_greater_than, 50)), IINQ_SELECT_LIST(2));
+	printf("\n");
+}
+
+void
+select_all_where_greater_than_equal(
+) {
+	volatile unsigned long start_time, end_time;
+
+	printf("SELECT * FROM Table1 WHERE ID >= 50;\n");
+
+	start_time = ion_time();
+
+/*	 iinq_result_set *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID >= 50;"); */
+	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + (sizeof(char) * 31) + sizeof(int), 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_greater_than_equal_to, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
+
+	end_time = ion_time();
+	printf("Time taken: %lu\n\n", end_time - start_time);
 
 	while (next(rs1)) {
-		printf("VALUE: %d\n", getInt(rs1, 1));
+		printf("ID: %i, ", getInt(rs1, 1));
+		printf("CharValue: %s, ", getString(rs1, 2));
+		printf("IntValue: %d\n", getInt(rs1, 3));
 	}
 
+	printf("\n");
+}
+
+void
+select_all_where_less_than(
+) {
+	volatile unsigned long start_time, end_time;
+
+	printf("SELECT * FROM Table1 WHERE ID < 50;\n");
+
+	start_time = ion_time();
+
+/*	 iinq_result_set *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID < 50;"); */
+	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + (sizeof(char) * 31) + sizeof(int), 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_less_than, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
+
+	end_time = ion_time();
+	printf("Time taken: %lu\n\n", end_time - start_time);
+
+	while (next(rs1)) {
+		printf("ID: %i, ", getInt(rs1, 1));
+		printf("CharValue: %s, ", getString(rs1, 2));
+		printf("IntValue: %d\n", getInt(rs1, 3));
+	}
+
+	printf("\n");
+}
+
+void
+select_all_where_less_than_equal(
+) {
+	volatile unsigned long start_time, end_time;
+
+	printf("SELECT * FROM Table1 WHERE ID <= 50;\n");
+
+	start_time = ion_time();
+
+/*	 iinq_result_set *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID <= 50;"); */
+	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + (sizeof(char) * 31) + sizeof(int), 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_less_than_equal_to, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
+
+	end_time = ion_time();
+	printf("Time taken: %lu\n\n", end_time - start_time);
+
+	while (next(rs1)) {
+		printf("ID: %i, ", getInt(rs1, 1));
+		printf("CharValue: %s, ", getString(rs1, 2));
+		printf("IntValue: %d\n", getInt(rs1, 3));
+	}
+
+	printf("\n");
+}
+
+void
+select_all_where_not_equal(
+) {
+	volatile unsigned long start_time, end_time;
+
+	printf("SELECT * FROM Table1 WHERE ID <> 50;\n");
+
+	start_time = ion_time();
+
+/*	 iinq_result_set *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID <> 50;"); */
+	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + (sizeof(char) * 31) + sizeof(int), 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_less_than, IONIZE(> 50, int))), IINQ_SELECT_LIST(1, 2, 3));
+
+	end_time = ion_time();
+	printf("Time taken: %lu\n\n", end_time - start_time);
+
+	while (next(rs1)) {
+		printf("ID: %i, ", getInt(rs1, 1));
+		printf("CharValue: %s, ", getString(rs1, 2));
+		printf("IntValue: %d\n", getInt(rs1, 3));
+	}
+
+	printf("\n");
+}
+
+void
+select_all_where_multiple_conditions(
+) {
+	volatile unsigned long start_time, end_time;
+
+	printf("SELECT * FROM Table1 WHERE ID < 50 AND IntValue <> 50;\n");
+
+	start_time = ion_time();
+
+/*	 iinq_result_set *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID < 50 AND IntValue <> 50;"); */
+	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + (sizeof(char) * 31) + sizeof(int), 2, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_less_than, IONIZE(> 50, int)), IINQ_CONDITION(1, iinq_less_than, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
+
+	end_time = ion_time();
+	printf("Time taken: %lu\n\n", end_time - start_time);
+
+	while (next(rs1)) {
+		printf("ID: %i, ", getInt(rs1, 1));
+		printf("CharValue: %s, ", getString(rs1, 2));
+		printf("IntValue: %d\n", getInt(rs1, 3));
+	}
+
+	printf("\n");
+}
+
+void
+/* drop_table1( */
+) {
 /*  SQL_execute("DROP TABLE Table1;"); */
 	drop_table(0);
+}
 
-	/* Clean-up */
-	cleanup();
+planck_unit_suite_t *
+iinq_get_suite1(
+) {
+	int i;
 
-	return 0;
+	planck_unit_suite_t *suite = planck_unit_new_suite();
+
+/*  PLANCK_UNIT_ADD_TO_SUITE(suite, create_table1); */
+/*  PLANCK_UNIT_ADD_TO_SUITE(suite, insert_records); */
+/*  PLANCK_UNIT_ADD_TO_SUITE(suite, insert_records_prep); */
+	PLANCK_UNIT_ADD_TO_SUITE(suite, select_all_records);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, select_field_list);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, select_all_where_greater_than);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, select_all_where_greater_than_equal);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, select_all_where_less_than);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, select_all_where_less_than_equal);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, select_all_where_not_equal);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, select_all_where_multiple_conditions);
+/*	 PLANCK_UNIT_ADD_TO_SUITE(suite, drop_table1) */
+
+	return suite;
+}
+
+void
+run_all_tests_iinq_device(
+	int records
+) {
+	printf("num records in table: %i\n", records);
+	num_records = records;
+
+	planck_unit_suite_t *suite1 = iinq_get_suite1();
+
+	planck_unit_run_suite(suite1);
+	planck_unit_destroy_suite(suite1);
+
+	fdeleteall();
+	fremove(ION_MASTER_TABLE_FILENAME);
 }
