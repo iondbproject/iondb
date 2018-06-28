@@ -184,7 +184,7 @@ where(
 					}
 				}
 				else if (field_type == iinq_char_array) {
-					if (memcmp(char_value, curr, calculateOffset(table_id, iinq_where.where_field + 1) - calculateOffset(table_id, iinq_where.where_field)) != 0) {
+					if (memcmp(char_value, curr, calculateOffset(table_id, iinq_where.where_field + 1) - calculateOffset(table_id, iinq_where.where_field)) == 0) {
 						return boolean_false;
 					}
 				}

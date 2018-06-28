@@ -44,8 +44,12 @@
 #define IINQ_UPDATE_LIST(...)												(iinq_update_params_t[]) { __VA_ARGS__ }
 #define IINQ_UPDATE(update_field, implicit_field, operator, field_value)	(iinq_update_params_t) { (update_field), (implicit_field), (operator), (field_value) }
 
-#define NULL_FIELD		NULL
-#define PREPARED_FIELD	NULL
+#define iinq_get_int(result_set, field_num)									NEUTRALIZE((result_set)->record.value + (result_set)->offset[(field_num) - 1], int)
+#define iinq_get_string(result_set, field_num)								(char *) ((result_set)->record.value + (result_set)->offset[(field_num) - 1])
+#define iinq_get_object(result_set, field_num)								((result_set)->record.value + (result_set)->offset[(field_num) - 1])
+
+#define iinq_close_result_set(result_set)									(result_set)->destroy(&(result_set))
+#define iinq_next(result_set)												(result_set)->next(result_set)
 
 #if defined(__cplusplus)
 extern "C" {
@@ -83,17 +87,38 @@ struct prepared_iinq {
 */
 typedef struct select_iinq iinq_result_set;
 
+typedef ion_boolean_t (*iinq_next_t)(
+	iinq_result_set *
+);
+
+typedef void (*iinq_destroy_result_set_t)(
+	iinq_result_set *
+);
+
+typedef struct IINQ_WHERE_PARAMS iinq_where_params_t;
+
+typedef struct IINQ_DICTIONARY iinq_dictionary_ref_t;
+
+struct IINQ_DICTIONARY {
+	ion_boolean_t				temp_dictionary;
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
+	ion_dict_cursor_t			*cursor;
+	ion_predicate_t				predicate;
+};
+
 struct select_iinq {
-	ion_record_t		record;
-	ion_dictionary_id_t id;
-	ion_dict_cursor_t	*cursor;
-	int					num_recs;
-	ion_value_t			value;
-	iinq_table_id		table_id;
-	iinq_field_num_t	*fields;
-	iinq_field_num_t	num_fields;
-	ion_status_t		status;
-	unsigned int		*offset;
+	ion_record_t				record;
+	iinq_dictionary_ref_t		dictionary_ref;
+	iinq_table_id				table_id;
+	iinq_field_num_t			*fields;
+	iinq_field_num_t			num_fields;
+	iinq_next_t					next;
+	unsigned int				num_wheres;
+	iinq_where_params_t			*wheres;
+	ion_status_t				status;
+	unsigned int				*offset;
+	iinq_destroy_result_set_t	destroy;
 };
 
 void
@@ -176,8 +201,6 @@ struct IINQ_WHERE_PARAMS {
 
 	iinq_bool_operator_t operator; iinq_field_value_t field_value;
 };
-
-typedef struct IINQ_WHERE_PARAMS iinq_where_params_t;
 
 ion_boolean_t
 where(
