@@ -6,8 +6,8 @@ set(SOURCE_FILES
     test_iinq_device.c
     ../iinq_interface/iinq_functions.h
     ../iinq_interface/iinq_functions.c
-    ../iinq_interface/iinq_user_functions.h
-    ../iinq_interface/iinq_user_functions.c)
+    generated/iinq_testing_functions.h
+    generated/iinq_testing_functions.c)
 
 if(USE_ARDUINO)
     set(${PROJECT_NAME}_BOARD       ${BOARD})

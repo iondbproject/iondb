@@ -38,6 +38,11 @@
 #if !defined(IINQ_FUNCTIONS_H_)
 #define IINQ_FUNCTIONS_H_
 
+/* Dummy functions for code that will be parsed */
+#define SQL_execute(SQL_string)												NULL
+#define SQL_prepare(SQL_string)												NULL
+#define SQL_select(SQL_string)												NULL
+
 #define IINQ_SELECT_LIST(...)												(iinq_field_num_t[]) { __VA_ARGS__ }
 #define IINQ_CONDITION(left, op, right)										(iinq_where_params_t) { (left), (op), (right) }
 #define IINQ_CONDITION_LIST(...)											(iinq_where_params_t[]) { __VA_ARGS__ }
@@ -190,21 +195,6 @@ typedef enum IINQ_FIELD_TYPE {
 	/**> Field is a char array type. This requires padding to prevent reading memory that is not owned by the value. */
 	iinq_char_array
 } iinq_field_t;
-
-void
-SQL_execute(
-	char *sql
-);
-
-iinq_prepared_sql
-SQL_prepare(
-	char *sql
-);
-
-iinq_result_set
-SQL_select(
-	char *sql
-);
 
 ion_cursor_status_t
 iinq_next_record(

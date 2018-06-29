@@ -45,7 +45,7 @@ extern "C" {
 #include <string.h>
 #include <limits.h>
 #include "../iinq.h"
-#include "../iinq_interface/iinq_user_functions.h"
+#include "generated/iinq_testing_functions.h"
 #include "../../tests/planck-unit/src/planck_unit.h"
 
 void

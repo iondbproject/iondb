@@ -52,8 +52,8 @@ insert_prepared_record(
 	char	*char_value,
 	int		int_value
 ) {
-/*  iinq_prepared_sql p = SQL_prepare("INSERT INTO Table1 VALUES (?, ?, ?);"); */
-	iinq_prepared_sql p = iinq_insert_0(NULL, "", NULL);
+/*  iinq_prepared_sql *p = SQL_prepare("INSERT INTO Table1 VALUES (?, ?, ?);"); */
+	iinq_prepared_sql *p = iinq_insert_0(NULL, "", NULL);
 
 	setParam(p, 1, IONIZE(id, int));
 	setParam(p, 2, char_value);
@@ -64,11 +64,11 @@ insert_prepared_record(
 
 void
 insert_record(
-	int		num,
-	char	*name,
-	int		age
+	int		id,
+	char	*char_value,
+	int		int_value
 ) {
-	execute(iinq_insert_0(num, name, age));
+	iinq_execute_instantaneous(iinq_insert_0(id, char_value, int_value));
 }
 
 void
@@ -122,10 +122,10 @@ select_all_records(
 	end_time = ion_time();
 	printf("Time taken: %lu\n\n", end_time - start_time);
 
-	while (next(rs1)) {
-		printf("ID: %i, ", getInt(rs1, 1));
-		printf("CharValue: %s, ", getString(rs1, 2));
-		printf("IntValue: %d\n", getInt(rs1, 3));
+	while (iinq_next(rs1)) {
+		printf("ID: %i, ", iinq_get_int(rs1, 1));
+		printf("CharValue: %s, ", iinq_get_string(rs1, 2));
+		printf("IntValue: %d\n", iinq_get_int(rs1, 3));
 	}
 
 	printf("\n");
@@ -147,9 +147,9 @@ select_field_list(
 	printf("Done select\n");
 	printf("Time taken: %lu\n\n", end_time - start_time);
 
-	while (next(rs1)) {
-		printf("IntValue: %d\n", getInt(rs1, 1));
-		printf("ID: %i, ", getInt(rs1, 2));
+	while (iinq_next(rs1)) {
+		printf("IntValue: %d\n", iinq_get_int(rs1, 1));
+		printf("ID: %i, ", iinq_get_int(rs1, 2));
 	}
 
 	printf("\n");
@@ -170,10 +170,10 @@ select_all_where_greater_than(
 	end_time = ion_time();
 	printf("Time taken: %lu\n\n", end_time - start_time);
 
-	while (next(rs1)) {
-		printf("ID: %i, ", getInt(rs1, 1));
-		printf("CharValue: %s, ", getString(rs1, 2));
-		printf("IntValue: %d\n", getInt(rs1, 3));
+	while (iinq_next(rs1)) {
+		printf("ID: %i, ", iinq_get_int(rs1, 1));
+		printf("CharValue: %s, ", iinq_get_string(rs1, 2));
+		printf("IntValue: %d\n", iinq_get_int(rs1, 3));
 	}
 
 	printf("\n");
@@ -194,10 +194,10 @@ select_all_where_greater_than_equal(
 	end_time = ion_time();
 	printf("Time taken: %lu\n\n", end_time - start_time);
 
-	while (next(rs1)) {
-		printf("ID: %i, ", getInt(rs1, 1));
-		printf("CharValue: %s, ", getString(rs1, 2));
-		printf("IntValue: %d\n", getInt(rs1, 3));
+	while (iinq_next(rs1)) {
+		printf("ID: %i, ", iinq_get_int(rs1, 1));
+		printf("CharValue: %s, ", iinq_get_string(rs1, 2));
+		printf("IntValue: %d\n", iinq_get_int(rs1, 3));
 	}
 
 	printf("\n");
@@ -218,10 +218,10 @@ select_all_where_less_than(
 	end_time = ion_time();
 	printf("Time taken: %lu\n\n", end_time - start_time);
 
-	while (next(rs1)) {
-		printf("ID: %i, ", getInt(rs1, 1));
-		printf("CharValue: %s, ", getString(rs1, 2));
-		printf("IntValue: %d\n", getInt(rs1, 3));
+	while (iinq_next(rs1)) {
+		printf("ID: %i, ", iinq_get_int(rs1, 1));
+		printf("CharValue: %s, ", iinq_get_string(rs1, 2));
+		printf("IntValue: %d\n", iinq_get_int(rs1, 3));
 	}
 
 	printf("\n");
@@ -242,10 +242,10 @@ select_all_where_less_than_equal(
 	end_time = ion_time();
 	printf("Time taken: %lu\n\n", end_time - start_time);
 
-	while (next(rs1)) {
-		printf("ID: %i, ", getInt(rs1, 1));
-		printf("CharValue: %s, ", getString(rs1, 2));
-		printf("IntValue: %d\n", getInt(rs1, 3));
+	while (iinq_next(rs1)) {
+		printf("ID: %i, ", iinq_get_int(rs1, 1));
+		printf("CharValue: %s, ", iinq_get_string(rs1, 2));
+		printf("IntValue: %d\n", iinq_get_int(rs1, 3));
 	}
 
 	printf("\n");
@@ -266,10 +266,10 @@ select_all_where_not_equal(
 	end_time = ion_time();
 	printf("Time taken: %lu\n\n", end_time - start_time);
 
-	while (next(rs1)) {
-		printf("ID: %i, ", getInt(rs1, 1));
-		printf("CharValue: %s, ", getString(rs1, 2));
-		printf("IntValue: %d\n", getInt(rs1, 3));
+	while (iinq_next(rs1)) {
+		printf("ID: %i, ", iinq_get_int(rs1, 1));
+		printf("CharValue: %s, ", iinq_get_string(rs1, 2));
+		printf("IntValue: %d\n", iinq_get_int(rs1, 3));
 	}
 
 	printf("\n");
@@ -290,10 +290,10 @@ select_all_where_multiple_conditions(
 	end_time = ion_time();
 	printf("Time taken: %lu\n\n", end_time - start_time);
 
-	while (next(rs1)) {
-		printf("ID: %i, ", getInt(rs1, 1));
-		printf("CharValue: %s, ", getString(rs1, 2));
-		printf("IntValue: %d\n", getInt(rs1, 3));
+	while (iinq_next(rs1)) {
+		printf("ID: %i, ", iinq_get_int(rs1, 1));
+		printf("CharValue: %s, ", iinq_get_string(rs1, 2));
+		printf("IntValue: %d\n", iinq_get_int(rs1, 3));
 	}
 
 	printf("\n");
@@ -309,6 +309,8 @@ drop_table1(
 planck_unit_suite_t *
 iinq_get_suite1(
 ) {
+	int i;
+
 	planck_unit_suite_t *suite = planck_unit_new_suite();
 
 	PLANCK_UNIT_ADD_TO_SUITE(suite, create_table1);

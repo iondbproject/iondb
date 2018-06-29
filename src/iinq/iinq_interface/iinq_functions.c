@@ -281,10 +281,3 @@ where(
 
 	return boolean_true;
 }
-
-void
-SQL_execute(
-	char *sql
-) {
-	printf("\n%s\n", sql);
-}

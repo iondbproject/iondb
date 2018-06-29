@@ -9,10 +9,10 @@
 extern "C" {
 #endif
 
-#include "..\..\dictionary\dictionary_types.h"
-#include "..\..\dictionary\dictionary.h"
-#include "..\iinq.h"
-#include "iinq_functions.h"
+#include "..\..\..\dictionary\dictionary_types.h"
+#include "..\..\..\dictionary\dictionary.h"
+#include "..\..\iinq.h"
+#include "..\..\iinq_interface\iinq_functions.h"
 
 unsigned int
 iinq_calculate_key_offset(
@@ -44,14 +44,6 @@ getFieldType(
 );
 
 void
-update(
-	iinq_table_id	table_id,
-	int				num_wheres,
-	int				num_update,
-	...
-);
-
-void
 iinq_destroy_table_scan(
 	iinq_result_set **result_set
 );
@@ -66,13 +58,6 @@ execute(
 	iinq_prepared_sql *p
 );
 
-void
-delete_record(
-	iinq_table_id	table_id,
-	int				num_wheres,
-	...
-);
-
 iinq_result_set *
 iinq_select(
 	iinq_table_id		table_id,
@@ -80,27 +65,6 @@ iinq_select(
 	int					num_wheres,
 	iinq_field_num_t	num_fields,
 	...
-);
-
-iinq_prepared_sql *
-iinq_insert_4(
-	int		value_1,
-	int		value_2,
-	char	*value_3
-);
-
-iinq_prepared_sql *
-iinq_insert_2(
-	int		value_1,
-	char	*value_2,
-	int		value_3
-);
-
-iinq_prepared_sql *
-iinq_insert_3(
-	int		value_1,
-	int		value_2,
-	char	*value_3
 );
 
 ion_boolean_t
@@ -121,18 +85,7 @@ iinq_prepared_sql *
 iinq_insert_0(
 	int		value_1,
 	char	*value_2,
-	char	*value_3,
-	int		value_4,
-	char	*value_5
-);
-
-iinq_prepared_sql *
-iinq_insert_1(
-	char	*value_1,
-	char	*value_2,
-	char	*value_3,
-	int		value_4,
-	char	*value_5
+	int		value_3
 );
 
 size_t

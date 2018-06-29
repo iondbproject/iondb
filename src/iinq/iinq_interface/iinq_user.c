@@ -1,8 +1,9 @@
 /******************************************************************************/
 /**
-@file		test_iinq.c
-@author		IonDB Project
-@brief		iinq tests.
+		@file		iinq_user.c
+		@author		Dana Klamut, Kai Neubauer
+
+@brief		This code contains definitions for iinq user functions
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
@@ -34,306 +35,251 @@
 */
 /******************************************************************************/
 
-#include "test_iinq_device.h"
-
-int num_records = 100;
+#include "iinq_user.h"
 
 void
-/* create_table1( */
+cleanup(
 ) {
-/*  SQL_execute("CREATE TABLE Table1 (ID INT, CharValue VARCHAR(30), IntValue INT, primary key(ID));"); */
-	create_table(0, key_type_numeric_unsigned, sizeof(int), (sizeof(int) * 2) + (sizeof(char) * 31));
-	printf("Table created.\n");
-}
-
-void
-/* insert_prepared_record( */
-int id, char	*char_value, int int_value) {
-/*  iinq_prepared_sql p2 = SQL_prepare("INSERT INTO Table1 VALUES (?, ?, ?);"); */
-	iinq_prepared_sql p2 = iinq_insert_0(NULL, "", NULL);
-	setParam(1, IONIZE(num, int));
-	setParam(2, char_value);
-	setParam(3, IONIZE(int_value, int));
-
-	execute(p2);
-}
-
-void
-/* insert_record( */
-int num, char   *name, int age) {
-/*  execute(insert_0(num, name, age)); */
-}
-
-void
-/* insert_records( */
-) {
-	int						i;
-	volatile unsigned long	start_time, end_time;
-
-	printf("Inserting records.\n");
-	start_time = ion_time();
-
-	for (i = 0; i < num_records; i++) {
-/*	  insert_record(i + 1, "regInsert", i + 5); */
-	}
-
-	end_time = ion_time();
-
-	printf("%d records inserted.Time taken: %lu\n", num_records, end_time - start_time);
-}
-
-void
-/* insert_records_prep( */
-) {
-	int						i;
-	volatile unsigned long	start_time, end_time;
-
-	printf("Inserting prep records.\n");
-	start_time = ion_time();
-
-	for (i = 0; i < num_records; i++) {
-/*	  insert_prepared(-i, "prepInsert", -i + 5); */
-	}
-
-	end_time = ion_time();
-
-	printf("%d records inserted. Time taken: %lu\n", num_records, end_time - start_time);
-}
-
-void
-select_all_records(
-) {
-	volatile unsigned long start_time, end_time;
-
-	printf("SELECT * FROM Table1\n");
-
-	start_time = ion_time();
-
-/*  iinq_result_set *rs1 = SQL_select("SELECT * FROM Table1;"); */
-	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + (sizeof(char) * 31) + sizeof(int), 0, 3, IINQ_SELECT_LIST(1, 2, 3));
-
-	end_time = ion_time();
-	printf("Time taken: %lu\n\n", end_time - start_time);
-
-	while (next(rs1)) {
-		printf("ID: %i, ", getInt(rs1, 1));
-		printf("CharValue: %s, ", getString(rs1, 2));
-		printf("IntValue: %d\n", getInt(rs1, 3));
-	}
-
-	printf("\n");
-}
-
-void
-select_field_list(
-) {
-	volatile unsigned long start_time, end_time;
-
-	printf("SELECT IntValue, ID FROM Table1\n");
-
-	start_time = ion_time();
-
-/*	 iinq_result_set *rs1 = SQL_select("SELECT IntValue, ID FROM Table1;"); */
-	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + sizeof(int), 0, 2, IINQ_SELECT_LIST(3, 1));
-
-	end_time = ion_time();
-	printf("Done select\n");
-	printf("Time taken: %lu\n\n", end_time - start_time);
-
-	while (next(rs1)) {
-		printf("IntValue: %d\n", getInt(rs1, 1));
-		printf("ID: %i, ", getInt(rs1, 2));
-	}
-
-	printf("\n");
-}
-
-void
-select_all_where_greater_than(
-) {
-	volatile unsigned long start_time, end_time;
-
-	printf("SELECT * FROM Table1 WHERE ID > 50;\n");
-
-	start_time = ion_time();
-
-/*	 iinq_result_set *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID > 50;"); */
-	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + (sizeof(char) * 31) + sizeof(int), 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_greater_than, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
-
-	end_time = ion_time();
-	printf("Time taken: %lu\n\n", end_time - start_time);
-
-	while (next(rs1)) {
-		printf("ID: %i, ", getInt(rs1, 1));
-		printf("CharValue: %s, ", getString(rs1, 2));
-		printf("IntValue: %d\n", getInt(rs1, 3));
-	}
-
-	printf("\n");
-}
-
-void
-select_all_where_greater_than_equal(
-) {
-	volatile unsigned long start_time, end_time;
-
-	printf("SELECT * FROM Table1 WHERE ID >= 50;\n");
-
-	start_time = ion_time();
-
-/*	 iinq_result_set *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID >= 50;"); */
-	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + (sizeof(char) * 31) + sizeof(int), 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_greater_than_equal_to, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
-
-	end_time = ion_time();
-	printf("Time taken: %lu\n\n", end_time - start_time);
-
-	while (next(rs1)) {
-		printf("ID: %i, ", getInt(rs1, 1));
-		printf("CharValue: %s, ", getString(rs1, 2));
-		printf("IntValue: %d\n", getInt(rs1, 3));
-	}
-
-	printf("\n");
-}
-
-void
-select_all_where_less_than(
-) {
-	volatile unsigned long start_time, end_time;
-
-	printf("SELECT * FROM Table1 WHERE ID < 50;\n");
-
-	start_time = ion_time();
-
-/*	 iinq_result_set *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID < 50;"); */
-	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + (sizeof(char) * 31) + sizeof(int), 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_less_than, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
-
-	end_time = ion_time();
-	printf("Time taken: %lu\n\n", end_time - start_time);
-
-	while (next(rs1)) {
-		printf("ID: %i, ", getInt(rs1, 1));
-		printf("CharValue: %s, ", getString(rs1, 2));
-		printf("IntValue: %d\n", getInt(rs1, 3));
-	}
-
-	printf("\n");
-}
-
-void
-select_all_where_less_than_equal(
-) {
-	volatile unsigned long start_time, end_time;
-
-	printf("SELECT * FROM Table1 WHERE ID <= 50;\n");
-
-	start_time = ion_time();
-
-/*	 iinq_result_set *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID <= 50;"); */
-	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + (sizeof(char) * 31) + sizeof(int), 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_less_than_equal_to, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
-
-	end_time = ion_time();
-	printf("Time taken: %lu\n\n", end_time - start_time);
-
-	while (next(rs1)) {
-		printf("ID: %i, ", getInt(rs1, 1));
-		printf("CharValue: %s, ", getString(rs1, 2));
-		printf("IntValue: %d\n", getInt(rs1, 3));
-	}
-
-	printf("\n");
-}
-
-void
-select_all_where_not_equal(
-) {
-	volatile unsigned long start_time, end_time;
-
-	printf("SELECT * FROM Table1 WHERE ID <> 50;\n");
-
-	start_time = ion_time();
-
-/*	 iinq_result_set *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID <> 50;"); */
-	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + (sizeof(char) * 31) + sizeof(int), 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_less_than, IONIZE(> 50, int))), IINQ_SELECT_LIST(1, 2, 3));
-
-	end_time = ion_time();
-	printf("Time taken: %lu\n\n", end_time - start_time);
-
-	while (next(rs1)) {
-		printf("ID: %i, ", getInt(rs1, 1));
-		printf("CharValue: %s, ", getString(rs1, 2));
-		printf("IntValue: %d\n", getInt(rs1, 3));
-	}
-
-	printf("\n");
-}
-
-void
-select_all_where_multiple_conditions(
-) {
-	volatile unsigned long start_time, end_time;
-
-	printf("SELECT * FROM Table1 WHERE ID < 50 AND IntValue <> 50;\n");
-
-	start_time = ion_time();
-
-/*	 iinq_result_set *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID < 50 AND IntValue <> 50;"); */
-	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + (sizeof(char) * 31) + sizeof(int), 2, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_less_than, IONIZE(> 50, int)), IINQ_CONDITION(1, iinq_less_than, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
-
-	end_time = ion_time();
-	printf("Time taken: %lu\n\n", end_time - start_time);
-
-	while (next(rs1)) {
-		printf("ID: %i, ", getInt(rs1, 1));
-		printf("CharValue: %s, ", getString(rs1, 2));
-		printf("IntValue: %d\n", getInt(rs1, 3));
-	}
-
-	printf("\n");
-}
-
-void
-/* drop_table1( */
-) {
-/*  SQL_execute("DROP TABLE Table1;"); */
-	drop_table(0);
-}
-
-planck_unit_suite_t *
-iinq_get_suite1(
-) {
-	int i;
-
-	planck_unit_suite_t *suite = planck_unit_new_suite();
-
-/*  PLANCK_UNIT_ADD_TO_SUITE(suite, create_table1); */
-/*  PLANCK_UNIT_ADD_TO_SUITE(suite, insert_records); */
-/*  PLANCK_UNIT_ADD_TO_SUITE(suite, insert_records_prep); */
-	PLANCK_UNIT_ADD_TO_SUITE(suite, select_all_records);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, select_field_list);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, select_all_where_greater_than);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, select_all_where_greater_than_equal);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, select_all_where_less_than);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, select_all_where_less_than_equal);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, select_all_where_not_equal);
-	PLANCK_UNIT_ADD_TO_SUITE(suite, select_all_where_multiple_conditions);
-/*	 PLANCK_UNIT_ADD_TO_SUITE(suite, drop_table1) */
-
-	return suite;
-}
-
-void
-run_all_tests_iinq_device(
-	int records
-) {
-	printf("num records in table: %i\n", records);
-	num_records = records;
-
-	planck_unit_suite_t *suite1 = iinq_get_suite1();
-
-	planck_unit_run_suite(suite1);
-	planck_unit_destroy_suite(suite1);
-
 	fdeleteall();
-	fremove(ION_MASTER_TABLE_FILENAME);
+	fremove("1.ffs");
+	fremove("2.ffs");
+	fremove("3.ffs");
+	fremove("4.ffs");
+	fremove("5.ffs");
+	fremove("6.ffs");
+	fremove("0.inq");
+	fremove("1.inq");
+	fremove("2.inq");
+	fremove("3.inq");
+	fremove("4.inq");
+	fremove("ion_mt.tbl");
+}
+
+/* TODO: test OR and XOR once implemented */
+int
+main(
+	void
+) {
+	/* Clean-up */
+	cleanup();
+
+	/* Test CREATE TABLE statement (table_id = 0)*/
+/*  SQL_execute("CREATE TABLE Dogs (id INT, type CHAR(20), name VARCHAR(30), age INT, city VARCHAR(30), primary key(id));"); */
+	create_table(0, key_type_numeric_unsigned, sizeof(int), (sizeof(int) * 2) + (sizeof(char) * 83));
+
+	/* Test INSERT statements */
+	printf("INSERT INTO Dogs VALUES (10, 'Frenchie', 'Minnie', 1, 'Penticton');\n");
+/*  SQL_execute("INSERT INTO Dogs VALUES (10, 'Frenchie', 'Minnie', 1, 'Penticton');"); */
+	iinq_execute_instantaneous(iinq_insert_0(10, "Frenchie", "Minnie", 1, "Penticton"));
+	print_table(0);
+	printf("INSERT INTO Dogs VALUES (40, 'Chihuahua', 'Barky', 7, 'Van');\n");
+/*  SQL_execute("INSERT INTO Dogs VALUES (40, 'Chihuahua', 'Barky', 7, 'Van');"); */
+	iinq_execute_instantaneous(iinq_insert_0(40, "Chihuahua", "Barky", 7, "Van"));
+	print_table(0);
+	printf("INSERT INTO Dogs COLUMNS (id, type, age) VALUES (30, 'Black Lab', 5);\n");
+/*  SQL_execute("INSERT INTO Dogs COLUMNS (id, type, age) VALUES (30, 'Black Lab', 5);"); */
+	iinq_execute_instantaneous(iinq_insert_0(30, "Black Lab", "", 5, ""));
+	print_table(0);
+	printf("INSERT INTO Dogs COLUMNS (id, type) VALUES (20, 'Black Lab');\n");
+/*  SQL_execute("INSERT INTO Dogs COLUMNS (id, type) VALUES (20, 'Black Lab');"); */
+	iinq_execute_instantaneous(iinq_insert_0(20, "Black Lab", "", NULL, ""));
+	print_table(0);
+	printf("INSERT INTO Dogs COLUMNS (city, name, id) VALUES ('West Bench', 'Corky', 50);\n");
+/*  SQL_execute("INSERT INTO Dogs COLUMNS (city, name, id) VALUES ('West Bench', 'Corky', 50);"); */
+	iinq_execute_instantaneous(iinq_insert_0(50, "", "Corky", NULL, "West Bench"));
+	print_table(0);
+
+	/* Test UPDATE statement */
+	printf("UPDATE Dogs SET id = id-1, age = age * 10 WHERE name = 'Barky';\n");
+/*  SQL_execute("UPDATE Dogs SET id = id-1, age = age * 10 WHERE name = 'Barky';"); */
+	update(0, 1, 2, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_equal, "Barky")), IINQ_UPDATE_LIST(IINQ_UPDATE(1, 1, iinq_subtract, IONIZE(1, int)), IINQ_UPDATE(4, 4, iinq_multiply, IONIZE(10, int))));
+	print_table(0);
+
+	/* Test DELETE statement */
+	printf("DELETE FROM Dogs WHERE id < 50 AND age >= 5;\n");
+/*  SQL_execute("DELETE FROM Dogs WHERE id < 50 AND age >= 5;"); */
+	delete_record(0, 2, IINQ_CONDITION_LIST(IINQ_CONDITION(4, iinq_greater_than_equal_to, IONIZE(5, int)), IINQ_CONDITION(1, iinq_less_than, IONIZE(50, int))));
+	print_table(0);
+
+	/* Test DROP TABLE statement */
+	printf("DROP TABLE Dogs;\n");
+/*  SQL_execute("DROP TABLE Dogs;"); */
+	drop_table(0);
+
+	/* Create Dogs table for further testing (table_id = 1)*/
+	printf("CREATE TABLE Dogs (id VARCHAR(2), type CHAR(20), name VARCHAR(30), age INT, city VARCHAR(30), primary key(id));\n");
+/*  SQL_execute("CREATE TABLE Dogs (id VARCHAR(2), type CHAR(20), name VARCHAR(30), age INT, city VARCHAR(30), primary key(id));"); */
+	create_table(1, key_type_char_array, (sizeof(char) * 3), (sizeof(int) * 1) + (sizeof(char) * 86));
+
+	/* Test prepared statements */
+	printf("INSERT INTO Dogs VALUES ('1', 'Black Lab', 'Minnie', 5, 'Penticton'); (prepared)\n");
+
+/*  iinq_prepared_sql *p1 = SQL_prepare("INSERT INTO Dogs VALUES ('1', (?), 'Minnie', (?), 'Penticton');"); */
+	iinq_prepared_sql *p1 = iinq_insert_1("1", "", "Minnie", NULL, "Penticton");
+
+	setParam(p1, 2, "Black Lab");
+	setParam(p1, 4, IONIZE(5, int));
+	execute(p1);
+	print_table(1);
+
+	/* Test that multiple tables simultaneously will not break functionality (table_id = 2)*/
+	printf("CREATE TABLE Cats (id INT, name VARCHAR(30), age INT, primary key(id));\n");
+/*  SQL_execute("CREATE TABLE Cats (id INT, name VARCHAR(30), age INT, primary key(id));"); */
+	create_table(2, key_type_numeric_unsigned, sizeof(int), (sizeof(int) * 2) + (sizeof(char) * 31));
+
+	printf("INSERT INTO Cats VALUES (6, 'Buttons', 2);\n");
+/*  SQL_execute("INSERT INTO Cats VALUES (6, 'Buttons', 2);"); */
+	iinq_execute_instantaneous(iinq_insert_2(6, "Buttons", 2));
+	print_table(2);
+	printf("INSERT INTO Cats VALUES (4, 'Mr. Whiskers', 4);\n");
+/*  SQL_execute("INSERT INTO Cats VALUES (4, 'Mr. Whiskers', 4);"); */
+	iinq_execute_instantaneous(iinq_insert_2(4, "Mr. Whiskers", 4));
+	print_table(2);
+
+	printf("INSERT INTO Cats VALUES (5, 'Minnie', 6); (prepared)\n");
+
+/*  iinq_prepared_sql *p2 = SQL_prepare(""INSERT INTO Cats VALUES (5, ?, (?));""); */
+	iinq_prepared_sql *p2 = iinq_insert_2(5, "", NULL);
+
+	setParam(p2, 2, "Minnie");
+	setParam(p2, 3, IONIZE(6, int));
+	execute(p2);
+	iinq_close_statement(p2);
+	print_table(2);
+
+	/* Test DELETE with multiple conditions */
+	printf("DELETE FROM Cats WHERE id >= 5 AND id < 10 AND name != 'Minnie';\n");
+/*  SQL_execute("DELETE FROM Cats WHERE id >= 5 AND id < 10 AND name != 'Minnie';"); */
+	delete_record(2, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(2, iinq_not_equal, "Minnie"), IINQ_CONDITION(1, iinq_less_than, IONIZE(10, int)), IINQ_CONDITION(1, iinq_greater_than_equal_to, IONIZE(5, int))));
+	print_table(2);
+
+	/* Reinsert rows that were deleted */
+	printf("INSERT INTO Cats VALUES (6, 'Buttons', 2);\n");
+/*	 SQL_execute("INSERT INTO Cats VALUES (6, 'Buttons', 2);"); */
+	iinq_execute_instantaneous(iinq_insert_2(6, "Buttons", 2));
+	print_table(2);
+
+	/* Test UPDATE with multiple conditions */
+	printf("UPDATE Cats SET age = age + 90 WHERE id >= 5 AND id < 10 AND name != 'Minnie';\n");
+/*  SQL_execute("UPDATE Cats SET age = age + 90 WHERE id >= 5 AND id < 10 AND name != 'Minnie';"); */
+	update(2, 3, 1, IINQ_CONDITION_LIST(IINQ_CONDITION(2, iinq_not_equal, "Minnie"), IINQ_CONDITION(1, iinq_less_than, IONIZE(10, int)), IINQ_CONDITION(1, iinq_greater_than_equal_to, IONIZE(5, int))), IINQ_UPDATE_LIST(IINQ_UPDATE(3, 3, iinq_add, IONIZE(90, int))));
+	print_table(2);
+	printf("UPDATE Cats SET age = 90 WHERE age < 5;\n");
+/*  SQL_execute("UPDATE Cats SET age = 90 WHERE age < 5;"); */
+	update(2, 1, 1, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_less_than, IONIZE(5, int))), IINQ_UPDATE_LIST(IINQ_UPDATE(3, 0, 0, IONIZE(90, int))));
+	print_table(2);
+
+	/* Test update with implicit fields */
+	printf("UPDATE Cats SET age = 90, id = id+1, name = 'Chichi' WHERE age < 5;\n");
+/*  SQL_execute("UPDATE Cats SET age = 90, id = id+1, name = 'Chichi' WHERE age < 5;"); */
+	update(2, 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_less_than, IONIZE(5, int))), IINQ_UPDATE_LIST(IINQ_UPDATE(3, 0, 0, IONIZE(90, int)), IINQ_UPDATE(1, 1, iinq_add, IONIZE(1, int)), IINQ_UPDATE(2, 0, 0, "Chichi")));
+	print_table(2);
+	printf("UPDATE Cats SET age = 90, id = id+1, name = 'Chichi' WHERE id >= 5 AND id < 10 AND name != 'Minnie';\n");
+/*  SQL_execute("UPDATE Cats SET age = 90, id = id+1, name = 'Chichi' WHERE id >= 5 AND id < 10 AND name != 'Minnie';"); */
+	update(2, 3, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(2, iinq_not_equal, "Minnie"), IINQ_CONDITION(1, iinq_less_than, IONIZE(10, int)), IINQ_CONDITION(1, iinq_greater_than_equal_to, IONIZE(5, int))), IINQ_UPDATE_LIST(IINQ_UPDATE(3, 0, 0, IONIZE(90, int)), IINQ_UPDATE(1, 1, iinq_add, IONIZE(1, int)), IINQ_UPDATE(2, 0, 0, "Chichi")));
+	print_table(2);
+
+	printf("UPDATE Cats SET age = age + 5 WHERE age > 2;\n");
+/*  SQL_execute("UPDATE Cats SET age = age + 5 WHERE age > 2;"); */
+	update(2, 1, 1, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_greater_than, IONIZE(2, int))), IINQ_UPDATE_LIST(IINQ_UPDATE(3, 3, iinq_add, IONIZE(5, int))));
+	print_table(2);
+
+	printf("DELETE FROM Cats WHERE age >= 10;\n");
+/*  SQL_execute("DELETE FROM Cats WHERE age >= 10;"); */
+	delete_record(2, 1, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_greater_than_equal_to, IONIZE(10, int))));
+	print_table(2);
+
+	/* Test query */
+	printf("SELECT id, name FROM Cats WHERE age < 10;\n");
+
+/*  iinq_result_set *rs1 = SQL_select("SELECT id, name FROM Cats WHERE age < 10;"); */
+	iinq_result_set *rs1 = iinq_select(2, sizeof(int) + (sizeof(char) * 31), 1, 2, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_less_than, IONIZE(10, int))), IINQ_SELECT_LIST(1, 2));
+
+	while (iinq_next(rs1)) {
+		printf("ID: %i,", iinq_get_int(rs1, 1));
+		printf(" name: %s\n", iinq_get_string(rs1, 2));
+	}
+
+	iinq_close_result_set(rs1);
+
+	printf("DROP TABLE Cats;\n");
+/*  SQL_execute("DROP TABLE Cats;"); */
+	drop_table(2);
+	printf("DROP TABLE Dogs;\n");
+/*  SQL_execute("DROP TABLE Dogs;"); */
+	drop_table(1);
+
+	/* Test tables with composite keys and different orderings for key fields (table_id = 3 & 4)*/
+	printf("CREATE TABLE test1 (id1 INT, id2 INT, value CHAR(5), PRIMARY KEY(id1, id2));\n");
+/*	 SQL_execute("CREATE TABLE test1 (id1 INT, id2 INT, value CHAR(5), PRIMARY KEY(id1, id2));"); */
+	create_table(3, key_type_char_array, sizeof(int) + sizeof(int), (sizeof(int) * 2) + (sizeof(char) * 6));
+	printf("CREATE TABLE test2 (id1 INT, id2 INT, value CHAR(5), PRIMARY KEY(id2, id1));\n");
+/*	 SQL_execute("CREATE TABLE test2 (id1 INT, id2 INT, value CHAR(5), PRIMARY KEY(id2, id1));"); */
+	create_table(4, key_type_char_array, sizeof(int) + sizeof(int), (sizeof(int) * 2) + (sizeof(char) * 6));
+
+	/* Test that the keys are also set when using prepared statements */
+/*	 p1 = SQL_prepare("INSERT INTO test1 COLUMNS (id1, id2) VALUES (?, ?);"); */
+	p1	= iinq_insert_3(NULL, NULL, "");
+/*	 p2 = SQL_prepare("INSERT INTO test2 COLUMNS (id1, id2) VALUES (?, ?);"); */
+	p2	= iinq_insert_4(NULL, NULL, "");
+
+	setParam(p1, 1, IONIZE(1, int));
+	setParam(p1, 2, IONIZE(2, int));
+
+	setParam(p2, 1, IONIZE(1, int));
+	setParam(p2, 2, IONIZE(2, int));
+
+	printf("INSERT INTO test1 COLUMNS (id1, id2) VALUES (1, 2); (prepared)\n");
+	execute(p1);
+	iinq_close_statement(p1);
+	print_table(3);
+	printf("INSERT INTO test2 COLUMNS (id1, id2) VALUES (1, 2); (prepared)\n");
+	execute(p2);
+	iinq_close_statement(p2);
+	print_table(4);
+
+	/* TODO: print keys */
+
+	/* Test that duplicate keys cannot be inserted */
+	printf("INSERT INTO test1 COLUMNS (id1, id2) VALUES (5, 3);\n");
+/*	 SQL_execute("INSERT INTO test1 COLUMNS (id1, id2) VALUES (5, 3);"); */
+	iinq_execute_instantaneous(iinq_insert_3(5, 3, ""));
+	print_table(3);
+	printf("INSERT INTO test1 COLUMNS (id1, id2) VALUES (5, 3);\n");
+/*	 SQL_execute("INSERT INTO test1 COLUMNS (id1, id2) VALUES (5, 3);"); */
+	iinq_execute_instantaneous(iinq_insert_3(5, 3, ""));
+	print_table(3);
+
+	printf("INSERT INTO test2 COLUMNS (id1, id2) VALUES (5, 3);\n");
+/*	 SQL_execute("INSERT INTO test2 COLUMNS (id1, id2) VALUES (5, 3);"); */
+	iinq_execute_instantaneous(iinq_insert_4(5, 3, ""));
+	print_table(4);
+	printf("INSERT INTO test2 COLUMNS (id1, id2) VALUES (5, 3);\n");
+/*	 SQL_execute("INSERT INTO test2 COLUMNS (id1, id2) VALUES (5, 3);"); */
+	iinq_execute_instantaneous(iinq_insert_4(5, 3, ""));
+	print_table(4);
+
+	/* Test an UPDATE that would violate the primary key constraint */
+	printf("UPDATE test1 SET id1 = 1, id2 = 2 WHERE id1 = 5 AND id2 = 3;\n");
+/*	 SQL_execute("UPDATE test1 SET id1 = 1, id2 = 2 WHERE id1 = 5 AND id2 = 3;"); */
+	update(3, 2, 2, IINQ_CONDITION_LIST(IINQ_CONDITION(2, iinq_equal, IONIZE(3, int)), IINQ_CONDITION(1, iinq_equal, IONIZE(5, int))), IINQ_UPDATE_LIST(IINQ_UPDATE(1, 0, 0, IONIZE(1, int)), IINQ_UPDATE(2, 0, 0, IONIZE(2, int))));
+	print_table(3);
+
+	/* Test an UPDATE that updates a key field */
+	printf("UPDATE test1 SET id1 = id+1;\n");
+/*	 SQL_execute("UPDATE test1 SET id1 = id1+1;"); */
+	update(3, 0, 1, IINQ_UPDATE_LIST(IINQ_UPDATE(1, 1, iinq_add, IONIZE(1, int))));
+	print_table(3);
+
+	printf("DROP TABLE test1;\n");
+/*	 SQL_execute("DROP TABLE test1;"); */
+	drop_table(3);
+	printf("DROP TABLE test2;\n");
+/*	 SQL_execute("DROP TABLE test2;\n"); */
+	drop_table(4);
+
+	/* Clean-up */
+	cleanup();
+
+	return 0;
 }
