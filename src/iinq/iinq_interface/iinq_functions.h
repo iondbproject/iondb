@@ -51,6 +51,24 @@
 #define iinq_close_result_set(result_set)									(result_set)->destroy(&(result_set))
 #define iinq_next(result_set)												(result_set)->next(result_set)
 
+#define iinq_close_statement(p) \
+	if ((p) != NULL) { \
+		if ((p)->value != NULL) { \
+			free((p)->value); \
+		} \
+		if ((p)->key != NULL) { \
+			free((p)->key); \
+		} \
+		free((p)); \
+	}
+
+void *iinq_reserved;
+
+#define iinq_execute_instantaneous(p) \
+	iinq_reserved = p; \
+	execute(iinq_reserved); \
+	iinq_close_statement((iinq_prepared_sql *) iinq_reserved);
+
 #if defined(__cplusplus)
 extern "C" {
 #endif
