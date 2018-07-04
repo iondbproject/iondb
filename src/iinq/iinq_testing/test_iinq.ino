@@ -16,24 +16,10 @@ setup(
 	SPI.begin();
 	SD.begin(SD_CS_PIN);
 	Serial.begin(BAUD_RATE);
-	int i;
-	int num_records = 30;
 
-    for (i = 0; i < 3; i++) {
-        Serial.println(freeRam());
-        run_all_tests_iinq_device(num_records);
-        num_records = num_records-10;
-        Serial.println(freeRam());
-
-        pinMode(13, OUTPUT);
-
-        for (int j = 0 ; j < EEPROM.length() ; j++) {
-            EEPROM.write(j, 0);
-        }
-
-        // turn the LED on when we're done
-        digitalWrite(13, HIGH);
-    }
+	int num_records = 100;
+	fdeleteall();
+	run_all_tests_iinq_device(num_records);
 }
 
 void

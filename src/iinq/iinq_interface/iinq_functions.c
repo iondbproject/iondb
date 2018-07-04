@@ -33,7 +33,7 @@
 #include "iinq_functions.h"
 #include "../../util/sort/sort.h"
 
-void
+ion_err_t
 iinq_execute(
 	iinq_table_id			table_id,
 	ion_key_t				key,
@@ -91,19 +91,13 @@ iinq_execute(
 
 	error = ion_close_dictionary(&dictionary);
 
-	if (err_ok != error) {
-		goto ERROR;
-	}
-
-	return;
-
 ERROR:
 
 	if (NULL != cursor) {
 		cursor->destroy(&cursor);
 	}
 
-	printf("Execution error: %i\n", error);
+	return error;
 }
 
 ion_cursor_status_t
@@ -150,7 +144,7 @@ where(
 
 		curr = curr + calculateOffset(table_id, (iinq_where.where_field));
 
-		switch (iinq_where.operator) {
+		switch (iinq_where.bool_operator) {
 			case iinq_equal:
 
 				if (field_type == iinq_int) {
