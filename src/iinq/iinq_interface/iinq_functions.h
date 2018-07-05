@@ -49,8 +49,8 @@
 #define IINQ_UPDATE_LIST(...)												(iinq_update_params_t[]) { __VA_ARGS__ }
 #define IINQ_UPDATE(update_field, implicit_field, operator, field_value)	(iinq_update_params_t) { (update_field), (implicit_field), (operator), (field_value) }
 
-#define iinq_get_int(result_set, field_num)									NEUTRALIZE((char *)(result_set)->record.value + (result_set)->offset[(field_num) - 1], int)
-#define iinq_get_string(result_set, field_num)								((char *)(result_set)->record.value + (result_set)->offset[(field_num) - 1])
+#define iinq_get_int(result_set, field_num)									NEUTRALIZE((char *) (result_set)->record.value + (result_set)->offset[(field_num) - 1], int)
+#define iinq_get_string(result_set, field_num)								((char *) (result_set)->record.value + (result_set)->offset[(field_num) - 1])
 #define iinq_get_object(result_set, field_num)								(void *) ((char *) (result_set)->record.value + (result_set)->offset[(field_num) - 1]))
 
 #define iinq_close_result_set(result_set)									(result_set)->destroy(&(result_set))
@@ -206,9 +206,9 @@ iinq_next_record(
 typedef void *iinq_field_value_t;
 
 struct IINQ_WHERE_PARAMS {
-	int where_field;
-	iinq_bool_operator_t bool_operator;
-	iinq_field_value_t field_value;
+	int						where_field;
+	iinq_bool_operator_t	bool_operator;
+	iinq_field_value_t		field_value;
 };
 
 ion_boolean_t
@@ -224,10 +224,10 @@ typedef void (*iinq_print_table_t)(
 );
 
 struct IINQ_UPDATE_PARAMS {
-	int update_field;
-	int implicit_field;
-	iinq_math_operator_t math_operator;
-	iinq_field_value_t field_value;
+	int						update_field;
+	int						implicit_field;
+	iinq_math_operator_t	math_operator;
+	iinq_field_value_t		field_value;
 };
 
 typedef struct IINQ_UPDATE_PARAMS iinq_update_params_t;

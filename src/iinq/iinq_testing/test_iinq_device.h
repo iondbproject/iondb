@@ -50,7 +50,7 @@ extern "C" {
 
 void
 run_all_tests_iinq_device(
-	int num_records
+	unsigned int num_records
 );
 
 #if defined(__cplusplus)
