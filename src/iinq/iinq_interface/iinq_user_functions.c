@@ -56,12 +56,20 @@ print_table(
 	ion_dictionary_t			dictionary;
 	ion_dictionary_handler_t	handler;
 
+	ion_cursor_status_t cursor_status;
+
+	ion_record_t ion_record;
+
+	ion_record.key		= NULL;
+	ion_record.value	= NULL;
+
+	ion_dict_cursor_t *cursor = NULL;
+
 	dictionary.handler = &handler;
 
 	ion_err_t error = iinq_open_source(tableId, &dictionary, &handler);
 
 	if (err_ok != error) {
-		printf("Print error: %d", error);
 		goto END;
 	}
 
@@ -69,16 +77,7 @@ print_table(
 
 	dictionary_build_predicate(&predicate, predicate_all_records);
 
-	ion_dict_cursor_t *cursor = NULL;
-
 	dictionary_find(&dictionary, &predicate, &cursor);
-
-	ion_cursor_status_t cursor_status;
-
-	ion_record_t ion_record;
-
-	ion_record.key;
-	ion_record.value;
 
 	switch (tableId) {
 		case 0:
@@ -92,7 +91,6 @@ print_table(
 			ion_record.value = malloc((sizeof(int) * 2) + (sizeof(char) * 83));
 
 			if (NULL == ion_record.value) {
-				free(ion_record.key);
 				error = err_out_of_memory;
 				goto END;
 			}
@@ -110,7 +108,6 @@ print_table(
 			ion_record.value = malloc((sizeof(int) * 1) + (sizeof(char) * 86));
 
 			if (NULL == ion_record.value) {
-				free(ion_record.key);
 				error = err_out_of_memory;
 				goto END;
 			}
@@ -128,7 +125,6 @@ print_table(
 			ion_record.value = malloc((sizeof(int) * 2) + (sizeof(char) * 31));
 
 			if (NULL == ion_record.value) {
-				free(ion_record.key);
 				error = err_out_of_memory;
 				goto END;
 			}
@@ -146,7 +142,6 @@ print_table(
 			ion_record.value = malloc((sizeof(int) * 2) + (sizeof(char) * 6));
 
 			if (NULL == ion_record.value) {
-				free(ion_record.key);
 				error = err_out_of_memory;
 				goto END;
 			}
@@ -164,7 +159,6 @@ print_table(
 			ion_record.value = malloc((sizeof(int) * 2) + (sizeof(char) * 6));
 
 			if (NULL == ion_record.value) {
-				free(ion_record.key);
 				error = err_out_of_memory;
 				goto END;
 			}
@@ -278,6 +272,20 @@ END:
 	if (NULL != cursor) {
 		cursor->destroy(&cursor);
 	}
+
+	if (NULL != ion_record.key) {
+		free(ion_record.key);
+	}
+
+	;
+
+	if (NULL != ion_record.value) {
+		free(ion_record.value);
+	}
+
+	;
+
+	ion_close_dictionary(&dictionary);
 
 	return error;
 }
