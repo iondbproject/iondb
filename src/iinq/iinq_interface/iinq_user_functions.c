@@ -77,30 +77,98 @@ print_table(
 
 	ion_record_t ion_record;
 
+	ion_record.key;
+	ion_record.value;
+
 	switch (tableId) {
 		case 0:
-			ion_record.key		= malloc(sizeof(int));
-			ion_record.value	= malloc((sizeof(int) * 2) + (sizeof(char) * 83));
+			ion_record.key = malloc(sizeof(int));
+
+			if (NULL == ion_record.key) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			ion_record.value = malloc((sizeof(int) * 2) + (sizeof(char) * 83));
+
+			if (NULL == ion_record.value) {
+				free(ion_record.key);
+				error = err_out_of_memory;
+				goto END;
+			}
+
 			break;
 
 		case 1:
-			ion_record.key		= malloc((sizeof(char) * 3));
-			ion_record.value	= malloc((sizeof(int) * 1) + (sizeof(char) * 86));
+			ion_record.key = malloc((sizeof(char) * 3));
+
+			if (NULL == ion_record.key) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			ion_record.value = malloc((sizeof(int) * 1) + (sizeof(char) * 86));
+
+			if (NULL == ion_record.value) {
+				free(ion_record.key);
+				error = err_out_of_memory;
+				goto END;
+			}
+
 			break;
 
 		case 2:
-			ion_record.key		= malloc(sizeof(int));
-			ion_record.value	= malloc((sizeof(int) * 2) + (sizeof(char) * 31));
+			ion_record.key = malloc(sizeof(int));
+
+			if (NULL == ion_record.key) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			ion_record.value = malloc((sizeof(int) * 2) + (sizeof(char) * 31));
+
+			if (NULL == ion_record.value) {
+				free(ion_record.key);
+				error = err_out_of_memory;
+				goto END;
+			}
+
 			break;
 
 		case 3:
-			ion_record.key		= malloc(sizeof(int) + sizeof(int));
-			ion_record.value	= malloc((sizeof(int) * 2) + (sizeof(char) * 6));
+			ion_record.key = malloc(sizeof(int) + sizeof(int));
+
+			if (NULL == ion_record.key) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			ion_record.value = malloc((sizeof(int) * 2) + (sizeof(char) * 6));
+
+			if (NULL == ion_record.value) {
+				free(ion_record.key);
+				error = err_out_of_memory;
+				goto END;
+			}
+
 			break;
 
 		case 4:
-			ion_record.key		= malloc(sizeof(int) + sizeof(int));
-			ion_record.value	= malloc((sizeof(int) * 2) + (sizeof(char) * 6));
+			ion_record.key = malloc(sizeof(int) + sizeof(int));
+
+			if (NULL == ion_record.key) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			ion_record.value = malloc((sizeof(int) * 2) + (sizeof(char) * 6));
+
+			if (NULL == ion_record.value) {
+				free(ion_record.key);
+				error = err_out_of_memory;
+				goto END;
+			}
+
 			break;
 	}
 
