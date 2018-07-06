@@ -122,24 +122,22 @@ where(
 	for (i = 0; i < num_wheres; i++) {
 		iinq_where = where[i];
 
-		unsigned char *curr			= record->value;
+		unsigned char *curr						= record->value;
 
-		iinq_field_t	field_type	= getFieldType(table_id, iinq_where.where_field);
-		int				int_value	= 0;
-		char			*char_value = NULL;
+		iinq_field_t	field_type				= getFieldType(table_id, iinq_where.where_field);
+		int				int_value				= 0;
+		char			*char_value				= NULL;
+		unsigned char	*unsigned_char_value	= NULL;
 
-		if (field_type == iinq_int) {
-			int_value = NEUTRALIZE(iinq_where.field_value, int);
-		}
-		else if (field_type == iinq_null_terminated_string) {
-			char_value = malloc(calculateOffset(table_id, (iinq_where.where_field + 1)) - calculateOffset(table_id, (iinq_where.where_field)));
-			strncpy(char_value, (char *) iinq_where.field_value, sizeof(iinq_where.field_value));
-		}
-		else {
-			size_t size = calculateOffset(table_id, (iinq_where.where_field + 1)) - calculateOffset(table_id, (iinq_where.where_field));
+		switch (field_type) {
+			case iinq_int:
+				int_value = NEUTRALIZE(iinq_where.field_value, int);
+				break;
 
-			char_value = malloc(size);
-			memcpy(char_value, (char *) iinq_where.field_value, sizeof(iinq_where.field_value));
+			case iinq_null_terminated_string:
+			case iinq_char_array:
+				char_value = iinq_where.field_value;
+				break;
 		}
 
 		curr = curr + calculateOffset(table_id, (iinq_where.where_field));
@@ -158,7 +156,7 @@ where(
 					}
 				}
 				else if (field_type == iinq_char_array) {
-					if (memcmp(char_value, curr, calculateOffset(table_id, iinq_where.where_field + 1) - calculateOffset(table_id, iinq_where.where_field)) != 0) {
+					if (memcmp(unsigned_char_value, curr, calculateOffset(table_id, iinq_where.where_field + 1) - calculateOffset(table_id, iinq_where.where_field)) != 0) {
 						return boolean_false;
 					}
 				}
@@ -178,7 +176,7 @@ where(
 					}
 				}
 				else if (field_type == iinq_char_array) {
-					if (memcmp(char_value, curr, calculateOffset(table_id, iinq_where.where_field + 1) - calculateOffset(table_id, iinq_where.where_field)) == 0) {
+					if (memcmp(unsigned_char_value, curr, calculateOffset(table_id, iinq_where.where_field + 1) - calculateOffset(table_id, iinq_where.where_field)) == 0) {
 						return boolean_false;
 					}
 				}
@@ -198,7 +196,7 @@ where(
 					}
 				}
 				else if (field_type == iinq_char_array) {
-					if (memcmp(char_value, curr, calculateOffset(table_id, iinq_where.where_field + 1) - calculateOffset(table_id, iinq_where.where_field)) != 0) {
+					if (memcmp(unsigned_char_value, curr, calculateOffset(table_id, iinq_where.where_field + 1) - calculateOffset(table_id, iinq_where.where_field)) != 0) {
 						return boolean_false;
 					}
 				}
@@ -220,7 +218,7 @@ where(
 					}
 				}
 				else if (field_type == iinq_char_array) {
-					if (memcmp(char_value, curr, calculateOffset(table_id, iinq_where.where_field + 1) - calculateOffset(table_id, iinq_where.where_field)) != 0) {
+					if (memcmp(unsigned_char_value, curr, calculateOffset(table_id, iinq_where.where_field + 1) - calculateOffset(table_id, iinq_where.where_field)) != 0) {
 						return boolean_false;
 					}
 				}
@@ -240,7 +238,7 @@ where(
 					}
 				}
 				else if (field_type == iinq_char_array) {
-					if (memcmp(char_value, curr, calculateOffset(table_id, iinq_where.where_field) - calculateOffset(table_id, iinq_where.where_field - 1)) != 0) {
+					if (memcmp(unsigned_char_value, curr, calculateOffset(table_id, iinq_where.where_field) - calculateOffset(table_id, iinq_where.where_field - 1)) != 0) {
 						return boolean_false;
 					}
 				}
@@ -260,16 +258,12 @@ where(
 					}
 				}
 				else if (field_type == iinq_char_array) {
-					if (memcmp(char_value, curr, calculateOffset(table_id, iinq_where.where_field) - calculateOffset(table_id, iinq_where.where_field - 1)) != 0) {
+					if (memcmp(unsigned_char_value, curr, calculateOffset(table_id, iinq_where.where_field) - calculateOffset(table_id, iinq_where.where_field - 1)) != 0) {
 						return boolean_false;
 					}
 				}
 
 				break;
-		}
-
-		if (char_value != NULL) {
-			free(char_value);
 		}
 	}
 

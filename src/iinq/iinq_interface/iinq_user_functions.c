@@ -620,6 +620,7 @@ update(
 
 	cursor_temp->destroy(&cursor_temp);
 	ion_delete_dictionary(&dictionary_temp, dictionary_temp.instance->id);
+	ion_close_dictionary(&dictionary);
 	ion_close_master_table();
 	free(new_key);
 	free(ion_record.key);
@@ -821,6 +822,7 @@ delete_record(
 		return;
 	}
 
+	ion_close_dictionary(&dictionary);
 	ion_close_master_table();
 	free(ion_record.key);
 	free(ion_record.value);
@@ -941,15 +943,15 @@ iinq_insert_4(
 
 	unsigned char *data = p->value;
 
-	p->key								= malloc(sizeof(int) + sizeof(int));
-	*((int *) p->key + 0)				= value_2;
-	*((int *) p->key + 0 + sizeof(int)) = value_1;
+	p->key											= malloc(sizeof(int) + sizeof(int));
+	*(int *) ((char *) p->key + 0)					= value_2;
+	*(int *) ((char *) p->key + 0 + sizeof(int))	= value_1;
 
-	*(int *) data						= value_1;
-	data								+= sizeof(int);
+	*(int *) data									= value_1;
+	data											+= sizeof(int);
 
-	*(int *) data						= value_2;
-	data								+= sizeof(int);
+	*(int *) data									= value_2;
+	data											+= sizeof(int);
 
 	strncpy(data, value_3, (sizeof(char) * 6));
 
@@ -969,16 +971,16 @@ iinq_insert_2(
 
 	unsigned char *data = p->value;
 
-	p->key					= malloc(sizeof(int));
-	*((int *) p->key + 0)	= value_1;
+	p->key							= malloc(sizeof(int));
+	*(int *) ((char *) p->key + 0)	= value_1;
 
-	*(int *) data			= value_1;
-	data					+= sizeof(int);
+	*(int *) data					= value_1;
+	data							+= sizeof(int);
 
 	strncpy(data, value_2, (sizeof(char) * 31));
-	data					+= (sizeof(char) * 31);
+	data							+= (sizeof(char) * 31);
 
-	*(int *) data			= value_3;
+	*(int *) data					= value_3;
 
 	return p;
 }
@@ -996,15 +998,15 @@ iinq_insert_3(
 
 	unsigned char *data = p->value;
 
-	p->key								= malloc(sizeof(int) + sizeof(int));
-	*((int *) p->key + 0)				= value_1;
-	*((int *) p->key + 0 + sizeof(int)) = value_2;
+	p->key											= malloc(sizeof(int) + sizeof(int));
+	*(int *) ((char *) p->key + 0)					= value_1;
+	*(int *) ((char *) p->key + 0 + sizeof(int))	= value_2;
 
-	*(int *) data						= value_1;
-	data								+= sizeof(int);
+	*(int *) data									= value_1;
+	data											+= sizeof(int);
 
-	*(int *) data						= value_2;
-	data								+= sizeof(int);
+	*(int *) data									= value_2;
+	data											+= sizeof(int);
 
 	strncpy(data, value_3, (sizeof(char) * 6));
 
@@ -1101,20 +1103,20 @@ iinq_insert_0(
 
 	unsigned char *data = p->value;
 
-	p->key					= malloc(sizeof(int));
-	*((int *) p->key + 0)	= value_1;
+	p->key							= malloc(sizeof(int));
+	*(int *) ((char *) p->key + 0)	= value_1;
 
-	*(int *) data			= value_1;
-	data					+= sizeof(int);
+	*(int *) data					= value_1;
+	data							+= sizeof(int);
 
 	strncpy(data, value_2, (sizeof(char) * 21));
-	data					+= (sizeof(char) * 21);
+	data							+= (sizeof(char) * 21);
 
 	strncpy(data, value_3, (sizeof(char) * 31));
-	data					+= (sizeof(char) * 31);
+	data							+= (sizeof(char) * 31);
 
-	*(int *) data			= value_4;
-	data					+= sizeof(int);
+	*(int *) data					= value_4;
+	data							+= sizeof(int);
 
 	strncpy(data, value_5, (sizeof(char) * 31));
 

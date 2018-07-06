@@ -120,6 +120,7 @@ main(
 	setParam(p1, 2, "Black Lab");
 	setParam(p1, 4, IONIZE(5, int));
 	execute(p1);
+	iinq_close_statement(p1);
 	print_table(1);
 
 	/* Test that multiple tables simultaneously will not break functionality (table_id = 2)*/
