@@ -89,12 +89,17 @@ iinq_execute(
 		goto ERROR;
 	}
 
-	error = ion_close_dictionary(&dictionary);
-
 ERROR:
 
 	if (NULL != cursor) {
 		cursor->destroy(&cursor);
+	}
+
+	if (err_ok == error) {
+		error = ion_close_dictionary(&dictionary);
+	}
+	else {
+		ion_close_dictionary(&dictionary);
 	}
 
 	return error;
