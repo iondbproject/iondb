@@ -15,71 +15,6 @@ iinq_calculate_key_offset(
 	}
 }
 
-ion_err_t
-print_table(
-	iinq_table_id tableId
-) {
-	ion_dictionary_t			dictionary;
-	ion_dictionary_handler_t	handler;
-
-	dictionary.handler = &handler;
-
-	ion_err_t error = iinq_open_source(tableId, &dictionary, &handler);
-
-	if (err_ok != error) {
-		printf("Print error: %d", error);
-		goto END;
-	}
-
-	ion_predicate_t predicate;
-
-	dictionary_build_predicate(&predicate, predicate_all_records);
-
-	ion_dict_cursor_t *cursor = NULL;
-
-	dictionary_find(&dictionary, &predicate, &cursor);
-
-	ion_cursor_status_t cursor_status;
-
-	ion_record_t ion_record;
-
-	switch (tableId) {
-		case 0:
-			ion_record.key		= malloc(sizeof(int));
-			ion_record.value	= malloc((sizeof(int) * 2) + (sizeof(char) * 31));
-			break;
-	}
-
-	unsigned char *value;
-
-	switch (tableId) {
-		case 0:
-
-			while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
-				value	= ion_record.value;
-
-				printf("%10d, ", NEUTRALIZE(value, int));
-				value	+= sizeof(int);
-
-				printf("%31s, ", (char *) value);
-				value	+= (sizeof(char) * 31);
-
-				printf("%10d\n", NEUTRALIZE(value, int));
-			}
-
-			printf("\n");
-			break;
-	}
-
-END:
-
-	if (NULL != cursor) {
-		cursor->destroy(&cursor);
-	}
-
-	return error;
-}
-
 void
 setParam(
 	iinq_prepared_sql	*p,
@@ -188,40 +123,94 @@ iinq_destroy_table_scan(
 }
 
 ion_err_t
-drop_table(
+iinq_print_keys(
 	iinq_table_id table_id
 ) {
 	ion_dictionary_t			dictionary;
 	ion_dictionary_handler_t	handler;
 	ion_err_t					error;
+	ion_predicate_t				predicate;
+	ion_dict_cursor_t			*cursor = NULL;
+	ion_cursor_status_t			cursor_status;
+	ion_record_t				ion_record;
 
-	error = iinq_open_source(table_id, &dictionary, &handler);
+	ion_record.key		= NULL;
+	ion_record.value	= NULL;
+
+	error				= iinq_open_source(table_id, &dictionary, &handler);
 
 	if (err_ok != error) {
 		return error;
 	}
 
+	error = dictionary_build_predicate(&predicate, predicate_all_records);
+
+	if (err_ok != error) {
+		ion_close_dictionary(&dictionary);
+		return error;
+	}
+
+	error = dictionary_find(&dictionary, &predicate, &cursor);
+
+	if (err_ok != error) {
+		ion_close_dictionary(&dictionary);
+		return error;
+	}
+
+	unsigned char *key;
+
+	switch (table_id) {
+		case 0:
+			ion_record.key = malloc(sizeof(int));
+
+			if (NULL == ion_record.key) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			ion_record.value = malloc((sizeof(int) * 2) + (sizeof(char) * 31));
+
+			if (NULL == ion_record.value) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
+				key = ion_record.key;
+
+				printf("%10d\n", NEUTRALIZE(key, int));
+			}
+
+			break;
+	}
+
+	printf("\n");
+END:
+
+	if (NULL != cursor) {
+		cursor->destroy(&cursor);
+	}
+
+	if (NULL != ion_record.key) {
+		free(ion_record.key);
+	}
+
+	;
+
+	if (NULL != ion_record.value) {
+		free(ion_record.value);
+	}
+
+	;
+
 	ion_close_dictionary(&dictionary);
-	error = iinq_drop(table_id);
+
 	return error;
 }
 
-ion_err_t
-execute(
-	iinq_prepared_sql *p
-) {
-	switch (p->table) {
-		case 0: {
-			return iinq_execute(0, p->key, p->value, iinq_insert_t);
-			break;
-		}
-	}
-}
-
 iinq_result_set *
-iinq_select(
+iinq_table_scan_init(
 	iinq_table_id		table_id,
-	size_t				project_size,
 	int					num_wheres,
 	iinq_field_num_t	num_fields,
 	...
@@ -320,6 +309,37 @@ iinq_select(
 	return result_set;
 }
 
+ion_err_t
+drop_table(
+	iinq_table_id table_id
+) {
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
+	ion_err_t					error;
+
+	error = iinq_open_source(table_id, &dictionary, &handler);
+
+	if (err_ok != error) {
+		return error;
+	}
+
+	ion_close_dictionary(&dictionary);
+	error = iinq_drop(table_id);
+	return error;
+}
+
+ion_err_t
+execute(
+	iinq_prepared_sql *p
+) {
+	switch (p->table) {
+		case 0: {
+			return iinq_execute(0, p->key, p->value, iinq_insert_t);
+			break;
+		}
+	}
+}
+
 ion_boolean_t
 iinq_is_key_field(
 	iinq_table_id		table_id,
@@ -339,6 +359,99 @@ iinq_is_key_field(
 		default:
 			return boolean_false;
 	}
+}
+
+ion_err_t
+iinq_print_table(
+	iinq_table_id tableId
+) {
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
+
+	ion_cursor_status_t cursor_status;
+
+	ion_record_t ion_record;
+
+	ion_record.key		= NULL;
+	ion_record.value	= NULL;
+
+	ion_dict_cursor_t *cursor = NULL;
+
+	dictionary.handler = &handler;
+
+	ion_err_t error = iinq_open_source(tableId, &dictionary, &handler);
+
+	if (err_ok != error) {
+		return error;
+	}
+
+	ion_predicate_t predicate;
+
+	dictionary_build_predicate(&predicate, predicate_all_records);
+
+	dictionary_find(&dictionary, &predicate, &cursor);
+
+	switch (tableId) {
+		case 0:
+			ion_record.key = malloc(sizeof(int));
+
+			if (NULL == ion_record.key) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			ion_record.value = malloc((sizeof(int) * 2) + (sizeof(char) * 31));
+
+			if (NULL == ion_record.value) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			break;
+	}
+
+	unsigned char *value;
+
+	switch (tableId) {
+		case 0:
+
+			while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
+				value	= ion_record.value;
+
+				printf("%10d, ", NEUTRALIZE(value, int));
+				value	+= sizeof(int);
+
+				printf("%31s, ", (char *) value);
+				value	+= (sizeof(char) * 31);
+
+				printf("%10d\n", NEUTRALIZE(value, int));
+			}
+
+			printf("\n");
+			break;
+	}
+
+END:
+
+	if (NULL != cursor) {
+		cursor->destroy(&cursor);
+	}
+
+	if (NULL != ion_record.key) {
+		free(ion_record.key);
+	}
+
+	;
+
+	if (NULL != ion_record.value) {
+		free(ion_record.value);
+	}
+
+	;
+
+	ion_close_dictionary(&dictionary);
+
+	return error;
 }
 
 ion_err_t
@@ -366,16 +479,16 @@ iinq_insert_0(
 
 	unsigned char *data = p->value;
 
-	p->key					= malloc(sizeof(int));
-	*((int *) p->key + 0)	= value_1;
+	p->key							= malloc(sizeof(int));
+	*(int *) ((char *) p->key + 0)	= value_1;
 
-	*(int *) data			= value_1;
-	data					+= sizeof(int);
+	*(int *) data					= value_1;
+	data							+= sizeof(int);
 
 	strncpy(data, value_2, (sizeof(char) * 31));
-	data					+= (sizeof(char) * 31);
+	data							+= (sizeof(char) * 31);
 
-	*(int *) data			= value_3;
+	*(int *) data					= value_3;
 
 	return p;
 }

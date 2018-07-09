@@ -49,247 +49,6 @@ iinq_calculate_key_offset(
 	}
 }
 
-ion_err_t
-print_table(
-	iinq_table_id tableId
-) {
-	ion_dictionary_t			dictionary;
-	ion_dictionary_handler_t	handler;
-
-	ion_cursor_status_t cursor_status;
-
-	ion_record_t ion_record;
-
-	ion_record.key		= NULL;
-	ion_record.value	= NULL;
-
-	ion_dict_cursor_t *cursor = NULL;
-
-	dictionary.handler = &handler;
-
-	ion_err_t error = iinq_open_source(tableId, &dictionary, &handler);
-
-	if (err_ok != error) {
-		goto END;
-	}
-
-	ion_predicate_t predicate;
-
-	dictionary_build_predicate(&predicate, predicate_all_records);
-
-	dictionary_find(&dictionary, &predicate, &cursor);
-
-	switch (tableId) {
-		case 0:
-			ion_record.key = malloc(sizeof(int));
-
-			if (NULL == ion_record.key) {
-				error = err_out_of_memory;
-				goto END;
-			}
-
-			ion_record.value = malloc((sizeof(int) * 2) + (sizeof(char) * 83));
-
-			if (NULL == ion_record.value) {
-				error = err_out_of_memory;
-				goto END;
-			}
-
-			break;
-
-		case 1:
-			ion_record.key = malloc((sizeof(char) * 3));
-
-			if (NULL == ion_record.key) {
-				error = err_out_of_memory;
-				goto END;
-			}
-
-			ion_record.value = malloc((sizeof(int) * 1) + (sizeof(char) * 86));
-
-			if (NULL == ion_record.value) {
-				error = err_out_of_memory;
-				goto END;
-			}
-
-			break;
-
-		case 2:
-			ion_record.key = malloc(sizeof(int));
-
-			if (NULL == ion_record.key) {
-				error = err_out_of_memory;
-				goto END;
-			}
-
-			ion_record.value = malloc((sizeof(int) * 2) + (sizeof(char) * 31));
-
-			if (NULL == ion_record.value) {
-				error = err_out_of_memory;
-				goto END;
-			}
-
-			break;
-
-		case 3:
-			ion_record.key = malloc(sizeof(int) + sizeof(int));
-
-			if (NULL == ion_record.key) {
-				error = err_out_of_memory;
-				goto END;
-			}
-
-			ion_record.value = malloc((sizeof(int) * 2) + (sizeof(char) * 6));
-
-			if (NULL == ion_record.value) {
-				error = err_out_of_memory;
-				goto END;
-			}
-
-			break;
-
-		case 4:
-			ion_record.key = malloc(sizeof(int) + sizeof(int));
-
-			if (NULL == ion_record.key) {
-				error = err_out_of_memory;
-				goto END;
-			}
-
-			ion_record.value = malloc((sizeof(int) * 2) + (sizeof(char) * 6));
-
-			if (NULL == ion_record.value) {
-				error = err_out_of_memory;
-				goto END;
-			}
-
-			break;
-	}
-
-	unsigned char *value;
-
-	switch (tableId) {
-		case 0:
-
-			while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
-				value	= ion_record.value;
-
-				printf("%10d, ", NEUTRALIZE(value, int));
-				value	+= sizeof(int);
-
-				printf("%21s, ", (char *) value);
-				value	+= (sizeof(char) * 21);
-
-				printf("%31s, ", (char *) value);
-				value	+= (sizeof(char) * 31);
-
-				printf("%10d, ", NEUTRALIZE(value, int));
-				value	+= sizeof(int);
-
-				printf("%31s\n", (char *) value);
-			}
-
-			printf("\n");
-			break;
-
-		case 1:
-
-			while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
-				value	= ion_record.value;
-
-				printf("%3s, ", (char *) value);
-				value	+= (sizeof(char) * 3);
-
-				printf("%21s, ", (char *) value);
-				value	+= (sizeof(char) * 21);
-
-				printf("%31s, ", (char *) value);
-				value	+= (sizeof(char) * 31);
-
-				printf("%10d, ", NEUTRALIZE(value, int));
-				value	+= sizeof(int);
-
-				printf("%31s\n", (char *) value);
-			}
-
-			printf("\n");
-			break;
-
-		case 2:
-
-			while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
-				value	= ion_record.value;
-
-				printf("%10d, ", NEUTRALIZE(value, int));
-				value	+= sizeof(int);
-
-				printf("%31s, ", (char *) value);
-				value	+= (sizeof(char) * 31);
-
-				printf("%10d\n", NEUTRALIZE(value, int));
-			}
-
-			printf("\n");
-			break;
-
-		case 3:
-
-			while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
-				value	= ion_record.value;
-
-				printf("%10d, ", NEUTRALIZE(value, int));
-				value	+= sizeof(int);
-
-				printf("%10d, ", NEUTRALIZE(value, int));
-				value	+= sizeof(int);
-
-				printf("%6s\n", (char *) value);
-			}
-
-			printf("\n");
-			break;
-
-		case 4:
-
-			while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
-				value	= ion_record.value;
-
-				printf("%10d, ", NEUTRALIZE(value, int));
-				value	+= sizeof(int);
-
-				printf("%10d, ", NEUTRALIZE(value, int));
-				value	+= sizeof(int);
-
-				printf("%6s\n", (char *) value);
-			}
-
-			printf("\n");
-			break;
-	}
-
-END:
-
-	if (NULL != cursor) {
-		cursor->destroy(&cursor);
-	}
-
-	if (NULL != ion_record.key) {
-		free(ion_record.key);
-	}
-
-	;
-
-	if (NULL != ion_record.value) {
-		free(ion_record.value);
-	}
-
-	;
-
-	ion_close_dictionary(&dictionary);
-
-	return error;
-}
-
 void
 setParam(
 	iinq_prepared_sql	*p,
@@ -663,6 +422,190 @@ iinq_destroy_table_scan(
 }
 
 ion_err_t
+iinq_print_keys(
+	iinq_table_id table_id
+) {
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
+	ion_err_t					error;
+	ion_predicate_t				predicate;
+	ion_dict_cursor_t			*cursor = NULL;
+	ion_cursor_status_t			cursor_status;
+	ion_record_t				ion_record;
+
+	ion_record.key		= NULL;
+	ion_record.value	= NULL;
+
+	error				= iinq_open_source(table_id, &dictionary, &handler);
+
+	if (err_ok != error) {
+		return error;
+	}
+
+	error = dictionary_build_predicate(&predicate, predicate_all_records);
+
+	if (err_ok != error) {
+		ion_close_dictionary(&dictionary);
+		return error;
+	}
+
+	error = dictionary_find(&dictionary, &predicate, &cursor);
+
+	if (err_ok != error) {
+		ion_close_dictionary(&dictionary);
+		return error;
+	}
+
+	unsigned char *key;
+
+	switch (table_id) {
+		case 0:
+			ion_record.key = malloc(sizeof(int));
+
+			if (NULL == ion_record.key) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			ion_record.value = malloc((sizeof(int) * 2) + (sizeof(char) * 83));
+
+			if (NULL == ion_record.value) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
+				key = ion_record.key;
+
+				printf("%10d\n", NEUTRALIZE(key, int));
+			}
+
+			break;
+
+		case 1:
+			ion_record.key = malloc((sizeof(char) * 3));
+
+			if (NULL == ion_record.key) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			ion_record.value = malloc((sizeof(int) * 1) + (sizeof(char) * 86));
+
+			if (NULL == ion_record.value) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
+				key = ion_record.key;
+
+				printf("%3s\n", (char *) key);
+			}
+
+			break;
+
+		case 2:
+			ion_record.key = malloc(sizeof(int));
+
+			if (NULL == ion_record.key) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			ion_record.value = malloc((sizeof(int) * 2) + (sizeof(char) * 31));
+
+			if (NULL == ion_record.value) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
+				key = ion_record.key;
+
+				printf("%10d\n", NEUTRALIZE(key, int));
+			}
+
+			break;
+
+		case 3:
+			ion_record.key = malloc(sizeof(int) + sizeof(int));
+
+			if (NULL == ion_record.key) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			ion_record.value = malloc((sizeof(int) * 2) + (sizeof(char) * 6));
+
+			if (NULL == ion_record.value) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
+				key = ion_record.key;
+
+				printf("%10d, ", NEUTRALIZE(key, int));
+				key += sizeof(int);
+
+				printf("%10d\n", NEUTRALIZE(key, int));
+			}
+
+			break;
+
+		case 4:
+			ion_record.key = malloc(sizeof(int) + sizeof(int));
+
+			if (NULL == ion_record.key) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			ion_record.value = malloc((sizeof(int) * 2) + (sizeof(char) * 6));
+
+			if (NULL == ion_record.value) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
+				key = ion_record.key;
+
+				printf("%10d, ", NEUTRALIZE(key, int));
+				key += sizeof(int);
+
+				printf("%10d\n", NEUTRALIZE(key, int));
+			}
+
+			break;
+	}
+
+	printf("\n");
+END:
+
+	if (NULL != cursor) {
+		cursor->destroy(&cursor);
+	}
+
+	if (NULL != ion_record.key) {
+		free(ion_record.key);
+	}
+
+	;
+
+	if (NULL != ion_record.value) {
+		free(ion_record.value);
+	}
+
+	;
+
+	ion_close_dictionary(&dictionary);
+
+	return error;
+}
+
+ion_err_t
 drop_table(
 	iinq_table_id table_id
 ) {
@@ -679,6 +622,107 @@ drop_table(
 	ion_close_dictionary(&dictionary);
 	error = iinq_drop(table_id);
 	return error;
+}
+
+iinq_result_set *
+iinq_table_scan_init(
+	iinq_table_id		table_id,
+	int					num_wheres,
+	iinq_field_num_t	num_fields,
+	...
+) {
+	int					i;
+	va_list				valist;
+	iinq_where_params_t *where_list = NULL;
+
+	va_start(valist, num_fields);
+
+	iinq_result_set *result_set = malloc(sizeof(iinq_result_set));
+
+	if (NULL == result_set) {
+		return NULL;
+	}
+
+	ion_predicate_t *predicate = &result_set->dictionary_ref.predicate;
+
+	result_set->status.error = dictionary_build_predicate(predicate, predicate_all_records);
+
+	if (err_ok != result_set->status.error) {
+		return result_set;
+	}
+
+	ion_dictionary_t			*dictionary = &result_set->dictionary_ref.dictionary;
+	ion_dictionary_handler_t	*handler	= &result_set->dictionary_ref.handler;
+
+	dictionary->handler			= handler;
+	result_set->status.error	= iinq_open_source(table_id, dictionary, handler);
+
+	if (err_ok != result_set->status.error) {
+		return result_set;
+	}
+
+	ion_dict_cursor_t *cursor = NULL;
+
+	result_set->status.error = dictionary_find(dictionary, predicate, &cursor);
+
+	if (err_ok != result_set->status.error) {
+		return result_set;
+	}
+
+	result_set->record.key = malloc(dictionary->instance->record.key_size);
+
+	if (NULL == result_set->record.key) {
+		result_set->status.error = err_out_of_memory;
+		return result_set;
+	}
+
+	result_set->record.value = malloc(dictionary->instance->record.value_size);
+
+	if (NULL == result_set->record.value) {
+		result_set->status.error = err_out_of_memory;
+		free(result_set->record.key);
+		return result_set;
+	}
+
+	result_set->dictionary_ref.cursor	= cursor;
+	result_set->table_id				= table_id;
+
+	if (num_wheres > 0) {
+		where_list			= va_arg(valist, iinq_where_params_t *);
+		result_set->wheres	= where_list;
+	}
+	else {
+		result_set->wheres = NULL;
+	}
+
+	result_set->num_wheres = num_wheres;
+
+	iinq_field_num_t *fields = va_arg(valist, iinq_field_num_t *);
+
+	result_set->num_fields	= num_fields;
+	result_set->offset		= malloc(sizeof(unsigned int) * num_fields);
+
+	if (NULL == result_set->offset) {
+		free(result_set->record.value);
+		free(result_set->record.key);
+		result_set->status.error = err_out_of_memory;
+		return result_set;
+	}
+
+	result_set->fields = fields;
+
+	for (i = 0; i < num_fields; i++) {
+		result_set->offset[i] = calculateOffset(table_id, fields[i]);
+	}
+
+	va_end(valist);
+
+	ion_close_master_table();
+	result_set->next							= iinq_table_scan_next;
+	result_set->destroy							= iinq_destroy_table_scan;
+	result_set->dictionary_ref.temp_dictionary	= boolean_false;
+
+	return result_set;
 }
 
 ion_err_t
@@ -828,108 +872,6 @@ delete_record(
 	free(ion_record.value);
 }
 
-iinq_result_set *
-iinq_select(
-	iinq_table_id		table_id,
-	size_t				project_size,
-	int					num_wheres,
-	iinq_field_num_t	num_fields,
-	...
-) {
-	int					i;
-	va_list				valist;
-	iinq_where_params_t *where_list = NULL;
-
-	va_start(valist, num_fields);
-
-	iinq_result_set *result_set = malloc(sizeof(iinq_result_set));
-
-	if (NULL == result_set) {
-		return NULL;
-	}
-
-	ion_predicate_t *predicate = &result_set->dictionary_ref.predicate;
-
-	result_set->status.error = dictionary_build_predicate(predicate, predicate_all_records);
-
-	if (err_ok != result_set->status.error) {
-		return result_set;
-	}
-
-	ion_dictionary_t			*dictionary = &result_set->dictionary_ref.dictionary;
-	ion_dictionary_handler_t	*handler	= &result_set->dictionary_ref.handler;
-
-	dictionary->handler			= handler;
-	result_set->status.error	= iinq_open_source(table_id, dictionary, handler);
-
-	if (err_ok != result_set->status.error) {
-		return result_set;
-	}
-
-	ion_dict_cursor_t *cursor = NULL;
-
-	result_set->status.error = dictionary_find(dictionary, predicate, &cursor);
-
-	if (err_ok != result_set->status.error) {
-		return result_set;
-	}
-
-	result_set->record.key = malloc(dictionary->instance->record.key_size);
-
-	if (NULL == result_set->record.key) {
-		result_set->status.error = err_out_of_memory;
-		return result_set;
-	}
-
-	result_set->record.value = malloc(dictionary->instance->record.value_size);
-
-	if (NULL == result_set->record.value) {
-		result_set->status.error = err_out_of_memory;
-		free(result_set->record.key);
-		return result_set;
-	}
-
-	result_set->dictionary_ref.cursor	= cursor;
-	result_set->table_id				= table_id;
-
-	if (num_wheres > 0) {
-		where_list			= va_arg(valist, iinq_where_params_t *);
-		result_set->wheres	= where_list;
-	}
-	else {
-		result_set->wheres = NULL;
-	}
-
-	result_set->num_wheres = num_wheres;
-
-	iinq_field_num_t *fields = va_arg(valist, iinq_field_num_t *);
-
-	result_set->num_fields	= num_fields;
-	result_set->offset		= malloc(sizeof(unsigned int) * num_fields);
-
-	if (NULL == result_set->offset) {
-		free(result_set->record.value);
-		free(result_set->record.key);
-		result_set->status.error = err_out_of_memory;
-		return result_set;
-	}
-
-	result_set->fields = fields;
-
-	for (i = 0; i < num_fields; i++) {
-		result_set->offset[i] = calculateOffset(table_id, fields[i]);
-	}
-
-	va_end(valist);
-
-	ion_close_master_table();
-	result_set->next							= iinq_table_scan_next;
-	result_set->destroy							= iinq_destroy_table_scan;
-	result_set->dictionary_ref.temp_dictionary	= boolean_false;
-
-	return result_set;
-}
-
 iinq_prepared_sql *
 iinq_insert_4(
 	int		value_1,
@@ -1074,6 +1016,247 @@ iinq_is_key_field(
 		default:
 			return boolean_false;
 	}
+}
+
+ion_err_t
+iinq_print_table(
+	iinq_table_id tableId
+) {
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
+
+	ion_cursor_status_t cursor_status;
+
+	ion_record_t ion_record;
+
+	ion_record.key		= NULL;
+	ion_record.value	= NULL;
+
+	ion_dict_cursor_t *cursor = NULL;
+
+	dictionary.handler = &handler;
+
+	ion_err_t error = iinq_open_source(tableId, &dictionary, &handler);
+
+	if (err_ok != error) {
+		return error;
+	}
+
+	ion_predicate_t predicate;
+
+	dictionary_build_predicate(&predicate, predicate_all_records);
+
+	dictionary_find(&dictionary, &predicate, &cursor);
+
+	switch (tableId) {
+		case 0:
+			ion_record.key = malloc(sizeof(int));
+
+			if (NULL == ion_record.key) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			ion_record.value = malloc((sizeof(int) * 2) + (sizeof(char) * 83));
+
+			if (NULL == ion_record.value) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			break;
+
+		case 1:
+			ion_record.key = malloc((sizeof(char) * 3));
+
+			if (NULL == ion_record.key) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			ion_record.value = malloc((sizeof(int) * 1) + (sizeof(char) * 86));
+
+			if (NULL == ion_record.value) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			break;
+
+		case 2:
+			ion_record.key = malloc(sizeof(int));
+
+			if (NULL == ion_record.key) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			ion_record.value = malloc((sizeof(int) * 2) + (sizeof(char) * 31));
+
+			if (NULL == ion_record.value) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			break;
+
+		case 3:
+			ion_record.key = malloc(sizeof(int) + sizeof(int));
+
+			if (NULL == ion_record.key) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			ion_record.value = malloc((sizeof(int) * 2) + (sizeof(char) * 6));
+
+			if (NULL == ion_record.value) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			break;
+
+		case 4:
+			ion_record.key = malloc(sizeof(int) + sizeof(int));
+
+			if (NULL == ion_record.key) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			ion_record.value = malloc((sizeof(int) * 2) + (sizeof(char) * 6));
+
+			if (NULL == ion_record.value) {
+				error = err_out_of_memory;
+				goto END;
+			}
+
+			break;
+	}
+
+	unsigned char *value;
+
+	switch (tableId) {
+		case 0:
+
+			while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
+				value	= ion_record.value;
+
+				printf("%10d, ", NEUTRALIZE(value, int));
+				value	+= sizeof(int);
+
+				printf("%21s, ", (char *) value);
+				value	+= (sizeof(char) * 21);
+
+				printf("%31s, ", (char *) value);
+				value	+= (sizeof(char) * 31);
+
+				printf("%10d, ", NEUTRALIZE(value, int));
+				value	+= sizeof(int);
+
+				printf("%31s\n", (char *) value);
+			}
+
+			printf("\n");
+			break;
+
+		case 1:
+
+			while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
+				value	= ion_record.value;
+
+				printf("%3s, ", (char *) value);
+				value	+= (sizeof(char) * 3);
+
+				printf("%21s, ", (char *) value);
+				value	+= (sizeof(char) * 21);
+
+				printf("%31s, ", (char *) value);
+				value	+= (sizeof(char) * 31);
+
+				printf("%10d, ", NEUTRALIZE(value, int));
+				value	+= sizeof(int);
+
+				printf("%31s\n", (char *) value);
+			}
+
+			printf("\n");
+			break;
+
+		case 2:
+
+			while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
+				value	= ion_record.value;
+
+				printf("%10d, ", NEUTRALIZE(value, int));
+				value	+= sizeof(int);
+
+				printf("%31s, ", (char *) value);
+				value	+= (sizeof(char) * 31);
+
+				printf("%10d\n", NEUTRALIZE(value, int));
+			}
+
+			printf("\n");
+			break;
+
+		case 3:
+
+			while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
+				value	= ion_record.value;
+
+				printf("%10d, ", NEUTRALIZE(value, int));
+				value	+= sizeof(int);
+
+				printf("%10d, ", NEUTRALIZE(value, int));
+				value	+= sizeof(int);
+
+				printf("%6s\n", (char *) value);
+			}
+
+			printf("\n");
+			break;
+
+		case 4:
+
+			while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
+				value	= ion_record.value;
+
+				printf("%10d, ", NEUTRALIZE(value, int));
+				value	+= sizeof(int);
+
+				printf("%10d, ", NEUTRALIZE(value, int));
+				value	+= sizeof(int);
+
+				printf("%6s\n", (char *) value);
+			}
+
+			printf("\n");
+			break;
+	}
+
+END:
+
+	if (NULL != cursor) {
+		cursor->destroy(&cursor);
+	}
+
+	if (NULL != ion_record.key) {
+		free(ion_record.key);
+	}
+
+	;
+
+	if (NULL != ion_record.value) {
+		free(ion_record.value);
+	}
+
+	;
+
+	ion_close_dictionary(&dictionary);
+
+	return error;
 }
 
 ion_err_t

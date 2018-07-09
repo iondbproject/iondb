@@ -71,35 +71,35 @@ main(
 	printf("INSERT INTO Dogs VALUES (10, 'Frenchie', 'Minnie', 1, 'Penticton');\n");
 /*  SQL_execute("INSERT INTO Dogs VALUES (10, 'Frenchie', 'Minnie', 1, 'Penticton');"); */
 	iinq_execute_instantaneous(iinq_insert_0(10, "Frenchie", "Minnie", 1, "Penticton"));
-	print_table(0);
+	iinq_print_table(0);
 	printf("INSERT INTO Dogs VALUES (40, 'Chihuahua', 'Barky', 7, 'Van');\n");
 /*  SQL_execute("INSERT INTO Dogs VALUES (40, 'Chihuahua', 'Barky', 7, 'Van');"); */
 	iinq_execute_instantaneous(iinq_insert_0(40, "Chihuahua", "Barky", 7, "Van"));
-	print_table(0);
+	iinq_print_table(0);
 	printf("INSERT INTO Dogs COLUMNS (id, type, age) VALUES (30, 'Black Lab', 5);\n");
 /*  SQL_execute("INSERT INTO Dogs COLUMNS (id, type, age) VALUES (30, 'Black Lab', 5);"); */
 	iinq_execute_instantaneous(iinq_insert_0(30, "Black Lab", "", 5, ""));
-	print_table(0);
+	iinq_print_table(0);
 	printf("INSERT INTO Dogs COLUMNS (id, type) VALUES (20, 'Black Lab');\n");
 /*  SQL_execute("INSERT INTO Dogs COLUMNS (id, type) VALUES (20, 'Black Lab');"); */
 	iinq_execute_instantaneous(iinq_insert_0(20, "Black Lab", "", NULL, ""));
-	print_table(0);
+	iinq_print_table(0);
 	printf("INSERT INTO Dogs COLUMNS (city, name, id) VALUES ('West Bench', 'Corky', 50);\n");
 /*  SQL_execute("INSERT INTO Dogs COLUMNS (city, name, id) VALUES ('West Bench', 'Corky', 50);"); */
 	iinq_execute_instantaneous(iinq_insert_0(50, "", "Corky", NULL, "West Bench"));
-	print_table(0);
+	iinq_print_table(0);
 
 	/* Test UPDATE statement */
 	printf("UPDATE Dogs SET id = id-1, age = age * 10 WHERE name = 'Barky';\n");
 /*  SQL_execute("UPDATE Dogs SET id = id-1, age = age * 10 WHERE name = 'Barky';"); */
 	update(0, 1, 2, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_equal, "Barky")), IINQ_UPDATE_LIST(IINQ_UPDATE(1, 1, iinq_subtract, IONIZE(1, int)), IINQ_UPDATE(4, 4, iinq_multiply, IONIZE(10, int))));
-	print_table(0);
+	iinq_print_table(0);
 
 	/* Test DELETE statement */
 	printf("DELETE FROM Dogs WHERE id < 50 AND age >= 5;\n");
 /*  SQL_execute("DELETE FROM Dogs WHERE id < 50 AND age >= 5;"); */
 	delete_record(0, 2, IINQ_CONDITION_LIST(IINQ_CONDITION(4, iinq_greater_than_equal_to, IONIZE(5, int)), IINQ_CONDITION(1, iinq_less_than, IONIZE(50, int))));
-	print_table(0);
+	iinq_print_table(0);
 
 	/* Test DROP TABLE statement */
 	printf("DROP TABLE Dogs;\n");
@@ -121,7 +121,7 @@ main(
 	setParam(p1, 4, IONIZE(5, int));
 	execute(p1);
 	iinq_close_statement(p1);
-	print_table(1);
+	iinq_print_table(1);
 
 	/* Test that multiple tables simultaneously will not break functionality (table_id = 2)*/
 	printf("CREATE TABLE Cats (id INT, name VARCHAR(30), age INT, primary key(id));\n");
@@ -131,11 +131,11 @@ main(
 	printf("INSERT INTO Cats VALUES (6, 'Buttons', 2);\n");
 /*  SQL_execute("INSERT INTO Cats VALUES (6, 'Buttons', 2);"); */
 	iinq_execute_instantaneous(iinq_insert_2(6, "Buttons", 2));
-	print_table(2);
+	iinq_print_table(2);
 	printf("INSERT INTO Cats VALUES (4, 'Mr. Whiskers', 4);\n");
 /*  SQL_execute("INSERT INTO Cats VALUES (4, 'Mr. Whiskers', 4);"); */
 	iinq_execute_instantaneous(iinq_insert_2(4, "Mr. Whiskers", 4));
-	print_table(2);
+	iinq_print_table(2);
 
 	printf("INSERT INTO Cats VALUES (5, 'Minnie', 6); (prepared)\n");
 
@@ -146,55 +146,55 @@ main(
 	setParam(p2, 3, IONIZE(6, int));
 	execute(p2);
 	iinq_close_statement(p2);
-	print_table(2);
+	iinq_print_table(2);
 
 	/* Test DELETE with multiple conditions */
 	printf("DELETE FROM Cats WHERE id >= 5 AND id < 10 AND name != 'Minnie';\n");
 /*  SQL_execute("DELETE FROM Cats WHERE id >= 5 AND id < 10 AND name != 'Minnie';"); */
 	delete_record(2, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(2, iinq_not_equal, "Minnie"), IINQ_CONDITION(1, iinq_less_than, IONIZE(10, int)), IINQ_CONDITION(1, iinq_greater_than_equal_to, IONIZE(5, int))));
-	print_table(2);
+	iinq_print_table(2);
 
 	/* Reinsert rows that were deleted */
 	printf("INSERT INTO Cats VALUES (6, 'Buttons', 2);\n");
 /*	 SQL_execute("INSERT INTO Cats VALUES (6, 'Buttons', 2);"); */
 	iinq_execute_instantaneous(iinq_insert_2(6, "Buttons", 2));
-	print_table(2);
+	iinq_print_table(2);
 
 	/* Test UPDATE with multiple conditions */
 	printf("UPDATE Cats SET age = age + 90 WHERE id >= 5 AND id < 10 AND name != 'Minnie';\n");
 /*  SQL_execute("UPDATE Cats SET age = age + 90 WHERE id >= 5 AND id < 10 AND name != 'Minnie';"); */
 	update(2, 3, 1, IINQ_CONDITION_LIST(IINQ_CONDITION(2, iinq_not_equal, "Minnie"), IINQ_CONDITION(1, iinq_less_than, IONIZE(10, int)), IINQ_CONDITION(1, iinq_greater_than_equal_to, IONIZE(5, int))), IINQ_UPDATE_LIST(IINQ_UPDATE(3, 3, iinq_add, IONIZE(90, int))));
-	print_table(2);
+	iinq_print_table(2);
 	printf("UPDATE Cats SET age = 90 WHERE age < 5;\n");
 /*  SQL_execute("UPDATE Cats SET age = 90 WHERE age < 5;"); */
 	update(2, 1, 1, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_less_than, IONIZE(5, int))), IINQ_UPDATE_LIST(IINQ_UPDATE(3, 0, 0, IONIZE(90, int))));
-	print_table(2);
+	iinq_print_table(2);
 
 	/* Test update with implicit fields */
 	printf("UPDATE Cats SET age = 90, id = id+1, name = 'Chichi' WHERE age < 5;\n");
 /*  SQL_execute("UPDATE Cats SET age = 90, id = id+1, name = 'Chichi' WHERE age < 5;"); */
 	update(2, 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_less_than, IONIZE(5, int))), IINQ_UPDATE_LIST(IINQ_UPDATE(3, 0, 0, IONIZE(90, int)), IINQ_UPDATE(1, 1, iinq_add, IONIZE(1, int)), IINQ_UPDATE(2, 0, 0, "Chichi")));
-	print_table(2);
+	iinq_print_table(2);
 	printf("UPDATE Cats SET age = 90, id = id+1, name = 'Chichi' WHERE id >= 5 AND id < 10 AND name != 'Minnie';\n");
 /*  SQL_execute("UPDATE Cats SET age = 90, id = id+1, name = 'Chichi' WHERE id >= 5 AND id < 10 AND name != 'Minnie';"); */
 	update(2, 3, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(2, iinq_not_equal, "Minnie"), IINQ_CONDITION(1, iinq_less_than, IONIZE(10, int)), IINQ_CONDITION(1, iinq_greater_than_equal_to, IONIZE(5, int))), IINQ_UPDATE_LIST(IINQ_UPDATE(3, 0, 0, IONIZE(90, int)), IINQ_UPDATE(1, 1, iinq_add, IONIZE(1, int)), IINQ_UPDATE(2, 0, 0, "Chichi")));
-	print_table(2);
+	iinq_print_table(2);
 
 	printf("UPDATE Cats SET age = age + 5 WHERE age > 2;\n");
 /*  SQL_execute("UPDATE Cats SET age = age + 5 WHERE age > 2;"); */
 	update(2, 1, 1, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_greater_than, IONIZE(2, int))), IINQ_UPDATE_LIST(IINQ_UPDATE(3, 3, iinq_add, IONIZE(5, int))));
-	print_table(2);
+	iinq_print_table(2);
 
 	printf("DELETE FROM Cats WHERE age >= 10;\n");
 /*  SQL_execute("DELETE FROM Cats WHERE age >= 10;"); */
 	delete_record(2, 1, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_greater_than_equal_to, IONIZE(10, int))));
-	print_table(2);
+	iinq_print_table(2);
 
 	/* Test query */
 	printf("SELECT id, name FROM Cats WHERE age < 10;\n");
 
 /*  iinq_result_set *rs1 = SQL_select("SELECT id, name FROM Cats WHERE age < 10;"); */
-	iinq_result_set *rs1 = iinq_select(2, sizeof(int) + (sizeof(char) * 31), 1, 2, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_less_than, IONIZE(10, int))), IINQ_SELECT_LIST(1, 2));
+	iinq_result_set *rs1 = iinq_table_scan_init(2, 1, 2, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_less_than, IONIZE(10, int))), IINQ_SELECT_LIST(1, 2));
 
 	while (iinq_next(rs1)) {
 		printf("ID: %i,", iinq_get_int(rs1, 1));
@@ -233,44 +233,50 @@ main(
 	printf("INSERT INTO test1 COLUMNS (id1, id2) VALUES (1, 2); (prepared)\n");
 	execute(p1);
 	iinq_close_statement(p1);
-	print_table(3);
+	iinq_print_table(3);
+	printf("KEYS:\n");
+	iinq_print_keys(3);
+
 	printf("INSERT INTO test2 COLUMNS (id1, id2) VALUES (1, 2); (prepared)\n");
 	execute(p2);
 	iinq_close_statement(p2);
-	print_table(4);
-
-	/* TODO: print keys */
+	iinq_print_table(4);
+	printf("KEYS:\n");
+	iinq_print_keys(4);
 
 	/* Test that duplicate keys cannot be inserted */
 	printf("INSERT INTO test1 COLUMNS (id1, id2) VALUES (5, 3);\n");
 /*	 SQL_execute("INSERT INTO test1 COLUMNS (id1, id2) VALUES (5, 3);"); */
 	iinq_execute_instantaneous(iinq_insert_3(5, 3, ""));
-	print_table(3);
+	iinq_print_table(3);
 	printf("INSERT INTO test1 COLUMNS (id1, id2) VALUES (5, 3);\n");
 /*	 SQL_execute("INSERT INTO test1 COLUMNS (id1, id2) VALUES (5, 3);"); */
 	iinq_execute_instantaneous(iinq_insert_3(5, 3, ""));
-	print_table(3);
+	iinq_print_table(3);
 
 	printf("INSERT INTO test2 COLUMNS (id1, id2) VALUES (5, 3);\n");
 /*	 SQL_execute("INSERT INTO test2 COLUMNS (id1, id2) VALUES (5, 3);"); */
 	iinq_execute_instantaneous(iinq_insert_4(5, 3, ""));
-	print_table(4);
+	iinq_print_table(4);
 	printf("INSERT INTO test2 COLUMNS (id1, id2) VALUES (5, 3);\n");
 /*	 SQL_execute("INSERT INTO test2 COLUMNS (id1, id2) VALUES (5, 3);"); */
 	iinq_execute_instantaneous(iinq_insert_4(5, 3, ""));
-	print_table(4);
+	iinq_print_table(4);
 
 	/* Test an UPDATE that would violate the primary key constraint */
 	printf("UPDATE test1 SET id1 = 1, id2 = 2 WHERE id1 = 5 AND id2 = 3;\n");
 /*	 SQL_execute("UPDATE test1 SET id1 = 1, id2 = 2 WHERE id1 = 5 AND id2 = 3;"); */
 	update(3, 2, 2, IINQ_CONDITION_LIST(IINQ_CONDITION(2, iinq_equal, IONIZE(3, int)), IINQ_CONDITION(1, iinq_equal, IONIZE(5, int))), IINQ_UPDATE_LIST(IINQ_UPDATE(1, 0, 0, IONIZE(1, int)), IINQ_UPDATE(2, 0, 0, IONIZE(2, int))));
-	print_table(3);
+	iinq_print_table(3);
 
 	/* Test an UPDATE that updates a key field */
-	printf("UPDATE test1 SET id1 = id+1;\n");
+	printf("UPDATE test1 SET id1 = id1+1;\n");
+	printf("KEYS BEFORE:\n");
+	iinq_print_keys(3);
 /*	 SQL_execute("UPDATE test1 SET id1 = id1+1;"); */
 	update(3, 0, 1, IINQ_UPDATE_LIST(IINQ_UPDATE(1, 1, iinq_add, IONIZE(1, int))));
-	print_table(3);
+	printf("KEYS AFTER:\n");
+	iinq_print_keys(3);
 
 	printf("DROP TABLE test1;\n");
 /*	 SQL_execute("DROP TABLE test1;"); */

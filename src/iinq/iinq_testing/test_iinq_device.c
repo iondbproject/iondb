@@ -36,7 +36,7 @@
 
 #include "test_iinq_device.h"
 
-int num_records;
+unsigned int num_records;
 
 #define REGULAR_INSERTS_PERCENTAGE			0.75
 #define NUM_PREPARED_INSERTS				(unsigned int) (((double) num_records) * (1 - REGULAR_INSERTS_PERCENTAGE))
@@ -46,7 +46,7 @@ int num_records;
 #define OUTPUT_TIMES						0
 #define OUTPUT_SQL_STATEMENTS				1
 #define OUTPUT_INSERT_PROGRESS				1
-#define OUTPUT_INSERT_PROGRESS_FREQUENCY	10
+#define OUTPUT_INSERT_PROGRESS_FREQUENCY	25
 
 void
 test_create_table1(
@@ -153,7 +153,7 @@ void
 test_insert_records_table1(
 	planck_unit_test_t *tc
 ) {
-	int						i;
+	unsigned int			i;
 	volatile unsigned long	start_time, end_time;
 
 	start_time = ion_time();
@@ -189,7 +189,7 @@ void
 test_insert_records_prep_table1(
 	planck_unit_test_t *tc
 ) {
-	int						i;
+	unsigned int			i;
 	volatile unsigned long	start_time, end_time;
 
 	start_time = ion_time();
@@ -234,7 +234,7 @@ test_select_all_records_table1(
 	start_time = ion_time();
 
 /*  iinq_result_set *rs1 = SQL_select("SELECT * FROM Table1;"); */
-	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + (sizeof(char) * 31) + sizeof(int), 0, 3, IINQ_SELECT_LIST(1, 2, 3));
+	iinq_result_set *rs1 = iinq_table_scan_init(0, 0, 3, IINQ_SELECT_LIST(1, 2, 3));
 
 	end_time = ion_time();
 #if OUTPUT_TIMES
@@ -261,8 +261,8 @@ test_select_all_records_table1(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(int), rs1->offset[1]);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(int) + sizeof(char) * 31, rs1->offset[2]);
 
-	int count1	= 0;
-	int count2	= 0;
+	unsigned int	count1	= 0;
+	unsigned int	count2	= 0;
 
 	while (iinq_next(rs1)) {
 #if OUTPUT_QUERY_RESULTS
@@ -306,7 +306,7 @@ test_select_field_list_table1(
 	start_time = ion_time();
 
 /*  iinq_result_set *rs1 = SQL_select("SELECT IntValue, ID FROM Table1;"); */
-	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + sizeof(int), 0, 2, IINQ_SELECT_LIST(3, 1));
+	iinq_result_set *rs1 = iinq_table_scan_init(0, 0, 2, IINQ_SELECT_LIST(3, 1));
 
 	end_time = ion_time();
 #if OUTPUT_TIMES
@@ -331,8 +331,8 @@ test_select_field_list_table1(
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, sizeof(int) + sizeof(char) * 31, rs1->offset[0]);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, rs1->offset[1]);
 
-	int count1	= 0;
-	int count2	= 0;
+	unsigned int	count1	= 0;
+	unsigned int	count2	= 0;
 
 	while (iinq_next(rs1)) {
 #if OUTPUT_QUERY_RESULTS
@@ -373,7 +373,7 @@ test_select_all_where_greater_than_table1(
 	start_time = ion_time();
 
 /*  iinq_result_set *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID > 50;"); */
-	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + (sizeof(char) * 31) + sizeof(int), 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_greater_than, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
+	iinq_result_set *rs1 = iinq_table_scan_init(0, 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_greater_than, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
 
 	end_time = ion_time();
 #if OUTPUT_TIMES
@@ -430,7 +430,7 @@ test_select_all_where_greater_than_equal_table1(
 	start_time = ion_time();
 
 /*  iinq_result_set *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID >= 50;"); */
-	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + (sizeof(char) * 31) + sizeof(int), 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_greater_than_equal_to, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
+	iinq_result_set *rs1 = iinq_table_scan_init(0, 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_greater_than_equal_to, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
 
 	end_time = ion_time();
 #if OUTPUT_TIMES
@@ -487,7 +487,7 @@ test_select_all_where_less_than_table1(
 	start_time = ion_time();
 
 /*  iinq_result_set *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID < 50;"); */
-	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + (sizeof(char) * 31) + sizeof(int), 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_less_than, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
+	iinq_result_set *rs1 = iinq_table_scan_init(0, 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_less_than, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
 
 	end_time = ion_time();
 #if OUTPUT_TIMES
@@ -544,7 +544,7 @@ test_select_all_where_less_than_equal_table1(
 	start_time = ion_time();
 
 /*	 iinq_result_set *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID <= 50;"); */
-	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + (sizeof(char) * 31) + sizeof(int), 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_less_than_equal_to, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
+	iinq_result_set *rs1 = iinq_table_scan_init(0, 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_less_than_equal_to, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
 
 	end_time = ion_time();
 #if OUTPUT_TIMES
@@ -601,7 +601,7 @@ test_select_all_where_not_equal_table1(
 	start_time = ion_time();
 
 /*  iinq_result_set *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID <> 50;"); */
-	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + (sizeof(char) * 31) + sizeof(int), 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_not_equal, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
+	iinq_result_set *rs1 = iinq_table_scan_init(0, 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_not_equal, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
 
 	end_time = ion_time();
 #if OUTPUT_TIMES
@@ -650,7 +650,7 @@ test_select_all_where_not_equal_table1(
 
 	start_time	= ion_time();
 /*  rs1 = SQL_select("SELECT * FROM Table1 WHERE ID <> 50;"); */
-	rs1			= iinq_select(0, sizeof(int) + (sizeof(char) * 31) + sizeof(int), 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_not_equal, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
+	rs1			= iinq_table_scan_init(0, 1, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_not_equal, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
 
 	end_time	= ion_time();
 #if OUTPUT_TIMES
@@ -707,7 +707,7 @@ test_select_all_where_multiple_conditions_table1(
 	start_time = ion_time();
 
 /*  iinq_result_set *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID < 50 AND IntValue <> 50;"); */
-	iinq_result_set *rs1 = iinq_select(0, sizeof(int) + (sizeof(char) * 31) + sizeof(int), 2, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_not_equal, IONIZE(50, int)), IINQ_CONDITION(1, iinq_less_than, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
+	iinq_result_set *rs1 = iinq_table_scan_init(0, 2, 3, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_not_equal, IONIZE(50, int)), IINQ_CONDITION(1, iinq_less_than, IONIZE(50, int))), IINQ_SELECT_LIST(1, 2, 3));
 
 	end_time = ion_time();
 #if OUTPUT_TIMES
