@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
 @file		test_iinq_device.h
-@author		Dana Klamut
+@author		Dana Klamut, Kai Neubauer
 @brief		Entry point for iinq tests.
 @copyright	Copyright 2017
 			The University of British Columbia,
@@ -44,9 +44,9 @@ extern "C" {
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
-#include "../iinq.h"
+#include "../../iinq.h"
 #include "generated/iinq_testing_functions.h"
-#include "../../tests/planck-unit/src/planck_unit.h"
+#include "../../../tests/planck-unit/src/planck_unit.h"
 
 void
 run_all_tests_iinq_device(

@@ -63,7 +63,8 @@ add_subdirectory(src/util/sort/external_sort)
 
 add_subdirectory(src/iinq)
 add_subdirectory(src/iinq/iinq_interface)
-add_subdirectory(src/iinq/iinq_testing)
+add_subdirectory(src/iinq/iinq_testing/select_from_where)
+#add_subdirectory(src/iinq/iinq_testing/select_from_where_order_by)
 #add_subdirectory(src/iinq_rewrite)
 
 add_subdirectory(src/dictionary/bpp_tree)

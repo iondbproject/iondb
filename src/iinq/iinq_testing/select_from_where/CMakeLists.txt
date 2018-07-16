@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.5)
-project(test_iinq_device)
+project(test_iinq_select_from_where)
 
 set(SOURCE_FILES
-    test_iinq_device.h
-    test_iinq_device.c
-    ../iinq_interface/iinq_functions.h
-    ../iinq_interface/iinq_functions.c
-    generated/iinq_testing_functions.h
-    generated/iinq_testing_functions.c)
+        test_iinq_device.h
+        test_iinq_device.c
+        ../../iinq_interface/iinq_functions.h
+        ../../iinq_interface/iinq_functions.c
+        generated/iinq_testing_functions.h
+        generated/iinq_testing_functions.c)
 
 if(USE_ARDUINO)
     set(${PROJECT_NAME}_BOARD       ${BOARD})
@@ -17,12 +17,12 @@ if(USE_ARDUINO)
     set(${PROJECT_NAME}_SERIAL      ${SERIAL})
 
     set(${PROJECT_NAME}_SRCS        ${SOURCE_FILES})
-    set(${PROJECT_NAME}_SKETCH      test_iinq.ino)
+    set(${PROJECT_NAME}_SKETCH test_iinq.ino)
     set(${PROJECT_NAME}_LIBS        planck_unit iinq flat_file skip_list open_address_file_hash open_address_hash linear_hash)
 
     generate_arduino_firmware(${PROJECT_NAME})
 else()
-    add_executable(${PROJECT_NAME}          run_iinq_device.c ${SOURCE_FILES})
+    add_executable(${PROJECT_NAME} run_iinq_device.c ${SOURCE_FILES})
 
     target_link_libraries(${PROJECT_NAME}   planck_unit iinq flat_file skip_list open_address_file_hash open_address_hash linear_hash)
 

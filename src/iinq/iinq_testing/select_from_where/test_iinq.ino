@@ -17,7 +17,7 @@ setup(
 	SD.begin(SD_CS_PIN);
 	Serial.begin(BAUD_RATE);
 
-	unsigned int num_records = 1000;
+	unsigned int num_records = 10000;
 	fdeleteall();
 	run_all_tests_iinq_device(num_records);
 }

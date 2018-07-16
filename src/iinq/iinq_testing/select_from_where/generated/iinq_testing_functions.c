@@ -15,36 +15,6 @@ iinq_calculate_key_offset(
 	}
 }
 
-void
-setParam(
-	iinq_prepared_sql	*p,
-	iinq_field_num_t	field_num,
-	ion_value_t			val
-) {
-	unsigned char *data = p->value;
-
-	iinq_field_t type	= getFieldType(p->table, field_num);
-
-	data += calculateOffset(p->table, field_num);
-
-	if (type == iinq_int) {
-		if (iinq_is_key_field(p->table, field_num)) {
-			*(int *) (p->key + iinq_calculate_key_offset(p->table, field_num)) = NEUTRALIZE(val, int);
-		}
-
-		*(int *) data = NEUTRALIZE(val, int);
-	}
-	else {
-		size_t size = calculateOffset(p->table, field_num + 1) - calculateOffset(p->table, field_num);
-
-		if (iinq_is_key_field(p->table, field_num)) {
-			strncpy(p->key + iinq_calculate_key_offset(p->table, field_num), val, size);
-		}
-
-		strncpy(data, val, size);
-	}
-}
-
 ion_boolean_t
 iinq_table_scan_next(
 	iinq_result_set *select
@@ -334,8 +304,47 @@ execute(
 ) {
 	switch (p->table) {
 		case 0: {
+			if (iinq_check_null_indicator(p->value, 1)) {
+				return err_unable_to_insert;
+			}
+
 			return iinq_execute(0, p->key, p->value, iinq_insert_t);
-			break;
+		}
+	}
+}
+
+void
+iinq_set_param(
+	iinq_prepared_sql	*p,
+	iinq_field_num_t	field_num,
+	ion_value_t			val
+) {
+	iinq_null_indicator_t	*null_indicators	= p->value;
+	unsigned char			*data				= ((char *) p->value) + calculateOffset(p->table, field_num);
+
+	if (NULL == val) {
+		iinq_set_null_indicator(null_indicators, field_num);
+	}
+	else {
+		iinq_clear_null_indicator(null_indicators, field_num);
+
+		iinq_field_t type = getFieldType(p->table, field_num);
+
+		if (type == iinq_int) {
+			if (iinq_is_key_field(p->table, field_num)) {
+				*(int *) (p->key + iinq_calculate_key_offset(p->table, field_num)) = NEUTRALIZE(val, int);
+			}
+
+			*(int *) data = NEUTRALIZE(val, int);
+		}
+		else {
+			size_t size = calculateOffset(p->table, field_num + 1) - calculateOffset(p->table, field_num);
+
+			if (iinq_is_key_field(p->table, field_num)) {
+				strncpy(p->key + iinq_calculate_key_offset(p->table, field_num), val, size);
+			}
+
+			strncpy(data, val, size);
 		}
 	}
 }
@@ -410,21 +419,40 @@ iinq_print_table(
 			break;
 	}
 
-	unsigned char *value;
+	unsigned char			*value;
+	iinq_null_indicator_t	*null_indicators;
 
 	switch (tableId) {
 		case 0:
+			null_indicators = ion_record.value;
 
 			while ((cursor_status = cursor->next(cursor, &ion_record)) == cs_cursor_active || cursor_status == cs_cursor_initialized) {
-				value	= ion_record.value;
+				value = ((unsigned char *) ion_record.value) + IINQ_BITS_FOR_NULL(3);
 
-				printf("%10d, ", NEUTRALIZE(value, int));
-				value	+= sizeof(int);
+				if (!iinq_check_null_indicator(null_indicators, 1)) {
+					printf("%10d, ", NEUTRALIZE(value, int));
+				}
+				else {
+					printf("NULL, ");
+				}
 
-				printf("%31s, ", (char *) value);
-				value	+= (sizeof(char) * 31);
+				value += sizeof(int);
 
-				printf("%10d\n", NEUTRALIZE(value, int));
+				if (!iinq_check_null_indicator(null_indicators, 2)) {
+					printf("%31s, ", (char *) value);
+				}
+				else {
+					printf("NULL, ");
+				}
+
+				value += (sizeof(char) * 31);
+
+				if (!iinq_check_null_indicator(null_indicators, 3)) {
+					printf("%10d\n", NEUTRALIZE(value, int));
+				}
+				else {
+					printf("NULL\n");
+				}
 			}
 
 			printf("\n");
@@ -468,27 +496,64 @@ create_table(
 
 iinq_prepared_sql *
 iinq_insert_0(
-	int		value_1,
+	int		*value_1,
 	char	*value_2,
-	int		value_3
+	int		*value_3
 ) {
 	iinq_prepared_sql *p = malloc(sizeof(iinq_prepared_sql));
 
+	if (NULL == p) {
+		return NULL;
+	}
+
 	p->table	= 0;
-	p->value	= malloc((sizeof(int) * 2) + (sizeof(char) * 31));
+	p->value	= malloc((sizeof(int) * 2) + (sizeof(char) * 31) + IINQ_BITS_FOR_NULL(3));
 
-	unsigned char *data = p->value;
+	if (NULL == p->value) {
+		free(p);
+		return NULL;
+	}
 
-	p->key							= malloc(sizeof(int));
-	*(int *) ((char *) p->key + 0)	= value_1;
+	iinq_null_indicator_t	*null_indicators	= p->value;
+	unsigned char			*data				= ((char *) p->value + IINQ_BITS_FOR_NULL(3));
 
-	*(int *) data					= value_1;
-	data							+= sizeof(int);
+	p->key = malloc(sizeof(int));
 
-	strncpy(data, value_2, (sizeof(char) * 31));
-	data							+= (sizeof(char) * 31);
+	if (NULL == p->key) {
+		free(p->value);
+		free(p);
+		return NULL;
+	}
 
-	*(int *) data					= value_3;
+	if (NULL != value_1) {
+		*(int *) ((char *) p->key + 0) = NEUTRALIZE(value_1, int);
+	}
+
+	if (NULL == value_1) {
+		iinq_set_null_indicator(null_indicators, 1);
+	}
+	else {
+		iinq_clear_null_indicator(null_indicators, 1);
+		*(int *) data	= NEUTRALIZE(value_1, int);
+		data			+= sizeof(int);
+	}
+
+	if (NULL == value_2) {
+		iinq_set_null_indicator(null_indicators, 2);
+	}
+	else {
+		iinq_clear_null_indicator(null_indicators, 2);
+		strncpy(data, value_2, (sizeof(char) * 31));
+		data += (sizeof(char) * 31);
+	}
+
+	if (NULL == value_3) {
+		iinq_set_null_indicator(null_indicators, 3);
+	}
+	else {
+		iinq_clear_null_indicator(null_indicators, 3);
+		*(int *) data = NEUTRALIZE(value_3, int);
+	}
 
 	return p;
 }
@@ -502,16 +567,16 @@ calculateOffset(
 		case 0: {
 			switch (field_num) {
 				case 1:
-					return 0;
+					return IINQ_BITS_FOR_NULL(3);
 
 				case 2:
-					return sizeof(int);
+					return IINQ_BITS_FOR_NULL(3) + sizeof(int);
 
 				case 3:
-					return sizeof(int) + (sizeof(char) * 31);
+					return IINQ_BITS_FOR_NULL(3) + sizeof(int) + (sizeof(char) * 31);
 
 				case 4:
-					return sizeof(int) + (sizeof(char) * 31) + sizeof(int);
+					return IINQ_BITS_FOR_NULL(3) + sizeof(int) + (sizeof(char) * 31) + sizeof(int);
 
 				default:
 					return 0;

@@ -38,6 +38,9 @@
 #if !defined(IINQ_FUNCTIONS_H_)
 #define IINQ_FUNCTIONS_H_
 
+#define _STRINGIZE(x)														# x
+#define STRINGIZE(x)														_STRINGIZE(x)
+
 /* Dummy functions for code that will be parsed */
 #define SQL_execute(SQL_string)												NULL
 #define SQL_prepare(SQL_string)												NULL
@@ -49,12 +52,18 @@
 #define IINQ_UPDATE_LIST(...)												(iinq_update_params_t[]) { __VA_ARGS__ }
 #define IINQ_UPDATE(update_field, implicit_field, operator, field_value)	(iinq_update_params_t) { (update_field), (implicit_field), (operator), (field_value) }
 
-#define iinq_get_int(result_set, field_num)									NEUTRALIZE((char *) (result_set)->record.value + (result_set)->offset[(field_num) - 1], int)
-#define iinq_get_string(result_set, field_num)								((char *) (result_set)->record.value + (result_set)->offset[(field_num) - 1])
-#define iinq_get_object(result_set, field_num)								(void *) ((char *) (result_set)->record.value + (result_set)->offset[(field_num) - 1]))
+#define IINQ_ORDER_BY_LIST(...)												(iinq_order_by_field_t[]) { __VA_ARGS__ }
+#define IINQ_ORDER_BY(field_num, direction)									(iinq_order_by_field_t) { (field_num), (direction) }
+
+#define iinq_get_int(result_set, field_num)									(int *) iinq_get_object((result_set), (field_num))
+#define iinq_get_string(result_set, field_num)								(char *) iinq_get_object((result_set), (field_num))
+#define iinq_get_object(result_set, field_num)								(int *) (iinq_check_null_indicator((result_set)->record.value, field_num) ? NULL : (((unsigned char *) (result_set)->record.value) + (result_set)->offset[(field_num) - 1]))
 
 #define iinq_close_result_set(result_set)									(result_set)->destroy(&(result_set))
 #define iinq_next(result_set)												(result_set)->next(result_set)
+
+#define IINQ_BITS_FOR_NULL(num_fields) \
+	((num_fields) / CHAR_BIT + 1)
 
 #define iinq_close_statement(p) \
 	if ((p) != NULL) { \
@@ -75,11 +84,30 @@ void *__IINQ_RESERVED;
 	iinq_close_statement((iinq_prepared_sql *) __IINQ_RESERVED); \
 	__IINQ_RESERVED = NULL;
 
+#define iinq_check_null_indicator(indicator_array, field_num) \
+	(((iinq_null_indicator_t *) (indicator_array))[(((iinq_field_num_t) field_num) - 1) / CHAR_BIT] & (((iinq_field_num_t) 0x1) << ((((iinq_field_num_t) field_num) - 1) % CHAR_BIT)))
+
+#define iinq_set_null_indicator(indicator_array, field_num) \
+	(((iinq_null_indicator_t *) (indicator_array))[(((iinq_field_num_t) field_num) - 1) / CHAR_BIT] |= (((iinq_field_num_t) 0x1) << ((((iinq_field_num_t) field_num) - 1) % CHAR_BIT)))
+
+#define iinq_clear_null_indicator(indicator_array, field_num) \
+	(((iinq_null_indicator_t *) (indicator_array))[(((iinq_field_num_t) field_num) - 1) / CHAR_BIT] &= ~(((iinq_field_num_t) 0x1) << ((((iinq_field_num_t) field_num) - 1) % CHAR_BIT)))
+
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
+typedef unsigned char iinq_null_indicator_t;
+
 typedef unsigned char iinq_field_num_t;
+
+/**
+@brief		Type for detailing an ORDER BY for a field.
+*/
+typedef struct {
+	iinq_field_num_t		field_num;	/**< The field number of the field to sort by. */
+	iinq_order_direction_t	direction;	/**< The direction of the sort. ASC is 1, DESC is -1. */
+} iinq_order_by_field_t;
 
 /**
 @brief		This is the available operation types for IINQ.
@@ -100,9 +128,10 @@ typedef enum IINQ_OPERATION_TYPE {
 typedef struct prepared_iinq iinq_prepared_sql;
 
 struct prepared_iinq {
-	ion_value_t		value;	/* Value parsed from the prepared statement */
-	ion_key_t		key;	/* Key to be inserted */
-	iinq_table_id	table;	/* The table name, stored as a unique identifier */
+	iinq_null_indicator_t	*null_indicators;
+	ion_value_t				value;	/* Value parsed from the prepared statement */
+	ion_key_t				key;/* Key to be inserted */
+	iinq_table_id			table;	/* The table name, stored as a unique identifier */
 };
 
 /**
@@ -131,6 +160,12 @@ struct IINQ_DICTIONARY {
 	ion_predicate_t				predicate;
 };
 
+typedef struct {
+	ion_external_sort_cursor_t	*cursor;/**< Cursor to iterate through sorted records. */
+	char						*record_buf;/**< Memory allocated for the sorted record. */
+	iinq_size_t					size;	/**< Size of the sort fields. */
+} iinq_sort_t;
+
 struct select_iinq {
 	ion_record_t				record;
 	iinq_dictionary_ref_t		dictionary_ref;
@@ -142,6 +177,7 @@ struct select_iinq {
 	iinq_where_params_t			*wheres;
 	ion_status_t				status;
 	unsigned int				*offset;
+	iinq_sort_t					iinq_sort;
 	iinq_destroy_result_set_t	destroy;
 };
 
@@ -191,6 +227,10 @@ typedef enum IINQ_MATH_OPERATOR_TYPE {
 typedef enum IINQ_FIELD_TYPE {
 	/**> Field is a signed integer type. */
 	iinq_int,
+	/**> Field is an unsigned integer type. */
+	iinq_unsigned_int,
+	/**> Field is a floating type */
+	iinq_float,
 	/**> Field is a null-terminated string type. */
 	iinq_null_terminated_string,
 	/**> Field is a char array type. This requires padding to prevent reading memory that is not owned by the value. */
