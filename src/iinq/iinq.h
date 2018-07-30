@@ -54,7 +54,7 @@ typedef unsigned int ion_iinq_result_size_t;
 /**
 @brief		A unique identifier used for an IINQ table
 */
-typedef unsigned char iinq_table_id;
+typedef unsigned char iinq_table_id_t;
 
 /**
 @brief		IINQ result type.
@@ -309,7 +309,7 @@ typedef enum {
 */
 ion_err_t
 iinq_create_source(
-	iinq_table_id		table_id,
+	iinq_table_id_t		table_id,
 	ion_key_type_t		key_type,
 	ion_key_size_t		key_size,
 	ion_value_size_t	value_size
@@ -328,7 +328,7 @@ iinq_create_source(
 */
 ion_err_t
 iinq_open_source(
-	iinq_table_id				table_id,
+	iinq_table_id_t				table_id,
 	ion_dictionary_t			*dictionary,
 	ion_dictionary_handler_t	*handler
 );
@@ -345,7 +345,7 @@ iinq_open_source(
 */
 ion_status_t
 iinq_insert(
-	iinq_table_id	table_id,
+	iinq_table_id_t table_id,
 	ion_key_t		key,
 	ion_value_t		value
 );
@@ -363,7 +363,7 @@ iinq_insert(
 */
 ion_status_t
 iinq_update(
-	iinq_table_id	table_id,
+	iinq_table_id_t table_id,
 	ion_key_t		key,
 	ion_value_t		value
 );
@@ -379,7 +379,7 @@ iinq_update(
 */
 ion_status_t
 iinq_delete(
-	iinq_table_id	table_id,
+	iinq_table_id_t table_id,
 	ion_key_t		key
 );
 
@@ -391,7 +391,7 @@ iinq_delete(
 */
 ion_err_t
 iinq_drop(
-	iinq_table_id table_id
+	iinq_table_id_t table_id
 );
 
 ion_comparison_t

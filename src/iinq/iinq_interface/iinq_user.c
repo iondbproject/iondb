@@ -65,7 +65,7 @@ main(
 
 	/* Test CREATE TABLE statement (table_id = 0)*/
 /*  SQL_execute("CREATE TABLE Dogs (id INT, type CHAR(20), name VARCHAR(30), age INT, city VARCHAR(30), primary key(id));"); */
-	create_table(0, key_type_numeric_signed, sizeof(int), (sizeof(int) * 2) + (sizeof(char) * 83) + IINQ_BITS_FOR_NULL(5));
+	create_table(0, key_type_numeric_signed, sizeof(int), IINQ_BITS_FOR_NULL(5) + (sizeof(int) * 2) + (sizeof(char) * 83));
 
 	/* Test INSERT statements */
 	printf("INSERT INTO Dogs VALUES (10, 'Frenchie', 'Minnie', 1, 'Penticton');\n");
@@ -109,7 +109,7 @@ main(
 	/* Create Dogs table for further testing (table_id = 1)*/
 	printf("CREATE TABLE Dogs (id VARCHAR(2), type CHAR(20), name VARCHAR(30), age INT, city VARCHAR(30), primary key(id));\n");
 /*  SQL_execute("CREATE TABLE Dogs (id VARCHAR(2), type CHAR(20), name VARCHAR(30), age INT, city VARCHAR(30), primary key(id));"); */
-	create_table(1, key_type_char_array, (sizeof(char) * 3), (sizeof(int) * 1) + (sizeof(char) * 86) + IINQ_BITS_FOR_NULL(5));
+	create_table(1, key_type_char_array, (sizeof(char) * 3), IINQ_BITS_FOR_NULL(5) + (sizeof(int) * 1) + (sizeof(char) * 86));
 
 	/* Test prepared statements */
 	printf("INSERT INTO Dogs VALUES ('1', 'Black Lab', 'Minnie', 5, 'Penticton'); (prepared)\n");
@@ -119,14 +119,14 @@ main(
 
 	iinq_set_param(p1, 2, "Black Lab");
 	iinq_set_param(p1, 4, IONIZE(5, int));
-	execute(p1);
+	iinq_execute_prepared(p1);
 	iinq_close_statement(p1);
 	iinq_print_table(1);
 
 	/* Test that multiple tables simultaneously will not break functionality (table_id = 2)*/
 	printf("CREATE TABLE Cats (id INT, name VARCHAR(30), age INT, primary key(id));\n");
 /*  SQL_execute("CREATE TABLE Cats (id INT, name VARCHAR(30), age INT, primary key(id));"); */
-	create_table(2, key_type_numeric_signed, sizeof(int), (sizeof(int) * 2) + (sizeof(char) * 31) + IINQ_BITS_FOR_NULL(3));
+	create_table(2, key_type_numeric_signed, sizeof(int), IINQ_BITS_FOR_NULL(3) + (sizeof(int) * 2) + (sizeof(char) * 31));
 
 	printf("INSERT INTO Cats VALUES (6, 'Buttons', 2);\n");
 /*  SQL_execute("INSERT INTO Cats VALUES (6, 'Buttons', 2);"); */
@@ -144,7 +144,7 @@ main(
 
 	iinq_set_param(p2, 2, "Minnie");
 	iinq_set_param(p2, 3, IONIZE(6, int));
-	execute(p2);
+	iinq_execute_prepared(p2);
 	iinq_close_statement(p2);
 	iinq_print_table(2);
 
@@ -193,8 +193,8 @@ main(
 	/* Test query */
 	printf("SELECT id, name FROM Cats WHERE age < 10;\n");
 
-/*  iinq_result_set *rs1 = SQL_select("SELECT id, name FROM Cats WHERE age < 10;"); */
-	iinq_result_set *rs1 = iinq_table_scan_init(2, 1, 2, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_less_than, IONIZE(10, int))), IINQ_SELECT_LIST(1, 2));
+/*  iinq_result_set_t *rs1 = SQL_select("SELECT id, name FROM Cats WHERE age < 10;"); */
+	iinq_result_set_t *rs1 = iinq_projection_init(iinq_selection_init(iinq_table_scan_init(2, 3), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_less_than, IONIZE(10, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
 
 	while (iinq_next(rs1)) {
 		printf("ID: %i,", iinq_get_int(rs1, 1));
@@ -213,10 +213,10 @@ main(
 	/* Test tables with composite keys and different orderings for key fields (table_id = 3 & 4)*/
 	printf("CREATE TABLE test1 (id1 INT, id2 INT, value CHAR(5), PRIMARY KEY(id1, id2));\n");
 /*	 SQL_execute("CREATE TABLE test1 (id1 INT, id2 INT, value CHAR(5), PRIMARY KEY(id1, id2));"); */
-	create_table(3, key_type_char_array, sizeof(int) + sizeof(int), (sizeof(int) * 2) + (sizeof(char) * 6) + IINQ_BITS_FOR_NULL(3));
+	create_table(3, key_type_char_array, sizeof(int) + sizeof(int), IINQ_BITS_FOR_NULL(3) + (sizeof(int) * 2) + (sizeof(char) * 6));
 	printf("CREATE TABLE test2 (id1 INT, id2 INT, value CHAR(5), PRIMARY KEY(id2, id1));\n");
 /*	 SQL_execute("CREATE TABLE test2 (id1 INT, id2 INT, value CHAR(5), PRIMARY KEY(id2, id1));"); */
-	create_table(4, key_type_char_array, sizeof(int) + sizeof(int), (sizeof(int) * 2) + (sizeof(char) * 6) + IINQ_BITS_FOR_NULL(3));
+	create_table(4, key_type_char_array, sizeof(int) + sizeof(int), IINQ_BITS_FOR_NULL(3) + (sizeof(int) * 2) + (sizeof(char) * 6));
 
 	/* Test that the keys are also set when using prepared statements */
 /*	 p1 = SQL_prepare("INSERT INTO test1 COLUMNS (id1, id2) VALUES (?, ?);"); */
@@ -231,14 +231,14 @@ main(
 	iinq_set_param(p2, 2, IONIZE(2, int));
 
 	printf("INSERT INTO test1 COLUMNS (id1, id2) VALUES (1, 2); (prepared)\n");
-	execute(p1);
+	iinq_execute_prepared(p1);
 	iinq_close_statement(p1);
 	iinq_print_table(3);
 	printf("KEYS:\n");
 	iinq_print_keys(3);
 
 	printf("INSERT INTO test2 COLUMNS (id1, id2) VALUES (1, 2); (prepared)\n");
-	execute(p2);
+	iinq_execute_prepared(p2);
 	iinq_close_statement(p2);
 	iinq_print_table(4);
 	printf("KEYS:\n");

@@ -46,7 +46,7 @@
 #define SQL_prepare(SQL_string)												NULL
 #define SQL_select(SQL_string)												NULL
 
-#define IINQ_SELECT_LIST(...)												(iinq_field_num_t[]) { __VA_ARGS__ }
+#define IINQ_PROJECTION_LIST(...)											(iinq_field_num_t[]) { __VA_ARGS__ }
 #define IINQ_CONDITION(left, op, right)										(iinq_where_params_t) { (left), (op), (right) }
 #define IINQ_CONDITION_LIST(...)											(iinq_where_params_t[]) { __VA_ARGS__ }
 #define IINQ_UPDATE_LIST(...)												(iinq_update_params_t[]) { __VA_ARGS__ }
@@ -57,7 +57,9 @@
 
 #define iinq_get_int(result_set, field_num)									(int *) iinq_get_object((result_set), (field_num))
 #define iinq_get_string(result_set, field_num)								(char *) iinq_get_object((result_set), (field_num))
-#define iinq_get_object(result_set, field_num)								(int *) (iinq_check_null_indicator((result_set)->record.value, field_num) ? NULL : (((unsigned char *) (result_set)->record.value) + (result_set)->offset[(field_num) - 1]))
+/* #define iinq_get_object(result_set, field_num)								(int *) (iinq_check_null_indicator((result_set)->record.value, field_num) ? NULL : (((unsigned char *) (result_set)->record.value) + (result_set)->offset[(field_num) - 1])) */
+
+#define iinq_get_object(result_set, field_num)								(iinq_check_null_indicator((result_set)->instance->null_indicators, field_num) ? NULL : ((result_set)->instance->fields[(field_num) - 1]))
 
 #define iinq_close_result_set(result_set)									(result_set)->destroy(&(result_set))
 #define iinq_next(result_set)												(result_set)->next(result_set)
@@ -76,13 +78,13 @@
 		free((p)); \
 	}
 
-void *__IINQ_RESERVED;
-
 #define iinq_execute_instantaneous(p) \
-	__IINQ_RESERVED = p; \
-	execute(__IINQ_RESERVED); \
-	iinq_close_statement((iinq_prepared_sql *) __IINQ_RESERVED); \
-	__IINQ_RESERVED = NULL;
+	{ \
+		iinq_prepared_sql *__IINQ_RESERVED = p; \
+		iinq_execute_prepared(__IINQ_RESERVED); \
+		iinq_close_statement(__IINQ_RESERVED); \
+		__IINQ_RESERVED = NULL; \
+	}
 
 #define iinq_check_null_indicator(indicator_array, field_num) \
 	(((iinq_null_indicator_t *) (indicator_array))[(((iinq_field_num_t) field_num) - 1) / CHAR_BIT] & (((iinq_field_num_t) 0x1) << ((((iinq_field_num_t) field_num) - 1) % CHAR_BIT)))
@@ -100,6 +102,14 @@ extern "C" {
 typedef unsigned char iinq_null_indicator_t;
 
 typedef unsigned char iinq_field_num_t;
+
+typedef struct IINQ_FIELD_INFO {
+	iinq_table_id_t		table_id;
+	iinq_field_num_t	field_num;
+} iinq_field_info_t;
+
+#define IINQ_ASC	1
+#define IINQ_DESC	-1
 
 /**
 @brief		Type for detailing an ORDER BY for a field.
@@ -131,22 +141,8 @@ struct prepared_iinq {
 	iinq_null_indicator_t	*null_indicators;
 	ion_value_t				value;	/* Value parsed from the prepared statement */
 	ion_key_t				key;/* Key to be inserted */
-	iinq_table_id			table;	/* The table name, stored as a unique identifier */
+	iinq_table_id_t			table;	/* The table name, stored as a unique identifier */
 };
-
-/**
-@brief		Struct defining IINQ SELECT iterator.
-@see		select_iinq
-*/
-typedef struct select_iinq iinq_result_set;
-
-typedef ion_boolean_t (*iinq_next_t)(
-	iinq_result_set *
-);
-
-typedef void (*iinq_destroy_result_set_t)(
-	iinq_result_set *
-);
 
 typedef struct IINQ_WHERE_PARAMS iinq_where_params_t;
 
@@ -166,24 +162,58 @@ typedef struct {
 	iinq_size_t					size;	/**< Size of the sort fields. */
 } iinq_sort_t;
 
-struct select_iinq {
-	ion_record_t				record;
-	iinq_dictionary_ref_t		dictionary_ref;
-	iinq_table_id				table_id;
-	iinq_field_num_t			*fields;
+typedef enum IINQ_QUERY_OPERATOR_TYPE {
+	iinq_table_scan_e, iinq_external_sort_e, iinq_projection_e, iinq_selection_e
+} iinq_query_operator_type_t;
+
+typedef struct IINQ_OPERATOR_PARENT iinq_query_operator_parent_t;
+
+typedef struct IINQ_OPERATOR iinq_query_operator_t;
+
+struct IINQ_OPERATOR_PARENT {
+	iinq_query_operator_type_t	type;
+	unsigned int				num_input_operators;
+	iinq_query_operator_t		**input_operators;
 	iinq_field_num_t			num_fields;
-	iinq_next_t					next;
-	unsigned int				num_wheres;
-	iinq_where_params_t			*wheres;
-	ion_status_t				status;
-	unsigned int				*offset;
-	iinq_sort_t					iinq_sort;
-	iinq_destroy_result_set_t	destroy;
+	iinq_null_indicator_t		*null_indicators;
+	iinq_field_info_t			*field_info;
+	ion_value_t					*fields;
+};
+
+typedef void (*iinq_destroy_operator_t)(
+	iinq_query_operator_t **
+);
+
+typedef iinq_query_operator_t iinq_result_set_t;
+
+typedef ion_boolean_t (*iinq_operator_next_t)(
+	iinq_query_operator_t *
+);
+
+struct IINQ_OPERATOR {
+	ion_status_t					status;
+	iinq_query_operator_parent_t	*instance;
+	iinq_operator_next_t			next;
+	iinq_destroy_operator_t			destroy;
+};
+
+struct select_iinq {
+	ion_record_t			record;
+	iinq_dictionary_ref_t	dictionary_ref;
+	iinq_table_id_t			table_id;
+	iinq_field_num_t		num_fields;
+	iinq_operator_next_t	next;
+	unsigned int			num_wheres;
+	iinq_where_params_t		*wheres;
+	ion_status_t			status;
+	unsigned int			*offset;
+	iinq_sort_t				iinq_sort;
+	iinq_destroy_operator_t destroy;
 };
 
 ion_err_t
 iinq_execute(
-	iinq_table_id			table_id,
+	iinq_table_id_t			table_id,
 	ion_key_t				key,
 	ion_value_t				value,
 	iinq_operation_type_t	type
@@ -237,23 +267,16 @@ typedef enum IINQ_FIELD_TYPE {
 	iinq_char_array
 } iinq_field_t;
 
-ion_cursor_status_t
-iinq_next_record(
-	ion_dict_cursor_t	*cursor,
-	ion_record_t		*record
-);
-
-typedef void *iinq_field_value_t;
-
 struct IINQ_WHERE_PARAMS {
-	int						where_field;
+	unsigned int			where_field;
 	iinq_bool_operator_t	bool_operator;
-	iinq_field_value_t		field_value;
+	ion_value_t				field_value;
+	iinq_field_info_t		field_info;
 };
 
 ion_boolean_t
 where(
-	iinq_table_id		id,
+	iinq_table_id_t		id,
 	ion_record_t		*record,
 	int					num_wheres,
 	iinq_where_params_t *where
@@ -267,7 +290,7 @@ struct IINQ_UPDATE_PARAMS {
 	int						update_field;
 	int						implicit_field;
 	iinq_math_operator_t	math_operator;
-	iinq_field_value_t		field_value;
+	ion_value_t				field_value;
 };
 
 typedef struct IINQ_UPDATE_PARAMS iinq_update_params_t;

@@ -35,7 +35,7 @@
 
 ion_err_t
 iinq_execute(
-	iinq_table_id			table_id,
+	iinq_table_id_t			table_id,
 	ion_key_t				key,
 	ion_value_t				value,
 	iinq_operation_type_t	type
@@ -104,17 +104,9 @@ ERROR:
 	return error;
 }
 
-ion_cursor_status_t
-iinq_next_record(
-	ion_dict_cursor_t	*cursor,
-	ion_record_t		*record
-) {
-	return cursor->next(cursor, record);
-}
-
 ion_boolean_t
 where(
-	iinq_table_id		table_id,
+	iinq_table_id_t		table_id,
 	ion_record_t		*record,
 	int					num_wheres,
 	iinq_where_params_t *where
@@ -128,7 +120,7 @@ where(
 
 		unsigned char *curr						= record->value;
 
-		iinq_field_t	field_type				= getFieldType(table_id, iinq_where.where_field);
+		iinq_field_t	field_type				= iinq_get_field_type(table_id, iinq_where.where_field);
 		int				int_value				= 0;
 		char			*char_value				= NULL;
 		unsigned char	*unsigned_char_value	= NULL;
@@ -144,7 +136,7 @@ where(
 				break;
 		}
 
-		curr = curr + calculateOffset(table_id, (iinq_where.where_field));
+		curr = curr + iinq_calculate_offset(table_id, (iinq_where.where_field));
 
 		switch (iinq_where.bool_operator) {
 			case iinq_equal:
@@ -155,12 +147,12 @@ where(
 					}
 				}
 				else if (field_type == iinq_null_terminated_string) {
-					if (strncmp(char_value, (char *) curr, calculateOffset(table_id, iinq_where.where_field + 1) - calculateOffset(table_id, iinq_where.where_field)) != 0) {
+					if (strncmp(char_value, (char *) curr, iinq_calculate_offset(table_id, iinq_where.where_field + 1) - iinq_calculate_offset(table_id, iinq_where.where_field)) != 0) {
 						return boolean_false;
 					}
 				}
 				else if (field_type == iinq_char_array) {
-					if (memcmp(unsigned_char_value, curr, calculateOffset(table_id, iinq_where.where_field + 1) - calculateOffset(table_id, iinq_where.where_field)) != 0) {
+					if (memcmp(unsigned_char_value, curr, iinq_calculate_offset(table_id, iinq_where.where_field + 1) - iinq_calculate_offset(table_id, iinq_where.where_field)) != 0) {
 						return boolean_false;
 					}
 				}
@@ -175,12 +167,12 @@ where(
 					}
 				}
 				else if (field_type == iinq_null_terminated_string) {
-					if (strncmp(char_value, (char *) curr, calculateOffset(table_id, iinq_where.where_field + 1) - calculateOffset(table_id, iinq_where.where_field)) == 0) {
+					if (strncmp(char_value, (char *) curr, iinq_calculate_offset(table_id, iinq_where.where_field + 1) - iinq_calculate_offset(table_id, iinq_where.where_field)) == 0) {
 						return boolean_false;
 					}
 				}
 				else if (field_type == iinq_char_array) {
-					if (memcmp(unsigned_char_value, curr, calculateOffset(table_id, iinq_where.where_field + 1) - calculateOffset(table_id, iinq_where.where_field)) == 0) {
+					if (memcmp(unsigned_char_value, curr, iinq_calculate_offset(table_id, iinq_where.where_field + 1) - iinq_calculate_offset(table_id, iinq_where.where_field)) == 0) {
 						return boolean_false;
 					}
 				}
@@ -195,12 +187,12 @@ where(
 					}
 				}
 				else if (field_type == iinq_null_terminated_string) {
-					if (strncmp(char_value, (char *) curr, calculateOffset(table_id, iinq_where.where_field + 1) - calculateOffset(table_id, iinq_where.where_field)) >= 0) {
+					if (strncmp(char_value, (char *) curr, iinq_calculate_offset(table_id, iinq_where.where_field + 1) - iinq_calculate_offset(table_id, iinq_where.where_field)) >= 0) {
 						return boolean_false;
 					}
 				}
 				else if (field_type == iinq_char_array) {
-					if (memcmp(unsigned_char_value, curr, calculateOffset(table_id, iinq_where.where_field + 1) - calculateOffset(table_id, iinq_where.where_field)) != 0) {
+					if (memcmp(unsigned_char_value, curr, iinq_calculate_offset(table_id, iinq_where.where_field + 1) - iinq_calculate_offset(table_id, iinq_where.where_field)) != 0) {
 						return boolean_false;
 					}
 				}
@@ -217,12 +209,12 @@ where(
 				else if (field_type == iinq_null_terminated_string) {
 					char *value = (char *) iinq_where.field_value;
 
-					if (strncmp(value, (char *) curr, calculateOffset(table_id, iinq_where.where_field + 1) - calculateOffset(table_id, iinq_where.where_field)) > 0) {
+					if (strncmp(value, (char *) curr, iinq_calculate_offset(table_id, iinq_where.where_field + 1) - iinq_calculate_offset(table_id, iinq_where.where_field)) > 0) {
 						return boolean_false;
 					}
 				}
 				else if (field_type == iinq_char_array) {
-					if (memcmp(unsigned_char_value, curr, calculateOffset(table_id, iinq_where.where_field + 1) - calculateOffset(table_id, iinq_where.where_field)) != 0) {
+					if (memcmp(unsigned_char_value, curr, iinq_calculate_offset(table_id, iinq_where.where_field + 1) - iinq_calculate_offset(table_id, iinq_where.where_field)) != 0) {
 						return boolean_false;
 					}
 				}
@@ -237,12 +229,12 @@ where(
 					}
 				}
 				else if (field_type == iinq_null_terminated_string) {
-					if (strncmp(char_value, (char *) curr, calculateOffset(table_id, iinq_where.where_field) - calculateOffset(table_id, iinq_where.where_field - 1)) <= 0) {
+					if (strncmp(char_value, (char *) curr, iinq_calculate_offset(table_id, iinq_where.where_field) - iinq_calculate_offset(table_id, iinq_where.where_field - 1)) <= 0) {
 						return boolean_false;
 					}
 				}
 				else if (field_type == iinq_char_array) {
-					if (memcmp(unsigned_char_value, curr, calculateOffset(table_id, iinq_where.where_field) - calculateOffset(table_id, iinq_where.where_field - 1)) != 0) {
+					if (memcmp(unsigned_char_value, curr, iinq_calculate_offset(table_id, iinq_where.where_field) - iinq_calculate_offset(table_id, iinq_where.where_field - 1)) != 0) {
 						return boolean_false;
 					}
 				}
@@ -257,12 +249,12 @@ where(
 					}
 				}
 				else if (field_type == iinq_null_terminated_string) {
-					if (strncmp(char_value, (char *) curr, calculateOffset(table_id, iinq_where.where_field) - calculateOffset(table_id, iinq_where.where_field - 1)) < 0) {
+					if (strncmp(char_value, (char *) curr, iinq_calculate_offset(table_id, iinq_where.where_field) - iinq_calculate_offset(table_id, iinq_where.where_field - 1)) < 0) {
 						return boolean_false;
 					}
 				}
 				else if (field_type == iinq_char_array) {
-					if (memcmp(unsigned_char_value, curr, calculateOffset(table_id, iinq_where.where_field) - calculateOffset(table_id, iinq_where.where_field - 1)) != 0) {
+					if (memcmp(unsigned_char_value, curr, iinq_calculate_offset(table_id, iinq_where.where_field) - iinq_calculate_offset(table_id, iinq_where.where_field - 1)) != 0) {
 						return boolean_false;
 					}
 				}
