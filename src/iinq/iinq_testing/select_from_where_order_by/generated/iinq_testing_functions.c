@@ -22,9 +22,16 @@ iinq_external_sort_destroy(
 			}
 
 			if (NULL != external_sort->es) {
-				fclose(external_sort->es->input_file);
+				if (NULL != external_sort->ex->input_file) {
+					fclose(external_sort->es->input_file);
+					fremove("orderby");
+				}
 
 				if (NULL != external_sort->es->context) {
+					if (NULL != external_sort->es->parts) {
+						free(external_sort->es->parts);
+					}
+
 					free(external_sort->es->context);
 				}
 
