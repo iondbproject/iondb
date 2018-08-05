@@ -300,7 +300,7 @@ iinq_sort_compare(
 
 	/* Loop through each ordering part. Stop early if possible. */
 	for (i = 0; i < c->n; i++) {
-		if (IINQ_ORDERTYPE_INT == c->parts->type) {
+		if (IINQ_ORDERTYPE_UINT == c->parts->type) {
 			if (1 == c->parts[i].size) {
 				if (*((uint8_t *) cur_a) > *((uint8_t *) cur_b)) {
 					result = 1;
@@ -334,7 +334,7 @@ iinq_sort_compare(
 				}
 			}
 		}
-		else if (IINQ_ORDERTYPE_UINT == c->parts->type) {
+		else if (IINQ_ORDERTYPE_INT == c->parts->type) {
 			if (1 == c->parts[i].size) {
 				if (*((int8_t *) cur_a) > *((int8_t *) cur_b)) {
 					result = 1;

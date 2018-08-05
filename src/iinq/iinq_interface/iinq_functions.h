@@ -271,7 +271,6 @@ struct IINQ_WHERE_PARAMS {
 	unsigned int			where_field;
 	iinq_bool_operator_t	bool_operator;
 	ion_value_t				field_value;
-	iinq_field_info_t		field_info;
 };
 
 ion_boolean_t

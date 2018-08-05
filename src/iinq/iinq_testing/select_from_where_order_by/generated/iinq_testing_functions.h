@@ -45,7 +45,7 @@ struct iinq_projection {
 	iinq_field_num_t				*input_field_nums;
 };
 
-void iinq_external_sort_destroy (iinq_query_operator_t **operator);
+void iinq_external_sort_destroy (iinq_query_operator_t * *operator);
 								 size_t
 								 iinq_calculate_offset(
 									 iinq_table_id_t	table_id,
@@ -56,7 +56,7 @@ void iinq_external_sort_destroy (iinq_query_operator_t **operator);
 																	 ion_err_t iinq_execute_prepared(iinq_prepared_sql * p);
 																	 size_t iinq_calculate_key_offset(iinq_table_id_t table_id, iinq_field_num_t field_num);
 																	 iinq_query_operator_t *iinq_projection_init(iinq_query_operator_t * input_operator, iinq_field_num_t num_fields, iinq_field_num_t * field_nums);
-																	 void iinq_projection_destroy (iinq_query_operator_t **operator);
+																	 void iinq_projection_destroy (iinq_query_operator_t * *operator);
 																								   ion_boolean_t iinq_table_scan_next (iinq_query_operator_t * operator);
 																																	   ion_err_t iinq_print_keys(iinq_table_id_t table_id);
 																																	   ion_err_t drop_table(iinq_table_id_t table_id);
@@ -64,7 +64,7 @@ void iinq_external_sort_destroy (iinq_query_operator_t **operator);
 																																	   ion_boolean_t iinq_external_sort_next (iinq_query_operator_t * operator);
 																																											  void iinq_set_param(iinq_prepared_sql * p, iinq_field_num_t field_num, ion_value_t val);
 																																											  ion_boolean_t iinq_is_key_field(iinq_table_id_t table_id, iinq_field_num_t field_num);
-																																											  void iinq_table_scan_destroy (iinq_query_operator_t **operator);
+																																											  void iinq_table_scan_destroy (iinq_query_operator_t * *operator);
 																																																			iinq_field_t iinq_get_field_type(iinq_table_id_t tableId, iinq_field_num_t field_num);
 																																																			ion_err_t iinq_print_table(iinq_table_id_t table_id);
 																																																			ion_err_t create_table(iinq_table_id_t table_id, ion_key_type_t keyType, ion_key_size_t keySize, ion_value_size_t value_size);

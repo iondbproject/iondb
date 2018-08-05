@@ -77,6 +77,8 @@ iinq_projection_next(
 				iinq_clear_null_indicator(projection->super.null_indicators, i + 1);
 			}
 		}
+
+		operator->status.count++;
 	}
 
 	return result;
@@ -118,34 +120,40 @@ iinq_projection_init(
 	iinq_field_num_t		num_fields,
 	iinq_field_num_t		*field_nums
 ) {
-	iinq_projection_t		*projection = NULL;
-	iinq_query_operator_t	*operator	= malloc(sizeof(iinq_query_operator_t));
+	if (NULL == input_operator) {
+		return NULL;
+	}
+
+	iinq_query_operator_t *operator = malloc(sizeof(iinq_query_operator_t));
 
 	if (NULL == operator) {
-		goto ERROR;
+		input_operator->destroy(&input_operator);
+		return NULL;
 	}
 
 	operator->instance = malloc(sizeof(iinq_projection_t));
 
 	if (NULL == operator->instance) {
-		goto ERROR;
+		free(operator);
+		input_operator->destroy(&input_operator);
+		return NULL;
 	}
 
-	operator->next			= iinq_projection_next;
-	operator->destroy		= iinq_projection_destroy;
+	operator->next		= iinq_projection_next;
+	operator->destroy	= iinq_projection_destroy;
 
-	projection				= operator->instance;
-	projection->super.type	= iinq_projection_e;
+	iinq_projection_t *projection = (iinq_projection_t *) operator->instance;
 
-	if (input_operator == NULL) {
-		goto ERROR;
-	}
+	projection->super.type					= iinq_projection_e;
 
 	projection->super.num_input_operators	= 1;
 	projection->super.input_operators		= malloc(sizeof(iinq_query_operator_t));
 
 	if (NULL == projection->super.input_operators) {
-		goto ERROR;
+		free(projection);
+		free(operator);
+		input_operator->destroy(&input_operator);
+		return NULL;
 	}
 
 	projection->super.input_operators[0]	= input_operator;
@@ -154,7 +162,11 @@ iinq_projection_init(
 	projection->input_field_nums			= malloc(sizeof(iinq_field_num_t) * num_fields);
 
 	if (NULL == projection->input_field_nums) {
-		goto ERROR;
+		free(projection->super.input_operators);
+		free(projection);
+		free(operator);
+		input_operator->destroy(&input_operator);
+		return NULL;
 	}
 
 	memcpy(projection->input_field_nums, field_nums, sizeof(iinq_field_num_t) * num_fields);
@@ -162,19 +174,35 @@ iinq_projection_init(
 	projection->super.null_indicators = malloc(IINQ_BITS_FOR_NULL(num_fields));
 
 	if (NULL == projection->super.null_indicators) {
-		goto ERROR;
+		free(projection->input_field_nums);
+		free(projection->super.input_operators);
+		free(projection);
+		free(operator);
+		input_operator->destroy(&input_operator);
+		return NULL;
 	}
 
 	projection->super.field_info = malloc(sizeof(iinq_field_info_t) * num_fields);
 
 	if (NULL == projection->super.field_info) {
-		goto ERROR;
+		free(projection->super.null_indicators);
+		free(projection->super.input_operators);
+		free(projection);
+		free(operator);
+		input_operator->destroy(&input_operator);
+		return NULL;
 	}
 
 	projection->super.fields = malloc(sizeof(ion_value_t) * num_fields);
 
 	if (NULL == projection->super.fields) {
-		goto ERROR;
+		free(projection->super.field_info);
+		free(projection->super.null_indicators);
+		free(projection->super.input_operators);
+		free(projection);
+		free(operator);
+		input_operator->destroy(&input_operator);
+		return NULL;
 	}
 
 	int i;
@@ -187,40 +215,41 @@ iinq_projection_init(
 	operator->status = ION_STATUS_OK(0);
 
 	return operator;
-
-ERROR:
-
-	if (NULL != input_operator) {
-		input_operator->destroy(&input_operator);
-	}
-
-	if (NULL != operator) {
-		if (NULL != projection) {
-			if (NULL != projection->super.input_operators) {
-				free(projection->super.input_operators);
-			}
-
-			free(projection);
-		}
-
-		free(operator);
-	}
-
-	return NULL;
 }
 
 void
 iinq_projection_destroy(
 	iinq_query_operator_t **operator
 ) {
-	if (NULL != *operator) {
-		iinq_projection_t *projection = (iinq_projection_t *) (*operator)->instance;
+	if (*operator != NULL) {
+		if ((*operator)->instance != NULL) {
+			iinq_projection_t *projection = (iinq_projection_t *) (*operator)->instance;
 
-		if (NULL != projection->super.input_operators) {
-			projection->super.input_operators[0]->destroy(projection->super.input_operators);
-			free(projection->super.input_operators);
+			if (NULL != projection->input_field_nums) {
+				free(projection->input_field_nums);
+			}
+
+			if (NULL != projection->super.fields) {
+				free(projection->super.fields);
+			}
+
+			if (NULL != projection->super.field_info) {
+				free(projection->super.field_info);
+			}
+
+			if (NULL != projection->super.null_indicators) {
+				free(projection->super.null_indicators);
+			}
+
+			if (NULL != projection->super.input_operators) {
+				projection->super.input_operators[0]->destroy(&projection->super.input_operators[0]);
+				free(projection->super.input_operators);
+			}
+
+			free(projection);
 		}
 
+		free(*operator);
 		*operator = NULL;
 	}
 }
@@ -351,8 +380,8 @@ iinq_table_scan_init(
 ) {
 	int							i;
 	ion_err_t					error;
-	iinq_table_scan_t			*table_scan = NULL;
-	ion_predicate_t				*predicate	= NULL;
+	iinq_table_scan_t			*table_scan;
+	ion_predicate_t				*predicate;
 	ion_dict_cursor_t			*cursor		= NULL;
 	ion_record_t				*record		= NULL;
 	ion_dictionary_t			*dictionary = NULL;
@@ -361,60 +390,87 @@ iinq_table_scan_init(
 	iinq_query_operator_t *operator			= malloc(sizeof(iinq_query_operator_t));
 
 	if (NULL == operator) {
-		goto ERROR;
+		return NULL;
 	}
 
 	operator->instance = malloc(sizeof(iinq_table_scan_t));
 
 	if (NULL == operator->instance) {
-		goto ERROR;
+		free(operator);
+		return NULL;
 	}
 
-	table_scan				= (iinq_table_scan_t *) operator->instance;
-	table_scan->super.type	= iinq_table_scan_e;
-	predicate				= &table_scan->predicate;
-	error					= dictionary_build_predicate(predicate, predicate_all_records);
+	table_scan						= (iinq_table_scan_t *) operator->instance;
+	table_scan->super.type			= iinq_table_scan_e;
+	table_scan->super.num_fields	= num_fields;
+	predicate						= &table_scan->predicate;
+	error							= dictionary_build_predicate(predicate, predicate_all_records);
 
 	if (err_ok != error) {
-		goto ERROR;
+		free(operator->instance);
+		free(operator);
+		return NULL;
 	}
 
 	dictionary			= &table_scan->dictionary;
 	handler				= &table_scan->handler;
 	dictionary->handler = handler;
 	record				= &table_scan->record;
-	record->key			= NULL;
-	record->value		= NULL;
 
 	error				= iinq_open_source(table_id, dictionary, handler);
 
 	if (err_ok != error) {
-		goto ERROR;
+		free(operator->instance);
+		free(operator);
+		return NULL;
 	}
 
 	error = dictionary_find(dictionary, predicate, &cursor);
 
 	if (err_ok != error) {
-		goto ERROR;
+		if (NULL != cursor) {
+			cursor->destroy(&cursor);
+		}
+
+		ion_close_dictionary(&dictionary);
+		free(operator->instance);
+		free(operator);
+		return NULL;
 	}
 
 	table_scan->cursor		= cursor;
+
 	table_scan->record.key	= malloc(dictionary->instance->record.key_size);
 
 	if (NULL == table_scan->record.key) {
-		goto ERROR;
+		cursor->destroy(&cursor);
+		ion_close_dictionary(&dictionary);
+		free(operator->instance);
+		free(operator);
+		return NULL;
 	}
 
 	record->value = malloc(dictionary->instance->record.value_size);
 
 	if (NULL == record->value) {
-		goto ERROR;
+		free(record->key);
+		cursor->destroy(&cursor);
+		ion_close_dictionary(&dictionary);
+		free(operator->instance);
+		free(operator);
+		return NULL;
 	}
 
 	table_scan->super.field_info = malloc(sizeof(iinq_field_info_t) * num_fields);
 
 	if (NULL == table_scan->super.field_info) {
-		goto ERROR;
+		free(record->value);
+		free(record->key);
+		cursor->destroy(&cursor);
+		ion_close_dictionary(&dictionary);
+		free(operator->instance);
+		free(operator);
+		return NULL;
 	}
 
 	table_scan->super.null_indicators	= table_scan->record.value;
@@ -422,7 +478,14 @@ iinq_table_scan_init(
 	table_scan->super.fields			= malloc(sizeof(ion_value_t) * num_fields);
 
 	if (NULL == table_scan->super.fields) {
-		goto ERROR;
+		free(table_scan->super.field_info);
+		free(record->value);
+		free(record->key);
+		cursor->destroy(&cursor);
+		ion_close_dictionary(&dictionary);
+		free(operator->instance);
+		free(operator);
+		return NULL;
 	}
 
 	for (i = 0; i < num_fields; i++) {
@@ -438,36 +501,6 @@ iinq_table_scan_init(
 	operator->status	= ION_STATUS_OK(0);
 
 	return operator;
-
-ERROR:
-
-	if (NULL != record) {
-		if (NULL != record->key) {
-			free(record->key);
-		}
-
-		if (NULL != record->value) {
-			free(record->value);
-		}
-	}
-
-	if (NULL != cursor) {
-		cursor->destroy(&cursor);
-	}
-
-	if (NULL != dictionary) {
-		ion_close_dictionary(dictionary);
-	}
-
-	if (NULL != operator) {
-		if (NULL != operator->instance) {
-			free(operator->instance);
-		}
-
-		free(operator);
-	}
-
-	return NULL;
 }
 
 ion_boolean_t
@@ -480,6 +513,7 @@ iinq_external_sort_next(
 		return boolean_false;
 	}
 
+	operator->status.count++;
 	return boolean_true;
 }
 
@@ -544,25 +578,38 @@ void
 iinq_table_scan_destroy(
 	iinq_query_operator_t **operator
 ) {
-	iinq_table_scan_t *table_scan = (iinq_table_scan_t *) (*operator)->instance;
+	if (NULL != *operator) {
+		if (NULL != (*operator)->instance) {
+			iinq_table_scan_t *table_scan = (iinq_table_scan_t *) (*operator)->instance;
 
-	if (NULL != table_scan->record.key) {
-		free(table_scan->record.key);
+			if (NULL != table_scan->super.field_info) {
+				free(table_scan->super.field_info);
+			}
+
+			if (NULL != table_scan->super.fields) {
+				free(table_scan->super.fields);
+			}
+
+			if (NULL != table_scan->record.value) {
+				free(table_scan->record.value);
+			}
+
+			if (NULL != table_scan->record.key) {
+				free(table_scan->record.key);
+			}
+
+			if (NULL != table_scan->cursor) {
+				table_scan->cursor->destroy(&table_scan->cursor);
+			}
+
+			ion_close_dictionary(&table_scan->dictionary);
+
+			free(table_scan);
+		}
+
+		free(*operator);
+		*operator = NULL;
 	}
-
-	if (NULL != table_scan->record.value) {
-		free(table_scan->record.value);
-	}
-
-	ion_close_dictionary(&table_scan->dictionary);
-
-	if (NULL != table_scan->cursor) {
-		table_scan->cursor->destroy(&table_scan->cursor);
-	}
-
-	free(table_scan);
-	free(*operator);
-	*operator = NULL;
 }
 
 iinq_field_t
@@ -782,7 +829,7 @@ iinq_external_sort_init(
 
 	/* Filter before sorting. Use existing table scan operator*/
 	while (input_operator->next(input_operator)) {
-		if (write_page_remaining < (total_orderby_size /*+ key_size*/ + IINQ_BITS_FOR_NULL(num_fields) + value_size)) {
+		if (write_page_remaining < (total_orderby_size + IINQ_BITS_FOR_NULL(num_fields) + value_size)) {
 			char x = 0;
 
 			for (i = 0; i < write_page_remaining; i++) {
@@ -813,9 +860,9 @@ iinq_external_sort_init(
 		int j;
 
 		for (j = 0; j < num_fields; j++) {
-			iinq_field_num_t	field_num;
-			iinq_table_id_t		table_id;
-			size_t				field_size = iinq_calculate_offset(table_id, field_num + 1) - iinq_calculate_offset(table_id, field_num);
+			iinq_field_num_t	field_num	= input_operator->instance->field_info[j].field_num;
+			iinq_table_id_t		table_id	= input_operator->instance->field_info[j].table_id;
+			size_t				field_size	= iinq_calculate_offset(table_id, field_num + 1) - iinq_calculate_offset(table_id, field_num);
 
 			if (1 != fwrite(input_operator->instance->fields[j], field_size, 1, file)) {
 				break;
@@ -850,14 +897,13 @@ iinq_external_sort_init(
 	context->parts	= orderby_order_parts;
 	context->n		= num_orderby;
 
-	ion_err_t error			= ion_external_sort_init(es, file, context, iinq_sort_compare, /*key_size + */ 0,
-		/*key_size + */ value_size + IINQ_BITS_FOR_NULL(num_fields) + total_orderby_size, IINQ_PAGE_SIZE, boolean_false, ION_FILE_SORT_FLASH_MINSORT);
+	ion_err_t error			= ion_external_sort_init(es, file, context, iinq_sort_compare, 0, IINQ_BITS_FOR_NULL(num_fields) + value_size + total_orderby_size, IINQ_PAGE_SIZE, boolean_false, ION_FILE_SORT_FLASH_MINSORT);
 
 	uint16_t buffer_size	= ion_external_sort_bytes_of_memory_required(es, 0, boolean_false);
 
 	char *buffer			= malloc(buffer_size);
 	/* recordbuf needs enough room for the sort field and the table tuple (sort field is stored twice) */
-	char *record_buf		= malloc((total_orderby_size /*+ key_size*/ + IINQ_BITS_FOR_NULL(num_fields) + value_size));
+	char *record_buf		= malloc((total_orderby_size + IINQ_BITS_FOR_NULL(num_fields) + value_size));
 
 	operator->instance->null_indicators = record_buf + total_orderby_size;
 

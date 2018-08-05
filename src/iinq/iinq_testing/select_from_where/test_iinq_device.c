@@ -46,7 +46,7 @@ uintmax_t num_records;
 #define OUTPUT_TIMES						0
 #define OUTPUT_SQL_STATEMENTS				1
 #define OUTPUT_INSERT_PROGRESS				1
-#define OUTPUT_INSERT_PROGRESS_FREQUENCY	25
+#define OUTPUT_INSERT_PROGRESS_FREQUENCY	100
 
 void
 test_create_table1(
@@ -89,23 +89,23 @@ test_record_exists_table1(
 ) {
 	ion_dictionary_t			dictionary;
 	ion_dictionary_handler_t	handler;
-	ion_err_t					error = iinq_open_source(0, &dictionary, &handler);
-
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
-
-	ion_value_t value = malloc(sizeof(int) * 2 + sizeof(char) * 31);
+	ion_value_t					value = malloc(sizeof(int) * 2 + sizeof(char) * 31);
 
 	if (NULL == value) {
 		PLANCK_UNIT_SET_FAIL(tc);
 	}
 
+	ion_err_t error = iinq_open_source(0, &dictionary, &handler);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
+
 	ion_status_t status = dictionary_get(&dictionary, IONIZE(id, int), value);
 
 	free(value);
+	ion_close_dictionary(&dictionary);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
-	ion_close_dictionary(&dictionary);
 }
 
 void
@@ -167,7 +167,7 @@ void
 test_insert_records_table1(
 	planck_unit_test_t *tc
 ) {
-	uintmax_t				i;
+	intmax_t				i;
 	volatile unsigned long	start_time, end_time;
 
 	start_time = ion_time();
@@ -179,12 +179,12 @@ test_insert_records_table1(
 		if ((i % OUTPUT_INSERT_PROGRESS_FREQUENCY == 0) || (i == NUM_REGULAR_INSERTS - 1))
 #if defined(ARDUINO)
 		{
-			printf("Inserting regular (%u): %u%%\n", NUM_REGULAR_INSERTS, (i + 1) * 100 / NUM_REGULAR_INSERTS);
+			printf("Inserting regular (%d): %d%%\n", NUM_REGULAR_INSERTS, (i + 1) * 100 / NUM_REGULAR_INSERTS);
 		}
 
 #else
 		{
-			printf("Inserting regular (%u): %u%%\r", NUM_REGULAR_INSERTS, (i + 1) * 100 / NUM_REGULAR_INSERTS);
+			printf("Inserting regular (%d): %d%%\r", NUM_REGULAR_INSERTS, (i + 1) * 100 / NUM_REGULAR_INSERTS);
 		}
 		fflush(stdout);
 #endif
@@ -195,7 +195,7 @@ test_insert_records_table1(
 
 	end_time = ion_time();
 #if OUTPUT_TIMES
-	printf("%u records inserted. Time taken: %lu\n", NUM_REGULAR_INSERTS, end_time - start_time);
+	printf("%d records inserted. Time taken: %lu\n", NUM_REGULAR_INSERTS, end_time - start_time);
 #endif
 }
 
@@ -215,12 +215,12 @@ test_insert_records_prep_table1(
 		if ((i % OUTPUT_INSERT_PROGRESS_FREQUENCY == 0) || (i == NUM_PREPARED_INSERTS - 1))
 #if defined(ARDUINO)
 		{
-			printf("Inserting prepared (%u): %u%%\n", NUM_PREPARED_INSERTS, (i + 1) * 100 / NUM_PREPARED_INSERTS);
+			printf("Inserting prepared (%d): %d%%\n", NUM_PREPARED_INSERTS, (i + 1) * 100 / NUM_PREPARED_INSERTS);
 		}
 
 #else
 		{
-			printf("Inserting prepared (%u): %u%%\r", NUM_PREPARED_INSERTS, (i + 1) * 100 / NUM_PREPARED_INSERTS);
+			printf("Inserting prepared (%d): %d%%\r", NUM_PREPARED_INSERTS, (i + 1) * 100 / NUM_PREPARED_INSERTS);
 		}
 		fflush(stdout);
 #endif
@@ -231,7 +231,7 @@ test_insert_records_prep_table1(
 
 	end_time = ion_time();
 #if OUTPUT_TIMES
-	printf("%u records inserted. Time taken: %lu\n", NUM_PREPARED_INSERTS, end_time - start_time);
+	printf("%d records inserted. Time taken: %lu\n", NUM_PREPARED_INSERTS, end_time - start_time);
 #endif
 }
 

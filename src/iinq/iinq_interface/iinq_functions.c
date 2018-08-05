@@ -50,60 +50,51 @@ iinq_execute(
 	error				= iinq_open_source(table_id, &dictionary, &handler);
 
 	if (err_ok != error) {
-		goto ERROR;
+		return error;
 	}
 
 	dictionary_build_predicate(&predicate, predicate_equality, key);
 	error = dictionary_find(&dictionary, &predicate, &cursor);
 
 	if (err_ok != error) {
-		goto ERROR;
+		if (NULL != cursor) {
+			cursor->destroy(&cursor);
+		}
+
+		ion_close_dictionary(&dictionary);
+		return error;
 	}
 
 	if (cs_end_of_results != cursor->status) {
-		error = err_duplicate_key;
-		goto ERROR;
+		cursor->destroy(&cursor);
+		ion_close_dictionary(&dictionary);
+		return err_duplicate_key;
 	}
-
-	ion_status_t status;
 
 	switch (type) {
 		case iinq_insert_t:
-			status	= dictionary_insert(&dictionary, key, value);
-			error	= status.error;
+			error = dictionary_insert(&dictionary, key, value).error;
 			break;
 
 		case iinq_delete_t:
-			status	= dictionary_delete(&dictionary, key);
-			error	= status.error;
+			error = dictionary_delete(&dictionary, key).error;
 			break;
 
 		case iinq_update_t:
-			status	= dictionary_update(&dictionary, key, value);
-			error	= status.error;
+			error = dictionary_update(&dictionary, key, value).error;
 			break;
 	}
 
 	if (err_ok != error) {
-		goto ERROR;
-	}
-
-ERROR:
-
-	if (NULL != cursor) {
 		cursor->destroy(&cursor);
-	}
-
-	if (err_ok == error) {
-		error = ion_close_dictionary(&dictionary);
-	}
-	else {
 		ion_close_dictionary(&dictionary);
+		return error;
 	}
 
-	return error;
+	return ion_close_dictionary(&dictionary);
 }
 
+/* TODO: change update and delete to use selection operator functions instead of this one */
 ion_boolean_t
 where(
 	iinq_table_id_t		table_id,

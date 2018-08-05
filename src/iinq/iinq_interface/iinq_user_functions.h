@@ -97,14 +97,14 @@ ion_boolean_t iinq_table_scan_next (iinq_query_operator_t * operator);
 										ion_value_t			val
 									);
 
-									void iinq_selection_destroy (iinq_query_operator_t **operator);
-																 void iinq_table_scan_destroy (iinq_query_operator_t **operator);
+									void iinq_selection_destroy (iinq_query_operator_t * *operator);
+																 void iinq_table_scan_destroy (iinq_query_operator_t * *operator);
 																							   ion_err_t iinq_print_table(iinq_table_id_t table_id);
 																							   ion_boolean_t iinq_selection_next (iinq_query_operator_t * operator);
 																																  size_t iinq_calculate_offset(iinq_table_id_t table_id, iinq_field_num_t field_num);
 																																  ion_boolean_t iinq_projection_next (iinq_query_operator_t * operator);
 																																									  ion_err_t iinq_execute_prepared(iinq_prepared_sql * p);
-																																									  void iinq_projection_destroy (iinq_query_operator_t **operator);
+																																									  void iinq_projection_destroy (iinq_query_operator_t * *operator);
 																																																	ion_err_t iinq_print_keys(iinq_table_id_t table_id);
 																																																	iinq_prepared_sql *iinq_insert_4(int *value_1, int *value_2, char *value_3);
 																																																	iinq_prepared_sql *iinq_insert_2(int *value_1, char *value_2, int *value_3);
