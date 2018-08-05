@@ -33,7 +33,6 @@
 #include "../../key_value/kv_system.h"
 #include "../../util/sort/sort.h"
 #include "../iinq.h"
-#include "iinq_user_functions.h"
 
 #if !defined(IINQ_FUNCTIONS_H_)
 #define IINQ_FUNCTIONS_H_

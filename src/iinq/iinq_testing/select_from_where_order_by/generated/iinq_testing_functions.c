@@ -2,11 +2,11 @@
 
 void
 iinq_external_sort_destroy(
-	iinq_query_operator_t **operator
+	iinq_query_operator_t **query_operator
 ) {
-	if (NULL != *operator) {
-		if (NULL != (*operator)->instance) {
-			iinq_external_sort_t *external_sort = (iinq_external_sort_t *) (*operator)->instance;
+	if (NULL != *query_operator) {
+		if (NULL != (*query_operator)->instance) {
+			iinq_external_sort_t *external_sort = (iinq_external_sort_t *) (*query_operator)->instance;
 
 			if (NULL != external_sort->cursor) {
 				ion_external_sort_destroy_cursor(external_sort->cursor);
@@ -42,8 +42,8 @@ iinq_external_sort_destroy(
 			free(external_sort);
 		}
 
-		free(*operator);
-		*operator = NULL;
+		free(*query_operator);
+		*query_operator = NULL;
 	}
 }
 
@@ -79,13 +79,13 @@ iinq_calculate_offset(
 
 ion_boolean_t
 iinq_projection_next(
-	iinq_query_operator_t *operator
+	iinq_query_operator_t *query_operator
 ) {
-	ion_boolean_t result = operator->instance->input_operators[0]->next(operator->instance->input_operators[0]);
+	ion_boolean_t result = query_operator->instance->input_operators[0]->next(query_operator->instance->input_operators[0]);
 
 	if (result) {
 		int					i;
-		iinq_projection_t	*projection = (iinq_projection_t *) operator->instance;
+		iinq_projection_t	*projection = (iinq_projection_t *) query_operator->instance;
 
 		for (i = 0; i < projection->super.num_fields; i++) {
 			if (iinq_check_null_indicator(projection->super.input_operators[0]->instance->null_indicators, projection->input_field_nums[i])) {
@@ -96,7 +96,7 @@ iinq_projection_next(
 			}
 		}
 
-		operator->status.count++;
+		query_operator->status.count++;
 	}
 
 	return result;
@@ -237,11 +237,11 @@ iinq_projection_init(
 
 void
 iinq_projection_destroy(
-	iinq_query_operator_t **operator
+	iinq_query_operator_t **query_operator
 ) {
-	if (*operator != NULL) {
-		if ((*operator)->instance != NULL) {
-			iinq_projection_t *projection = (iinq_projection_t *) (*operator)->instance;
+	if (*query_operator != NULL) {
+		if ((*query_operator)->instance != NULL) {
+			iinq_projection_t *projection = (iinq_projection_t *) (*query_operator)->instance;
 
 			if (NULL != projection->input_field_nums) {
 				free(projection->input_field_nums);
@@ -267,19 +267,19 @@ iinq_projection_destroy(
 			free(projection);
 		}
 
-		free(*operator);
-		*operator = NULL;
+		free(*query_operator);
+		*query_operator = NULL;
 	}
 }
 
 ion_boolean_t
 iinq_table_scan_next(
-	iinq_query_operator_t *operator
+	iinq_query_operator_t *query_operator
 ) {
-	iinq_table_scan_t *table_scan = (iinq_table_scan_t *) operator->instance;
+	iinq_table_scan_t *table_scan = (iinq_table_scan_t *) query_operator->instance;
 
 	if ((cs_cursor_active == table_scan->cursor->next(table_scan->cursor, &table_scan->record)) || (cs_cursor_initialized == table_scan->cursor->status)) {
-		operator->status.count++;
+		query_operator->status.count++;
 		return boolean_true;
 	}
 
@@ -523,15 +523,15 @@ iinq_table_scan_init(
 
 ion_boolean_t
 iinq_external_sort_next(
-	iinq_query_operator_t *operator
+	iinq_query_operator_t *query_operator
 ) {
-	iinq_external_sort_t *external_sort = (iinq_external_sort_t *) operator->instance;
+	iinq_external_sort_t *external_sort = (iinq_external_sort_t *) query_operator->instance;
 
 	if ((err_ok != external_sort->cursor->next(external_sort->cursor, external_sort->record_buf)) || (cs_cursor_active != external_sort->cursor->status)) {
 		return boolean_false;
 	}
 
-	operator->status.count++;
+	query_operator->status.count++;
 	return boolean_true;
 }
 
@@ -594,11 +594,11 @@ iinq_is_key_field(
 
 void
 iinq_table_scan_destroy(
-	iinq_query_operator_t **operator
+	iinq_query_operator_t **query_operator
 ) {
-	if (NULL != *operator) {
-		if (NULL != (*operator)->instance) {
-			iinq_table_scan_t *table_scan = (iinq_table_scan_t *) (*operator)->instance;
+	if (NULL != *query_operator) {
+		if (NULL != (*query_operator)->instance) {
+			iinq_table_scan_t *table_scan = (iinq_table_scan_t *) (*query_operator)->instance;
 
 			if (NULL != table_scan->super.field_info) {
 				free(table_scan->super.field_info);
@@ -625,8 +625,8 @@ iinq_table_scan_destroy(
 			free(table_scan);
 		}
 
-		free(*operator);
-		*operator = NULL;
+		free(*query_operator);
+		*query_operator = NULL;
 	}
 }
 

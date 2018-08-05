@@ -138,13 +138,13 @@ iinq_selection_init(
 
 ion_boolean_t
 iinq_projection_next(
-	iinq_query_operator_t *operator
+	iinq_query_operator_t *query_operator
 ) {
-	ion_boolean_t result = operator->instance->input_operators[0]->next(operator->instance->input_operators[0]);
+	ion_boolean_t result = query_operator->instance->input_operators[0]->next(query_operator->instance->input_operators[0]);
 
 	if (result) {
 		int					i;
-		iinq_projection_t	*projection = (iinq_projection_t *) operator->instance;
+		iinq_projection_t	*projection = (iinq_projection_t *) query_operator->instance;
 
 		for (i = 0; i < projection->super.num_fields; i++) {
 			if (iinq_check_null_indicator(projection->super.input_operators[0]->instance->null_indicators, projection->input_field_nums[i])) {
@@ -155,7 +155,7 @@ iinq_projection_next(
 			}
 		}
 
-		operator->status.count++;
+		query_operator->status.count++;
 	}
 
 	return result;
@@ -296,11 +296,11 @@ iinq_projection_init(
 
 void
 iinq_projection_destroy(
-	iinq_query_operator_t **operator
+	iinq_query_operator_t **query_operator
 ) {
-	if (*operator != NULL) {
-		if ((*operator)->instance != NULL) {
-			iinq_projection_t *projection = (iinq_projection_t *) (*operator)->instance;
+	if (*query_operator != NULL) {
+		if ((*query_operator)->instance != NULL) {
+			iinq_projection_t *projection = (iinq_projection_t *) (*query_operator)->instance;
 
 			if (NULL != projection->input_field_nums) {
 				free(projection->input_field_nums);
@@ -326,19 +326,19 @@ iinq_projection_destroy(
 			free(projection);
 		}
 
-		free(*operator);
-		*operator = NULL;
+		free(*query_operator);
+		*query_operator = NULL;
 	}
 }
 
 ion_boolean_t
 iinq_table_scan_next(
-	iinq_query_operator_t *operator
+	iinq_query_operator_t *query_operator
 ) {
-	iinq_table_scan_t *table_scan = (iinq_table_scan_t *) operator->instance;
+	iinq_table_scan_t *table_scan = (iinq_table_scan_t *) query_operator->instance;
 
 	if ((cs_cursor_active == table_scan->cursor->next(table_scan->cursor, &table_scan->record)) || (cs_cursor_initialized == table_scan->cursor->status)) {
-		operator->status.count++;
+		query_operator->status.count++;
 		return boolean_true;
 	}
 
@@ -639,11 +639,11 @@ iinq_is_key_field(
 
 void
 iinq_table_scan_destroy(
-	iinq_query_operator_t **operator
+	iinq_query_operator_t **query_operator
 ) {
-	if (NULL != *operator) {
-		if (NULL != (*operator)->instance) {
-			iinq_table_scan_t *table_scan = (iinq_table_scan_t *) (*operator)->instance;
+	if (NULL != *query_operator) {
+		if (NULL != (*query_operator)->instance) {
+			iinq_table_scan_t *table_scan = (iinq_table_scan_t *) (*query_operator)->instance;
 
 			if (NULL != table_scan->super.field_info) {
 				free(table_scan->super.field_info);
@@ -670,18 +670,18 @@ iinq_table_scan_destroy(
 			free(table_scan);
 		}
 
-		free(*operator);
-		*operator = NULL;
+		free(*query_operator);
+		*query_operator = NULL;
 	}
 }
 
 void
 iinq_selection_destroy(
-	iinq_query_operator_t **operator
+	iinq_query_operator_t **query_operator
 ) {
-	if (NULL != *operator) {
-		if (NULL != (*operator)->instance) {
-			iinq_selection_t *selection = (iinq_selection_t *) (*operator)->instance;
+	if (NULL != *query_operator) {
+		if (NULL != (*query_operator)->instance) {
+			iinq_selection_t *selection = (iinq_selection_t *) (*query_operator)->instance;
 
 			if (NULL != selection->conditions) {
 				int i;
@@ -703,8 +703,8 @@ iinq_selection_destroy(
 			free(selection);
 		}
 
-		free(*operator);
-		*operator = NULL;
+		free(*query_operator);
+		*query_operator = NULL;
 	}
 }
 
@@ -925,11 +925,11 @@ iinq_insert_0(
 
 ion_boolean_t
 iinq_selection_next(
-	iinq_query_operator_t *operator
+	iinq_query_operator_t *query_operator
 ) {
 	int					i;
 	ion_boolean_t		selection_result;
-	iinq_selection_t	*selection = (iinq_selection_t *) operator->instance;
+	iinq_selection_t	*selection = (iinq_selection_t *) query_operator->instance;
 
 	do {
 		if (!selection->super.input_operators[0]->next(selection->super.input_operators[0])) {
@@ -945,8 +945,8 @@ iinq_selection_next(
 		for (i = 0; i < selection->num_conditions; i++) {
 			curr_condition = &selection->conditions[i];
 
-			iinq_table_id_t		table_id	= operator->instance->input_operators[0]->instance->field_info[curr_condition->where_field - 1].table_id;
-			iinq_field_num_t	field_num	= operator->instance->input_operators[0]->instance->field_info[curr_condition->where_field - 1].field_num;
+			iinq_table_id_t		table_id	= query_operator->instance->input_operators[0]->instance->field_info[curr_condition->where_field - 1].table_id;
+			iinq_field_num_t	field_num	= query_operator->instance->input_operators[0]->instance->field_info[curr_condition->where_field - 1].field_num;
 
 			curr_value = selection->super.fields[curr_condition->where_field - 1];
 
@@ -1078,7 +1078,7 @@ iinq_selection_next(
 	} while (!selection_result);
 
 	if (selection_result) {
-		operator->status.count++;
+		query_operator->status.count++;
 	}
 
 	return selection_result;

@@ -63,60 +63,151 @@ iinq_projection_init(
 	iinq_field_num_t		*field_nums
 );
 
-ion_boolean_t iinq_table_scan_next (iinq_query_operator_t * operator);
-									void
-									update(
-										iinq_table_id_t table_id,
-										int				num_wheres,
-										int				num_update,
-										...
-									);
+ion_boolean_t
+iinq_table_scan_next(
+	iinq_query_operator_t *query_operator
+);
 
-									ion_err_t
-									drop_table(
-										iinq_table_id_t table_id
-									);
+void
+update(
+	iinq_table_id_t table_id,
+	int				num_wheres,
+	int				num_update,
+	...
+);
 
-									iinq_query_operator_t *
-									iinq_table_scan_init(
-										iinq_table_id_t		table_id,
-										iinq_field_num_t	num_fields
-									);
+ion_err_t
+drop_table(
+	iinq_table_id_t table_id
+);
 
-									void
-									delete_record(
-										iinq_table_id_t table_id,
-										int				num_wheres,
-										...
-									);
+iinq_query_operator_t *
+iinq_table_scan_init(
+	iinq_table_id_t		table_id,
+	iinq_field_num_t	num_fields
+);
 
-									void
-									iinq_set_param(
-										iinq_prepared_sql	*p,
-										iinq_field_num_t	field_num,
-										ion_value_t			val
-									);
+void
+delete_record(
+	iinq_table_id_t table_id,
+	int				num_wheres,
+	...
+);
 
-									void iinq_selection_destroy (iinq_query_operator_t * *operator);
-																 void iinq_table_scan_destroy (iinq_query_operator_t * *operator);
-																							   ion_err_t iinq_print_table(iinq_table_id_t table_id);
-																							   ion_boolean_t iinq_selection_next (iinq_query_operator_t * operator);
-																																  size_t iinq_calculate_offset(iinq_table_id_t table_id, iinq_field_num_t field_num);
-																																  ion_boolean_t iinq_projection_next (iinq_query_operator_t * operator);
-																																									  ion_err_t iinq_execute_prepared(iinq_prepared_sql * p);
-																																									  void iinq_projection_destroy (iinq_query_operator_t * *operator);
-																																																	ion_err_t iinq_print_keys(iinq_table_id_t table_id);
-																																																	iinq_prepared_sql *iinq_insert_4(int *value_1, int *value_2, char *value_3);
-																																																	iinq_prepared_sql *iinq_insert_2(int *value_1, char *value_2, int *value_3);
-																																																	iinq_prepared_sql *iinq_insert_3(int *value_1, int *value_2, char *value_3);
-																																																	ion_boolean_t iinq_is_key_field(iinq_table_id_t table_id, iinq_field_num_t field_num);
-																																																	iinq_field_t iinq_get_field_type(iinq_table_id_t tableId, iinq_field_num_t field_num);
-																																																	ion_err_t create_table(iinq_table_id_t table_id, ion_key_type_t keyType, ion_key_size_t keySize, ion_value_size_t value_size);
-																																																	iinq_prepared_sql *iinq_insert_0(int *value_1, char *value_2, char *value_3, int *value_4, char *value_5);
-																																																	iinq_prepared_sql *iinq_insert_1(char *value_1, char *value_2, char *value_3, int *value_4, char *value_5);
+void
+iinq_set_param(
+	iinq_prepared_sql	*p,
+	iinq_field_num_t	field_num,
+	ion_value_t			val
+);
+
+void
+iinq_selection_destroy(
+	iinq_query_operator_t **query_operator
+);
+
+void
+iinq_table_scan_destroy(
+	iinq_query_operator_t **query_operator
+);
+
+ion_err_t
+iinq_print_table(
+	iinq_table_id_t table_id
+);
+
+ion_boolean_t
+iinq_selection_next(
+	iinq_query_operator_t *query_operator
+);
+
+size_t
+iinq_calculate_offset(
+	iinq_table_id_t		table_id,
+	iinq_field_num_t	field_num
+);
+
+ion_boolean_t
+iinq_projection_next(
+	iinq_query_operator_t *query_operator
+);
+
+ion_err_t
+iinq_execute_prepared(
+	iinq_prepared_sql *p
+);
+
+void
+iinq_projection_destroy(
+	iinq_query_operator_t **query_operator
+);
+
+ion_err_t
+iinq_print_keys(
+	iinq_table_id_t table_id
+);
+
+iinq_prepared_sql *
+iinq_insert_4(
+	int		*value_1,
+	int		*value_2,
+	char	*value_3
+);
+
+iinq_prepared_sql *
+iinq_insert_2(
+	int		*value_1,
+	char	*value_2,
+	int		*value_3
+);
+
+iinq_prepared_sql *
+iinq_insert_3(
+	int		*value_1,
+	int		*value_2,
+	char	*value_3
+);
+
+ion_boolean_t
+iinq_is_key_field(
+	iinq_table_id_t		table_id,
+	iinq_field_num_t	field_num
+);
+
+iinq_field_t
+iinq_get_field_type(
+	iinq_table_id_t		tableId,
+	iinq_field_num_t	field_num
+);
+
+ion_err_t
+create_table(
+	iinq_table_id_t		table_id,
+	ion_key_type_t		keyType,
+	ion_key_size_t		keySize,
+	ion_value_size_t	value_size
+);
+
+iinq_prepared_sql *
+iinq_insert_0(
+	int		*value_1,
+	char	*value_2,
+	char	*value_3,
+	int		*value_4,
+	char	*value_5
+);
+
+iinq_prepared_sql *
+iinq_insert_1(
+	char	*value_1,
+	char	*value_2,
+	char	*value_3,
+	int		*value_4,
+	char	*value_5
+);
 
 #if defined(__cplusplus)
-																																																	}
+}
 #endif
 
 #endif
