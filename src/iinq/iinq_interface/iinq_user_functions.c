@@ -777,6 +777,8 @@ iinq_selection_destroy(
 						free(selection->conditions[i].field_value);
 					}
 				}
+
+				free(selection->conditions);
 			}
 
 			if (NULL != selection->super.input_operators) {

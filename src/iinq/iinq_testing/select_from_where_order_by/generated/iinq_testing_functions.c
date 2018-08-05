@@ -8,17 +8,35 @@ iinq_external_sort_destroy(
 		if (NULL != (*operator)->instance) {
 			iinq_external_sort_t *external_sort = (iinq_external_sort_t *) (*operator)->instance;
 
-			if (external_sort->cursor != NULL) {
+			if (NULL != external_sort->cursor) {
 				ion_external_sort_destroy_cursor(external_sort->cursor);
+				free(external_sort->cursor);
 			}
 
-			if (external_sort->buffer != NULL) {
+			if (NULL != external_sort->buffer) {
 				free(external_sort->buffer);
 			}
 
-			if (external_sort->es != NULL) {
+			if (NULL != external_sort->record_buf) {
+				free(external_sort->record_buf);
+			}
+
+			if (NULL != external_sort->es) {
 				fclose(external_sort->es->input_file);
+
+				if (NULL != external_sort->es->context) {
+					free(external_sort->es->context);
+				}
+
 				free(external_sort->es);
+			}
+
+			if (NULL != external_sort->super.field_info) {
+				free(external_sort->super.field_info);
+			}
+
+			if (NULL != external_sort->super.fields) {
+				free(external_sort->super.fields);
 			}
 
 			free(external_sort);

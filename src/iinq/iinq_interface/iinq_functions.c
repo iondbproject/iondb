@@ -91,6 +91,8 @@ iinq_execute(
 		return error;
 	}
 
+	cursor->destroy(&cursor);
+
 	return ion_close_dictionary(&dictionary);
 }
 

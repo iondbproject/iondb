@@ -89,7 +89,7 @@ test_record_exists_table1(
 ) {
 	ion_dictionary_t			dictionary;
 	ion_dictionary_handler_t	handler;
-	ion_value_t					value = malloc(sizeof(int) * 2 + sizeof(char) * 31);
+	ion_value_t					value = malloc(IINQ_BITS_FOR_NULL(3) + sizeof(int) * 2 + sizeof(char) * 31);
 
 	if (NULL == value) {
 		PLANCK_UNIT_SET_FAIL(tc);
