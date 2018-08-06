@@ -23,10 +23,8 @@ setup(
 	SPI.begin();
 	SD.begin(SD_CS_PIN);
 	Serial.begin(BAUD_RATE);
-
-	unsigned int num_records = 1000;
 	cleanup();
-	run_all_tests_iinq_device(num_records);
+	run_all_tests_iinq_device();
 }
 
 void
