@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(test_iinq_new)
+project(iinq_new)
 
 set(SOURCE_FILES
         iinq_user.c
