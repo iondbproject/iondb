@@ -43,8 +43,11 @@
 #define OUTPUT_QUERY_RESULTS				0
 #define OUTPUT_TIMES						1
 #define OUTPUT_SQL_STATEMENTS				1
-#define OUTPUT_INSERT_PROGRESS				1
+#define OUTPUT_INSERT_PROGRESS				0
 #define OUTPUT_INSERT_PROGRESS_FREQUENCY	100
+
+volatile unsigned long	insert_time		= 0;
+unsigned int			total_inserts	= 0;
 
 void
 test_create_table1(
@@ -128,12 +131,12 @@ test_insert_records_table1(
 	planck_unit_test_t	*tc,
 	int					num_records
 ) {
-	intmax_t				i;
+	intmax_t				i, n;
 	volatile unsigned long	start_time, end_time;
 
 	start_time = ion_time();
 
-	for (i = 0; i < num_records; i++) {
+	for (i = total_inserts, n = total_inserts + num_records; i < n; i++) {
 		test_insert_record_table1(tc, i + 1, "regInsert", i + 5);
 #if OUTPUT_INSERT_PROGRESS
 
@@ -154,9 +157,14 @@ test_insert_records_table1(
 
 	printf("\n");
 
-	end_time = ion_time();
+	end_time		= ion_time();
+
+	insert_time		+= end_time - start_time;
+	total_inserts	+= num_records;
+
 #if OUTPUT_TIMES
 	printf("%d records inserted. Time taken: %lu\n", num_records, end_time - start_time);
+	printf("%d total records inserted. Total time taken: %lu\n\n", total_inserts, insert_time);
 #endif
 }
 
@@ -165,12 +173,12 @@ test_insert_records_prep_table1(
 	planck_unit_test_t	*tc,
 	int					num_records
 ) {
-	intmax_t				i;
+	intmax_t				i, n;
 	volatile unsigned long	start_time, end_time;
 
 	start_time = ion_time();
 
-	for (i = 0; i < num_records; i++) {
+	for (i = total_inserts, n = total_inserts + num_records; i < n; i++) {
 		test_insert_prepared_record_table1(tc, -i, "prepInsert", -i + 5);
 #if OUTPUT_INSERT_PROGRESS
 
@@ -191,9 +199,14 @@ test_insert_records_prep_table1(
 
 	printf("\n");
 
-	end_time = ion_time();
+	end_time		= ion_time();
+
+	insert_time		+= end_time - start_time;
+	total_inserts	+= num_records;
+
 #if OUTPUT_TIMES
 	printf("%d prepared records inserted. Time taken: %lu\n", num_records, end_time - start_time);
+	printf("%d total records prepared inserted. Total time taken: %lu\n\n", total_inserts, insert_time);
 #endif
 }
 
@@ -242,12 +255,14 @@ test_select_all_records_table1(
 	printf("Iteration time taken: %lu\n", end_time - start_time);
 #endif
 
+	start_time = ion_time();
+
 	iinq_close_result_set(rs1);
 
 	end_time = ion_time();
 
 #if OUTPUT_TIMES
-	printf("Closing time taken: %lu\n", end_time - start_time);
+	printf("Closing time taken: %lu\n\n", end_time - start_time);
 #endif
 
 	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == rs1);
@@ -257,13 +272,23 @@ void
 test_drop_table1(
 	planck_unit_test_t *tc
 ) {
+	volatile unsigned long start_time, end_time;
+
 #if OUTPUT_SQL_STATEMENTS
 	printf("DROP TABLE Table1;\n");
 #endif
 
+	start_time = ion_time();
+
 	ion_err_t error =
 /*	  SQL_execute("DROP TABLE Table1;"); */
 		drop_table(0);
+
+	end_time = ion_time();
+
+#if OUTPUT_TIMES
+	printf("Drop Table time taken: %lu\n\n", end_time - start_time);
+#endif
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
 
@@ -281,13 +306,16 @@ test_performance_regular_records(
 ) {
 	int num_records;
 
-	for (num_records = MIN_RECORDS; num_records < MAX_RECORDS; num_records += RECORD_INCREMENT) {
-		test_create_table1(tc);
-		test_insert_records_table1(tc, num_records);
+	insert_time		= 0;
+	total_inserts	= 0;
+	test_create_table1(tc);
+
+	for (num_records = MIN_RECORDS; num_records <= MAX_RECORDS; num_records += RECORD_INCREMENT) {
+		test_insert_records_table1(tc, RECORD_INCREMENT);
 		test_select_all_records_table1(tc);
-		test_drop_table1(tc);
-		printf("\n");
 	}
+
+	test_drop_table1(tc);
 }
 
 void
@@ -296,13 +324,16 @@ test_performance_prepared_records(
 ) {
 	int num_records;
 
-	for (num_records = MIN_RECORDS; num_records < MAX_RECORDS; num_records += RECORD_INCREMENT) {
-		test_create_table1(tc);
-		test_insert_records_prep_table1(tc, num_records);
+	insert_time		= 0;
+	total_inserts	= 0;
+	test_create_table1(tc);
+
+	for (num_records = MIN_RECORDS; num_records <= MAX_RECORDS; num_records += RECORD_INCREMENT) {
+		test_insert_records_prep_table1(tc, RECORD_INCREMENT);
 		test_select_all_records_table1(tc);
-		test_drop_table1(tc);
-		printf("\n");
 	}
+
+	test_drop_table1(tc);
 }
 
 planck_unit_suite_t *
