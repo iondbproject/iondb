@@ -46,7 +46,7 @@ unsigned int num_records;
 #define OUTPUT_TIMES						0
 #define OUTPUT_SQL_STATEMENTS				1
 #define OUTPUT_INSERT_PROGRESS				1
-#define OUTPUT_INSERT_PROGRESS_FREQUENCY	100
+#define OUTPUT_INSERT_PROGRESS_FREQUENCY	10
 
 void
 test_create_table1(

@@ -39,14 +39,14 @@
 uintmax_t num_records;
 
 #define REGULAR_INSERTS_PERCENTAGE			0.75
-#define NUM_PREPARED_INSERTS				(uintmax_t) (((double) num_records) * (1 - REGULAR_INSERTS_PERCENTAGE))
-#define NUM_REGULAR_INSERTS					(uintmax_t) (((double) num_records) * REGULAR_INSERTS_PERCENTAGE)
+#define NUM_PREPARED_INSERTS				(unsigned int) (((double) num_records) * (1 - REGULAR_INSERTS_PERCENTAGE))
+#define NUM_REGULAR_INSERTS					(unsigned int) (((double) num_records) * REGULAR_INSERTS_PERCENTAGE)
 
 #define OUTPUT_QUERY_RESULTS				0
 #define OUTPUT_TIMES						0
 #define OUTPUT_SQL_STATEMENTS				1
 #define OUTPUT_INSERT_PROGRESS				1
-#define OUTPUT_INSERT_PROGRESS_FREQUENCY	100
+#define OUTPUT_INSERT_PROGRESS_FREQUENCY	10
 
 void
 test_create_table1(
