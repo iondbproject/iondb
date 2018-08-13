@@ -36,9 +36,9 @@
 
 #include "test_iinq_device.h"
 
-#define MIN_RECORDS							10
+#define MIN_RECORDS							1
 #define MAX_RECORDS							1000
-#define RECORD_INCREMENT					10
+#define RECORD_INCREMENT					1
 
 #define OUTPUT_QUERY_RESULTS				0
 #define OUTPUT_TIMES						1
@@ -136,7 +136,7 @@ test_insert_records_table1(
 
 	start_time = ion_time();
 
-	for (i = total_inserts, n = total_inserts + num_records; i < n; i++) {
+	for (i = 0; i < num_records; i++) {
 		test_insert_record_table1(tc, i + 1, "regInsert", i + 5);
 #if OUTPUT_INSERT_PROGRESS
 
@@ -157,14 +157,10 @@ test_insert_records_table1(
 
 	printf("\n");
 
-	end_time		= ion_time();
-
-	insert_time		+= end_time - start_time;
-	total_inserts	+= num_records;
+	end_time = ion_time();
 
 #if OUTPUT_TIMES
 	printf("%d records inserted. Time taken: %lu\n", num_records, end_time - start_time);
-	printf("%d total records inserted. Total time taken: %lu\n\n", total_inserts, insert_time);
 #endif
 }
 
@@ -178,7 +174,7 @@ test_insert_records_prep_table1(
 
 	start_time = ion_time();
 
-	for (i = total_inserts, n = total_inserts + num_records; i < n; i++) {
+	for (i = 0; i < num_records; i++) {
 		test_insert_prepared_record_table1(tc, -i, "prepInsert", -i + 5);
 #if OUTPUT_INSERT_PROGRESS
 
@@ -199,14 +195,10 @@ test_insert_records_prep_table1(
 
 	printf("\n");
 
-	end_time		= ion_time();
-
-	insert_time		+= end_time - start_time;
-	total_inserts	+= num_records;
+	end_time = ion_time();
 
 #if OUTPUT_TIMES
 	printf("%d prepared records inserted. Time taken: %lu\n", num_records, end_time - start_time);
-	printf("%d total records prepared inserted. Total time taken: %lu\n\n", total_inserts, insert_time);
 #endif
 }
 
@@ -223,7 +215,239 @@ test_select_all_records_table1(
 	start_time = ion_time();
 
 /*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1;"); */
-	iinq_result_set_t *rs1 = iinq_projection_init(iinq_table_scan_init(0, 3), 3, IINQ_PROJECTION_LIST(1, 2, 3));
+	iinq_result_set_t *rs1 = iinq_projection_init(iinq_dictionary_init(0, 3, predicate_all_records), 3, IINQ_PROJECTION_LIST(1, 2, 3));
+
+	end_time = ion_time();
+
+#if OUTPUT_TIMES
+	printf("Init time taken: %lu\n", end_time - start_time);
+#endif
+
+	if ((NULL == rs1) || (err_ok != rs1->status.error)) {
+		PLANCK_UNIT_SET_FAIL(tc);
+	}
+
+	start_time = ion_time();
+
+	while (iinq_next(rs1)) {
+#if OUTPUT_QUERY_RESULTS
+		printf("ID: %i, ", *iinq_get_int(rs1, 1));
+		printf("CharValue: %s, ", iinq_get_string(rs1, 2));
+		printf("IntValue: %d\n", *iinq_get_int(rs1, 3));
+#endif
+	}
+
+#if OUTPUT_QUERY_RESULTS
+	printf("\n");
+#endif
+
+	end_time = ion_time();
+
+#if OUTPUT_TIMES
+	printf("Iteration time taken: %lu\n", end_time - start_time);
+#endif
+
+	start_time = ion_time();
+
+	iinq_close_result_set(rs1);
+
+	end_time = ion_time();
+
+#if OUTPUT_TIMES
+	printf("Closing time taken: %lu\n\n", end_time - start_time);
+#endif
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == rs1);
+}
+
+void
+test_select_all_where_equal_table1(
+	planck_unit_test_t *tc
+) {
+	volatile unsigned long start_time, end_time;
+
+#if OUTPUT_SQL_STATEMENTS
+	printf("SELECT * FROM Table1 WHERE IntValue = 50\n");
+#endif
+
+	start_time = ion_time();
+
+/*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE IntValue = 50;"); */
+	iinq_result_set_t *rs1 = iinq_projection_init(iinq_selection_init(iinq_dictionary_init(0, 3, predicate_all_records), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_equal, IONIZE(50, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
+
+	end_time = ion_time();
+
+#if OUTPUT_TIMES
+	printf("Init time taken: %lu\n", end_time - start_time);
+#endif
+
+	if ((NULL == rs1) || (err_ok != rs1->status.error)) {
+		PLANCK_UNIT_SET_FAIL(tc);
+	}
+
+	start_time = ion_time();
+
+	while (iinq_next(rs1)) {
+#if OUTPUT_QUERY_RESULTS
+		printf("ID: %i, ", *iinq_get_int(rs1, 1));
+		printf("CharValue: %s, ", iinq_get_string(rs1, 2));
+		printf("IntValue: %d\n", *iinq_get_int(rs1, 3));
+#endif
+	}
+
+#if OUTPUT_QUERY_RESULTS
+	printf("\n");
+#endif
+
+	end_time = ion_time();
+
+#if OUTPUT_TIMES
+	printf("Iteration time taken: %lu\n", end_time - start_time);
+#endif
+
+	start_time = ion_time();
+
+	iinq_close_result_set(rs1);
+
+	end_time = ion_time();
+
+#if OUTPUT_TIMES
+	printf("Closing time taken: %lu\n\n", end_time - start_time);
+#endif
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == rs1);
+}
+
+void
+test_select_all_where_equal_key_table1(
+	planck_unit_test_t *tc
+) {
+	volatile unsigned long start_time, end_time;
+
+#if OUTPUT_SQL_STATEMENTS
+	printf("SELECT * FROM Table1 WHERE ID = 50\n");
+#endif
+
+	start_time = ion_time();
+
+/*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID = 50;"); */
+	iinq_result_set_t *rs1 = iinq_projection_init(iinq_dictionary_init(0, 3, predicate_equality, IONIZE(50, int)), 3, IINQ_PROJECTION_LIST(1, 2, 3));
+
+	end_time = ion_time();
+
+#if OUTPUT_TIMES
+	printf("Init time taken: %lu\n", end_time - start_time);
+#endif
+
+	if ((NULL == rs1) || (err_ok != rs1->status.error)) {
+		PLANCK_UNIT_SET_FAIL(tc);
+	}
+
+	start_time = ion_time();
+
+	while (iinq_next(rs1)) {
+#if OUTPUT_QUERY_RESULTS
+		printf("ID: %i, ", *iinq_get_int(rs1, 1));
+		printf("CharValue: %s, ", iinq_get_string(rs1, 2));
+		printf("IntValue: %d\n", *iinq_get_int(rs1, 3));
+#endif
+	}
+
+#if OUTPUT_QUERY_RESULTS
+	printf("\n");
+#endif
+
+	end_time = ion_time();
+
+#if OUTPUT_TIMES
+	printf("Iteration time taken: %lu\n", end_time - start_time);
+#endif
+
+	start_time = ion_time();
+
+	iinq_close_result_set(rs1);
+
+	end_time = ion_time();
+
+#if OUTPUT_TIMES
+	printf("Closing time taken: %lu\n\n", end_time - start_time);
+#endif
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == rs1);
+}
+
+void
+test_select_all_where_range_table1(
+	planck_unit_test_t *tc
+) {
+	volatile unsigned long start_time, end_time;
+
+#if OUTPUT_SQL_STATEMENTS
+	printf("SELECT * FROM Table1 WHERE IntValue >= 25 AND IntValue <= 75\n");
+#endif
+
+	start_time = ion_time();
+
+/*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE IntValue >= 25 AND IntValue <= 75;"); */
+	iinq_result_set_t *rs1 = iinq_projection_init(iinq_selection_init(iinq_dictionary_init(0, 3, predicate_all_records), 2, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_less_than_equal_to, IONIZE(75, int)), IINQ_CONDITION(3, iinq_greater_than_equal_to, IONIZE(25, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
+
+	end_time = ion_time();
+
+#if OUTPUT_TIMES
+	printf("Init time taken: %lu\n", end_time - start_time);
+#endif
+
+	if ((NULL == rs1) || (err_ok != rs1->status.error)) {
+		PLANCK_UNIT_SET_FAIL(tc);
+	}
+
+	start_time = ion_time();
+
+	while (iinq_next(rs1)) {
+#if OUTPUT_QUERY_RESULTS
+		printf("ID: %i, ", *iinq_get_int(rs1, 1));
+		printf("CharValue: %s, ", iinq_get_string(rs1, 2));
+		printf("IntValue: %d\n", *iinq_get_int(rs1, 3));
+#endif
+	}
+
+#if OUTPUT_QUERY_RESULTS
+	printf("\n");
+#endif
+
+	end_time = ion_time();
+
+#if OUTPUT_TIMES
+	printf("Iteration time taken: %lu\n", end_time - start_time);
+#endif
+
+	start_time = ion_time();
+
+	iinq_close_result_set(rs1);
+
+	end_time = ion_time();
+
+#if OUTPUT_TIMES
+	printf("Closing time taken: %lu\n\n", end_time - start_time);
+#endif
+
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == rs1);
+}
+
+void
+test_select_all_where_range_key_table1(
+	planck_unit_test_t *tc
+) {
+	volatile unsigned long start_time, end_time;
+
+#if OUTPUT_SQL_STATEMENTS
+	printf("SELECT * FROM Table1 WHERE ID >= 25 AND ID <= 75\n");
+#endif
+
+	start_time = ion_time();
+
+/*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID >= 25 AND ID <= 75;"); */
+	iinq_result_set_t *rs1 = iinq_projection_init(iinq_dictionary_init(0, 3, predicate_range, IONIZE(75, int), IONIZE(25, int)), 3, IINQ_PROJECTION_LIST(1, 2, 3));
 
 	end_time = ion_time();
 
@@ -306,16 +530,17 @@ test_performance_regular_records(
 ) {
 	int num_records;
 
-	insert_time		= 0;
-	total_inserts	= 0;
-	test_create_table1(tc);
-
 	for (num_records = MIN_RECORDS; num_records <= MAX_RECORDS; num_records += RECORD_INCREMENT) {
-		test_insert_records_table1(tc, RECORD_INCREMENT);
+		test_create_table1(tc);
+		test_insert_records_table1(tc, num_records);
 		test_select_all_records_table1(tc);
+		test_select_all_where_equal_table1(tc);
+		test_select_all_where_equal_key_table1(tc);
+		test_select_all_where_range_table1(tc);
+		test_select_all_where_range_key_table1(tc);
+		test_drop_table1(tc);
+		fremove(ION_MASTER_TABLE_FILENAME);
 	}
-
-	test_drop_table1(tc);
 }
 
 void
@@ -324,16 +549,17 @@ test_performance_prepared_records(
 ) {
 	int num_records;
 
-	insert_time		= 0;
-	total_inserts	= 0;
-	test_create_table1(tc);
-
 	for (num_records = MIN_RECORDS; num_records <= MAX_RECORDS; num_records += RECORD_INCREMENT) {
-		test_insert_records_prep_table1(tc, RECORD_INCREMENT);
+		test_create_table1(tc);
+		test_insert_records_prep_table1(tc, num_records);
 		test_select_all_records_table1(tc);
+		test_select_all_where_equal_table1(tc);
+		test_select_all_where_equal_key_table1(tc);
+		test_select_all_where_range_table1(tc);
+		test_select_all_where_range_key_table1(tc);
+		test_drop_table1(tc);
+		fremove(ION_MASTER_TABLE_FILENAME);
 	}
-
-	test_drop_table1(tc);
 }
 
 planck_unit_suite_t *

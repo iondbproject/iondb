@@ -303,7 +303,7 @@ typedef char ion_predicate_type_t;
 */
 enum ION_PREDICATE_TYPE {
 	predicate_equality,	/**< Predicate type for equality cursors. */
-	predicate_range,/**< Predicate tyoe for range cursors. */
+	predicate_range,/**< Predicate type for range cursors. */
 	predicate_all_records,	/**< Predicate type for cursors over all records. */
 	predicate_predicate	/**< Predicate type for predicate cursors. */
 };

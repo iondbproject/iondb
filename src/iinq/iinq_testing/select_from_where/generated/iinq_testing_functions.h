@@ -17,9 +17,9 @@ extern "C" {
 
 #define IINQ_DEBUG 1
 
-typedef struct iinq_table_scan iinq_table_scan_t;
+typedef struct iinq_dictionary_operator iinq_dictionary_operator_t;
 
-struct iinq_table_scan {
+struct iinq_dictionary_operator {
 	iinq_query_operator_parent_t	super;
 	ion_dictionary_t				dictionary;
 	ion_dictionary_handler_t		handler;
@@ -72,6 +72,11 @@ iinq_calculate_key_offset(
 	iinq_field_num_t	field_num
 );
 
+ion_boolean_t
+iinq_dictionary_operator_next(
+	iinq_query_operator_t *query_operator
+);
+
 iinq_query_operator_t *
 iinq_projection_init(
 	iinq_query_operator_t	*input_operator,
@@ -84,11 +89,6 @@ iinq_projection_destroy(
 	iinq_query_operator_t **query_operator
 );
 
-ion_boolean_t
-iinq_table_scan_next(
-	iinq_query_operator_t *query_operator
-);
-
 ion_err_t
 iinq_print_keys(
 	iinq_table_id_t table_id
@@ -99,12 +99,6 @@ drop_table(
 	iinq_table_id_t table_id
 );
 
-iinq_query_operator_t *
-iinq_table_scan_init(
-	iinq_table_id_t		table_id,
-	iinq_field_num_t	num_fields
-);
-
 void
 iinq_set_param(
 	iinq_prepared_sql	*p,
@@ -112,15 +106,18 @@ iinq_set_param(
 	ion_value_t			val
 );
 
+iinq_query_operator_t *
+iinq_dictionary_init(
+	iinq_table_id_t			table_id,
+	iinq_field_num_t		num_fields,
+	ion_predicate_type_t	predicate_type,
+	...
+);
+
 ion_boolean_t
 iinq_is_key_field(
 	iinq_table_id_t		table_id,
 	iinq_field_num_t	field_num
-);
-
-void
-iinq_table_scan_destroy(
-	iinq_query_operator_t **query_operator
 );
 
 void
@@ -145,6 +142,11 @@ create_table(
 	ion_key_type_t		keyType,
 	ion_key_size_t		keySize,
 	ion_value_size_t	value_size
+);
+
+void
+iinq_dictionary_operator_destroy(
+	iinq_query_operator_t **query_operator
 );
 
 iinq_prepared_sql *

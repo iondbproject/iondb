@@ -53,6 +53,9 @@ iinq_execute(
 		return error;
 	}
 
+	/* If duplicates are prohibited in a table, a scan must be completed before inserting a record (can be costly for certain data types). */
+#if IINQ_ALLOW_DUPLICATES
+#else
 	dictionary_build_predicate(&predicate, predicate_equality, key);
 	error = dictionary_find(&dictionary, &predicate, &cursor);
 
@@ -71,6 +74,8 @@ iinq_execute(
 		return err_duplicate_key;
 	}
 
+#endif
+
 	switch (type) {
 		case iinq_insert_t:
 			error = dictionary_insert(&dictionary, key, value).error;
@@ -86,12 +91,9 @@ iinq_execute(
 	}
 
 	if (err_ok != error) {
-		cursor->destroy(&cursor);
 		ion_close_dictionary(&dictionary);
 		return error;
 	}
-
-	cursor->destroy(&cursor);
 
 	return ion_close_dictionary(&dictionary);
 }

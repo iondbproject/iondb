@@ -24,9 +24,9 @@ struct iinq_projection {
 	iinq_field_num_t				*input_field_nums;
 };
 
-typedef struct iinq_table_scan iinq_table_scan_t;
+typedef struct iinq_dictionary_operator iinq_dictionary_operator_t;
 
-struct iinq_table_scan {
+struct iinq_dictionary_operator {
 	iinq_query_operator_parent_t	super;
 	ion_dictionary_t				dictionary;
 	ion_dictionary_handler_t		handler;
@@ -64,7 +64,7 @@ iinq_projection_init(
 );
 
 ion_boolean_t
-iinq_table_scan_next(
+iinq_dictionary_operator_next(
 	iinq_query_operator_t *query_operator
 );
 
@@ -81,12 +81,6 @@ drop_table(
 	iinq_table_id_t table_id
 );
 
-iinq_query_operator_t *
-iinq_table_scan_init(
-	iinq_table_id_t		table_id,
-	iinq_field_num_t	num_fields
-);
-
 void
 delete_record(
 	iinq_table_id_t table_id,
@@ -101,13 +95,16 @@ iinq_set_param(
 	ion_value_t			val
 );
 
-void
-iinq_selection_destroy(
-	iinq_query_operator_t **query_operator
+iinq_query_operator_t *
+iinq_dictionary_init(
+	iinq_table_id_t			table_id,
+	iinq_field_num_t		num_fields,
+	ion_predicate_type_t	predicate_type,
+	...
 );
 
 void
-iinq_table_scan_destroy(
+iinq_selection_destroy(
 	iinq_query_operator_t **query_operator
 );
 
@@ -186,6 +183,11 @@ create_table(
 	ion_key_type_t		keyType,
 	ion_key_size_t		keySize,
 	ion_value_size_t	value_size
+);
+
+void
+iinq_dictionary_operator_destroy(
+	iinq_query_operator_t **query_operator
 );
 
 iinq_prepared_sql *

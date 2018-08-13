@@ -40,28 +40,28 @@ iinq_selection_init(
 		return NULL;
 	}
 
-	iinq_query_operator_t *operator = malloc(sizeof(iinq_query_operator_t));
+	iinq_query_operator_t *operatorType = malloc(sizeof(iinq_query_operator_t));
 
-	if (NULL == operator) {
+	if (NULL == operatorType) {
 		input_operator->destroy(&input_operator);
 		return NULL;
 	}
 
-	operator->instance = malloc(sizeof(iinq_selection_t));
+	operatorType->instance = malloc(sizeof(iinq_selection_t));
 
-	if (NULL == operator->instance) {
-		free(operator);
+	if (NULL == operatorType->instance) {
+		free(operatorType);
 		input_operator->destroy(&input_operator);
 		return NULL;
 	}
 
-	iinq_selection_t *selection = (iinq_selection_t *) operator->instance;
+	iinq_selection_t *selection = (iinq_selection_t *) operatorType->instance;
 
 	selection->super.input_operators = malloc(sizeof(iinq_query_operator_t *));
 
 	if (NULL == selection->super.input_operators) {
 		free(selection);
-		free(operator);
+		free(operatorType);
 		input_operator->destroy(&input_operator);
 		return NULL;
 	}
@@ -81,7 +81,7 @@ iinq_selection_init(
 	if (NULL == selection->conditions) {
 		free(selection->super.input_operators);
 		free(selection);
-		free(operator);
+		free(operatorType);
 		input_operator->destroy(&input_operator);
 		return NULL;
 	}
@@ -108,7 +108,7 @@ iinq_selection_init(
 			free(selection->conditions);
 			free(selection->super.input_operators);
 			free(selection);
-			free(operator);
+			free(operatorType);
 			input_operator->destroy(&input_operator);
 			return NULL;
 		}
@@ -130,10 +130,10 @@ iinq_selection_init(
 		}
 	}
 
-	operator->next		= iinq_selection_next;
-	operator->destroy	= iinq_selection_destroy;
+	operatorType->next		= iinq_selection_next;
+	operatorType->destroy	= iinq_selection_destroy;
 
-	return operator;
+	return operatorType;
 }
 
 ion_boolean_t
@@ -191,6 +191,20 @@ iinq_calculate_key_offset(
 	}
 }
 
+ion_boolean_t
+iinq_dictionary_operator_next(
+	iinq_query_operator_t *query_operator
+) {
+	iinq_dictionary_operator_t *dict_op = (iinq_dictionary_operator_t *) query_operator->instance;
+
+	if ((cs_cursor_active == dict_op->cursor->next(dict_op->cursor, &dict_op->record)) || (cs_cursor_initialized == dict_op->cursor->status)) {
+		query_operator->status.count++;
+		return boolean_true;
+	}
+
+	return boolean_false;
+}
+
 iinq_query_operator_t *
 iinq_projection_init(
 	iinq_query_operator_t	*input_operator,
@@ -201,25 +215,25 @@ iinq_projection_init(
 		return NULL;
 	}
 
-	iinq_query_operator_t *operator = malloc(sizeof(iinq_query_operator_t));
+	iinq_query_operator_t *operatorType = malloc(sizeof(iinq_query_operator_t));
 
-	if (NULL == operator) {
+	if (NULL == operatorType) {
 		input_operator->destroy(&input_operator);
 		return NULL;
 	}
 
-	operator->instance = malloc(sizeof(iinq_projection_t));
+	operatorType->instance = malloc(sizeof(iinq_projection_t));
 
-	if (NULL == operator->instance) {
-		free(operator);
+	if (NULL == operatorType->instance) {
+		free(operatorType);
 		input_operator->destroy(&input_operator);
 		return NULL;
 	}
 
-	operator->next		= iinq_projection_next;
-	operator->destroy	= iinq_projection_destroy;
+	operatorType->next		= iinq_projection_next;
+	operatorType->destroy	= iinq_projection_destroy;
 
-	iinq_projection_t *projection = (iinq_projection_t *) operator->instance;
+	iinq_projection_t *projection = (iinq_projection_t *) operatorType->instance;
 
 	projection->super.type					= iinq_projection_e;
 
@@ -228,7 +242,7 @@ iinq_projection_init(
 
 	if (NULL == projection->super.input_operators) {
 		free(projection);
-		free(operator);
+		free(operatorType);
 		input_operator->destroy(&input_operator);
 		return NULL;
 	}
@@ -241,7 +255,7 @@ iinq_projection_init(
 	if (NULL == projection->input_field_nums) {
 		free(projection->super.input_operators);
 		free(projection);
-		free(operator);
+		free(operatorType);
 		input_operator->destroy(&input_operator);
 		return NULL;
 	}
@@ -254,7 +268,7 @@ iinq_projection_init(
 		free(projection->input_field_nums);
 		free(projection->super.input_operators);
 		free(projection);
-		free(operator);
+		free(operatorType);
 		input_operator->destroy(&input_operator);
 		return NULL;
 	}
@@ -265,7 +279,7 @@ iinq_projection_init(
 		free(projection->super.null_indicators);
 		free(projection->super.input_operators);
 		free(projection);
-		free(operator);
+		free(operatorType);
 		input_operator->destroy(&input_operator);
 		return NULL;
 	}
@@ -277,7 +291,7 @@ iinq_projection_init(
 		free(projection->super.null_indicators);
 		free(projection->super.input_operators);
 		free(projection);
-		free(operator);
+		free(operatorType);
 		input_operator->destroy(&input_operator);
 		return NULL;
 	}
@@ -289,9 +303,9 @@ iinq_projection_init(
 		projection->super.fields[i]		= input_operator->instance->fields[field_nums[i] - 1];
 	}
 
-	operator->status = ION_STATUS_OK(0);
+	operatorType->status = ION_STATUS_OK(0);
 
-	return operator;
+	return operatorType;
 }
 
 void
@@ -329,20 +343,6 @@ iinq_projection_destroy(
 		free(*query_operator);
 		*query_operator = NULL;
 	}
-}
-
-ion_boolean_t
-iinq_table_scan_next(
-	iinq_query_operator_t *query_operator
-) {
-	iinq_table_scan_t *table_scan = (iinq_table_scan_t *) query_operator->instance;
-
-	if ((cs_cursor_active == table_scan->cursor->next(table_scan->cursor, &table_scan->record)) || (cs_cursor_initialized == table_scan->cursor->status)) {
-		query_operator->status.count++;
-		return boolean_true;
-	}
-
-	return boolean_false;
 }
 
 ion_err_t
@@ -450,136 +450,6 @@ drop_table(
 	return error;
 }
 
-iinq_query_operator_t *
-iinq_table_scan_init(
-	iinq_table_id_t		table_id,
-	iinq_field_num_t	num_fields
-) {
-	int							i;
-	ion_err_t					error;
-	iinq_table_scan_t			*table_scan;
-	ion_predicate_t				*predicate;
-	ion_dict_cursor_t			*cursor		= NULL;
-	ion_record_t				*record		= NULL;
-	ion_dictionary_t			*dictionary = NULL;
-	ion_dictionary_handler_t	*handler	= NULL;
-
-	iinq_query_operator_t *operator			= malloc(sizeof(iinq_query_operator_t));
-
-	if (NULL == operator) {
-		return NULL;
-	}
-
-	operator->instance = malloc(sizeof(iinq_table_scan_t));
-
-	if (NULL == operator->instance) {
-		free(operator);
-		return NULL;
-	}
-
-	table_scan						= (iinq_table_scan_t *) operator->instance;
-	table_scan->super.type			= iinq_table_scan_e;
-	table_scan->super.num_fields	= num_fields;
-	predicate						= &table_scan->predicate;
-	error							= dictionary_build_predicate(predicate, predicate_all_records);
-
-	if (err_ok != error) {
-		free(operator->instance);
-		free(operator);
-		return NULL;
-	}
-
-	dictionary			= &table_scan->dictionary;
-	handler				= &table_scan->handler;
-	dictionary->handler = handler;
-	record				= &table_scan->record;
-
-	error				= iinq_open_source(table_id, dictionary, handler);
-
-	if (err_ok != error) {
-		free(operator->instance);
-		free(operator);
-		return NULL;
-	}
-
-	error = dictionary_find(dictionary, predicate, &cursor);
-
-	if (err_ok != error) {
-		if (NULL != cursor) {
-			cursor->destroy(&cursor);
-		}
-
-		ion_close_dictionary(&dictionary);
-		free(operator->instance);
-		free(operator);
-		return NULL;
-	}
-
-	table_scan->cursor		= cursor;
-
-	table_scan->record.key	= malloc(dictionary->instance->record.key_size);
-
-	if (NULL == table_scan->record.key) {
-		cursor->destroy(&cursor);
-		ion_close_dictionary(&dictionary);
-		free(operator->instance);
-		free(operator);
-		return NULL;
-	}
-
-	record->value = malloc(dictionary->instance->record.value_size);
-
-	if (NULL == record->value) {
-		free(record->key);
-		cursor->destroy(&cursor);
-		ion_close_dictionary(&dictionary);
-		free(operator->instance);
-		free(operator);
-		return NULL;
-	}
-
-	table_scan->super.field_info = malloc(sizeof(iinq_field_info_t) * num_fields);
-
-	if (NULL == table_scan->super.field_info) {
-		free(record->value);
-		free(record->key);
-		cursor->destroy(&cursor);
-		ion_close_dictionary(&dictionary);
-		free(operator->instance);
-		free(operator);
-		return NULL;
-	}
-
-	table_scan->super.null_indicators	= table_scan->record.value;
-
-	table_scan->super.fields			= malloc(sizeof(ion_value_t) * num_fields);
-
-	if (NULL == table_scan->super.fields) {
-		free(table_scan->super.field_info);
-		free(record->value);
-		free(record->key);
-		cursor->destroy(&cursor);
-		ion_close_dictionary(&dictionary);
-		free(operator->instance);
-		free(operator);
-		return NULL;
-	}
-
-	for (i = 0; i < num_fields; i++) {
-		table_scan->super.field_info[i] = (iinq_field_info_t) {
-			table_id, i + 1
-		};
-		table_scan->super.fields[i]		= (unsigned char *) record->value + iinq_calculate_offset(table_id, i + 1);
-	}
-
-	ion_close_master_table();
-	operator->next		= iinq_table_scan_next;
-	operator->destroy	= iinq_table_scan_destroy;
-	operator->status	= ION_STATUS_OK(0);
-
-	return operator;
-}
-
 void
 iinq_set_param(
 	iinq_prepared_sql	*p,
@@ -616,6 +486,162 @@ iinq_set_param(
 	}
 }
 
+iinq_query_operator_t *
+iinq_dictionary_init(
+	iinq_table_id_t			table_id,
+	iinq_field_num_t		num_fields,
+	ion_predicate_type_t	predicate_type,
+	...
+) {
+	int							i;
+	ion_err_t					error;
+	iinq_dictionary_operator_t	*dictionary_operator;
+	ion_predicate_t				*predicate;
+	ion_dict_cursor_t			*cursor		= NULL;
+	ion_record_t				*record		= NULL;
+	ion_dictionary_t			*dictionary = NULL;
+	ion_dictionary_handler_t	*handler	= NULL;
+
+	iinq_query_operator_t *operatorType		= malloc(sizeof(iinq_query_operator_t));
+
+	if (NULL == operatorType) {
+		return NULL;
+	}
+
+	operatorType->instance = malloc(sizeof(iinq_dictionary_operator_t));
+
+	if (NULL == operatorType->instance) {
+		free(operatorType);
+		return NULL;
+	}
+
+	dictionary_operator						= (iinq_dictionary_operator_t *) operatorType->instance;
+	dictionary_operator->super.type			= iinq_dictionary_operator_e;
+	dictionary_operator->super.num_fields	= num_fields;
+	predicate								= &dictionary_operator->predicate;
+
+	switch (predicate_type) {
+		case predicate_all_records: {
+			error = dictionary_build_predicate(predicate, predicate_type);
+			break;
+		}
+
+		case predicate_equality: {
+			va_list arg_list;
+
+			va_start(arg_list, predicate_type);
+			error = dictionary_build_predicate(predicate, predicate_type, va_arg(arg_list, ion_key_t));
+			va_end(arg_list);
+			break;
+		}
+
+		case predicate_range: {
+			va_list arg_list;
+
+			va_start(arg_list, predicate_type);
+			error = dictionary_build_predicate(predicate, predicate_type, va_arg(arg_list, ion_key_t), va_arg(arg_list, ion_key_t));
+			va_end(arg_list);
+			break;
+		}
+	}
+
+	if (err_ok != error) {
+		free(operatorType->instance);
+		free(operatorType);
+		return NULL;
+	}
+
+	dictionary			= &dictionary_operator->dictionary;
+	handler				= &dictionary_operator->handler;
+	dictionary->handler = handler;
+	record				= &dictionary_operator->record;
+
+	error				= iinq_open_source(table_id, dictionary, handler);
+
+	if (err_ok != error) {
+		free(operatorType->instance);
+		free(operatorType);
+		return NULL;
+	}
+
+	error = dictionary_find(dictionary, predicate, &cursor);
+
+	if (err_ok != error) {
+		if (NULL != cursor) {
+			cursor->destroy(&cursor);
+		}
+
+		ion_close_dictionary(&dictionary);
+		free(operatorType->instance);
+		free(operatorType);
+		return NULL;
+	}
+
+	dictionary_operator->cursor		= cursor;
+
+	dictionary_operator->record.key = malloc(dictionary->instance->record.key_size);
+
+	if (NULL == dictionary_operator->record.key) {
+		cursor->destroy(&cursor);
+		ion_close_dictionary(&dictionary);
+		free(operatorType->instance);
+		free(operatorType);
+		return NULL;
+	}
+
+	record->value = malloc(dictionary->instance->record.value_size);
+
+	if (NULL == record->value) {
+		free(record->key);
+		cursor->destroy(&cursor);
+		ion_close_dictionary(&dictionary);
+		free(operatorType->instance);
+		free(operatorType);
+		return NULL;
+	}
+
+	dictionary_operator->super.field_info = malloc(sizeof(iinq_field_info_t) * num_fields);
+
+	if (NULL == dictionary_operator->super.field_info) {
+		free(record->value);
+		free(record->key);
+		cursor->destroy(&cursor);
+		ion_close_dictionary(&dictionary);
+		free(operatorType->instance);
+		free(operatorType);
+		return NULL;
+	}
+
+	dictionary_operator->super.null_indicators	= dictionary_operator->record.value;
+
+	dictionary_operator->super.fields			= malloc(sizeof(ion_value_t) * num_fields);
+
+	if (NULL == dictionary_operator->super.fields) {
+		free(dictionary_operator->super.field_info);
+		free(record->value);
+		free(record->key);
+		cursor->destroy(&cursor);
+		ion_close_dictionary(&dictionary);
+		free(operatorType->instance);
+		free(operatorType);
+		return NULL;
+	}
+
+	for (i = 0; i < num_fields; i++) {
+		dictionary_operator->super.field_info[i]	= (iinq_field_info_t) {
+			table_id, i + 1
+		};
+		dictionary_operator->super.fields[i]		= (unsigned char *) record->value + iinq_calculate_offset(table_id, i + 1);
+	}
+
+	ion_close_master_table();
+	operatorType->next		= iinq_dictionary_operator_next;
+	operatorType->destroy	= iinq_dictionary_operator_destroy;
+	operatorType->status	= ION_STATUS_OK(0);
+
+	return operatorType;
+}
+
 ion_boolean_t
 iinq_is_key_field(
 	iinq_table_id_t		table_id,
@@ -634,44 +660,6 @@ iinq_is_key_field(
 
 		default:
 			return boolean_false;
-	}
-}
-
-void
-iinq_table_scan_destroy(
-	iinq_query_operator_t **query_operator
-) {
-	if (NULL != *query_operator) {
-		if (NULL != (*query_operator)->instance) {
-			iinq_table_scan_t *table_scan = (iinq_table_scan_t *) (*query_operator)->instance;
-
-			if (NULL != table_scan->super.field_info) {
-				free(table_scan->super.field_info);
-			}
-
-			if (NULL != table_scan->super.fields) {
-				free(table_scan->super.fields);
-			}
-
-			if (NULL != table_scan->record.value) {
-				free(table_scan->record.value);
-			}
-
-			if (NULL != table_scan->record.key) {
-				free(table_scan->record.key);
-			}
-
-			if (NULL != table_scan->cursor) {
-				table_scan->cursor->destroy(&table_scan->cursor);
-			}
-
-			ion_close_dictionary(&table_scan->dictionary);
-
-			free(table_scan);
-		}
-
-		free(*query_operator);
-		*query_operator = NULL;
 	}
 }
 
@@ -857,6 +845,44 @@ create_table(
 	ion_err_t error = iinq_create_source(table_id, keyType, keySize, value_size);
 
 	return error;
+}
+
+void
+iinq_dictionary_operator_destroy(
+	iinq_query_operator_t **query_operator
+) {
+	if (NULL != *query_operator) {
+		if (NULL != (*query_operator)->instance) {
+			iinq_dictionary_operator_t *dict_op = (iinq_dictionary_operator_t *) (*query_operator)->instance;
+
+			if (NULL != dict_op->super.field_info) {
+				free(dict_op->super.field_info);
+			}
+
+			if (NULL != dict_op->super.fields) {
+				free(dict_op->super.fields);
+			}
+
+			if (NULL != dict_op->record.value) {
+				free(dict_op->record.value);
+			}
+
+			if (NULL != dict_op->record.key) {
+				free(dict_op->record.key);
+			}
+
+			if (NULL != dict_op->cursor) {
+				dict_op->cursor->destroy(&dict_op->cursor);
+			}
+
+			ion_close_dictionary(&dict_op->dictionary);
+
+			free(dict_op);
+		}
+
+		free(*query_operator);
+		*query_operator = NULL;
+	}
 }
 
 iinq_prepared_sql *

@@ -37,8 +37,7 @@
 #if !defined(IINQ_FUNCTIONS_H_)
 #define IINQ_FUNCTIONS_H_
 
-#define _STRINGIZE(x)														# x
-#define STRINGIZE(x)														_STRINGIZE(x)
+#define IINQ_ALLOW_DUPLICATES 1
 
 /* Dummy functions for code that will be parsed */
 #define SQL_execute(SQL_string)												NULL
@@ -56,7 +55,6 @@
 
 #define iinq_get_int(result_set, field_num)									(int *) iinq_get_object((result_set), (field_num))
 #define iinq_get_string(result_set, field_num)								(char *) iinq_get_object((result_set), (field_num))
-/* #define iinq_get_object(result_set, field_num)								(int *) (iinq_check_null_indicator((result_set)->record.value, field_num) ? NULL : (((unsigned char *) (result_set)->record.value) + (result_set)->offset[(field_num) - 1])) */
 
 #define iinq_get_object(result_set, field_num)								(iinq_check_null_indicator((result_set)->instance->null_indicators, field_num) ? NULL : ((result_set)->instance->fields[(field_num) - 1]))
 
@@ -162,7 +160,7 @@ typedef struct {
 } iinq_sort_t;
 
 typedef enum IINQ_QUERY_OPERATOR_TYPE {
-	iinq_table_scan_e, iinq_external_sort_e, iinq_projection_e, iinq_selection_e
+	iinq_dictionary_operator_e, iinq_external_sort_e, iinq_projection_e, iinq_selection_e
 } iinq_query_operator_type_t;
 
 typedef struct IINQ_OPERATOR_PARENT iinq_query_operator_parent_t;

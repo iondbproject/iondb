@@ -39,14 +39,14 @@
 uintmax_t num_records;
 
 #define REGULAR_INSERTS_PERCENTAGE			0.75
-#define NUM_PREPARED_INSERTS				(unsigned int) (((double) num_records) * (1 - REGULAR_INSERTS_PERCENTAGE))
-#define NUM_REGULAR_INSERTS					(unsigned int) (((double) num_records) * REGULAR_INSERTS_PERCENTAGE)
+#define NUM_PREPARED_INSERTS				(uintmax_t) (((double) num_records) * (1 - REGULAR_INSERTS_PERCENTAGE))
+#define NUM_REGULAR_INSERTS					(uintmax_t) (((double) num_records) * REGULAR_INSERTS_PERCENTAGE)
 
 #define OUTPUT_QUERY_RESULTS				0
 #define OUTPUT_TIMES						0
 #define OUTPUT_SQL_STATEMENTS				1
 #define OUTPUT_INSERT_PROGRESS				1
-#define OUTPUT_INSERT_PROGRESS_FREQUENCY	10
+#define OUTPUT_INSERT_PROGRESS_FREQUENCY	100
 
 void
 test_create_table1(
@@ -248,7 +248,7 @@ test_select_all_records_table1(
 	start_time = ion_time();
 
 /*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1;"); */
-	iinq_result_set_t *rs1 = iinq_projection_init(iinq_table_scan_init(0, 3), 3, IINQ_PROJECTION_LIST(1, 2, 3));
+	iinq_result_set_t *rs1 = iinq_projection_init(iinq_dictionary_init(0, 3, predicate_all_records), 3, IINQ_PROJECTION_LIST(1, 2, 3));
 
 	end_time = ion_time();
 #if OUTPUT_TIMES
@@ -313,7 +313,7 @@ test_select_field_list_table1(
 	start_time = ion_time();
 
 /*	  iinq_result_set_t *rs1 = SQL_select("SELECT IntValue, ID FROM Table1;"); */
-	iinq_result_set_t *rs1 = iinq_projection_init(iinq_table_scan_init(0, 3), 2, IINQ_PROJECTION_LIST(3, 1));
+	iinq_result_set_t *rs1 = iinq_projection_init(iinq_dictionary_init(0, 3, predicate_all_records), 2, IINQ_PROJECTION_LIST(3, 1));
 
 	end_time = ion_time();
 #if OUTPUT_TIMES
@@ -373,7 +373,7 @@ test_select_all_where_greater_than_table1(
 	start_time = ion_time();
 
 /*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID > 50;"); */
-	iinq_result_set_t *rs1 = iinq_projection_init(iinq_selection_init(iinq_table_scan_init(0, 3), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_greater_than, IONIZE(50, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
+	iinq_result_set_t *rs1 = iinq_projection_init(iinq_selection_init(iinq_dictionary_init(0, 3, predicate_all_records), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_greater_than, IONIZE(50, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
 
 	end_time = ion_time();
 #if OUTPUT_TIMES
@@ -423,7 +423,7 @@ test_select_all_where_greater_than_equal_table1(
 	start_time = ion_time();
 
 /*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID >= 50;"); */
-	iinq_result_set_t *rs1 = iinq_projection_init(iinq_selection_init(iinq_table_scan_init(0, 3), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_greater_than_equal_to, IONIZE(50, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
+	iinq_result_set_t *rs1 = iinq_projection_init(iinq_selection_init(iinq_dictionary_init(0, 3, predicate_all_records), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_greater_than_equal_to, IONIZE(50, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
 
 	end_time = ion_time();
 #if OUTPUT_TIMES
@@ -476,7 +476,7 @@ test_select_all_where_less_than_table1(
 	start_time = ion_time();
 
 /*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID < 50;"); */
-	iinq_result_set_t *rs1 = iinq_projection_init(iinq_selection_init(iinq_table_scan_init(0, 3), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_less_than, IONIZE(50, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
+	iinq_result_set_t *rs1 = iinq_projection_init(iinq_selection_init(iinq_dictionary_init(0, 3, predicate_all_records), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_less_than, IONIZE(50, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
 
 	end_time = ion_time();
 #if OUTPUT_TIMES
@@ -529,7 +529,7 @@ test_select_all_where_less_than_equal_table1(
 	start_time = ion_time();
 
 /*	 iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID <= 50;"); */
-	iinq_result_set_t *rs1 = iinq_projection_init(iinq_selection_init(iinq_table_scan_init(0, 3), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_less_than_equal_to, IONIZE(50, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
+	iinq_result_set_t *rs1 = iinq_projection_init(iinq_selection_init(iinq_dictionary_init(0, 3, predicate_all_records), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_less_than_equal_to, IONIZE(50, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
 
 	end_time = ion_time();
 #if OUTPUT_TIMES
@@ -570,6 +570,113 @@ test_select_all_where_less_than_equal_table1(
 }
 
 void
+test_select_all_where_range_key_table1(
+	planck_unit_test_t *tc
+) {
+	volatile unsigned long start_time, end_time;
+
+#if OUTPUT_SQL_STATEMENTS
+	printf("SELECT * FROM Table1 WHERE ID < 75 AND ID > 25;\n");
+#endif
+
+	start_time = ion_time();
+
+/*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID <= 75 AND ID >= 25;"); */
+	iinq_result_set_t *rs1 = iinq_projection_init(iinq_dictionary_init(0, 3, predicate_range, IONIZE(75, int), IONIZE(25, int)), 3, IINQ_PROJECTION_LIST(1, 2, 3));
+
+	end_time = ion_time();
+#if OUTPUT_TIMES
+	printf("Time taken: %lu\n\n", end_time - start_time);
+#endif
+
+	if ((NULL == rs1) || (err_ok != rs1->status.error)) {
+		PLANCK_UNIT_SET_FAIL(tc);
+	}
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, rs1->instance->num_fields);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, rs1->instance->field_info[0].field_num);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, rs1->instance->field_info[1].field_num);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, rs1->instance->field_info[2].field_num);
+
+	/* Selection operator would be removed in optimization. Input operator should be dictionary operator. */
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, iinq_dictionary_operator_e, rs1->instance->input_operators[0]->instance->type);
+
+	while (iinq_next(rs1)) {
+#if OUTPUT_QUERY_RESULTS
+		printf("ID: %i, ", *iinq_get_int(rs1, 1));
+		printf("CharValue: %s, ", iinq_get_string(rs1, 2));
+		printf("IntValue: %d\n", *iinq_get_int(rs1, 3));
+#endif
+		PLANCK_UNIT_ASSERT_FALSE(tc, NULL == iinq_get_int(rs1, 1));
+		PLANCK_UNIT_ASSERT_FALSE(tc, NULL == iinq_get_string(rs1, 1));
+		PLANCK_UNIT_ASSERT_FALSE(tc, NULL == iinq_get_int(rs1, 3));
+		PLANCK_UNIT_ASSERT_TRUE(tc, *iinq_get_int(rs1, 1) >= 25);
+		PLANCK_UNIT_ASSERT_TRUE(tc, *iinq_get_int(rs1, 1) <= 75);
+	}
+
+#if OUTPUT_QUERY_RESULTS
+	printf("\n");
+#endif
+
+	iinq_close_result_set(rs1);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == rs1);
+}
+
+void
+test_select_all_where_equal_key_table1(
+	planck_unit_test_t *tc
+) {
+	volatile unsigned long start_time, end_time;
+
+#if OUTPUT_SQL_STATEMENTS
+	printf("SELECT * FROM Table1 WHERE ID = 50;\n");
+#endif
+
+	start_time = ion_time();
+
+/*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID = 50;"); */
+	iinq_result_set_t *rs1 = iinq_projection_init(iinq_dictionary_init(0, 3, predicate_equality, IONIZE(50, int)), 3, IINQ_PROJECTION_LIST(1, 2, 3));
+
+	end_time = ion_time();
+#if OUTPUT_TIMES
+	printf("Time taken: %lu\n\n", end_time - start_time);
+#endif
+
+	if ((NULL == rs1) || (err_ok != rs1->status.error)) {
+		PLANCK_UNIT_SET_FAIL(tc);
+	}
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, rs1->instance->num_fields);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, rs1->instance->field_info[0].field_num);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, rs1->instance->field_info[1].field_num);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, rs1->instance->field_info[2].field_num);
+
+	/* Selection operator would be removed in optimization. Input operator should be dictionary operator. */
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, iinq_dictionary_operator_e, rs1->instance->input_operators[0]->instance->type);
+
+	while (iinq_next(rs1)) {
+#if OUTPUT_QUERY_RESULTS
+		printf("ID: %i, ", *iinq_get_int(rs1, 1));
+		printf("CharValue: %s, ", iinq_get_string(rs1, 2));
+		printf("IntValue: %d\n", *iinq_get_int(rs1, 3));
+#endif
+		PLANCK_UNIT_ASSERT_FALSE(tc, NULL == iinq_get_int(rs1, 1));
+		PLANCK_UNIT_ASSERT_FALSE(tc, NULL == iinq_get_string(rs1, 1));
+		PLANCK_UNIT_ASSERT_FALSE(tc, NULL == iinq_get_int(rs1, 3));
+		PLANCK_UNIT_ASSERT_TRUE(tc, *iinq_get_int(rs1, 1) == 50);
+	}
+
+#if OUTPUT_QUERY_RESULTS
+	printf("\n");
+#endif
+
+	iinq_close_result_set(rs1);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == rs1);
+}
+
+void
 test_select_all_where_not_equal_table1(
 	planck_unit_test_t *tc
 ) {
@@ -582,7 +689,7 @@ test_select_all_where_not_equal_table1(
 	start_time = ion_time();
 
 /*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID <> 50;"); */
-	iinq_result_set_t *rs1 = iinq_projection_init(iinq_selection_init(iinq_table_scan_init(0, 3), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_not_equal, IONIZE(50, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
+	iinq_result_set_t *rs1 = iinq_projection_init(iinq_selection_init(iinq_dictionary_init(0, 3, predicate_all_records), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_not_equal, IONIZE(50, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
 
 	end_time = ion_time();
 #if OUTPUT_TIMES
@@ -627,7 +734,7 @@ test_select_all_where_not_equal_table1(
 
 	start_time	= ion_time();
 /*	  rs1 = SQL_select("SELECT * FROM Table1 WHERE ID <> 50;"); */
-	rs1			= iinq_projection_init(iinq_selection_init(iinq_table_scan_init(0, 3), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_not_equal, IONIZE(50, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
+	rs1			= iinq_projection_init(iinq_selection_init(iinq_dictionary_init(0, 3, predicate_all_records), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_not_equal, IONIZE(50, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
 
 	end_time	= ion_time();
 #if OUTPUT_TIMES
@@ -680,7 +787,7 @@ test_select_all_where_multiple_conditions_table1(
 	start_time = ion_time();
 
 /*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID < 50 AND IntValue <> 50;"); */
-	iinq_result_set_t *rs1 = iinq_projection_init(iinq_selection_init(iinq_table_scan_init(0, 3), 2, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_not_equal, IONIZE(50, int)), IINQ_CONDITION(1, iinq_less_than, IONIZE(50, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
+	iinq_result_set_t *rs1 = iinq_projection_init(iinq_selection_init(iinq_dictionary_init(0, 3, predicate_all_records), 2, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_not_equal, IONIZE(50, int)), IINQ_CONDITION(1, iinq_less_than, IONIZE(50, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
 
 	end_time = ion_time();
 #if OUTPUT_TIMES
@@ -734,7 +841,7 @@ test_select_all_where_str_equal(
 	start_time = ion_time();
 
 /*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE CharValue = 'prepInsert';"); */
-	iinq_result_set_t *rs1 = iinq_projection_init(iinq_selection_init(iinq_table_scan_init(0, 3), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(2, iinq_equal, "prepInsert"))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
+	iinq_result_set_t *rs1 = iinq_projection_init(iinq_selection_init(iinq_dictionary_init(0, 3, predicate_all_records), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(2, iinq_equal, "prepInsert"))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
 
 	end_time = ion_time();
 #if OUTPUT_TIMES
@@ -784,7 +891,7 @@ test_select_all_where_str_not_equal(
 	start_time = ion_time();
 
 /*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE CharValue <> 'prepInsert';"); */
-	iinq_result_set_t *rs1 = iinq_projection_init(iinq_selection_init(iinq_table_scan_init(0, 3), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(2, iinq_not_equal, "prepInsert"))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
+	iinq_result_set_t *rs1 = iinq_projection_init(iinq_selection_init(iinq_dictionary_init(0, 3, predicate_all_records), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(2, iinq_not_equal, "prepInsert"))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
 
 	end_time = ion_time();
 #if OUTPUT_TIMES
@@ -829,7 +936,7 @@ test_select_all_where_str_not_equal(
 	start_time	= ion_time();
 
 /*	 rs1 = SQL_select("SELECT * FROM Table1 WHERE CharValue != 'prepInsert';"); */
-	rs1			= iinq_projection_init(iinq_selection_init(iinq_table_scan_init(0, 3), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(2, iinq_not_equal, "prepInsert"))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
+	rs1			= iinq_projection_init(iinq_selection_init(iinq_dictionary_init(0, 3, predicate_all_records), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(2, iinq_not_equal, "prepInsert"))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
 
 	end_time	= ion_time();
 #if OUTPUT_TIMES
@@ -890,7 +997,11 @@ test_insert_duplicate_key_table1(
 
 	iinq_close_statement(p);
 
+#if IINQ_ALLOW_DUPLICATES
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
+#else
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_duplicate_key, error);
+#endif
 }
 
 void
@@ -929,6 +1040,8 @@ iinq_get_suite1(
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_select_all_where_greater_than_equal_table1);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_select_all_where_less_than_table1);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_select_all_where_less_than_equal_table1);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_select_all_where_equal_key_table1);
+	PLANCK_UNIT_ADD_TO_SUITE(suite, test_select_all_where_range_key_table1);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_select_all_where_not_equal_table1);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_select_all_where_multiple_conditions_table1);
 	PLANCK_UNIT_ADD_TO_SUITE(suite, test_select_all_where_str_equal);
