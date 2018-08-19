@@ -35,27 +35,19 @@
 
 ion_err_t
 iinq_execute(
-	iinq_table_id_t			table_id,
+	ion_dictionary_t		*dictionary,
 	ion_key_t				key,
 	ion_value_t				value,
 	iinq_operation_type_t	type
 ) {
-	ion_err_t					error;
-	ion_dictionary_t			dictionary;
-	ion_dictionary_handler_t	handler;
-	ion_dict_cursor_t			*cursor = NULL;
-	ion_predicate_t				predicate;
-
-	dictionary.handler	= &handler;
-	error				= iinq_open_source(table_id, &dictionary, &handler);
-
-	if (err_ok != error) {
-		return error;
-	}
-
-	/* If duplicates are prohibited in a table, a scan must be completed before inserting a record (can be costly for certain data types). */
+/* If duplicates are prohibited in a table, a scan must be completed before inserting a record (can be costly for certain data types). */
 #if IINQ_ALLOW_DUPLICATES
 #else
+
+	ion_err_t			error;
+	ion_dict_cursor_t	*cursor = NULL;
+	ion_predicate_t		predicate;
+
 	dictionary_build_predicate(&predicate, predicate_equality, key);
 	error = dictionary_find(&dictionary, &predicate, &cursor);
 
@@ -78,24 +70,17 @@ iinq_execute(
 
 	switch (type) {
 		case iinq_insert_t:
-			error = dictionary_insert(&dictionary, key, value).error;
-			break;
+			return dictionary_insert(dictionary, key, value).error;
 
 		case iinq_delete_t:
-			error = dictionary_delete(&dictionary, key).error;
-			break;
+			return dictionary_delete(dictionary, key).error;
 
 		case iinq_update_t:
-			error = dictionary_update(&dictionary, key, value).error;
-			break;
-	}
+			return dictionary_update(dictionary, key, value).error;
 
-	if (err_ok != error) {
-		ion_close_dictionary(&dictionary);
-		return error;
+		default:
+			return err_illegal_state;
 	}
-
-	return ion_close_dictionary(&dictionary);
 }
 
 /* TODO: change update and delete to use selection operator functions instead of this one */

@@ -72,6 +72,7 @@
 		if ((p)->key != NULL) { \
 			free((p)->key); \
 		} \
+		ion_close_dictionary(&(p)->dictionary); \
 		free((p)); \
 	}
 
@@ -135,23 +136,15 @@ typedef enum IINQ_OPERATION_TYPE {
 typedef struct prepared_iinq iinq_prepared_sql;
 
 struct prepared_iinq {
-	iinq_null_indicator_t	*null_indicators;
-	ion_value_t				value;	/* Value parsed from the prepared statement */
-	ion_key_t				key;/* Key to be inserted */
-	iinq_table_id_t			table;	/* The table name, stored as a unique identifier */
+	ion_value_t					value;	/* Value parsed from the prepared statement */
+	ion_key_t					key;/* Key to be inserted */
+	iinq_table_id_t				table;	/* The table name, stored as a unique identifier */
+	ion_dictionary_t			dictionary;	/* Dictionary to perform the operation on */
+	ion_dictionary_handler_t	handler;/* Handler for the dictionary */
+	iinq_operation_type_t		operation_type;	/* Operation to be performed */
 };
 
 typedef struct IINQ_WHERE_PARAMS iinq_where_params_t;
-
-typedef struct IINQ_DICTIONARY iinq_dictionary_ref_t;
-
-struct IINQ_DICTIONARY {
-	ion_boolean_t				temp_dictionary;
-	ion_dictionary_t			dictionary;
-	ion_dictionary_handler_t	handler;
-	ion_dict_cursor_t			*cursor;
-	ion_predicate_t				predicate;
-};
 
 typedef struct {
 	ion_external_sort_cursor_t	*cursor;/**< Cursor to iterate through sorted records. */
@@ -194,23 +187,9 @@ struct IINQ_OPERATOR {
 	iinq_destroy_operator_t			destroy;
 };
 
-struct select_iinq {
-	ion_record_t			record;
-	iinq_dictionary_ref_t	dictionary_ref;
-	iinq_table_id_t			table_id;
-	iinq_field_num_t		num_fields;
-	iinq_operator_next_t	next;
-	unsigned int			num_wheres;
-	iinq_where_params_t		*wheres;
-	ion_status_t			status;
-	unsigned int			*offset;
-	iinq_sort_t				iinq_sort;
-	iinq_destroy_operator_t destroy;
-};
-
 ion_err_t
 iinq_execute(
-	iinq_table_id_t			table_id,
+	ion_dictionary_t		*dictionary,
 	ion_key_t				key,
 	ion_value_t				value,
 	iinq_operation_type_t	type

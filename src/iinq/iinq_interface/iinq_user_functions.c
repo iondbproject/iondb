@@ -1475,42 +1475,34 @@ iinq_execute_prepared(
 			if (iinq_check_null_indicator(p->value, 1)) {
 				return err_unable_to_insert;
 			}
-
-			return iinq_execute(0, p->key, p->value, iinq_insert_t);
 		}
 
 		case 1: {
 			if (iinq_check_null_indicator(p->value, 1)) {
 				return err_unable_to_insert;
 			}
-
-			return iinq_execute(1, p->key, p->value, iinq_insert_t);
 		}
 
 		case 2: {
 			if (iinq_check_null_indicator(p->value, 1)) {
 				return err_unable_to_insert;
 			}
-
-			return iinq_execute(2, p->key, p->value, iinq_insert_t);
 		}
 
 		case 3: {
 			if (iinq_check_null_indicator(p->value, 1) || iinq_check_null_indicator(p->value, 2)) {
 				return err_unable_to_insert;
 			}
-
-			return iinq_execute(3, p->key, p->value, iinq_insert_t);
 		}
 
 		case 4: {
 			if (iinq_check_null_indicator(p->value, 2) || iinq_check_null_indicator(p->value, 1)) {
 				return err_unable_to_insert;
 			}
-
-			return iinq_execute(4, p->key, p->value, iinq_insert_t);
 		}
 	}
+
+	return iinq_execute(&p->dictionary, p->key, p->value, p->operation_type);
 }
 
 void
@@ -1746,6 +1738,15 @@ iinq_insert_4(
 		return NULL;
 	}
 
+	p->operation_type = iinq_insert_t;
+
+	ion_err_t error = iinq_open_source(4, &p->dictionary, &p->handler);
+
+	if (err_ok != error) {
+		free(p);
+		return NULL;
+	}
+
 	p->table	= 4;
 	p->value	= malloc(IINQ_BITS_FOR_NULL(3) + (sizeof(int) * 2) + (sizeof(char) * 6));
 
@@ -1814,6 +1815,15 @@ iinq_insert_2(
 		return NULL;
 	}
 
+	p->operation_type = iinq_insert_t;
+
+	ion_err_t error = iinq_open_source(2, &p->dictionary, &p->handler);
+
+	if (err_ok != error) {
+		free(p);
+		return NULL;
+	}
+
 	p->table	= 2;
 	p->value	= malloc(IINQ_BITS_FOR_NULL(3) + (sizeof(int) * 2) + (sizeof(char) * 31));
 
@@ -1875,6 +1885,15 @@ iinq_insert_3(
 	iinq_prepared_sql *p = malloc(sizeof(iinq_prepared_sql));
 
 	if (NULL == p) {
+		return NULL;
+	}
+
+	p->operation_type = iinq_insert_t;
+
+	ion_err_t error = iinq_open_source(3, &p->dictionary, &p->handler);
+
+	if (err_ok != error) {
+		free(p);
 		return NULL;
 	}
 
@@ -2164,6 +2183,15 @@ iinq_insert_0(
 		return NULL;
 	}
 
+	p->operation_type = iinq_insert_t;
+
+	ion_err_t error = iinq_open_source(0, &p->dictionary, &p->handler);
+
+	if (err_ok != error) {
+		free(p);
+		return NULL;
+	}
+
 	p->table	= 0;
 	p->value	= malloc(IINQ_BITS_FOR_NULL(5) + (sizeof(int) * 2) + (sizeof(char) * 83));
 
@@ -2245,6 +2273,15 @@ iinq_insert_1(
 	iinq_prepared_sql *p = malloc(sizeof(iinq_prepared_sql));
 
 	if (NULL == p) {
+		return NULL;
+	}
+
+	p->operation_type = iinq_insert_t;
+
+	ion_err_t error = iinq_open_source(1, &p->dictionary, &p->handler);
+
+	if (err_ok != error) {
+		free(p);
 		return NULL;
 	}
 

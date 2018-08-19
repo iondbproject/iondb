@@ -21,10 +21,10 @@ typedef struct iinq_dictionary_operator iinq_dictionary_operator_t;
 
 struct iinq_dictionary_operator {
 	iinq_query_operator_parent_t	super;
-	ion_dictionary_t				dictionary;
-	ion_dictionary_handler_t		handler;
 	ion_dict_cursor_t				*cursor;
+	ion_dictionary_handler_t		handler;
 	ion_predicate_t					predicate;
+	ion_dictionary_t				dictionary;
 	ion_record_t					record;
 };
 

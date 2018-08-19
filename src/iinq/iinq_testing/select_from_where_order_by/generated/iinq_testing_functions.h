@@ -17,14 +17,14 @@ extern "C" {
 
 #define IINQ_DEBUG 1
 
-typedef struct iinq_table_scan iinq_table_scan_t;
+typedef struct iinq_dictionary_operator iinq_dictionary_operator_t;
 
-struct iinq_table_scan {
+struct iinq_dictionary_operator {
 	iinq_query_operator_parent_t	super;
-	ion_dictionary_t				dictionary;
-	ion_dictionary_handler_t		handler;
 	ion_dict_cursor_t				*cursor;
+	ion_dictionary_handler_t		handler;
 	ion_predicate_t					predicate;
+	ion_dictionary_t				dictionary;
 	ion_record_t					record;
 };
 
@@ -32,10 +32,10 @@ typedef struct iinq_external_sort iinq_external_sort_t;
 
 struct iinq_external_sort {
 	iinq_query_operator_parent_t	super;
-	ion_external_sort_t				*es;
-	char							*buffer;
-	char							*record_buf;
 	ion_external_sort_cursor_t		*cursor;
+	char							*record_buf;
+	char							*buffer;
+	ion_external_sort_t				*es;
 };
 
 typedef struct iinq_projection iinq_projection_t;
@@ -79,14 +79,14 @@ iinq_projection_init(
 	iinq_field_num_t		*field_nums
 );
 
+ion_boolean_t
+iinq_dictionary_operator_next(
+	iinq_query_operator_t *query_operator
+);
+
 void
 iinq_projection_destroy(
 	iinq_query_operator_t **query_operator
-);
-
-ion_boolean_t
-iinq_table_scan_next(
-	iinq_query_operator_t *query_operator
 );
 
 ion_err_t
@@ -97,12 +97,6 @@ iinq_print_keys(
 ion_err_t
 drop_table(
 	iinq_table_id_t table_id
-);
-
-iinq_query_operator_t *
-iinq_table_scan_init(
-	iinq_table_id_t		table_id,
-	iinq_field_num_t	num_fields
 );
 
 ion_boolean_t
@@ -117,15 +111,18 @@ iinq_set_param(
 	ion_value_t			val
 );
 
+iinq_query_operator_t *
+iinq_dictionary_init(
+	iinq_table_id_t			table_id,
+	iinq_field_num_t		num_fields,
+	ion_predicate_type_t	predicate_type,
+	...
+);
+
 ion_boolean_t
 iinq_is_key_field(
 	iinq_table_id_t		table_id,
 	iinq_field_num_t	field_num
-);
-
-void
-iinq_table_scan_destroy(
-	iinq_query_operator_t **query_operator
 );
 
 iinq_field_t
@@ -152,6 +149,11 @@ iinq_external_sort_init(
 	iinq_query_operator_t	*input_operator,
 	int						num_orderby,
 	iinq_order_by_field_t	*order_by_fields
+);
+
+void
+iinq_dictionary_operator_destroy(
+	iinq_query_operator_t **query_operator
 );
 
 iinq_prepared_sql *

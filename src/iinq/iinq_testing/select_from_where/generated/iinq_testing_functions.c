@@ -170,10 +170,10 @@ iinq_execute_prepared(
 			if (iinq_check_null_indicator(p->value, 1)) {
 				return err_unable_to_insert;
 			}
-
-			return iinq_execute(0, p->key, p->value, iinq_insert_t);
 		}
 	}
+
+	return iinq_execute(&p->dictionary, p->key, p->value, p->operation_type);
 }
 
 size_t
@@ -894,6 +894,15 @@ iinq_insert_0(
 	iinq_prepared_sql *p = malloc(sizeof(iinq_prepared_sql));
 
 	if (NULL == p) {
+		return NULL;
+	}
+
+	p->operation_type = iinq_insert_t;
+
+	ion_err_t error = iinq_open_source(0, &p->dictionary, &p->handler);
+
+	if (err_ok != error) {
+		free(p);
 		return NULL;
 	}
 

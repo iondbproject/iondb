@@ -1,5 +1,59 @@
 #include "iinq_testing_functions.h"
 
+void
+iinq_external_sort_destroy(
+	iinq_query_operator_t **query_operator
+) {
+	if (NULL != *query_operator) {
+		if (NULL != (*query_operator)->instance) {
+			iinq_external_sort_t *external_sort = (iinq_external_sort_t *) (*query_operator)->instance;
+
+			if (NULL != external_sort->cursor) {
+				ion_external_sort_destroy_cursor(external_sort->cursor);
+				free(external_sort->cursor);
+			}
+
+			if (NULL != external_sort->buffer) {
+				free(external_sort->buffer);
+			}
+
+			if (NULL != external_sort->record_buf) {
+				free(external_sort->record_buf);
+			}
+
+			if (NULL != external_sort->es) {
+				if (NULL != external_sort->es->input_file) {
+					fclose(external_sort->es->input_file);
+					fremove("orderby");
+				}
+
+				if (NULL != external_sort->es->context) {
+					if (NULL != ((iinq_sort_context_t *) external_sort->es->context)->parts) {
+						free(((iinq_sort_context_t *) external_sort->es->context)->parts);
+					}
+
+					free(external_sort->es->context);
+				}
+
+				free(external_sort->es);
+			}
+
+			if (NULL != external_sort->super.field_info) {
+				free(external_sort->super.field_info);
+			}
+
+			if (NULL != external_sort->super.fields) {
+				free(external_sort->super.fields);
+			}
+
+			free(external_sort);
+		}
+
+		free(*query_operator);
+		*query_operator = NULL;
+	}
+}
+
 size_t
 iinq_calculate_offset(
 	iinq_table_id_t		table_id,
@@ -28,6 +82,31 @@ iinq_calculate_offset(
 		default:
 			return 0;
 	}
+}
+
+ion_boolean_t
+iinq_projection_next(
+	iinq_query_operator_t *query_operator
+) {
+	ion_boolean_t result = query_operator->instance->input_operators[0]->next(query_operator->instance->input_operators[0]);
+
+	if (result) {
+		int					i;
+		iinq_projection_t	*projection = (iinq_projection_t *) query_operator->instance;
+
+		for (i = 0; i < projection->super.num_fields; i++) {
+			if (iinq_check_null_indicator(projection->super.input_operators[0]->instance->null_indicators, projection->input_field_nums[i])) {
+				iinq_set_null_indicator(projection->super.null_indicators, i + 1);
+			}
+			else {
+				iinq_clear_null_indicator(projection->super.null_indicators, i + 1);
+			}
+		}
+
+		query_operator->status.count++;
+	}
+
+	return result;
 }
 
 iinq_query_operator_t *
@@ -136,31 +215,6 @@ iinq_selection_init(
 	return operatorType;
 }
 
-ion_boolean_t
-iinq_projection_next(
-	iinq_query_operator_t *query_operator
-) {
-	ion_boolean_t result = query_operator->instance->input_operators[0]->next(query_operator->instance->input_operators[0]);
-
-	if (result) {
-		int					i;
-		iinq_projection_t	*projection = (iinq_projection_t *) query_operator->instance;
-
-		for (i = 0; i < projection->super.num_fields; i++) {
-			if (iinq_check_null_indicator(projection->super.input_operators[0]->instance->null_indicators, projection->input_field_nums[i])) {
-				iinq_set_null_indicator(projection->super.null_indicators, i + 1);
-			}
-			else {
-				iinq_clear_null_indicator(projection->super.null_indicators, i + 1);
-			}
-		}
-
-		query_operator->status.count++;
-	}
-
-	return result;
-}
-
 ion_err_t
 iinq_execute_prepared(
 	iinq_prepared_sql *p
@@ -170,10 +224,10 @@ iinq_execute_prepared(
 			if (iinq_check_null_indicator(p->value, 1)) {
 				return err_unable_to_insert;
 			}
-
-			return iinq_execute(0, p->key, p->value, iinq_insert_t);
 		}
 	}
+
+	return iinq_execute(&p->dictionary, p->key, p->value, p->operation_type);
 }
 
 size_t
@@ -189,20 +243,6 @@ iinq_calculate_key_offset(
 					return 0;
 			}
 	}
-}
-
-ion_boolean_t
-iinq_dictionary_operator_next(
-	iinq_query_operator_t *query_operator
-) {
-	iinq_dictionary_operator_t *dict_op = (iinq_dictionary_operator_t *) query_operator->instance;
-
-	if ((cs_cursor_active == dict_op->cursor->next(dict_op->cursor, &dict_op->record)) || (cs_cursor_initialized == dict_op->cursor->status)) {
-		query_operator->status.count++;
-		return boolean_true;
-	}
-
-	return boolean_false;
 }
 
 iinq_query_operator_t *
@@ -308,6 +348,20 @@ iinq_projection_init(
 	return operatorType;
 }
 
+ion_boolean_t
+iinq_dictionary_operator_next(
+	iinq_query_operator_t *query_operator
+) {
+	iinq_dictionary_operator_t *dict_op = (iinq_dictionary_operator_t *) query_operator->instance;
+
+	if ((cs_cursor_active == dict_op->cursor->next(dict_op->cursor, &dict_op->record)) || (cs_cursor_initialized == dict_op->cursor->status)) {
+		query_operator->status.count++;
+		return boolean_true;
+	}
+
+	return boolean_false;
+}
+
 void
 iinq_projection_destroy(
 	iinq_query_operator_t **query_operator
@@ -362,6 +416,20 @@ drop_table(
 	ion_close_dictionary(&dictionary);
 	error = iinq_drop(table_id);
 	return error;
+}
+
+ion_boolean_t
+iinq_external_sort_next(
+	iinq_query_operator_t *query_operator
+) {
+	iinq_external_sort_t *external_sort = (iinq_external_sort_t *) query_operator->instance;
+
+	if ((err_ok != external_sort->cursor->next(external_sort->cursor, external_sort->record_buf)) || (cs_cursor_active != external_sort->cursor->status)) {
+		return boolean_false;
+	}
+
+	query_operator->status.count++;
+	return boolean_true;
 }
 
 void
@@ -435,11 +503,6 @@ iinq_dictionary_init(
 	predicate								= &dictionary_operator->predicate;
 
 	switch (predicate_type) {
-		case predicate_all_records: {
-			error = dictionary_build_predicate(predicate, predicate_type);
-			break;
-		}
-
 		case predicate_equality: {
 			va_list arg_list;
 
@@ -455,6 +518,11 @@ iinq_dictionary_init(
 			va_start(arg_list, predicate_type);
 			error = dictionary_build_predicate(predicate, predicate_type, va_arg(arg_list, ion_key_t), va_arg(arg_list, ion_key_t));
 			va_end(arg_list);
+			break;
+		}
+
+		case predicate_all_records: {
+			error = dictionary_build_predicate(predicate, predicate_type);
 			break;
 		}
 	}
@@ -649,6 +717,184 @@ create_table(
 	return error;
 }
 
+iinq_query_operator_t *
+iinq_external_sort_init(
+	iinq_query_operator_t	*input_operator,
+	int						num_orderby,
+	iinq_order_by_field_t	*order_by_fields
+) {
+	int					total_orderby_size		= 0;
+	iinq_field_num_t	num_fields				= input_operator->instance->num_fields;
+	iinq_order_part_t	*orderby_order_parts	= malloc(sizeof(iinq_order_part_t) * num_orderby);
+
+	if (NULL == orderby_order_parts) {
+		goto ERROR;
+	}
+
+	int					i;
+	ion_value_size_t	value_size = 0;
+
+	for (i = 0; i < num_fields; i++) {
+		iinq_table_id_t		table_id	= input_operator->instance->field_info[i].table_id;
+		iinq_field_num_t	field_num	= input_operator->instance->field_info[i].field_num;
+
+		value_size += iinq_calculate_offset(table_id, field_num + 1) - iinq_calculate_offset(table_id, field_num);
+	}
+
+	for (i = 0; i < num_orderby; i++) {
+		/* iinq_init_order_by_pointers(it, &order_by_field[i], orderby_order_parts, num_orderby); */
+		orderby_order_parts[i].pointer = input_operator->instance->fields[order_by_fields[i].field_num - 1];
+
+		iinq_field_num_t	field_num	= input_operator->instance->field_info[order_by_fields[i].field_num - 1].field_num;
+		iinq_table_id_t		table_id	= input_operator->instance->field_info[order_by_fields[i].field_num - 1].table_id;
+
+		orderby_order_parts[i].direction	= order_by_fields[i].direction;
+		orderby_order_parts[i].size			= iinq_calculate_offset(table_id, field_num + 1) - iinq_calculate_offset(table_id, field_num);
+
+		/* TODO: can we get rid of the order types and just use standard iinq types? */
+		switch (iinq_get_field_type(table_id, field_num)) {
+			case iinq_int:
+				orderby_order_parts[i].type = IINQ_ORDERTYPE_INT;
+				break;
+
+			case iinq_unsigned_int:
+				orderby_order_parts[i].type = IINQ_ORDERTYPE_UINT;
+				break;
+
+			case iinq_float:
+				orderby_order_parts[i].type = IINQ_ORDERTYPE_FLOAT;
+				break;
+
+			case iinq_null_terminated_string:
+			case iinq_char_array:
+			default:
+				orderby_order_parts[i].type = IINQ_ORDERTYPE_OTHER;
+				break;
+		}
+
+		total_orderby_size += orderby_order_parts[i].size;
+	}
+
+	/* iinq_order_by_write_to_file(it, orderby_n, orderby_order_parts, location); */
+
+	FILE *file					= fopen("orderby", "wb");
+
+	int write_page_remaining	= IINQ_PAGE_SIZE;
+
+	/* Filter before sorting. Use existing table scan operatorType*/
+	while (input_operator->next(input_operator)) {
+		if (write_page_remaining < (total_orderby_size + IINQ_BITS_FOR_NULL(num_fields) + value_size)) {
+			char x = 0;
+
+			for (i = 0; i < write_page_remaining; i++) {
+				if (1 != fwrite(&x, 1, 1, file)) {
+					break;
+				}
+			}
+
+			write_page_remaining = IINQ_PAGE_SIZE;
+		}
+
+		for (i = 0; i < num_orderby; i++) {
+			if (1 != fwrite(orderby_order_parts[i].pointer, orderby_order_parts[i].size, 1, file)) {
+				break;
+			}
+			else {
+				write_page_remaining -= orderby_order_parts[i].size;
+			}
+		}
+
+		if (1 != fwrite(input_operator->instance->null_indicators, IINQ_BITS_FOR_NULL(num_fields), 1, file)) {
+			break;
+		}
+		else {
+			write_page_remaining -= IINQ_BITS_FOR_NULL(num_fields);
+		}
+
+		int j;
+
+		for (j = 0; j < num_fields; j++) {
+			iinq_field_num_t	field_num	= input_operator->instance->field_info[j].field_num;
+			iinq_table_id_t		table_id	= input_operator->instance->field_info[j].table_id;
+			size_t				field_size	= iinq_calculate_offset(table_id, field_num + 1) - iinq_calculate_offset(table_id, field_num);
+
+			if (1 != fwrite(input_operator->instance->fields[j], field_size, 1, file)) {
+				break;
+			}
+			else {
+				write_page_remaining -= field_size;
+			}
+		}
+	}
+
+	/* All records have been written, so close file */
+	if (NULL != file) {
+		fclose(file);
+	}
+
+	iinq_query_operator_t *operatorType = malloc(sizeof(iinq_query_operator_t));
+
+	operatorType->instance			= malloc(sizeof(iinq_external_sort_t));
+	operatorType->instance->type	= iinq_external_sort_e;
+
+	iinq_external_sort_t *external_sort = (iinq_external_sort_t *) operatorType->instance;
+
+	ion_external_sort_t *es				= malloc(sizeof(ion_external_sort_t));
+
+	external_sort->es	= es;
+
+	/* Open file in read mode for sorting */
+	file				= fopen("orderby", "rb");
+
+	iinq_sort_context_t *context = malloc(sizeof(iinq_sort_context_t));
+
+	context->parts	= orderby_order_parts;
+	context->n		= num_orderby;
+
+	ion_err_t error			= ion_external_sort_init(es, file, context, iinq_sort_compare, 0, IINQ_BITS_FOR_NULL(num_fields) + value_size + total_orderby_size, IINQ_PAGE_SIZE, boolean_false, ION_FILE_SORT_FLASH_MINSORT);
+
+	uint16_t buffer_size	= ion_external_sort_bytes_of_memory_required(es, 0, boolean_false);
+
+	char *buffer			= malloc(buffer_size);
+	/* recordbuf needs enough room for the sort field and the table tuple (sort field is stored twice) */
+	char *record_buf		= malloc((total_orderby_size + IINQ_BITS_FOR_NULL(num_fields) + value_size));
+
+	operatorType->instance->null_indicators = record_buf + total_orderby_size;
+
+	operatorType->instance->num_fields		= num_fields;
+	operatorType->instance->field_info		= malloc(sizeof(iinq_field_info_t) * num_fields);
+	memcpy(operatorType->instance->field_info, input_operator->instance->field_info, sizeof(iinq_field_info_t) * num_fields);
+	operatorType->instance->fields			= malloc(sizeof(ion_value_t) * num_fields);
+
+	size_t offset = total_orderby_size + IINQ_BITS_FOR_NULL(num_fields);
+
+	for (i = 0; i < num_fields; i++) {
+		iinq_table_id_t		table_id	= operatorType->instance->field_info[i].table_id;
+		iinq_field_num_t	field_num	= operatorType->instance->field_info[i].field_num;
+
+		operatorType->instance->fields[i]	= record_buf + offset;
+		offset								+= iinq_calculate_offset(table_id, field_num + 1) - iinq_calculate_offset(table_id, field_num);
+	}
+
+	input_operator->destroy(&input_operator);
+
+	external_sort->buffer		= buffer;
+
+	external_sort->record_buf	= record_buf;
+
+	ion_external_sort_cursor_t *cursor = malloc(sizeof(ion_external_sort_cursor_t));
+
+	error					= ion_external_sort_init_cursor(es, cursor, buffer, buffer_size);
+	external_sort->cursor	= cursor;
+
+	operatorType->next		= iinq_external_sort_next;
+	operatorType->destroy	= iinq_external_sort_destroy;
+
+	return operatorType;
+
+ERROR: return NULL;
+}
+
 void
 iinq_dictionary_operator_destroy(
 	iinq_query_operator_t **query_operator
@@ -696,6 +942,15 @@ iinq_insert_0(
 	iinq_prepared_sql *p = malloc(sizeof(iinq_prepared_sql));
 
 	if (NULL == p) {
+		return NULL;
+	}
+
+	p->operation_type = iinq_insert_t;
+
+	ion_err_t error = iinq_open_source(0, &p->dictionary, &p->handler);
+
+	if (err_ok != error) {
+		free(p);
 		return NULL;
 	}
 

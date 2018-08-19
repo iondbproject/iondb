@@ -125,9 +125,6 @@ iinq_open_source(
 
 	dictionary_get_filename(table_id, "inq", schema_file_name);
 
-	/* Load the handler. */
-	iinq_table_handler_init(handler);
-
 	/* If the schema file already exists. */
 	if (NULL != (schema_file = fopen(schema_file_name, "rb"))) {
 		if (0 != fseek(schema_file, 0, SEEK_SET)) {

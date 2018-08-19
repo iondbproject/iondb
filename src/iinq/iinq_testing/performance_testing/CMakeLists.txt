@@ -18,13 +18,13 @@ if(USE_ARDUINO)
 
     set(${PROJECT_NAME}_SRCS        ${SOURCE_FILES})
     set(${PROJECT_NAME}_SKETCH test_iinq.ino)
-    set(${PROJECT_NAME}_LIBS        planck_unit iinq flat_file skip_list open_address_file_hash open_address_hash linear_hash)
+    set(${PROJECT_NAME}_LIBS        planck_unit iinq flat_file skip_list open_address_file_hash open_address_hash linear_hash external_sort)
 
     generate_arduino_firmware(${PROJECT_NAME})
 else()
     add_executable(${PROJECT_NAME} run_iinq_device.c ${SOURCE_FILES})
 
-    target_link_libraries(${PROJECT_NAME}   planck_unit iinq flat_file skip_list open_address_file_hash open_address_hash linear_hash)
+    target_link_libraries(${PROJECT_NAME}   planck_unit iinq flat_file skip_list open_address_file_hash open_address_hash linear_hash external_sort)
 
     # Use cmake -DCOVERAGE_TESTING=ON to include coverage testing information.
     if (CMAKE_COMPILER_IS_GNUCC AND COVERAGE_TESTING)
