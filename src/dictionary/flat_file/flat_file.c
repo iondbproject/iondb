@@ -186,27 +186,40 @@ flat_file_scan(
 	}
 
 	while (cur_offset != end_offset) {
-		if (0 != fseek(flat_file->data_file, cur_offset, SEEK_SET)) {
-			return err_file_bad_seek;
-		}
-
 		/* We set cur_offset to be the next block to read after this next code segment, so */
 		/* we need t save what block we're currently reading now for location calculation purposes */
 		ion_fpos_t	prev_offset				= cur_offset;
 		size_t		num_records_to_process	= flat_file->num_buffered;
 
 		if (ION_FLAT_FILE_SCAN_FORWARDS == scan_direction) {
+			/* It's possible that scanning the buffer may have resulted in an invalid offset */
+			if (end_offset < cur_offset) {
+				break;
+			}
+
 			/* It's possible for this to do a partial read (if you're close to EOF), calculate how many we need to read */
 			size_t records_left = (end_offset - cur_offset) / flat_file->row_size;
 
-			num_records_to_process = records_left > (unsigned) flat_file->num_buffered ? (unsigned) flat_file->num_buffered : records_left;
+			/* Only read into buffer if we need to */
+			if ((flat_file->current_loaded_region == -1) || (cur_offset >= flat_file->start_of_data + flat_file->row_size * (flat_file->current_loaded_region + flat_file->num_in_buffer)) || (cur_offset < flat_file->start_of_data + flat_file->row_size * flat_file->current_loaded_region)) {
+				if (0 != fseek(flat_file->data_file, cur_offset, SEEK_SET)) {
+					return err_file_bad_seek;
+				}
 
-			if (num_records_to_process != fread(flat_file->buffer, flat_file->row_size, num_records_to_process, flat_file->data_file)) {
-				return err_file_read_error;
+				num_records_to_process = records_left > (unsigned) flat_file->num_buffered ? (unsigned) flat_file->num_buffered : records_left;
+
+				if (-1 == (prev_offset = ftell(flat_file->data_file))) {
+					return err_file_read_error;
+				}
+
+				if (num_records_to_process != fread(flat_file->buffer, flat_file->row_size, num_records_to_process, flat_file->data_file)) {
+					return err_file_read_error;
+				}
+
+				flat_file->current_loaded_region = (prev_offset - flat_file->start_of_data) / flat_file->row_size;
 			}
-
-			if (-1 == (cur_offset = ftell(flat_file->data_file))) {
-				return err_file_read_error;
+			else {
+				prev_offset = flat_file->start_of_data + flat_file->current_loaded_region * flat_file->row_size;
 			}
 		}
 		else {
@@ -228,15 +241,15 @@ flat_file_scan(
 			}
 
 			/* In this case, the prev_offset is actually the cur_offset. */
-			prev_offset = cur_offset;
+			prev_offset							= cur_offset;
+			flat_file->current_loaded_region	= (prev_offset - flat_file->start_of_data) / flat_file->row_size;
 		}
 
-		flat_file->current_loaded_region	= (prev_offset - flat_file->start_of_data) / flat_file->row_size;
-		flat_file->num_in_buffer			= num_records_to_process;
+		flat_file->num_in_buffer = num_records_to_process;
 
 		int32_t i;
 
-		for (i = ION_FLAT_FILE_SCAN_FORWARDS == scan_direction ? 0 : num_records_to_process - 1; ION_FLAT_FILE_SCAN_FORWARDS == scan_direction ? (size_t) i < num_records_to_process : i >= 0; ION_FLAT_FILE_SCAN_FORWARDS == scan_direction ? i++ : i--) {
+		for (i = ION_FLAT_FILE_SCAN_FORWARDS == scan_direction ? ((cur_offset - flat_file->start_of_data) / flat_file->row_size - flat_file->current_loaded_region) % flat_file->num_buffered : num_records_to_process - 1; ION_FLAT_FILE_SCAN_FORWARDS == scan_direction ? (size_t) i < num_records_to_process : i >= 0; ION_FLAT_FILE_SCAN_FORWARDS == scan_direction ? i++, cur_offset += flat_file->row_size : i--) {
 			size_t cur_rec = i * flat_file->row_size;
 
 			/* This cast is done because in the future, the status could possibly be a non-byte type */
