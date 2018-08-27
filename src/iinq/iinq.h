@@ -25,15 +25,44 @@ extern "C" {
 #include "../file/sd_stdio_c_iface.h"
 #endif
 
-#define iinq_handler_init			ffdict_init
+/**
+ * @brief Handler used for all dictionaries within Iinq.
+ */
+#define iinq_handler_init			ffdict_init	/* TODO: Use B+ Tree when ready */
+
+/**
+ * @brief Handler used for table dictionaries.
+ */
 #define iinq_table_handler_init		iinq_handler_init
+
+/**
+ * @brief Handler used for queries that require materialization (not currently used).
+ */
 #define iinq_select_handler_init	iinq_handler_init
+
+/**
+ * @brief Handler used for dictionaries in update statements.
+ */
 #define iinq_update_handler_init	iinq_handler_init
+
+/**
+ * @brief Handler used for dictionaries in delete statements.
+ */
 #define iinq_delete_handler_init	iinq_handler_init
 
+/**
+ * @brief Size used for dictionaries created in Iinq. Considers the size of key, value, and overhead relative to the page size.
+ */
 #define IINQ_DICTIONARY_SIZE(key_size, value_size, overhead)	IINQ_PAGE_SIZE / ((value_size) + (key_size) + (overhead))
+
+/**
+ * @brief Size used for flat file dictionaries. Overhead is the row status indicator at the start of every row in the dictionary.
+ */
 #define iinq_flat_file_dictionary_size(key_size, value_size)	IINQ_DICTIONARY_SIZE((key_size), (value_size), sizeof(ion_flat_file_row_status_t))
 
+/**
+ * @brief Size used for dictionaries created for tables. Current implementation is a flat file.
+ */
 #define iinq_table_dictionary_size(key_size, value_size)		iinq_flat_file_dictionary_size((key_size), (value_size))
 
 /**
