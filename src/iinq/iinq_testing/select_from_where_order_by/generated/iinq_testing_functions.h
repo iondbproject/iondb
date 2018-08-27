@@ -23,7 +23,6 @@ struct iinq_dictionary_operator {
 	iinq_query_operator_parent_t	super;
 	ion_dict_cursor_t				*cursor;
 	ion_dictionary_handler_t		handler;
-	ion_predicate_t					predicate;
 	ion_dictionary_t				dictionary;
 	ion_record_t					record;
 };
@@ -56,11 +55,6 @@ iinq_calculate_offset(
 	iinq_field_num_t	field_num
 );
 
-ion_boolean_t
-iinq_projection_next(
-	iinq_query_operator_t *query_operator
-);
-
 ion_err_t
 iinq_execute_prepared(
 	iinq_prepared_sql *p
@@ -79,11 +73,6 @@ iinq_projection_init(
 	iinq_field_num_t		*field_nums
 );
 
-ion_boolean_t
-iinq_dictionary_operator_next(
-	iinq_query_operator_t *query_operator
-);
-
 void
 iinq_projection_destroy(
 	iinq_query_operator_t **query_operator
@@ -99,11 +88,6 @@ drop_table(
 	iinq_table_id_t table_id
 );
 
-ion_boolean_t
-iinq_external_sort_next(
-	iinq_query_operator_t *query_operator
-);
-
 void
 iinq_set_param(
 	iinq_prepared_sql	*p,
@@ -117,6 +101,11 @@ iinq_dictionary_init(
 	iinq_field_num_t		num_fields,
 	ion_predicate_type_t	predicate_type,
 	...
+);
+
+ion_boolean_t
+iinq_next(
+	iinq_result_set_t *result_set
 );
 
 ion_boolean_t
@@ -149,6 +138,11 @@ iinq_external_sort_init(
 	iinq_query_operator_t	*input_operator,
 	int						num_orderby,
 	iinq_order_by_field_t	*order_by_fields
+);
+
+iinq_result_set_t *
+iinq_init_result_set(
+	iinq_query_operator_t *query_operator
 );
 
 void

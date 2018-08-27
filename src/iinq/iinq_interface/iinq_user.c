@@ -194,7 +194,7 @@ main(
 	printf("SELECT id, name FROM Cats WHERE age < 10;\n");
 
 /*  iinq_result_set_t *rs1 = SQL_select("SELECT id, name FROM Cats WHERE age < 10;"); */
-	iinq_result_set_t *rs1 = iinq_projection_init(iinq_selection_init(iinq_dictionary_init(2, 3, predicate_all_records), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_less_than, IONIZE(10, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
+	iinq_result_set_t *rs1 = iinq_init_result_set(iinq_projection_init(iinq_selection_init(iinq_dictionary_init(2, 3, predicate_all_records), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_less_than, IONIZE(10, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3)));
 
 	while (iinq_next(rs1)) {
 		printf("ID: %i,", iinq_get_int(rs1, 1));

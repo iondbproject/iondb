@@ -30,7 +30,6 @@ struct iinq_dictionary_operator {
 	iinq_query_operator_parent_t	super;
 	ion_dict_cursor_t				*cursor;
 	ion_dictionary_handler_t		handler;
-	ion_predicate_t					predicate;
 	ion_dictionary_t				dictionary;
 	ion_record_t					record;
 };
@@ -61,11 +60,6 @@ iinq_projection_init(
 	iinq_query_operator_t	*input_operator,
 	iinq_field_num_t		num_fields,
 	iinq_field_num_t		*field_nums
-);
-
-ion_boolean_t
-iinq_dictionary_operator_next(
-	iinq_query_operator_t *query_operator
 );
 
 void
@@ -103,6 +97,11 @@ iinq_dictionary_init(
 	...
 );
 
+ion_boolean_t
+iinq_next(
+	iinq_result_set_t *result_set
+);
+
 void
 iinq_selection_destroy(
 	iinq_query_operator_t **query_operator
@@ -113,8 +112,8 @@ iinq_print_table(
 	iinq_table_id_t table_id
 );
 
-ion_boolean_t
-iinq_selection_next(
+iinq_result_set_t *
+iinq_init_result_set(
 	iinq_query_operator_t *query_operator
 );
 
@@ -122,11 +121,6 @@ size_t
 iinq_calculate_offset(
 	iinq_table_id_t		table_id,
 	iinq_field_num_t	field_num
-);
-
-ion_boolean_t
-iinq_projection_next(
-	iinq_query_operator_t *query_operator
 );
 
 ion_err_t

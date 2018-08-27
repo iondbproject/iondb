@@ -56,10 +56,14 @@
 #define iinq_get_int(result_set, field_num)									(int *) iinq_get_object((result_set), (field_num))
 #define iinq_get_string(result_set, field_num)								(char *) iinq_get_object((result_set), (field_num))
 
-#define iinq_get_object(result_set, field_num)								(iinq_check_null_indicator((result_set)->instance->null_indicators, field_num) ? NULL : ((result_set)->instance->fields[(field_num) - 1]))
-
-#define iinq_close_result_set(result_set)									(result_set)->destroy(&(result_set))
-#define iinq_next(result_set)												(result_set)->next(result_set)
+/* #define iinq_get_object(result_set, field_num)								(iinq_check_null_indicator((result_set)->instance->null_indicators, field_num) ? NULL : ((result_set)->instance->fields[(field_num) - 1])) */
+#define iinq_get_object(result_set, field_num)								(iinq_check_null_indicator((result_set)->head->instance->null_indicators, field_num) ? NULL : ((result_set)->head->instance->fields[(field_num) - 1]))
+/* #define iinq_close_result_set(result_set)									(result_set)->destroy(&(result_set)) */
+#define iinq_close_result_set(result_set) \
+	(result_set)->head->instance->destroy(&(result_set)->head); \
+	free((result_set)); \
+	(result_set) = NULL;
+/* #define iinq_next(result_set)												(result_set)->next(result_set) */
 
 #define IINQ_BITS_FOR_NULL(num_fields) \
 	((num_fields) / CHAR_BIT + 1)
@@ -160,31 +164,53 @@ typedef struct IINQ_OPERATOR_PARENT iinq_query_operator_parent_t;
 
 typedef struct IINQ_OPERATOR iinq_query_operator_t;
 
-struct IINQ_OPERATOR_PARENT {
-	iinq_query_operator_type_t	type;
+/*struct IINQ_OPERATOR_PARENT {
 	unsigned int				num_input_operators;
 	iinq_query_operator_t		**input_operators;
 	iinq_field_num_t			num_fields;
 	iinq_null_indicator_t		*null_indicators;
 	iinq_field_info_t			*field_info;
 	ion_value_t					*fields;
-};
+};*/
 
 typedef void (*iinq_destroy_operator_t)(
 	iinq_query_operator_t **
 );
 
-typedef iinq_query_operator_t iinq_result_set_t;
+struct IINQ_RESULT_SET {
+	ion_status_t			status;
+	iinq_query_operator_t	*head;
+	iinq_query_operator_t	*tail;
+};
+
+/* typedef iinq_query_operator_t iinq_result_set_t; */
+typedef struct IINQ_RESULT_SET iinq_result_set_t;
 
 typedef ion_boolean_t (*iinq_operator_next_t)(
 	iinq_query_operator_t *
 );
 
-struct IINQ_OPERATOR {
+/*struct IINQ_OPERATOR {
 	ion_status_t					status;
 	iinq_query_operator_parent_t	*instance;
 	iinq_operator_next_t			next;
 	iinq_destroy_operator_t			destroy;
+};*/
+
+typedef struct IINQ_OPERATOR_PARENT {
+	iinq_field_num_t			num_fields;
+	iinq_null_indicator_t		*null_indicators;
+	iinq_field_info_t			*field_info;
+	ion_value_t					*fields;
+	iinq_query_operator_type_t	type;
+	iinq_query_operator_t		*input_operator;
+	iinq_query_operator_t		*parent_operator;
+	iinq_destroy_operator_t		destroy;
+};
+
+struct IINQ_OPERATOR {
+	ion_status_t					status;
+	iinq_query_operator_parent_t	*instance;
 };
 
 ion_err_t

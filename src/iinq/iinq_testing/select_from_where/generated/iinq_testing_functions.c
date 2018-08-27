@@ -40,49 +40,40 @@ iinq_selection_init(
 		return NULL;
 	}
 
-	iinq_query_operator_t *operatorType = malloc(sizeof(iinq_query_operator_t));
+	iinq_query_operator_t *query_operator = malloc(sizeof(iinq_query_operator_t));
 
-	if (NULL == operatorType) {
-		input_operator->destroy(&input_operator);
+	if (NULL == query_operator) {
+		input_operator->instance->destroy(&input_operator);
 		return NULL;
 	}
 
-	operatorType->instance = malloc(sizeof(iinq_selection_t));
+	query_operator->instance = malloc(sizeof(iinq_selection_t));
 
-	if (NULL == operatorType->instance) {
-		free(operatorType);
-		input_operator->destroy(&input_operator);
+	if (NULL == query_operator->instance) {
+		free(query_operator);
+		input_operator->instance->destroy(&input_operator);
 		return NULL;
 	}
 
-	iinq_selection_t *selection = (iinq_selection_t *) operatorType->instance;
+	iinq_selection_t *selection = (iinq_selection_t *) query_operator->instance;
 
-	selection->super.input_operators = malloc(sizeof(iinq_query_operator_t *));
+	selection->super.type						= iinq_selection_e;
 
-	if (NULL == selection->super.input_operators) {
-		free(selection);
-		free(operatorType);
-		input_operator->destroy(&input_operator);
-		return NULL;
-	}
+	selection->super.input_operator				= input_operator;
+	selection->super.parent_operator			= NULL;
+	input_operator->instance->parent_operator	= query_operator;
+	selection->super.num_fields					= input_operator->instance->num_fields;
+	selection->super.null_indicators			= input_operator->instance->null_indicators;
+	selection->super.field_info					= input_operator->instance->field_info;
+	selection->super.fields						= input_operator->instance->fields;
 
-	selection->super.type					= iinq_selection_e;
-	selection->super.num_input_operators	= 1;
-
-	selection->super.input_operators[0]		= input_operator;
-	selection->super.num_fields				= input_operator->instance->num_fields;
-	selection->super.null_indicators		= input_operator->instance->null_indicators;
-	selection->super.field_info				= input_operator->instance->field_info;
-	selection->super.fields					= input_operator->instance->fields;
-
-	selection->num_conditions				= num_conditions;
-	selection->conditions					= malloc(sizeof(iinq_where_params_t) * num_conditions);
+	selection->num_conditions					= num_conditions;
+	selection->conditions						= malloc(sizeof(iinq_where_params_t) * num_conditions);
 
 	if (NULL == selection->conditions) {
-		free(selection->super.input_operators);
 		free(selection);
-		free(operatorType);
-		input_operator->destroy(&input_operator);
+		free(query_operator);
+		input_operator->instance->destroy(&input_operator);
 		return NULL;
 	}
 
@@ -106,10 +97,9 @@ iinq_selection_init(
 			}
 
 			free(selection->conditions);
-			free(selection->super.input_operators);
 			free(selection);
-			free(operatorType);
-			input_operator->destroy(&input_operator);
+			free(query_operator);
+			input_operator->instance->destroy(&input_operator);
 			return NULL;
 		}
 
@@ -130,35 +120,9 @@ iinq_selection_init(
 		}
 	}
 
-	operatorType->next		= iinq_selection_next;
-	operatorType->destroy	= iinq_selection_destroy;
+	query_operator->instance->destroy = iinq_selection_destroy;
 
-	return operatorType;
-}
-
-ion_boolean_t
-iinq_projection_next(
-	iinq_query_operator_t *query_operator
-) {
-	ion_boolean_t result = query_operator->instance->input_operators[0]->next(query_operator->instance->input_operators[0]);
-
-	if (result) {
-		int					i;
-		iinq_projection_t	*projection = (iinq_projection_t *) query_operator->instance;
-
-		for (i = 0; i < projection->super.num_fields; i++) {
-			if (iinq_check_null_indicator(projection->super.input_operators[0]->instance->null_indicators, projection->input_field_nums[i])) {
-				iinq_set_null_indicator(projection->super.null_indicators, i + 1);
-			}
-			else {
-				iinq_clear_null_indicator(projection->super.null_indicators, i + 1);
-			}
-		}
-
-		query_operator->status.count++;
-	}
-
-	return result;
+	return query_operator;
 }
 
 ion_err_t
@@ -191,20 +155,6 @@ iinq_calculate_key_offset(
 	}
 }
 
-ion_boolean_t
-iinq_dictionary_operator_next(
-	iinq_query_operator_t *query_operator
-) {
-	iinq_dictionary_operator_t *dict_op = (iinq_dictionary_operator_t *) query_operator->instance;
-
-	if ((cs_cursor_active == dict_op->cursor->next(dict_op->cursor, &dict_op->record)) || (cs_cursor_initialized == dict_op->cursor->status)) {
-		query_operator->status.count++;
-		return boolean_true;
-	}
-
-	return boolean_false;
-}
-
 iinq_query_operator_t *
 iinq_projection_init(
 	iinq_query_operator_t	*input_operator,
@@ -215,48 +165,38 @@ iinq_projection_init(
 		return NULL;
 	}
 
-	iinq_query_operator_t *operatorType = malloc(sizeof(iinq_query_operator_t));
+	iinq_query_operator_t *query_operator = malloc(sizeof(iinq_query_operator_t));
 
-	if (NULL == operatorType) {
-		input_operator->destroy(&input_operator);
+	if (NULL == query_operator) {
+		input_operator->instance->destroy(&input_operator);
 		return NULL;
 	}
 
-	operatorType->instance = malloc(sizeof(iinq_projection_t));
+	query_operator->instance = malloc(sizeof(iinq_projection_t));
 
-	if (NULL == operatorType->instance) {
-		free(operatorType);
-		input_operator->destroy(&input_operator);
+	if (NULL == query_operator->instance) {
+		free(query_operator);
+		input_operator->instance->destroy(&input_operator);
 		return NULL;
 	}
 
-	operatorType->next		= iinq_projection_next;
-	operatorType->destroy	= iinq_projection_destroy;
+	query_operator->instance->destroy = iinq_projection_destroy;
 
-	iinq_projection_t *projection = (iinq_projection_t *) operatorType->instance;
+	iinq_projection_t *projection = (iinq_projection_t *) query_operator->instance;
 
-	projection->super.type					= iinq_projection_e;
+	projection->super.type						= iinq_projection_e;
 
-	projection->super.num_input_operators	= 1;
-	projection->super.input_operators		= malloc(sizeof(iinq_query_operator_t));
+	projection->super.input_operator			= input_operator;
+	projection->super.parent_operator			= NULL;
+	input_operator->instance->parent_operator	= query_operator;
+	projection->super.num_fields				= num_fields;
 
-	if (NULL == projection->super.input_operators) {
-		free(projection);
-		free(operatorType);
-		input_operator->destroy(&input_operator);
-		return NULL;
-	}
-
-	projection->super.input_operators[0]	= input_operator;
-	projection->super.num_fields			= num_fields;
-
-	projection->input_field_nums			= malloc(sizeof(iinq_field_num_t) * num_fields);
+	projection->input_field_nums				= malloc(sizeof(iinq_field_num_t) * num_fields);
 
 	if (NULL == projection->input_field_nums) {
-		free(projection->super.input_operators);
 		free(projection);
-		free(operatorType);
-		input_operator->destroy(&input_operator);
+		free(query_operator);
+		input_operator->instance->destroy(&input_operator);
 		return NULL;
 	}
 
@@ -266,10 +206,9 @@ iinq_projection_init(
 
 	if (NULL == projection->super.null_indicators) {
 		free(projection->input_field_nums);
-		free(projection->super.input_operators);
 		free(projection);
-		free(operatorType);
-		input_operator->destroy(&input_operator);
+		free(query_operator);
+		input_operator->instance->destroy(&input_operator);
 		return NULL;
 	}
 
@@ -277,10 +216,9 @@ iinq_projection_init(
 
 	if (NULL == projection->super.field_info) {
 		free(projection->super.null_indicators);
-		free(projection->super.input_operators);
 		free(projection);
-		free(operatorType);
-		input_operator->destroy(&input_operator);
+		free(query_operator);
+		input_operator->instance->destroy(&input_operator);
 		return NULL;
 	}
 
@@ -289,10 +227,9 @@ iinq_projection_init(
 	if (NULL == projection->super.fields) {
 		free(projection->super.field_info);
 		free(projection->super.null_indicators);
-		free(projection->super.input_operators);
 		free(projection);
-		free(operatorType);
-		input_operator->destroy(&input_operator);
+		free(query_operator);
+		input_operator->instance->destroy(&input_operator);
 		return NULL;
 	}
 
@@ -303,9 +240,9 @@ iinq_projection_init(
 		projection->super.fields[i]		= input_operator->instance->fields[field_nums[i] - 1];
 	}
 
-	operatorType->status = ION_STATUS_OK(0);
+	query_operator->status = ION_STATUS_OK(0);
 
-	return operatorType;
+	return query_operator;
 }
 
 void
@@ -332,9 +269,8 @@ iinq_projection_destroy(
 				free(projection->super.null_indicators);
 			}
 
-			if (NULL != projection->super.input_operators) {
-				projection->super.input_operators[0]->destroy(&projection->super.input_operators[0]);
-				free(projection->super.input_operators);
+			if (NULL != projection->super.input_operator) {
+				projection->super.input_operator->instance->destroy(&projection->super.input_operator);
 			}
 
 			free(projection);
@@ -496,33 +432,33 @@ iinq_dictionary_init(
 	int							i;
 	ion_err_t					error;
 	iinq_dictionary_operator_t	*dictionary_operator;
-	ion_predicate_t				*predicate;
 	ion_dict_cursor_t			*cursor		= NULL;
 	ion_record_t				*record		= NULL;
 	ion_dictionary_t			*dictionary = NULL;
 	ion_dictionary_handler_t	*handler	= NULL;
 
-	iinq_query_operator_t *operatorType		= malloc(sizeof(iinq_query_operator_t));
+	iinq_query_operator_t *query_operator	= malloc(sizeof(iinq_query_operator_t));
 
-	if (NULL == operatorType) {
+	if (NULL == query_operator) {
 		return NULL;
 	}
 
-	operatorType->instance = malloc(sizeof(iinq_dictionary_operator_t));
+	query_operator->instance = malloc(sizeof(iinq_dictionary_operator_t));
 
-	if (NULL == operatorType->instance) {
-		free(operatorType);
+	if (NULL == query_operator->instance) {
+		free(query_operator);
 		return NULL;
 	}
 
-	dictionary_operator						= (iinq_dictionary_operator_t *) operatorType->instance;
+	dictionary_operator						= (iinq_dictionary_operator_t *) query_operator->instance;
 	dictionary_operator->super.type			= iinq_dictionary_operator_e;
 	dictionary_operator->super.num_fields	= num_fields;
-	predicate								= &dictionary_operator->predicate;
+
+	ion_predicate_t predicate;
 
 	switch (predicate_type) {
 		case predicate_all_records: {
-			error = dictionary_build_predicate(predicate, predicate_type);
+			error = dictionary_build_predicate(&predicate, predicate_type);
 			break;
 		}
 
@@ -530,7 +466,7 @@ iinq_dictionary_init(
 			va_list arg_list;
 
 			va_start(arg_list, predicate_type);
-			error = dictionary_build_predicate(predicate, predicate_type, va_arg(arg_list, ion_key_t));
+			error = dictionary_build_predicate(&predicate, predicate_type, va_arg(arg_list, ion_key_t));
 			va_end(arg_list);
 			break;
 		}
@@ -539,15 +475,20 @@ iinq_dictionary_init(
 			va_list arg_list;
 
 			va_start(arg_list, predicate_type);
-			error = dictionary_build_predicate(predicate, predicate_type, va_arg(arg_list, ion_key_t), va_arg(arg_list, ion_key_t));
+			error = dictionary_build_predicate(&predicate, predicate_type, va_arg(arg_list, ion_key_t), va_arg(arg_list, ion_key_t));
 			va_end(arg_list);
+			break;
+		}
+
+		case predicate_predicate: {
+			error = dictionary_build_predicate(&predicate, predicate_type);
 			break;
 		}
 	}
 
 	if (err_ok != error) {
-		free(operatorType->instance);
-		free(operatorType);
+		free(query_operator->instance);
+		free(query_operator);
 		return NULL;
 	}
 
@@ -559,12 +500,12 @@ iinq_dictionary_init(
 	error				= iinq_open_source(table_id, dictionary, handler);
 
 	if (err_ok != error) {
-		free(operatorType->instance);
-		free(operatorType);
+		free(query_operator->instance);
+		free(query_operator);
 		return NULL;
 	}
 
-	error = dictionary_find(dictionary, predicate, &cursor);
+	error = dictionary_find(dictionary, &predicate, &cursor);
 
 	if (err_ok != error) {
 		if (NULL != cursor) {
@@ -572,8 +513,8 @@ iinq_dictionary_init(
 		}
 
 		ion_close_dictionary(&dictionary);
-		free(operatorType->instance);
-		free(operatorType);
+		free(query_operator->instance);
+		free(query_operator);
 		return NULL;
 	}
 
@@ -584,8 +525,8 @@ iinq_dictionary_init(
 	if (NULL == dictionary_operator->record.key) {
 		cursor->destroy(&cursor);
 		ion_close_dictionary(&dictionary);
-		free(operatorType->instance);
-		free(operatorType);
+		free(query_operator->instance);
+		free(query_operator);
 		return NULL;
 	}
 
@@ -595,8 +536,8 @@ iinq_dictionary_init(
 		free(record->key);
 		cursor->destroy(&cursor);
 		ion_close_dictionary(&dictionary);
-		free(operatorType->instance);
-		free(operatorType);
+		free(query_operator->instance);
+		free(query_operator);
 		return NULL;
 	}
 
@@ -607,8 +548,8 @@ iinq_dictionary_init(
 		free(record->key);
 		cursor->destroy(&cursor);
 		ion_close_dictionary(&dictionary);
-		free(operatorType->instance);
-		free(operatorType);
+		free(query_operator->instance);
+		free(query_operator);
 		return NULL;
 	}
 
@@ -622,8 +563,8 @@ iinq_dictionary_init(
 		free(record->key);
 		cursor->destroy(&cursor);
 		ion_close_dictionary(&dictionary);
-		free(operatorType->instance);
-		free(operatorType);
+		free(query_operator->instance);
+		free(query_operator);
 		return NULL;
 	}
 
@@ -635,11 +576,212 @@ iinq_dictionary_init(
 	}
 
 	ion_close_master_table();
-	operatorType->next		= iinq_dictionary_operator_next;
-	operatorType->destroy	= iinq_dictionary_operator_destroy;
-	operatorType->status	= ION_STATUS_OK(0);
+	query_operator->status						= ION_STATUS_OK(0);
 
-	return operatorType;
+	query_operator->instance->destroy			= iinq_dictionary_operator_destroy;
+	query_operator->instance->input_operator	= query_operator->instance->parent_operator = NULL;
+	query_operator->status						= ION_STATUS_OK(0);
+
+	return query_operator;
+}
+
+ion_boolean_t
+iinq_next(
+	iinq_result_set_t *result_set
+) {
+	iinq_query_operator_t *curr;
+
+	do {
+		curr = result_set->tail;
+
+		while (NULL != curr) {
+			if (curr->instance->type == iinq_selection_e) {
+				int					i;
+				ion_boolean_t		selection_result;
+				iinq_selection_t	*selection = (iinq_selection_t *) curr->instance;
+				ion_value_t			curr_value;
+
+				selection_result = boolean_true;
+
+				iinq_where_params_t *curr_condition;
+
+				for (i = 0; i < selection->num_conditions; i++) {
+					curr_condition = &selection->conditions[i];
+
+					iinq_table_id_t		table_id	= curr->instance->input_operator->instance->field_info[curr_condition->where_field - 1].table_id;
+					iinq_field_num_t	field_num	= curr->instance->input_operator->instance->field_info[curr_condition->where_field - 1].field_num;
+
+					curr_value = selection->super.fields[curr_condition->where_field - 1];
+
+					iinq_field_t field_type = iinq_get_field_type(table_id, field_num);
+
+					if (field_type == iinq_int) {
+						int comp_value = NEUTRALIZE(curr_condition->field_value, int);
+
+						if (curr_condition->bool_operator == iinq_equal) {
+							if (NEUTRALIZE(curr_value, int) != comp_value) {
+								selection_result = boolean_false;
+								break;
+							}
+						}
+						else if (curr_condition->bool_operator == iinq_not_equal) {
+							if (NEUTRALIZE(curr_value, int) == comp_value) {
+								selection_result = boolean_false;
+								break;
+							}
+						}
+						else if (curr_condition->bool_operator == iinq_less_than) {
+							if (NEUTRALIZE(curr_value, int) >= comp_value) {
+								selection_result = boolean_false;
+								break;
+							}
+						}
+						else if (curr_condition->bool_operator == iinq_greater_than) {
+							if (NEUTRALIZE(curr_value, int) <= comp_value) {
+								selection_result = boolean_false;
+								break;
+							}
+						}
+						else if (curr_condition->bool_operator == iinq_less_than_equal_to) {
+							if (NEUTRALIZE(curr_value, int) > comp_value) {
+								selection_result = boolean_false;
+								break;
+							}
+						}
+						else if (curr_condition->bool_operator == iinq_greater_than_equal_to) {
+							if (NEUTRALIZE(curr_value, int) < comp_value) {
+								selection_result = boolean_false;
+								break;
+							}
+						}
+					}
+					else if (field_type == iinq_null_terminated_string) {
+						char	*comp_value = (char *) curr_condition->field_value;
+						size_t	value_size	= iinq_calculate_offset(table_id, field_num + 1) - iinq_calculate_offset(table_id, field_num);
+
+						if (curr_condition->bool_operator == iinq_equal) {
+							if (strncmp((char *) curr_value, comp_value, value_size) != 0) {
+								selection_result = boolean_false;
+								break;
+							}
+						}
+						else if (curr_condition->bool_operator == iinq_not_equal) {
+							if (strncmp((char *) curr_value, comp_value, value_size) == 0) {
+								selection_result = boolean_false;
+								break;
+							}
+						}
+						else if (curr_condition->bool_operator == iinq_less_than) {
+							if (strncmp((char *) curr_value, comp_value, value_size) >= 0) {
+								selection_result = boolean_false;
+								break;
+							}
+						}
+						else if (curr_condition->bool_operator == iinq_greater_than) {
+							if (strncmp((char *) curr_value, comp_value, value_size) <= 0) {
+								selection_result = boolean_false;
+								break;
+							}
+						}
+						else if (curr_condition->bool_operator == iinq_less_than_equal_to) {
+							if (strncmp((char *) curr_value, comp_value, value_size) > 0) {
+								selection_result = boolean_false;
+								break;
+							}
+						}
+						else if (curr_condition->bool_operator == iinq_greater_than_equal_to) {
+							if (strncmp((char *) curr_value, comp_value, value_size) < 0) {
+								selection_result = boolean_false;
+								break;
+							}
+						}
+					}
+					else if (field_type == iinq_char_array) {
+						unsigned char	*comp_value = (char *) curr_condition->field_value;
+						size_t			value_size	= iinq_calculate_offset(table_id, field_num + 1) - iinq_calculate_offset(table_id, field_num);
+
+						if (curr_condition->bool_operator == iinq_equal) {
+							if (memcmp((char *) curr_value, comp_value, value_size) != 0) {
+								selection_result = boolean_false;
+								break;
+							}
+						}
+						else if (curr_condition->bool_operator == iinq_not_equal) {
+							if (memcmp((char *) curr_value, comp_value, value_size) == 0) {
+								selection_result = boolean_false;
+								break;
+							}
+						}
+						else if (curr_condition->bool_operator == iinq_less_than) {
+							if (memcmp((char *) curr_value, comp_value, value_size) >= 0) {
+								selection_result = boolean_false;
+								break;
+							}
+						}
+						else if (curr_condition->bool_operator == iinq_greater_than) {
+							if (memcmp((char *) curr_value, comp_value, value_size) <= 0) {
+								selection_result = boolean_false;
+								break;
+							}
+						}
+						else if (curr_condition->bool_operator == iinq_less_than_equal_to) {
+							if (memcmp((char *) curr_value, comp_value, value_size) > 0) {
+								selection_result = boolean_false;
+								break;
+							}
+						}
+						else if (curr_condition->bool_operator == iinq_greater_than_equal_to) {
+							if (memcmp((char *) curr_value, comp_value, value_size) < 0) {
+								selection_result = boolean_false;
+								break;
+							}
+						}
+					}
+				}
+
+				if (selection_result) {
+					curr->status.count++;
+				}
+				else {
+					break;
+				}
+			}
+			else if (curr->instance->type == iinq_projection_e) {
+				int					i;
+				iinq_projection_t	*projection = (iinq_projection_t *) curr->instance;
+
+				for (i = 0; i < projection->super.num_fields; i++) {
+					if (iinq_check_null_indicator(projection->super.input_operator->instance->null_indicators, projection->input_field_nums[i])) {
+						iinq_set_null_indicator(projection->super.null_indicators, i + 1);
+					}
+					else {
+						iinq_clear_null_indicator(projection->super.null_indicators, i + 1);
+					}
+				}
+
+				curr->status.count++;
+			}
+			else if (curr->instance->type == iinq_dictionary_operator_e) {
+				iinq_dictionary_operator_t *dict_op = (iinq_dictionary_operator_t *) curr->instance;
+
+				if ((cs_cursor_active == dict_op->cursor->next(dict_op->cursor, &dict_op->record)) || (cs_cursor_initialized == dict_op->cursor->status)) {
+					curr->status.count++;
+				}
+				else {
+					result_set->status = ION_STATUS_ERROR(err_file_hit_eof);
+					return boolean_false;
+				}
+			}
+			else {
+				result_set->status = ION_STATUS_ERROR(err_illegal_state);
+				return boolean_false;
+			}
+
+			curr = curr->instance->parent_operator;
+		}
+	} while (NULL != curr);
+
+	return boolean_true;
 }
 
 ion_boolean_t
@@ -683,9 +825,8 @@ iinq_selection_destroy(
 				free(selection->conditions);
 			}
 
-			if (NULL != selection->super.input_operators) {
-				selection->super.input_operators[0]->destroy(&selection->super.input_operators[0]);
-				free(selection->super.input_operators);
+			if (NULL != selection->super.input_operator) {
+				selection->super.input_operator->instance->destroy(&selection->super.input_operator);
 			}
 
 			free(selection);
@@ -847,6 +988,32 @@ create_table(
 	return error;
 }
 
+iinq_result_set_t *
+iinq_init_result_set(
+	iinq_query_operator_t *query_operator
+) {
+	if (NULL == query_operator) {
+		return NULL;
+	}
+
+	iinq_result_set_t *result_set = malloc(sizeof(iinq_result_set_t));
+
+	if (NULL == result_set) {
+		query_operator->instance->destroy(query_operator);
+		return NULL;
+	}
+
+	result_set->head = result_set->tail = query_operator;
+
+	while (NULL != result_set->tail->instance->input_operator) {
+		result_set->tail = result_set->tail->instance->input_operator;
+	}
+
+	result_set->status = ION_STATUS_OK(0);
+
+	return result_set;
+}
+
 void
 iinq_dictionary_operator_destroy(
 	iinq_query_operator_t **query_operator
@@ -956,165 +1123,4 @@ iinq_insert_0(
 	}
 
 	return p;
-}
-
-ion_boolean_t
-iinq_selection_next(
-	iinq_query_operator_t *query_operator
-) {
-	int					i;
-	ion_boolean_t		selection_result;
-	iinq_selection_t	*selection = (iinq_selection_t *) query_operator->instance;
-
-	do {
-		if (!selection->super.input_operators[0]->next(selection->super.input_operators[0])) {
-			return boolean_false;
-		}
-
-		ion_value_t curr_value;
-
-		selection_result = boolean_true;
-
-		iinq_where_params_t *curr_condition;
-
-		for (i = 0; i < selection->num_conditions; i++) {
-			curr_condition = &selection->conditions[i];
-
-			iinq_table_id_t		table_id	= query_operator->instance->input_operators[0]->instance->field_info[curr_condition->where_field - 1].table_id;
-			iinq_field_num_t	field_num	= query_operator->instance->input_operators[0]->instance->field_info[curr_condition->where_field - 1].field_num;
-
-			curr_value = selection->super.fields[curr_condition->where_field - 1];
-
-			iinq_field_t field_type = iinq_get_field_type(table_id, field_num);
-
-			if (field_type == iinq_int) {
-				int comp_value = NEUTRALIZE(curr_condition->field_value, int);
-
-				if (curr_condition->bool_operator == iinq_equal) {
-					if (NEUTRALIZE(curr_value, int) != comp_value) {
-						selection_result = boolean_false;
-						break;
-					}
-				}
-				else if (curr_condition->bool_operator == iinq_not_equal) {
-					if (NEUTRALIZE(curr_value, int) == comp_value) {
-						selection_result = boolean_false;
-						break;
-					}
-				}
-				else if (curr_condition->bool_operator == iinq_less_than) {
-					if (NEUTRALIZE(curr_value, int) >= comp_value) {
-						selection_result = boolean_false;
-						break;
-					}
-				}
-				else if (curr_condition->bool_operator == iinq_greater_than) {
-					if (NEUTRALIZE(curr_value, int) <= comp_value) {
-						selection_result = boolean_false;
-						break;
-					}
-				}
-				else if (curr_condition->bool_operator == iinq_less_than_equal_to) {
-					if (NEUTRALIZE(curr_value, int) > comp_value) {
-						selection_result = boolean_false;
-						break;
-					}
-				}
-				else if (curr_condition->bool_operator == iinq_greater_than_equal_to) {
-					if (NEUTRALIZE(curr_value, int) < comp_value) {
-						selection_result = boolean_false;
-						break;
-					}
-				}
-			}
-			else if (field_type == iinq_null_terminated_string) {
-				char	*comp_value = (char *) curr_condition->field_value;
-				size_t	value_size	= iinq_calculate_offset(table_id, field_num + 1) - iinq_calculate_offset(table_id, field_num);
-
-				if (curr_condition->bool_operator == iinq_equal) {
-					if (strncmp((char *) curr_value, comp_value, value_size) != 0) {
-						selection_result = boolean_false;
-						break;
-					}
-				}
-				else if (curr_condition->bool_operator == iinq_not_equal) {
-					if (strncmp((char *) curr_value, comp_value, value_size) == 0) {
-						selection_result = boolean_false;
-						break;
-					}
-				}
-				else if (curr_condition->bool_operator == iinq_less_than) {
-					if (strncmp((char *) curr_value, comp_value, value_size) >= 0) {
-						selection_result = boolean_false;
-						break;
-					}
-				}
-				else if (curr_condition->bool_operator == iinq_greater_than) {
-					if (strncmp((char *) curr_value, comp_value, value_size) <= 0) {
-						selection_result = boolean_false;
-						break;
-					}
-				}
-				else if (curr_condition->bool_operator == iinq_less_than_equal_to) {
-					if (strncmp((char *) curr_value, comp_value, value_size) > 0) {
-						selection_result = boolean_false;
-						break;
-					}
-				}
-				else if (curr_condition->bool_operator == iinq_greater_than_equal_to) {
-					if (strncmp((char *) curr_value, comp_value, value_size) < 0) {
-						selection_result = boolean_false;
-						break;
-					}
-				}
-			}
-			else if (field_type == iinq_char_array) {
-				unsigned char	*comp_value = (char *) curr_condition->field_value;
-				size_t			value_size	= iinq_calculate_offset(table_id, field_num + 1) - iinq_calculate_offset(table_id, field_num);
-
-				if (curr_condition->bool_operator == iinq_equal) {
-					if (memcmp((char *) curr_value, comp_value, value_size) != 0) {
-						selection_result = boolean_false;
-						break;
-					}
-				}
-				else if (curr_condition->bool_operator == iinq_not_equal) {
-					if (memcmp((char *) curr_value, comp_value, value_size) == 0) {
-						selection_result = boolean_false;
-						break;
-					}
-				}
-				else if (curr_condition->bool_operator == iinq_less_than) {
-					if (memcmp((char *) curr_value, comp_value, value_size) >= 0) {
-						selection_result = boolean_false;
-						break;
-					}
-				}
-				else if (curr_condition->bool_operator == iinq_greater_than) {
-					if (memcmp((char *) curr_value, comp_value, value_size) <= 0) {
-						selection_result = boolean_false;
-						break;
-					}
-				}
-				else if (curr_condition->bool_operator == iinq_less_than_equal_to) {
-					if (memcmp((char *) curr_value, comp_value, value_size) > 0) {
-						selection_result = boolean_false;
-						break;
-					}
-				}
-				else if (curr_condition->bool_operator == iinq_greater_than_equal_to) {
-					if (memcmp((char *) curr_value, comp_value, value_size) < 0) {
-						selection_result = boolean_false;
-						break;
-					}
-				}
-			}
-		}
-	} while (!selection_result);
-
-	if (selection_result) {
-		query_operator->status.count++;
-	}
-
-	return selection_result;
 }

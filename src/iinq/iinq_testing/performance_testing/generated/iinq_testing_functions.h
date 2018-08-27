@@ -28,7 +28,6 @@ struct iinq_dictionary_operator {
 	iinq_query_operator_parent_t	super;
 	ion_dict_cursor_t				*cursor;
 	ion_dictionary_handler_t		handler;
-	ion_predicate_t					predicate;
 	ion_dictionary_t				dictionary;
 	ion_record_t					record;
 };
@@ -62,11 +61,6 @@ iinq_calculate_offset(
 	iinq_field_num_t	field_num
 );
 
-ion_boolean_t
-iinq_projection_next(
-	iinq_query_operator_t *query_operator
-);
-
 iinq_query_operator_t *
 iinq_selection_init(
 	iinq_query_operator_t	*input_operator,
@@ -92,11 +86,6 @@ iinq_projection_init(
 	iinq_field_num_t		*field_nums
 );
 
-ion_boolean_t
-iinq_dictionary_operator_next(
-	iinq_query_operator_t *query_operator
-);
-
 void
 iinq_projection_destroy(
 	iinq_query_operator_t **query_operator
@@ -105,11 +94,6 @@ iinq_projection_destroy(
 ion_err_t
 drop_table(
 	iinq_table_id_t table_id
-);
-
-ion_boolean_t
-iinq_external_sort_next(
-	iinq_query_operator_t *query_operator
 );
 
 void
@@ -125,6 +109,11 @@ iinq_dictionary_init(
 	iinq_field_num_t		num_fields,
 	ion_predicate_type_t	predicate_type,
 	...
+);
+
+ion_boolean_t
+iinq_next(
+	iinq_result_set_t *result_set
 );
 
 ion_boolean_t
@@ -159,6 +148,11 @@ iinq_external_sort_init(
 	iinq_order_by_field_t	*order_by_fields
 );
 
+iinq_result_set_t *
+iinq_init_result_set(
+	iinq_query_operator_t *query_operator
+);
+
 void
 iinq_dictionary_operator_destroy(
 	iinq_query_operator_t **query_operator
@@ -169,11 +163,6 @@ iinq_insert_0(
 	int		*value_1,
 	char	*value_2,
 	int		*value_3
-);
-
-ion_boolean_t
-iinq_selection_next(
-	iinq_query_operator_t *query_operator
 );
 
 #if defined(__cplusplus)

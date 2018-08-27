@@ -78,7 +78,7 @@ iinq_create_source(
 			return err_file_bad_seek;
 		}
 
-		error = ion_master_table_create_dictionary(&handler, &dictionary, key_type, key_size, value_size, 10);
+		error = ion_master_table_create_dictionary(&handler, &dictionary, key_type, key_size, value_size, iinq_table_dictionary_size(key_size, value_size));
 
 		if (err_ok != error) {
 			return error;

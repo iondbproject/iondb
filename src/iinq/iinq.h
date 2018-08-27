@@ -31,20 +31,25 @@ extern "C" {
 #define iinq_update_handler_init	iinq_handler_init
 #define iinq_delete_handler_init	iinq_handler_init
 
+#define IINQ_DICTIONARY_SIZE(key_size, value_size, overhead)	IINQ_PAGE_SIZE / ((value_size) + (key_size) + (overhead))
+#define iinq_flat_file_dictionary_size(key_size, value_size)	IINQ_DICTIONARY_SIZE((key_size), (value_size), sizeof(ion_flat_file_row_status_t))
+
+#define iinq_table_dictionary_size(key_size, value_size)		iinq_flat_file_dictionary_size((key_size), (value_size))
+
 /**
 @brief		Page size in bytes.
 */
-#define IINQ_PAGE_SIZE				512
+#define IINQ_PAGE_SIZE	512
 
 /**
 @brief		Error code for using long jumps.
 */
-#define IINQ_JMP_ERROR				1
+#define IINQ_JMP_ERROR	1
 
 /**
 @brief		"Everything is good" code when using long jumps.
 */
-#define IINQ_JMP_OK					2
+#define IINQ_JMP_OK		2
 
 /**
 @brief		A size type for IINQ results (row data from an IINQ query).

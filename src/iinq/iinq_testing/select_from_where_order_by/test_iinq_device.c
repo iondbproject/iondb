@@ -42,7 +42,7 @@ unsigned int num_records;
 #define NUM_PREPARED_INSERTS				(unsigned int) (((double) num_records) * (1 - REGULAR_INSERTS_PERCENTAGE))
 #define NUM_REGULAR_INSERTS					(unsigned int) (((double) num_records) * REGULAR_INSERTS_PERCENTAGE)
 
-#define OUTPUT_QUERY_RESULTS				0
+#define OUTPUT_QUERY_RESULTS				1
 #define OUTPUT_TIMES						0
 #define OUTPUT_SQL_STATEMENTS				1
 #define OUTPUT_INSERT_PROGRESS				1
@@ -243,14 +243,18 @@ test_select_all_from_order_by_int_asc_table1(
 	printf("SELECT * FROM Table1 ORDER BY ID;\n");
 #endif
 
+	iinq_result_set_t	*rs1;
+	int					old_id_value;
+	ion_boolean_t		first;
+
 	volatile unsigned long start_time, end_time;
 
-	start_time = ion_time();
+	start_time	= ion_time();
 
-/*	 iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 ORDER BY ID;"); */
-	iinq_result_set_t *rs1 = iinq_projection_init(iinq_external_sort_init(iinq_projection_init(iinq_dictionary_init(0, 3, predicate_all_records), 3, IINQ_PROJECTION_LIST(1, 2, 3)), 1, IINQ_ORDER_BY_LIST(IINQ_ORDER_BY(1, IINQ_ASC))), 3, IINQ_PROJECTION_LIST(1, 2, 3));
+/*	 rs1 = SQL_select("SELECT * FROM Table1 ORDER BY ID;"); */
+	rs1			= iinq_init_result_set(iinq_projection_init(iinq_external_sort_init(iinq_projection_init(iinq_dictionary_init(0, 3, predicate_all_records), 3, IINQ_PROJECTION_LIST(1, 2, 3)), 1, IINQ_ORDER_BY_LIST(IINQ_ORDER_BY(1, IINQ_ASC))), 3, IINQ_PROJECTION_LIST(1, 2, 3)));
 
-	end_time = ion_time();
+	end_time	= ion_time();
 #if OUTPUT_TIMES
 	printf("Time taken: %lu\n\n", end_time - start_time);
 #endif
@@ -259,14 +263,13 @@ test_select_all_from_order_by_int_asc_table1(
 		PLANCK_UNIT_SET_FAIL(tc);
 	}
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, rs1->instance->num_fields);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, rs1->head->instance->num_fields);
 
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, rs1->instance->field_info[0].field_num);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, rs1->instance->field_info[1].field_num);
-	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, rs1->instance->field_info[2].field_num);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, rs1->head->instance->field_info[0].field_num);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, rs1->head->instance->field_info[1].field_num);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, rs1->head->instance->field_info[2].field_num);
 
-	int				old_id_value;
-	ion_boolean_t	first = boolean_true;
+	first = boolean_true;
 
 	while (iinq_next(rs1)) {
 #if OUTPUT_QUERY_RESULTS
@@ -294,95 +297,105 @@ test_select_all_from_order_by_int_asc_table1(
 	printf("SELECT * FROM Table1 ORDER BY ID ASC;\n");
 #endif
 
-/*	start_time = ion_time(); */
-/*  */
-/*	rs1 = SQL_select("SELECT * FROM Table1 ORDER BY ID ASC;"); */
-/*  */
-/*	end_time = ion_time(); */
-/*	#if OUTPUT_TIMES */
-/*	printf("Time taken: %lu\n\n", end_time - start_time); */
-/*	#endif */
-/*  */
-/*	if (NULL == rs1 || err_ok != rs1->status.error) { */
-/*		PLANCK_UNIT_SET_FAIL(tc); */
-/*	} */
-/*  */
-/*	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, rs1->instance->num_fields); */
-/*  */
-/*	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, rs1->instance->field_info[0].field_num); */
-/*	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, rs1->instance->field_info[1].field_num); */
-/*	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, rs1->instance->field_info[2].field_num); */
-/*  */
-/*	first = boolean_true; */
-/*	while (iinq_next(rs1)) { */
-/*		#if OUTPUT_QUERY_RESULTS */
-/*		printf("ID: %i, ", *iinq_get_int(rs1, 1)); */
-/*		printf("CharValue: %s, ", iinq_get_string(rs1, 2)); */
-/*		printf("IntValue: %d\n", *iinq_get_int(rs1, 3)); */
-/*		#endif */
-/*		if (!first) { */
-/*			PLANCK_UNIT_ASSERT_TRUE(tc, *iinq_get_int(rs1, 1) > old_id_value); */
-/*		} */
-/*		old_id_value = *iinq_get_int(rs1, 1); */
-/*		first = boolean_false; */
-/*	} */
-/*	#if OUTPUT_QUERY_RESULTS */
-/*	printf("\n"); */
-/*	#endif */
-/*  */
-/*	iinq_close_result_set(rs1); */
-/*	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == rs1); */
+	start_time	= ion_time();
+
+/*	 rs1 = SQL_select("SELECT * FROM Table1 ORDER BY ID ASC;"); */
+	rs1			= iinq_init_result_set(iinq_projection_init(iinq_external_sort_init(iinq_projection_init(iinq_dictionary_init(0, 3, predicate_all_records), 3, IINQ_PROJECTION_LIST(1, 2, 3)), 1, IINQ_ORDER_BY_LIST(IINQ_ORDER_BY(1, IINQ_ASC))), 3, IINQ_PROJECTION_LIST(1, 2, 3)));
+
+	end_time	= ion_time();
+#if OUTPUT_TIMES
+	printf("Time taken: %lu\n\n", end_time - start_time);
+#endif
+
+	if ((NULL == rs1) || (err_ok != rs1->status.error)) {
+		PLANCK_UNIT_SET_FAIL(tc);
+	}
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, rs1->head->instance->num_fields);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, rs1->head->instance->field_info[0].field_num);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, rs1->head->instance->field_info[1].field_num);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, rs1->head->instance->field_info[2].field_num);
+
+	first = boolean_true;
+
+	while (iinq_next(rs1)) {
+#if OUTPUT_QUERY_RESULTS
+		printf("ID: %i, ", *iinq_get_int(rs1, 1));
+		printf("CharValue: %s, ", iinq_get_string(rs1, 2));
+		printf("IntValue: %d\n", *iinq_get_int(rs1, 3));
+#endif
+
+		if (!first) {
+			PLANCK_UNIT_ASSERT_TRUE(tc, *iinq_get_int(rs1, 1) > old_id_value);
+		}
+
+		old_id_value	= *iinq_get_int(rs1, 1);
+		first			= boolean_false;
+	}
+
+#if OUTPUT_QUERY_RESULTS
+	printf("\n");
+#endif
+
+	iinq_close_result_set(rs1);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == rs1);
 }
 
 void
 test_select_all_from_order_by_int_desc_table1(
 	planck_unit_test_t *tc
 ) {
-/*	#if OUTPUT_SQL_STATEMENTS */
-/*	printf("SELECT * FROM Table1 ORDER BY ID DESC;\n"); */
-/*	#endif */
-/*  */
-/*	volatile unsigned long start_time, end_time; */
-/*  */
-/*	start_time = ion_time(); */
-/*  */
-/*	iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 ORDER BY ID DESC;"); */
-/*  */
-/*	end_time = ion_time(); */
-/*	#if OUTPUT_TIMES */
-/*	printf("Time taken: %lu\n\n", end_time - start_time); */
-/*	#endif */
-/*  */
-/*	if (NULL == rs1 || err_ok != rs1->status.error) { */
-/*		PLANCK_UNIT_SET_FAIL(tc); */
-/*	} */
-/*  */
-/*	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, rs1->instance->num_fields); */
-/*  */
-/*	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, rs1->instance->field_info[0].field_num); */
-/*	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, rs1->instance->field_info[1].field_num); */
-/*	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, rs1->instance->field_info[2].field_num); */
-/*  */
-/*	int old_id_value; */
-/*	ion_boolean_t first = boolean_true; */
-/*	while (iinq_next(rs1)) { */
-/*		#if OUTPUT_QUERY_RESULTS */
-/*		printf("ID: %i, ", *iinq_get_int(rs1, 1)); */
-/*		printf("CharValue: %s, ", iinq_get_string(rs1, 2)); */
-/*		printf("IntValue: %d\n", *iinq_get_int(rs1, 3)); */
-/*		#endif */
-/*		if (!first) { */
-/*			PLANCK_UNIT_ASSERT_TRUE(tc, *iinq_get_int(rs1, 1) < old_id_value); */
-/*		} */
-/*		old_id_value = *iinq_get_int(rs1, 1); */
-/*		first = boolean_false; */
-/*	} */
-/*	#if OUTPUT_QUERY_RESULTS */
-/*	printf("\n"); */
-/*	#endif */
-/*  */
-/*	iinq_close_result_set(rs1); */
-/*	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == rs1); */
+#if OUTPUT_SQL_STATEMENTS
+	printf("SELECT * FROM Table1 ORDER BY ID DESC;\n");
+#endif
+
+	volatile unsigned long start_time, end_time;
+
+	start_time = ion_time();
+
+/*	 iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 ORDER BY ID DESC;"); */
+	iinq_result_set_t *rs1 = iinq_init_result_set(iinq_projection_init(iinq_external_sort_init(iinq_projection_init(iinq_dictionary_init(0, 3, predicate_all_records), 3, IINQ_PROJECTION_LIST(1, 2, 3)), 1, IINQ_ORDER_BY_LIST(IINQ_ORDER_BY(1, IINQ_DESC))), 3, IINQ_PROJECTION_LIST(1, 2, 3)));
+
+	end_time = ion_time();
+#if OUTPUT_TIMES
+	printf("Time taken: %lu\n\n", end_time - start_time);
+#endif
+
+	if ((NULL == rs1) || (err_ok != rs1->status.error)) {
+		PLANCK_UNIT_SET_FAIL(tc);
+	}
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, rs1->head->instance->num_fields);
+
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, rs1->head->instance->field_info[0].field_num);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 2, rs1->head->instance->field_info[1].field_num);
+	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 3, rs1->head->instance->field_info[2].field_num);
+
+	int				old_id_value;
+	ion_boolean_t	first = boolean_true;
+
+	while (iinq_next(rs1)) {
+#if OUTPUT_QUERY_RESULTS
+		printf("ID: %i, ", *iinq_get_int(rs1, 1));
+		printf("CharValue: %s, ", iinq_get_string(rs1, 2));
+		printf("IntValue: %d\n", *iinq_get_int(rs1, 3));
+#endif
+
+		if (!first) {
+			PLANCK_UNIT_ASSERT_TRUE(tc, *iinq_get_int(rs1, 1) < old_id_value);
+		}
+
+		old_id_value	= *iinq_get_int(rs1, 1);
+		first			= boolean_false;
+	}
+
+#if OUTPUT_QUERY_RESULTS
+	printf("\n");
+#endif
+
+	iinq_close_result_set(rs1);
+	PLANCK_UNIT_ASSERT_TRUE(tc, NULL == rs1);
 }
 
 void
