@@ -186,65 +186,6 @@ iinq_insert(
 RETURN: return status;
 }
 
-ion_status_t
-iinq_update(
-	iinq_table_id_t table_id,
-	ion_key_t		key,
-	ion_value_t		value
-) {
-	ion_err_t					error;
-	ion_status_t				status = ION_STATUS_INITIALIZE;
-	ion_dictionary_t			dictionary;
-	ion_dictionary_handler_t	handler;
-
-	dictionary.handler	= &handler;
-
-	error				= iinq_open_source(table_id, &dictionary, &handler);
-
-	if (err_ok != error) {
-		status = ION_STATUS_ERROR(error);
-		goto RETURN;
-	}
-
-	status	= dictionary_update(&dictionary, key, value);
-	error	= ion_close_dictionary(&dictionary);
-
-	if ((err_ok == status.error) && (err_ok != error)) {
-		status.error = error;
-	}
-
-RETURN: return status;
-}
-
-ion_status_t
-iinq_delete(
-	iinq_table_id_t table_id,
-	ion_key_t		key
-) {
-	ion_err_t					error;
-	ion_status_t				status = ION_STATUS_INITIALIZE;
-	ion_dictionary_t			dictionary;
-	ion_dictionary_handler_t	handler;
-
-	dictionary.handler	= &handler;
-
-	error				= iinq_open_source(table_id, &dictionary, &handler);
-
-	if (err_ok != error) {
-		status = ION_STATUS_ERROR(error);
-		goto RETURN;
-	}
-
-	status	= dictionary_delete(&dictionary, key);
-	error	= ion_close_dictionary(&dictionary);
-
-	if ((err_ok == status.error) && (err_ok != error)) {
-		status.error = error;
-	}
-
-RETURN: return status;
-}
-
 ion_err_t
 iinq_drop(
 	iinq_table_id_t table_id

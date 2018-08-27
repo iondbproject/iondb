@@ -1151,7 +1151,7 @@ test_select_all_where_int_order_by_asc_table1(
 	iinq_order_part_t orderby_order_part;
 
 	orderby_order_part.pointer		= (char *) record.value + iinq_calculate_offset(0, 1);
-	orderby_order_part.direction	= _ASCENDING_INDICATOR;
+	orderby_order_part.direction	= IINQ_ASC;
 	orderby_order_part.size			= iinq_calculate_offset(0, 2) - iinq_calculate_offset(0, 1);
 
 	switch (iinq_get_field_type(0, 1)) {
