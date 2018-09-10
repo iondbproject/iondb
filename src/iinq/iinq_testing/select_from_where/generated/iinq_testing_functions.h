@@ -17,6 +17,13 @@ extern "C" {
 
 #define IINQ_DEBUG 1
 
+typedef struct iinq_projection iinq_projection_t;
+
+struct iinq_projection {
+	iinq_query_operator_parent_t	super;
+	iinq_field_num_t				*input_field_nums;
+};
+
 typedef struct iinq_dictionary_operator iinq_dictionary_operator_t;
 
 struct iinq_dictionary_operator {
@@ -35,13 +42,6 @@ struct iinq_selection {
 	iinq_where_params_t				*conditions;
 };
 
-typedef struct iinq_projection iinq_projection_t;
-
-struct iinq_projection {
-	iinq_query_operator_parent_t	super;
-	iinq_field_num_t				*input_field_nums;
-};
-
 size_t
 iinq_calculate_offset(
 	iinq_table_id_t		table_id,
@@ -58,6 +58,11 @@ iinq_selection_init(
 ion_err_t
 iinq_execute_prepared(
 	iinq_prepared_sql *p
+);
+
+ion_err_t
+iinq_drop_table(
+	iinq_table_id_t table_id
 );
 
 size_t
@@ -84,8 +89,11 @@ iinq_print_keys(
 );
 
 ion_err_t
-drop_table(
-	iinq_table_id_t table_id
+create_table(
+	iinq_table_id_t		table_id,
+	ion_key_type_t		keyType,
+	ion_key_size_t		keySize,
+	ion_value_size_t	value_size
 );
 
 void
@@ -128,14 +136,6 @@ iinq_get_field_type(
 ion_err_t
 iinq_print_table(
 	iinq_table_id_t table_id
-);
-
-ion_err_t
-create_table(
-	iinq_table_id_t		table_id,
-	ion_key_type_t		keyType,
-	ion_key_size_t		keySize,
-	ion_value_size_t	value_size
 );
 
 iinq_result_set_t *

@@ -235,7 +235,122 @@ iinq_projection_init(
 }
 
 void
-update(
+iinq_delete(
+	iinq_table_id_t table_id,
+	int				num_wheres,
+	...
+) {
+	va_list valist;
+
+	va_start(valist, num_wheres);
+
+	ion_err_t					error;
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
+
+	dictionary.handler	= &handler;
+
+	error				= iinq_open_source(table_id, &dictionary, &handler);
+
+	if (err_ok != error) {
+		printf("Error occurred. Error code: %i\n", error);
+		return;
+	}
+
+	ion_predicate_t predicate;
+
+	dictionary_build_predicate(&predicate, predicate_all_records);
+
+	ion_dict_cursor_t *cursor = NULL;
+
+	dictionary_find(&dictionary, &predicate, &cursor);
+
+	ion_record_t ion_record;
+
+	ion_record.key		= malloc(dictionary.instance->record.key_size);
+	ion_record.value	= malloc(dictionary.instance->record.value_size);
+
+	ion_cursor_status_t status;
+
+	ion_dictionary_t			dictionary_temp;
+	ion_dictionary_handler_t	handler_temp;
+
+	dictionary_temp.handler = &handler_temp;
+
+	error					= ion_init_master_table();
+
+	if (err_ok != error) {
+		printf("Error occurred. Error code: %i\n", error);
+		return;
+	}
+
+	iinq_delete_handler_init(&handler_temp);
+	dictionary_temp.handler = &handler_temp;
+
+	error					= ion_master_table_create_dictionary(&handler_temp, &dictionary_temp, dictionary.instance->key_type, dictionary.instance->record.key_size, 1, 10);
+
+	if (err_ok != error) {
+		printf("Error occurred. Error code: %i\n", error);
+		return;
+	}
+
+	ion_boolean_t condition_satisfied;
+
+	iinq_where_params_t *wheres = NULL;
+
+	if (num_wheres > 0) {
+		wheres = va_arg(valist, iinq_where_params_t *);
+	}
+
+	while ((status = cursor->next(cursor, &ion_record)) == cs_cursor_initialized || status == cs_cursor_active) {
+		condition_satisfied = where(table_id, &ion_record, num_wheres, wheres);
+
+		if (condition_satisfied) {
+			error = dictionary_insert(&dictionary_temp, ion_record.key, IONIZE(0, char)).error;
+
+			if (err_ok != error) {
+				printf("Error occurred. Error code: %i\n", error);
+				return;
+			}
+		}
+	}
+
+	va_end(valist);
+	cursor->destroy(&cursor);
+
+	ion_predicate_t predicate_temp;
+
+	dictionary_build_predicate(&predicate_temp, predicate_all_records);
+
+	ion_dict_cursor_t *cursor_temp = NULL;
+
+	dictionary_find(&dictionary_temp, &predicate_temp, &cursor_temp);
+
+	while ((status = cursor_temp->next(cursor_temp, &ion_record)) == cs_cursor_initialized || status == cs_cursor_active) {
+		error = dictionary_delete(&dictionary, ion_record.key).error;
+
+		if (err_ok != error) {
+			printf("Error occurred. Error code: %i\n", error);
+			return;
+		}
+	}
+
+	cursor_temp->destroy(&cursor_temp);
+	error = ion_delete_dictionary(&dictionary_temp, dictionary_temp.instance->id);
+
+	if (err_ok != error) {
+		printf("Error occurred. Error code: %i\n", error);
+		return;
+	}
+
+	ion_close_dictionary(&dictionary);
+	ion_close_master_table();
+	free(ion_record.key);
+	free(ion_record.value);
+}
+
+void
+iinq_update(
 	iinq_table_id_t table_id,
 	int				num_wheres,
 	int				num_update,
@@ -433,140 +548,6 @@ update(
 	free(ion_record.value);
 }
 
-ion_err_t
-drop_table(
-	iinq_table_id_t table_id
-) {
-	ion_dictionary_t			dictionary;
-	ion_dictionary_handler_t	handler;
-	ion_err_t					error;
-
-	error = iinq_open_source(table_id, &dictionary, &handler);
-
-	if (err_ok != error) {
-		return error;
-	}
-
-	ion_close_dictionary(&dictionary);
-	error = iinq_drop(table_id);
-	return error;
-}
-
-void
-delete_record(
-	iinq_table_id_t table_id,
-	int				num_wheres,
-	...
-) {
-	va_list valist;
-
-	va_start(valist, num_wheres);
-
-	ion_err_t					error;
-	ion_dictionary_t			dictionary;
-	ion_dictionary_handler_t	handler;
-
-	dictionary.handler	= &handler;
-
-	error				= iinq_open_source(table_id, &dictionary, &handler);
-
-	if (err_ok != error) {
-		printf("Error occurred. Error code: %i\n", error);
-		return;
-	}
-
-	ion_predicate_t predicate;
-
-	dictionary_build_predicate(&predicate, predicate_all_records);
-
-	ion_dict_cursor_t *cursor = NULL;
-
-	dictionary_find(&dictionary, &predicate, &cursor);
-
-	ion_record_t ion_record;
-
-	ion_record.key		= malloc(dictionary.instance->record.key_size);
-	ion_record.value	= malloc(dictionary.instance->record.value_size);
-
-	ion_cursor_status_t status;
-
-	ion_dictionary_t			dictionary_temp;
-	ion_dictionary_handler_t	handler_temp;
-
-	dictionary_temp.handler = &handler_temp;
-
-	error					= ion_init_master_table();
-
-	if (err_ok != error) {
-		printf("Error occurred. Error code: %i\n", error);
-		return;
-	}
-
-	iinq_delete_handler_init(&handler_temp);
-	dictionary_temp.handler = &handler_temp;
-
-	error					= ion_master_table_create_dictionary(&handler_temp, &dictionary_temp, dictionary.instance->key_type, dictionary.instance->record.key_size, 1, 10);
-
-	if (err_ok != error) {
-		printf("Error occurred. Error code: %i\n", error);
-		return;
-	}
-
-	ion_boolean_t condition_satisfied;
-
-	iinq_where_params_t *wheres = NULL;
-
-	if (num_wheres > 0) {
-		wheres = va_arg(valist, iinq_where_params_t *);
-	}
-
-	while ((status = cursor->next(cursor, &ion_record)) == cs_cursor_initialized || status == cs_cursor_active) {
-		condition_satisfied = where(table_id, &ion_record, num_wheres, wheres);
-
-		if (condition_satisfied) {
-			error = dictionary_insert(&dictionary_temp, ion_record.key, IONIZE(0, char)).error;
-
-			if (err_ok != error) {
-				printf("Error occurred. Error code: %i\n", error);
-				return;
-			}
-		}
-	}
-
-	va_end(valist);
-	cursor->destroy(&cursor);
-
-	ion_predicate_t predicate_temp;
-
-	dictionary_build_predicate(&predicate_temp, predicate_all_records);
-
-	ion_dict_cursor_t *cursor_temp = NULL;
-
-	dictionary_find(&dictionary_temp, &predicate_temp, &cursor_temp);
-
-	while ((status = cursor_temp->next(cursor_temp, &ion_record)) == cs_cursor_initialized || status == cs_cursor_active) {
-		error = dictionary_delete(&dictionary, ion_record.key).error;
-
-		if (err_ok != error) {
-			printf("Error occurred. Error code: %i\n", error);
-			return;
-		}
-	}
-
-	cursor_temp->destroy(&cursor_temp);
-	error = ion_delete_dictionary(&dictionary_temp, dictionary_temp.instance->id);
-
-	if (err_ok != error) {
-		printf("Error occurred. Error code: %i\n", error);
-		return;
-	}
-
-	ion_close_dictionary(&dictionary);
-	ion_close_master_table();
-	free(ion_record.key);
-	free(ion_record.value);
-}
-
 void
 iinq_set_param(
 	iinq_prepared_sql	*p,
@@ -665,6 +646,9 @@ iinq_dictionary_init(
 			error = dictionary_build_predicate(&predicate, predicate_type);
 			break;
 		}
+
+		default:
+			error = err_not_implemented;
 	}
 
 	if (err_ok != error) {
@@ -757,7 +741,6 @@ iinq_dictionary_init(
 	}
 
 	ion_close_master_table();
-	query_operator->status						= ION_STATUS_OK(0);
 
 	query_operator->instance->destroy			= iinq_dictionary_operator_destroy;
 	query_operator->instance->input_operator	= query_operator->instance->parent_operator = NULL;
@@ -776,22 +759,7 @@ iinq_next(
 		curr = result_set->tail;
 
 		while (NULL != curr) {
-			if (curr->instance->type == iinq_projection_e) {
-				int					i;
-				iinq_projection_t	*projection = (iinq_projection_t *) curr->instance;
-
-				for (i = 0; i < projection->super.num_fields; i++) {
-					if (iinq_check_null_indicator(projection->super.input_operator->instance->null_indicators, projection->input_field_nums[i])) {
-						iinq_set_null_indicator(projection->super.null_indicators, i + 1);
-					}
-					else {
-						iinq_clear_null_indicator(projection->super.null_indicators, i + 1);
-					}
-				}
-
-				curr->status.count++;
-			}
-			else if (curr->instance->type == iinq_selection_e) {
+			if (curr->instance->type == iinq_selection_e) {
 				int					i;
 				ion_boolean_t		selection_result;
 				iinq_selection_t	*selection = (iinq_selection_t *) curr->instance;
@@ -952,6 +920,21 @@ iinq_next(
 					result_set->status = ION_STATUS_ERROR(err_file_hit_eof);
 					return boolean_false;
 				}
+			}
+			else if (curr->instance->type == iinq_projection_e) {
+				int					i;
+				iinq_projection_t	*projection = (iinq_projection_t *) curr->instance;
+
+				for (i = 0; i < projection->super.num_fields; i++) {
+					if (iinq_check_null_indicator(projection->super.input_operator->instance->null_indicators, projection->input_field_nums[i])) {
+						iinq_set_null_indicator(projection->super.null_indicators, i + 1);
+					}
+					else {
+						iinq_clear_null_indicator(projection->super.null_indicators, i + 1);
+					}
+				}
+
+				curr->status.count++;
 			}
 			else {
 				result_set->status = ION_STATUS_ERROR(err_illegal_state);
@@ -1536,6 +1519,25 @@ iinq_execute_prepared(
 	return iinq_execute(&p->dictionary, p->key, p->value, p->operation_type);
 }
 
+ion_err_t
+iinq_drop_table(
+	iinq_table_id_t table_id
+) {
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
+	ion_err_t					error;
+
+	error = iinq_open_source(table_id, &dictionary, &handler);
+
+	if (err_ok != error) {
+		return error;
+	}
+
+	ion_close_dictionary(&dictionary);
+	error = iinq_drop(table_id);
+	return error;
+}
+
 void
 iinq_projection_destroy(
 	iinq_query_operator_t **query_operator
@@ -1752,6 +1754,18 @@ END:
 	;
 
 	ion_close_dictionary(&dictionary);
+
+	return error;
+}
+
+ion_err_t
+iinq_create_table(
+	iinq_table_id_t		table_id,
+	ion_key_type_t		keyType,
+	ion_key_size_t		keySize,
+	ion_value_size_t	value_size
+) {
+	ion_err_t error = iinq_create_source(table_id, keyType, keySize, value_size);
 
 	return error;
 }
@@ -2147,18 +2161,6 @@ iinq_get_field_type(
 		default:
 			return 0;
 	}
-}
-
-ion_err_t
-create_table(
-	iinq_table_id_t		table_id,
-	ion_key_type_t		keyType,
-	ion_key_size_t		keySize,
-	ion_value_size_t	value_size
-) {
-	ion_err_t error = iinq_create_source(table_id, keyType, keySize, value_size);
-
-	return error;
 }
 
 void

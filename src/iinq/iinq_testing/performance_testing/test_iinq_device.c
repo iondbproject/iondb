@@ -37,7 +37,7 @@
 #include "test_iinq_device.h"
 
 #define MIN_RECORDS							100
-#define MAX_RECORDS							1000000
+#define MAX_RECORDS							1000
 #define RECORD_INCREMENT					100
 
 #define OUTPUT_QUERY_RESULTS				0
@@ -64,7 +64,7 @@ test_create_table1(
 
 	ion_err_t error =
 /*		  SQL_execute("CREATE TABLE Table1 (ID INT, CharValue VARCHAR(30), IntValue INT, primary key(ID));"); */
-		create_table(0, key_type_numeric_signed, sizeof(int), IINQ_BITS_FOR_NULL(3) + (sizeof(int) * 2) + (sizeof(char) * 31));
+		iinq_create_table(0, key_type_numeric_signed, sizeof(int), IINQ_BITS_FOR_NULL(3) + (sizeof(int) * 2) + (sizeof(char) * 31));
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
 
@@ -1365,7 +1365,7 @@ test_drop_table1(
 
 	ion_err_t error =
 /*		  SQL_execute("DROP TABLE Table1;"); */
-		drop_table(0);
+		iinq_drop_table(0);
 
 	end_time = ion_time();
 

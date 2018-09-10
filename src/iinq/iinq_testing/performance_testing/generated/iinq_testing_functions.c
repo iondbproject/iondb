@@ -194,6 +194,25 @@ iinq_execute_prepared(
 	return iinq_execute(&p->dictionary, p->key, p->value, p->operation_type);
 }
 
+ion_err_t
+iinq_drop_table(
+	iinq_table_id_t table_id
+) {
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
+	ion_err_t					error;
+
+	error = iinq_open_source(table_id, &dictionary, &handler);
+
+	if (err_ok != error) {
+		return error;
+	}
+
+	ion_close_dictionary(&dictionary);
+	error = iinq_drop(table_id);
+	return error;
+}
+
 size_t
 iinq_calculate_key_offset(
 	iinq_table_id_t		table_id,
@@ -336,21 +355,14 @@ iinq_projection_destroy(
 }
 
 ion_err_t
-drop_table(
-	iinq_table_id_t table_id
+iinq_create_table(
+	iinq_table_id_t		table_id,
+	ion_key_type_t		keyType,
+	ion_key_size_t		keySize,
+	ion_value_size_t	value_size
 ) {
-	ion_dictionary_t			dictionary;
-	ion_dictionary_handler_t	handler;
-	ion_err_t					error;
+	ion_err_t error = iinq_create_source(table_id, keyType, keySize, value_size);
 
-	error = iinq_open_source(table_id, &dictionary, &handler);
-
-	if (err_ok != error) {
-		return error;
-	}
-
-	ion_close_dictionary(&dictionary);
-	error = iinq_drop(table_id);
 	return error;
 }
 
@@ -565,18 +577,7 @@ iinq_next(
 		curr = result_set->tail;
 
 		while (NULL != curr) {
-			if (curr->instance->type == iinq_dictionary_operator_e) {
-				iinq_dictionary_operator_t *dict_op = (iinq_dictionary_operator_t *) curr->instance;
-
-				if ((cs_cursor_active == dict_op->cursor->next(dict_op->cursor, &dict_op->record)) || (cs_cursor_initialized == dict_op->cursor->status)) {
-					curr->status.count++;
-				}
-				else {
-					result_set->status = ION_STATUS_ERROR(err_file_hit_eof);
-					return boolean_false;
-				}
-			}
-			else if (curr->instance->type == iinq_selection_e) {
+			if (curr->instance->type == iinq_selection_e) {
 				int					i;
 				ion_boolean_t		selection_result;
 				iinq_selection_t	*selection = (iinq_selection_t *) curr->instance;
@@ -727,6 +728,17 @@ iinq_next(
 					break;
 				}
 			}
+			else if (curr->instance->type == iinq_dictionary_operator_e) {
+				iinq_dictionary_operator_t *dict_op = (iinq_dictionary_operator_t *) curr->instance;
+
+				if ((cs_cursor_active == dict_op->cursor->next(dict_op->cursor, &dict_op->record)) || (cs_cursor_initialized == dict_op->cursor->status)) {
+					curr->status.count++;
+				}
+				else {
+					result_set->status = ION_STATUS_ERROR(err_file_hit_eof);
+					return boolean_false;
+				}
+			}
 			else if (curr->instance->type == iinq_projection_e) {
 				int					i;
 				iinq_projection_t	*projection = (iinq_projection_t *) curr->instance;
@@ -844,18 +856,6 @@ iinq_get_field_type(
 	}
 }
 
-ion_err_t
-create_table(
-	iinq_table_id_t		table_id,
-	ion_key_type_t		keyType,
-	ion_key_size_t		keySize,
-	ion_value_size_t	value_size
-) {
-	ion_err_t error = iinq_create_source(table_id, keyType, keySize, value_size);
-
-	return error;
-}
-
 iinq_query_operator_t *
 iinq_external_sort_init(
 	iinq_query_operator_t	*input_operator,
@@ -894,7 +894,6 @@ iinq_external_sort_init(
 		orderby_order_parts[i].direction	= order_by_fields[i].direction;
 		orderby_order_parts[i].size			= iinq_calculate_offset(table_id, field_num + 1) - iinq_calculate_offset(table_id, field_num);
 
-		/* TODO: can we get rid of the order types and just use standard iinq types? */
 		switch (iinq_get_field_type(table_id, field_num)) {
 			case iinq_int:
 				orderby_order_parts[i].type = IINQ_ORDERTYPE_INT;

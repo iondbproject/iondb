@@ -17,13 +17,6 @@ extern "C" {
 
 #define IINQ_DEBUG 1
 
-typedef struct iinq_projection iinq_projection_t;
-
-struct iinq_projection {
-	iinq_query_operator_parent_t	super;
-	iinq_field_num_t				*input_field_nums;
-};
-
 typedef struct iinq_dictionary_operator iinq_dictionary_operator_t;
 
 struct iinq_dictionary_operator {
@@ -40,6 +33,13 @@ struct iinq_selection {
 	iinq_query_operator_parent_t	super;
 	unsigned int					num_conditions;
 	iinq_where_params_t				*conditions;
+};
+
+typedef struct iinq_projection iinq_projection_t;
+
+struct iinq_projection {
+	iinq_query_operator_parent_t	super;
+	iinq_field_num_t				*input_field_nums;
 };
 
 iinq_query_operator_t *
@@ -63,22 +63,17 @@ iinq_projection_init(
 );
 
 void
-update(
+iinq_delete(
 	iinq_table_id_t table_id,
 	int				num_wheres,
-	int				num_update,
 	...
 );
 
-ion_err_t
-drop_table(
-	iinq_table_id_t table_id
-);
-
 void
-delete_record(
+iinq_update(
 	iinq_table_id_t table_id,
 	int				num_wheres,
+	int				num_update,
 	...
 );
 
@@ -128,6 +123,11 @@ iinq_execute_prepared(
 	iinq_prepared_sql *p
 );
 
+ion_err_t
+iinq_drop_table(
+	iinq_table_id_t table_id
+);
+
 void
 iinq_projection_destroy(
 	iinq_query_operator_t **query_operator
@@ -136,6 +136,14 @@ iinq_projection_destroy(
 ion_err_t
 iinq_print_keys(
 	iinq_table_id_t table_id
+);
+
+ion_err_t
+create_table(
+	iinq_table_id_t		table_id,
+	ion_key_type_t		keyType,
+	ion_key_size_t		keySize,
+	ion_value_size_t	value_size
 );
 
 iinq_prepared_sql *
@@ -169,14 +177,6 @@ iinq_field_t
 iinq_get_field_type(
 	iinq_table_id_t		tableId,
 	iinq_field_num_t	field_num
-);
-
-ion_err_t
-create_table(
-	iinq_table_id_t		table_id,
-	ion_key_type_t		keyType,
-	ion_key_size_t		keySize,
-	ion_value_size_t	value_size
 );
 
 void

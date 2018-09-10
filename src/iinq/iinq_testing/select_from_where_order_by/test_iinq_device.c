@@ -42,7 +42,7 @@ unsigned int num_records;
 #define NUM_PREPARED_INSERTS				(unsigned int) (((double) num_records) * (1 - REGULAR_INSERTS_PERCENTAGE))
 #define NUM_REGULAR_INSERTS					(unsigned int) (((double) num_records) * REGULAR_INSERTS_PERCENTAGE)
 
-#define OUTPUT_QUERY_RESULTS				1
+#define OUTPUT_QUERY_RESULTS				0
 #define OUTPUT_TIMES						0
 #define OUTPUT_SQL_STATEMENTS				1
 #define OUTPUT_INSERT_PROGRESS				1
@@ -57,8 +57,8 @@ test_create_table1(
 #endif
 
 	ion_err_t error =
-/*	  SQL_execute("CREATE TABLE Table1 (ID INT, CharValue VARCHAR(30), IntValue INT, primary key(ID));"); */
-		create_table(0, key_type_numeric_signed, sizeof(int), IINQ_BITS_FOR_NULL(3) + (sizeof(int) * 2) + (sizeof(char) * 31));
+/*		  SQL_execute("CREATE TABLE Table1 (ID INT, CharValue VARCHAR(30), IntValue INT, primary key(ID));"); */
+		iinq_create_table(0, key_type_numeric_signed, sizeof(int), IINQ_BITS_FOR_NULL(3) + (sizeof(int) * 2) + (sizeof(char) * 31));
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
 
@@ -115,7 +115,7 @@ test_insert_prepared_record_table1(
 	char				*char_value,
 	int					int_value
 ) {
-/*	  iinq_prepared_sql *p = SQL_prepare("INSERT INTO Table1 VALUES (?, ?, ?);"); */
+/*  iinq_prepared_sql *p = SQL_prepare("INSERT INTO Table1 VALUES (?, ?, ?);"); */
 	iinq_prepared_sql *p = iinq_insert_0(NULL, NULL, NULL);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0x1, iinq_check_null_indicator(p->value, 1));
@@ -251,7 +251,7 @@ test_select_all_from_order_by_int_asc_table1(
 
 	start_time	= ion_time();
 
-/*	 rs1 = SQL_select("SELECT * FROM Table1 ORDER BY ID;"); */
+/*  rs1 = SQL_select("SELECT * FROM Table1 ORDER BY ID;"); */
 	rs1			= iinq_init_result_set(iinq_projection_init(iinq_external_sort_init(iinq_projection_init(iinq_dictionary_init(0, 3, predicate_all_records), 3, IINQ_PROJECTION_LIST(1, 2, 3)), 1, IINQ_ORDER_BY_LIST(IINQ_ORDER_BY(1, IINQ_ASC))), 3, IINQ_PROJECTION_LIST(1, 2, 3)));
 
 	end_time	= ion_time();
@@ -299,7 +299,7 @@ test_select_all_from_order_by_int_asc_table1(
 
 	start_time	= ion_time();
 
-/*	 rs1 = SQL_select("SELECT * FROM Table1 ORDER BY ID ASC;"); */
+/*  rs1 = SQL_select("SELECT * FROM Table1 ORDER BY ID ASC;"); */
 	rs1			= iinq_init_result_set(iinq_projection_init(iinq_external_sort_init(iinq_projection_init(iinq_dictionary_init(0, 3, predicate_all_records), 3, IINQ_PROJECTION_LIST(1, 2, 3)), 1, IINQ_ORDER_BY_LIST(IINQ_ORDER_BY(1, IINQ_ASC))), 3, IINQ_PROJECTION_LIST(1, 2, 3)));
 
 	end_time	= ion_time();
@@ -354,7 +354,7 @@ test_select_all_from_order_by_int_desc_table1(
 
 	start_time = ion_time();
 
-/*	 iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 ORDER BY ID DESC;"); */
+/*  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 ORDER BY ID DESC;"); */
 	iinq_result_set_t *rs1 = iinq_init_result_set(iinq_projection_init(iinq_external_sort_init(iinq_projection_init(iinq_dictionary_init(0, 3, predicate_all_records), 3, IINQ_PROJECTION_LIST(1, 2, 3)), 1, IINQ_ORDER_BY_LIST(IINQ_ORDER_BY(1, IINQ_DESC))), 3, IINQ_PROJECTION_LIST(1, 2, 3)));
 
 	end_time = ion_time();
@@ -407,8 +407,8 @@ test_drop_table1(
 #endif
 
 	ion_err_t error =
-/*	  SQL_execute("DROP TABLE Table1;"); */
-		drop_table(0);
+/*		  SQL_execute("DROP TABLE Table1;"); */
+		iinq_drop_table(0);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
 

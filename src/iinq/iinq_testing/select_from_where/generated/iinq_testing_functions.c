@@ -140,6 +140,25 @@ iinq_execute_prepared(
 	return iinq_execute(&p->dictionary, p->key, p->value, p->operation_type);
 }
 
+ion_err_t
+iinq_drop_table(
+	iinq_table_id_t table_id
+) {
+	ion_dictionary_t			dictionary;
+	ion_dictionary_handler_t	handler;
+	ion_err_t					error;
+
+	error = iinq_open_source(table_id, &dictionary, &handler);
+
+	if (err_ok != error) {
+		return error;
+	}
+
+	ion_close_dictionary(&dictionary);
+	error = iinq_drop(table_id);
+	return error;
+}
+
 size_t
 iinq_calculate_key_offset(
 	iinq_table_id_t		table_id,
@@ -368,21 +387,14 @@ END:
 }
 
 ion_err_t
-drop_table(
-	iinq_table_id_t table_id
+iinq_create_table(
+	iinq_table_id_t		table_id,
+	ion_key_type_t		keyType,
+	ion_key_size_t		keySize,
+	ion_value_size_t	value_size
 ) {
-	ion_dictionary_t			dictionary;
-	ion_dictionary_handler_t	handler;
-	ion_err_t					error;
+	ion_err_t error = iinq_create_source(table_id, keyType, keySize, value_size);
 
-	error = iinq_open_source(table_id, &dictionary, &handler);
-
-	if (err_ok != error) {
-		return error;
-	}
-
-	ion_close_dictionary(&dictionary);
-	error = iinq_drop(table_id);
 	return error;
 }
 
@@ -484,6 +496,9 @@ iinq_dictionary_init(
 			error = dictionary_build_predicate(&predicate, predicate_type);
 			break;
 		}
+
+		default:
+			error = err_not_implemented;
 	}
 
 	if (err_ok != error) {
@@ -576,7 +591,6 @@ iinq_dictionary_init(
 	}
 
 	ion_close_master_table();
-	query_operator->status						= ION_STATUS_OK(0);
 
 	query_operator->instance->destroy			= iinq_dictionary_operator_destroy;
 	query_operator->instance->input_operator	= query_operator->instance->parent_operator = NULL;
@@ -595,7 +609,33 @@ iinq_next(
 		curr = result_set->tail;
 
 		while (NULL != curr) {
-			if (curr->instance->type == iinq_selection_e) {
+			if (curr->instance->type == iinq_projection_e) {
+				int					i;
+				iinq_projection_t	*projection = (iinq_projection_t *) curr->instance;
+
+				for (i = 0; i < projection->super.num_fields; i++) {
+					if (iinq_check_null_indicator(projection->super.input_operator->instance->null_indicators, projection->input_field_nums[i])) {
+						iinq_set_null_indicator(projection->super.null_indicators, i + 1);
+					}
+					else {
+						iinq_clear_null_indicator(projection->super.null_indicators, i + 1);
+					}
+				}
+
+				curr->status.count++;
+			}
+			else if (curr->instance->type == iinq_dictionary_operator_e) {
+				iinq_dictionary_operator_t *dict_op = (iinq_dictionary_operator_t *) curr->instance;
+
+				if ((cs_cursor_active == dict_op->cursor->next(dict_op->cursor, &dict_op->record)) || (cs_cursor_initialized == dict_op->cursor->status)) {
+					curr->status.count++;
+				}
+				else {
+					result_set->status = ION_STATUS_ERROR(err_file_hit_eof);
+					return boolean_false;
+				}
+			}
+			else if (curr->instance->type == iinq_selection_e) {
 				int					i;
 				ion_boolean_t		selection_result;
 				iinq_selection_t	*selection = (iinq_selection_t *) curr->instance;
@@ -744,32 +784,6 @@ iinq_next(
 				}
 				else {
 					break;
-				}
-			}
-			else if (curr->instance->type == iinq_projection_e) {
-				int					i;
-				iinq_projection_t	*projection = (iinq_projection_t *) curr->instance;
-
-				for (i = 0; i < projection->super.num_fields; i++) {
-					if (iinq_check_null_indicator(projection->super.input_operator->instance->null_indicators, projection->input_field_nums[i])) {
-						iinq_set_null_indicator(projection->super.null_indicators, i + 1);
-					}
-					else {
-						iinq_clear_null_indicator(projection->super.null_indicators, i + 1);
-					}
-				}
-
-				curr->status.count++;
-			}
-			else if (curr->instance->type == iinq_dictionary_operator_e) {
-				iinq_dictionary_operator_t *dict_op = (iinq_dictionary_operator_t *) curr->instance;
-
-				if ((cs_cursor_active == dict_op->cursor->next(dict_op->cursor, &dict_op->record)) || (cs_cursor_initialized == dict_op->cursor->status)) {
-					curr->status.count++;
-				}
-				else {
-					result_set->status = ION_STATUS_ERROR(err_file_hit_eof);
-					return boolean_false;
 				}
 			}
 			else {
@@ -972,18 +986,6 @@ END:
 	;
 
 	ion_close_dictionary(&dictionary);
-
-	return error;
-}
-
-ion_err_t
-create_table(
-	iinq_table_id_t		table_id,
-	ion_key_type_t		keyType,
-	ion_key_size_t		keySize,
-	ion_value_size_t	value_size
-) {
-	ion_err_t error = iinq_create_source(table_id, keyType, keySize, value_size);
 
 	return error;
 }

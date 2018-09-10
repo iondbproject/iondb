@@ -73,6 +73,11 @@ iinq_execute_prepared(
 	iinq_prepared_sql *p
 );
 
+ion_err_t
+iinq_drop_table(
+	iinq_table_id_t table_id
+);
+
 size_t
 iinq_calculate_key_offset(
 	iinq_table_id_t		table_id,
@@ -92,8 +97,11 @@ iinq_projection_destroy(
 );
 
 ion_err_t
-drop_table(
-	iinq_table_id_t table_id
+create_table(
+	iinq_table_id_t		table_id,
+	ion_key_type_t		keyType,
+	ion_key_size_t		keySize,
+	ion_value_size_t	value_size
 );
 
 void
@@ -131,14 +139,6 @@ iinq_field_t
 iinq_get_field_type(
 	iinq_table_id_t		tableId,
 	iinq_field_num_t	field_num
-);
-
-ion_err_t
-create_table(
-	iinq_table_id_t		table_id,
-	ion_key_type_t		keyType,
-	ion_key_size_t		keySize,
-	ion_value_size_t	value_size
 );
 
 iinq_query_operator_t *

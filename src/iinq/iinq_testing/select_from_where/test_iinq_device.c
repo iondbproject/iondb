@@ -57,8 +57,8 @@ test_create_table1(
 #endif
 
 	ion_err_t error =
-/*	  SQL_execute("CREATE TABLE Table1 (ID INT, CharValue VARCHAR(30), IntValue INT, primary key(ID));"); */
-		create_table(0, key_type_numeric_signed, sizeof(int), IINQ_BITS_FOR_NULL(3) + (sizeof(int) * 2) + (sizeof(char) * 31));
+/*		  SQL_execute("CREATE TABLE Table1 (ID INT, CharValue VARCHAR(30), IntValue INT, primary key(ID));"); */
+		iinq_create_table(0, key_type_numeric_signed, sizeof(int), IINQ_BITS_FOR_NULL(3) + (sizeof(int) * 2) + (sizeof(char) * 31));
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
 
@@ -115,7 +115,7 @@ test_insert_prepared_record_table1(
 	char				*char_value,
 	int					int_value
 ) {
-/*	  iinq_prepared_sql *p = SQL_prepare("INSERT INTO Table1 VALUES (?, ?, ?);"); */
+/*  iinq_prepared_sql *p = SQL_prepare("INSERT INTO Table1 VALUES (?, ?, ?);"); */
 	iinq_prepared_sql *p = iinq_insert_0(NULL, NULL, NULL);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0x1, iinq_check_null_indicator(p->value, 1));
@@ -247,7 +247,7 @@ test_select_all_records_table1(
 
 	start_time = ion_time();
 
-/*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1;"); */
+/*  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1;"); */
 	iinq_result_set_t *rs1 = iinq_init_result_set(iinq_projection_init(iinq_dictionary_init(0, 3, predicate_all_records), 3, IINQ_PROJECTION_LIST(1, 2, 3)));
 
 	end_time = ion_time();
@@ -312,7 +312,7 @@ test_select_field_list_table1(
 
 	start_time = ion_time();
 
-/*	  iinq_result_set_t *rs1 = SQL_select("SELECT IntValue, ID FROM Table1;"); */
+/*  iinq_result_set_t *rs1 = SQL_select("SELECT IntValue, ID FROM Table1;"); */
 	iinq_result_set_t *rs1 = iinq_init_result_set(iinq_projection_init(iinq_dictionary_init(0, 3, predicate_all_records), 2, IINQ_PROJECTION_LIST(3, 1)));
 
 	end_time = ion_time();
@@ -372,7 +372,7 @@ test_select_all_where_greater_than_table1(
 
 	start_time = ion_time();
 
-/*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID > 50;"); */
+/*  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID > 50;"); */
 	iinq_result_set_t *rs1 = iinq_init_result_set(iinq_projection_init(iinq_selection_init(iinq_dictionary_init(0, 3, predicate_all_records), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_greater_than, IONIZE(50, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3)));
 
 	end_time = ion_time();
@@ -422,7 +422,7 @@ test_select_all_where_greater_than_equal_table1(
 
 	start_time = ion_time();
 
-/*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID >= 50;"); */
+/*  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID >= 50;"); */
 	iinq_result_set_t *rs1 = iinq_init_result_set(iinq_projection_init(iinq_selection_init(iinq_dictionary_init(0, 3, predicate_all_records), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_greater_than_equal_to, IONIZE(50, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3)));
 
 	end_time = ion_time();
@@ -475,7 +475,7 @@ test_select_all_where_less_than_table1(
 
 	start_time = ion_time();
 
-/*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID < 50;"); */
+/*  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID < 50;"); */
 	iinq_result_set_t *rs1 = iinq_init_result_set(iinq_projection_init(iinq_selection_init(iinq_dictionary_init(0, 3, predicate_all_records), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_less_than, IONIZE(50, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3)));
 
 	end_time = ion_time();
@@ -528,7 +528,7 @@ test_select_all_where_less_than_equal_table1(
 
 	start_time = ion_time();
 
-/*	 iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID <= 50;"); */
+/*  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID <= 50;"); */
 	iinq_result_set_t *rs1 = iinq_init_result_set(iinq_projection_init(iinq_selection_init(iinq_dictionary_init(0, 3, predicate_all_records), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_less_than_equal_to, IONIZE(50, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3)));
 
 	end_time = ion_time();
@@ -581,7 +581,7 @@ test_select_all_where_range_key_table1(
 
 	start_time = ion_time();
 
-/*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID <= 75 AND ID >= 25;"); */
+/*  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID <= 75 AND ID >= 25;"); */
 	iinq_result_set_t *rs1 = iinq_init_result_set(iinq_projection_init(iinq_dictionary_init(0, 3, predicate_range, IONIZE(75, int), IONIZE(25, int)), 3, IINQ_PROJECTION_LIST(1, 2, 3)));
 
 	end_time = ion_time();
@@ -635,7 +635,7 @@ test_select_all_where_equal_key_table1(
 
 	start_time = ion_time();
 
-/*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID = 50;"); */
+/*  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID = 50;"); */
 	iinq_result_set_t *rs1 = iinq_init_result_set(iinq_projection_init(iinq_dictionary_init(0, 3, predicate_equality, IONIZE(50, int)), 3, IINQ_PROJECTION_LIST(1, 2, 3)));
 
 	end_time = ion_time();
@@ -688,7 +688,7 @@ test_select_all_where_not_equal_table1(
 
 	start_time = ion_time();
 
-/*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID <> 50;"); */
+/*  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID <> 50;"); */
 	iinq_result_set_t *rs1 = iinq_init_result_set(iinq_projection_init(iinq_selection_init(iinq_dictionary_init(0, 3, predicate_all_records), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_not_equal, IONIZE(50, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3)));
 
 	end_time = ion_time();
@@ -733,7 +733,7 @@ test_select_all_where_not_equal_table1(
 #endif
 
 	start_time	= ion_time();
-/*	  rs1 = SQL_select("SELECT * FROM Table1 WHERE ID <> 50;"); */
+/*  rs1 = SQL_select("SELECT * FROM Table1 WHERE ID <> 50;"); */
 	rs1			= iinq_init_result_set(iinq_projection_init(iinq_selection_init(iinq_dictionary_init(0, 3, predicate_all_records), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(1, iinq_not_equal, IONIZE(50, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3)));
 
 	end_time	= ion_time();
@@ -786,7 +786,7 @@ test_select_all_where_multiple_conditions_table1(
 
 	start_time = ion_time();
 
-/*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID < 50 AND IntValue <> 50;"); */
+/*  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE ID < 50 AND IntValue <> 50;"); */
 	iinq_result_set_t *rs1 = iinq_init_result_set(iinq_projection_init(iinq_selection_init(iinq_dictionary_init(0, 3, predicate_all_records), 2, IINQ_CONDITION_LIST(IINQ_CONDITION(3, iinq_not_equal, IONIZE(50, int)), IINQ_CONDITION(1, iinq_less_than, IONIZE(50, int)))), 3, IINQ_PROJECTION_LIST(1, 2, 3)));
 
 	end_time = ion_time();
@@ -840,7 +840,7 @@ test_select_all_where_str_equal(
 
 	start_time = ion_time();
 
-/*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE CharValue = 'prepInsert';"); */
+/*  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE CharValue = 'prepInsert';"); */
 	iinq_result_set_t *rs1 = iinq_init_result_set(iinq_projection_init(iinq_selection_init(iinq_dictionary_init(0, 3, predicate_all_records), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(2, iinq_equal, "prepInsert"))), 3, IINQ_PROJECTION_LIST(1, 2, 3)));
 
 	end_time = ion_time();
@@ -890,7 +890,7 @@ test_select_all_where_str_not_equal(
 
 	start_time = ion_time();
 
-/*	  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE CharValue <> 'prepInsert';"); */
+/*  iinq_result_set_t *rs1 = SQL_select("SELECT * FROM Table1 WHERE CharValue <> 'prepInsert';"); */
 	iinq_result_set_t *rs1 = iinq_init_result_set(iinq_projection_init(iinq_selection_init(iinq_dictionary_init(0, 3, predicate_all_records), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(2, iinq_not_equal, "prepInsert"))), 3, IINQ_PROJECTION_LIST(1, 2, 3)));
 
 	end_time = ion_time();
@@ -935,7 +935,7 @@ test_select_all_where_str_not_equal(
 
 	start_time	= ion_time();
 
-/*	 rs1 = SQL_select("SELECT * FROM Table1 WHERE CharValue != 'prepInsert';"); */
+/*  rs1 = SQL_select("SELECT * FROM Table1 WHERE CharValue != 'prepInsert';"); */
 	rs1			= iinq_init_result_set(iinq_projection_init(iinq_selection_init(iinq_dictionary_init(0, 3, predicate_all_records), 1, IINQ_CONDITION_LIST(IINQ_CONDITION(2, iinq_not_equal, "prepInsert"))), 3, IINQ_PROJECTION_LIST(1, 2, 3)));
 
 	end_time	= ion_time();
@@ -1013,8 +1013,8 @@ test_drop_table1(
 #endif
 
 	ion_err_t error =
-/*	  SQL_execute("DROP TABLE Table1;"); */
-		drop_table(0);
+/*		  SQL_execute("DROP TABLE Table1;"); */
+		iinq_drop_table(0);
 
 	PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, error);
 
