@@ -133,7 +133,7 @@ sd_fopen(
 			SD.remove(filename);
 		}
 
-		operation = FILE_WRITE;
+		operation = (O_WRITE | O_TRUNC | O_CREAT);
 		/* Open a file for update both reading and writing. The file must exist. */
 	}
 	else if (strstr(mode, "r+") != NULL) {
@@ -141,7 +141,7 @@ sd_fopen(
 			return NULL;
 		}
 
-		operation	= FILE_WRITE;
+		operation	= O_RDWR;
 		seek_start	= boolean_true;
 	}
 	/* Create an empty file for both reading and writing. */
@@ -150,10 +150,10 @@ sd_fopen(
 			SD.remove(filename);
 		}
 
-		operation = FILE_WRITE;
+		operation = (O_RDWR | O_CREAT | O_TRUNC);
 	}
 	else if (strcmp(mode, "a+") == 0) {
-		operation = FILE_WRITE;
+		operation = (O_RDWR | O_APPEND | O_CREAT);
 	}
 	else {
 		return 0;	/*incorrect args */
