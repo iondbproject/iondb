@@ -34,3 +34,5 @@ IonDB is licensed under the BSD Clause-3 License. For more information, please r
 [Ramon Lawrence](https://people.ok.ubc.ca/rlawrenc/)
 
 [Spencer MacBeth]
+
+[Andrew Feltham](https://github.com/stonepaw)

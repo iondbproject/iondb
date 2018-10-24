@@ -60,7 +60,7 @@ extern "C" {
 
 #define ION_USING_MASTER_TABLE	1
 #define ION_USING_ECLIPSE		0
-#define ION_DEBUG				0
+#define ION_DEBUG				1
 #define ION_IS_EQUAL			0
 #define ION_IS_GREATER			1
 #define ION_IS_LESS				-1
