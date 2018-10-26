@@ -1,9 +1,9 @@
 /******************************************************************************/
 /**
 @file		test_linear_hash.c
-@author		Spencer MacBeth
+@author		Andrew Feltham, Spencer MacBeth
 @brief		Implementation unit tests for the linear hash.
-@copyright	Copyright 2017
+@copyright	Copyright 2018
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
 @par Redistribution and use in source and binary forms, with or without
@@ -110,6 +110,7 @@ test_linear_hash_takedown(
     fclose(linear_hash->database);
 }
 
+
 void
 test_linear_hash_get(
         planck_unit_test_t *tc,
@@ -127,7 +128,7 @@ test_linear_hash_get(
 
     memcpy(retval, defaultval, linear_hash->super.record.value_size);
 
-    ion_status_t status = ion_linear_hash_get(key, NULL, linear_hash);
+    ion_status_t status = ion_linear_hash_get(key, retval, linear_hash);
 
     PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_status, status.error);
     PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, status.count);
@@ -139,6 +140,7 @@ test_linear_hash_get(
         PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, memcmp(defaultval, retval, linear_hash->super.record.value_size));
     }
 }
+
 
 /**
 @brief		Inserts into the flat file and optionally checks if the insert was OK
@@ -220,10 +222,10 @@ test_linear_hash_basic_operations(
     ion_linear_hash_table_t *linear_hash = malloc(sizeof(ion_linear_hash_table_t));
 
     test_linear_hash_setup(tc, linear_hash);
-//    for (int i = 0; i < 20; i++) {
-//        test_linear_hash_insert(tc, IONIZE(i, int), IONIZE(INT16_MAX, int), err_ok, 1, boolean_true, linear_hash);
-//    }
-    test_linear_hash_insert(tc, IONIZE(32766, int), IONIZE(32767, int), err_ok, 1, boolean_true, linear_hash);
+    for (int i = 0; i < linear_hash->records_per_bucket; i++) {
+        test_linear_hash_insert(tc, IONIZE(i, int), IONIZE(i * 2, int), err_ok, 1, boolean_true, linear_hash);
+    }
+//    test_linear_hash_insert(tc, IONIZE(32766, int), IONIZE(32767, int), err_ok, 1, boolean_true, linear_hash);
 //    test_linear_hash_insert(tc, IONIZE(8, int), IONIZE(19, int), err_ok, 1, boolean_false, linear_hash);
 //    test_linear_hash_insert(tc, IONIZE(90, int), IONIZE(19, int), err_ok, 1, boolean_false, linear_hash);
 //    test_linear_hash_update(tc, IONIZE(17, int), IONIZE(25, int), err_ok, 1, linear_hash);
@@ -480,13 +482,74 @@ test_linear_hash_correct_hash_function(
 //    test_linear_hash_takedown(tc, linear_hash);
 //}
 
+void
+test_inserting_into_existing_bucket_should_increment_bucket_count(
+        planck_unit_test_t *tc
+) {
+    ion_linear_hash_table_t *table = alloca(sizeof(ion_linear_hash_table_t));
+    test_linear_hash_setup(tc, table);
+    int key = 10;
+    int value = 20;
+    ion_status_t status = ion_linear_hash_insert(&key, &value, table);
+    PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error)
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
+    ion_linear_hash_bucket_t *bucket = (ion_linear_hash_bucket_t *) table->block1;
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, bucket->records);
+}
+
+void
+test_inserting_increments_total_record_count(
+        planck_unit_test_t *tc
+) {
+    ion_linear_hash_table_t *table = alloca(sizeof(ion_linear_hash_table_t));
+    test_linear_hash_setup(tc, table);
+    int initial = table->num_records;
+    int key = 10;
+    int value = 20;
+    ion_status_t status = ion_linear_hash_insert(&key, &value, table);
+    PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error)
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, initial + 1, table->num_records);
+}
+
+void
+test_inserting_with_a_full_bucket_adds_a_new_bucket(
+        planck_unit_test_t *tc
+) {
+    ion_linear_hash_table_t *table = alloca(sizeof(ion_linear_hash_table_t));
+    test_linear_hash_setup(tc, table);
+    int initial = table->num_buckets;
+
+    // Fill up the bucket
+    int value = 0;
+    for (int i = 0; i < table->records_per_bucket; i++) {
+        value = i * 2;
+        ion_linear_hash_insert(&i, &value, table);
+    }
+
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, initial, table->num_buckets)
+    int key = 123;
+    value = key * 2;
+    ion_linear_hash_insert(&key, &value, table);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, initial + 1, table->num_buckets)
+    int rtrn_value = 0;
+    ion_status_t err = ion_linear_hash_get(&key, &rtrn_value, table);
+    PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err.error)
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, value, rtrn_value)
+}
+
+
 planck_unit_suite_t *
 linear_hash_getsuite(
 ) {
     planck_unit_suite_t *suite = planck_unit_new_suite();
 
+    // Insert specific tests
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_inserting_into_existing_bucket_should_increment_bucket_count);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_inserting_increments_total_record_count);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_inserting_with_a_full_bucket_adds_a_new_bucket);
+
 //    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_create_destroy);
-    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_basic_operations);
+//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_basic_operations);
 //    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_bucket_map_head_updates);
 //    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_increment_buckets);
 //    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_correct_hash_function);
