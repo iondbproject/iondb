@@ -94,7 +94,7 @@ ion_linear_hash_initialize_bucket(
  * @return The error (if any)
  */
 ion_err_t
-ion_linear_hash_write_bucket(ion_byte_t *bucket, int block, ion_linear_hash_table_t *linear_hash) {
+ion_linear_hash_write_block(ion_byte_t *bucket, int block, ion_linear_hash_table_t *linear_hash) {
     if (0 != fseek(linear_hash->database, block * LINEAR_HASH_BLOCK_SIZE, SEEK_SET)) {
         return err_file_bad_seek;
     }
@@ -114,7 +114,6 @@ ion_linear_hash_init(
         ion_value_size_t value_size,
         int initial_size,
         int split_threshold,
-        int records_per_bucket,
         ion_linear_hash_table_t *linear_hash
 ) {
     linear_hash->super.id = id;
@@ -130,7 +129,7 @@ ion_linear_hash_init(
     linear_hash->next_split = 0;
     linear_hash->total_blocks = 0;
     linear_hash->split_threshold = split_threshold;
-    linear_hash->record_total_size = key_size + value_size;
+    linear_hash->record_total_size = (unsigned int) (key_size + value_size);
     linear_hash->records_per_bucket =
             (LINEAR_HASH_BLOCK_SIZE - sizeof(ion_linear_hash_bucket_t)) / (key_size + value_size);
     linear_hash->block1 = malloc(LINEAR_HASH_BLOCK_SIZE);
@@ -146,6 +145,8 @@ ion_linear_hash_init(
     ion_array_list_init(2 * initial_size, bucket_map);
     linear_hash->bucket_map = bucket_map;
 
+    //TODO: Read and write state
+
     linear_hash->database = fopen("db.lhd", "w+");
 
 #if LINEAR_HASH_DEBUG > 0
@@ -155,7 +156,7 @@ ion_linear_hash_init(
     // Create initial blocks
     for (int i = 0; i < initial_size; i++) {
         ion_linear_hash_initialize_bucket(i, linear_hash->block1, LINEAR_HASH_BLOCK_SIZE, LINEAR_HASH_NO_OVERFLOW);
-        ion_linear_hash_write_bucket(linear_hash->block1, i, linear_hash);
+        ion_linear_hash_write_block(linear_hash->block1, i, linear_hash);
         ion_array_list_insert(i, i, bucket_map);
         linear_hash->total_blocks++;
         linear_hash->num_buckets++;
@@ -215,7 +216,7 @@ int ion_linear_hash_h1(ion_byte_t *key, ion_linear_hash_table_t *linear_hash) {
  * @return The error (if any)
  */
 ion_err_t
-ion_linear_hash_read_bucket(int block, ion_linear_hash_table_t *linear_hash, ion_byte_t *bucket) {
+ion_linear_hash_read_block(int block, ion_linear_hash_table_t *linear_hash, ion_byte_t *bucket) {
     if (0 != fseek(linear_hash->database, block * LINEAR_HASH_BLOCK_SIZE, SEEK_SET)) {
         return err_file_bad_seek;
     }
@@ -227,6 +228,119 @@ ion_linear_hash_read_bucket(int block, ion_linear_hash_table_t *linear_hash, ion
 }
 
 //endregion
+
+ion_err_t ion_linear_hash_split(ion_linear_hash_table_t *lht) {
+
+    int current_split = lht->next_split;
+    int starting_blocks = lht->total_blocks;
+    // Load the bucket to split
+    int block = ion_array_list_get(current_split, lht->bucket_map);
+    ion_byte_t *current_buffer = lht->block1;
+    ion_err_t err = ion_linear_hash_read_block(block, lht, current_buffer);
+    ion_linear_hash_bucket_t *current_bucket = (ion_linear_hash_bucket_t *) current_buffer;
+
+    if (err_ok != err) {
+        return err;
+    }
+
+    // Initialize a new bucket at the next available block
+    ion_byte_t *new_buffer = lht->block2;
+    ion_linear_hash_initialize_bucket(lht->total_blocks, new_buffer, LINEAR_HASH_BLOCK_SIZE, LINEAR_HASH_NO_OVERFLOW);
+    ion_linear_hash_bucket_t *new_bucket = (ion_linear_hash_bucket_t *) current_buffer;
+
+    lht->total_blocks++;
+
+
+    ion_boolean_t completed = boolean_false;
+    ion_byte_t *insert_ptr_new = new_buffer + sizeof(ion_linear_hash_bucket_t);
+    ion_byte_t *insert_ptr_current = current_bucket + sizeof(ion_linear_hash_bucket_t);
+    ion_byte_t *read_ptr;
+    ion_byte_t *key;
+    int num_records = current_bucket->records;
+
+    while (!completed) {
+        read_ptr = current_buffer + sizeof(ion_linear_hash_bucket_t);
+        for (int i = 0; i < num_records; i++) {
+            key = read_ptr;
+            if (ion_linear_hash_h0(key, lht) != ion_linear_hash_h1(key, lht)) {
+                // This record belongs in the new bucket
+                memcpy(insert_ptr_new, read_ptr, lht->record_total_size);
+                new_bucket->records++;
+                insert_ptr_new += lht->record_total_size;
+                // If the new bucket is now full, write it out and initialize a new one.
+                if (new_bucket->records == lht->records_per_bucket) {
+                    err = ion_linear_hash_write_block(new_buffer, new_bucket->block, lht);
+                    if (err_ok != err) {
+                        // Clean up to try and reset the state
+                        lht->total_blocks = starting_blocks;
+                        // Exit. Note that this might be an in-consistent state but no records were lost.
+                        return err;
+                    }
+                    ion_linear_hash_initialize_bucket(lht->total_blocks, new_buffer, LINEAR_HASH_BLOCK_SIZE,
+                                                      new_bucket->block);
+                    lht->total_blocks++;
+                    insert_ptr_new = new_buffer + sizeof(ion_linear_hash_bucket_t);
+                }
+
+                // Remove the record
+                memset(read_ptr, 0, lht->record_total_size);
+                current_bucket->records--;
+            } else {
+                if (read_ptr != insert_ptr_current) {
+                    memcpy(insert_ptr_current, read_ptr, lht->record_total_size);
+                }
+                insert_ptr_current += lht->record_total_size;
+            }
+            read_ptr += lht->record_total_size;
+        }
+
+        if (LINEAR_HASH_NO_OVERFLOW != current_bucket->overflow_block) {
+            err = ion_linear_hash_write_block(current_buffer, current_bucket->block, lht);
+            if (err_ok != err) {
+                lht->total_blocks = starting_blocks;
+                return err;
+            }
+            // Load the new bucket
+            err = ion_linear_hash_read_block(current_bucket->overflow_block, lht, current_buffer);
+            if (err_ok != err) {
+                lht->total_blocks = starting_blocks;
+                return err;
+            }
+            num_records = current_bucket->records;
+            read_ptr = current_buffer + sizeof(ion_linear_hash_bucket_t);
+        } else {
+            completed = boolean_true;
+        }
+    }
+
+    // Write out the changed and new blocks
+    err = ion_linear_hash_write_block(current_buffer, current_bucket->block, lht);
+    if (err_ok != err) {
+        return err;
+    }
+
+    err = ion_linear_hash_write_block(new_buffer, new_bucket->block, lht);
+    if (err_ok != err) {
+        return err;
+    }
+
+    // Increment Bucket count and next split.
+    lht->num_buckets++;
+    if (lht->num_buckets == 2 * lht->initial_size + 1) {
+        lht->initial_size = lht->initial_size * 2;
+        lht->next_split = 0;
+    }
+    return err_ok;
+}
+
+ion_err_t
+ion_linear_hash_increment_num_records(ion_linear_hash_table_t *table) {
+    table->num_records++;
+    if (table->num_records / table->num_buckets > table->split_threshold) {
+        return ion_linear_hash_split(table);
+    }
+    return err_ok;
+}
 
 ion_status_t ion_linear_hash_insert(
         ion_key_t key,
@@ -264,7 +378,7 @@ ion_status_t ion_linear_hash_insert(
     ion_byte_t *buffer = linear_hash->block1;
 
     // Read the block from the file
-    ion_err_t err = ion_linear_hash_read_bucket(block, linear_hash, buffer);
+    ion_err_t err = ion_linear_hash_read_block(block, linear_hash, buffer);
     if (err_ok != err) {
         return ION_STATUS_ERROR(err);
     }
@@ -281,7 +395,6 @@ ion_status_t ion_linear_hash_insert(
         ion_linear_hash_initialize_bucket(linear_hash->total_blocks, buffer, LINEAR_HASH_BLOCK_SIZE, bucket->block);
         ion_array_list_insert(idx, linear_hash->total_blocks, linear_hash->bucket_map);
         linear_hash->total_blocks++;
-        linear_hash->num_buckets++;
     }
 
     int record_size = linear_hash->super.record.key_size + linear_hash->super.record.value_size;
@@ -301,9 +414,12 @@ ion_status_t ion_linear_hash_insert(
     ion_linear_hash_debug_print_key(written_key, linear_hash);
     printf("\n");
 #endif
-    ion_linear_hash_write_bucket(buffer, bucket->block, linear_hash);
+    ion_linear_hash_write_block(buffer, bucket->block, linear_hash);
 
-    linear_hash->num_records++;
+    err = ion_linear_hash_increment_num_records(linear_hash);
+    if (err_ok != err) {
+        return ION_STATUS_ERROR(err);
+    }
 
     return ION_STATUS_OK(1);
 }
@@ -332,7 +448,7 @@ ion_linear_hash_get(ion_key_t key, ion_value_t value, ion_linear_hash_table_t *l
     int block = ion_array_list_get(idx, linear_hash->bucket_map);
     ion_byte_t *buffer;
     buffer = linear_hash->block1;
-    ion_err_t read_bucket = ion_linear_hash_read_bucket(block, linear_hash, buffer);
+    ion_err_t read_bucket = ion_linear_hash_read_block(block, linear_hash, buffer);
     if (err_ok != read_bucket) {
         return ION_STATUS_ERROR(read_bucket);
     }
@@ -383,7 +499,7 @@ ion_linear_hash_get(ion_key_t key, ion_value_t value, ion_linear_hash_table_t *l
         if (LINEAR_HASH_NO_OVERFLOW == bucket->overflow_block) {
             terminal = boolean_false;
         } else {
-            ion_linear_hash_read_bucket(bucket->overflow_block, linear_hash, buffer);
+            ion_linear_hash_read_block(bucket->overflow_block, linear_hash, buffer);
             offset = sizeof(bucket);
         }
     }
@@ -391,4 +507,90 @@ ion_linear_hash_get(ion_key_t key, ion_value_t value, ion_linear_hash_table_t *l
     printf("Done");
 #endif
     return ION_STATUS_ERROR(err_item_not_found);
+}
+
+ion_status_t
+ion_linear_hash_delete(
+        ion_key_t key,
+        ion_linear_hash_table_t *lht
+) {
+    ion_status_t status = ION_STATUS_INITIALIZE;
+
+    // Find the bucket index for this key
+    int idx = ion_linear_hash_h0((ion_byte_t *) key, lht);
+    if (idx < lht->next_split) {
+        idx = ion_linear_hash_h1((ion_byte_t *) key, lht);
+    }
+
+    // Get the file block for the first bucket
+    // Load the bucket to split
+    int block = ion_array_list_get(idx, lht->bucket_map);
+    ion_byte_t *buffer = lht->block1;
+    status.error = ion_linear_hash_read_block(block, lht, buffer);
+    if (err_ok != status.error) {
+        return status;
+    }
+
+    // The bucket header is the first bytes of the buffer
+    ion_linear_hash_bucket_t *bucket = (ion_linear_hash_bucket_t *) buffer;
+
+    // Terminal when there is no overflow buckets left
+    ion_boolean_t terminal = boolean_false;
+
+    // We modify the number of records so keep track of how many we started with.
+    int record_count = bucket->records;
+
+    // Read pointer point to the current record
+    ion_byte_t *read_ptr;
+
+    // Inserting pointer to shrink gaps
+    ion_byte_t *insert_ptr;
+
+    while (!terminal) {
+        // Initialize for each bucket
+        insert_ptr = read_ptr = buffer + sizeof(ion_linear_hash_bucket_t);
+
+        for (int i = 0; i < record_count; i++) {
+
+            if (0 == lht->super.compare(read_ptr, key, lht->super.record.key_size)) {
+                // We should delete this record.
+                status.error++;
+
+                // Move the record into the insert spot
+                if (insert_ptr != read_ptr) {
+                    memcpy(insert_ptr, read_ptr, lht->record_total_size);
+                    insert_ptr += lht->record_total_size;
+                }
+                // TODO: Not strictly necessary and probably effects performance?
+                memset(read_ptr, 0, lht->record_total_size);
+                bucket->records--;
+                lht->num_records--;
+            } else {
+                if (insert_ptr == read_ptr) {
+                    insert_ptr += lht->record_total_size;
+                }
+            }
+            read_ptr += lht->record_total_size;
+        }
+
+        // TODO: We leave empty buckets in the chain for the moment, discuss about removing or changing how overflow works.
+
+        status.error = ion_linear_hash_write_block(buffer, bucket->block, lht);
+        if (err_ok == status.error) {
+            return status;
+        }
+
+        if (LINEAR_HASH_NO_OVERFLOW == bucket->overflow_block) {
+            terminal = boolean_true;
+        } else {
+            status.error = ion_linear_hash_read_block(bucket->overflow_block, lht, buffer);
+            if (err_ok != status.error) {
+                return status;
+            }
+        }
+    }
+    if (status.count == 0) {
+        status.error = err_item_not_found;
+    }
+    return status;
 }

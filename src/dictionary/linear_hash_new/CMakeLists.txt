@@ -5,6 +5,8 @@ set(SOURCE_FILES
         linear_hash.c
         linear_hash.h
         linear_hash_types.h
+        linear_hash_handler.h
+        linear_hash_handler.c
         ../dictionary.h
         ../dictionary.c
         ../dictionary_types.h

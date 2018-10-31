@@ -75,17 +75,9 @@ ion_linear_hash_h1(
         ion_linear_hash_table_t *linear_hash
 );
 
-ion_err_t ion_linear_hash_init(
-        ion_dictionary_id_t id,
-        ion_dictionary_size_t dictionary_size,
-        ion_key_type_t key_type,
-        ion_key_size_t key_size,
-        ion_value_size_t value_size,
-        int initial_size,
-        int split_threshold,
-        int records_per_bucket,
-        ion_linear_hash_table_t *linear_hash
-);
+ion_err_t ion_linear_hash_init(ion_dictionary_id_t id, ion_dictionary_size_t dictionary_size, ion_key_type_t key_type,
+                               ion_key_size_t key_size, ion_value_size_t value_size, int initial_size,
+                               int split_threshold, ion_linear_hash_table_t *linear_hash);
 
 ion_status_t ion_linear_hash_insert(
         ion_key_t key,
@@ -95,13 +87,13 @@ ion_status_t ion_linear_hash_insert(
 
 ion_status_t ion_linear_hash_delete(
         ion_key_t key,
-        ion_linear_hash_table_t *linear_hash
+        ion_linear_hash_table_t *lht
 );
 
 ion_status_t ion_linear_hash_get(ion_key_t key, ion_value_t value, ion_linear_hash_table_t *linear_hash);
 
-ion_status_t ion_linear_hash_split(
-
+ion_err_t ion_linear_hash_split(
+        ion_linear_hash_table_t *lht
 );
 
 #if defined(__cplusplus)

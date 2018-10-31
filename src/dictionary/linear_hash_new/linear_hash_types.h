@@ -61,7 +61,7 @@ typedef struct {
     int num_records;
     int records_per_bucket;
     int total_blocks;
-    ion_fpos_t record_total_size;
+    unsigned int record_total_size;
     ion_byte_t *block1;
     ion_byte_t *block2;
     ion_array_list_t *bucket_map;

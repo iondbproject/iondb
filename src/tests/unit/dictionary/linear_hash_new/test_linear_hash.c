@@ -38,6 +38,7 @@
 #include "../../../../key_value/kv_system.h"
 #include "../../../../dictionary/linear_hash_new/linear_hash.h"
 #include "../../../../dictionary/dictionary.h"
+#include "../generic_dictionary_test.h"
 #include <time.h>
 
 /**
@@ -58,8 +59,7 @@ test_linear_hash_create(
     int split_threshold = 85;
     int records_per_bucket = 4;
     ion_err_t err = ion_linear_hash_init(1, dictionary_size, key_type, key_size, value_size, initial_size,
-                                         split_threshold,
-                                         records_per_bucket, linear_hash);
+                                         split_threshold, linear_hash);
 
     linear_hash->super.compare = dictionary_compare_signed_value;
     PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
@@ -530,11 +530,34 @@ test_inserting_with_a_full_bucket_adds_a_new_bucket(
     int key = 123;
     value = key * 2;
     ion_linear_hash_insert(&key, &value, table);
-    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, initial + 1, table->num_buckets)
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, initial, table->num_buckets)
+    ion_linear_hash_bucket_t *bucket = (ion_linear_hash_bucket_t *) table->block1;
+    PLANCK_UNIT_ASSERT_INT_ARE_NOT_EQUAL(tc, LINEAR_HASH_NO_OVERFLOW, bucket->overflow_block);
     int rtrn_value = 0;
     ion_status_t err = ion_linear_hash_get(&key, &rtrn_value, table);
-    PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err.error)
-    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, value, rtrn_value)
+    PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == err.error);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, value, rtrn_value);
+}
+
+
+void
+test_inserting_above_the_load_factor_performs_a_split(
+        planck_unit_test_t *tc
+) {
+    ion_linear_hash_table_t *table = alloca(sizeof(ion_linear_hash_table_t));
+    test_linear_hash_setup(tc, table);
+    int initial = table->num_buckets;
+
+    // Fill up the bucket
+    int value = 0;
+    ion_status_t status = ION_STATUS_INITIALIZE;
+    int records = table->num_buckets * table->records_per_bucket / table->split_threshold;
+    for (int i = 0; i < table->records_per_bucket * 2; i++) {
+        value = i * 2;
+        status = ion_linear_hash_insert(&i, &value, table);
+        PLANCK_UNIT_ASSERT_TRUE(tc, err_ok == status.error);
+    }
+//    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, initial + 1, table->num_buckets);
 }
 
 
@@ -547,6 +570,7 @@ linear_hash_getsuite(
     PLANCK_UNIT_ADD_TO_SUITE(suite, test_inserting_into_existing_bucket_should_increment_bucket_count);
     PLANCK_UNIT_ADD_TO_SUITE(suite, test_inserting_increments_total_record_count);
     PLANCK_UNIT_ADD_TO_SUITE(suite, test_inserting_with_a_full_bucket_adds_a_new_bucket);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_inserting_above_the_load_factor_performs_a_split);
 
 //    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_create_destroy);
 //    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_basic_operations);
