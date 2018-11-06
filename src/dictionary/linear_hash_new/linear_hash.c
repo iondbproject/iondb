@@ -106,39 +106,38 @@ ion_linear_hash_write_block(ion_byte_t *bucket, int block, ion_linear_hash_table
 }
 
 ion_err_t
-ion_linear_hash_init(
-        ion_dictionary_id_t id,
-        ion_dictionary_size_t dictionary_size,
-        ion_key_type_t key_type,
-        ion_key_size_t key_size,
-        ion_value_size_t value_size,
-        int initial_size,
-        int split_threshold,
-        ion_linear_hash_table_t *linear_hash
-) {
+ion_linear_hash_init(ion_dictionary_id_t id, ion_key_type_t key_type, ion_key_size_t key_size,
+                     ion_value_size_t value_size, int initial_size, int split_threshold,
+                     ion_linear_hash_table_t *linear_hash) {
+
+    // Assign super dictionary info
     linear_hash->super.id = id;
-    linear_hash->dictionary_size = dictionary_size;
     linear_hash->super.key_type = key_type;
     linear_hash->super.record.key_size = key_size;
     linear_hash->super.record.value_size = value_size;
 
     /* initialize linear_hash fields */
     linear_hash->initial_size = initial_size;
-    linear_hash->num_buckets = 0;
+    linear_hash->current_size = 0;
     linear_hash->num_records = 0;
     linear_hash->next_split = 0;
     linear_hash->total_blocks = 0;
     linear_hash->split_threshold = split_threshold;
-    linear_hash->record_total_size = (unsigned int) (key_size + value_size);
+    linear_hash->record_total_size = key_size + value_size;
     linear_hash->records_per_bucket =
             (LINEAR_HASH_BLOCK_SIZE - sizeof(ion_linear_hash_bucket_t)) / (key_size + value_size);
     linear_hash->block1 = malloc(LINEAR_HASH_BLOCK_SIZE);
     linear_hash->block2 = malloc(LINEAR_HASH_BLOCK_SIZE);
 
     if (linear_hash->block1 == NULL || linear_hash->block2 == NULL) {
-        //TODO Clean up
+        free(linear_hash->block1);
+        free(linear_hash->block2);
         return err_out_of_memory;
     }
+
+    // TODO: Detect key type and assign
+    linear_hash->hash_key = ion_linear_hash_int_key_hash;
+
 
     ion_array_list_t *bucket_map;
     bucket_map = malloc(sizeof(ion_array_list_t));
@@ -159,7 +158,7 @@ ion_linear_hash_init(
         ion_linear_hash_write_block(linear_hash->block1, i, linear_hash);
         ion_array_list_insert(i, i, bucket_map);
         linear_hash->total_blocks++;
-        linear_hash->num_buckets++;
+        linear_hash->current_size++;
     }
 
 
@@ -168,60 +167,34 @@ ion_linear_hash_init(
 
 //region Bucket Index Hashing
 
-/**
-@brief		Transform a key to an integer.
-@details	Applies a polynomial hash to the byte-string representation of the key to transform the key to an integer.
-@param[in]	key
-				Pointer to the key to hash
-@param[in]	linear_hash
-				Pointer to a linear hash table instance.
-@return		The result of applying the polynomial hash to the key as an integer.
-*/
 int
-ion_linear_hash_key_bytes_to_int(
-        ion_byte_t *key,
-        ion_linear_hash_table_t *linear_hash
-) {
-    int i;
-    int key_bytes_as_int = 0;
-    static int coefficients[] = {3, 5, 7, 11, 13, 17, 19};
-
-    for (i = 0; i < linear_hash->super.record.key_size - 1; i++) {
-        key_bytes_as_int += *(key + i) * coefficients[i + 1] - *(key + i) * coefficients[i];
+ion_key_to_bucket_index(ion_key_t key, ion_linear_hash_table_t *lht) {
+    int hash = lht->hash_key(key, lht);
+    int idx = ion_linear_hash_h0(hash, lht);
+    if (idx < lht->next_split) {
+        idx = ion_linear_hash_h1(hash, lht);
     }
-#if LINEAR_HASH_DEBUG > 0
-    printf("Hash value: %d\n", key_bytes_as_int);
-#endif
-    return key_bytes_as_int;
+    return idx;
 }
 
-int ion_linear_hash_h0(ion_byte_t *key, ion_linear_hash_table_t *linear_hash) {
-    int key_bytes_as_int = ion_linear_hash_key_bytes_to_int(key, linear_hash);
-    return key_bytes_as_int & (linear_hash->initial_size - 1);
+int ion_linear_hash_h0(int hash, ion_linear_hash_table_t *linear_hash) {
+    return hash & (linear_hash->initial_size - 1);
 }
 
-int ion_linear_hash_h1(ion_byte_t *key, ion_linear_hash_table_t *linear_hash) {
-    int key_bytes_as_int = ion_linear_hash_key_bytes_to_int(key, linear_hash);
-    return key_bytes_as_int & ((2 * linear_hash->initial_size) - 1);
+int ion_linear_hash_h1(int hash, ion_linear_hash_table_t *linear_hash) {
+    return hash & ((2 * linear_hash->initial_size) - 1);
 }
+
 //endregion
 
+//region Block writing
 
-//region File writing
-/**
- * @brief Reads a bucket block from the database
- * @param [in] block [in] The integer block number to read
- * @param [in] linear_hash The linear hash instance containing the database to use
- * @param [out] bucket A buffer of size for a block that the bucket block will be read into
- * @return The error (if any)
- */
-ion_err_t
-ion_linear_hash_read_block(int block, ion_linear_hash_table_t *linear_hash, ion_byte_t *bucket) {
+ion_err_t ion_linear_hash_read_block(int block, ion_linear_hash_table_t *linear_hash, ion_byte_t *buffer) {
     if (0 != fseek(linear_hash->database, block * LINEAR_HASH_BLOCK_SIZE, SEEK_SET)) {
         return err_file_bad_seek;
     }
 
-    if (1 != fread(bucket, LINEAR_HASH_BLOCK_SIZE, 1, linear_hash->database)) {
+    if (1 != fread(buffer, LINEAR_HASH_BLOCK_SIZE, 1, linear_hash->database)) {
         return err_file_read_error;
     }
     return err_ok;
@@ -262,7 +235,8 @@ ion_err_t ion_linear_hash_split(ion_linear_hash_table_t *lht) {
         read_ptr = current_buffer + sizeof(ion_linear_hash_bucket_t);
         for (int i = 0; i < num_records; i++) {
             key = read_ptr;
-            if (ion_linear_hash_h0(key, lht) != ion_linear_hash_h1(key, lht)) {
+            int hash = lht->hash_key(key, lht);
+            if (ion_linear_hash_h0(hash, lht) != ion_linear_hash_h1(hash, lht)) {
                 // This record belongs in the new bucket
                 memcpy(insert_ptr_new, read_ptr, lht->record_total_size);
                 new_bucket->records++;
@@ -325,8 +299,8 @@ ion_err_t ion_linear_hash_split(ion_linear_hash_table_t *lht) {
     }
 
     // Increment Bucket count and next split.
-    lht->num_buckets++;
-    if (lht->num_buckets == 2 * lht->initial_size + 1) {
+    lht->current_size++;
+    if (lht->current_size == 2 * lht->initial_size + 1) {
         lht->initial_size = lht->initial_size * 2;
         lht->next_split = 0;
     }
@@ -336,7 +310,7 @@ ion_err_t ion_linear_hash_split(ion_linear_hash_table_t *lht) {
 ion_err_t
 ion_linear_hash_increment_num_records(ion_linear_hash_table_t *table) {
     table->num_records++;
-    if (table->num_records / table->num_buckets > table->split_threshold) {
+    if (table->num_records / table->current_size > table->split_threshold) {
         return ion_linear_hash_split(table);
     }
     return err_ok;
@@ -355,10 +329,7 @@ ion_status_t ion_linear_hash_insert(
     printf("\n");
 #endif
 
-    int idx = ion_linear_hash_h0(key, linear_hash);
-    if (idx < linear_hash->next_split) {
-        idx = ion_linear_hash_h1(key, linear_hash);
-    }
+    int idx = ion_key_to_bucket_index(key, linear_hash);
 
 #if LINEAR_HASH_DEBUG > 0
     printf("Inserting with index %i\n", idx);
@@ -395,6 +366,7 @@ ion_status_t ion_linear_hash_insert(
         ion_linear_hash_initialize_bucket(linear_hash->total_blocks, buffer, LINEAR_HASH_BLOCK_SIZE, bucket->block);
         ion_array_list_insert(idx, linear_hash->total_blocks, linear_hash->bucket_map);
         linear_hash->total_blocks++;
+        linear_hash->total_buckets++;
     }
 
     int record_size = linear_hash->super.record.key_size + linear_hash->super.record.value_size;
@@ -435,11 +407,7 @@ ion_linear_hash_get(ion_key_t key, ion_value_t value, ion_linear_hash_table_t *l
 #endif
 
     // Calculate the block index
-    int idx = ion_linear_hash_h0((ion_byte_t *) key, linear_hash);
-
-    if (idx < linear_hash->next_split) {
-        idx = ion_linear_hash_h1((ion_byte_t *) key, linear_hash);
-    }
+    int idx = ion_key_to_bucket_index(key, linear_hash);
 
 #if LINEAR_HASH_DEBUG > 0
     printf("Hash index: %i\n", idx);
@@ -485,7 +453,6 @@ ion_linear_hash_get(ion_key_t key, ion_value_t value, ion_linear_hash_table_t *l
 #endif
 
             if (linear_hash->super.compare(record_key, key, linear_hash->super.record.key_size) == 0) {
-                printf("Value matches");
                 memcpy(value, record_value, sizeof(int));
                 return ION_STATUS_OK(1);
             }
@@ -517,10 +484,7 @@ ion_linear_hash_delete(
     ion_status_t status = ION_STATUS_INITIALIZE;
 
     // Find the bucket index for this key
-    int idx = ion_linear_hash_h0((ion_byte_t *) key, lht);
-    if (idx < lht->next_split) {
-        idx = ion_linear_hash_h1((ion_byte_t *) key, lht);
-    }
+    int idx = ion_key_to_bucket_index(key, lht);
 
     // Get the file block for the first bucket
     // Load the bucket to split
@@ -554,7 +518,7 @@ ion_linear_hash_delete(
 
             if (0 == lht->super.compare(read_ptr, key, lht->super.record.key_size)) {
                 // We should delete this record.
-                status.error++;
+                status.count++;
 
                 // Move the record into the insert spot
                 if (insert_ptr != read_ptr) {
@@ -593,4 +557,86 @@ ion_linear_hash_delete(
         status.error = err_item_not_found;
     }
     return status;
+}
+
+ion_status_t
+ion_linear_hash_update(ion_key_t key, ion_value_t value, ion_linear_hash_table_t *lht) {
+
+    ion_status_t status = ION_STATUS_INITIALIZE;
+
+    // Find the bucket index for this key
+    int idx = ion_key_to_bucket_index(key, lht);
+
+    // The first file block to use
+    int block = ion_array_list_get(idx, lht->bucket_map);
+
+    ion_byte_t *buffer = lht->block1;
+
+    // Bucket header in the block
+    ion_linear_hash_bucket_t *bucket = (ion_linear_hash_bucket_t *) buffer;
+
+    // If there is nothing to update we can save writes.
+    ion_boolean_t block_is_dirty;
+
+    // Read ptr for the key in each record
+    ion_byte_t *read_ptr;
+
+    // True once all blocks have been read.
+    ion_boolean_t terminal = boolean_false;
+
+    while (!terminal) {
+
+        // Read the current bucket block (updated at the end of the loop to the new overflow)
+        status.error = ion_linear_hash_read_block(block, lht, buffer);
+        if (err_ok != status.error) {
+            return status;
+        }
+
+        // Reset bucket block variables.
+        block_is_dirty = boolean_false;
+        read_ptr = buffer + sizeof(ion_linear_hash_bucket_t); // Start of records.
+
+        for (int i = 0; i < bucket->records; i++) {
+            if (0 == lht->super.compare(read_ptr, key, lht->super.record.key_size)) {
+                // Key matches copy value and increment the count
+                status.count++;
+                memcpy(read_ptr + lht->super.record.key_size, value, (size_t) lht->super.record.value_size);
+                block_is_dirty = boolean_true;
+            }
+            read_ptr += lht->record_total_size;
+        }
+
+        // Only write the block if it was changed.
+        if (block_is_dirty) {
+            status.error = ion_linear_hash_write_block(buffer, bucket->block, lht);
+            if (err_ok != status.error) {
+                return status;
+            }
+        }
+
+        if (LINEAR_HASH_NO_OVERFLOW != bucket->overflow_block) {
+            block = bucket->overflow_block;
+        } else {
+            // All done!
+            terminal = boolean_true;
+        }
+    }
+
+    if (0 == status.count) {
+        status.error == err_item_not_found;
+    }
+    return status;
+}
+
+int ion_linear_hash_int_key_hash(ion_key_t key, ion_key_size_t key_size) {
+    return *(int *) key;
+}
+
+ion_err_t ion_linear_hash_close(ion_linear_hash_table_t *lht) {
+    free(lht->block1);
+    free(lht->block2);
+    if (0 != fclose(lht->database)) {
+        return err_file_close_error;
+    }
+    return err_ok;
 }

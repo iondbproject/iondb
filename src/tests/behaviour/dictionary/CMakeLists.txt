@@ -19,7 +19,7 @@ if(USE_ARDUINO)
 else()
 	add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 
-	target_link_libraries(${PROJECT_NAME}   planck_unit bpp_tree skip_list flat_file open_address_hash open_address_file_hash linear_hash)
+	target_link_libraries(${PROJECT_NAME}   planck_unit bpp_tree skip_list flat_file open_address_hash open_address_file_hash linear_hash linear_hash_new)
 
 	# Required on Unix OS family to be able to be linked into shared libraries.
 	set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)

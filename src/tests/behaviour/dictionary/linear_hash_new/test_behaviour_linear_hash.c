@@ -1,8 +1,8 @@
 /******************************************************************************/
 /**
-@file		test_linear_hash.h
+@file		test_behaviour_linear_hash.c
 @author		Spencer MacBeth
-@brief		Header declarations for the linear hash unit tests.
+@brief		Behaviour tests for the flat file implementation.
 @copyright	Copyright 2017
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
@@ -34,24 +34,14 @@
 */
 /******************************************************************************/
 
-#if !defined(TEST_LINEAR_HASH_H)
-#define TEST_LINEAR_HASH_H
-
-#if defined(__cplusplus)
-extern "C" {
-#endif
-
 #include "../../../planck-unit/src/planck_unit.h"
-#include "../../../../dictionary/linear_hash_new/linear_hash.h"
+#include "../behaviour_dictionary.h"
 #include "../../../../dictionary/linear_hash_new/linear_hash_handler.h"
-#include "../generic_dictionary_test.h"
+#include "test_behaviour_linear_hash.h"
 
 void
-runalltests_linear_hash(
-);
-
-#if defined(__cplusplus)
+runalltests_behaviour_linear_hash(
+	void
+) {
+	bhdct_run_tests(ion_linear_hash_dict_init, 15, ION_BHDCT_ALL_TESTS);
 }
-#endif
-
-#endif

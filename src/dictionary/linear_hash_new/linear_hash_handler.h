@@ -33,8 +33,8 @@
 	POSSIBILITY OF SUCH DAMAGE.
 */
 /******************************************************************************/
-#if !defined(LINEAR_HASH_HANDLER_H_)
-#define LINEAR_HASH_HANDLER_H_
+#if !defined(LINEAR_HASH_HANDLER_NEW_H_)
+#define LINEAR_HASH_HANDLER_NEW_H_
 
 #if defined(__cplusplus)
 extern "C" {

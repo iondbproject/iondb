@@ -4,6 +4,8 @@ project(test_linear_hash_new)
 set(SOURCE_FILES
         test_linear_hash.h
         test_linear_hash.c
+        ../generic_dictionary_test.h
+        ../generic_dictionary_test.c
         )
 
 if(USE_ARDUINO)
