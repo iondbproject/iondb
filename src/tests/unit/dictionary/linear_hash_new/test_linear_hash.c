@@ -256,10 +256,21 @@ void test_linear_hash_delete_decrements_records_count(planck_unit_test_t *tc) {
     test_linear_hash_tear_down(tc, &table);
 }
 
-void test_linear_hash_deletes_from_overflow_bucket() {
+void test_linear_hash_deletes_from_overflow_bucket(planck_unit_test_t *tc) {
     // Fill a bucket with data to generate an overflow bucket
+    ion_linear_hash_table_t table;
+    test_linear_hash_setup(tc, &table);
+
+    int key = table.initial_size - 2;
+    int buckets = table.total_buckets;
+    for (int i = 0; i < table.records_per_bucket; ++i) {
+        test_linear_hash_insert(tc, &table, key, key, boolean_false);
+    }
+
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, buckets, table.total_buckets)
 
 
+    test_linear_hash_tear_down(tc, &table);
 }
 
 //endregion
@@ -282,6 +293,10 @@ linear_hash_getsuite(
     PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_delete_decrements_records_count);
     PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_delete);
     PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_delete_updates_bucket_header);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_deletes_from_overflow_bucket);
+
+    // Splitting
+
 
     return suite;
 }

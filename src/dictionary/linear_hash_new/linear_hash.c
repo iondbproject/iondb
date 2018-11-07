@@ -121,6 +121,7 @@ ion_linear_hash_init(ion_dictionary_id_t id, ion_key_type_t key_type, ion_key_si
     linear_hash->current_size = 0;
     linear_hash->num_records = 0;
     linear_hash->next_split = 0;
+    linear_hash->total_buckets = initial_size;
     linear_hash->total_blocks = 0;
     linear_hash->split_threshold = split_threshold;
     linear_hash->record_total_size = key_size + value_size;
@@ -540,7 +541,7 @@ ion_linear_hash_delete(
         // TODO: We leave empty buckets in the chain for the moment, discuss about removing or changing how overflow works.
 
         status.error = ion_linear_hash_write_block(buffer, bucket->block, lht);
-        if (err_ok == status.error) {
+        if (err_ok != status.error) {
             return status;
         }
 
@@ -622,8 +623,8 @@ ion_linear_hash_update(ion_key_t key, ion_value_t value, ion_linear_hash_table_t
         }
     }
 
-    if (0 == status.count) {
-        status.error == err_item_not_found;
+    if (0 == status.count) { // Perform an upsert
+        return ion_linear_hash_insert(key, value, lht);
     }
     return status;
 }
