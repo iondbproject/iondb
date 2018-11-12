@@ -38,8 +38,6 @@
 #include "../linear_hash/linear_hash_types.h"
 #include <alloca.h>
 
-#define linear_hash_end_of_list            -1
-
 ion_err_t
 ion_array_list_init(int init_size, ion_array_list_t *array_list) {
     array_list->current_size = init_size;

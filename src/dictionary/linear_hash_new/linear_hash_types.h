@@ -101,7 +101,7 @@ typedef struct {
      * The total count of blocks in use. This is used to know the next block in the file to use when a new bucket is
      * created.
      */
-    int total_blocks;
+    int next_block;
 
     /**
      * Convience value for the total size (key + value) of a record in bytes.

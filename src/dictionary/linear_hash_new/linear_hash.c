@@ -71,19 +71,23 @@ ion_linear_hash_debug_print_bucket(
  * @param block_size
  * @param overflow_block
  */
-void
-ion_linear_hash_initialize_bucket(
-        int block_num,
-        ion_byte_t *block,
-        int block_size,
-        int overflow_block
-) {
-    memset(block, 0, (size_t) block_size);
+ion_err_t
+ion_linear_hash_initialize_new_bucket_for_idx(ion_byte_t *block, int idx, ion_linear_hash_table_t *lht) {
+    memset(block, 0, LINEAR_HASH_BLOCK_SIZE);
     ion_linear_hash_bucket_t *bucket;
     bucket = (ion_linear_hash_bucket_t *) block;
-    bucket->block = block_num;
-    bucket->overflow_block = overflow_block;
+    bucket->block = lht->next_block;
+    lht->next_block++;
     bucket->records = 0;
+
+    if (idx < lht->current_size) {
+        int overflow = ion_array_list_get(idx, lht->bucket_map);
+        bucket->overflow_block = overflow;
+    } else {
+        bucket->overflow_block = LINEAR_HASH_NO_OVERFLOW;
+    }
+    lht->total_buckets++;
+    return ion_array_list_insert(idx, bucket->block, lht->bucket_map);
 }
 
 /**
@@ -121,8 +125,8 @@ ion_linear_hash_init(ion_dictionary_id_t id, ion_key_type_t key_type, ion_key_si
     linear_hash->current_size = 0;
     linear_hash->num_records = 0;
     linear_hash->next_split = 0;
-    linear_hash->total_buckets = initial_size;
-    linear_hash->total_blocks = 0;
+    linear_hash->total_buckets = 0;
+    linear_hash->next_block = 0;
     linear_hash->split_threshold = split_threshold;
     linear_hash->record_total_size = key_size + value_size;
     linear_hash->records_per_bucket =
@@ -155,10 +159,8 @@ ion_linear_hash_init(ion_dictionary_id_t id, ion_key_type_t key_type, ion_key_si
 
     // Create initial blocks
     for (int i = 0; i < initial_size; i++) {
-        ion_linear_hash_initialize_bucket(i, linear_hash->block1, LINEAR_HASH_BLOCK_SIZE, LINEAR_HASH_NO_OVERFLOW);
+        ion_linear_hash_initialize_new_bucket_for_idx(linear_hash->block1, i, linear_hash);
         ion_linear_hash_write_block(linear_hash->block1, i, linear_hash);
-        ion_array_list_insert(i, i, bucket_map);
-        linear_hash->total_blocks++;
         linear_hash->current_size++;
     }
 
@@ -206,7 +208,8 @@ ion_err_t ion_linear_hash_read_block(int block, ion_linear_hash_table_t *linear_
 ion_err_t ion_linear_hash_split(ion_linear_hash_table_t *lht) {
 
     int current_split = lht->next_split;
-    int starting_blocks = lht->total_blocks;
+    int new_idx = lht->current_size;
+    int starting_blocks = lht->next_block;
     // Load the bucket to split
     int block = ion_array_list_get(current_split, lht->bucket_map);
     ion_byte_t *current_buffer = lht->block1;
@@ -219,50 +222,58 @@ ion_err_t ion_linear_hash_split(ion_linear_hash_table_t *lht) {
 
     // Initialize a new bucket at the next available block
     ion_byte_t *new_buffer = lht->block2;
-    ion_linear_hash_initialize_bucket(lht->total_blocks, new_buffer, LINEAR_HASH_BLOCK_SIZE, LINEAR_HASH_NO_OVERFLOW);
-    ion_linear_hash_bucket_t *new_bucket = (ion_linear_hash_bucket_t *) current_buffer;
-
-    lht->total_blocks++;
-
+    ion_linear_hash_initialize_new_bucket_for_idx(new_buffer, new_idx, lht);
+    lht->current_size++;
+    ion_linear_hash_bucket_t *new_bucket = (ion_linear_hash_bucket_t *) new_buffer;
 
     ion_boolean_t completed = boolean_false;
+
+    // Initialize read pointers for swapping records
     ion_byte_t *insert_ptr_new = new_buffer + sizeof(ion_linear_hash_bucket_t);
-    ion_byte_t *insert_ptr_current = current_bucket + sizeof(ion_linear_hash_bucket_t);
+    ion_byte_t *insert_ptr_current;
     ion_byte_t *read_ptr;
     ion_byte_t *key;
-    int num_records = current_bucket->records;
+    int num_records;
+
+    // Iterator
 
     while (!completed) {
+
+        // Set read and write values for the current bucket
+        num_records = current_bucket->records;
+        insert_ptr_current = current_buffer + sizeof(ion_linear_hash_bucket_t);
         read_ptr = current_buffer + sizeof(ion_linear_hash_bucket_t);
-        for (int i = 0; i < num_records; i++) {
+
+        // Iterate through all records.
+        for (int i = 0; i < num_records; ++i) {
             key = read_ptr;
             int hash = lht->hash_key(key, lht);
+
             if (ion_linear_hash_h0(hash, lht) != ion_linear_hash_h1(hash, lht)) {
                 // This record belongs in the new bucket
-                memcpy(insert_ptr_new, read_ptr, lht->record_total_size);
+                memcpy(insert_ptr_new, read_ptr, (size_t) lht->record_total_size);
                 new_bucket->records++;
                 insert_ptr_new += lht->record_total_size;
+
                 // If the new bucket is now full, write it out and initialize a new one.
                 if (new_bucket->records == lht->records_per_bucket) {
                     err = ion_linear_hash_write_block(new_buffer, new_bucket->block, lht);
                     if (err_ok != err) {
                         // Clean up to try and reset the state
-                        lht->total_blocks = starting_blocks;
+                        lht->next_block = starting_blocks;
                         // Exit. Note that this might be an in-consistent state but no records were lost.
                         return err;
                     }
-                    ion_linear_hash_initialize_bucket(lht->total_blocks, new_buffer, LINEAR_HASH_BLOCK_SIZE,
-                                                      new_bucket->block);
-                    lht->total_blocks++;
+                    ion_linear_hash_initialize_new_bucket_for_idx(new_buffer, new_idx, lht);
                     insert_ptr_new = new_buffer + sizeof(ion_linear_hash_bucket_t);
                 }
 
                 // Remove the record
-                memset(read_ptr, 0, lht->record_total_size);
+                memset(read_ptr, 0, (size_t) lht->record_total_size);
                 current_bucket->records--;
             } else {
                 if (read_ptr != insert_ptr_current) {
-                    memcpy(insert_ptr_current, read_ptr, lht->record_total_size);
+                    memcpy(insert_ptr_current, read_ptr, (size_t) lht->record_total_size);
                 }
                 insert_ptr_current += lht->record_total_size;
             }
@@ -272,17 +283,15 @@ ion_err_t ion_linear_hash_split(ion_linear_hash_table_t *lht) {
         if (LINEAR_HASH_NO_OVERFLOW != current_bucket->overflow_block) {
             err = ion_linear_hash_write_block(current_buffer, current_bucket->block, lht);
             if (err_ok != err) {
-                lht->total_blocks = starting_blocks;
+                lht->next_block = starting_blocks;
                 return err;
             }
             // Load the new bucket
             err = ion_linear_hash_read_block(current_bucket->overflow_block, lht, current_buffer);
             if (err_ok != err) {
-                lht->total_blocks = starting_blocks;
+                lht->next_block = starting_blocks;
                 return err;
             }
-            num_records = current_bucket->records;
-            read_ptr = current_buffer + sizeof(ion_linear_hash_bucket_t);
         } else {
             completed = boolean_true;
         }
@@ -300,10 +309,11 @@ ion_err_t ion_linear_hash_split(ion_linear_hash_table_t *lht) {
     }
 
     // Increment Bucket count and next split.
-    lht->current_size++;
-    if (lht->current_size == 2 * lht->initial_size + 1) {
+    if (lht->current_size == 2 * lht->initial_size) {
         lht->initial_size = lht->initial_size * 2;
         lht->next_split = 0;
+    } else {
+        lht->next_split++;
     }
     return err_ok;
 }
@@ -364,10 +374,7 @@ ion_status_t ion_linear_hash_insert(
 #endif
 
     if (bucket->records == linear_hash->records_per_bucket) {
-        ion_linear_hash_initialize_bucket(linear_hash->total_blocks, buffer, LINEAR_HASH_BLOCK_SIZE, bucket->block);
-        ion_array_list_insert(idx, linear_hash->total_blocks, linear_hash->bucket_map);
-        linear_hash->total_blocks++;
-        linear_hash->total_buckets++;
+        ion_linear_hash_initialize_new_bucket_for_idx(buffer, idx, linear_hash);
     }
 
     int record_size = linear_hash->super.record.key_size + linear_hash->super.record.value_size;
