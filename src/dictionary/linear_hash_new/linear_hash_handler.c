@@ -135,19 +135,19 @@ ion_err_t
 ion_linear_hash_destroy_dictionary(
         ion_dictionary_id_t id
 ) {
-//    char filename[ION_MAX_FILENAME_LENGTH];
-//
-//    dictionary_get_filename(id, "lhs", filename);
-//
-//    if (0 != fremove(filename)) {
-//        return err_file_delete_error;
-//    }
-//
-//    dictionary_get_filename(id, "lhd", filename);
-//
-//    if (0 != fremove(filename)) {
-//        return err_file_delete_error;
-//    }
+    char filename[ION_MAX_FILENAME_LENGTH];
+
+    dictionary_get_filename(id, "lhs", filename);
+
+    if (0 != fremove(filename)) {
+        return err_file_delete_error;
+    }
+
+    dictionary_get_filename(id, "lhd", filename);
+
+    if (0 != fremove(filename)) {
+        return err_file_delete_error;
+    }
 
     return err_ok;
 }
@@ -156,12 +156,19 @@ ion_err_t
 ion_linear_hash_delete_dictionary(
         ion_dictionary_t *dictionary
 ) {
-    ion_linear_hash_close_dictionary(dictionary);
-//    ion_err_t result = linear_hash_destroy((ion_linear_hash_table_t *) dictionary->instance);
+    ion_dictionary_id_t id = dictionary->instance->id;
+    ion_err_t err;
+    err = ion_linear_hash_close_dictionary(dictionary);
+    if (err_ok != err) {
+        return err;
+    }
+    err = ion_linear_hash_destroy_dictionary(id);
+    if (err_ok != err) {
+        return err;
+    }
     free(dictionary->instance);
     dictionary->instance = NULL;
-//    return result;
-    return err_ok;
+    return err;
 }
 
 ion_err_t
@@ -179,17 +186,13 @@ ion_err_t
 ion_linear_hash_close_dictionary(
         ion_dictionary_t *dictionary
 ) {
-    ion_err_t err = ion_linear_hash_close((ion_linear_hash_table_t *) dictionary->instance);
+    ion_err_t err = err_ok;
+    err = ion_linear_hash_close((ion_linear_hash_table_t *) dictionary->instance);
     if (dictionary->instance != NULL) {
         free(dictionary->instance);
         dictionary->instance = NULL;
     }
-
-    if (err_ok != err) {
-        return err;
-    }
-
-    return err_ok;
+    return err;
 }
 
 ion_status_t

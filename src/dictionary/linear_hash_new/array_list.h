@@ -42,7 +42,7 @@
 extern "C" {
 #endif
 
-#define ARRAY_LIST_END_OF_LIST			-1
+#define ARRAY_LIST_END_OF_LIST            -1
 
 /* SIMPLE ARRAY_LIST FOR BUCKET MAP */
 typedef struct {
@@ -96,6 +96,36 @@ ion_array_list_get(
         int index,
         ion_array_list_t *array_list
 );
+
+/**
+ * @brief Frees all memory for an array list.
+ * @param[in] array_list
+ *                  The array list to free.
+ */
+void
+ion_array_list_destroy(ion_array_list_t *array_list);
+
+/**
+ * @brief Writes an array list to the current seek position in a file.
+ * @param[in] file
+ *              The file to write to
+ * @param[in] array_list
+ *              The array list to write.
+ * @return err_ok if successful, err_file_write_error if a write failure occurred.
+ */
+ion_err_t
+ion_array_list_save_to_file(FILE *file, ion_array_list_t *array_list);
+
+/**
+ * @brief Initializes a
+ * @param[in] file
+ *              The file to read from at the current seek position
+ * @param[in] array_list
+ *              The array list to use. This should be created already.
+ * @return err_ok if successful, err_file_read_error if the file could not be read.
+ */
+ion_err_t
+ion_array_list_init_from_file(FILE *file, ion_array_list_t *array_list);
 
 #if defined(__cplusplus)
 }

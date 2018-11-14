@@ -36,7 +36,7 @@
 
 #if !defined(LINEAR_HASH_H)
 #define LINEAR_HASH_H
-#define LINEAR_HASH_DEBUG 0
+#define LINEAR_HASH_DEBUG 1
 
 #include <stdio.h>
 #include "../dictionary_types.h"
@@ -109,7 +109,7 @@ ion_err_t ion_linear_hash_split(
 );
 
 /**
- * @brief Closes the linear hash table by close open files and freeing buffer memory.
+ * @brief Closes the linear hash table by saving the state and database, closing open files, and freeing buffer memory.
  * @param lht The linear hash table to close
  * @return The error if any
  */

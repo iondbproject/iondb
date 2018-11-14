@@ -117,8 +117,20 @@ typedef struct {
      * The second block cache used to load and write bucket blocks to the file.
      */
     ion_byte_t *block2;
+
+    /**
+     * The array list containing the index to block mapping
+     */
     ion_array_list_t *bucket_map;
+
+    /**
+     * The database file
+     */
     FILE *database;
+
+    /**
+     * The state file.
+     */
     FILE *state;
 
     /**
