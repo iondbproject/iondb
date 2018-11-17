@@ -121,5 +121,4 @@ ion_array_list_init_from_file(FILE *file, ion_array_list_t *array_list) {
 void
 ion_array_list_destroy(ion_array_list_t *array_list) {
     free(array_list->data);
-    free(array_list);
 }

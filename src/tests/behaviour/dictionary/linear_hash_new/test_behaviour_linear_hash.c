@@ -1,9 +1,9 @@
 /******************************************************************************/
 /**
 @file		test_behaviour_linear_hash.c
-@author		Spencer MacBeth
+@author		Andrew Feltham, Spencer MacBeth
 @brief		Behaviour tests for the flat file implementation.
-@copyright	Copyright 2017
+@copyright	Copyright 2018
 			The University of British Columbia,
 			IonDB Project Contributors (see AUTHORS.md)
 @par Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@
 
 void
 runalltests_behaviour_linear_hash(
-	void
+        void
 ) {
-	bhdct_run_tests(ion_linear_hash_dict_init, 15, ION_BHDCT_ALL_TESTS);
+    bhdct_run_tests(ion_linear_hash_dict_init, 15, ION_BHDCT_ALL_TESTS);
 }

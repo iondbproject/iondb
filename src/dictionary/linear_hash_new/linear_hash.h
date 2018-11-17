@@ -36,7 +36,7 @@
 
 #if !defined(LINEAR_HASH_H)
 #define LINEAR_HASH_H
-#define LINEAR_HASH_DEBUG 1
+#define LINEAR_HASH_DEBUG 0
 
 #include <stdio.h>
 #include "../dictionary_types.h"
@@ -123,6 +123,9 @@ ion_err_t ion_linear_hash_close(ion_linear_hash_table_t *lht);
  */
 int
 ion_linear_hash_int_key_hash(ion_key_t key, ion_key_size_t key_size);
+
+int
+ion_linear_hash_generic_key_hash(ion_key_t key, ion_key_size_t key_size);
 
 #if defined(__cplusplus)
 }

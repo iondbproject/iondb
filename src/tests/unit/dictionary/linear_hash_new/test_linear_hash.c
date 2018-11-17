@@ -62,6 +62,45 @@ test_linear_hash_setup(planck_unit_test_t *tc, ion_linear_hash_table_t *lht) {
 }
 
 /**
+ * Creates a linear hash table
+ */
+void
+test_linear_hash_setup_char_value(planck_unit_test_t *tc, ion_linear_hash_table_t *lht, ion_value_size_t value_size) {
+    ion_err_t err = ion_linear_hash_init(
+            ++linear_hash_id,
+            key_type_numeric_signed,
+            sizeof(int),
+            value_size,
+            4,
+            85,
+            lht
+    );
+    lht->super.compare = dictionary_compare_signed_value;
+    lht->hash_key = ion_linear_hash_int_key_hash;
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+}
+
+/**
+ * Creates a linear hash table
+ */
+void
+test_linear_hash_setup_char_key_int_value(planck_unit_test_t *tc, ion_linear_hash_table_t *lht,
+                                          ion_key_size_t key_size) {
+    ion_err_t err = ion_linear_hash_init(
+            ++linear_hash_id,
+            key_type_char_array,
+            key_size,
+            sizeof(int),
+            4,
+            85,
+            lht
+    );
+    lht->super.compare = dictionary_compare_unsigned_value;
+    lht->hash_key = ion_linear_hash_int_key_hash;
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+}
+
+/**
  * Cleans up a linear hash table test
  */
 void
@@ -252,6 +291,54 @@ void test_linear_hash_get_finds_from_an_overflow_bucket(planck_unit_test_t *tc) 
     test_linear_hash_tear_down(tc, &table);
 }
 
+/**
+ * Tests that a int key with a char value can be retrieved.
+ */
+void test_linear_hash_get_char_value(planck_unit_test_t *tc) {
+    ion_linear_hash_table_t table;
+    const int size = 32;
+    char str[size];
+    strncpy(str, "Test This Thing", size);
+    int key = 654;
+    test_linear_hash_setup_char_value(tc, &table, (ion_value_size_t) size);
+
+    ion_status_t status = ion_linear_hash_insert(&key, &str, &table);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error)
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count)
+
+    char result[size];
+    status = ion_linear_hash_get(&key, &result, &table);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error)
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count)
+    PLANCK_UNIT_ASSERT_STR_ARE_EQUAL(tc, str, result)
+
+    test_linear_hash_tear_down(tc, &table);
+}
+
+/**
+ * Tests that a int key with a char value can be retrieved.
+ */
+void test_linear_hash_get_char_key(planck_unit_test_t *tc) {
+    ion_linear_hash_table_t table;
+    const int size = 32;
+    char str[size];
+    strncpy(str, "Test This Thing", size);
+    int value = 654;
+    test_linear_hash_setup_char_key_int_value(tc, &table, (ion_key_size_t) size);
+
+    ion_status_t status = ion_linear_hash_insert(&str, &value, &table);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error)
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count)
+
+    int result = 0;
+    status = ion_linear_hash_get(&str, &result, &table);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error)
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count)
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, value, result)
+
+    test_linear_hash_tear_down(tc, &table);
+}
+
 //endregion
 
 
@@ -379,6 +466,29 @@ void test_linear_hash_deletes_from_overflow_bucket(planck_unit_test_t *tc) {
     test_linear_hash_tear_down(tc, &table);
 }
 
+void test_linear_hash_delete_char_key(planck_unit_test_t *tc) {
+    ion_linear_hash_table_t table;
+    const int size = 32;
+    char str[size];
+    strncpy(str, "Test This Thing", size);
+    int value = 654;
+    test_linear_hash_setup_char_key_int_value(tc, &table, (ion_key_size_t) size);
+
+    ion_status_t status = ion_linear_hash_insert(&str, &value, &table);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error)
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count)
+
+    status = ion_linear_hash_delete(&str, &table);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error)
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count)
+
+    int result = 0;
+    status = ion_linear_hash_get(&str, &result, &table);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_item_not_found, status.error)
+
+    test_linear_hash_tear_down(tc, &table);
+}
+
 //endregion
 
 
@@ -407,7 +517,24 @@ test_linear_hash_split_adds_the_new_bucket_to_the_bucket_map(planck_unit_test_t 
 
 void
 test_linear_hash_triggers_a_split_at_the_threshold(planck_unit_test_t *tc) {
+    ion_linear_hash_table_t table;
+    test_linear_hash_setup(tc, &table);
+    int split_records =
+            (int) (table.records_per_bucket * table.current_size * (table.split_threshold / 100.0));
+    int current_size = table.current_size;
+    int expected_size = table.current_size + 1;
+    int i;
+    for (i = 0; i < split_records; ++i) {
+        test_linear_hash_insert(&table, tc, i, i, boolean_true);
+    }
 
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, current_size, table.current_size)
+
+    // Trigger a split with the insert record
+    test_linear_hash_insert(&table, tc, i, i, boolean_true);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_size, table.current_size)
+
+    test_linear_hash_tear_down(tc, &table);
 }
 
 /**
@@ -659,33 +786,37 @@ linear_hash_getsuite(
     planck_unit_suite_t *suite = planck_unit_new_suite();
 
     // Insert specific tests
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_insert_increments_bucket_header_count);
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_insert_creates_overflow_bucket);
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_insert_increments_num_records);
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_insert_adds_the_new_bucket_to_the_bucket_map);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_insert_increments_bucket_header_count);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_insert_creates_overflow_bucket);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_insert_increments_num_records);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_insert_adds_the_new_bucket_to_the_bucket_map);
 
     // Get specific tests
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_get_finds_from_an_overflow_bucket);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_get_finds_from_an_overflow_bucket);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_get_char_value);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_get_char_key);
 
 
     // Delete specific tests
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_delete_decrements_records_count);
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_delete);
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_delete_updates_bucket_header);
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_deletes_from_overflow_bucket);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_delete_decrements_records_count);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_delete);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_delete_updates_bucket_header);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_deletes_from_overflow_bucket);
     PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_delete_and_fills_gaps);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_delete_char_key);
 
     // Splitting
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_increments_the_split);
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_resets_when_the_size_doubles);
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_increments_the_initial_size_when_doubled);
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_adds_a_new_bucket);
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_creates_overflow_buckets);
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_adds_the_new_bucket_to_the_bucket_map);
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_keeps_the_same_record_count);
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_move_item_to_new_bucket);
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_verify_get_retrieves_items);
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_moves_records_in_buckets_to_fill_space);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_increments_the_split);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_resets_when_the_size_doubles);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_increments_the_initial_size_when_doubled);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_adds_a_new_bucket);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_creates_overflow_buckets);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_adds_the_new_bucket_to_the_bucket_map);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_keeps_the_same_record_count);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_move_item_to_new_bucket);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_verify_get_retrieves_items);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_moves_records_in_buckets_to_fill_space);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_triggers_a_split_at_the_threshold);
 
     return suite;
 }
