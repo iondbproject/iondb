@@ -193,11 +193,6 @@ ion_linear_hash_read_state(ion_linear_hash_table_t *table) {
         return err_file_read_error;
     }
 
-    // Initialize a new bucket map
-    if (NULL != table->bucket_map) {
-        ion_array_list_destroy(table->bucket_map);
-    }
-
     ion_array_list_t *bucket_map = malloc(sizeof(ion_array_list_t));
     if (NULL == bucket_map) {
         return err_out_of_memory;

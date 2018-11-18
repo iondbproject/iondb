@@ -93,10 +93,10 @@ ion_array_list_get(int index, ion_array_list_t *array_list) {
 
 ion_err_t
 ion_array_list_save_to_file(FILE *file, ion_array_list_t *array_list) {
-    if (1 != fwrite(&array_list->current_size, sizeof(int), 1, file)) {
+    if (1 != fwrite(&(array_list->current_size), sizeof(int), 1, file)) {
         return err_file_write_error;
     }
-    if (1 != fwrite(&array_list->data, array_list->current_size * sizeof(int), 1, file)) {
+    if (array_list->current_size != fwrite(array_list->data, sizeof(int), (size_t) array_list->current_size, file)) {
         return err_file_write_error;
     }
     return err_ok;
@@ -114,11 +114,11 @@ ion_array_list_init_from_file(FILE *file, ion_array_list_t *array_list) {
     if (1 != fread(array_list->data, sizeof(int) * size, 1, file)) {
         return err_file_read_error;
     }
-
     return 0;
-}
+    }
 
 void
 ion_array_list_destroy(ion_array_list_t *array_list) {
     free(array_list->data);
+    array_list->data = NULL;
 }

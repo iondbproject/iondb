@@ -776,7 +776,106 @@ test_linear_hash_split_increments_the_initial_size_when_doubled(planck_unit_test
     PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_size, table.initial_size);
     test_linear_hash_tear_down(tc, &table);
 }
+//endregion
 
+//region Save and restore
+
+void test_linear_hash_can_save_and_restore_records(planck_unit_test_t *tc) {
+    //Creates an instance of a linear hash
+    ion_linear_hash_table_t table;
+    test_linear_hash_setup(tc, &table);
+
+    int keys[100];
+    int values[100];
+
+    for (int i = 0; i < 100; ++i) {
+        test_linear_hash_insert(&table, tc, i, i, boolean_true);
+        keys[i] = i;
+        values[i] = i;
+    }
+    ion_dictionary_id_t id = table.super.id;
+    ion_err_t err = ion_linear_hash_close(&table);
+
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err)
+
+    ion_linear_hash_table_t new_table;
+    err = ion_linear_hash_init(
+            id,
+            key_type_numeric_signed,
+            sizeof(int),
+            sizeof(int),
+            4,
+            85,
+            &new_table
+    );
+    new_table.super.compare = dictionary_compare_signed_value;
+
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err)
+
+    int value = -1;
+    ion_status_t status;
+    for (int i = 0; i < 100; ++i) {
+        status = ion_linear_hash_get(IONIZE(i, int), IONIZE(value, int), &new_table);
+        PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error)
+        PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count)
+    }
+
+    test_linear_hash_tear_down(tc, &new_table);
+}
+//endregion
+
+//region arraylist
+
+void
+test_linear_hash_array_list_can_be_saved_and_restored(planck_unit_test_t *tc) {
+    ion_array_list_t list;
+    ion_err_t err;
+    err = ion_array_list_init(100, &list);
+
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err)
+
+    int values[100];
+    for (int i = 0; i < 100; i++) {
+        err = ion_array_list_insert(i, i, &list);
+        PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err)
+        values[i] = i;
+    }
+
+    FILE *file = fopen("arraylist.dat", "w+b");
+    err = ion_array_list_save_to_file(file, &list);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err)
+    ion_array_list_destroy(&list);
+
+    ion_array_list_t restored;
+    fseek(file, 0, SEEK_SET);
+    err = ion_array_list_init_from_file(file, &restored);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err)
+
+    for (int i = 0; i < 100; i++) {
+        int result = ion_array_list_get(i, &restored);
+        PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, values[i], result)
+    }
+
+    ion_array_list_destroy(&restored);
+}
+
+void
+test_linear_hash_array_list_destroy_frees_memory(planck_unit_test_t *tc) {
+    ion_array_list_t list;
+    ion_err_t err;
+    err = ion_array_list_init(100, &list);
+
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err)
+
+    int values[100];
+    for (int i = 0; i < 100; i++) {
+        err = ion_array_list_insert(i, i, &list);
+        PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err)
+        values[i] = i;
+    }
+    ion_array_list_destroy(&list);
+    PLANCK_UNIT_ASSERT_TRUE(tc, NULL == list.data)
+}
 
 //endregion
 
@@ -817,6 +916,13 @@ linear_hash_getsuite(
     PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_verify_get_retrieves_items);
     PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_moves_records_in_buckets_to_fill_space);
     PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_triggers_a_split_at_the_threshold);
+
+    // Saving and restoring
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_can_save_and_restore_records);
+
+    // Array List
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_array_list_can_be_saved_and_restored);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_array_list_destroy_frees_memory);
 
     return suite;
 }
