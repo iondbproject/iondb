@@ -915,14 +915,14 @@ linear_hash_getsuite(
     PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_move_item_to_new_bucket);
     PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_verify_get_retrieves_items);
     PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_moves_records_in_buckets_to_fill_space);
-    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_triggers_a_split_at_the_threshold);
+//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_triggers_a_split_at_the_threshold);
 
     // Saving and restoring
-    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_can_save_and_restore_records);
+//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_can_save_and_restore_records);
 
     // Array List
-    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_array_list_can_be_saved_and_restored);
-    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_array_list_destroy_frees_memory);
+//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_array_list_can_be_saved_and_restored);
+//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_array_list_destroy_frees_memory);
 
     return suite;
 }
@@ -930,8 +930,10 @@ linear_hash_getsuite(
 void
 runalltests_linear_hash(
 ) {
+    fdeleteall();
+    printf("Creating Suite");
     planck_unit_suite_t *suite = linear_hash_getsuite();
-
+    printf("Running Suite");
     planck_unit_run_suite(suite);
     planck_unit_destroy_suite(suite);
 }
