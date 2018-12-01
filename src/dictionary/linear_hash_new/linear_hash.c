@@ -206,34 +206,74 @@ ion_linear_hash_read_state(ion_linear_hash_table_t *table) {
 }
 
 ion_err_t ion_linear_hash_close(ion_linear_hash_table_t *table) {
-    ion_err_t err = ion_linear_hash_save_state(table);
+    ion_err_t err = err_ok;
+#if LINEAR_HASH_DEBUG_CLOSE
+    printf("Closing database\n");
+#endif
+    if (NULL != table->state) {
+#if LINEAR_HASH_DEBUG_CLOSE
+        printf("\tSaving the state\n");
+#endif
+        err = ion_linear_hash_save_state(table);
+    }
+#if LINEAR_HASH_DEBUG_CLOSE
+    printf("\tClearing block cache\n");
+#endif
     free(table->block1);
     free(table->block2);
+
+#if LINEAR_HASH_DEBUG_CLOSE
+    printf("\tClearing bucket map\n");
+#endif
     if (NULL != table->bucket_map) {
+#if LINEAR_HASH_DEBUG_CLOSE
+        printf("\tDestroying bucket map\n");
+#endif
         ion_array_list_destroy(table->bucket_map);
+#if LINEAR_HASH_DEBUG_CLOSE
+        printf("\tFreeing bucket map\n");
+#endif
         free(table->bucket_map);
     }
+#if LINEAR_HASH_DEBUG_CLOSE
+        printf("\tClosing files\n");
+#endif
     fclose(table->state);
     fclose(table->database);
     return err;
 }
 
 ion_err_t ion_linear_hash_initialize_new(ion_linear_hash_table_t *table) {
+#if LINEAR_HASH_DEBUG_INIT
+    printf("Initializing a new linear hash\n");
+#endif
     ion_err_t err;
 
     // Initialize the bucket map
+#if LINEAR_HASH_DEBUG_INIT
+    printf("\tInitializing a a new bucket map\n");
+#endif
     ion_array_list_t *bucket_map;
     bucket_map = malloc(sizeof(ion_array_list_t));
     if (NULL == bucket_map) {
+#if LINEAR_HASH_DEBUG_INIT
+        printf("\tUnable to initialize a new bucket map\n");
+#endif
         return err_out_of_memory;
     }
     table->bucket_map = bucket_map;
+#if LINEAR_HASH_DEBUG_INIT
+    printf("\tInitializing bucket map with %d spots\n", table->initial_size * 2);
+#endif
     err = ion_array_list_init(table->initial_size * 2, bucket_map);
     if (err_ok != err) {
         return err;
     }
 
-    // Create initial blocks
+        // Create initial blocks
+#if LINEAR_HASH_DEBUG_INIT
+    printf("\tInitializing %d blocks\n", table->initial_size);
+#endif
     for (int i = 0; i < table->initial_size; i++) {
         ion_linear_hash_initialize_new_bucket_for_idx(table->block1, i, table);
         err = ion_linear_hash_write_block(table->block1, i, table);
@@ -242,6 +282,9 @@ ion_err_t ion_linear_hash_initialize_new(ion_linear_hash_table_t *table) {
         }
         table->current_size++;
     }
+#if LINEAR_HASH_DEBUG_INIT
+    printf("\tCompleted initializing\n");
+#endif
     return err_ok;
 }
 
@@ -250,7 +293,9 @@ ion_err_t
 ion_linear_hash_init(ion_dictionary_id_t id, ion_key_type_t key_type, ion_key_size_t key_size,
                      ion_value_size_t value_size, int initial_size, int split_threshold,
                      ion_linear_hash_table_t *linear_hash) {
-
+#if LINEAR_HASH_DEBUG_INIT > 0
+    printf("Initializing with id: %d\n", id);
+#endif
     // Assign super dictionary info
     linear_hash->super.id = id;
     linear_hash->super.key_type = key_type;
@@ -269,6 +314,11 @@ ion_linear_hash_init(ion_dictionary_id_t id, ion_key_type_t key_type, ion_key_si
             (LINEAR_HASH_BLOCK_SIZE - sizeof(ion_linear_hash_bucket_t)) / (key_size + value_size);
     linear_hash->record_total_size = key_size + value_size;
 
+    // Initialize the bucket map to a null pointer as it is not created yet.
+    // This prevents some errors trying to free it if closing early
+    linear_hash->bucket_map = NULL;
+    linear_hash->block1 = NULL;
+    linear_hash->block2 = NULL;
 
     // Initialize the buffers
     linear_hash->block1 = malloc(LINEAR_HASH_BLOCK_SIZE);
@@ -295,18 +345,40 @@ ion_linear_hash_init(ion_dictionary_id_t id, ion_key_type_t key_type, ion_key_si
     linear_hash->state = fopen(state_filename, "r+b");
     linear_hash->database = fopen(data_filename, "r+b");
     if (NULL == linear_hash->state || NULL == linear_hash->database) {
+#if LINEAR_HASH_DEBUG_INIT > 0
+        printf("Could find an existing database or state\n");
+#endif
         // Initialize a new state
         fclose(linear_hash->state);
         fclose(linear_hash->database);
 
+#if LINEAR_HASH_DEBUG_INIT > 0
+        printf("Initializing new files\n");
+#endif
         // Initialize new files
-        linear_hash->state = fopen(state_filename, "w+b");
-        linear_hash->database = fopen(data_filename, "w+b");
+        linear_hash->state = fopen(state_filename, "w+");
+        linear_hash->database = fopen(data_filename, "w+");
 
         if (NULL == linear_hash->state || NULL == linear_hash->database) {
+#if LINEAR_HASH_DEBUG_INIT > 0
+            if (NULL == linear_hash->state) {
+                printf("Unable to initialize new state file, %s\n", state_filename);
+            }
+
+            if (NULL == linear_hash->database) {
+                printf("Unable to initialize new data file, %s\n", data_filename);
+            }
+#endif
             ion_linear_hash_close(linear_hash);
+#if LINEAR_HASH_DEBUG_INIT > 0
+            printf("Closed gracefully\n");
+#endif
             return err_file_open_error;
         }
+
+#if LINEAR_HASH_DEBUG_INIT > 0
+        printf("Created files %s, %s\n", state_filename, data_filename);
+#endif
 
         // Initialize the new linear hash
         ion_err_t err = ion_linear_hash_initialize_new(linear_hash);
@@ -316,10 +388,15 @@ ion_linear_hash_init(ion_dictionary_id_t id, ion_key_type_t key_type, ion_key_si
         }
 
     } else {
+#if LINEAR_HASH_DEBUG_INIT > 0
+        printf("Reading from existing state\n");
+#endif
+
         // Read the existing state
         ion_err_t err = ion_linear_hash_read_state(linear_hash);
         if (err_ok != err) {
             ion_linear_hash_close(linear_hash);
+            printf("Unable to read the existing state. Something has gone badly wrong.\n");
             return err;
         }
     }
@@ -328,8 +405,7 @@ ion_linear_hash_init(ion_dictionary_id_t id, ion_key_type_t key_type, ion_key_si
 
 //region Bucket Index Hashing
 
-int
-ion_key_to_bucket_index(ion_key_t key, ion_linear_hash_table_t *lht) {
+int ion_linear_hash_key_to_bucket_idx(ion_key_t key, ion_linear_hash_table_t *lht) {
     int hash = lht->hash_key(key, lht->super.record.key_size);
     int idx = ion_linear_hash_h0(hash, lht);
     if (idx < lht->next_split) {
@@ -364,7 +440,9 @@ ion_err_t ion_linear_hash_read_block(int block, ion_linear_hash_table_t *linear_
 //endregion
 
 ion_err_t ion_linear_hash_split(ion_linear_hash_table_t *lht) {
-
+#if LINEAR_HASH_DEBUG_SPLIT
+    printf("\nStarting split\n");
+#endif
     int current_split = lht->next_split;
     int new_idx = lht->current_size;
     int starting_blocks = lht->next_block;
@@ -478,11 +556,16 @@ ion_err_t ion_linear_hash_split(ion_linear_hash_table_t *lht) {
 
 ion_err_t
 ion_linear_hash_increment_num_records(ion_linear_hash_table_t *table) {
+#if LINEAR_HASH_DEBUG_INCREMENT
+    printf("Incrementing the number of records\n");
+#endif
     table->num_records++;
-    double numerator = (double) (100 * (table->num_records));
-    double denominator = (double) (table->current_size * table->records_per_bucket);
-    double load = numerator / denominator;
+    float load = (100.0f * table->num_records) / (table->current_size * table->records_per_bucket);
     ion_boolean_t above_threshold = (load > table->split_threshold);
+#if LINEAR_HASH_DEBUG_INCREMENT
+    printf("\tIncremented number of records to %d\n", table->num_records);
+    printf("\tLoad is now: %d\n", (int) load);
+#endif
     if (above_threshold) {
         return ion_linear_hash_split(table);
     }
@@ -507,7 +590,7 @@ ion_status_t ion_linear_hash_insert(
 #endif
 
 
-    int idx = ion_key_to_bucket_index(key, linear_hash);
+    int idx = ion_linear_hash_key_to_bucket_idx(key, linear_hash);
     int block = ion_array_list_get(idx, linear_hash->bucket_map);
 
 #if LINEAR_HASH_DEBUG > 0
@@ -582,7 +665,7 @@ ion_linear_hash_get(ion_key_t key, ion_value_t value, ion_linear_hash_table_t *l
 #endif
 
     // Calculate the block index
-    int idx = ion_key_to_bucket_index(key, linear_hash);
+    int idx = ion_linear_hash_key_to_bucket_idx(key, linear_hash);
 
     // Read the first bucket
     int block = ion_array_list_get(idx, linear_hash->bucket_map);
@@ -633,7 +716,7 @@ ion_linear_hash_delete(
     ion_status_t status = ION_STATUS_INITIALIZE;
 
     // Find the bucket index for this key
-    int idx = ion_key_to_bucket_index(key, lht);
+    int idx = ion_linear_hash_key_to_bucket_idx(key, lht);
 
 
     // Get the file block for the first bucket
@@ -734,7 +817,7 @@ ion_linear_hash_update(ion_key_t key, ion_value_t value, ion_linear_hash_table_t
     ion_status_t status = ION_STATUS_INITIALIZE;
 
     // Find the bucket index for this key
-    int idx = ion_key_to_bucket_index(key, lht);
+    int idx = ion_linear_hash_key_to_bucket_idx(key, lht);
 
     // The first file block to use
     int block = ion_array_list_get(idx, lht->bucket_map);

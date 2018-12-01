@@ -38,10 +38,13 @@
 #include "../behaviour_dictionary.h"
 #include "../../../../dictionary/linear_hash_new/linear_hash_handler.h"
 #include "test_behaviour_linear_hash.h"
+#include <stdio.h>
+#include "../../../../file/kv_stdio_intercept.h"
 
 void
 runalltests_behaviour_linear_hash(
         void
 ) {
+    fdeleteall();
     bhdct_run_tests(ion_linear_hash_dict_init, 15, ION_BHDCT_ALL_TESTS);
 }

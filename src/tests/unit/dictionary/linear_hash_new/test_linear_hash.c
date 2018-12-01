@@ -40,15 +40,28 @@
 #include "../../../../dictionary/dictionary.h"
 #include <time.h>
 
-unsigned int linear_hash_id = 0;
+ion_dictionary_id_t linear_hash_id = 0;
 
 /**
  * Creates a linear hash table
  */
 void
 test_linear_hash_setup(planck_unit_test_t *tc, ion_linear_hash_table_t *lht) {
+    fdeleteall();
+    char name[ION_MAX_FILENAME_LENGTH];
+
+    ion_dictionary_id_t id = linear_hash_id++;
+    dictionary_get_filename(id, "lhd", name);
+    printf("Trying to remove %s\n", name);
+    fremove(name);
+    dictionary_get_filename(id, "lhs", name);
+    printf("Trying to remove %s\n", name);
+    fremove(name);
+
+    printf("Test Setup with id %d\n", id);
+
     ion_err_t err = ion_linear_hash_init(
-            ++linear_hash_id,
+            id,
             key_type_numeric_signed,
             sizeof(int),
             sizeof(int),
@@ -107,8 +120,7 @@ void
 test_linear_hash_tear_down(planck_unit_test_t *tc, ion_linear_hash_table_t *lht) {
     ion_err_t err = ion_linear_hash_close(lht);
     PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
-    err = ion_linear_hash_destroy_dictionary(lht->super.id);
-    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+    ion_linear_hash_destroy_dictionary(lht->super.id);
 }
 
 /**
@@ -158,8 +170,8 @@ void test_linear_hash_insert(ion_linear_hash_table_t *lht, planck_unit_test_t *t
     int result_value = value - 1;
     if (boolean_true == verify) {
         status = ion_linear_hash_get(&key, &result_value, lht);
-        PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error)
-        PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count)
+        PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, status.error);
+        PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, status.count);
         PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, result_value, value);
     }
 }
@@ -841,13 +853,13 @@ test_linear_hash_array_list_can_be_saved_and_restored(planck_unit_test_t *tc) {
         values[i] = i;
     }
 
-    FILE *file = fopen("arraylist.dat", "w+b");
+    FILE *file = fopen("array.dat", "w+b");
     err = ion_array_list_save_to_file(file, &list);
     PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err)
     ion_array_list_destroy(&list);
-
+    fflush(file);
     ion_array_list_t restored;
-    fseek(file, 0, SEEK_SET);
+    frewind(file);
     err = ion_array_list_init_from_file(file, &restored);
     PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err)
 
@@ -855,8 +867,9 @@ test_linear_hash_array_list_can_be_saved_and_restored(planck_unit_test_t *tc) {
         int result = ion_array_list_get(i, &restored);
         PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, values[i], result)
     }
-
     ion_array_list_destroy(&restored);
+    fclose(file);
+    fremove("array.dat");
 }
 
 void
@@ -915,14 +928,14 @@ linear_hash_getsuite(
     PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_move_item_to_new_bucket);
     PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_split_verify_get_retrieves_items);
     PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_moves_records_in_buckets_to_fill_space);
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_triggers_a_split_at_the_threshold);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_triggers_a_split_at_the_threshold);
 
-    // Saving and restoring
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_can_save_and_restore_records);
+//     Saving and restoring
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_can_save_and_restore_records);
 
     // Array List
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_array_list_can_be_saved_and_restored);
-//    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_array_list_destroy_frees_memory);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_array_list_can_be_saved_and_restored);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_array_list_destroy_frees_memory);
 
     return suite;
 }
@@ -931,9 +944,10 @@ void
 runalltests_linear_hash(
 ) {
     fdeleteall();
-    printf("Creating Suite");
+    printf("Creating Suite\n");
     planck_unit_suite_t *suite = linear_hash_getsuite();
-    printf("Running Suite");
+    printf("Running Suite\n");
     planck_unit_run_suite(suite);
+    printf("Completed Suite\n");
     planck_unit_destroy_suite(suite);
 }

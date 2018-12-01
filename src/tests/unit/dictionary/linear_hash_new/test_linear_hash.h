@@ -34,13 +34,15 @@
 */
 /******************************************************************************/
 
-#if !defined(TEST_LINEAR_HASH_H)
-#define TEST_LINEAR_HASH_H
+#if !defined(TEST_LINEAR_HASH_NEW_H)
+#define TEST_LINEAR_HASH_NEW_H
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
+#include <stdio.h>
+#include "../../../../file/kv_stdio_intercept.h"
 #include "../../../planck-unit/src/planck_unit.h"
 #include "../../../../dictionary/linear_hash_new/linear_hash.h"
 #include "../../../../dictionary/linear_hash_new/linear_hash_handler.h"

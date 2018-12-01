@@ -36,7 +36,15 @@
 #ifndef IONDB_ARRAY_LIST_H
 #define IONDB_ARRAY_LIST_H
 
+#define ARRAY_LIST_DEBUG 0
+
 #include "../../key_value/kv_system.h"
+
+#ifdef ARDUINO
+
+#include "../../serial/serial_c_iface.h"
+
+#endif
 
 #if defined(__cplusplus)
 extern "C" {

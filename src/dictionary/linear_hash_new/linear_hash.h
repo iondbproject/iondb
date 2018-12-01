@@ -34,14 +34,27 @@
 */
 /******************************************************************************/
 
-#if !defined(LINEAR_HASH_H)
-#define LINEAR_HASH_H
+#if !defined(LINEAR_HASH_H_)
+#define LINEAR_HASH_H_
+
+// Granular debugging flags
 #define LINEAR_HASH_DEBUG 0
+#define LINEAR_HASH_DEBUG_STATE 1
+#define LINEAR_HASH_DEBUG_INIT 0
+#define LINEAR_HASH_DEBUG_CLOSE 0
+#define LINEAR_HASH_DEBUG_SAVE 1
+#define LINEAR_HASH_DEBUG_INCREMENT 0
+#define LINEAR_HASH_DEBUG_SPLIT 0
 
 #include <stdio.h>
 #include "../dictionary_types.h"
 #include "linear_hash_types.h"
 #include "../../file/kv_stdio_intercept.h"
+
+// printf for Ardunio
+#ifdef ARDUINO
+#include "../../serial/serial_c_iface.h"
+#endif
 
 #if defined(__cplusplus)
 extern "C" {
@@ -126,6 +139,9 @@ ion_linear_hash_int_key_hash(ion_key_t key, ion_key_size_t key_size);
 
 int
 ion_linear_hash_generic_key_hash(ion_key_t key, ion_key_size_t key_size);
+
+int
+ion_linear_hash_key_to_bucket_idx(ion_key_t key, ion_linear_hash_table_t *lht);
 
 #if defined(__cplusplus)
 }

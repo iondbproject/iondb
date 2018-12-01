@@ -231,7 +231,8 @@ benchmark_gets(long dictionary_size, long num_gets, ion_dictionary_handler_t *ha
 
 
 void
-benchmark_log_deletes(long count, int hits, unsigned long time, ion_linear_hash_table_t *lht) {
+benchmark_log_deletes(long count, int hits, unsigned long time, ion_linear_hash_table_t *lht, int num_records_initial,
+                      int table_size_initial, int buckets_initial) {
     FILE *log = fopen("deletes.csv", "a+");
 
     if (NULL == log) {
@@ -239,7 +240,7 @@ benchmark_log_deletes(long count, int hits, unsigned long time, ion_linear_hash_
         return;
     }
     fseek(log, 0, SEEK_SET);
-    char *header = "Number of keys,Number deleted,Time Total(ms),Records in Table (final), Table Size(final), Total Buckets (incl overflow)(final)\n";
+    char *header = "Number of keys,Number deleted,Time Total(ms),Records in Table (initial),Records in Table (final), Table Size(initial),Table Size(final), Total Buckets (incl overflow)(initial), Total Buckets (incl overflow)(final)\n";
 
     fread(str, strlen(header), 1, log);
 
@@ -251,12 +252,15 @@ benchmark_log_deletes(long count, int hits, unsigned long time, ion_linear_hash_
     int size = snprintf(
             str,
             200,
-            "%li,%i,%li,%d,%d,%d\n",
+            "%li,%i,%li,%d,%d,%d,%d,%d,%d\n",
             count,
             hits,
             time,
+            num_records_initial,
             lht->num_records,
+            table_size_initial,
             lht->current_size,
+            buckets_initial,
             lht->total_buckets
     );
     if (size < 0 || size > 200) {
@@ -284,8 +288,13 @@ benchmark_deletes(long dictionary_size, long num_deletes, ion_dictionary_handler
 
     dict = bench_dictionary_create(handler);
     if (NULL != dict) {
+        lfsr_reset(&lfsr);
         bench_insert_records_random(dict, dictionary_size);
         lfsr_reset(&lfsr);
+        ion_linear_hash_table_t *table = (ion_linear_hash_table_t *) dict->instance;
+        int records_initial = table->num_records;
+        int table_size = table->current_size;
+        int num_buckets = table->total_buckets;
         unsigned long start = ion_time();
         int hits = 0;
         ion_status_t status;
@@ -298,7 +307,8 @@ benchmark_deletes(long dictionary_size, long num_deletes, ion_dictionary_handler
         printf("Tried to delete %li randomish records from a table with %li records in %lu (ms). (%d hits)\n",
                num_deletes,
                dictionary_size, time, hits);
-        benchmark_log_deletes(num_deletes, hits, time, (ion_linear_hash_table_t *) dict->instance);
+        benchmark_log_deletes(num_deletes, hits, time, (ion_linear_hash_table_t *) dict->instance, records_initial,
+                              table_size, num_buckets);
         dictionary_delete_dictionary(dict);
         free(dict);
     } else {
@@ -308,6 +318,7 @@ benchmark_deletes(long dictionary_size, long num_deletes, ion_dictionary_handler
 }
 
 void run_benchmarks() {
+    fdeleteall()
     printf("Initializing benchmarks\n");
     lfsr_init_start_state(1231, &lfsr);
     ion_dictionary_handler_t handler;
