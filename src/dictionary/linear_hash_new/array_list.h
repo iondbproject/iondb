@@ -40,12 +40,6 @@
 
 #include "../../key_value/kv_system.h"
 
-#ifdef ARDUINO
-
-#include "../../serial/serial_c_iface.h"
-
-#endif
-
 #if defined(__cplusplus)
 extern "C" {
 #endif

@@ -45,6 +45,9 @@
 #define LINEAR_HASH_DEBUG_SAVE 1
 #define LINEAR_HASH_DEBUG_INCREMENT 0
 #define LINEAR_HASH_DEBUG_SPLIT 0
+#define LINEAR_HASH_DEBUG_ERRORS 0
+#define LINEAR_HASH_DEBUG_WRITE_BLOCK 0
+#define LINEAR_HASH_DEBUG_READ_BLOCK 0
 
 #include <stdio.h>
 #include "../dictionary_types.h"
