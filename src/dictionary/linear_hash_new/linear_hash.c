@@ -37,6 +37,7 @@
 #include "linear_hash.h"
 #include "../../key_value/kv_system.h"
 #include <stdio.h>
+#include <limits.h>
 #include "../../file/kv_stdio_intercept.h"
 #include "../dictionary.h"
 
@@ -74,6 +75,11 @@ ion_linear_hash_debug_print_bucket(
  */
 ion_err_t
 ion_linear_hash_initialize_new_bucket_for_idx(ion_byte_t *block, int idx, ion_linear_hash_table_t *lht) {
+    // Preconditions
+    if(INT_MAX == lht->total_buckets){
+        return err_out_of_bounds;
+    }
+
     memset(block, 0, LINEAR_HASH_BLOCK_SIZE);
     ion_linear_hash_bucket_t *bucket;
     bucket = (ion_linear_hash_bucket_t *) block;
@@ -242,7 +248,7 @@ ion_err_t ion_linear_hash_close(ion_linear_hash_table_t *table) {
         free(table->bucket_map);
     }
 #if LINEAR_HASH_DEBUG_CLOSE
-    printf("\tClosing files\n");
+        printf("\tClosing files\n");
 #endif
     fclose(table->state);
     fclose(table->database);
@@ -582,13 +588,22 @@ ion_linear_hash_increment_num_records(ion_linear_hash_table_t *table) {
     return err_ok;
 }
 
+ion_err_t
+ion_linear_hash_insert_preconditions(ion_linear_hash_table_t *lht) {
+    // Verify we aren't overflowing the maximum size
+    if (UINT32_MAX == lht->num_records) {
+        return err_out_of_bounds;
+    }
+    return err_ok;
+}
+
 ion_status_t ion_linear_hash_insert(
         ion_key_t key,
         ion_value_t value,
         ion_linear_hash_table_t *linear_hash
 ) {
 
-#if LINEAR_HASH_DEBUG > 0
+#if LINEAR_HASH_DEBUG
     printf("\n********** Insert **********\n");
     printf("\nInserting with key: ");
     char str[linear_hash->super.record.key_size];
@@ -599,11 +614,16 @@ ion_status_t ion_linear_hash_insert(
     printf("\n");
 #endif
 
+    ion_err_t err = ion_linear_hash_insert_preconditions(linear_hash);
+
+    if (err != err_ok) {
+        return ION_STATUS_ERROR(err);
+    }
 
     int idx = ion_linear_hash_key_to_bucket_idx(key, linear_hash);
     int block = ion_array_list_get(idx, linear_hash->bucket_map);
 
-#if LINEAR_HASH_DEBUG > 0
+#if LINEAR_HASH_DEBUG
     printf("\n\tInto bucket index %d at block %d\n", idx, block);
 #endif
     // Invalid block index (shouldn't happen)
@@ -614,7 +634,7 @@ ion_status_t ion_linear_hash_insert(
     ion_byte_t *buffer = linear_hash->block1;
 
     // Read the block from the file
-    ion_err_t err = ion_linear_hash_read_block(block, linear_hash, buffer);
+    err = ion_linear_hash_read_block(block, linear_hash, buffer);
     if (err_ok != err) {
 #if LINEAR_HASH_DEBUG_ERRORS
         printf("Insert failed to read block %d with error %d. Current blocks: [0..%d)\n", block, err,
@@ -737,7 +757,7 @@ ion_linear_hash_delete(
         ion_key_t key,
         ion_linear_hash_table_t *lht
 ) {
-#if LINEAR_HASH_DEBUG > 0
+#if LINEAR_HASH_DEBUG
     printf("\nDeleting with key: ");
     char str[lht->super.record.key_size];
     strncpy(str, key, (size_t) lht->super.record.key_size);
@@ -753,7 +773,7 @@ ion_linear_hash_delete(
     // Load the bucket to split
     int block = ion_array_list_get(idx, lht->bucket_map);
 
-#if LINEAR_HASH_DEBUG > 0
+#if LINEAR_HASH_DEBUG
     printf("\tFrom bucket %d at block %d\n", idx, block);
 #endif
 
@@ -778,31 +798,35 @@ ion_linear_hash_delete(
     // Inserting pointer to shrink gaps
     ion_byte_t *insert_ptr;
 
+    ion_boolean_t dirty;
+
     while (!terminal) {
         // Initialize for each bucket
+        dirty = boolean_false;
         record_count = bucket->records;
         insert_ptr = buffer + sizeof(ion_linear_hash_bucket_t);
         read_ptr = buffer + sizeof(ion_linear_hash_bucket_t);
 
         for (int i = 0; i < record_count; i++) {
-#if LINEAR_HASH_DEBUG > 0
+#if LINEAR_HASH_DEBUG
             char strkey[lht->super.record.key_size];
             strncpy(strkey, read_ptr, (size_t) lht->super.record.key_size);
             printf("\tComparing to key %s\n", strkey);
 #endif
             if (0 == lht->super.compare(read_ptr, key, lht->super.record.key_size)) {
                 // We should delete this record.
-#if LINEAR_HASH_DEBUG > 0
+#if LINEAR_HASH_DEBUG
                 printf("\t\tDeleting this record\n");
 #endif
                 status.count++;
                 memset(read_ptr, 0, (size_t) lht->record_total_size);
                 bucket->records--;
                 lht->num_records--;
+                dirty = boolean_true;
                 // Don't increment the insert_ptr, we will insert to this location
             } else {
                 if (insert_ptr != read_ptr) {
-#if LINEAR_HASH_DEBUG > 0
+#if LINEAR_HASH_DEBUG
                     printf("\t\tShifting the record up\n");
 #endif
                     // Shift this record to the insert spot
@@ -815,18 +839,20 @@ ion_linear_hash_delete(
 
         // TODO: We leave empty buckets in the chain for the moment, discuss about removing or changing how overflow works.
 
-        status.error = ion_linear_hash_write_block(buffer, bucket->block, lht);
-        if (err_ok != status.error) {
-            return status;
+        if(boolean_true == dirty) {
+            status.error = ion_linear_hash_write_block(buffer, bucket->block, lht);
+            if (err_ok != status.error) {
+                return status;
+            }
         }
 
         if (LINEAR_HASH_NO_OVERFLOW == bucket->overflow_block) {
-#if LINEAR_HASH_DEBUG > 0
+#if LINEAR_HASH_DEBUG
             printf("\tNo more overflow buckets\n");
 #endif
             terminal = boolean_true;
         } else {
-#if LINEAR_HASH_DEBUG > 0
+#if LINEAR_HASH_DEBUG
             printf("\tReading overflow bucket from block %d from block %d\n", bucket->overflow_block, bucket->block);
 #endif
             status.error = ion_linear_hash_read_block(bucket->overflow_block, lht, buffer);

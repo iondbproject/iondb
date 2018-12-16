@@ -89,7 +89,7 @@ typedef struct {
     /**
      * The total number of records in the hash table in all top level buckets and all overflow buckets.
      */
-    int num_records;
+    uint32_t num_records;
 
     /**
      * The total number of records that can be stored in a bucket. Automatically calculated from the size of the bucket
