@@ -316,7 +316,7 @@ benchmark_log_gets(uint32_t count, uint32_t hits, uint32_t failures, uint32_t no
         return;
     }
     fseek(log, 0, SEEK_SET);
-    char *header = "Ops,Hits,Fails,Time(ms),RecordsCnt,TableSize,Buckets,InsertTime(ms),BlkR,BlkW\n";
+    char *header = "Ops,Hits,Fails,NotFnd,Time(ms),RecordsCnt,TableSize,Buckets,InsertTime(ms),BlkR,BlkW\n";
 
     fread(str, strlen(header), 1, log);
 
@@ -326,7 +326,7 @@ benchmark_log_gets(uint32_t count, uint32_t hits, uint32_t failures, uint32_t no
     int size = snprintf(
             str,
             200,
-            "%lu,%lu,%lu,%lu,%li,%lu,%d,%d,%lu,%lu,%lu\n",
+            "%lu,%lu,%lu,%lu,%lu,%lu,%d,%d,%lu,%lu,%lu\n",
             (unsigned long) count,
             (unsigned long) hits,
             (unsigned long) failures,
