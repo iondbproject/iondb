@@ -142,6 +142,10 @@ typedef struct {
      * @param key The key to hash to an integer value
      */
     int (*hash_key)(ion_key_t key, ion_key_size_t key_size);
+
+    unsigned long ion_linear_hash_block_reads;
+
+    unsigned long ion_linear_hash_block_writes;
 } ion_linear_hash_table_t;
 
 typedef struct {
