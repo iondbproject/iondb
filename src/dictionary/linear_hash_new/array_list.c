@@ -37,6 +37,14 @@
 #include "array_list.h"
 #include "../linear_hash/linear_hash_types.h"
 #include <alloca.h>
+#include <stdio.h>
+#include "../../file/kv_stdio_intercept.h"
+
+#ifdef ARDUINO
+
+#include "../../serial/serial_c_iface.h"
+
+#endif
 
 ion_err_t
 ion_array_list_init(int init_size, ion_array_list_t *array_list) {
@@ -55,23 +63,47 @@ ion_err_t
 ion_array_list_insert(int index, int value, ion_array_list_t *array_list) {
     /* case we need to expand array */
     if (index >= array_list->current_size) {
+#if ARRAY_LIST_DEBUG
+        printf("Expanding array list to size %d\n", array_list->current_size * 2);
+        printf("Current list:\n\t[");
+        for (int i = 0; i < array_list->current_size; i++) {
+            printf("%d,", array_list->data[i]);
+        }
+        printf("]\n");
+#endif
         int old_size = array_list->current_size;
 
         array_list->current_size = array_list->current_size * 2;
 
-        ion_byte_t *bucket_map_cache = alloca(old_size * sizeof(int));
+        // Keep a copy of the current data
+        int *bucket_map_cache = array_list->data;
 
-        memcpy(bucket_map_cache, array_list->data, old_size * sizeof(int));
-        free(array_list->data);
+        // Allocate double the size
         array_list->data = NULL;
         array_list->data = malloc(2 * old_size * sizeof(int));
+        if (NULL == array_list->data) {
+#if ARRAY_LIST_DEBUG
+            printf("Failed to expand array list\n");
+#endif
+            free(array_list->data);
+            free(bucket_map_cache);
+            return err_out_of_memory;
+        }
+
+        // Expand the array list
         memset(array_list->data, 0, array_list->current_size * sizeof(int));
         memcpy(array_list->data, bucket_map_cache, old_size * sizeof(int));
 
-        if (NULL == array_list->data) {
-            free(array_list->data);
-            return err_out_of_memory;
+#if ARRAY_LIST_DEBUG
+        printf("Expanded array list:\n\t[");
+        for (int i = 0; i < array_list->current_size; i++) {
+            printf("%d,", array_list->data[i]);
         }
+        printf("]\n");
+#endif
+
+        // Make sure to free the old data
+        free(bucket_map_cache);
     }
 
     array_list->data[index] = value;
