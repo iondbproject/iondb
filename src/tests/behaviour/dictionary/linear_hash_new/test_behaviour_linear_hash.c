@@ -46,5 +46,5 @@ runalltests_behaviour_linear_hash(
         void
 ) {
     fdeleteall();
-    bhdct_run_tests(ion_linear_hash_dict_init, 15, ION_BHDCT_ALL_TESTS);
+    bhdct_run_tests(ion_linear_hash_dict_init, 8, ION_BHDCT_ALL_TESTS);
 }

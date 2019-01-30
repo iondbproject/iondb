@@ -101,15 +101,22 @@ ion_linear_hash_initialize_new_bucket_for_idx(ion_byte_t *block, int idx, ion_li
 
 ion_err_t
 ion_linear_hash_read_block(int block, ion_linear_hash_table_t *linear_hash, ion_byte_t *buffer) {
-    long offset = ((long) block) * LINEAR_HASH_BLOCK_SIZE;
+    unsigned long offset = ((long) block) * (unsigned long) (LINEAR_HASH_BLOCK_SIZE);
+
 #if LINEAR_HASH_DEBUG_READ_BLOCK
     printf("Reading block %d from offset %lu\n", block, offset);
 #endif
     if (0 != fseek(linear_hash->database, offset, SEEK_SET)) {
+#if LINEAR_HASH_DEBUG_READ_BLOCK
+        printf("Failed to seek\n");
+#endif
         return err_file_bad_seek;
     }
 
     if (1 != fread(buffer, LINEAR_HASH_BLOCK_SIZE, 1, linear_hash->database)) {
+#if LINEAR_HASH_DEBUG_READ_BLOCK
+        printf("Failed to read block\n");
+#endif
         return err_file_read_error;
     }
     linear_hash->ion_linear_hash_block_reads++;
@@ -296,7 +303,8 @@ ion_err_t ion_linear_hash_initialize_new(ion_linear_hash_table_t *table) {
 #if LINEAR_HASH_DEBUG_INIT
     printf("\tInitializing bucket map with %d spots\n", table->initial_size * 2);
 #endif
-    err = ion_array_list_init(table->initial_size * 2, bucket_map);
+//    err = ion_array_list_init(table->initial_size * 2, bucket_map);
+    err = ion_array_list_init(512, bucket_map);
     if (err_ok != err) {
         return err;
     }
@@ -358,6 +366,9 @@ ion_linear_hash_init(ion_dictionary_id_t id, ion_key_type_t key_type, ion_key_si
     linear_hash->block1 = malloc(LINEAR_HASH_BLOCK_SIZE);
     linear_hash->block2 = malloc(LINEAR_HASH_BLOCK_SIZE);
     if (linear_hash->block1 == NULL || linear_hash->block2 == NULL) {
+#if LINEAR_HASH_DEBUG_INIT
+        printf("Unable to allocate memory for main buffers");
+#endif
         ion_linear_hash_close(linear_hash);
         return err_out_of_memory;
     }
@@ -458,8 +469,6 @@ int ion_linear_hash_h1(int hash, ion_linear_hash_table_t *linear_hash) {
 
 //endregion
 
-
-
 ion_err_t ion_linear_hash_split(ion_linear_hash_table_t *lht) {
 #if LINEAR_HASH_DEBUG_SPLIT
     printf("\nStarting split\n");
@@ -470,12 +479,32 @@ ion_err_t ion_linear_hash_split(ion_linear_hash_table_t *lht) {
     // Load the bucket to split
     int block = ion_array_list_get(current_split, lht->bucket_map);
     ion_byte_t *current_buffer = lht->block1;
+
+#if LINEAR_HASH_DEBUG_SPLIT
+    printf("\nReading block %d\n", block);
+    printf("\nNext block %d\n", lht->next_block);
+#endif
+
     ion_err_t err = ion_linear_hash_read_block(block, lht, current_buffer);
+#if LINEAR_HASH_DEBUG_SPLIT
+    printf("Read block %d with err %d\n", block, err);
+#endif
     ion_linear_hash_bucket_t *current_bucket = (ion_linear_hash_bucket_t *) current_buffer;
 
     if (err_ok != err) {
         return err;
     }
+
+#if LINEAR_HASH_DEBUG_SPLIT
+    printf("Read block\n", block);
+    printf("Read block\n", block);
+    printf("Read block\n", block);
+    printf("Read block\n", block);
+    printf("Read block\n", block);
+    printf("Read block\n", block);
+    printf("Read block\n", block);
+    printf("Read block\n", block);
+#endif
 
     // Initialize a new bucket at the next available block
     ion_byte_t *new_buffer = lht->block2;
@@ -495,7 +524,6 @@ ion_err_t ion_linear_hash_split(ion_linear_hash_table_t *lht) {
     // Iterator
 
     while (!completed) {
-
         // Set read and write values for the current bucket
         num_records = current_bucket->records;
         insert_ptr_current = current_buffer + sizeof(ion_linear_hash_bucket_t);

@@ -839,6 +839,40 @@ void test_linear_hash_can_save_and_restore_records(planck_unit_test_t *tc) {
 //region arraylist
 
 void
+test_linear_hash_array_list_expands(planck_unit_test_t *tc) {
+    ion_array_list_t list;
+    ion_err_t err;
+    ion_array_list_init(256, &list);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 256, list.current_size)
+    err = ion_array_list_insert(256, 256, &list);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 512, list.current_size)
+    ion_array_list_destroy(&list);
+}
+
+void
+test_linear_hash_array_keeps_values_when_expanded(planck_unit_test_t *tc) {
+    ion_array_list_t list;
+    ion_err_t err;
+    ion_array_list_init(256, &list);
+    for (int i = 0; i < 256; i++) {
+        err = ion_array_list_insert(i, i, &list);
+        PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+    }
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 256, list.current_size)
+    err = ion_array_list_insert(256, 256, &list);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 512, list.current_size)
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err);
+
+    int value;
+    for (int i = 0; i < 256; i++) {
+        value = ion_array_list_get(i, &list);
+        PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, i, value);
+    }
+    ion_array_list_destroy(&list);
+}
+
+void
 test_linear_hash_array_list_can_be_saved_and_restored(planck_unit_test_t *tc) {
     ion_array_list_t list;
     ion_err_t err;
@@ -936,6 +970,8 @@ linear_hash_getsuite(
     // Array List
     PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_array_list_can_be_saved_and_restored);
     PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_array_list_destroy_frees_memory);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_array_keeps_values_when_expanded);
+    PLANCK_UNIT_ADD_TO_SUITE(suite, test_linear_hash_array_list_expands);
 
     return suite;
 }
