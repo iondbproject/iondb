@@ -70,6 +70,7 @@ add_subdirectory(src/dictionary/linear_hash)
 add_subdirectory(src/dictionary/linear_hash_new)
 add_subdirectory(src/benchmark/linear_hash_new_benchmarks)
 add_subdirectory(src/benchmark/block_write_benchmarks)
+add_subdirectory(src/benchmark/hash_benchmarks)
 
 add_subdirectory(src/tests/unit/iinq)
 add_subdirectory(src/tests/unit/dictionary/bpp_tree)
