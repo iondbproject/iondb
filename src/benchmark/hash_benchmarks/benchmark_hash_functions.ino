@@ -31,10 +31,11 @@ void test_hashfunction(uint32_t (*hashFunc)(char *, size_t), char *name) {
 
 void setup() {
     Serial.begin(BAUD_RATE);
-    test_hashfunction(sdbm, "sdbm");
-    test_hashfunction(jenkins, "jenkins");
-    test_hashfunction(fnv1a, "fnv1a");
-    test_hashfunction(djb2, "djb2");
+//    test_hashfunction(sdbm, "sdbm");
+//    test_hashfunction(jenkins, "jenkins");
+//    test_hashfunction(fnv1a, "fnv1a");
+//    test_hashfunction(djb2, "djb2");
+    test_hashfunction(SuperFastHash, "superfasthash");
 }
 
 void loop() {

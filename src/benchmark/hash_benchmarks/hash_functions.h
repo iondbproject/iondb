@@ -36,8 +36,22 @@ jenkins(char *key, size_t size);
 uint32_t
 fnv1a(char *key, size_t size);
 
+/**
+ * Implementation of djb2 simple hashing
+ * @param key
+ * @param size
+ * @return
+ */
 uint32_t
 djb2(char *key, size_t size);
+
+/**
+ * Implementation of SuperFastHash from http://www.azillionmonkeys.com/qed/hash.html
+ *
+ * Author: Paul Hsieh
+ * Licence: LGPL 2.1 license
+ */
+uint32_t SuperFastHash(char *data, size_t len);
 
 
 #endif //IONDB_HASH_FUNCTIONS_H
