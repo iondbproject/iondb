@@ -52,6 +52,21 @@ extern "C" {
 #define LINEAR_HASH_NO_OVERFLOW -1
 
 /**
+ * Defines the type for a hashed key
+ */
+typedef uint32_t ion_linear_hash_key_hash;
+
+/**
+ * Defines the type for the linear hash table bucket index for retrieving a top level bucket.
+ */
+typedef uint32_t ion_linear_hash_bucket_index;
+
+/**
+ * Defines the type for the block index
+ */
+typedef int ion_linear_hash_block_index_t;
+
+/**
  * Represents a linear hash table data
  */
 typedef struct {
@@ -64,12 +79,12 @@ typedef struct {
      * The initial size of the dictionary and the size of the direction when it has doubled. This is used to know when
      * to reset the split bucket.
      */
-    int initial_size;
+    ion_linear_hash_bucket_index initial_size;
 
     /**
      * The next bucket that will be split
      */
-    int next_split;
+    ion_linear_hash_bucket_index next_split;
 
     /**
      * The integer percent threshold that determines when a split is made.
@@ -79,12 +94,12 @@ typedef struct {
     /**
      * The current number of top level buckets in the linear hash table.
      */
-    int current_size;
+    ion_linear_hash_block_index_t current_size;
 
     /**
      * The total number of buckets in the linear hash table including overflow buckets.
      */
-    int total_buckets;
+    ion_linear_hash_block_index_t total_buckets;
 
     /**
      * The total number of records in the hash table in all top level buckets and all overflow buckets.
@@ -101,7 +116,7 @@ typedef struct {
      * The total count of blocks in use. This is used to know the next block in the file to use when a new bucket is
      * created.
      */
-    int next_block;
+    ion_linear_hash_block_index_t next_block;
 
     /**
      * Convience value for the total size (key + value) of a record in bytes.
@@ -141,18 +156,28 @@ typedef struct {
      *
      * @param key The key to hash to an integer value
      */
-    int (*hash_key)(ion_key_t key, ion_key_size_t key_size);
+    ion_linear_hash_key_hash (*hash_key_function)(ion_key_t key, ion_key_size_t key_size);
 
     unsigned long ion_linear_hash_block_reads;
 
     unsigned long ion_linear_hash_block_writes;
 } ion_linear_hash_table_t;
 
+/**
+ * Bucket header that stores the block index, next block in the chain, and number of records
+ */
 typedef struct {
-    int block;
+    ion_linear_hash_block_index_t block;
     int records;
-    int overflow_block;
+    ion_linear_hash_block_index_t overflow_block;
 } ion_linear_hash_bucket_t;
+
+/**
+ * Linear hash buffer that holds one file block
+ */
+typedef struct {
+    ion_byte_t buffer[LINEAR_HASH_BLOCK_SIZE];
+} ion_linear_hash_buffer_t;
 
 #if defined(__cplusplus)
 }

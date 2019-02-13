@@ -61,6 +61,24 @@
 
 #endif
 
+#ifdef LINEAR_HASH_DEBUG
+#define LH_DEBUG_PRINT(fmt, args...)    printf(fmt, ## args)
+#else
+#define LH_DEBUG_PRINT(fmt, args...)    /* Don't do anything in release builds */
+#endif
+
+#ifdef LINEAR_HASH_DEBUG_WRITE_BLOCK
+#define LH_WRITE_BLOCK_DEBUG_PRINT(fmt, args...)    printf(fmt, ## args)
+#else
+#define LH_WRITE_BLOCK_DEBUG_PRINT(fmt, args...)    /* Don't do anything in release builds */
+#endif
+
+#ifdef LINEAR_HASH_DEBUG_READ_BLOCK
+#define LH_READ_BLOCK_DEBUG_PRINT(fmt, args...)    printf(fmt, ## args)
+#else
+#define LH_READ_BLOCK_DEBUG_PRINT(fmt, args...)    /* Don't do anything in release builds */
+#endif
+
 #if defined(__cplusplus)
 extern "C" {
 #endif
@@ -73,9 +91,9 @@ extern "C" {
             Pointer to the linear hash instance (required for knowledge of the key-size)
 @return		An integer in the address space of the linear hash.
 */
-int
+ion_linear_hash_bucket_index
 ion_linear_hash_h0(
-        int hash,
+        ion_linear_hash_key_hash hash,
         ion_linear_hash_table_t *linear_hash
 );
 
@@ -87,11 +105,29 @@ ion_linear_hash_h0(
 				Pointer to the linear hash instance (required for knowledge of the key-size)
 @return		An integer in the address space of the linear hash.
 */
-int
+ion_linear_hash_bucket_index
 ion_linear_hash_h1(
-        int hash,
+        ion_linear_hash_key_hash hash,
         ion_linear_hash_table_t *linear_hash
 );
+
+/**
+ * @brief Hashes a key to a bucket index value using the linear hash function set in the
+ * linear hash table and the h0 and h1 functions
+ * @param key The key hash
+ * @param lht The linear hash table
+ * @return The bucket index for the given key.
+ */
+ion_linear_hash_bucket_index
+ion_linear_hash_key_to_bucket_idx(ion_key_t key, ion_linear_hash_table_t *lht);
+
+/**
+ * @brief Gets and returns the file block index where the top level bucket for the given index resides.
+ * @param bucket The index of the top level bucket to retrieve.
+ * @return The location of the bucket to use
+ */
+ion_linear_hash_block_index_t
+ion_linear_hash_block_index_for_bucket(ion_linear_hash_bucket_index bucket, ion_linear_hash_table_t *lht);
 
 /**
  * @brief Reads a bucket block from the database file
@@ -154,14 +190,18 @@ ion_err_t ion_linear_hash_close(ion_linear_hash_table_t *lht);
  * @param key_size The size of the key (not used)
  * @return the integer value of this key.
  */
-int
+ion_linear_hash_bucket_index
 ion_linear_hash_int_key_hash(ion_key_t key, ion_key_size_t key_size);
 
-int
-ion_linear_hash_generic_key_hash(ion_key_t key, ion_key_size_t key_size);
+/**
+ * Implementation of sdbm hash for generic key hashing
+ * @param key The key to hash
+ * @param key_size The size of the key to hash
+ * @return A hashed uint32 integer
+ */
+uint32_t
+ion_linear_hash_sdbm_hash(ion_key_t key, ion_key_size_t key_size);
 
-int
-ion_linear_hash_key_to_bucket_idx(ion_key_t key, ion_linear_hash_table_t *lht);
 
 #if defined(__cplusplus)
 }
