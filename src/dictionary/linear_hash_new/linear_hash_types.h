@@ -66,6 +66,58 @@ typedef uint32_t ion_linear_hash_bucket_index;
  */
 typedef int ion_linear_hash_block_index_t;
 
+enum buffer_type {
+    /**
+       * The buffer doesn't contain any reasonable data
+       */
+            EMPTY,
+    /**
+     * The buffer is a top level linear hash block.
+     */
+            DATA,
+
+    /**
+     * The buffer is an overflow block
+     */
+            OVERFLOW,
+
+    /**
+     * The block is for state or bucket maps
+     */
+            STATE,
+};
+
+/**
+ * A buffer to keep track of the type
+ */
+typedef struct {
+    /**
+     * Stores the 512 buffer that was read from the file.
+     */
+    ion_byte_t data[LINEAR_HASH_BLOCK_SIZE];
+
+    /**
+     * The type of buffer that was loaded.
+     */
+    enum buffer_type type;
+
+    /**
+     * Indicates if the block needs to be written to the file.
+     */
+    ion_boolean_t dirty;
+
+    /**
+     * The block index in the file where this block belongs.
+     */
+    ion_linear_hash_block_index_t block_index;
+
+    /**
+     * The error state of the last read
+     */
+    ion_err_t err;
+
+} ion_linear_hash_buffer_t;
+
 /**
  * Represents a linear hash table data
  */
@@ -126,12 +178,12 @@ typedef struct {
     /**
      * The first block cache used to load and write bucket blocks to the file
      */
-    ion_byte_t *block1;
+    ion_linear_hash_buffer_t *buffer1;
 
     /**
      * The second block cache used to load and write bucket blocks to the file.
      */
-    ion_byte_t *block2;
+    ion_linear_hash_buffer_t *buffer2;
 
     /**
      * The array list containing the index to block mapping
@@ -151,7 +203,7 @@ typedef struct {
     /**
      * The hashing function for a key to an int
      *
-     * Some premade hashing functions are provided and will automatically be used based on the type of key that is
+     * Some pre-made hashing functions are provided and will automatically be used based on the type of key that is
      * provided to the dictionary.
      *
      * @param key The key to hash to an integer value
@@ -171,13 +223,6 @@ typedef struct {
     int records;
     ion_linear_hash_block_index_t overflow_block;
 } ion_linear_hash_bucket_t;
-
-/**
- * Linear hash buffer that holds one file block
- */
-typedef struct {
-    ion_byte_t buffer[LINEAR_HASH_BLOCK_SIZE];
-} ion_linear_hash_buffer_t;
 
 #if defined(__cplusplus)
 }

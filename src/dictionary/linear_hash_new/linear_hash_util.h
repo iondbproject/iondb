@@ -40,15 +40,12 @@ ion_linear_hash_save_block_index_for_bucket(ion_linear_hash_bucket_index bucket,
 /**
  * Initializes the memory block to a new, empty block with no records.
  * @param block_num
- * @param block
+ * @param buffer
  * @param block_size
  * @param overflow_block
  */
 ion_err_t
-ion_linear_hash_initialize_new_bucket_for_idx(
-        ion_byte_t *block,
-        ion_linear_hash_bucket_index idx,
-        ion_linear_hash_table_t *lht
-);
+ion_linear_hash_initialize_new_bucket_for_idx(ion_linear_hash_buffer_t *buffer, ion_linear_hash_bucket_index idx,
+                                              ion_linear_hash_table_t *lht, enum buffer_type buffer_type);
 
 #endif //IONDB_LINEAR_HASH_UTIL_H

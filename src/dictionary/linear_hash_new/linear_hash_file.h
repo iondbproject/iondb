@@ -39,6 +39,7 @@
 
 #include "linear_hash_types.h"
 #include "linear_hash_macros.h"
+#include "linear_hash_util.h"
 #include "array_list.h"
 #include <stdio.h>
 #include "../../file/kv_stdio_intercept.h"
@@ -58,6 +59,16 @@ ion_err_t
 ion_linear_hash_read_block(int block, ion_linear_hash_table_t *linear_hash, ion_byte_t *buffer);
 
 /**
+ * @brief Reads a bucket block from the database file
+ * @param [in] block [in] The integer block number to read
+ * @param [in] linear_hash The linear hash instance containing the database to use
+ * @param [out] buffer A buffer of size for a block that the bucket block will be read into
+ * @return The error (if any)
+ */
+ion_err_t
+ion_linear_hash_read_block_file(ion_linear_hash_block_index_t block, FILE *file, ion_byte_t *buffer);
+
+/**
  * @brief Writes a bucket block to the database file, overwriting the current block
  * @param [in] bucket The bucket to write
  * @param [in] block The block number to write
@@ -68,6 +79,27 @@ ion_err_t
 ion_linear_hash_write_block(ion_byte_t *bucket, int block, ion_linear_hash_table_t *linear_hash);
 
 ion_err_t
+ion_linear_hash_write_block_file(ion_byte_t *data, ion_linear_hash_block_index_t block, FILE *file);
+
+/**
+ * @brief Reads a top level bucket block to a buffer using a given top level bucket index.
+ * @param linear_hash The linear hash table in use.
+ * @param bucket_index The bucket index
+ * @return The buffer containing the block and error state.
+ */
+ion_linear_hash_buffer_t *
+ion_linear_hash_read_data_block(ion_linear_hash_table_t *linear_hash, ion_linear_hash_bucket_index bucket_index);
+
+/**
+ * @brief Reads an overflow block using the specified block index.
+ * @param linear_hash The linear hash table in use.
+ * @param block_index The index of the overflow block.
+ * @return The buffer containing the block or error state.
+ */
+ion_linear_hash_buffer_t *
+ion_linear_hash_read_overflow_block(ion_linear_hash_table_t *linear_hash, ion_linear_hash_block_index_t block_index);
+
+ion_err_t
 ion_linear_hash_save_state(
         ion_linear_hash_table_t *table
 );
@@ -76,6 +108,9 @@ ion_err_t
 ion_linear_hash_read_state(
         ion_linear_hash_table_t *table
 );
+
+ion_err_t
+ion_linear_hash_write_buffer(ion_linear_hash_table_t *linear_hash_table, ion_linear_hash_buffer_t *buffer);
 
 #if defined(__cplusplus)
 }

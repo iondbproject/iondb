@@ -135,7 +135,7 @@ benchmark_block_reads_writes(int blocks, ion_dictionary_handler_t *handler) {
     int fail = 0;
     unsigned long start = ion_time();
     for (int i = 0; i < blocks; i++) {
-        err = ion_linear_hash_write_block(lht->block1, i, lht);
+        err = ion_linear_hash_write_block(lht->buffer1, i, lht);
         if (err_ok == err) {
             success++;
         } else {
@@ -149,7 +149,7 @@ benchmark_block_reads_writes(int blocks, ion_dictionary_handler_t *handler) {
     fail = 0;
     start = ion_time();
     for (int i = 0; i < blocks; i++) {
-        err = ion_linear_hash_read_block(i, lht, lht->block1);
+        err = ion_linear_hash_read_block(i, lht, lht->buffer1);
         if (err_ok == err) {
             success++;
         } else {

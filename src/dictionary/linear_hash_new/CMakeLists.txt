@@ -1,10 +1,19 @@
 cmake_minimum_required(VERSION 3.5)
 project(linear_hash_new)
 
+include_directories('.')
+
 set(SOURCE_FILES
+        linear_hash_types.h
+        linear_hash_file.h
+        linear_hash_file.c
+        linear_hash_hashing.h
+        linear_hash_hashing.c
+        linear_hash_macros.h
+        linear_hash_util.h
+        linear_hash_util.c
         linear_hash.h
         linear_hash.c
-        linear_hash_types.h
         linear_hash_handler.h
         linear_hash_handler.c
         ../dictionary.h
@@ -13,11 +22,7 @@ set(SOURCE_FILES
         ../../key_value/kv_system.h
         array_list.h
         array_list.c
-        linear_hash_file.c
-        linear_hash_file.h
-        linear_hash_hashing.c
-        linear_hash_hashing.h
-        linear_hash_macros.h linear_hash_util.c linear_hash_util.h)
+        )
 
 if(USE_ARDUINO)
     set(${PROJECT_NAME}_BOARD       ${BOARD})

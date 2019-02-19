@@ -6,18 +6,17 @@ ion_linear_hash_read_block(
         ion_linear_hash_table_t *linear_hash,
         ion_byte_t *buffer
 ) {
-
     unsigned long offset = ((long) block) * (unsigned long) (LINEAR_HASH_BLOCK_SIZE);
 
     LH_READ_BLOCK_DEBUG_PRINT("Reading block %d from offset %lu\n", block, offset);
 
     if (0 != fseek(linear_hash->database, offset, SEEK_SET)) {
-        LH_READ_BLOCK_DEBUG_PRINT("Failed to seek\n");
+        LH_READ_BLOCK_DEBUG_PRINT("Failed to seek %lu\n", offset);
         return err_file_bad_seek;
     }
 
     if (1 != fread(buffer, LINEAR_HASH_BLOCK_SIZE, 1, linear_hash->database)) {
-        LH_READ_BLOCK_DEBUG_PRINT("Failed to read block\n");
+        LH_READ_BLOCK_DEBUG_PRINT("Failed to read block %d\n", block);
         return err_file_read_error;
     }
 
@@ -36,7 +35,7 @@ ion_linear_hash_write_block(
     LH_WRITE_BLOCK_DEBUG_PRINT("Writing block %d to offset %lu\n", block, offset);
 
     if (0 != fseek(linear_hash->database, offset, SEEK_SET)) {
-        LH_WRITE_BLOCK_DEBUG_PRINT("Failed to seek\n");
+        LH_WRITE_BLOCK_DEBUG_PRINT("Failed to seek %lu\n", offset);
         return err_file_bad_seek;
     }
 
@@ -49,7 +48,33 @@ ion_linear_hash_write_block(
     return err_ok;
 }
 
-ion_err_t ion_linear_hash_save_state(ion_linear_hash_table_t *table) {
+ion_err_t
+ion_linear_hash_write_block_file(
+        ion_byte_t *data,
+        ion_linear_hash_block_index_t block,
+        FILE *file
+) {
+    long offset = ((long) block) * LINEAR_HASH_BLOCK_SIZE;
+
+    LH_WRITE_BLOCK_DEBUG_PRINT("Writing block %d to offset %lu\n", block, offset);
+
+    if (0 != fseek(file, offset, SEEK_SET)) {
+        LH_WRITE_BLOCK_DEBUG_PRINT("Failed to seek %lu\n", offset);
+        return err_file_bad_seek;
+    }
+
+    if (1 != fwrite(data, LINEAR_HASH_BLOCK_SIZE, 1, file)) {
+        LH_WRITE_BLOCK_DEBUG_PRINT("Failed to write block %d to offset %lu\n", block, offset);
+        return err_file_write_error;
+    }
+
+    return err_ok;
+}
+
+ion_err_t
+ion_linear_hash_save_state(
+        ion_linear_hash_table_t *table
+) {
     if (0 != fseek(table->state, 0, SEEK_SET)) {
         return err_file_bad_seek;
     }
@@ -95,7 +120,10 @@ ion_err_t ion_linear_hash_save_state(ion_linear_hash_table_t *table) {
     return err_ok;
 }
 
-ion_err_t ion_linear_hash_read_state(ion_linear_hash_table_t *table) {
+ion_err_t
+ion_linear_hash_read_state(
+        ion_linear_hash_table_t *table
+) {
     if (0 != fseek(table->state, 0, SEEK_SET)) {
         return err_file_bad_seek;
     }
@@ -147,4 +175,93 @@ ion_err_t ion_linear_hash_read_state(ion_linear_hash_table_t *table) {
     }
 
     return err_ok;
+}
+
+ion_err_t
+ion_linear_hash_read_block_file(
+        ion_linear_hash_block_index_t block,
+        FILE *file,
+        ion_byte_t *buffer
+) {
+    unsigned long offset = ((long) block) * (unsigned long) (LINEAR_HASH_BLOCK_SIZE);
+
+    LH_READ_BLOCK_DEBUG_PRINT("Reading block %d from offset %lu\n", block, offset);
+
+    if (0 != fseek(file, offset, SEEK_SET)) {
+        LH_READ_BLOCK_DEBUG_PRINT("\tFailed to seek %lu\n", offset);
+        return err_file_bad_seek;
+    }
+
+    if (1 != fread(buffer, LINEAR_HASH_BLOCK_SIZE, 1, file)) {
+        LH_READ_BLOCK_DEBUG_PRINT("\tFailed to read block %d\n", block);
+        return err_file_read_error;
+    }
+
+    return err_ok;
+}
+
+ion_linear_hash_buffer_t *
+ion_linear_hash_read_overflow_block(
+        ion_linear_hash_table_t *linear_hash,
+        ion_linear_hash_block_index_t block_index
+) {
+    ion_err_t err;
+    ion_linear_hash_buffer_t *buffer = linear_hash->buffer1;
+
+    err = ion_linear_hash_read_block_file(block_index, linear_hash->database, buffer->data);
+    buffer->err = err;
+    buffer->type = OVERFLOW;
+    buffer->dirty = boolean_false;
+    buffer->block_index = block_index;
+
+    if (err_ok == err) {
+        linear_hash->ion_linear_hash_block_reads++;
+    }
+
+    return buffer;
+}
+
+ion_linear_hash_buffer_t *
+ion_linear_hash_read_data_block(ion_linear_hash_table_t *linear_hash, ion_linear_hash_bucket_index bucket_index) {
+    ion_linear_hash_buffer_t *buffer = linear_hash->buffer1;
+    ion_linear_hash_block_index_t block = ion_linear_hash_block_index_for_bucket(bucket_index, linear_hash);
+    ion_err_t err;
+
+    if (ARRAY_LIST_END_OF_LIST == block) {
+        err = err_out_of_bounds;
+    } else {
+        err = ion_linear_hash_read_block_file(block, linear_hash->database, buffer->data);
+
+        if (err_ok == err) {
+            linear_hash->ion_linear_hash_block_reads++;
+        }
+    }
+
+    buffer->err = err;
+    buffer->block_index = block;
+    buffer->type = DATA;
+    buffer->dirty = boolean_false;
+    return buffer;
+}
+
+ion_err_t
+ion_linear_hash_write_buffer(
+        ion_linear_hash_table_t *linear_hash_table,
+        ion_linear_hash_buffer_t *buffer
+) {
+    ion_err_t err;
+    if (boolean_true == buffer->dirty) {
+        if ((DATA == buffer->type) || (OVERFLOW == buffer->type)) {
+            err = ion_linear_hash_write_block_file(buffer->data, buffer->block_index, linear_hash_table->database);
+            if (err_ok == err) {
+                buffer->dirty = boolean_false;
+                linear_hash_table->ion_linear_hash_block_writes++;
+            }
+        } else {
+            err = err_file_write_error;
+        }
+    } else {
+        err = err_ok;
+    }
+    return err;
 }

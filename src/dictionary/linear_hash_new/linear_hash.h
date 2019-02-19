@@ -47,7 +47,6 @@
 #include "linear_hash_util.h"
 
 
-
 #if defined(__cplusplus)
 extern "C" {
 #endif
