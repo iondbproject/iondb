@@ -1,4 +1,3 @@
-#include "../../../../../../cygwin64/usr/include/endian.h"/******************************************************************************/
 /**
 @file		linear_hash_hashing.h
 @author		Feltham
@@ -45,7 +44,7 @@
  * @return the integer value of this key.
  */
 ion_linear_hash_bucket_index
-ion_linear_hash_int_key_hash(ion_key_t key, ion_key_size_t __unused key_size);
+ion_linear_hash_int_key_hash(ion_key_t key, ion_key_size_t key_size);
 
 
 /**

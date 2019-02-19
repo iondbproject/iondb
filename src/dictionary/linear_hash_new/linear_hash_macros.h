@@ -9,11 +9,11 @@
  * Defines constants and debugging macros
  */
 // Granular debugging flags
-#define LINEAR_HASH_DEBUG 1
+#define LINEAR_HASH_DEBUG 0
 #define LINEAR_HASH_DEBUG_INSERT 0
 #define LINEAR_HASH_DEBUG_DELETE 0
 #define LINEAR_HASH_DEBUG_STATE 0
-#define LINEAR_HASH_DEBUG_INIT 0
+#define LINEAR_HASH_DEBUG_INIT 1
 #define LINEAR_HASH_DEBUG_CLOSE 0
 #define LINEAR_HASH_DEBUG_SAVE 0
 #define LINEAR_HASH_DEBUG_INCREMENT 0

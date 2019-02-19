@@ -1,7 +1,3 @@
-#include "../../../../../../cygwin64/usr/include/endian.h"//
-// Created by itsal on 2019-02-13.
-//
-
 #include "linear_hash_hashing.h"
 
 ion_linear_hash_key_hash
@@ -20,7 +16,7 @@ ion_linear_hash_sdbm_hash(
 ion_linear_hash_bucket_index
 ion_linear_hash_int_key_hash(
         ion_key_t key,
-        ion_key_size_t __unused key_size
+        ion_key_size_t key_size
 ) {
     return *(ion_linear_hash_bucket_index *) key;
 }
