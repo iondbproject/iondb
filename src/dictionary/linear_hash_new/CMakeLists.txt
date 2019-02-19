@@ -10,7 +10,14 @@ set(SOURCE_FILES
         ../dictionary.h
         ../dictionary.c
         ../dictionary_types.h
-        ../../key_value/kv_system.h array_list.h array_list.c)
+        ../../key_value/kv_system.h
+        array_list.h
+        array_list.c
+        linear_hash_file.c
+        linear_hash_file.h
+        linear_hash_hashing.c
+        linear_hash_hashing.h
+        linear_hash_macros.h linear_hash_util.c linear_hash_util.h)
 
 if(USE_ARDUINO)
     set(${PROJECT_NAME}_BOARD       ${BOARD})

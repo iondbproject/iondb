@@ -65,209 +65,6 @@ ion_linear_hash_debug_print_bucket(
 
 #endif
 
-ion_linear_hash_block_index_t
-ion_linear_hash_block_index_for_bucket(ion_linear_hash_bucket_index bucket, ion_linear_hash_table_t *lht) {
-    return ion_array_list_get((int) bucket, lht->bucket_map);
-}
-
-/**
- * Initializes the memory block to a new, empty block with no records.
- * @param block_num
- * @param block
- * @param block_size
- * @param overflow_block
- */
-ion_err_t
-ion_linear_hash_initialize_new_bucket_for_idx(
-        ion_byte_t *block,
-        ion_linear_hash_bucket_index idx,
-        ion_linear_hash_table_t *lht
-) {
-    /* Preconditions */
-    if (INT_MAX == lht->total_buckets) {
-        return err_out_of_bounds;
-    }
-
-    memset(block, 0, LINEAR_HASH_BLOCK_SIZE);
-
-    ion_linear_hash_bucket_t *bucket;
-
-    bucket = (ion_linear_hash_bucket_t *) block;
-    bucket->block = lht->next_block;
-    lht->next_block++;
-    bucket->records = 0;
-
-    if (idx < lht->current_size) {
-        int overflow = ion_linear_hash_block_index_for_bucket(idx, lht);
-
-        bucket->overflow_block = overflow;
-    } else {
-        bucket->overflow_block = LINEAR_HASH_NO_OVERFLOW;
-    }
-
-    lht->total_buckets++;
-    return ion_array_list_insert((int) idx, bucket->block, lht->bucket_map);
-}
-
-ion_err_t
-ion_linear_hash_read_block(
-        ion_linear_hash_block_index_t block,
-        ion_linear_hash_table_t *linear_hash,
-        ion_byte_t *buffer
-) {
-
-    unsigned long offset = ((long) block) * (unsigned long) (LINEAR_HASH_BLOCK_SIZE);
-
-    LH_READ_BLOCK_DEBUG_PRINT("Reading block %d from offset %lu\n", block, offset);
-
-    if (0 != fseek(linear_hash->database, offset, SEEK_SET)) {
-        LH_READ_BLOCK_DEBUG_PRINT("Failed to seek\n");
-        return err_file_bad_seek;
-    }
-
-    if (1 != fread(buffer, LINEAR_HASH_BLOCK_SIZE, 1, linear_hash->database)) {
-        LH_READ_BLOCK_DEBUG_PRINT("Failed to read block\n");
-        return err_file_read_error;
-    }
-
-    linear_hash->ion_linear_hash_block_reads++;
-    return err_ok;
-}
-
-ion_err_t
-ion_linear_hash_write_block(
-        ion_byte_t *bucket,
-        int block,
-        ion_linear_hash_table_t *linear_hash
-) {
-    long offset = ((long) block) * LINEAR_HASH_BLOCK_SIZE;
-
-#if LINEAR_HASH_DEBUG_WRITE_BLOCK
-    printf("Writing block %d to offset %lu\n", block, offset);
-#endif
-
-    if (0 != fseek(linear_hash->database, offset, SEEK_SET)) {
-        return err_file_bad_seek;
-    }
-
-    if (1 != fwrite(bucket, LINEAR_HASH_BLOCK_SIZE, 1, linear_hash->database)) {
-        return err_file_write_error;
-    }
-
-    linear_hash->ion_linear_hash_block_writes++;
-    return err_ok;
-}
-
-/* endregion */
-
-/* region Save State */
-
-ion_err_t
-ion_linear_hash_save_state(
-        ion_linear_hash_table_t *table
-) {
-    if (0 != fseek(table->state, 0, SEEK_SET)) {
-        return err_file_bad_seek;
-    }
-
-    if (1 != fwrite(&(table->initial_size), sizeof(table->initial_size), 1, table->state)) {
-        return err_file_read_error;
-    }
-
-    if (1 != fwrite(&table->next_split, sizeof(table->next_split), 1, table->state)) {
-        return err_file_read_error;
-    }
-
-    if (1 != fwrite(&table->split_threshold, sizeof(table->split_threshold), 1, table->state)) {
-        return err_file_read_error;
-    }
-
-    if (1 != fwrite(&table->current_size, sizeof(table->current_size), 1, table->state)) {
-        return err_file_read_error;
-    }
-
-    if (1 != fwrite(&table->total_buckets, sizeof(table->total_buckets), 1, table->state)) {
-        return err_file_read_error;
-    }
-
-    if (1 != fwrite(&table->num_records, sizeof(table->num_records), 1, table->state)) {
-        return err_file_read_error;
-    }
-
-    if (1 != fwrite(&table->records_per_bucket, sizeof(table->records_per_bucket), 1, table->state)) {
-        return err_file_read_error;
-    }
-
-    if (1 != fwrite(&table->next_block, sizeof(table->next_block), 1, table->state)) {
-        return err_file_read_error;
-    }
-
-    ion_err_t err = ion_array_list_save_to_file(table->state, table->bucket_map);
-
-    if (err_ok != err) {
-        return err;
-    }
-
-    return err_ok;
-}
-
-ion_err_t
-ion_linear_hash_read_state(
-        ion_linear_hash_table_t *table
-) {
-    if (0 != fseek(table->state, 0, SEEK_SET)) {
-        return err_file_bad_seek;
-    }
-
-    if (1 != fread(&(table->initial_size), sizeof(table->initial_size), 1, table->state)) {
-        return err_file_read_error;
-    }
-
-    if (1 != fread(&table->next_split, sizeof(table->next_split), 1, table->state)) {
-        return err_file_read_error;
-    }
-
-    if (1 != fread(&table->split_threshold, sizeof(table->split_threshold), 1, table->state)) {
-        return err_file_read_error;
-    }
-
-    if (1 != fread(&table->current_size, sizeof(table->current_size), 1, table->state)) {
-        return err_file_read_error;
-    }
-
-    if (1 != fread(&table->total_buckets, sizeof(table->total_buckets), 1, table->state)) {
-        return err_file_read_error;
-    }
-
-    if (1 != fread(&table->num_records, sizeof(table->num_records), 1, table->state)) {
-        return err_file_read_error;
-    }
-
-    if (1 != fread(&table->records_per_bucket, sizeof(table->records_per_bucket), 1, table->state)) {
-        return err_file_read_error;
-    }
-
-    if (1 != fread(&table->next_block, sizeof(table->next_block), 1, table->state)) {
-        return err_file_read_error;
-    }
-
-    ion_array_list_t *bucket_map = malloc(sizeof(ion_array_list_t));
-
-    if (NULL == bucket_map) {
-        return err_out_of_memory;
-    }
-
-    table->bucket_map = bucket_map;
-
-    ion_err_t err = ion_array_list_init_from_file(table->state, bucket_map);
-
-    if (err_ok != err) {
-        return err;
-    }
-
-    return err_ok;
-}
-
 ion_err_t
 ion_linear_hash_close(
         ion_linear_hash_table_t *table
@@ -506,37 +303,6 @@ ion_linear_hash_init(
     return err_ok;
 }
 
-ion_linear_hash_bucket_index
-ion_linear_hash_key_to_bucket_idx(
-        ion_key_t key,
-        ion_linear_hash_table_t *lht
-) {
-    ion_linear_hash_key_hash hash = lht->hash_key_function(key, lht->super.record.key_size);
-    ion_linear_hash_bucket_index idx = ion_linear_hash_h0(hash, lht);
-
-    if (idx < lht->next_split) {
-        idx = ion_linear_hash_h1(hash, lht);
-    }
-
-    return idx;
-}
-
-ion_linear_hash_bucket_index
-ion_linear_hash_h0(
-        ion_linear_hash_key_hash hash,
-        ion_linear_hash_table_t *linear_hash
-) {
-    return hash & (linear_hash->initial_size - 1);
-}
-
-ion_linear_hash_bucket_index
-ion_linear_hash_h1(
-        ion_linear_hash_key_hash hash,
-        ion_linear_hash_table_t *linear_hash
-) {
-    return hash & ((2 * linear_hash->initial_size) - 1);
-}
-
 //endregion
 
 ion_err_t
@@ -548,7 +314,7 @@ ion_linear_hash_split(
 #endif
 
     ion_linear_hash_bucket_index current_split = lht->next_split;
-    ion_linear_hash_block_index_t new_idx = lht->current_size;
+    ion_linear_hash_bucket_index new_idx = (ion_linear_hash_bucket_index) lht->current_size;
     ion_linear_hash_block_index_t starting_blocks = lht->next_block;
     /* Load the bucket to split */
     ion_linear_hash_block_index_t block = ion_linear_hash_block_index_for_bucket(current_split, lht);
@@ -692,38 +458,6 @@ ion_linear_hash_split(
     return err_ok;
 }
 
-ion_boolean_t
-ion_linear_hash_check_above_threshold(
-        ion_linear_hash_table_t *lht
-) {
-/*    long denominator = (lht->current_size * lht->records_per_bucket); */
-    float numerator = lht->num_records * 1.0;
-    float load = (numerator / lht->current_size / lht->records_per_bucket) * 100;
-    int load_int = (int) load;
-
-#if LINEAR_HASH_DEBUG_INCREMENT
-    printf("\tIncremented number of records to %lu, current size: %d, records per bucket: %d\n", (unsigned long) lht->num_records, lht->current_size, lht->records_per_bucket);
-#ifdef ARDUINO
-
-    char load_str[7];
-
-    dtostrf(load, 5, 2, load_str);
-    printf("\tLoad is now %s\n", load_str);
-    printf("\tLoad is now (int) %d\n", load_int);
-#else
-    printf("\tLoad is now %.2f\n", load);
-    printf("\tLoad is now (int) %d\n", load_int);
-#endif
-    printf("\tSplit threshold: %d\n", lht->split_threshold);
-#endif
-
-    if (load_int >= lht->split_threshold) {
-        return boolean_true;
-    }
-
-    return boolean_false;
-}
-
 ion_err_t
 ion_linear_hash_increment_num_records(
         ion_linear_hash_table_t *table
@@ -740,18 +474,6 @@ ion_linear_hash_increment_num_records(
         printf("\tTriggering Split\n");
 #endif
         return ion_linear_hash_split(table);
-    }
-
-    return err_ok;
-}
-
-ion_err_t
-ion_linear_hash_insert_preconditions(
-        ion_linear_hash_table_t *lht
-) {
-    /* Verify we aren't overflowing the maximum size */
-    if (UINT32_MAX == lht->num_records) {
-        return err_out_of_bounds;
     }
 
     return err_ok;
@@ -1139,23 +861,4 @@ ion_linear_hash_update(
     return status;
 }
 
-ion_linear_hash_bucket_index
-ion_linear_hash_int_key_hash(
-        ion_key_t key,
-        ion_key_size_t key_size
-) {
-    return *(ion_linear_hash_bucket_index *) key;
-}
 
-uint32_t
-ion_linear_hash_sdbm_hash(
-        ion_key_t key,
-        ion_key_size_t key_size
-) {
-    ion_byte_t *key_bytes = (ion_byte_t *) key;
-    uint32_t hash = 0;
-    for (int i = 0; i < key_size; i++) {
-        hash = key_bytes[i] + (hash << 6) + (hash << 16) - hash;
-    }
-    return hash;
-}

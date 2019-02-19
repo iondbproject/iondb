@@ -1,7 +1,7 @@
 /******************************************************************************/
 /**
-@file		linear_hash.h
-@author		Andrew Feltham.
+@file		linear_hash_file.h
+@author		Feltham
 			All rights reserved.
 @copyright	Copyright 2018
 			The University of British Columbia,
@@ -34,56 +34,51 @@
 */
 /******************************************************************************/
 
-#if !defined(LINEAR_HASH_H_)
-#define LINEAR_HASH_H_
+#ifndef IONDB_LINEAR_HASH_FILE_H
+#define IONDB_LINEAR_HASH_FILE_H
 
-#include <stdio.h>
-#include "../dictionary_types.h"
-#include "../../file/kv_stdio_intercept.h"
-#include "linear_hash_macros.h"
 #include "linear_hash_types.h"
-#include "linear_hash_hashing.h"
-#include "linear_hash_file.h"
-#include "linear_hash_util.h"
-
-
+#include "linear_hash_macros.h"
+#include "array_list.h"
+#include <stdio.h>
+#include "../../file/kv_stdio_intercept.h"
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-ion_err_t ion_linear_hash_init(ion_dictionary_id_t id, ion_key_type_t key_type, ion_key_size_t key_size,
-                               ion_value_size_t value_size, int initial_size, int split_threshold,
-                               ion_linear_hash_table_t *linear_hash);
-
-ion_status_t ion_linear_hash_insert(
-        ion_key_t key,
-        ion_value_t value,
-        ion_linear_hash_table_t *linear_hash
-);
-
-ion_status_t ion_linear_hash_delete(
-        ion_key_t key,
-        ion_linear_hash_table_t *lht
-);
-
-ion_status_t ion_linear_hash_get(ion_key_t key, ion_value_t value, ion_linear_hash_table_t *linear_hash);
-
-ion_status_t ion_linear_hash_update(ion_key_t key, ion_value_t value, ion_linear_hash_table_t *lht);
-
-ion_err_t ion_linear_hash_split(
-        ion_linear_hash_table_t *lht
-);
+/**
+ * @brief Reads a bucket block from the database file
+ * @param [in] block [in] The integer block number to read
+ * @param [in] linear_hash The linear hash instance containing the database to use
+ * @param [out] buffer A buffer of size for a block that the bucket block will be read into
+ * @return The error (if any)
+ */
+ion_err_t
+ion_linear_hash_read_block(int block, ion_linear_hash_table_t *linear_hash, ion_byte_t *buffer);
 
 /**
- * @brief Closes the linear hash table by saving the state and database, closing open files, and freeing buffer memory.
- * @param lht The linear hash table to close
- * @return The error if any
+ * @brief Writes a bucket block to the database file, overwriting the current block
+ * @param [in] bucket The bucket to write
+ * @param [in] block The block number to write
+ * @param [in] linear_hash The linear hash instance containing the database to use
+ * @return The error (if any)
  */
-ion_err_t ion_linear_hash_close(ion_linear_hash_table_t *lht);
+ion_err_t
+ion_linear_hash_write_block(ion_byte_t *bucket, int block, ion_linear_hash_table_t *linear_hash);
+
+ion_err_t
+ion_linear_hash_save_state(
+        ion_linear_hash_table_t *table
+);
+
+ion_err_t
+ion_linear_hash_read_state(
+        ion_linear_hash_table_t *table
+);
 
 #if defined(__cplusplus)
 }
 #endif
 
-#endif
+#endif //IONDB_LINEAR_HASH_FILE_H
