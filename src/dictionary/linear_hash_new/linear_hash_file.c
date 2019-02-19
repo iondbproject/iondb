@@ -208,7 +208,7 @@ ion_linear_hash_read_overflow_block(
     ion_err_t err;
     ion_linear_hash_buffer_t *buffer = linear_hash->buffer1;
 
-    err = ion_linear_hash_read_block_file(block_index, linear_hash->database, buffer->data);
+    err = ion_linear_hash_read_block_file(block_index, linear_hash->database, buffer->block.raw);
     buffer->err = err;
     buffer->type = OVERFLOW;
     buffer->dirty = boolean_false;
@@ -230,7 +230,7 @@ ion_linear_hash_read_data_block(ion_linear_hash_table_t *linear_hash, ion_linear
     if (ARRAY_LIST_END_OF_LIST == block) {
         err = err_out_of_bounds;
     } else {
-        err = ion_linear_hash_read_block_file(block, linear_hash->database, buffer->data);
+        err = ion_linear_hash_read_block_file(block, linear_hash->database, buffer->block.raw);
 
         if (err_ok == err) {
             linear_hash->ion_linear_hash_block_reads++;
@@ -252,7 +252,7 @@ ion_linear_hash_write_buffer(
     ion_err_t err;
     if (boolean_true == buffer->dirty) {
         if ((DATA == buffer->type) || (OVERFLOW == buffer->type)) {
-            err = ion_linear_hash_write_block_file(buffer->data, buffer->block_index, linear_hash_table->database);
+            err = ion_linear_hash_write_block_file(buffer->block.raw, buffer->block_index, linear_hash_table->database);
             if (err_ok == err) {
                 buffer->dirty = boolean_false;
                 linear_hash_table->ion_linear_hash_block_writes++;

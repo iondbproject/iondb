@@ -76,11 +76,11 @@ ion_linear_hash_initialize_new_bucket_for_idx(
 		return err_out_of_bounds;
 	}
 
-	memset(buffer->data, 0, LINEAR_HASH_BLOCK_SIZE);
+	memset(buffer->block.raw, 0, LINEAR_HASH_BLOCK_SIZE);
 
-	ion_linear_hash_bucket_t *bucket;
+	ion_linear_hash_bucket_header_t *bucket;
 
-	bucket				= (ion_linear_hash_bucket_t *) buffer->data;
+	bucket				= &buffer->block.bucket.header;
 	bucket->block		= lht->next_block;
 	buffer->block_index = bucket->block;
 	buffer->dirty		= boolean_true;

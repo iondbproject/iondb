@@ -66,6 +66,16 @@ typedef uint32_t ion_linear_hash_bucket_index;
  */
 typedef int ion_linear_hash_block_index_t;
 
+
+/**
+ * Bucket header that stores the block index, next block in the chain, and number of records
+ */
+typedef struct ion_linear_hash_bucket_header {
+    ion_linear_hash_block_index_t block;
+    int records;
+    ion_linear_hash_block_index_t overflow_block;
+} ion_linear_hash_bucket_header_t;
+
 enum buffer_type {
     /**
        * The buffer doesn't contain any reasonable data
@@ -87,14 +97,24 @@ enum buffer_type {
             STATE,
 };
 
+typedef struct ion_linear_hash_bucket {
+    ion_linear_hash_bucket_header_t header;
+    ion_byte_t data[LINEAR_HASH_BLOCK_SIZE - sizeof(ion_linear_hash_bucket_header_t)];
+} ion_linear_hash_bucket_t;
+
+union ion_linear_hash_buffer_contents_t{
+    ion_linear_hash_bucket_t bucket;
+    ion_byte_t raw[LINEAR_HASH_BLOCK_SIZE];
+};
+
 /**
  * A buffer to keep track of the type
  */
-typedef struct {
+typedef struct ion_linear_hash_buffer {
     /**
-     * Stores the 512 buffer that was read from the file.
+     * Stores the 512 block that was read from the file.
      */
-    ion_byte_t data[LINEAR_HASH_BLOCK_SIZE];
+    union ion_linear_hash_buffer_contents_t block;
 
     /**
      * The type of buffer that was loaded.
@@ -215,14 +235,6 @@ typedef struct {
     unsigned long ion_linear_hash_block_writes;
 } ion_linear_hash_table_t;
 
-/**
- * Bucket header that stores the block index, next block in the chain, and number of records
- */
-typedef struct {
-    ion_linear_hash_block_index_t block;
-    int records;
-    ion_linear_hash_block_index_t overflow_block;
-} ion_linear_hash_bucket_t;
 
 #if defined(__cplusplus)
 }
