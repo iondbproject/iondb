@@ -13,7 +13,7 @@
 #define LINEAR_HASH_DEBUG_INSERT 0
 #define LINEAR_HASH_DEBUG_DELETE 0
 #define LINEAR_HASH_DEBUG_STATE 0
-#define LINEAR_HASH_DEBUG_INIT 1
+#define LINEAR_HASH_DEBUG_INIT 0
 #define LINEAR_HASH_DEBUG_CLOSE 0
 #define LINEAR_HASH_DEBUG_SAVE 0
 #define LINEAR_HASH_DEBUG_INCREMENT 0
@@ -69,6 +69,12 @@
 #define LH_ERROR(fmt, ...)    printf(fmt, ##__VA_ARGS__)
 #else
 #define LH_ERROR(fmt, ...)    /* Don't do anything in release builds */
+#endif
+
+#if LINEAR_HASH_DEBUG_CLOSE
+#define LH_DEBUG_CLOSE(fmt, ...)    printf(fmt, ##__VA_ARGS__)
+#else
+#define LH_DEBUG_CLOSE(fmt, ...)    /* Don't do anything in release builds */
 #endif
 
 #endif //IONDB_LINEAR_HASH_MACROS_H

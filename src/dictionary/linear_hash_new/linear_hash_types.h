@@ -185,8 +185,7 @@ typedef struct {
     int records_per_bucket;
 
     /**
-     * The total count of blocks in use. This is used to know the next block in the file to use when a new bucket is
-     * created.
+     * The next block in the file to use. This is only the overflow block
      */
     ion_linear_hash_block_index_t next_block;
 
@@ -206,11 +205,6 @@ typedef struct {
     ion_linear_hash_buffer_t *buffer2;
 
     /**
-     * The array list containing the index to block mapping
-     */
-    ion_array_list_t *bucket_map;
-
-    /**
      * The database file
      */
     FILE *database;
@@ -219,6 +213,11 @@ typedef struct {
      * The state file.
      */
     FILE *state;
+
+    /**
+     * The overflow file
+     */
+    FILE *overflow;
 
     /**
      * The hashing function for a key to an int

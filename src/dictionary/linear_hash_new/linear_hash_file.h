@@ -88,7 +88,8 @@ ion_linear_hash_write_block_file(ion_byte_t *data, ion_linear_hash_block_index_t
  * @return The buffer containing the block and error state.
  */
 ion_linear_hash_buffer_t *
-ion_linear_hash_read_data_block(ion_linear_hash_table_t *linear_hash, ion_linear_hash_bucket_index bucket_index);
+ion_linear_hash_read_data_block(ion_linear_hash_table_t *linear_hash, ion_linear_hash_buffer_t *buffer,
+                                ion_linear_hash_bucket_index bucket_index);
 
 /**
  * @brief Reads an overflow block using the specified block index.
@@ -97,7 +98,8 @@ ion_linear_hash_read_data_block(ion_linear_hash_table_t *linear_hash, ion_linear
  * @return The buffer containing the block or error state.
  */
 ion_linear_hash_buffer_t *
-ion_linear_hash_read_overflow_block(ion_linear_hash_table_t *linear_hash, ion_linear_hash_block_index_t block_index);
+ion_linear_hash_read_overflow_block(ion_linear_hash_table_t *linear_hash, ion_linear_hash_buffer_t *buffer,
+                                    ion_linear_hash_block_index_t block_index);
 
 ion_err_t
 ion_linear_hash_save_state(
