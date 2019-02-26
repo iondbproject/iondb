@@ -149,6 +149,12 @@ ion_linear_hash_destroy_dictionary(
         return err_file_delete_error;
     }
 
+    dictionary_get_filename(id, "lho", filename);
+
+    if (0 != fremove(filename)) {
+        return err_file_delete_error;
+    }
+
     return err_ok;
 }
 

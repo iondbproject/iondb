@@ -7,6 +7,7 @@
 
 #include <limits.h>
 #include "linear_hash_types.h"
+#include "linear_hash_macros.h"
 #include "array_list.h"
 
 ion_err_t

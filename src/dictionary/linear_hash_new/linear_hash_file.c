@@ -27,7 +27,7 @@ ion_linear_hash_read_block(
 ion_err_t
 ion_linear_hash_write_block(
         ion_byte_t *bucket,
-        int block,
+        ion_linear_hash_block_index_t block,
         ion_linear_hash_table_t *linear_hash
 ) {
     long offset = ((long) block) * LINEAR_HASH_BLOCK_SIZE;

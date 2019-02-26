@@ -4,13 +4,13 @@
 #include "./../../tests/planck-unit/src/ion_time/ion_time.h"
 
 #ifdef ARDUINO
-uint32_t delete_get_size = 50000;
+uint32_t delete_get_size = 60000;
 #else
 uint32_t delete_get_size = 1000000;
 #endif
 ion_dictionary_id_t dictionary_id = 0;
 uint32_t increment = 10000;
-#define RUNS 4
+#define RUNS 5
 
 /**
  * Defines the size of the value to insert. Will be a bytes array with the first bytes of the key int.
@@ -134,8 +134,8 @@ benchmark_block_reads_writes(int blocks, ion_dictionary_handler_t *handler) {
     int success = 0;
     int fail = 0;
     unsigned long start = ion_time();
-    for (int i = 0; i < blocks; i++) {
-        err = ion_linear_hash_write_block(lht->buffer1, i, lht);
+    for (i i = 0; i < blocks; i++) {
+        err = ion_linear_hash_write_block(lht->buffer1->block.raw, i, lht);
         if (err_ok == err) {
             success++;
         } else {
@@ -149,7 +149,7 @@ benchmark_block_reads_writes(int blocks, ion_dictionary_handler_t *handler) {
     fail = 0;
     start = ion_time();
     for (int i = 0; i < blocks; i++) {
-        err = ion_linear_hash_read_block(i, lht, lht->buffer1);
+        err = ion_linear_hash_read_block(i, lht, lht->buffer1->block.raw);
         if (err_ok == err) {
             success++;
         } else {
@@ -182,7 +182,7 @@ benchmark_log_inserts(uint32_t count, uint32_t success, uint32_t failures, unsig
     int size = snprintf(
             str,
             200,
-            "%lu,%lu,%lu,%li,%lu,%d,%d,%lu,%lu\n",
+            "%lu,%lu,%lu,%li,%lu,%lu,%lu,%lu,%lu\n",
             (unsigned long) count,
             (unsigned long) success,
             (unsigned long) failures,
@@ -301,7 +301,7 @@ benchmark_inserts_individual_logs(int num, ion_dictionary_handler_t *handler) {
             int size = snprintf(
                     str,
                     200,
-                    "%i,%d,%lu,%lu,%d,%d\n",
+                    "%i,%d,%lu,%lu,%lu,%lu\n",
                     i,
                     status.error,
                     end - start,
@@ -346,7 +346,7 @@ benchmark_log_gets(uint32_t count, uint32_t hits, uint32_t failures, uint32_t no
     int size = snprintf(
             str,
             200,
-            "%lu,%lu,%lu,%lu,%lu,%lu,%d,%d,%lu,%lu,%lu\n",
+            "%lu,%lu,%lu,%lu,%lu,%lu,%lu,%lu,%lu,%lu,%lu\n",
             (unsigned long) count,
             (unsigned long) hits,
             (unsigned long) failures,
@@ -489,8 +489,8 @@ benchmark_log_deletes(
         unsigned long time,
         ion_linear_hash_table_t *lht,
         uint32_t num_records_initial,
-        int table_size_initial,
-        int buckets_initial,
+        ion_linear_hash_block_index_t table_size_initial,
+        ion_linear_hash_block_index_t buckets_initial,
         unsigned long insert_time
 ) {
     FILE *log = fopen("deletes.csv", "a+");
@@ -511,7 +511,7 @@ benchmark_log_deletes(
     int size = snprintf(
             str,
             200,
-            "%lu,%lu,%lu,%lu,%lu,%lu,%lu,%d,%d,%d,%d,%lu,%lu,%lu\n",
+            "%lu,%lu,%lu,%lu,%lu,%lu,%lu,%lu,%lu,%lu,%lu,%lu,%lu,%lu\n",
             (unsigned long) count,
             (unsigned long) hits,
             (unsigned long) fails,
@@ -555,8 +555,8 @@ benchmark_delete(ion_dictionary_t *dict, uint32_t num_deletes, unsigned long ins
 
     // Log values
     uint32_t records_initial = table->num_records;
-    int table_size = table->current_size;
-    int num_buckets = table->total_buckets;
+    ion_linear_hash_block_index_t table_size = table->current_size;
+    ion_linear_hash_block_index_t num_buckets = table->total_buckets;
     ion_status_t status;
     int key;
     uint32_t hits = 0;

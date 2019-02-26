@@ -9,7 +9,7 @@ ion_linear_hash_insert_preconditions(
         ion_linear_hash_table_t *lht
 ) {
     /* Verify we aren't overflowing the maximum size */
-    if (UINT32_MAX == lht->num_records) {
+    if (LINEAR_HASH_MAX_BLOCKS == lht->total_buckets) {
         return err_out_of_bounds;
     }
 
@@ -20,31 +20,33 @@ ion_boolean_t
 ion_linear_hash_check_above_threshold(
         ion_linear_hash_table_t *lht
 ) {
-    float numerator = lht->num_records * 1.0;
-    float load = (numerator / lht->current_size / lht->records_per_bucket) * 100;
-    int load_int = (int) load;
+    float threashold = (lht->current_size * lht->records_per_bucket) * (lht->split_threshold / 100.0);
 
 #if LINEAR_HASH_DEBUG_INCREMENT
-    printf("\tIncremented number of records to %lu, current size: %d, records per bucket: %d\n", (unsigned long) lht->num_records, lht->current_size, lht->records_per_bucket);
+    printf("\tIncremented number of records to %lu, current size: %lu, records per bucket: %d\n",
+           (unsigned long) lht->num_records, lht->current_size, lht->records_per_bucket);
 #ifdef ARDUINO
 
     char load_str[7];
 
-    dtostrf(load, 5, 2, load_str);
-    printf("\tLoad is now %s\n", load_str);
-    printf("\tLoad is now (int) %d\n", load_int);
+    dtostrf(threashold, 5, 2, load_str);
+    printf("\tThreashold is now %s\n", load_str);
 #else
-    printf("\tLoad is now %.2f\n", load);
-    printf("\tLoad is now (int) %d\n", load_int);
+    printf("\tThreashold is %.2f\n", threashold);
 #endif
     printf("\tSplit threshold: %d\n", lht->split_threshold);
 #endif
 
-    if (load_int >= lht->split_threshold) {
+    if (lht->num_records > threashold) {
         return boolean_true;
+    } else {
+        return boolean_false;
     }
-
-    return boolean_false;
+//    if (load_int >= lht->split_threshold) {
+//        return boolean_true;
+//    }
+//
+//    return boolean_false;
 }
 
 ion_err_t

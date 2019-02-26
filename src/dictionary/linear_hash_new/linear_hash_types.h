@@ -49,7 +49,8 @@ extern "C" {
 #endif
 
 #define LINEAR_HASH_BLOCK_SIZE 512
-#define LINEAR_HASH_NO_OVERFLOW -1
+#define LINEAR_HASH_NO_OVERFLOW UINT32_MAX
+#define LINEAR_HASH_MAX_BLOCKS UINT32_MAX
 
 /**
  * Defines the type for a hashed key
@@ -64,7 +65,7 @@ typedef uint32_t ion_linear_hash_bucket_index;
 /**
  * Defines the type for the block index
  */
-typedef int ion_linear_hash_block_index_t;
+typedef uint32_t ion_linear_hash_block_index_t;
 
 
 /**
