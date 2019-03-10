@@ -4,7 +4,7 @@
 #include "./../../tests/planck-unit/src/ion_time/ion_time.h"
 
 #ifdef ARDUINO
-uint32_t delete_get_size = 60000;
+uint32_t delete_get_size = 100000;
 #else
 uint32_t delete_get_size = 1000000;
 #endif
@@ -15,7 +15,7 @@ uint32_t increment = 10000;
 /**
  * Defines the size of the value to insert. Will be a bytes array with the first bytes of the key int.
  */
-ion_value_size_t value_size = 16;
+ion_value_size_t value_size = 2;
 
 char str[200];
 
@@ -134,7 +134,7 @@ benchmark_block_reads_writes(int blocks, ion_dictionary_handler_t *handler) {
     int success = 0;
     int fail = 0;
     unsigned long start = ion_time();
-    for (i i = 0; i < blocks; i++) {
+    for (int i = 0; i < blocks; i++) {
         err = ion_linear_hash_write_block(lht->buffer1->block.raw, i, lht);
         if (err_ok == err) {
             success++;
@@ -171,7 +171,7 @@ benchmark_log_inserts(uint32_t count, uint32_t success, uint32_t failures, unsig
         return;
     }
     fseek(log, 0, SEEK_SET);
-    char *header = "Inserts,Success,Fails,Time(ms),RecordsCount,Size,Buckets,BlksR,BlksW\n";
+    char *header = "Inserts,Success,Fails,Time(ms),RecordsCount,Size,Buckets,BlksR,BlksW,SR,SW\n";
 
     fread(str, strlen(header), 1, log);
 
@@ -182,7 +182,7 @@ benchmark_log_inserts(uint32_t count, uint32_t success, uint32_t failures, unsig
     int size = snprintf(
             str,
             200,
-            "%lu,%lu,%lu,%li,%lu,%lu,%lu,%lu,%lu\n",
+            "%lu,%lu,%lu,%li,%lu,%lu,%lu,%lu,%lu,%lu,%lu\n",
             (unsigned long) count,
             (unsigned long) success,
             (unsigned long) failures,
@@ -191,7 +191,9 @@ benchmark_log_inserts(uint32_t count, uint32_t success, uint32_t failures, unsig
             lht->current_size,
             lht->total_buckets,
             lht->ion_linear_hash_block_reads,
-            lht->ion_linear_hash_block_writes
+            lht->ion_linear_hash_block_writes,
+            lht->ion_linear_hash_spilt_reads,
+            lht->ion_linear_hash_spilt_writes
     );
     if (size < 0 || size > 200) {
         printf("Unable to create insert log string\n");
@@ -757,7 +759,7 @@ void run_benchmarks() {
 
         times[run] = ion_time() - start;
         printf("Completed benchmarks in %lu ms\n", times[run]);
-        value_size *= 2;
+//        value_size *= 2;
     }
 
     printf("Completed all benchmarks:\n");

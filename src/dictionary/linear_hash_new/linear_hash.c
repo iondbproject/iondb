@@ -163,6 +163,8 @@ ion_linear_hash_init(
 
     linear_hash->ion_linear_hash_block_writes = 0;
     linear_hash->ion_linear_hash_block_reads = 0;
+    linear_hash->ion_linear_hash_spilt_writes = 0;
+    linear_hash->ion_linear_hash_spilt_reads = 0;
 
     /* Initialize the buffers */
     linear_hash->buffer1 = malloc(sizeof(ion_linear_hash_buffer_t));
@@ -277,6 +279,9 @@ ion_linear_hash_split(
     ion_linear_hash_block_index_t starting_blocks = lht->next_block;
     /* Load the bucket to split */
     ion_linear_hash_buffer_t *splitting_buffer = ion_linear_hash_read_data_block(lht, lht->buffer1, current_split);
+#if LINEAR_HASH_TRACK_BLOCK_RW
+    lht->ion_linear_hash_spilt_reads++;
+#endif
 
     LH_SPLIT_DEBUG("\nNext block %d\n", lht->next_block);
 
@@ -328,7 +333,9 @@ ion_linear_hash_split(
                 if (new_bucket->records == lht->records_per_bucket) {
                     new_bucket->overflow_block = lht->next_block;
                     err = ion_linear_hash_write_buffer(lht, new_buffer);
-
+#if LINEAR_HASH_TRACK_BLOCK_RW
+                    lht->ion_linear_hash_spilt_writes++;
+#endif
                     if (err_ok != err) {
                         /* Clean up to try and reset the state */
                         lht->next_block = starting_blocks;
@@ -357,7 +364,9 @@ ion_linear_hash_split(
 
         if (LINEAR_HASH_NO_OVERFLOW != splitting_bucket->overflow_block) {
             err = ion_linear_hash_write_buffer(lht, splitting_buffer);
-
+#if LINEAR_HASH_TRACK_BLOCK_RW
+            lht->ion_linear_hash_block_writes++;
+#endif
             if (err_ok != err) {
                 lht->next_block = starting_blocks;
                 return err;
@@ -366,6 +375,9 @@ ion_linear_hash_split(
             /* Load the new bucket */
             splitting_buffer = ion_linear_hash_read_overflow_block(lht, splitting_buffer,
                                                                    splitting_bucket->overflow_block);
+#if LINEAR_HASH_TRACK_BLOCK_RW
+            lht->ion_linear_hash_spilt_reads++;
+#endif
             err = splitting_buffer->err;
             if (err_ok != err) {
                 lht->next_block = starting_blocks;
@@ -378,13 +390,17 @@ ion_linear_hash_split(
 
     /* Write out the changed and new blocks */
     err = ion_linear_hash_write_buffer(lht, splitting_buffer);
-
+#if LINEAR_HASH_TRACK_BLOCK_RW
+    lht->ion_linear_hash_spilt_writes++;
+#endif
     if (err_ok != err) {
         return err;
     }
 
     err = ion_linear_hash_write_buffer(lht, new_buffer);
-
+#if LINEAR_HASH_TRACK_BLOCK_RW
+    lht->ion_linear_hash_spilt_writes++;
+#endif
     if (err_ok != err) {
         return err;
     }
