@@ -527,6 +527,9 @@ ion_linear_hash_insert(
             LH_ERROR("Insert failed to initialize new idx %d with error %d\n", idx, err);
             return ION_STATUS_ERROR(err);
         }
+    } else {
+        buffer->block_index = linear_hash->next_block;
+        linear_hash->next_block++;
     }
 
     LH_INSERT_DEBUG("\tInserting into bucket with current size %d and block %d\n", bucket->records,
