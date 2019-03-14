@@ -74,10 +74,10 @@ ion_array_list_insert(int index, int value, ion_array_list_t *array_list) {
         int old_size = array_list->current_size;
 
         array_list->current_size = array_list->current_size * 2;
-
+        ion_byte_t *bucket_map_cache = alloca(old_size * sizeof(int));
         // Keep a copy of the current data
-        int *bucket_map_cache = array_list->data;
-
+        memcpy(bucket_map_cache, array_list->data, old_size * sizeof(int));
+        free(array_list->data);
         // Allocate double the size
         array_list->data = NULL;
         array_list->data = malloc(2 * old_size * sizeof(int));
@@ -86,7 +86,6 @@ ion_array_list_insert(int index, int value, ion_array_list_t *array_list) {
             printf("Failed to expand array list\n");
 #endif
             free(array_list->data);
-            free(bucket_map_cache);
             return err_out_of_memory;
         }
 
@@ -103,7 +102,7 @@ ion_array_list_insert(int index, int value, ion_array_list_t *array_list) {
 #endif
 
         // Make sure to free the old data
-        free(bucket_map_cache);
+//        free(bucket_map_cache);
     }
 
     array_list->data[index] = value;

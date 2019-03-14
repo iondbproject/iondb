@@ -36,6 +36,7 @@
 #define IONDB_LINEAR_HASH_HASHING_H
 
 #include "linear_hash_types.h"
+#include "linear_hash_macros.h"
 
 /**
  * Simple hash function for integer values that casts the key to an int.

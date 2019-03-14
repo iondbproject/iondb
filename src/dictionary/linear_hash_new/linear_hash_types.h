@@ -102,7 +102,7 @@ typedef struct ion_linear_hash_bucket {
     ion_byte_t data[LINEAR_HASH_BLOCK_SIZE - sizeof(ion_linear_hash_bucket_header_t)];
 } ion_linear_hash_bucket_t;
 
-union ion_linear_hash_buffer_contents_t{
+union ion_linear_hash_buffer_contents_t {
     ion_linear_hash_bucket_t bucket;
     ion_byte_t raw[LINEAR_HASH_BLOCK_SIZE];
 };
@@ -233,6 +233,11 @@ typedef struct {
     unsigned long ion_linear_hash_block_reads;
 
     unsigned long ion_linear_hash_block_writes;
+
+    unsigned long ion_linear_hash_split_reads;
+
+    unsigned long ion_linear_hash_split_writes;
+
 } ion_linear_hash_table_t;
 
 
