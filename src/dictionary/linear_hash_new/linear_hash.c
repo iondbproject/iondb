@@ -143,14 +143,14 @@ ion_linear_hash_initialize_new(
 #if LINEAR_HASH_DEBUG_INIT
     printf("\tInitializing bucket map with %d spots\n", table->initial_size * 2);
 #endif
-    err = ion_array_list_init((int) (table->initial_size * 2), bucket_map);
+    err = ion_array_list_init((ion_linear_hash_block_index_t) (table->initial_size * 2), bucket_map);
 //    err = ion_array_list_init(1024, bucket_map);
 
     if (err_ok != err) {
         return err;
     }
 
-        /* Create initial blocks */
+    /* Create initial blocks */
 #if LINEAR_HASH_DEBUG_INIT
     printf("\tInitializing %d blocks\n", table->initial_size);
 #endif
@@ -300,7 +300,9 @@ ion_linear_hash_init(
 
         if (err_ok != err) {
             ion_linear_hash_close(linear_hash);
+#if LINEAR_HASH_DEBUG_ERRORS
             printf("Unable to read the existing state. Something has gone badly wrong.\n");
+#endif
             return err;
         }
     }
@@ -314,15 +316,18 @@ ion_err_t
 ion_linear_hash_split(
         ion_linear_hash_table_t *lht
 ) {
-    LH_SPLIT_DEBUG("\nStarting split\n", NULL);
+#if LINEAR_HASH_DEBUG_SPLIT
+    printf("\nStarting split\n", NULL);
+#endif
 
     ion_linear_hash_bucket_index current_split = lht->next_split;
     ion_linear_hash_bucket_index new_idx = (ion_linear_hash_bucket_index) lht->current_size;
     ion_linear_hash_block_index_t starting_blocks = lht->next_block;
     /* Load the bucket to split */
     ion_linear_hash_buffer_t *splitting_buffer = ion_linear_hash_read_data_block(lht, current_split);
-
-    LH_SPLIT_DEBUG("\nNext block %d\n", lht->next_block);
+#if LINEAR_HASH_DEBUG_SPLIT
+    printf("\nNext block %d\n", lht->next_block);
+#endif
 
     ion_err_t err = splitting_buffer->err;
     ion_linear_hash_bucket_header_t *splitting_bucket = &splitting_buffer->block.bucket.header;
@@ -350,6 +355,7 @@ ion_linear_hash_split(
     ion_byte_t *insert_ptr_current;
     ion_byte_t *read_ptr;
     ion_byte_t *key;
+    ion_linear_hash_block_index_t previous_overflow = LINEAR_HASH_NO_OVERFLOW;
     int num_records;
 
     /* Iterator */
@@ -403,17 +409,37 @@ ion_linear_hash_split(
             read_ptr += lht->record_total_size;
         }
 
-        if (LINEAR_HASH_NO_OVERFLOW != splitting_bucket->overflow_block) {
-            err = ion_linear_hash_write_buffer(lht, splitting_buffer);
+        // Write out the finished splitting bucket.
+        ion_linear_hash_block_index_t overflow_block = splitting_bucket->overflow_block;
 
-            if (err_ok != err) {
-                lht->next_block = starting_blocks;
-                return err;
-            }
-            lht->ion_linear_hash_split_writes++;
+        // Attempt to increment the block index
+        err = ion_linear_hash_increment_buffer_block(splitting_buffer, lht);
+        if (err_max_capacity == err) { //TODO: Better error handling
+            return err;
+        }
 
+        // As we are reversing the overflow list, change the overflow pointers
+        splitting_buffer->block.bucket.header.overflow_block = previous_overflow;
+        previous_overflow = splitting_buffer->block_index;
+
+        // Write out the buffer
+        err = ion_linear_hash_write_buffer(lht, splitting_buffer);
+
+        if (err_ok != err) {
+            lht->next_block = starting_blocks;
+            return err;
+        }
+
+        // Re-index this bucket as the top
+        err = ion_linear_hash_save_block_index_for_bucket(current_split, splitting_buffer->block_index, lht);
+        if (err_ok != err) {
+            return err;
+        }
+        lht->ion_linear_hash_split_writes++;
+
+        if (LINEAR_HASH_NO_OVERFLOW != overflow_block) {
             /* Load the new bucket */
-            splitting_buffer = ion_linear_hash_read_overflow_block(lht, splitting_bucket->overflow_block);
+            splitting_buffer = ion_linear_hash_read_overflow_block(lht, overflow_block);
             err = splitting_buffer->err;
             if (err_ok != err) {
                 lht->next_block = starting_blocks;
@@ -425,15 +451,7 @@ ion_linear_hash_split(
         }
     }
 
-    /* Write out the changed and new blocks */
-    err = ion_linear_hash_write_buffer(lht, splitting_buffer);
-
-    if (err_ok != err) {
-        return err;
-    }
-
-    lht->ion_linear_hash_split_writes++;
-
+    // Write out the finished new block
     err = ion_linear_hash_write_buffer(lht, new_buffer);
 
     if (err_ok != err) {
@@ -495,20 +513,25 @@ ion_linear_hash_insert(
     ion_err_t err = ion_linear_hash_insert_preconditions(linear_hash);
 
     if (err != err_ok) {
-        LH_ERROR("Failed insert preconditions. Blocks: %d\n", linear_hash->total_buckets);
+#if LINEAR_HASH_DEBUG_ERRORS
+        printf("Failed insert preconditions. Blocks: %d\n", linear_hash->total_buckets);
+#endif
         return ION_STATUS_ERROR(err);
     }
 
     ion_linear_hash_bucket_index idx = ion_linear_hash_key_to_bucket_idx(key, linear_hash);
 
-    LH_INSERT_DEBUG("\n\tInto bucket index %d\n", idx);
-
+#if LINEAR_HASH_DEBUG_INSERT
+    printf("\n\tInto bucket index %d\n", idx);
+#endif
     ion_linear_hash_buffer_t *buffer = ion_linear_hash_read_data_block(linear_hash, idx);
 
     if (err_ok != buffer->err) {
-        LH_ERROR("Insert failed to read block %d with error %d. Current blocks: [0..%d)\n", buffer->block_index,
-                 buffer->err,
-                 linear_hash->next_block);
+#if LINEAR_HASH_DEBUG_ERRORS
+        printf("Insert failed to read block %d with error %d. Current blocks: [0..%d)\n", buffer->block_index,
+               buffer->err,
+               linear_hash->next_block);
+#endif
         return ION_STATUS_ERROR(err);
     }
 
@@ -520,28 +543,40 @@ ion_linear_hash_insert(
 #endif
 
     if (bucket->records == linear_hash->records_per_bucket) {
-        LH_INSERT_DEBUG("\tBucket was full %d, initializing a new bucket\n", bucket->records);
+#if LINEAR_HASH_DEBUG_INSERT
+        printf("\tBucket was full %d, initializing a new bucket\n", bucket->records);
+#endif
         err = ion_linear_hash_initialize_new_bucket_for_idx(buffer, idx, linear_hash, OVERFLOW);
 
         if (err_ok != err) {
-            LH_ERROR("Insert failed to initialize new idx %d with error %d\n", idx, err);
+#if LINEAR_HASH_DEBUG_ERRORS
+            printf("Insert failed to initialize new idx %d with error %d\n", idx, err);
+#endif
             return ION_STATUS_ERROR(err);
         }
     } else {
-        buffer->block_index = linear_hash->next_block;
-        linear_hash->next_block++;
+        err = ion_linear_hash_increment_buffer_block(buffer, linear_hash);
+        if (err_ok != err) {
+#if LINEAR_HASH_DEBUG_ERRORS
+            printf("Received error %d when incrementing the buffer block\n", err);
+#endif
+        }
+        ion_linear_hash_save_block_index_for_bucket(idx, buffer->block_index, linear_hash);
     }
 
-    LH_INSERT_DEBUG("\tInserting into bucket with current size %d and block %d\n", bucket->records,
+#if LINEAR_HASH_DEBUG_INSERT
+    printf("\tInserting into bucket with current size %d and block %d\n", bucket->records,
                     buffer->block_index);
-
+#endif
     // Calculate offsets
     size_t key_offset = (size_t) (linear_hash->record_total_size * bucket->records);
     size_t value_offset = key_offset + linear_hash->super.record.key_size;
     ion_byte_t *key_loc = buffer->block.bucket.data + key_offset;
     ion_byte_t *value_loc = buffer->block.bucket.data + value_offset;
 
-    LH_INSERT_DEBUG("Inserting key at offset %u, value at offset: %d\n", key_offset, value_offset);
+#if LINEAR_HASH_DEBUG_INSERT
+    printf("Inserting key at offset %u, value at offset: %d\n", key_offset, value_offset);
+#endif
     memcpy(key_loc, key, (size_t) linear_hash->super.record.key_size);
     memcpy(value_loc, value, (size_t) linear_hash->super.record.value_size);
     bucket->records++;
@@ -549,7 +584,6 @@ ion_linear_hash_insert(
 
 #if LINEAR_HASH_DEBUG > 0
     ion_key_t written_key;
-
     written_key = buffer->block.bucket.data + key_offset;
     printf("Written key ");
     ion_linear_hash_debug_print_key(written_key, linear_hash);
@@ -558,18 +592,24 @@ ion_linear_hash_insert(
     err = ion_linear_hash_write_buffer(linear_hash, buffer);
 
     if (err_ok != err) {
-        LH_ERROR("Insert failed to write block %d with error %d\n", buffer->block_index, err);
+#if LINEAR_HASH_DEBUG_ERRORS
+        printf("Insert failed to write block %d with error %d\n", buffer->block_index, err);
+#endif
         return ION_STATUS_ERROR(err);
     }
 
     err = ion_linear_hash_increment_num_records(linear_hash);
 
     if (err_ok != err) {
-        LH_ERROR("Insert failed with error %d\n", err);
+#if LINEAR_HASH_DEBUG_ERRORS
+        printf("Insert failed with error %d\n", err);
+#endif
         return ION_STATUS_ERROR(err);
     }
-    LH_INSERT_DEBUG("Inserted. New table size: %d, buckets: %d, num records %lu\n", linear_hash->current_size,
-                    linear_hash->next_block, linear_hash->num_records);
+#if LINEAR_HASH_DEBUG_INSERT
+    printf("Inserted. New table size: %d, buckets: %d, num records %lu\n", linear_hash->current_size,
+                        linear_hash->next_block, linear_hash->num_records);
+#endif
     return ION_STATUS_OK(1);
 }
 

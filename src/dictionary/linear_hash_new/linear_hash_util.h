@@ -48,4 +48,13 @@ ion_err_t
 ion_linear_hash_initialize_new_bucket_for_idx(ion_linear_hash_buffer_t *buffer, ion_linear_hash_bucket_index idx,
                                               ion_linear_hash_table_t *lht, enum buffer_type buffer_type);
 
+/**
+ * @brief Sets the buffer block to the next available block and sets it to be dirty
+ * @param buffer
+ * @param hash_table
+ * @return err_max_capacity when the table has exceeded the limit of addressable blocks
+ */
+ion_err_t
+ion_linear_hash_increment_buffer_block(ion_linear_hash_buffer_t *buffer, ion_linear_hash_table_t *hash_table);
+
 #endif //IONDB_LINEAR_HASH_UTIL_H

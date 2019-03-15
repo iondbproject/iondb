@@ -35,10 +35,7 @@
 /******************************************************************************/
 
 #include "array_list.h"
-#include "../linear_hash/linear_hash_types.h"
 #include <alloca.h>
-#include <stdio.h>
-#include "../../file/kv_stdio_intercept.h"
 
 #ifdef ARDUINO
 
@@ -47,10 +44,10 @@
 #endif
 
 ion_err_t
-ion_array_list_init(int init_size, ion_array_list_t *array_list) {
+ion_array_list_init(ion_linear_hash_block_index_t init_size, ion_array_list_t *array_list) {
     array_list->current_size = init_size;
-    array_list->data = malloc(init_size * sizeof(int));
-    memset(array_list->data, 0, sizeof(int) * init_size);
+    array_list->data = malloc(init_size * sizeof(ion_linear_hash_block_index_t));
+    memset(array_list->data, 0, sizeof(ion_linear_hash_block_index_t) * init_size);
 
     if (NULL == array_list->data) {
         return err_out_of_memory;
@@ -60,7 +57,7 @@ ion_array_list_init(int init_size, ion_array_list_t *array_list) {
 }
 
 ion_err_t
-ion_array_list_insert(int index, int value, ion_array_list_t *array_list) {
+ion_array_list_insert(int index, ion_linear_hash_block_index_t value, ion_array_list_t *array_list) {
     /* case we need to expand array */
     if (index >= array_list->current_size) {
 #if ARRAY_LIST_DEBUG
@@ -74,13 +71,13 @@ ion_array_list_insert(int index, int value, ion_array_list_t *array_list) {
         int old_size = array_list->current_size;
 
         array_list->current_size = array_list->current_size * 2;
-        ion_byte_t *bucket_map_cache = alloca(old_size * sizeof(int));
+        ion_byte_t *bucket_map_cache = alloca(old_size * sizeof(ion_linear_hash_block_index_t));
         // Keep a copy of the current data
-        memcpy(bucket_map_cache, array_list->data, old_size * sizeof(int));
+        memcpy(bucket_map_cache, array_list->data, old_size * sizeof(ion_linear_hash_block_index_t));
         free(array_list->data);
         // Allocate double the size
         array_list->data = NULL;
-        array_list->data = malloc(2 * old_size * sizeof(int));
+        array_list->data = malloc(2 * old_size * sizeof(ion_linear_hash_block_index_t));
         if (NULL == array_list->data) {
 #if ARRAY_LIST_DEBUG
             printf("Failed to expand array list\n");
@@ -90,8 +87,8 @@ ion_array_list_insert(int index, int value, ion_array_list_t *array_list) {
         }
 
         // Expand the array list
-        memset(array_list->data, 0, array_list->current_size * sizeof(int));
-        memcpy(array_list->data, bucket_map_cache, old_size * sizeof(int));
+        memset(array_list->data, 0, array_list->current_size * sizeof(ion_linear_hash_block_index_t));
+        memcpy(array_list->data, bucket_map_cache, old_size * sizeof(ion_linear_hash_block_index_t));
 
 #if ARRAY_LIST_DEBUG
         printf("Expanded array list:\n\t[");
@@ -110,8 +107,8 @@ ion_array_list_insert(int index, int value, ion_array_list_t *array_list) {
     return err_ok;
 }
 
-int
-ion_array_list_get(int index, ion_array_list_t *array_list) {
+ion_linear_hash_block_index_t
+ion_array_list_get(ion_linear_hash_block_index_t index, ion_array_list_t *array_list) {
     /* case bucket_idx is outside of current size of array */
     if (index >= array_list->current_size) {
         return ARRAY_LIST_END_OF_LIST;

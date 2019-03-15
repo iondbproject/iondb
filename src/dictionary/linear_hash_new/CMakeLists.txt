@@ -13,6 +13,7 @@ set(SOURCE_FILES
         linear_hash_util.h
         linear_hash_util.c
         linear_hash.h
+        linear_hash_common_types.h
         linear_hash.c
         linear_hash_handler.h
         linear_hash_handler.c

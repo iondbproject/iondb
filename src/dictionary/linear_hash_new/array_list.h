@@ -38,18 +38,22 @@
 
 #define ARRAY_LIST_DEBUG 0
 
+#include "linear_hash_common_types.h"
+#include <stdio.h>
+#include <stdint.h>
+#include "../../file/kv_stdio_intercept.h"
 #include "../../key_value/kv_system.h"
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
-#define ARRAY_LIST_END_OF_LIST            -1
+#define ARRAY_LIST_END_OF_LIST  UINT16_MAX
 
 /* SIMPLE ARRAY_LIST FOR BUCKET MAP */
 typedef struct {
     int current_size;
-    int *data;
+    ion_linear_hash_block_index_t *data;
 } ion_array_list_t;
 
 /**
@@ -62,7 +66,7 @@ typedef struct {
 */
 ion_err_t
 ion_array_list_init(
-        int init_size,
+        ion_linear_hash_block_index_t init_size,
         ion_array_list_t *array_list
 );
 
@@ -80,7 +84,7 @@ ion_array_list_init(
 ion_err_t
 ion_array_list_insert(
         int index,
-        int value,
+        ion_linear_hash_block_index_t value,
         ion_array_list_t *array_list
 );
 
@@ -93,9 +97,9 @@ ion_array_list_insert(
 @return		An int of the value at that position if successful, array_list_end_of_list if array bucket idx is outside
             of array list bounds.
 */
-int
+ion_linear_hash_block_index_t
 ion_array_list_get(
-        int index,
+        ion_linear_hash_block_index_t index,
         ion_array_list_t *array_list
 );
 

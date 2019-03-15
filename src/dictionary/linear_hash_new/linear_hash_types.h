@@ -37,6 +37,7 @@
 #if !defined(LINEAR_HASH_TYPES_H)
 #define LINEAR_HASH_TYPES_H
 
+#include "linear_hash_common_types.h"
 #include <stdio.h>
 #include "../../file/kv_stdio_intercept.h"
 #include "../../key_value/kv_system.h"
@@ -48,54 +49,30 @@
 extern "C" {
 #endif
 
-#define LINEAR_HASH_BLOCK_SIZE 512
-#define LINEAR_HASH_NO_OVERFLOW -1
-
-/**
- * Defines the type for a hashed key
- */
-typedef uint32_t ion_linear_hash_key_hash;
-
-/**
- * Defines the type for the linear hash table bucket index for retrieving a top level bucket.
- */
-typedef uint32_t ion_linear_hash_bucket_index;
-
-/**
- * Defines the type for the block index
- */
-typedef int ion_linear_hash_block_index_t;
-
-
 /**
  * Bucket header that stores the block index, next block in the chain, and number of records
  */
 typedef struct ion_linear_hash_bucket_header {
-    ion_linear_hash_block_index_t block;
+    /**
+     * The bucket index that this block belongs to
+     */
+    ion_linear_hash_bucket_index index;
+
+    /**
+     * The number of records in this block.
+     */
     int records;
+
+    /**
+     * The block index pointer to the overflow block.
+     */
     ion_linear_hash_block_index_t overflow_block;
+
+    /**
+     * The version of the bucket. The largest version will be the most recent.
+     */
+    uint16_t version;
 } ion_linear_hash_bucket_header_t;
-
-enum buffer_type {
-    /**
-       * The buffer doesn't contain any reasonable data
-       */
-            EMPTY,
-    /**
-     * The buffer is a top level linear hash block.
-     */
-            DATA,
-
-    /**
-     * The buffer is an overflow block
-     */
-            OVERFLOW,
-
-    /**
-     * The block is for state or bucket maps
-     */
-            STATE,
-};
 
 typedef struct ion_linear_hash_bucket {
     ion_linear_hash_bucket_header_t header;

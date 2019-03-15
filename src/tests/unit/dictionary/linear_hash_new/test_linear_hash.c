@@ -155,7 +155,7 @@ test_linear_hash_check_bucket_record_count(planck_unit_test_t *tc, ion_linear_ha
     ion_err_t err = ion_linear_hash_read_block(block, table, table->buffer1->block.raw);
     PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err)
     ion_linear_hash_bucket_header_t *bucket = (ion_linear_hash_bucket_header_t *) table->buffer1;
-    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, bucket->records)
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_count, table->buffer1->block.bucket.header.records)
 }
 
 /**
@@ -255,7 +255,7 @@ test_linear_hash_insert_adds_the_new_bucket_to_the_bucket_map(planck_unit_test_t
     ion_linear_hash_table_t table;
     test_linear_hash_setup(tc, &table);
     int expected_total_buckets = table.total_buckets + 1;
-    int expected_block_index = table.next_block;
+    int expected_block_index = table.next_block + table.records_per_bucket;
     int current_block_for_idx = ion_array_list_get(0, table.bucket_map);
     PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 0, current_block_for_idx)
 
@@ -268,9 +268,10 @@ test_linear_hash_insert_adds_the_new_bucket_to_the_bucket_map(planck_unit_test_t
         count++;
     }
 
-    test_linear_hash_check_bucket_record_count(tc, &table, 0, table.records_per_bucket);
-
+    // The top bucket should contain 1 item
     current_block_for_idx = ion_array_list_get(0, table.bucket_map);
+    test_linear_hash_check_bucket_record_count(tc, &table, current_block_for_idx, 1);
+
     PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_block_index, current_block_for_idx)
 
     PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, expected_total_buckets, table.total_buckets)
@@ -747,8 +748,8 @@ test_linear_hash_split_adds_a_new_bucket(planck_unit_test_t *tc) {
     int current_block = table.next_block;
     ion_err_t err = ion_linear_hash_split(&table);
     PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err)
-    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, current_size + 1, table.current_size);
-    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, current_block + 1, table.next_block);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, current_size + 1 + 1, table.current_size);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, current_block + 1 + 1, table.next_block);
     test_linear_hash_tear_down(tc, &table);
 }
 

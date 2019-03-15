@@ -56,7 +56,7 @@ extern "C" {
  * @return The error (if any)
  */
 ion_err_t
-ion_linear_hash_read_block(int block, ion_linear_hash_table_t *linear_hash, ion_byte_t *buffer);
+ion_linear_hash_read_block(ion_linear_hash_block_index_t block, ion_linear_hash_table_t *linear_hash, ion_byte_t *buffer);
 
 /**
  * @brief Reads a bucket block from the database file
