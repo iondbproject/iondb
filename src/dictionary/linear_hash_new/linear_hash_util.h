@@ -7,7 +7,7 @@
 
 #include <limits.h>
 #include "linear_hash_types.h"
-#include "array_list.h"
+#include "linear_hash_macros.h"
 
 ion_err_t
 ion_linear_hash_insert_preconditions(

@@ -511,11 +511,11 @@ void
 test_linear_hash_split_adds_the_new_bucket_to_the_bucket_map(planck_unit_test_t *tc) {
     ion_linear_hash_table_t table;
     test_linear_hash_setup(tc, &table);
-    int split_idx = table.current_size;
-    int expected_block_index = table.next_block;
-    int expected_total_buckets = table.total_buckets + 1;
+    ion_linear_hash_block_index_t split_idx = table.current_size;
+    ion_linear_hash_block_index_t expected_block_index = (ion_linear_hash_block_index_t) (table.next_block + 1);
+    ion_linear_hash_block_index_t expected_total_buckets = (ion_linear_hash_block_index_t) (table.total_buckets + 1);
 
-    int current_block_for_idx = ion_array_list_get(split_idx, table.bucket_map);
+    ion_linear_hash_block_index_t current_block_for_idx = ion_array_list_get(split_idx, table.bucket_map);
     PLANCK_UNIT_ASSERT_INT_ARE_NOT_EQUAL(tc, expected_block_index, current_block_for_idx)
 
     ion_err_t err = ion_linear_hash_split(&table);
@@ -537,6 +537,7 @@ test_linear_hash_triggers_a_split_at_the_threshold(planck_unit_test_t *tc) {
     int current_size = table.current_size;
     int expected_size = table.current_size + 1;
     int i;
+    printf("Inserting %d records", split_records);
     for (i = 0; i < split_records; ++i) {
         test_linear_hash_insert(&table, tc, i, i, boolean_true);
     }
@@ -565,15 +566,16 @@ test_linear_hash_split_move_item_to_new_bucket(planck_unit_test_t *tc) {
     int split_idx_block = table.next_block;
     test_linear_hash_insert(&table, tc, key1, value1, boolean_true);
     test_linear_hash_insert(&table, tc, key2, value2, boolean_true);
-    test_linear_hash_check_bucket_record_count(tc, &table, 0, 2);
+    test_linear_hash_check_bucket_record_count(tc, &table, ion_array_list_get(0, table.bucket_map), 2);
 
     // Trigger a split
     ion_err_t err = ion_linear_hash_split(&table);
     PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err)
 
     // Check the original bucket contains 1 record.
-    ion_linear_hash_read_block(0, &table, table.buffer1->block.raw);
-    ion_linear_hash_bucket_header_t *bucket = (ion_linear_hash_bucket_header_t *) table.buffer1;
+    ion_linear_hash_read_block((ion_linear_hash_block_index_t) ion_array_list_get(0, table.bucket_map), &table,
+                               table.buffer1->block.raw);
+    ion_linear_hash_bucket_header_t *bucket = &table.buffer1->block.bucket.header;
     PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, bucket->records)
 
     // Check the first record still exists in the original bucket.
@@ -583,7 +585,7 @@ test_linear_hash_split_move_item_to_new_bucket(planck_unit_test_t *tc) {
     PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, value1, *value)
 
     // Verify that the new bucket contains the record and has a total of one record
-    ion_linear_hash_read_block(split_idx_block, &table, table.buffer1->block.raw);
+    ion_linear_hash_read_block(ion_array_list_get(4, table.bucket_map), &table, table.buffer1->block.raw);
     bucket = &table.buffer1->block.bucket.header;
     PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, 1, bucket->records)
 
@@ -610,7 +612,7 @@ test_linear_hash_split_verify_get_retrieves_items(planck_unit_test_t *tc) {
     int key2 = 4;
     test_linear_hash_insert(&table, tc, key1, value1, boolean_true);
     test_linear_hash_insert(&table, tc, key2, value2, boolean_true);
-    test_linear_hash_check_bucket_record_count(tc, &table, 0, 2);
+    test_linear_hash_check_bucket_record_count(tc, &table, ion_array_list_get(0, table.bucket_map), 2);
 
     // Trigger a split
     ion_err_t err = ion_linear_hash_split(&table);
@@ -645,7 +647,7 @@ test_linear_hash_moves_records_in_buckets_to_fill_space(planck_unit_test_t *tc) 
     int value2 = 858343;
     test_linear_hash_insert(&table, tc, key2, value2, boolean_true);
     test_linear_hash_insert(&table, tc, key1, value1, boolean_true);
-    test_linear_hash_check_bucket_record_count(tc, &table, 0, 2);
+    test_linear_hash_check_bucket_record_count(tc, &table, ion_array_list_get(0, table.bucket_map), 2);
 
     // Trigger a split
     ion_err_t err = ion_linear_hash_split(&table);
@@ -748,8 +750,8 @@ test_linear_hash_split_adds_a_new_bucket(planck_unit_test_t *tc) {
     int current_block = table.next_block;
     ion_err_t err = ion_linear_hash_split(&table);
     PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err)
-    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, current_size + 1 + 1, table.current_size);
-    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, current_block + 1 + 1, table.next_block);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, current_size + 1, table.current_size);
+    PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, current_block + 2, table.next_block);
     test_linear_hash_tear_down(tc, &table);
 }
 
@@ -757,7 +759,7 @@ void
 test_linear_hash_split_increments_the_split(planck_unit_test_t *tc) {
     ion_linear_hash_table_t table;
     test_linear_hash_setup(tc, &table);
-    int current_split = table.next_split;
+    ion_linear_hash_bucket_index current_split = table.next_split;
     ion_err_t err = ion_linear_hash_split(&table);
     PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, err_ok, err)
     PLANCK_UNIT_ASSERT_INT_ARE_EQUAL(tc, current_split + 1, table.next_split);

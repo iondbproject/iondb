@@ -6,7 +6,7 @@ ion_linear_hash_read_block(
         ion_linear_hash_table_t *linear_hash,
         ion_byte_t *buffer
 ) {
-    long int offset = ((long int) block) * (LINEAR_HASH_BLOCK_SIZE);
+    unsigned long offset = ((unsigned long) block) * (LINEAR_HASH_BLOCK_SIZE);
 
     LH_READ_BLOCK_DEBUG_PRINT("Reading block %d from offset %lu\n", block, offset);
 
@@ -30,7 +30,7 @@ ion_linear_hash_write_block(
         int block,
         ion_linear_hash_table_t *linear_hash
 ) {
-    long int offset = ((long int) block) * LINEAR_HASH_BLOCK_SIZE;
+    unsigned long offset = ((unsigned long) block) * LINEAR_HASH_BLOCK_SIZE;
 
     LH_WRITE_BLOCK_DEBUG_PRINT("Writing block %d to offset %lu\n", block, offset);
 
@@ -54,7 +54,7 @@ ion_linear_hash_write_block_file(
         ion_linear_hash_block_index_t block,
         FILE *file
 ) {
-    long int offset = ((long int) block) * LINEAR_HASH_BLOCK_SIZE;
+    unsigned long offset = ((unsigned long) block) * LINEAR_HASH_BLOCK_SIZE;
 
     LH_WRITE_BLOCK_DEBUG_PRINT("Writing block %d to offset %lu\n", block, offset);
 
@@ -183,7 +183,7 @@ ion_linear_hash_read_block_file(
         FILE *file,
         ion_byte_t *buffer
 ) {
-    long int offset = ((long int) block) * (LINEAR_HASH_BLOCK_SIZE);
+    unsigned long offset = ((unsigned long) block) * (LINEAR_HASH_BLOCK_SIZE);
 
     LH_READ_BLOCK_DEBUG_PRINT("Reading block %d from offset %lu\n", block, offset);
 

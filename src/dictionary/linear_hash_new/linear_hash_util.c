@@ -13,7 +13,7 @@ ion_linear_hash_insert_preconditions(
         return err_out_of_bounds;
     }
 
-    if (LINEAR_HASH_MAX_BLOCKS == lht->next_block){
+    if (LINEAR_HASH_MAX_BLOCKS == lht->next_block) {
         return err_max_capacity;
     }
 
@@ -29,22 +29,24 @@ ion_linear_hash_check_above_threshold(
     int load_int = (int) load;
 
 #if LINEAR_HASH_DEBUG_INCREMENT
-    printf("\tIncremented number of records to %lu, current size: %d, records per bucket: %d\n", (unsigned long) lht->num_records, lht->current_size, lht->records_per_bucket);
-#ifdef ARDUINO
-
-    char load_str[7];
-
-    dtostrf(load, 5, 2, load_str);
-    printf("\tLoad is now %s\n", load_str);
-    printf("\tLoad is now (int) %d\n", load_int);
-#else
-    printf("\tLoad is now %.2f\n", load);
-    printf("\tLoad is now (int) %d\n", load_int);
+    printf("\tIncremented number of records to %lu, current size: %u, records per bucket: %d\n",
+           (unsigned long) lht->num_records, (unsigned int) lht->current_size, lht->records_per_bucket);
 #endif
-    printf("\tSplit threshold: %d\n", lht->split_threshold);
-#endif
+//#ifdef ARDUINO
+//
+//    char load_str[7];
+//
+//    dtostrf(load, 5, 2, load_str);
+//    printf("\tLoad is now %s\n", load_str);
+//    printf("\tLoad is now (int) %d\n", load_int);
+//#else
+//    printf("\tLoad is now %.2f\n", load);
+//    printf("\tLoad is now (int) %d\n", load_int);
+//#endif
+//    printf("\tSplit threshold: %d\n", lht->split_threshold);
+//#endif
 
-    if (load_int >= lht->split_threshold) {
+    if (load > (float) lht->split_threshold) {
         return boolean_true;
     }
 
@@ -79,7 +81,6 @@ ion_linear_hash_initialize_new_bucket_for_idx(
     if (LINEAR_HASH_MAX_BUCKETS == lht->total_buckets) {
         return err_out_of_bounds;
     }
-
     memset(buffer->block.raw, 0, LINEAR_HASH_BLOCK_SIZE);
 
     ion_linear_hash_bucket_header_t *bucket;
@@ -87,22 +88,18 @@ ion_linear_hash_initialize_new_bucket_for_idx(
     bucket = &buffer->block.bucket.header;
     bucket->index = idx;
     bucket->version = 0;
-    buffer->block_index = lht->next_block;
     buffer->dirty = boolean_true;
     buffer->type = DATA;
-    lht->next_block++;
     bucket->records = 0;
 
     if (idx < lht->current_size) {
-        int overflow = ion_linear_hash_block_index_for_bucket(idx, lht);
-
+        ion_linear_hash_block_index_t overflow = ion_linear_hash_block_index_for_bucket(idx, lht);
         bucket->overflow_block = overflow;
     } else {
         bucket->overflow_block = LINEAR_HASH_NO_OVERFLOW;
     }
-
     lht->total_buckets++;
-    return ion_linear_hash_save_block_index_for_bucket(idx, buffer->block_index, lht);
+    return err_ok;
 }
 
 ion_err_t

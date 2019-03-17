@@ -4,13 +4,13 @@
 #include "./../../tests/planck-unit/src/ion_time/ion_time.h"
 
 #ifdef ARDUINO
-uint32_t delete_get_size = 100000;
+uint32_t delete_get_size = 30000;
 #else
 uint32_t delete_get_size = 1000000;
 #endif
 ion_dictionary_id_t dictionary_id = 0;
 uint32_t increment = 10000;
-#define RUNS 1
+#define RUNS 5
 
 /**
  * Defines the size of the value to insert. Will be a bytes array with the first bytes of the key int.
@@ -685,7 +685,7 @@ void run_benchmarks() {
 
 //        benchmark_insert_create_new(60000, boolean_false, &handler, boolean_true);
         // Testing some small inserts
-        benchmark_insert_create_new(100, boolean_true, &handler, boolean_true);
+        benchmark_insert_create_new(100, boolean_false, &handler, boolean_true);
         benchmark_insert_create_new(500, boolean_true, &handler, boolean_true);
         benchmark_insert_create_new(1000, boolean_true, &handler, boolean_true);
         benchmark_insert_create_new(2000, boolean_true, &handler, boolean_true);
@@ -695,19 +695,6 @@ void run_benchmarks() {
 
         ion_dictionary_id_t id;
         ion_dictionary_t *dict;
-//        dictionary_id = 405;
-//        dict = bench_dictionary_load_existing(&handler, id);
-//        if (NULL == dict) {
-//            printf("Unable to load dict with id %d\n", id);
-//        } else {
-//            ion_linear_hash_table_t *table = (ion_linear_hash_table_t *) dict->instance;
-////            benchmark_insert(dict, 1);
-//            ion_err_t err = ion_linear_hash_split(table);
-//            printf("Split with error %d\n", err);
-//            dictionary_close(dict);
-//        }
-//        free(dict);
-//
         for (uint32_t i = increment; i < delete_get_size; i += increment) {
             id = dictionary_id;
             dict = bench_dictionary_create(&handler);
