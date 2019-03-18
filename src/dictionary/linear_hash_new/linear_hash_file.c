@@ -7,16 +7,21 @@ ion_linear_hash_read_block(
         ion_byte_t *buffer
 ) {
     long int offset = ((long int) block) * (LINEAR_HASH_BLOCK_SIZE);
-
-    LH_READ_BLOCK_DEBUG_PRINT("Reading block %d from offset %lu\n", block, offset);
+#if LINEAR_HASH_DEBUG_READ_BLOCK
+    printf("Reading block %d from offset %lu\n", block, offset);
+#endif
 
     if (0 != fseek(linear_hash->database, offset, SEEK_SET)) {
-        LH_READ_BLOCK_DEBUG_PRINT("Failed to seek %lu\n", offset);
+#if LINEAR_HASH_DEBUG_READ_BLOCK
+        printf("Failed to seek %lu\n", offset);
+#endif
         return err_file_bad_seek;
     }
 
     if (1 != fread(buffer, LINEAR_HASH_BLOCK_SIZE, 1, linear_hash->database)) {
-        LH_READ_BLOCK_DEBUG_PRINT("Failed to read block %d\n", block);
+#if LINEAR_HASH_DEBUG_READ_BLOCK
+        printf("Failed to read block %d\n", block);
+#endif
         return err_file_read_error;
     }
 
@@ -31,16 +36,21 @@ ion_linear_hash_write_block(
         ion_linear_hash_table_t *linear_hash
 ) {
     long int offset = ((long int) block) * LINEAR_HASH_BLOCK_SIZE;
-
-    LH_WRITE_BLOCK_DEBUG_PRINT("Writing block %d to offset %lu\n", block, offset);
+#if LINEAR_HASH_DEBUG_WRITE_BLOCK
+    printf("Writing block %d to offset %lu\n", block, offset);
+#endif
 
     if (0 != fseek(linear_hash->database, offset, SEEK_SET)) {
-        LH_WRITE_BLOCK_DEBUG_PRINT("Failed to seek %lu\n", offset);
+#if LINEAR_HASH_DEBUG_WRITE_BLOCK
+        printf("Failed to seek %lu\n", offset);
+#endif
         return err_file_bad_seek;
     }
 
     if (1 != fwrite(bucket, LINEAR_HASH_BLOCK_SIZE, 1, linear_hash->database)) {
-        LH_WRITE_BLOCK_DEBUG_PRINT("Failed to write block %d to offset %lu\n", block, offset);
+#if LINEAR_HASH_DEBUG_WRITE_BLOCK
+        printf("Failed to write block %d to offset %lu\n", block, offset);
+#endif
         return err_file_write_error;
     }
 
@@ -56,15 +66,21 @@ ion_linear_hash_write_block_file(
 ) {
     long int offset = ((long int) block) * LINEAR_HASH_BLOCK_SIZE;
 
-    LH_WRITE_BLOCK_DEBUG_PRINT("Writing block %d to offset %lu\n", block, offset);
+#if LINEAR_HASH_DEBUG_WRITE_BLOCK
+    printf("Writing block %d to offset %lu\n", block, offset);
+#endif
 
     if (0 != fseek(file, offset, SEEK_SET)) {
-        LH_WRITE_BLOCK_DEBUG_PRINT("Failed to seek %lu\n", offset);
+#if LINEAR_HASH_DEBUG_WRITE_BLOCK
+        printf("Failed to seek %lu\n", offset);
+#endif
         return err_file_bad_seek;
     }
 
     if (1 != fwrite(data, LINEAR_HASH_BLOCK_SIZE, 1, file)) {
-        LH_WRITE_BLOCK_DEBUG_PRINT("Failed to write block %d to offset %lu\n", block, offset);
+#if LINEAR_HASH_DEBUG_WRITE_BLOCK
+        printf("Failed to write block %d to offset %lu\n", block, offset);
+#endif
         return err_file_write_error;
     }
 
@@ -184,16 +200,20 @@ ion_linear_hash_read_block_file(
         ion_byte_t *buffer
 ) {
     long int offset = ((long int) block) * (LINEAR_HASH_BLOCK_SIZE);
-
-    LH_READ_BLOCK_DEBUG_PRINT("Reading block %d from offset %lu\n", block, offset);
-
+#if LINEAR_HASH_DEBUG_READ_BLOCK
+    printf("Reading block %d from offset %lu\n", block, offset);
+#endif
     if (0 != fseek(file, offset, SEEK_SET)) {
-        LH_READ_BLOCK_DEBUG_PRINT("\tFailed to seek %lu\n", offset);
+#if LINEAR_HASH_DEBUG_READ_BLOCK
+        printf("\tFailed to seek %lu\n", offset);
+#endif
         return err_file_bad_seek;
     }
 
     if (1 != fread(buffer, LINEAR_HASH_BLOCK_SIZE, 1, file)) {
-        LH_READ_BLOCK_DEBUG_PRINT("\tFailed to read block %d\n", block);
+#if LINEAR_HASH_DEBUG_READ_BLOCK
+        printf("\tFailed to read block %d\n", block);
+#endif
         return err_file_read_error;
     }
 

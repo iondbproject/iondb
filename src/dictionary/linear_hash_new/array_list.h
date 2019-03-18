@@ -38,7 +38,11 @@
 
 #define ARRAY_LIST_DEBUG 0
 
+#include "linear_hash_macros.h"
 #include "../../key_value/kv_system.h"
+#include "stdio.h"
+#include "../../file/kv_stdio_intercept.h"
+#include <alloca.h>
 
 #if defined(__cplusplus)
 extern "C" {

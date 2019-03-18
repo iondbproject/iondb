@@ -38,8 +38,8 @@
 #define LINEAR_HASH_H_
 
 #include <stdio.h>
-#include "../dictionary_types.h"
 #include "../../file/kv_stdio_intercept.h"
+#include "../dictionary_types.h"
 #include "linear_hash_macros.h"
 #include "linear_hash_types.h"
 #include "linear_hash_hashing.h"

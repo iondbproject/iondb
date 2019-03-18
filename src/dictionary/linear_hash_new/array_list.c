@@ -35,16 +35,6 @@
 /******************************************************************************/
 
 #include "array_list.h"
-#include "../linear_hash/linear_hash_types.h"
-#include <alloca.h>
-#include <stdio.h>
-#include "../../file/kv_stdio_intercept.h"
-
-#ifdef ARDUINO
-
-#include "../../serial/serial_c_iface.h"
-
-#endif
 
 ion_err_t
 ion_array_list_init(int init_size, ion_array_list_t *array_list) {

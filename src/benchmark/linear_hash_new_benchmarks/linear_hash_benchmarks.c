@@ -1,9 +1,7 @@
-#include <stdio.h>
-#include "../../file/kv_stdio_intercept.h"
 #include "linear_hash_benchmarks.h"
-#include "./../../tests/planck-unit/src/ion_time/ion_time.h"
 
-#ifdef ARDUINO
+
+#if defined(ARDUINO)
 uint32_t delete_get_size = 100000;
 #else
 uint32_t delete_get_size = 1000000;
@@ -69,10 +67,10 @@ bench_dictionary_create(ion_dictionary_handler_t *handler) {
             value_size,
             4
     );
-    printf("Rc sz: %d\n", ((ion_linear_hash_table_t *)dict->instance)->record_total_size);
+//    printf("Rc sz: %d\n", ((ion_linear_hash_table_t *) dict->instance)->record_total_size);
     if (err_ok != err) {
         free(dict);
-        printf("Unable to create dictionary. Err %d\n", err);
+//        printf("Unable to create dictionary. Err %d\n", err);
         return NULL;
     }
     return dict;
@@ -92,7 +90,7 @@ bench_dictionary_load_existing(ion_dictionary_handler_t *handler, ion_dictionary
     );
     if (err_ok != err) {
         free(dict);
-        printf("Unable to create dictionary. Err %d\n", err);
+//        printf("Unable to create dictionary. Err %d\n", err);
         return NULL;
     }
     return dict;
@@ -143,7 +141,7 @@ benchmark_block_reads_writes(int blocks, ion_dictionary_handler_t *handler) {
         }
     }
     unsigned long time = ion_time() - start;
-    printf("Wrote %d blocks in %lu. (success %d, fail %d)\n", blocks, time, success, fail);
+//    printf("Wrote %d blocks in %lu. (success %d, fail %d)\n", blocks, time, success, fail);
 
     success = 0;
     fail = 0;
@@ -157,7 +155,7 @@ benchmark_block_reads_writes(int blocks, ion_dictionary_handler_t *handler) {
         }
     }
     time = ion_time() - start;
-    printf("Read %d blocks in %lu. (success %d, fail %d)\n", blocks, time, success, fail);
+//    printf("Read %d blocks in %lu. (success %d, fail %d)\n", blocks, time, success, fail);
     dictionary_delete_dictionary(dict);
 }
 
@@ -167,7 +165,7 @@ benchmark_log_inserts(uint32_t count, uint32_t success, uint32_t failures, unsig
     FILE *log = fopen("inserts.csv", "a+");
 
     if (NULL == log) {
-        printf("Unable to open the inserts log file\n");
+//        printf("Unable to open the inserts log file\n");
         return;
     }
     fseek(log, 0, SEEK_SET);
@@ -196,7 +194,7 @@ benchmark_log_inserts(uint32_t count, uint32_t success, uint32_t failures, unsig
             lht->ion_linear_hash_split_writes
     );
     if (size < 0 || size > 200) {
-        printf("Unable to create insert log string\n");
+//        printf("Unable to create insert log string\n");
     } else {
         if (NULL != log) {
             fwrite(str, (size_t) size, 1, log);
@@ -219,7 +217,7 @@ benchmark_insert(ion_dictionary_t *dict, uint32_t num, ion_boolean_t abort_on_fa
     ion_linear_hash_table_t *lht = (ion_linear_hash_table_t *) dict->instance;
     lht->ion_linear_hash_block_writes = 0;
     lht->ion_linear_hash_block_reads = 0;
-    printf("\nInsert: Starting to insert %lu records\n", (unsigned long) num);
+//    printf("\nInsert: Starting to insert %lu records\n", (unsigned long) num);
     uint32_t inserted = 0;
     uint32_t failures = 0;
     unsigned long start = ion_time();
@@ -232,7 +230,7 @@ benchmark_insert(ion_dictionary_t *dict, uint32_t num, ion_boolean_t abort_on_fa
         if (err_ok != status.error) {
             failures += 1;
             if (boolean_true == abort_on_fail) {
-                printf("Failed with error %d\n", status.error);
+                printf("Err %d\n", status.error);
                 return;
             }
         }
@@ -240,7 +238,7 @@ benchmark_insert(ion_dictionary_t *dict, uint32_t num, ion_boolean_t abort_on_fa
     }
     unsigned long end = ion_time();
     benchmark_log_inserts(num, inserted, failures, end - start, (ion_linear_hash_table_t *) dict->instance);
-    printf("\tInserted %lu records in %lu ms with %lu failures: Resulting Size %lu\n", (unsigned long) num,
+    printf("\tInsert %lu in %lu ms with %lu fail: Size %lu\n", (unsigned long) num,
            end - start,
            (unsigned long) failures, (unsigned long) ((ion_linear_hash_table_t *) dict->instance)->num_records);
     printf("\tBlock R: %lu, W: %lu\n", lht->ion_linear_hash_block_reads, lht->ion_linear_hash_block_writes);
@@ -249,7 +247,7 @@ benchmark_insert(ion_dictionary_t *dict, uint32_t num, ion_boolean_t abort_on_fa
 void
 benchmark_insert_create_new(uint32_t num, ion_boolean_t remove_dict, ion_dictionary_handler_t *handler,
                             ion_boolean_t abort_on_fail) {
-    printf("\nInsert: Starting to insert %lu records with a new dict\n", (unsigned long) num);
+    printf("\nInsert: %lu rc, new\n", (unsigned long) num);
     ion_dictionary_t *dict;
     dict = bench_dictionary_create(handler);
     if (NULL != dict) {
@@ -261,70 +259,9 @@ benchmark_insert_create_new(uint32_t num, ion_boolean_t remove_dict, ion_diction
         }
         free(dict);
     } else {
-        printf("\tFailed to create dictionary\n");
+        printf("\tFailed\n");
         return;
     }
-}
-
-void
-benchmark_inserts_individual_logs(int num, ion_dictionary_handler_t *handler) {
-    FILE *log = fopen("inserti.csv", "w+");
-
-    if (NULL == log) {
-        printf("Unable to open the inserts log file\n");
-        return;
-    }
-    char *header = "Num,Return Status,Time(ms),Records in Table, Table Size, Total Buckets (incl overflow)\n";
-
-    fwrite(header, strlen(header), 1, log);
-
-    ion_dictionary_t *dict;
-    printf("Starting time individual inserts with %d records\n", num);
-    dict = bench_dictionary_create(handler);
-    ion_linear_hash_table_t *lht = (ion_linear_hash_table_t *) dict->instance;
-    if (NULL != dict) {
-        int inserted = 0;
-        int failures = 0;
-        unsigned long start, end;
-        ion_status_t status;
-        lfsr_reset(&lfsr);
-        int key;
-        for (int i = 0; i < num; i++) {
-            key = (int) lfsr_get_next(&lfsr);
-            start = ion_time();
-            status = dictionary_insert(dict, IONIZE(key, int), IONIZE(key, int));
-            end = ion_time();
-            if (err_ok != status.error) {
-                failures += 1;
-            }
-            inserted += status.count;
-
-
-            int size = snprintf(
-                    str,
-                    200,
-                    "%i,%d,%lu,%lu,%d,%d\n",
-                    i,
-                    status.error,
-                    end - start,
-                    (unsigned long) lht->num_records,
-                    lht->current_size,
-                    lht->total_buckets
-            );
-            if (size < 0 || size > 200) {
-                printf("Unable to create insert log string\n");
-            } else {
-                if (NULL != log) {
-                    fwrite(str, (size_t) size, 1, log);
-                }
-            }
-
-        }
-        dictionary_close(dict);
-        free(dict);
-        printf("Completed timing individual inserts with %d success and %d failures\n", inserted, failures);
-    }
-    fclose(log);
 }
 
 void
@@ -334,7 +271,7 @@ benchmark_log_gets(uint32_t count, uint32_t hits, uint32_t failures, uint32_t no
     FILE *log = fopen("gets.csv", "a+");
 
     if (NULL == log) {
-        printf("\tUnable to open the gets log file\n");
+        printf("\tFailed\n");
         return;
     }
     fseek(log, 0, SEEK_SET);
@@ -362,7 +299,7 @@ benchmark_log_gets(uint32_t count, uint32_t hits, uint32_t failures, uint32_t no
             lht->ion_linear_hash_block_writes
     );
     if (size < 0 || size > 200) {
-        printf("\tUnable to create insert log string\n");
+        printf("\tFailed logging\n");
     } else {
         if (NULL != log) {
             fwrite(str, (size_t) size, 1, log);
@@ -383,7 +320,7 @@ benchmark_get(
     ion_linear_hash_table_t *lht = (ion_linear_hash_table_t *) dict->instance;
     lht->ion_linear_hash_block_writes = 0;
     lht->ion_linear_hash_block_reads = 0;
-    printf("Starting to get %lu random keys from a hash table with %lu records\n",
+    printf("Get %lu table %lu sz\n",
            (unsigned long) num_gets,
            (unsigned long) lht->num_records
     );
@@ -398,7 +335,7 @@ benchmark_get(
     int key;
     ion_status_t status;
 
-    printf("\tGetting %lu records\n", (unsigned long) num_gets);
+//    printf("\tGetting %lu records\n", (unsigned long) num_gets);
 
     start = ion_time();
     for (uint32_t i = 0; i < num_gets; ++i) {
@@ -413,7 +350,7 @@ benchmark_get(
         }
     }
     time = ion_time() - start;
-    printf("\tTried to get %lu randomish records from a table with %lu records in %lu (ms). (%lu hits, %lu failures, %lu not-found)\n",
+    printf("\tGet %lu rc, table %lu rc in %lu (ms). (%lu h, %lu f, %lu nf)\n",
            (unsigned long) num_gets,
            (unsigned long) lht->num_records,
            time,
@@ -421,7 +358,7 @@ benchmark_get(
            (unsigned long) failures,
            (unsigned long) not_found
     );
-    printf("\tBlock R: %lu, W: %lu\n", lht->ion_linear_hash_block_reads, lht->ion_linear_hash_block_writes);
+//    printf("\tBlock R: %lu, W: %lu\n", lht->ion_linear_hash_block_reads, lht->ion_linear_hash_block_writes);
     benchmark_log_gets(num_gets, hits, failures, not_found, time, (ion_linear_hash_table_t *) dict->instance,
                        insert_time);
 }
@@ -429,19 +366,19 @@ benchmark_get(
 void
 benchmark_get_create_new(uint32_t dictionary_size, uint32_t num_gets, ion_dictionary_handler_t *handler,
                          ion_boolean_t remove_dict) {
-    printf("Starting to build a dictionary with %lu keys for benchmarking %lu gets\n",
-           (unsigned long) dictionary_size, (unsigned long) num_gets);
+//    printf("Starting to build a dictionary with %lu keys for benchmarking %lu gets\n",
+//           (unsigned long) dictionary_size, (unsigned long) num_gets);
     ion_dictionary_t *dict;
 
     dict = bench_dictionary_create(handler);
     if (NULL != dict) {
         unsigned long start, time;
         lfsr_reset(&lfsr);
-        printf("\tInserting %lu records\n", (unsigned long) dictionary_size);
+//        printf("\tInserting %lu records\n", (unsigned long) dictionary_size);
         start = ion_time();
         bench_insert_records_random(dict, dictionary_size);
         time = ion_time() - start;
-        printf("\tInserted in %lu ms\n", time);
+//        printf("\tInserted in %lu ms\n", time);
         benchmark_get(dict, num_gets, time);
         if (boolean_true == remove_dict) {
             dictionary_delete_dictionary(dict);
@@ -450,7 +387,7 @@ benchmark_get_create_new(uint32_t dictionary_size, uint32_t num_gets, ion_dictio
         }
         free(dict);
     } else {
-        printf("\tFailed to create dictionary\n");
+//        printf("\tFailed to create dictionary\n");
         return;
     }
 }
@@ -467,7 +404,7 @@ benchmark_get_load_existing(
 ) {
     ion_dictionary_t *dict = bench_dictionary_load_existing(handler, dict_id);
     if (NULL != dict) {
-        printf("Loaded dict with id %d\n", dict_id);
+//        printf("Loaded dict with id %d\n", dict_id);
         benchmark_get(dict, num_gets, 0);
         if (boolean_true == remove_dict) {
             dictionary_delete_dictionary(dict);
@@ -476,7 +413,7 @@ benchmark_get_load_existing(
         }
         free(dict);
     } else {
-        printf("\tFailed to create dictionary\n");
+//        printf("\tFailed to create dictionary\n");
         return;
     }
 }
@@ -498,7 +435,7 @@ benchmark_log_deletes(
     FILE *log = fopen("deletes.csv", "a+");
 
     if (NULL == log) {
-        printf("\tUnable to open the deletes log file\n");
+//        printf("\tUnable to open the deletes log file\n");
         return;
     }
     fseek(log, 0, SEEK_SET);
@@ -530,7 +467,7 @@ benchmark_log_deletes(
             lht->ion_linear_hash_block_writes
     );
     if (size < 0 || size > 200) {
-        printf("\tUnable to create insert log string\n");
+//        printf("\tUnable to create insert log string\n");
     } else {
         if (NULL != log) {
             fwrite(str, (size_t) size, 1, log);
@@ -549,7 +486,7 @@ benchmark_delete(ion_dictionary_t *dict, uint32_t num_deletes, unsigned long ins
     ion_linear_hash_table_t *table = (ion_linear_hash_table_t *) dict->instance;
     table->ion_linear_hash_block_reads = 0;
     table->ion_linear_hash_block_writes = 0;
-    printf("Starting to delete %lu random keys from a hash table with %lu records\n", (unsigned long) num_deletes,
+    printf("Delete %lu table %lu rc\n", (unsigned long) num_deletes,
            (unsigned long) table->num_records);
 
     // Reset the lfsr in order to try and get random values
@@ -566,7 +503,7 @@ benchmark_delete(ion_dictionary_t *dict, uint32_t num_deletes, unsigned long ins
     uint32_t not_found = 0;
     unsigned long time;
 
-    printf("\tDeleting %lu records\n", (unsigned long) num_deletes);
+//    printf("\tDeleting %lu records\n", (unsigned long) num_deletes);
     unsigned long start = ion_time();
     for (uint32_t i = 0; i < num_deletes; ++i) {
         key = lfsr_get_next(&lfsr);
@@ -582,7 +519,7 @@ benchmark_delete(ion_dictionary_t *dict, uint32_t num_deletes, unsigned long ins
     time = ion_time() - start;
 
     // Log results
-    printf("\tCompleted deleting %lu random records from a table with %lu records in %lu (ms). (%lu hits, %lu fails, %lu not-found)\n",
+    printf("\tDone del %lu, tbl %lu rc in %lu (ms). (%lu h, %lu f, %lu nf)\n",
            (unsigned long) num_deletes,
            (unsigned long) records_initial,
            time,
@@ -590,7 +527,7 @@ benchmark_delete(ion_dictionary_t *dict, uint32_t num_deletes, unsigned long ins
            (unsigned long) fails,
            (unsigned long) not_found
     );
-    printf("\tBlock R: %lu, W: %lu\n", table->ion_linear_hash_block_reads, table->ion_linear_hash_block_writes);
+//    printf("\tBlock R: %lu, W: %lu\n", table->ion_linear_hash_block_reads, table->ion_linear_hash_block_writes);
     benchmark_log_deletes(
             num_deletes,
             hits,
@@ -613,12 +550,12 @@ benchmark_delete_create_new(
         ion_boolean_t delete_dict,
         ion_dictionary_handler_t *handler
 ) {
-    printf("\nDelete: Starting benchmarking deleting %lu records from an new dictionary with %lu records",
+/*    printf("\nDelete: Starting benchmarking deleting %lu records from an new dictionary with %lu records",
            (unsigned long) num_deletes,
            (unsigned long) dictionary_size
-    );
+    );*/
 
-    printf("\tStarting to create a dictionary with %lu records", (unsigned long) dictionary_size);
+//    printf("\tStarting to create a dictionary with %lu records", (unsigned long) dictionary_size);
 
     unsigned long start;
     ion_dictionary_t *dict;
@@ -626,11 +563,11 @@ benchmark_delete_create_new(
 
     if (NULL != dict) {
         lfsr_init_start_state((uint16_t) rand(), &lfsr);
-        printf("\tInserting %d records\n", dictionary_size);
+//        printf("\tInserting %d records\n", dictionary_size);
         start = ion_time();
         bench_insert_records_random(dict, dictionary_size);
         unsigned long insert_time = ion_time() - start;
-        printf("\tInserted in %lu ms\n", insert_time);
+//        printf("\tInserted in %lu ms\n", insert_time);
         benchmark_delete(dict, num_deletes, insert_time);
         if (boolean_false == delete_dict) {
             dictionary_close(dict);
@@ -639,21 +576,21 @@ benchmark_delete_create_new(
         }
         free(dict);
     } else {
-        printf("\tFailed to create dictionary\n");
+//        printf("\tFailed to create dictionary\n");
     }
 }
 
 void
 benchmark_delete_load_existing(ion_dictionary_id_t id, uint32_t num_deletes, ion_boolean_t delete_dict,
                                ion_dictionary_handler_t *handler) {
-    printf("\nDelete: Starting benchmarking deleting %lu records from an existing dictionary",
+/*    printf("\nDelete: Starting benchmarking deleting %lu records from an existing dictionary",
            (unsigned long) num_deletes);
-    printf("\tLoading dictionary with id %d\n", id);
+    printf("\tLoading dictionary with id %d\n", id);*/
 
     ion_dictionary_t *dict = bench_dictionary_load_existing(handler, id);
 
     if (NULL == dict) {
-        printf("\tError: Unable to load the existing dictionary\n");
+//        printf("\tError: Unable to load the existing dictionary\n");
         return;
     }
     benchmark_delete(dict, num_deletes, 0);
@@ -680,7 +617,7 @@ void run_benchmarks() {
     for (int run = 0; run < RUNS; run++) {
 
         start = ion_time();
-        printf("Initializing benchmarks with value size %d\n", value_size);
+        printf("Init value sz %d\n", value_size);
         lfsr_init_start_state((uint16_t) ion_time(), &lfsr);
 
 //        benchmark_insert_create_new(60000, boolean_false, &handler, boolean_true);
@@ -712,7 +649,7 @@ void run_benchmarks() {
             id = dictionary_id;
             dict = bench_dictionary_create(&handler);
             if (NULL == dict) {
-                printf("Unable to create dict with id %d\n", id);
+//                printf("Unable to create dict with id %d\n", id);
                 continue;
             }
             // Benchmark inserting i items
@@ -735,13 +672,13 @@ void run_benchmarks() {
         dict = bench_dictionary_create(&handler);
 
         if (NULL == dict) {
-            printf("Unable to create dict with id %d\n", id);
+//            printf("Unable to create dict with id %d\n", id);
         } else {
             benchmark_insert(dict, delete_get_size, boolean_true);
 
             // Benchmark Gets with the max size dictionary
             for (uint32_t i = increment; i <= delete_get_size; i += increment) {
-                printf("\n");
+//                printf("\n");
                 benchmark_get(dict, i, 0);
             }
             // Final delete from full dict
@@ -757,12 +694,12 @@ void run_benchmarks() {
 //        }
 
         times[run] = ion_time() - start;
-        printf("Completed benchmarks in %lu ms\n", times[run]);
+        printf("Done %lu ms\n", times[run]);
 //        value_size *= 2;
     }
 
-    printf("Completed all benchmarks:\n");
-    for (int i = 0; i < RUNS; i++) {
-        printf("Run %d in %lu ms\n", i, times[i]);
-    }
+    printf("Done all\n");
+//    for (int i = 0; i < RUNS; i++) {
+////        printf("Run %d in %lu ms\n", i, times[i]);
+//    }
 }

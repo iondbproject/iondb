@@ -31,7 +31,9 @@ ion_linear_hash_key_to_bucket_idx(
     if (idx < linear_hash->next_split) {
         idx = ion_linear_hash_h1(hash, linear_hash);
     }
-    LH_DEBUG_PRINT("Hashed to %lu, bucket index %lu\n", hash, idx);
+#if  LINEAR_HASH_DEBUG
+    printf("Hashed to %lu, bucket index %lu\n", hash, idx);
+#endif
     return idx;
 }
 
