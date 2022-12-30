@@ -1,8 +1,9 @@
 ![IonDB](https://cdn.rawgit.com/iondbproject/iondb/master/documentation/doxygen/iondb_logo_final.svg)
 =========
-
+<!--
 **Development:** [![Build Status](http://ci.iondb.org/buildStatus/icon?job=iondb-pc-full)](http://ci.iondb.org/job/iondb-pc-full/)
 **Embedded Device:** [![Build Status](http://ci.iondb.org/buildStatus/icon?job=iondb-device)](http://ci.iondb.org/job/iondb-device/)
+-->
 
 You might also be interested in our sister project, [LittleD - A relational database using 1kB of RAM or less](https://github.com/graemedouglas/LittleD).
 
